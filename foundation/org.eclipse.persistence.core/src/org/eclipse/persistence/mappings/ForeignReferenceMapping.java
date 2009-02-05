@@ -627,6 +627,15 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         }
         return isLazy;
     }
+
+    /**
+     * INTERNAL:
+     * Return whether this mapping should be traversed when we are locking
+     * @return
+     */
+    public boolean isLockableMapping(){
+        return !(this.usesIndirection());
+    }
     
     /**
      * INTERNAL:
@@ -708,7 +717,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
 
     /**
      * INTERNAL:
-     * Returns the read query assoicated with the mapping.
+     * Returns the read query associated with the mapping.
      */
     public ReadQuery getSelectionQuery() {
         return selectionQuery;

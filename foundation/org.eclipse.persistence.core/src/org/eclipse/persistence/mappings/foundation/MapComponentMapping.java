@@ -9,8 +9,12 @@
  *
  * Contributors:
  *     tware - initial API check-in for MappedKeyMapContainerPolicy
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.mappings.foundation;
+
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.queries.ObjectBuildingQuery;
 
 /**
  * A MapComponentMapping is any mapping that can be used as the key or the value
@@ -30,4 +34,11 @@ package org.eclipse.persistence.mappings.foundation;
  */
 public interface MapComponentMapping {
 
+    /**
+     * INTERNAL
+     * Called when a DatabaseMapping is used to map the key in a collection.  Returns the key.
+     */
+    public Object createMapComponentFromRow(AbstractRecord dbRow, ObjectBuildingQuery query, AbstractSession session);
+
+    
 }

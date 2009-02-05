@@ -308,9 +308,10 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
         List extraNamespaces = new ArrayList();
         NamespaceResolver nr = row.getNamespaceResolver();
         for (Object iter = cp.iteratorFor(attributeValue); cp.hasNext(iter);) {
-            Object key = cp.next(iter, session);
+            Map.Entry entry = (Map.Entry)cp.nextEntry(iter, session);
+            Object key = entry.getKey();
             if ((key != null) && key instanceof QName) {
-                Object value = cp.valueFromKey(key, attributeValue);
+                Object value = entry.getValue();
                 QName attributeName = (QName) key;
                 String namespaceURI = attributeName.getNamespaceURI();
                 String qualifiedName = attributeName.getLocalPart();

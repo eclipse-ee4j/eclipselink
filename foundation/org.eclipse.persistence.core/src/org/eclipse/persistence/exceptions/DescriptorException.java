@@ -221,6 +221,8 @@ public class DescriptorException extends ValidationException {
     public final static int INSERT_ORDER_CYCLICAL_DEPENDENCY_BETWEEN_TWO_TABLES = 205;
     public final static int INSERT_ORDER_CYCLICAL_DEPENDENCY_BETWEEN_THREE_OR_MORE_TABLES = 206;
     public final static int INSERT_ORDER_CHILD_BEFORE_PARENT = 207;
+    public final static int CANNOT_SET_CONVERTER_FOR_NON_DIRECT_MAPPING = 208;
+    public final static int DIRECT_KEY_NOT_SET = 209;
 
     /**
      * INTERNAL:
@@ -1926,4 +1928,21 @@ public class DescriptorException extends ValidationException {
         descriptorException.setErrorCode(INSERT_ORDER_CHILD_BEFORE_PARENT);
         return descriptorException;
     }
+    
+    public static DescriptorException cannotSetConverterForNonDirectMapping(ClassDescriptor descriptor, DatabaseMapping mapping, String keyConverterClassName) {
+        Object[] args = { mapping, keyConverterClassName };
+
+        DescriptorException descriptorException = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, CANNOT_SET_CONVERTER_FOR_NON_DIRECT_MAPPING, args), descriptor);
+        descriptorException.setErrorCode(CANNOT_SET_CONVERTER_FOR_NON_DIRECT_MAPPING);
+        return descriptorException;
+    }
+
+    public static DescriptorException directKeyNotSet(ClassDescriptor descriptor) {
+        Object[] args = {  };
+
+        DescriptorException descriptorException = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, DIRECT_KEY_NOT_SET, args), descriptor);
+        descriptorException.setErrorCode(DIRECT_KEY_NOT_SET);
+        return descriptorException;
+    }
+
 }

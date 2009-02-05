@@ -215,7 +215,10 @@ public class DescriptorExceptionResource extends ListResourceBundle {
                                            { "204", "Insert table order contradicts to multiple tables foreign keys - according to the latter table [{0}] shouild be inserted before table [{1}]." },
                                            { "205", "Insert table order has cyclical dependency between tables [{0}] and [{1}]." },
                                            { "206", "Insert table order has cyclical dependency between three or more tables." },
-                                           { "207", "Insert table order is wrong: table [{0}] mapped to parent is specified to be inserted after table [{1}] mapped to child." }
+                                           { "207", "Insert table order is wrong: table [{0}] mapped to parent is specified to be inserted after table [{1}] mapped to child." },
+                                           { "208", "You are trying to set a Converter with class name [{1}] on a non-direct-mapping [{0}].  Only Direct Mappings are allowed to have converters.  This usually happens when trying to set a key converter on a DirectMapMapping with a non-direct key." },
+                                           { "209", "This descriptor contains a mapping with a DirectMapMapping and no key field set." },
+
     };
 
     /**

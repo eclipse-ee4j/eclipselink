@@ -20,16 +20,22 @@ import java.lang.reflect.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.internal.security.PrivilegedGetValueFromField;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.CollectionChangeRecord;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.MapChangeEvent;
 import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
+import org.eclipse.persistence.mappings.Association;
+import org.eclipse.persistence.mappings.CollectionMapping;
 
 /**
  * <p><b>Purpose</b>: A MapContainerPolicy is ContainerPolicy whose container class
@@ -84,7 +90,31 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
         }
         super.prepare(query, session);
     }
-
+    
+    /**
+     * INTERNAL:
+     * Add element to that implements the Map interface
+     * use the row to compute the key
+     */ 
+    public boolean addInto(Object element, Object container, AbstractSession session, AbstractRecord dbRow, ObjectBuildingQuery query) {
+        return addInto(null, element, container, session);
+    }
+    
+    /**
+     * INTERNAL:
+     * Add element to container.
+     * This is used to add to a collection independent of JDK 1.1 and 1.2.
+     * The session may be required to wrap for the wrapper policy.
+     * Return whether the container changed
+     */
+    public boolean addInto(Object element, Object container, AbstractSession session){
+        if (element instanceof Map.Entry){
+            return addInto(((Map.Entry)element).getKey(), ((Map.Entry)element).getValue(), container, session);
+        } else {
+            return super.addInto(element, container, session);
+        }
+    }
+    
     /**
      * INTERNAL:
      * Add element into container which implements the Map interface.
@@ -97,7 +127,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
         try {
             if (key != null) {
                 return ((Map)container).put(key, wrapped) != null;
-            } else {
+            } else if (isKeyAvailableFromElement()){
                 Object keyFromElement = keyFrom(element, session);
                 
                 try {
@@ -109,19 +139,80 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
                     // HashMap permits null keys.
                     if (keyFromElement == null) {
                         // TreeMap, HashTable, SortedMap do not permit null keys 
-                        throw QueryException.mapKeyIsNull(element, container);            		
+                        throw QueryException.mapKeyIsNull(element, container);
                     } else {
                         // We got a null pointer exception for some other reason
                         // so re-throw the exception.
                         throw e;
                     }
                 }
+            } else {
+                throw QueryException.cannotAddElementWithoutKeyToMap(element);
             }
         } catch (ClassCastException ex1) {
             throw QueryException.mapKeyNotComparable(key, container);
         }
     }
 
+    /**
+     * INTERNAL:
+     * This method is used to add the next value from an iterator built using ContainerPolicy's iteratorFor() method
+     * into the toCollection.  Since this ContainerPolicy represents a Map, the key and the value are extracted and added
+     * 
+     */
+    public void addNextValueFromIteratorInto(Object valuesIterator, Object toCollection, CollectionMapping mapping, UnitOfWorkImpl unitOfWork, boolean isExisting){
+        Map.Entry entry = ((MapContainerPolicyIterator)valuesIterator).next();
+        Object clonedKey = buildCloneForKey(entry.getKey(), unitOfWork, isExisting);
+        Object clonedValue = buildCloneForValue(entry.getValue(), mapping, unitOfWork, isExisting);
+        addInto(clonedKey, clonedValue, toCollection, unitOfWork);
+    }
+
+    /**
+     * INTERNAL:
+     * Return an object representing an entry in the collection represented by this container policy
+     * This method will returns an Association containing the key and the value for a Map
+     */
+    public Object buildCollectionEntry(Object objectAdded, ObjectChangeSet changeSet){
+        return new Association(changeSet.getNewKey(), objectAdded);
+    }
+    
+    /**
+     * INTERNAL:
+     * Ensure the new key is set for the change set for a new map object
+     */
+    public void buildChangeSetForNewObjectInCollection(Object object, ClassDescriptor referenceDescriptor, UnitOfWorkChangeSet uowChangeSet, AbstractSession session){
+        ObjectChangeSet changeSet = referenceDescriptor.getObjectBuilder().createObjectChangeSet(((Map.Entry)object).getValue(), uowChangeSet, session);
+        Object key = ((Map.Entry)object).getKey();
+        changeSet.setNewKey(key);
+    }
+    
+    /**
+     * Build a clone for the key of a Map represented by this container policy if necessary.
+     * By default, the key is not cloned since in standard EclipseLink Map Mappings it will not be 
+     * an Entity
+     * @param key
+     * @param uow
+     * @param isExisting
+     * @return
+     */
+    protected Object buildCloneForKey(Object key, UnitOfWorkImpl uow, boolean isExisting){
+        return key;
+        
+    }
+    
+    /**
+     * Build a clone for the value in a mapping.
+     * @param value
+     * @param mapping
+     * @param uow
+     * @param isExisting
+     * @return
+     */
+    protected Object buildCloneForValue(Object value, CollectionMapping mapping, UnitOfWorkImpl uow, boolean isExisting){
+        return mapping.buildElementClone(value, uow, isExisting);
+        
+    }
+    
     /**
      * INTERNAL:
      * Remove all the elements from container.
@@ -226,13 +317,34 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
     public boolean isMapPolicy() {
         return true;
     }
+    
+    
+    /**
+     * MapContainerPolicy is for mappings where the key is stored in actual
+     * element.
+     * @return
+     */
+    protected boolean isKeyAvailableFromElement(){
+        return true;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return whether the iterator has more objects.
+     * The iterator is the one returned from #iteratorFor().
+     *
+     * @see ContainerPolicy#iteratorFor(java.lang.Object)
+     */
+    public boolean hasNext(Object iterator){
+        return ((MapContainerPolicyIterator)iterator).hasNext();
+    }
 
     /**
      * INTERNAL:
      * Return an Iterator for the given container.
      */
     public Object iteratorFor(Object container) {
-        return ((Map)container).values().iterator();
+        return new MapContainerPolicyIterator((Map)container);
     }
 
     /**
@@ -296,6 +408,86 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
             // an element descriptor.
             return getElementDescriptor().getCMPPolicy().createPrimaryKeyInstance(keyElement, session);
         }
+    }
+    
+    public Object keyFromIterator(Object iterator){
+        return ((MapContainerPolicyIterator)iterator).getCurrentKey();
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the next object on the queue. The iterator is the one
+     * returned from #iteratorFor().
+     *
+     * @see ContainerPolicy#iteratorFor(java.lang.Object)
+     */
+    protected Object next(Object iterator){
+        return ((MapContainerPolicyIterator)iterator).next().getValue();
+    }
+
+    /**
+     * INTERNAL:
+     * Return the next object on the queue. The iterator is the one
+     * returned from #iteratorFor().
+     * 
+     * This will return a MapEntry to allow use of the key
+     *
+     * @see ContainerPolicy#iteratorFor(java.lang.Object)
+     * @see MapContainerPolicy.unwrapIteratorResult(Object object)
+     */
+    public Object nextEntry(Object iterator){
+        return ((MapContainerPolicyIterator)iterator).next();
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the next object on the queue. The iterator is the one
+     * returned from #iteratorFor().
+     * 
+     * This will return a MapEntry to allow use of the key
+     *
+     * @see ContainerPolicy#iteratorFor(Object iterator, AbstractSession session)
+     * @see MapContainerPolicy.unwrapIteratorResult(Object object)
+     */
+    public Object nextEntry(Object iterator, AbstractSession session) {
+        Map.Entry next = (Map.Entry)nextEntry(iterator);
+        Object object = next.getValue();
+        if (hasElementDescriptor()) {
+            object = getElementDescriptor().getObjectBuilder().unwrapObject(object, session);
+        }
+        Object key = next.getKey();
+        key = unwrapKey(key, session);
+        next = new Association(next.getKey(), object);
+        return next;
+    }
+    
+    /**
+     * INTERNAL: 
+     * MapContainerPolicy's iterator iterates on the Entries of a Map.
+     * This method returns the object from the iterator
+     * 
+     * @see MapContainerPolicy.nextWrapped(Object iterator)
+     */
+    public Object unwrapIteratorResult(Object object){
+        if (object instanceof Map.Entry){
+            return ((Map.Entry)object).getValue();
+        } else {
+            return object;
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Allow the key to be unwrapped.  This will be overridden by container policies that
+     * allow keys that are entities
+     * 
+     * @see MappedKeyMapContainerPolicy
+     * @param key
+     * @param session
+     * @return
+     */
+    public Object unwrapKey(Object key, AbstractSession session){
+        return key;
     }
     
     /**
@@ -391,7 +583,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
         // PERF: Use instanceof which is inlined, not isAssignable which is very inefficent.
         return container instanceof Map;
     }
-    
+
     /**
      * INTERNAL:
      * Sets the key name to be used to generate the key in a Map type container 
@@ -474,4 +666,49 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
             }
         }
     }
+    
+    
+    public Object valueFromIterator(Object iterator){
+        return ((MapContainerPolicyIterator)iterator).getCurrentValue();
+    }
+    
+    /** INTERNAL:
+     *  This inner class is used to iterate through the Map.Entry s of a Map
+     *  It maintains a pointer to the current entry to allow access to the key and the value
+     * @author tware
+     *
+     */
+    public static class MapContainerPolicyIterator{
+        
+        private Iterator iterator;
+        private Map.Entry currentEntry;
+        
+        public MapContainerPolicyIterator(Map container){
+            this.iterator = container.entrySet().iterator();
+        }
+        
+        public boolean hasNext(){
+            return iterator.hasNext();
+        }
+        
+        public Map.Entry next(){
+            currentEntry = (Map.Entry)iterator.next();
+            return currentEntry;
+        }
+        
+        public Object getCurrentKey(){
+            if (currentEntry != null){
+                return currentEntry.getKey();
+            }
+            return null;
+        }
+
+        public Object getCurrentValue(){
+            if (currentEntry != null){
+                return currentEntry.getValue();
+            }
+            return null;
+        }
+    }
+    
 }

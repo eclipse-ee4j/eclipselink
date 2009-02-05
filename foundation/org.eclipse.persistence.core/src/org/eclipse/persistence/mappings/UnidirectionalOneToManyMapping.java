@@ -15,6 +15,7 @@ package org.eclipse.persistence.mappings;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import org.eclipse.persistence.exceptions.ConversionException;
@@ -52,52 +53,6 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
  * @since Eclipselink 1.1
  */
 public class UnidirectionalOneToManyMapping extends OneToManyMapping {
-
-    /** Used for data modification events. */
-    protected static final String PostInsert = "postInsert";
-    protected static final String ObjectRemoved = "objectRemoved";
-    protected static final String ObjectAdded = "objectAdded";
-    
-    /** Query used to update all target rows before the source object is deleted. */
-    protected transient DataModifyQuery preDeleteQuery;
-    protected transient boolean hasCustomPreDeleteQuery;
-    
-    /** 
-     * Query used to update a single target row setting its foreign key to point to the source. 
-     * Run once for each target added to the source.
-     * Example: 
-     *   for Employee with managedEmployees attribute mapped with UnidirectionalOneToMany
-     *   the query looks like:
-     *   UPDATE EMPLOYEE SET MANAGER_ID = 1 WHERE (EMP_ID = 2)
-     *   where 1 is id of the source, and 2 is the id of the target to be added.  
-     **/
-    protected transient DataModifyQuery addTargetQuery;
-    protected transient boolean hasCustomAddTargetQuery;
-
-    /** 
-     * Query used to update a single target row changing its foreign key value from the one pointing to the source to null. 
-     * Run once for each target removed from the source. 
-     * Example: 
-     *   for Employee with managedEmployees attribute mapped with UnidirectionalOneToMany
-     *   the query looks like:
-     *   UPDATE EMPLOYEE SET MANAGER_ID = null WHERE ((MANAGER_ID = 1) AND (EMP_ID = 2))
-     *   where 1 is id of the source, and 2 is the id of the target to be removed.  
-     **/
-    protected transient DataModifyQuery removeTargetQuery;
-    protected transient boolean hasCustomRemoveTargetQuery;
-
-    /** 
-     * Query used to update all target rows changing target foreign key value from the one pointing to the source to null. 
-     * Run before the source object is deleted.
-     * Example: 
-     *   for Employee with managedEmployees attribute mapped with UnidirectionalOneToMany
-     *   the query looks like:
-     *   UPDATE EMPLOYEE SET MANAGER_ID = null WHERE (MANAGER_ID = 1)
-     *   where 1 is id of the source to be deleted.  
-     **/
-    protected transient DataModifyQuery removeAllTargetsQuery;
-    protected transient boolean hasCustomRemoveAllTargetsQuery;
-    
     /**
      * Indicates whether target's optimistic locking value should be incremented on
      * target being added to / removed from a source. 
@@ -118,12 +73,28 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
      */
     public UnidirectionalOneToManyMapping() {
         super();
-        this.addTargetQuery = new DataModifyQuery();
-        this.removeTargetQuery = new DataModifyQuery();
-        this.removeAllTargetsQuery = new DataModifyQuery();
         this.shouldIncrementTargetLockValueOnAddOrRemoveTarget = true;
         this.shouldIncrementTargetLockValueOnDeleteSource = true;
     }
+    
+
+    /**
+     * INTERNAL:
+     * Build a row containing the keys for use in the query that updates the row for the
+     * target object during an insert or update
+     */
+    protected AbstractRecord buildKeyRowForTargetUpdate(ObjectLevelModifyQuery query){
+       AbstractRecord keyRow = new DatabaseRecord();
+       // Extract primary key and value from the source.
+       int size = sourceKeyFields.size();
+       for (int index = 0; index < size; index++) {
+           DatabaseField sourceKey = sourceKeyFields.get(index);
+           DatabaseField targetForeignKey = targetForeignKeyFields.get(index);
+           Object sourceKeyValue = query.getTranslationRow().get(sourceKey);
+           keyRow.put(targetForeignKey, sourceKeyValue);
+       }
+       return keyRow;
+   }
     
     /**
      * INTERNAL:
@@ -137,7 +108,7 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
         }
         return record;
     }
-
+    
     /**
      * INTERNAL:
      * Extract the primary key value from the source row.
@@ -244,9 +215,6 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
      */
     public void initialize(AbstractSession session) throws DescriptorException {
         super.initialize(session);
-        initializeAddTargetQuery(session);
-        initializeRemoveTargetQuery(session);
-        initializeRemoveAllTargetsQuery(session);
         if(getReferenceDescriptor().getOptimisticLockingPolicy() != null) {
             if(shouldIncrementTargetLockValueOnAddOrRemoveTarget) {
                 descriptor.addMappingsPostCalculateChanges(this);
@@ -303,146 +271,13 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
             DatabaseField targetForeignKey = targetForeignKeyFields.get(index);
             modifyRow.put(targetForeignKey, null);
         }
-
+        containerPolicy.addFieldsForMapKey(modifyRow);
+        
         SQLUpdateStatement statement = new SQLUpdateStatement();
         statement.setTable(getReferenceDescriptor().getDefaultTable());
         statement.setWhereClause(whereClause);
         statement.setModifyRow(modifyRow);
         addTargetQuery.setSQLStatement(statement);
-    }
-
-    /**
-     * INTERNAL:
-     * Initialize removeTargetQuery.
-     */
-    protected void initializeRemoveTargetQuery(AbstractSession session) {
-        if (!removeTargetQuery.hasSessionName()) {
-            removeTargetQuery.setSessionName(session.getName());
-        }
-        if (hasCustomRemoveTargetQuery) {
-            return;
-        }
-
-        // Build where clause expression.
-        Expression whereClause = null;
-        Expression builder = new ExpressionBuilder();
-
-        List<DatabaseField> targetPrimaryKeyFields = getReferenceDescriptor().getPrimaryKeyFields();
-        int size = targetPrimaryKeyFields.size();
-        for (int index = 0; index < size; index++) {
-            DatabaseField targetPrimaryKey = targetPrimaryKeyFields.get(index);
-            Expression expression = builder.getField(targetPrimaryKey).equal(builder.getParameter(targetPrimaryKey));
-            whereClause = expression.and(whereClause);
-        }
-
-        AbstractRecord modifyRow = new DatabaseRecord();
-        size = targetForeignKeyFields.size();
-        for (int index = 0; index < size; index++) {
-            DatabaseField targetForeignKey = targetForeignKeyFields.get(index);
-            modifyRow.put(targetForeignKey, null);
-            Expression expression = builder.getField(targetForeignKey).equal(builder.getParameter(targetForeignKey));
-            whereClause = expression.and(whereClause);
-        }
-
-        SQLUpdateStatement statement = new SQLUpdateStatement();
-        statement.setTable(getReferenceDescriptor().getDefaultTable());
-        statement.setWhereClause(whereClause);
-        statement.setModifyRow(modifyRow);
-        removeTargetQuery.setSQLStatement(statement);
-    }
-
-    /**
-     * INTERNAL:
-     * Initialize removeAllTargetsQuery.
-     */
-    protected void initializeRemoveAllTargetsQuery(AbstractSession session) {
-        if (!removeAllTargetsQuery.hasSessionName()) {
-            removeAllTargetsQuery.setSessionName(session.getName());
-        }
-        if (hasCustomRemoveAllTargetsQuery) {
-            return;
-        }
-
-        // Build where clause expression.
-        Expression whereClause = null;
-        Expression builder = new ExpressionBuilder();
-
-        AbstractRecord modifyRow = new DatabaseRecord();
-        int size = targetForeignKeyFields.size();
-        for (int index = 0; index < size; index++) {
-            DatabaseField targetForeignKey = targetForeignKeyFields.get(index);
-            modifyRow.put(targetForeignKey, null);
-            Expression expression = builder.getField(targetForeignKey).equal(builder.getParameter(targetForeignKey));
-            whereClause = expression.and(whereClause);
-        }
-
-        SQLUpdateStatement statement = new SQLUpdateStatement();
-        statement.setTable(getReferenceDescriptor().getDefaultTable());
-        statement.setWhereClause(whereClause);
-        statement.setModifyRow(modifyRow);
-        removeAllTargetsQuery.setSQLStatement(statement);
-    }
-
-    /**
-     * INTERNAL:
-     * An object was added to the collection during an update, insert it if private.
-     */
-    protected void objectAddedDuringUpdate(ObjectLevelModifyQuery query, Object objectAdded, ObjectChangeSet changeSet) throws DatabaseException, OptimisticLockException {
-        // First insert/update object.
-        super.objectAddedDuringUpdate(query, objectAdded, changeSet);
-
-        // In the uow data queries are cached until the end of the commit.
-        if (query.shouldCascadeOnlyDependentParts()) {
-            // Hey I might actually want to use an inner class here... ok array for now.
-            Object[] event = new Object[3];
-            event[0] = ObjectAdded;
-            event[1] = query;
-            event[2] = objectAdded;
-            query.getSession().getCommitManager().addDataModificationEvent(this, event);
-        } else {
-            updateTargetForeignKeyPostUpdateSource_ObjectAdded(query, objectAdded);
-        }
-    }
-
-    /**
-     * INTERNAL:
-     * An object was removed to the collection during an update, delete it if private.
-     */
-    protected void objectRemovedDuringUpdate(ObjectLevelModifyQuery query, Object objectDeleted) throws DatabaseException, OptimisticLockException {
-        if(!isPrivateOwned()) {
-            // In the uow data queries are cached until the end of the commit.
-            if (query.shouldCascadeOnlyDependentParts()) {
-                // Hey I might actually want to use an inner class here... ok array for now.
-                Object[] event = new Object[3];
-                event[0] = ObjectRemoved;
-                event[1] = query;
-                event[2] = objectDeleted;
-                query.getSession().getCommitManager().addDataModificationEvent(this, event);
-            } else {
-                updateTargetForeignKeyPostUpdateSource_ObjectRemoved(query, objectDeleted);
-            }
-        }
-
-        // Delete object after join entry is delete if private.
-        super.objectRemovedDuringUpdate(query, objectDeleted);
-    }
-
-    /**
-     * INTERNAL:
-     * Perform the commit event.
-     * This is used in the uow to delay data modifications.
-     */
-    public void performDataModificationEvent(Object[] event, AbstractSession session) throws DatabaseException, DescriptorException {
-        // Hey I might actually want to use an inner class here... ok array for now.
-        if (event[0] == PostInsert) {
-            updateTargetForeignKeysPostInsertSource((WriteObjectQuery)event[1]);
-        } else if (event[0] == ObjectRemoved) {
-            updateTargetForeignKeyPostUpdateSource_ObjectRemoved((WriteObjectQuery)event[1], event[2]);
-        } else if (event[0] == ObjectAdded) {
-            updateTargetForeignKeyPostUpdateSource_ObjectAdded((WriteObjectQuery)event[1], event[2]);
-        } else {
-            throw DescriptorException.invalidDataModificationEventCode(event[0], this);
-        }
     }
 
     /**
@@ -453,7 +288,7 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
         if (shouldObjectModifyCascadeToParts(query)) {
             super.preDelete(query);
         } else {
-            updateTargetForeignKeyPreDeleteSource(query);
+            updateTargetRowPreDeleteSource(query);
         }
 
     }
@@ -520,32 +355,6 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
             }
         }
     }
-    
-    /**
-     * INTERNAL:
-     * Insert target foreign key into the reference table. This follows following steps.
-     * <p>- Extract primary key and its value from the source object.
-     * <p>- Extract target key and its value from the target object.
-     * <p>- Construct a insert statement with above fields and values for relation table.
-     * <p>- execute the statement.
-     * <p>- Repeat above three statements until all the target objects are done.
-     */
-    public void postInsert(WriteObjectQuery query) throws DatabaseException {
-        super.postInsert(query);
-        if (isReadOnly()) {
-            return;
-        }
-
-        if (query.shouldCascadeOnlyDependentParts()) {
-            // Hey I might actually want to use an inner class here... ok array for now.
-            Object[] event = new Object[2];
-            event[0] = PostInsert;
-            event[1] = query;
-            query.getSession().getCommitManager().addDataModificationEvent(this, event);
-        } else {
-            updateTargetForeignKeysPostInsertSource(query);
-        }
-    }
 
     /**
      * INTERNAL:
@@ -558,32 +367,6 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
         for(int i=0; i < size; i++) {
             mappingBatchQuery.addAdditionalField(targetForeignKeyFields.get(i));
         }        
-    }
-    
-    /**
-     * INTERNAL:
-     * Update the relation table with the entries related to this mapping.
-     * Delete entries removed, insert entries added.
-     * If private also insert/delete/update target objects.
-     */
-    public void postUpdate(WriteObjectQuery query) throws DatabaseException {
-        if (isReadOnly()) {
-            return;
-        }
-
-        // If objects are not instantiated that means they are not changed.
-        if (!isAttributeValueInstantiatedOrChanged(query.getObject())) {
-            return;
-        }
-
-        Object objectsInMemoryModel = getRealCollectionAttributeValueFromObject(query.getObject(), query.getSession());
-
-        // This accesses the backup in uow otherwise goes to database (may be better of to delete all in non uow case).
-        Object currentObjectsInDB = readPrivateOwnedForObject(query);
-        if (currentObjectsInDB == null) {
-            currentObjectsInDB = getContainerPolicy().containerInstance(1);
-        }
-        compareObjectsAndWrite(currentObjectsInDB, objectsInMemoryModel, query);
     }
 
     /**
@@ -602,56 +385,15 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
         }
     }
 
-    /**
-     * PUBLIC:
-     */
-    public void setAddTargetSQLString(String sqlString) {
-        DataModifyQuery query = new DataModifyQuery();
-        query.setSQLString(sqlString);
-        setCustomAddTargetQuery(query);
-    }
-    
-    /**
-     * PUBLIC:
-     * The default add target query for mapping can be overridden by specifying the new query.
-     * This query must set new value to target foreign key.
-     */
-    public void setCustomAddTargetQuery(DataModifyQuery query) {
-        addTargetQuery = query;
-        hasCustomAddTargetQuery = true;
-    }
 
     /**
-     * PUBLIC:
-     * The default remove target query for mapping can be overridden by specifying the new query.
-     * In case target foreign key references the source, this query must set target foreign key to null.
+     * INTERNAL:
+     * UnidirectionalOneToManyMapping performs some events after INSERT/UPDATE to maintain the keys
+     * @return
      */
-    public void setCustomRemoveTargetQuery(DataModifyQuery query) {
-        removeTargetQuery = query;
-        hasCustomRemoveTargetQuery = true;
-    }
-
-    /**
-     * PUBLIC:
-     * The default remove all targets query for mapping can be overridden by specifying the new query.
-     * This query must set all target foreign keys that reference the source to null.  
-     */
-    public void setCustomRemoveAllTargetsQuery(DataModifyQuery query) {
-        removeAllTargetsQuery = query;
-        hasCustomRemoveAllTargetsQuery = true;
-    }
-
-    /**
-     * PUBLIC:
-     * Set the name of the session to execute the mapping's queries under.
-     * This can be used by the session broker to override the default session
-     * to be used for the target class.
-     */
-    public void setSessionName(String name) {
-        super.setSessionName(name);
-        addTargetQuery.setSessionName(name);
-        removeTargetQuery.setSessionName(name);
-        removeAllTargetsQuery.setSessionName(name);
+    @Override
+    public boolean requiresDataModificationEvents(){
+        return true;
     }
 
     /**
@@ -689,165 +431,6 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
     public boolean shouldIncrementTargetLockValueOnDeleteSource() {
         return shouldIncrementTargetLockValueOnDeleteSource;
     }
+    
 
-    /**
-     * INTERNAL:
-     * Update target foreign keys after a new source was inserted. This follows following steps.
-     * <p>- Extract primary key and its value from the source object.
-     * <p>- Extract target key and its value from the target object.
-     * <p>- Construct an update statement with above fields and values for target table.
-     * <p>- execute the statement.
-     * <p>- Repeat above three statements until all the target objects are done.
-     */
-    public void updateTargetForeignKeysPostInsertSource(WriteObjectQuery query) throws DatabaseException {
-        if (isReadOnly()) {
-            return;
-        }
-
-        ContainerPolicy cp = getContainerPolicy();
-        Object objects = getRealCollectionAttributeValueFromObject(query.getObject(), query.getSession());
-        if (cp.isEmpty(objects)) {
-            return;
-        }
-
-        prepareTranslationRow(query.getTranslationRow(), query.getObject(), query.getSession());
-        AbstractRecord databaseRow = new DatabaseRecord();
-
-        // Extract primary key and value from the source.
-        int size = sourceKeyFields.size();
-        for (int index = 0; index < size; index++) {
-            DatabaseField sourceKey = sourceKeyFields.get(index);
-            DatabaseField targetForeignKey = targetForeignKeyFields.get(index);
-            Object sourceKeyValue = query.getTranslationRow().get(sourceKey);
-            databaseRow.put(targetForeignKey, sourceKeyValue);
-        }
-
-        // Extract target field and its value. Construct insert statement and execute it
-        List<DatabaseField> targetPrimaryKeyFields = getReferenceDescriptor().getPrimaryKeyFields();
-        size = targetPrimaryKeyFields.size();
-        for (Object iter = cp.iteratorFor(objects); cp.hasNext(iter);) {
-            Object object = cp.next(iter, query.getSession());
-            for(int index = 0; index < size; index++) {
-                DatabaseField targetPrimaryKey = targetPrimaryKeyFields.get(index);
-                Object targetKeyValue = getReferenceDescriptor().getObjectBuilder().extractValueFromObjectForField(object, targetPrimaryKey, query.getSession());
-                databaseRow.put(targetPrimaryKey, targetKeyValue);
-            }
-
-            query.getSession().executeQuery(addTargetQuery, databaseRow);
-        }
-    }
-
-    /**
-     * INTERNAL:
-     * Update target foreign key after a target object was added to the source. This follows following steps.
-     * <p>- Extract primary key and its value from the source object.
-     * <p>- Extract target key and its value from the target object.
-     * <p>- Construct an update statement with above fields and values for target table.
-     * <p>- execute the statement.
-     */
-    public void updateTargetForeignKeyPostUpdateSource_ObjectAdded(ObjectLevelModifyQuery query, Object objectAdded) throws DatabaseException {
-        if (isReadOnly()) {
-            return;
-        }
-
-        prepareTranslationRow(query.getTranslationRow(), query.getObject(), query.getSession());
-        AbstractRecord databaseRow = new DatabaseRecord();
-
-        // Extract primary key and value from the source.
-        int size = sourceKeyFields.size();
-        for (int index = 0; index < size; index++) {
-            DatabaseField sourceKey = sourceKeyFields.get(index);
-            DatabaseField targetForeignKey = targetForeignKeyFields.get(index);
-            Object sourceKeyValue = query.getTranslationRow().get(sourceKey);
-            databaseRow.put(targetForeignKey, sourceKeyValue);
-        }
-
-        // Extract target field and its value. Construct insert statement and execute it
-        List<DatabaseField> targetPrimaryKeyFields = getReferenceDescriptor().getPrimaryKeyFields();
-        size = targetPrimaryKeyFields.size();
-        for (int index = 0; index < size; index++) {
-            DatabaseField targetPrimaryKey = targetPrimaryKeyFields.get(index);
-            Object targetKeyValue = getReferenceDescriptor().getObjectBuilder().extractValueFromObjectForField(objectAdded, targetPrimaryKey, query.getSession());
-            databaseRow.put(targetPrimaryKey, targetKeyValue);
-        }
-
-        query.getSession().executeQuery(addTargetQuery, databaseRow);
-    }
-
-    /**
-     * INTERNAL:
-     * Update target foreign key after a target object was removed from the source. This follows following steps.
-     * <p>- Extract primary key and its value from the source object.
-     * <p>- Extract target key and its value from the target object.
-     * <p>- Construct an update statement with above fields and values for target table.
-     * <p>- execute the statement.
-     */
-    public void updateTargetForeignKeyPostUpdateSource_ObjectRemoved(ObjectLevelModifyQuery query, Object objectRemoved) throws DatabaseException {
-        if (this.isReadOnly) {
-            return;
-        }
-        AbstractSession session = query.getSession();
-        prepareTranslationRow(query.getTranslationRow(), query.getObject(), session);
-        AbstractRecord translationRow = new DatabaseRecord();
-
-        // Extract primary key and value from the source (use translation row).
-        int size = this.sourceKeyFields.size();
-        AbstractRecord modifyRow = new DatabaseRecord(size);
-        for (int index = 0; index < size; index++) {
-            DatabaseField sourceKey = this.sourceKeyFields.get(index);
-            DatabaseField targetForeignKey = this.targetForeignKeyFields.get(index);
-            Object sourceKeyValue = query.getTranslationRow().get(sourceKey);
-            translationRow.add(targetForeignKey, sourceKeyValue);
-            // Need to set this value to null in the modify row.
-            modifyRow.add(targetForeignKey, null);
-        }
-
-        // Extract target field and its value from the object.
-        List<DatabaseField> targetPrimaryKeyFields = getReferenceDescriptor().getPrimaryKeyFields();
-        size = targetPrimaryKeyFields.size();
-        for (int index = 0; index < size; index++) {
-            DatabaseField targetPrimaryKey = targetPrimaryKeyFields.get(index);
-            Object targetKeyValue = getReferenceDescriptor().getObjectBuilder().extractValueFromObjectForField(objectRemoved, targetPrimaryKey, session);
-            translationRow.add(targetPrimaryKey, targetKeyValue);
-        }
-        // Need a different modify row than translation row, as the same field has different values in each.
-        DataModifyQuery removeQuery = (DataModifyQuery)this.removeTargetQuery.clone();
-        removeQuery.setModifyRow(modifyRow);
-        removeQuery.setHasModifyRow(true);
-        removeQuery.setIsExecutionClone(true);
-        session.executeQuery(removeQuery, translationRow);
-    }
-
-    /**
-     * INTERNAL:
-     * Update target foreign key after a target object was removed from the source. This follows following steps.
-     * <p>- Extract primary key and its value from the source object.
-     * <p>- Extract target key and its value from the target object.
-     * <p>- Construct an update statement with above fields and values for target table.
-     * <p>- execute the statement.
-     */
-    public void updateTargetForeignKeyPreDeleteSource(ObjectLevelModifyQuery query) throws DatabaseException {
-        if (this.isReadOnly) {
-            return;
-        }
-
-        // Extract primary key and value from the source.
-        int size = this.sourceKeyFields.size();
-        AbstractRecord translationRow = new DatabaseRecord(size);
-        AbstractRecord modifyRow = new DatabaseRecord(size);
-        for (int index = 0; index < size; index++) {
-            DatabaseField sourceKey = this.sourceKeyFields.get(index);
-            DatabaseField targetForeignKey = this.targetForeignKeyFields.get(index);
-            Object sourceKeyValue = query.getTranslationRow().get(sourceKey);
-            translationRow.add(targetForeignKey, sourceKeyValue);
-            // Need to set this value to null in the modify row.
-            modifyRow.add(targetForeignKey, null);
-        }
-        // Need a different modify row than translation row, as the same field has different values in each.
-        DataModifyQuery removeQuery = (DataModifyQuery)this.removeAllTargetsQuery.clone();
-        removeQuery.setModifyRow(modifyRow);
-        removeQuery.setHasModifyRow(true);
-        removeQuery.setIsExecutionClone(true);
-        query.getSession().executeQuery(removeQuery, translationRow);
-    }
 }

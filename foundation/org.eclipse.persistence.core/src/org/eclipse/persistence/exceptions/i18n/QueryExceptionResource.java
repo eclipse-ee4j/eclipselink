@@ -157,6 +157,10 @@ public class QueryExceptionResource extends ListResourceBundle {
        { "6152", "An exception occurred while attempting to instantiate the class {0} passed through a JPA Query Hint {1}.  Please verify that the class has a default constructor."},
        { "6153", "CompatibleType must be set on complex type: {0}."},
        { "6154", "TypeName must be set on complex type: {0}."},
+       { "6155", "An exception occurred while attempting to set read the map key for [{0}]: [{1}]."},
+       { "6156", "Element [{0}] is being added to a map without a key.  This generally means the database does not hold a key that is expected."},
+       { "6157", "MapContainerPolicy has been asked to unwrap element [{0}] which is not a map element.  This means that the incorrect container policy is being used."}
+
     };
 
     /**

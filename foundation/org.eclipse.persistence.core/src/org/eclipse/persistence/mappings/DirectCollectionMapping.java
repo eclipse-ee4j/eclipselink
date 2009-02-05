@@ -37,7 +37,6 @@ import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.mappings.converters.*;
-import org.eclipse.persistence.mappings.foundation.MapComponentMapping;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.remote.*;
 import org.eclipse.persistence.sessions.ObjectCopyingPolicy;
@@ -56,7 +55,7 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
  * @author Sati
  * @since TOPLink/Java 1.0
  */
-public class DirectCollectionMapping extends CollectionMapping implements RelationalMapping, MapComponentMapping {
+public class DirectCollectionMapping extends CollectionMapping implements RelationalMapping {
 
     /** Used for data modification events. */
     protected static final String Delete = "delete";
@@ -179,7 +178,12 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
             builder = originalSelectionCriteria.getBuilder();
         }
 
-        Expression twisted = builder.twist(getSelectionQuery().getSQLStatement().getWhereClause(), builder);
+        Expression twisted = null;
+        if (getSelectionQuery().isReadAllQuery()){
+            twisted = builder.twist(getSelectionQuery().getSelectionCriteria(), builder);
+        } else {
+            twisted = builder.twist(getSelectionQuery().getSQLStatement().getWhereClause(), builder);
+        }
 
         // For 2729729, rebuildOn is not needed as the base is still the same.	
         if (originalSelectionCriteria != null) {
@@ -204,16 +208,14 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
             batchStatement.addField(builder.getTable(getReferenceTable()).getField((DatabaseField)enumtr.nextElement()));
         }
 
-        // For 3256419, add key field for DirectMapMapping
-        if (this instanceof DirectMapMapping) {
-            batchStatement.addField(builder.getTable(getReferenceTable()).getField(((DirectMapMapping)this).getDirectKeyField()));
-        }
-
         batchStatement.addField(builder.getTable(getReferenceTable()).getField(getDirectField()));
 
         batchStatement.setWhereClause(twisted);
-        batchStatement.normalize(query.getSession(), getDescriptor(), clonedExpressions);
         batchQuery.setSQLStatement(batchStatement);
+        getContainerPolicy().addAdditionalFieldsToQuery(batchQuery, builder);
+
+        batchStatement.normalize(query.getSession(), getDescriptor(), clonedExpressions);
+
         
         return batchQuery;
     }
@@ -292,7 +294,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * (e.g. int, String). These objects do not need to be cloned, unless they use a converter - they
      * are immutable.
      */
-    protected Object buildElementClone(Object element, UnitOfWorkImpl unitOfWork, boolean isExisting) {
+    public Object buildElementClone(Object element, UnitOfWorkImpl unitOfWork, boolean isExisting) {
         Object cloneValue = element;
         if ((getValueConverter() != null) && getValueConverter().isMutable()) {
             cloneValue = getValueConverter().convertDataValueToObjectValue(getValueConverter().convertObjectValueToDataValue(cloneValue, unitOfWork), unitOfWork);
@@ -563,7 +565,6 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
             setValueConverter(valueConverter);
         }
     };
-
 
     /**
      * INTERNAL:
@@ -898,7 +899,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         initializeReferenceTable(session);
         initializeReferenceKeys(session);
         initializeDirectField(session);
-        
+
         if (getReferenceTable().getName().indexOf(' ') != -1) {
             //table names contains a space so needs to be quoted.
             String quoteChar = ((DatasourcePlatform)session.getDatasourcePlatform()).getIdentifierQuoteCharacter();
@@ -907,13 +908,19 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
                 getReferenceTable().setName(quoteChar + getReferenceTable().getName() + quoteChar);
             }
         }
-        
-        if (shouldInitializeSelectionCriteria()) {
-            initializeSelectionCriteria(session);
-            initializeSelectionStatement(session);
-        }
-        if (!getSelectionQuery().hasSessionName()) {
-            getSelectionQuery().setSessionName(session.getName());
+        getContainerPolicy().initialize(session, referenceTable);
+        if (!hasCustomSelectionQuery()){
+            selectionQuery = containerPolicy.buildSelectionQueryForDirectCollectionMapping();
+            selectionQuery.setName(getAttributeName());
+            
+            if (shouldInitializeSelectionCriteria()) {
+                initializeSelectionCriteria(session);
+                initializeSelectionStatement(session);
+            }
+            
+            if (!getSelectionQuery().hasSessionName()) {
+                getSelectionQuery().setSessionName(session.getName());
+            }
         }
         if ((getValueConverter() != null) && (getSelectionQuery() instanceof DirectReadQuery)) {
             ((DirectReadQuery)getSelectionQuery()).setValueConverter(getValueConverter());
@@ -1173,6 +1180,15 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         return !getSourceKeyFields().isEmpty();
     }
 
+    /**
+     * INTERNAL:
+     * Return whether this mapping should be traversed when we are locking
+     * @return
+     */
+    public boolean isLockableMapping(){
+        return false;
+    }
+    
     /**
      * INTERNAL:
      * Direct collection is always private owned.
@@ -1628,7 +1644,9 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      */
     public void setContainerPolicy(ContainerPolicy containerPolicy) {
         this.containerPolicy = containerPolicy;
-        ((DataReadQuery) getSelectionQuery()).setContainerPolicy(containerPolicy);
+        if (selectionQuery.isDataReadQuery()){
+            ((DataReadQuery) getSelectionQuery()).setContainerPolicy(containerPolicy);
+        }
     }
 
     /**
@@ -1761,6 +1779,19 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         referenceTable = table;
     }
 
+    /**
+     * PUBLIC:
+     * Sets the selection criteria to be used as a where clause to read
+     * reference objects. This criteria is automatically generated by the
+     * TopLink if not explicitly specified by the user.
+     */
+    public void setSelectionCriteria(Expression anExpression) {
+        if (getSelectionQuery().isReadAllQuery()){
+            ((ReadAllQuery)getSelectionQuery()).setSelectionCriteria(anExpression);
+        } else {
+            getSelectionQuery().getSQLStatement().setWhereClause(anExpression);
+        }
+    }
     /**
      * PUBLIC:
      * Set the reference table name.

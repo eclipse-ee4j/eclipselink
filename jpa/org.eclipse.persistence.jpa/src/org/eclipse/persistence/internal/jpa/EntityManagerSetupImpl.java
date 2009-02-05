@@ -596,7 +596,7 @@ public class EntityManagerSetupImpl {
         while (it.hasNext() && (!typeMap.isEmpty() || !sizeMap.isEmpty() || !sharedMap.isEmpty())) {
             ClassDescriptor descriptor = (ClassDescriptor)it.next();
             
-            if(descriptor.isAggregateDescriptor() || descriptor.isAggregateCollectionDescriptor()) {
+            if(descriptor.isDescriptorTypeAggregate()) {
                 continue;
             }
             

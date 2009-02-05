@@ -2700,7 +2700,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         if (object == null) {
             return null;
         }
-        if (descriptor.isAggregateDescriptor() || descriptor.isAggregateCollectionDescriptor()) {
+        if (descriptor.isDescriptorTypeAggregate()) {
             throw ValidationException.cannotRegisterAggregateObjectInUnitOfWork(object.getClass());
         }
         Object registeredObject = checkIfAlreadyRegistered(object, descriptor);
@@ -3283,7 +3283,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             return null;
         }
         ClassDescriptor descriptor = getDescriptor(rmiClone);
-        if ((descriptor == null) || descriptor.isAggregateDescriptor() || descriptor.isAggregateCollectionDescriptor()) {
+        if ((descriptor == null) || descriptor.isDescriptorTypeAggregate()) {
             if (manager.getCascadePolicy() == MergeManager.CASCADE_BY_MAPPING){
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("not_an_entity", new Object[]{rmiClone}));
             }
@@ -3332,7 +3332,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 return;
             }
             ClassDescriptor descriptor = getDescriptor(toBeDeleted);
-            if ((descriptor == null) || descriptor.isAggregateDescriptor() || descriptor.isAggregateCollectionDescriptor()) {
+            if ((descriptor == null) || descriptor.isDescriptorTypeAggregate()) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("not_an_entity", new Object[] { toBeDeleted }));
             }
             logDebugMessage(toBeDeleted, "deleting_object");
@@ -3656,7 +3656,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         if (isAfterWriteChangesButBeforeCommit()) {
             throw ValidationException.illegalOperationForUnitOfWorkLifecycle(getLifecycle(), "registerExistingObject");
         }
-        if (descriptor.isAggregateDescriptor() || descriptor.isAggregateCollectionDescriptor()) {
+        if (descriptor.isDescriptorTypeAggregate()) {
             throw ValidationException.cannotRegisterAggregateObjectInUnitOfWork(objectToRegister.getClass());
         }
         //CR#2272
@@ -3813,7 +3813,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         if (isAfterWriteChangesButBeforeCommit()) {
             throw ValidationException.illegalOperationForUnitOfWorkLifecycle(getLifecycle(), "registerNewObject");
         }
-        if (descriptor.isAggregateDescriptor() || descriptor.isAggregateCollectionDescriptor()) {
+        if (descriptor.isDescriptorTypeAggregate()) {
             throw ValidationException.cannotRegisterAggregateObjectInUnitOfWork(implementation.getClass());
         }
         try {
@@ -3927,7 +3927,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         }
         visitedObjects.put(newObject, newObject);
         ClassDescriptor descriptor = getDescriptor(newObject);
-        if ((descriptor == null) || descriptor.isAggregateDescriptor() || descriptor.isAggregateCollectionDescriptor()) {
+        if ((descriptor == null) || descriptor.isDescriptorTypeAggregate()) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("not_an_entity", new Object[] { newObject }));
         }
 
@@ -5154,7 +5154,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         }
 
         //aggregated object cannot be registered directly, but through the parent owning object.
-        if (descriptor.isAggregateDescriptor() || descriptor.isAggregateCollectionDescriptor()) {
+        if (descriptor.isDescriptorTypeAggregate()) {
             throw ValidationException.cannotRegisterAggregateObjectInUnitOfWork(object.getClass());
         }
 
@@ -5371,7 +5371,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      */
     public Object getReference(Class theClass, Object primaryKey) {
         ClassDescriptor descriptor = getDescriptor(theClass);
-        if (descriptor == null || descriptor.isAggregateDescriptor() || descriptor.isAggregateCollectionDescriptor()) {
+        if (descriptor == null || descriptor.isDescriptorTypeAggregate()) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("unknown_bean_class", new Object[] { theClass }));
         }
         Object reference;

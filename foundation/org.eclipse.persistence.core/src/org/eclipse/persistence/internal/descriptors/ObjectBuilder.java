@@ -822,7 +822,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
             // PERF: 1-m joining nulls out duplicate rows.
             if (databaseRow != null) {
                 Object domainObject = buildObject(query, databaseRow, joinManager);
-                policy.addInto(domainObject, domainObjects, session);
+                policy.addInto(domainObject, domainObjects, session, databaseRow, query);
             }
         }
         return domainObjects;
@@ -1602,7 +1602,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
             ((DatabaseMapping)mappings.get(index)).buildCopy(copy, original, policy);
         }
 
-        if (policy.shouldResetPrimaryKey() && (!(this.descriptor.isAggregateDescriptor() || this.descriptor.isAggregateCollectionDescriptor()))) {
+        if (policy.shouldResetPrimaryKey() && (!(this.descriptor.isDescriptorTypeAggregate()))) {
             // Do not reset if any of the keys is mapped through a 1-1, i.e. back reference id has already changed.
             boolean hasOneToOne = false;
             List primaryKeyMappings = getPrimaryKeyMappings();
@@ -1680,7 +1680,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
             } else {
                 changes = new ObjectChangeSet(extractPrimaryKeyFromObject(clone, session, true), this.descriptor.getJavaClass(), clone, uowChangeSet, isNew);
             }
-            changes.setIsAggregate(this.descriptor.isAggregateDescriptor() || this.descriptor.isAggregateCollectionDescriptor());
+            changes.setIsAggregate(this.descriptor.isDescriptorTypeAggregate());
             uowChangeSet.addObjectChangeSetForIdentity(changes, clone);
         } else if (assignPrimaryKeyIfExisting) {
             if (!changes.isAggregate()) {
@@ -2365,8 +2365,6 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * Cache primary key and non primary key mappings.
      */
     public void initializePrimaryKey(AbstractSession session) throws DescriptorException {
-        createPrimaryKeyExpression(session);
-
         List primaryKeyFields = this.descriptor.getPrimaryKeyFields();
         if(primaryKeyFields.isEmpty() && getDescriptor().isAggregateCollectionDescriptor()) {
             // populate primaryKeys with all mapped fields found in the main table.
@@ -2378,7 +2376,9 @@ public class ObjectBuilder implements Cloneable, Serializable {
                     primaryKeyFields.add(field);
                 }
             }
+            primaryKeyFields.addAll(this.descriptor.getAdditionalAggregateCollectionKeyFields());
         }
+        createPrimaryKeyExpression(session);
 
         this.getPrimaryKeyMappings().clear();
         this.getNonPrimaryKeyMappings().clear();
@@ -2398,7 +2398,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
             DatabaseField primaryKeyField = (DatabaseField)primaryKeyFields.get(index);
             DatabaseMapping mapping = getMappingForField(primaryKeyField);
 
-            if ((mapping == null) && (!this.descriptor.isAggregateDescriptor()) && (!this.descriptor.isAggregateCollectionDescriptor())) {
+            if ((mapping == null) && (!this.descriptor.isDescriptorTypeAggregate())) {
                 throw DescriptorException.noMappingForPrimaryKey(primaryKeyField, this.descriptor);
             }
 

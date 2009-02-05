@@ -741,6 +741,15 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
+     * Return whether this mapping should be traversed when we are locking
+     * @return
+     */
+    public boolean isLockableMapping(){
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
      * Related mapping should implement this method to return true.
      */
     public boolean isManyToManyMapping() {

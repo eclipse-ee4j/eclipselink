@@ -14,6 +14,7 @@ package org.eclipse.persistence.internal.oxm;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
@@ -60,10 +61,11 @@ public class XMLAnyAttributeMappingNodeValue extends XMLSimpleMappingNodeValue i
         List extraNamespaces = new ArrayList();
         NamespaceResolver nr = marshalRecord.getNamespaceResolver();
         while (cp.hasNext(iter)) {
-            Object key = cp.next(iter, session);
+            Map.Entry entry = (Map.Entry)cp.nextEntry(iter, session);
+            Object key = entry.getKey();
             if (key instanceof QName) {
                 QName name = (QName) key;
-                String value = cp.valueFromKey(key, collection).toString();
+                String value = entry.getValue().toString();
 
                 String qualifiedName = name.getLocalPart();
                 if (nr != null) {

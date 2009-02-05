@@ -18,6 +18,9 @@ import java.security.PrivilegedActionException;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 
+import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.sessions.CollectionChangeRecord;
@@ -26,6 +29,7 @@ import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.security.PrivilegedInvokeConstructor;
@@ -35,6 +39,8 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
 import org.eclipse.persistence.indirection.IndirectCollection;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.mappings.CollectionMapping;
 
 /**
  * <p><b>Purpose</b>:
@@ -79,7 +85,26 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      */
     public ContainerPolicy() {
     }
+    
+    /**
+     * INTERNAL:
+     * Called when the selection query is being initialized to add any required additional fields to the
+     * query.  By default, there are not additional fields required but this method is overridden by subclasses.
+     * 
+     * @see MappedKeyMapContinerPolicy
+     */
+    public void addAdditionalFieldsToQuery(ReadQuery selectionQuery, Expression baseExpression){
+    }
 
+    /**
+     * INTERNAL:
+     * Called when the insert query is being initialized to ensure the fields for the key are in the insert query
+     * 
+     * @see MappedKeyMapContainerPolicy
+     */
+    public void addFieldsForMapKey(AbstractRecord joinRow){
+    }
+    
     /**
      * INTERNAL:
      * Add element to container however that needs to be done for the type of container.
@@ -98,6 +123,18 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      * Return whether the container changed
      */
     public boolean addInto(Object element, Object container, AbstractSession session) {
+        return addInto(null, element, container, session);
+    }
+    
+    /**
+     * INTERNAL:
+     * Add element to container.
+     * This is used to add to a collection independent of JDK 1.1 and 1.2.
+     * The session may be required to wrap for the wrapper policy.
+     * The row may be required by subclasses
+     * Return whether the container changed
+     */
+    public boolean addInto(Object element, Object container, AbstractSession session, AbstractRecord dbRow, ObjectBuildingQuery query) {
         return addInto(null, element, container, session);
     }
 
@@ -153,6 +190,40 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
     */
     public void addIntoWithOrder(Vector indexes, Hashtable elements, Object container, AbstractSession session) {
         throw QueryException.methodDoesNotExistInContainerClass("set", getContainerClass());
+    }
+
+    /**
+     * INTERNAL:
+     * This method is used to add the next value from an iterator built using ContainerPolicy's iteratorFor() method
+     * into the toCollection.
+     * This method is overridden by subclasses to provide extended functionality for map keys
+     * 
+     * @see MappedKeyMapContainerPolicy
+     * 
+     * @param valuesIterator
+     * @param toCollection
+     * @param mapping
+     * @param unitOfWork
+     * @param isExisting
+     */
+    public void addNextValueFromIteratorInto(Object valuesIterator, Object toCollection, CollectionMapping mapping, UnitOfWorkImpl unitOfWork, boolean isExisting){
+        Object cloneValue = mapping.buildElementClone(next(valuesIterator, unitOfWork), unitOfWork, isExisting);
+        addInto(cloneValue, toCollection, unitOfWork);
+    }
+    
+    /**
+     * INTERNAL:
+     * Return an object representing an entry in the collection represented by this container policy
+     * This method will be overridden to allow MapContainerPolicy to return a construct that
+     * contains the key and the value
+     * 
+     * @see MappedKeyMapContainerPolicy
+     * @param objectAdded
+     * @param changeSet
+     * @return
+     */
+    public Object buildCollectionEntry(Object objectAdded, ObjectChangeSet changeSet){
+        return objectAdded;
     }
 
     /**
@@ -220,6 +291,20 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
+     * This 
+     * Certain key mappings favor different types of selection query.  Return the appropriate
+     * type of selectionQuery
+     * @return
+     */
+    public ReadQuery buildSelectionQueryForDirectCollectionMapping(){
+        DirectReadQuery query = new DirectReadQuery();
+        query.setSQLStatement(new SQLSelectStatement());
+        query.setContainerPolicy(this);
+        return query;
+    }
+    
+    /**
+     * INTERNAL:
      * Remove all the elements from the specified container.
      * Valid only for certain subclasses.
      */
@@ -285,8 +370,8 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
             Object cloneIter = iteratorFor(newCollection);
             
             while (hasNext(cloneIter)) {
-                Object firstObject = next(cloneIter, session);
-    
+                Object wrappedFirstObject = nextEntry(cloneIter, session);
+                Object firstObject = unwrapIteratorResult(wrappedFirstObject);
                 // CR2378 null check to prevent a null pointer exception - XC
                 // If value is null then nothing can be done with it.
                 if (firstObject != null) {
@@ -316,6 +401,7 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
                         }
                     } else {
                         // Place it in the add collection
+                        buildChangeSetForNewObjectInCollection(wrappedFirstObject, referenceDescriptor, (UnitOfWorkChangeSet) changeRecord.getOwner().getUOWChangeSet(), session);
                         cloneKeyValues.put(firstObject, firstObject);
                     }
                 }
@@ -324,6 +410,9 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
 
         changeRecord.addAdditionChange(cloneKeyValues, (UnitOfWorkChangeSet) changeRecord.getOwner().getUOWChangeSet(), session);
         changeRecord.addRemoveChange(originalKeyValues, (UnitOfWorkChangeSet) changeRecord.getOwner().getUOWChangeSet(), session);
+    }
+    
+    public void buildChangeSetForNewObjectInCollection(Object object, ClassDescriptor referenceDescriptor, UnitOfWorkChangeSet uowChangeSet, AbstractSession session){
     }
     
     /**
@@ -455,12 +544,39 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
+     * This method will actually potentially wrap an object in two ways.  It will first wrap the object
+     * based on the referenceDescriptor's wrapper policy.  It will also potentially do some wrapping based
+     * on what is required by the container policy.
+     * 
+     * @see MappedKeyMapContainerPolicy
+     * @param wrappedObject
+     * @param referenceDescriptor
+     * @param mergeManager
+     * @return
+     */
+    public Object createWrappedObjectFromExistingWrappedObject(Object wrappedObject, ClassDescriptor referenceDescriptor, MergeManager mergeManager){
+        return referenceDescriptor.getObjectBuilder().wrapObject(mergeManager.getTargetVersionOfSourceObject(unwrapIteratorResult(wrappedObject)), mergeManager.getSession());
+    }
+    
+    /**
+     * INTERNAL:
      * This can be used by collection such as cursored stream to gain control over execution.
      */
     public Object execute() {
         throw QueryException.methodNotValid(this, "execute()");
     }
 
+    /**
+     * INTERNAL:
+     * Used when objects are added or removed during an update.
+     * This method returns either the clone from the ChangeSet or a packaged
+     * version of it that contains things like map keys
+     * @return
+     */
+    public Object getCloneDataFromChangeSet(ObjectChangeSet changeSet){
+        return changeSet.getUnitOfWorkClone();
+    }
+    
     /**
      * INTERNAL:
      * Return the size constructor if available.
@@ -495,6 +611,29 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
+     * Return the fields that make up the identity of the key if this mapping is a list
+     * This method will be overridden by subclasses
+     * @return
+     */
+    public List<DatabaseField> getIdentityFieldsForMapKey(){
+        return null;
+    }
+    
+    /**
+     * INTERNAL:
+     * Add any non-Foreign-key data from an Object describe by a MapKeyMapping to a database row
+     * This is typically used in write queries to ensure all the data stored in the collection table is included
+     * in the query.
+     * @param object
+     * @param databaseRow
+     * @param session
+     */
+    public Map getKeyMappingDataForWriteQuery(Object object, AbstractSession session){
+        return null;
+    }
+    
+    /**
+     * INTERNAL:
      * Used for wrapping and unwrapping with the wrapper policy.
      */
     public boolean hasElementDescriptor() {
@@ -517,6 +656,13 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      */
     public boolean hasOrder() {
         return false;
+    }
+
+    /**
+     * INTERNAL:
+     * Provide a hook to allow initialization of Container Policy parts
+     */
+    public void initialize(AbstractSession session, DatabaseTable keyTable){
     }
 
     /**
@@ -579,6 +725,10 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
     public boolean isMapPolicy() {
         return false;
     }
+    
+    public boolean isMappedKeyMapPolicy(){
+        return false;
+    }
 
     /**
      * INTERNAL:
@@ -618,6 +768,10 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      * @return java.lang.Object
      */
     public Object keyFrom(Object element, AbstractSession session) {
+        return null;
+    }
+    
+    public Object keyFromIterator(Object iterator){
         return null;
     }
     
@@ -740,6 +894,34 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
         return next;
     }
 
+    /**
+     * INTERNAL:
+     * Return the next object on the queue. The iterator is the one
+     * returned from #iteratorFor().
+     * 
+     * In the case of a Map, this will return a MapEntry to allow use of the key
+     *
+     * @see ContainerPolicy#iteratorFor(java.lang.Object)
+     * @see MapContainerPolicy.unwrapIteratorResult(Object object)
+     */
+    public Object nextEntry(Object iterator){
+        return next(iterator);
+    }
+
+    /**
+     * INTERNAL:
+     * Return the next object on the queue. The iterator is the one
+     * returned from #iteratorFor().
+     * 
+     * In the case of a Map, this will return a MapEntry to allow use of the key
+     *
+     * @see ContainerPolicy#iteratorFor(Object iterator, AbstractSession session)
+     * @see MapContainerPolicy.unwrapIteratorResult(Object object)
+     */
+    public Object nextEntry(Object iterator, AbstractSession session) {
+        return next(iterator, session);
+    }
+    
     /**
      * This can be used by collection such as cursored stream to gain control over execution.
      */
@@ -882,6 +1064,16 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
+     * Returns whether this ContainerPolicy should requires data modification events when
+     * objects are added or deleted during update
+     * @return
+     */
+    public boolean requiresDataModificationEvents(){
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
      * Set the size constructor if available.
      */
     protected void setConstructor(Constructor constructor) {
@@ -932,8 +1124,18 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      */
     public void setKeyName(String instanceVariableName, Class elementClass) {
         throw ValidationException.containerPolicyDoesNotUseKeys(this, instanceVariableName);
-   }
+    }
 
+    /**
+     * INTERNAL:
+     * Certain types of container policies require an extra update statement after a relationship
+     * is inserted.  Return whether this update statement is required
+     * @return
+     */
+    public boolean shouldUpdateForeignKeysPostInsert(){
+        return false;
+    }
+    
     /**
      * INTERNAL:
      * Return the size of container.
@@ -950,6 +1152,19 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
         return "";
     }
 
+    /**
+     * INTERNAL:
+     * Depending on the container, the entries returned of iteration using the ContainerPolicy.iteratorFor() method
+     * may be wrapped.  This method unwraps the values.
+     * 
+     * @see MapContainerPolicy.unwrapIteratorResult(Object object)
+     * @param object
+     * @return
+     */
+    public Object unwrapIteratorResult(Object object){
+        return object;
+    }
+    
     /**
      * INTERNAL:
      * over ride in MapPolicy subclass
@@ -972,4 +1187,22 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
         }
         return result;
     }
+    
+    /**
+     * INTERNAL:
+     * convenience method to copy the keys and values from a Map into an AbstractRecord
+     * @param mappingData a Map containering a database field as the key and the value of that field as the value
+     * @param databaseRow
+     */
+    public static void copyMapDataToRow(Map mappingData, AbstractRecord databaseRow){
+        if (mappingData != null){
+            for (Iterator<Map.Entry> keys = mappingData.entrySet().iterator(); keys.hasNext();) {
+                Map.Entry entry = keys.next();
+                Object entryKey = entry.getKey();
+                Object entryValue = entry.getValue();
+                databaseRow.put(entryKey, entryValue);
+            }
+        }
+    }
+
 }

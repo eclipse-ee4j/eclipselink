@@ -165,6 +165,9 @@ public class QueryException extends ValidationException {
     public final static int ERROR_INSTANTIATING_CLASS_FOR_QUERY_HINT = 6152;
     public final static int COMPATIBLE_TYPE_NOT_SET = 6153;
     public final static int TYPE_NAME_NOT_SET = 6154;
+    public final static int EXCEPTION_WHILE_READING_MAP_KEY = 6155;
+    public final static int CANNOT_ADD_ELEMENT_WITHOUT_KEY_TO_MAP = 6156;
+    public final static int CANNOT_UNWRAP_NON_MAP_MEMBERS = 6157;
 
     /**
      * INTERNAL:
@@ -1390,4 +1393,31 @@ public class QueryException extends ValidationException {
         queryException.setInternalException(exception);
         return queryException;
     }
+    
+    public static QueryException exceptionWhileReadingMapKey(Object object, Exception ex) {
+        Object[] args = { object, ex };
+
+        QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, EXCEPTION_WHILE_READING_MAP_KEY, args));
+        queryException.setErrorCode(EXCEPTION_WHILE_READING_MAP_KEY);
+        queryException.setInternalException(ex);
+        return queryException;
+    }
+    
+    public static QueryException cannotAddElementWithoutKeyToMap(Object object) {
+        Object[] args = { object };
+
+        QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, CANNOT_ADD_ELEMENT_WITHOUT_KEY_TO_MAP, args));
+        queryException.setErrorCode(CANNOT_ADD_ELEMENT_WITHOUT_KEY_TO_MAP);
+        return queryException;
+    }
+    
+    public static QueryException cannotUnwrapNonMapMembers(Object object) {
+        Object[] args = { object };
+
+        QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, CANNOT_UNWRAP_NON_MAP_MEMBERS, args));
+        queryException.setErrorCode(CANNOT_UNWRAP_NON_MAP_MEMBERS);
+        return queryException;
+    }
+
+    
 }

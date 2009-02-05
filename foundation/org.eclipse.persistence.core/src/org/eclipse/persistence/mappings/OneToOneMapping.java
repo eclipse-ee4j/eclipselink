@@ -20,12 +20,14 @@ import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.identitymaps.*;
 import org.eclipse.persistence.internal.indirection.ProxyIndirectionPolicy;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.internal.descriptors.CascadeLockingPolicy;
 import org.eclipse.persistence.internal.expressions.ObjectExpression;
+import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.mappings.foundation.MapKeyMapping;
 
 /**
@@ -49,6 +51,8 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     /** These are used for non-unit of work modification to check if the value of the 1-1 was changed and a deletion is required. */
     protected boolean shouldVerifyDelete;
     protected transient Expression privateOwnedCriteria;
+    
+    public DatabaseTable keyTableForMapKey = null;
 
     /**
      * PUBLIC:
@@ -70,6 +74,39 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
         return true;
     }
 
+    /**
+     * INTERNAL:
+     * Used when initializing queries for mappings that use a Map
+     * Called when the selection query is being initialized to add the fields for the map key to the query
+     */
+    public void addAdditionalFieldsToQuery(ReadQuery selectionQuery, Expression baseExpression){
+        Iterator i = getForeignKeyFields().iterator();
+        while (i.hasNext()){
+            DatabaseField field = (DatabaseField)i.next();
+            if (selectionQuery.isObjectLevelReadQuery()){
+                if (baseExpression != null){
+                    ((ObjectLevelReadQuery)selectionQuery).addAdditionalField(baseExpression.getField(field));
+                } else {
+                    ((ObjectLevelReadQuery)selectionQuery).addAdditionalField(field);
+                }
+            } else if (selectionQuery.isDataReadQuery()){
+                ((SQLSelectStatement)((DataReadQuery)selectionQuery).getSQLStatement()).addField(field);
+            }
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Used when initializing queries for mappings that use a Map
+     * Called when the insert query is being initialized to ensure the fields for the map key are in the insert query
+     */
+    public void addFieldsForMapKey(AbstractRecord joinRow){
+        Iterator i = getForeignKeyFields().iterator();
+        while (i.hasNext()){
+            joinRow.put((DatabaseField)i.next(), null);
+        }
+    }
+    
     /**
      * PUBLIC:
      * Define the foreign key relationship in the 1-1 mapping.
@@ -149,6 +186,17 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
         addTargetForeignKeyField(new DatabaseField(targetForeignKeyFieldName), new DatabaseField(sourcePrimaryKeyFieldName));
     }
 
+    /**
+     * Build a clone of the given element in a unitOfWork
+     * @param element
+     * @param unitOfWork
+     * @param isExisting
+     * @return
+     */
+    public Object buildElementClone(Object attributeValue, UnitOfWorkImpl unitOfWork, boolean isExisting){
+        return buildCloneForPartObject(attributeValue, null, null, unitOfWork, isExisting);
+    }
+    
     /**
      * INTERNAL:
      * Used to allow object level comparisons.
@@ -255,6 +303,19 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
 
     /**
      * INTERNAL:
+     * Certain key mappings favor different types of selection query.  Return the appropriate
+     * type of selectionQuery
+     * @return
+     */
+    public ReadQuery buildSelectionQueryForDirectCollectionKeyMapping(ContainerPolicy containerPolicy){
+        DataReadQuery query = new DataReadQuery();
+        query.setSQLStatement(new SQLSelectStatement());
+        query.setContainerPolicy(containerPolicy);
+        return query;
+    }
+    
+    /**
+     * INTERNAL:
      * This methods clones all the fields and ensures that each collection refers to
      * the same clones.
      */
@@ -319,7 +380,14 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
         return clone;
     }
 
-
+    /**
+     * INTERNAL
+     * Called when a DatabaseMapping is used to map the key in a collection.  Returns the key.
+     */
+    public Object createMapComponentFromRow(AbstractRecord dbRow, ObjectBuildingQuery query, AbstractSession session){
+        return session.executeQuery(getSelectionQuery(), dbRow);
+    }
+    
     /**
      * INTERNAL:
      * Extract the foreign key value from the source row.
@@ -345,6 +413,23 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
         return key;
     }
 
+    
+    /**
+     * INTERNAL:
+     * Extract the fields for the Map key from the object to use in a query
+     * @return
+     */
+    public Map extractIdentityFieldsForQuery(Object object, AbstractSession session){
+        Map keyFields = new HashMap();
+         for (int index = 0; index < getForeignKeyFields().size(); index++) {
+            DatabaseField targetRelationField = getForeignKeyFields().elementAt(index);
+            DatabaseField targetKey = getSourceToTargetKeyFields().get(targetRelationField);
+            Object value = getReferenceDescriptor().getObjectBuilder().extractValueFromObjectForField(object, targetKey, session);
+            keyFields.put(targetRelationField, value);
+        }
+        return keyFields;
+    }
+    
     /**
      * INTERNAL:
      * Extract the key value from the reference object.
@@ -468,6 +553,18 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
         }
     }
 
+
+    /**
+     * INTERNAL:
+     * Return the fields that make up the identity of the mapped object.  For mappings with
+     * a primary key, it will be the set of fields in the primary key.  For mappings without
+     * a primary key it will likely be all the fields
+     * @return
+     */
+    public List<DatabaseField> getIdentityFieldsForMapKey(){
+        return getForeignKeyFields();
+    }
+    
     /**
      * INTERNAL:
      * Return a vector of the foreign key fields in the same order
@@ -519,7 +616,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
         }
         return privateOwnedCriteria;
     }
-
+    
     /**
      * INTERNAL:
      * Return a collection of the source to target field value associations.
@@ -544,7 +641,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     public Map<DatabaseField, DatabaseField> getSourceToTargetKeyFields() {
         return sourceToTargetKeyFields;
     }
-
+    
     /**
      * INTERNAL:
      * Returns the target keys to source keys fields association.
@@ -555,6 +652,17 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
 
     /**
      * INTERNAL:
+     * If required, get the targetVersion of the source object from the merge manager
+     * 
+     *      * Used with MapKeyContainerPolicy to abstract getting the target version of a source key
+     * @return
+     */
+    public Object getTargetVersionOfSourceObject(Object object, MergeManager mergeManager){
+       return  mergeManager.getTargetVersionOfSourceObject(object);
+    }
+    
+    /**
+     * INTERNAL:
      * Initialize the mapping.
      */
     public void initialize(AbstractSession session) throws DescriptorException {
@@ -563,7 +671,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
         // Must set table of foreign keys.
         for (int index = 0; index < getForeignKeyFields().size(); index++) {
             DatabaseField foreignKeyField = getForeignKeyFields().get(index);
-            foreignKeyField = getDescriptor().buildField(foreignKeyField);
+            foreignKeyField = getDescriptor().buildField(foreignKeyField, keyTableForMapKey);
             getForeignKeyFields().set(index, foreignKeyField);
         }
 
@@ -607,9 +715,9 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
         while (iterator.hasNext()) {
             Map.Entry<DatabaseField, DatabaseField> entry = (Map.Entry)iterator.next();
             DatabaseField sourceField = entry.getKey();
-            sourceField = getDescriptor().buildField(sourceField);
+            sourceField = getDescriptor().buildField(sourceField, keyTableForMapKey);
             DatabaseField targetField = entry.getValue();
-            targetField = getReferenceDescriptor().buildField(targetField);
+            targetField = getReferenceDescriptor().buildField(targetField, keyTableForMapKey);
             newSourceToTargetKeyFields.put(sourceField, targetField);
             newTargetToSourceKeyFields.put(targetField, sourceField);
         }
@@ -712,6 +820,21 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
         }
     }
 
+    /**
+     * INTERNAL:
+     * Making any mapping changes necessary to use a the mapping as a map key prior to initializing the mapping
+     */
+    public void preinitializeMapKey(DatabaseTable table) throws DescriptorException {
+        keyTableForMapKey = table;
+    }
+
+    /**
+     * INTERNAL:
+     * Allow the selectionQuery to be modified when this MapComponentMapping is used as the value in a Map
+     */
+    public void postInitializeMapValueSelectionQuery(ReadQuery selectionQuery, AbstractSession session){
+    }
+    
     /**
      * INTERNAL:
      * Prepare a cascade locking policy.
@@ -950,7 +1073,30 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
         return true;
     }
 
+    /**
+     * INTERNAL:
+     * Allow the key mapping to unwrap the object
+     * @param key
+     * @param session
+     * @return
+     */
+    
+    public Object unwrapKey(Object key, AbstractSession session){
+        return getDescriptor().getObjectBuilder().unwrapObject(key, session);
+    }
 
+    /**
+     * INTERNAL:
+     * Allow the key mapping to wrap the object
+     * @param key
+     * @param session
+     * @return
+     */
+    
+    public Object wrapKey(Object key, AbstractSession session){
+        return getDescriptor().getObjectBuilder().wrapObject(key, session);
+    }
+    
     /**
      * INTERNAL:
      * A subclass should implement this method if it wants different behavior.

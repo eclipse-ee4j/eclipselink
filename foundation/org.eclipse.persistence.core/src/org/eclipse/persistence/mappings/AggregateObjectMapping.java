@@ -23,9 +23,11 @@ import org.eclipse.persistence.descriptors.changetracking.ObjectChangeTrackingPo
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
+import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
 import org.eclipse.persistence.mappings.foundation.MapKeyMapping;
 import org.eclipse.persistence.queries.*;
@@ -54,6 +56,8 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      */
     protected boolean isNullAllowed;
 
+    protected DatabaseTable aggregateKeyTable  = null;
+    
     /** Map the name of a field in the aggregate descriptor to a field in the source table. */
     protected transient Map<String, String> aggregateToSourceFieldNames;
 
@@ -72,6 +76,49 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         return true;
     }
 
+    /**
+     * INTERNAL:
+     * Used when initializing queries for mappings that use a Map
+     * Called when the selection query is being initialized to add the fields for the map key to the query
+     */
+    public void addAdditionalFieldsToQuery(ReadQuery selectionQuery, Expression baseExpression){
+        Iterator i = getReferenceDescriptor().getMappings().iterator();
+        while (i.hasNext()){
+            DatabaseMapping mapping = (DatabaseMapping)i.next();
+            Iterator selectFields = mapping.getSelectFields().iterator();
+            while (selectFields.hasNext()){
+                DatabaseField field = (DatabaseField)selectFields.next();
+                if (selectionQuery.isObjectLevelReadQuery()){
+                    if (baseExpression != null){
+                        ((ObjectLevelReadQuery)selectionQuery).addAdditionalField(baseExpression.getField(field));
+                    } else {
+                        ((ObjectLevelReadQuery)selectionQuery).addAdditionalField((DatabaseField)field.clone());
+                    }
+                } else if (selectionQuery.isDataReadQuery()){
+                    if (baseExpression == null){
+                        ((SQLSelectStatement)((DataReadQuery)selectionQuery).getSQLStatement()).addField((DatabaseField)field.clone());
+                        ((SQLSelectStatement)((DataReadQuery)selectionQuery).getSQLStatement()).addTable((DatabaseTable)field.getTable().clone());
+                    } else {
+                        ((SQLSelectStatement)((DataReadQuery)selectionQuery).getSQLStatement()).addField(baseExpression.getTable(field.getTable()).getField(field));
+                    }
+                    
+                }
+            }
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Used when initializing queries for mappings that use a Map
+     * Called when the insert query is being initialized to ensure the fields for the map key are in the insert query
+     */
+    public void addFieldsForMapKey(AbstractRecord joinRow){
+        Iterator i = getReferenceDescriptor().getMappings().iterator();
+        while (i.hasNext()){
+            joinRow.put(((DirectToFieldMapping)i.next()).getField(), null);
+        }
+    }
+    
     /**
      * PUBLIC:
      * Add a field name translation that maps from a field name in the
@@ -138,7 +185,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * If an aggregate is referenced by the target object, return it (maintain identity) 
      * Otherwise, simply create a new aggregate object and return it.
      */
-    protected Object buildAggregateFromRow(AbstractRecord databaseRow, Object targetObject, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, boolean buildShallowOriginal, AbstractSession executionSession) throws DatabaseException {
+    public Object buildAggregateFromRow(AbstractRecord databaseRow, Object targetObject, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, boolean buildShallowOriginal, AbstractSession executionSession) throws DatabaseException {
         // check for all NULLs
         if (isNullAllowed() && allAggregateFieldsAreNull(databaseRow)) {
             return null;
@@ -149,26 +196,27 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         Object aggregate = null;
         ClassDescriptor descriptor = getReferenceDescriptor();
         boolean refreshing = true;
-        if (descriptor.hasInheritance()) {
-            Class newAggregateClass = descriptor.getInheritancePolicy().classFromRow(databaseRow, executionSession);
-            descriptor = getReferenceDescriptor(newAggregateClass, executionSession);
-
-            aggregate = getMatchingAttributeValueFromObject(databaseRow, targetObject, executionSession, descriptor);
-            if ((aggregate != null) && (aggregate.getClass() != newAggregateClass)) {
-                // if the class has changed out from underneath us, we cannot preserve object identity
-                // build a new instance of the *new* class
-                aggregate = descriptor.getObjectBuilder().buildNewInstance();
-                refreshing = false;
+        if (targetObject != null){
+            if (descriptor.hasInheritance()) {
+                Class newAggregateClass = descriptor.getInheritancePolicy().classFromRow(databaseRow, executionSession);
+                descriptor = getReferenceDescriptor(newAggregateClass, executionSession);
+                aggregate = getMatchingAttributeValueFromObject(databaseRow, targetObject, executionSession, descriptor);
+                if ((aggregate != null) && (aggregate.getClass() != newAggregateClass)) {
+                    // if the class has changed out from underneath us, we cannot preserve object identity
+                    // build a new instance of the *new* class
+                    aggregate = descriptor.getObjectBuilder().buildNewInstance();
+                    refreshing = false;
+                }
+            } else {
+                aggregate = getMatchingAttributeValueFromObject(databaseRow, targetObject, executionSession, descriptor);
             }
-        } else {
-            aggregate = getMatchingAttributeValueFromObject(databaseRow, targetObject, executionSession, descriptor);
         }
 
         if (aggregate == null) {
             aggregate = descriptor.getObjectBuilder().buildNewInstance();
             refreshing = false;
         }
-
+        
         ObjectBuildingQuery nestedQuery = sourceQuery;
         if (sourceQuery.isObjectLevelReadQuery()){
             if (((ObjectLevelReadQuery)nestedQuery).isPartialAttribute(getAttributeName()) || ((joinManager != null) && joinManager.isAttributeJoined(getDescriptor(), getAttributeName()))) {
@@ -190,7 +238,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
             nestedQuery.setProperties(sourceQuery.getProperties());
             // Computed nested batch attribute expressions.
             ((ReadAllQuery)nestedQuery).setBatchReadAttributeExpressions(extractNestedExpressions(((ReadAllQuery)sourceQuery).getBatchReadAttributeExpressions(), ((ReadAllQuery)nestedQuery).getExpressionBuilder(), false));
-        }
+        }                               
 
         if (buildShallowOriginal) {
             descriptor.getObjectBuilder().buildAttributesIntoShallowObject(aggregate, databaseRow, nestedQuery);
@@ -358,6 +406,19 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
 
         setAttributeValueInObject(clone, aggregateClone);
     }
+    
+    /**
+     * INTERNAL:
+     * Build a clone of the given element in a unitOfWork
+     * @param element
+     * @param unitOfWork
+     * @param isExisting
+     * @return
+     */
+    public Object buildElementClone(Object attributeValue, UnitOfWorkImpl unitOfWork, boolean isExisting){
+        // TODO: Aggregate Change listener not currently added should investigate whether that is possible
+        return buildClonePart(attributeValue, unitOfWork, isExisting);
+    }
            
     /**
      * INTERNAL:
@@ -414,6 +475,20 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         setAttributeValueInObject(original, aggregate);
     }
 
+    /**
+     * INTERNAL:
+     * Certain key mappings favor different types of selection query.  Return the appropriate
+     * type of selectionQuery
+     * @return
+     */
+    public ReadQuery buildSelectionQueryForDirectCollectionKeyMapping(ContainerPolicy containerPolicy){
+        ReadAllQuery query = new ReadAllQuery();
+        query.setReferenceClass(referenceClass);
+        query.setDescriptor(getReferenceDescriptor());
+        query.setContainerPolicy(containerPolicy);
+        return query;
+    }
+    
     /**
      * INTERNAL:
      * Build and return a "template" database row with all the fields
@@ -484,6 +559,17 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     }
 
     /**
+     * INTERNAL
+     * Called when a DatabaseMapping is used to map the key in a collection.  Returns the key.
+     */
+    public Object createMapComponentFromRow(AbstractRecord dbRow, ObjectBuildingQuery query, AbstractSession session){
+        Object key = getReferenceDescriptor().getObjectBuilder().buildNewInstance();
+        key = buildAggregateFromRow(dbRow, null, null, query, false, session);
+        return key;
+    }
+    
+    
+    /**
      * PUBLIC:
      * If <em>all</em> the fields in the database row for the aggregate object are NULL,
      * then, by default, TopLink will place a null in the appropriate source object
@@ -499,6 +585,24 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         setIsNullAllowed(false);
     }
 
+    /**
+     * INTERNAL:
+     * Extract the fields for the Map key from the object to use in a query
+     * @return
+     */
+    public Map extractIdentityFieldsForQuery(Object object, AbstractSession session){
+        Map keyFields = new HashMap();
+        ClassDescriptor descriptor =getReferenceDescriptor();
+        Iterator i = descriptor.getMappings().iterator();
+        while (i.hasNext()){
+            DatabaseMapping mapping = (DatabaseMapping)i.next();
+            DatabaseField field = mapping.getField();
+            Object value = descriptor.getObjectBuilder().extractValueFromObjectForField(object, field, session);
+            keyFields.put(field, value);
+        }
+        return keyFields;
+    }
+    
     /**
      * INTERNAL:
      * Return a collection of the aggregate to source field name associations.
@@ -534,7 +638,18 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         }
         return mapping.getFieldClassification(fieldToClassify);
     }
-
+    
+    /**
+     * INTERNAL:
+     * Return the fields that make up the identity of the mapped object.  For mappings with
+     * a primary key, it will be the set of fields in the primary key.  For mappings without
+     * a primary key it will likely be all the fields
+     * @return
+     */
+    public List<DatabaseField> getIdentityFieldsForMapKey(){
+        return getReferenceDescriptor().getAllFields();
+    }
+    
     /**
      * INTERNAL:
      * This is used to preserve object identity during a refreshObject()
@@ -572,6 +687,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         }
     }
 
+    
     /**
      * INTERNAL:
      * Return the fields used to build the aggregate object.
@@ -579,7 +695,17 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     protected Vector<DatabaseField> getReferenceFields() {
         return getReferenceDescriptor().getAllFields();
     }
-
+    /**
+     * INTERNAL:
+     * If required, get the targetVersion of the source object from the merge manager.
+     * 
+     * Used with MapKeyContainerPolicy to abstract getting the target version of a source key
+     * @return
+     */
+    public Object getTargetVersionOfSourceObject(Object object, MergeManager mergeManager){
+       return object;
+    }
+    
     /**
      * INTERNAL:
      * Return if the mapping has any ownership or other dependency over its target object(s).
@@ -587,7 +713,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     public boolean hasDependency() {
         return getReferenceDescriptor().hasDependencyOnParts();
     }
-
+    
     /**
      * INTERNAL:
      * For an aggregate mapping the reference descriptor is cloned. The cloned descriptor is then
@@ -682,12 +808,30 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * Initialize the cloned reference descriptor with table names and primary keys
      */
     protected void initializeReferenceDescriptor(ClassDescriptor clonedDescriptor) {
-        // Must ensure default tables remains the same.
-        clonedDescriptor.setDefaultTable(getDescriptor().getDefaultTable());
-        clonedDescriptor.setTables(getDescriptor().getTables());
-        clonedDescriptor.setPrimaryKeyFields(getDescriptor().getPrimaryKeyFields());
+        if (aggregateKeyTable != null){
+            clonedDescriptor.setDefaultTable(aggregateKeyTable);
+            Vector<DatabaseTable> tables = new Vector<DatabaseTable>(1);
+            tables.add(aggregateKeyTable);
+            clonedDescriptor.setTables(tables);
+        } else {
+            // Must ensure default tables remains the same.
+            clonedDescriptor.setDefaultTable(getDescriptor().getDefaultTable());
+            clonedDescriptor.setTables(getDescriptor().getTables());
+            clonedDescriptor.setPrimaryKeyFields(getDescriptor().getPrimaryKeyFields());
+        }
+ 
     }
+    
 
+    /**
+     * INTERNAL:
+     * Return whether this mapping should be traversed when we are locking
+     * @return
+     */
+    public boolean isLockableMapping(){
+        return true;
+    }
+    
     /**
      * INTERNAL:
      * Related mapping should implement this method to return true.
@@ -737,6 +881,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     public boolean isCascadedLockingSupported() {
         return true;
     }
+    
     /**
      * INTERNAL:
      * Return setting.
@@ -769,7 +914,24 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
             getReferenceDescriptor().postInitialize(session);
         }
     }
+    
+    /**
+     * INTERNAL:
+     * Making any mapping changes necessary to use a the mapping as a map key prior to initializing the mapping
+     */
+    public void preinitializeMapKey(DatabaseTable table) throws DescriptorException {
+        setTableForAggregateMappingKey(table);
+    }
 
+    
+    /**
+     * INTERNAL:
+     * Allow the selectionQuery to be modified when this MapComponentMapping is used as the value in a Map
+     */
+    public void postInitializeMapValueSelectionQuery(ReadQuery selectionQuery, AbstractSession session){
+        selectionQuery.setShouldMaintainCache(false);
+    }
+    
     /**
      * INTERNAL:
      * Build an aggregate object from the specified return row and put it
@@ -885,6 +1047,16 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         isNullAllowed = aBoolean;
     }
 
+    /** 
+     * INTERNAL:
+     * If this mapping is used as the key of a CollectionTableMapMapping, the table used by this
+     * mapping will be the relation table.  Set this table
+     * @return
+     */
+    public void setTableForAggregateMappingKey(DatabaseTable table){
+        aggregateKeyTable = table;
+    }
+    
     /**
      * INTERNAL:
      * If field names are different in the source and aggregate objects then the translation
@@ -916,6 +1088,30 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         clonedDescriptor.rehashFieldDependancies(session);
     }
 
+    /**
+     * INTERNAL:
+     * Allow the key mapping to unwrap the object
+     * @param key
+     * @param session
+     * @return
+     */
+    
+    public Object unwrapKey(Object key, AbstractSession session){
+        return key;
+    }
+    
+    /**
+     * INTERNAL:
+     * Allow the key mapping to wrap the object
+     * @param key
+     * @param session
+     * @return
+     */
+    
+    public Object wrapKey(Object key, AbstractSession session){
+        return key;
+    }
+    
     /**
      * INTERNAL:
      * A subclass should implement this method if it wants different behavior.

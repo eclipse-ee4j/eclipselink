@@ -151,10 +151,17 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * Build and return a clone of the attribute.
      */
     protected Object buildClonePart(Object original, Object attributeValue, UnitOfWorkImpl unitOfWork) {
+        return buildClonePart(attributeValue, unitOfWork, unitOfWork.isOriginalNewObject(original));
+    }
+    
+    /**
+     * INTERNAL:     * Build and return a clone of the attribute.
+     */
+    protected Object buildClonePart(Object attributeValue, UnitOfWorkImpl unitOfWork, boolean isNewObject) {
         if (attributeValue == null) {
             return null;
         }
-        if (unitOfWork.isOriginalNewObject(original)) {
+        if (isNewObject) {
             unitOfWork.addNewAggregate(attributeValue);
         }
 
@@ -485,7 +492,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
             session.getIntegrityChecker().handleError(DescriptorException.descriptorIsMissing(getReferenceClass().getName(), this));
             return;
         }
-        if (refDescriptor.isAggregateDescriptor()) {
+        if (refDescriptor.isAggregateDescriptor() || refDescriptor.isAggregateCollectionDescriptor()) {
             refDescriptor.checkInheritanceTreeAggregateSettings(session, this);
         } else {
             session.getIntegrityChecker().handleError(DescriptorException.referenceDescriptorIsNotAggregate(getReferenceClass().getName(), this));

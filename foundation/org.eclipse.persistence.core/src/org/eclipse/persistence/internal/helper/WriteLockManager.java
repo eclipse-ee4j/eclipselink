@@ -413,7 +413,7 @@ public class WriteLockManager {
                 referenceDescriptor = mapping.getReferenceDescriptor();
             }
             // Need to traverse aggregates, but not lock aggregates directly.
-            if (referenceDescriptor.isAggregateDescriptor() || referenceDescriptor.isAggregateCollectionDescriptor()) {
+            if (referenceDescriptor.isDescriptorTypeAggregate()) {
                 traverseRelatedLocks(objectToLock, lockedObjects, refreshedObjects, referenceDescriptor, session, unitOfWork);
             } else {
                 primaryKeysToLock = referenceDescriptor.getObjectBuilder().extractPrimaryKeyFromObject(objectToLock, session);

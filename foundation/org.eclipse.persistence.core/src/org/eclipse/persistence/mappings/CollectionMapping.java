@@ -159,10 +159,8 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         synchronized (attributeValue) {
             temporaryCollection = containerPolicy.cloneFor(attributeValue);
         }
-        for (Object valuesIterator = containerPolicy.iteratorFor(temporaryCollection);
-                 containerPolicy.hasNext(valuesIterator);) {
-            Object cloneValue = buildElementClone(containerPolicy.next(valuesIterator, unitOfWork), unitOfWork, isExisting);
-            containerPolicy.addInto(cloneValue, clonedAttributeValue, unitOfWork);
+        for (Object valuesIterator = containerPolicy.iteratorFor(temporaryCollection);containerPolicy.hasNext(valuesIterator);){
+            containerPolicy.addNextValueFromIteratorInto(valuesIterator, clonedAttributeValue, this, unitOfWork, isExisting);
         }
         if ((this.getDescriptor().getObjectChangePolicy().isObjectChangeTrackingPolicy()) && ((clone != null) && (((ChangeTracker)clone)._persistence_getPropertyChangeListener() != null)) && (clonedAttributeValue instanceof CollectionChangeTracker)) {
             ((CollectionChangeTracker)clonedAttributeValue).setTrackedAttributeName(this.getAttributeName());
@@ -201,7 +199,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * INTERNAL:
      * Clone the element, if necessary.
      */
-    protected Object buildElementClone(Object element, UnitOfWorkImpl unitOfWork, boolean isExisting) {
+    public Object buildElementClone(Object element, UnitOfWorkImpl unitOfWork, boolean isExisting) {
         // optimize registration to knowledge of existence
         if (isExisting) {
             return unitOfWork.registerExistingObject(element);
@@ -425,12 +423,12 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                 Iterator removedObjects = record.getRemoveObjectList().values().iterator();
                 while (removedObjects.hasNext()) {
                     removedChangeSet = (ObjectChangeSet)removedObjects.next();
-                    objectRemovedDuringUpdate(query, removedChangeSet.getUnitOfWorkClone());
+                    objectRemovedDuringUpdate(query, getContainerPolicy().getCloneDataFromChangeSet(removedChangeSet), null);
                 }
                 Iterator addedObjects = record.getAddObjectList().values().iterator();
                 while (addedObjects.hasNext()) {
                     addedChangeSet = (ObjectChangeSet)addedObjects.next();
-                    objectAddedDuringUpdate(query, addedChangeSet.getUnitOfWorkClone(), addedChangeSet);
+                    objectAddedDuringUpdate(query, getContainerPolicy().getCloneDataFromChangeSet(addedChangeSet), addedChangeSet, null);
                 }
             }
             return;
@@ -465,26 +463,29 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         // and process the difference to current (optimized in same loop).
         for (Object previousObjectsIter = cp.iteratorFor(previousObjects);
                  cp.hasNext(previousObjectsIter);) {
-            Object previousObject = cp.next(previousObjectsIter, query.getSession());
+            Object wrappedObject = cp.nextEntry(previousObjectsIter, query.getSession());
+            Map mapKeyFields = containerPolicy.getKeyMappingDataForWriteQuery(wrappedObject, query.getSession());
+            Object previousObject = containerPolicy.unwrapIteratorResult(wrappedObject);
             Vector primaryKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(previousObject, query.getSession());
             CacheKey key = new CacheKey(primaryKey);
             previousObjectsByKey.put(key, previousObject);
-
             // Delete must occur first, in case object with same pk is removed and added,
             // (technically should not happen, but same applies to unique constraints)
             if (!currentObjectsByKey.containsKey(key)) {
-                objectRemovedDuringUpdate(query, previousObject);
+                objectRemovedDuringUpdate(query, previousObject, mapKeyFields);
             }
         }
 
         for (Object currentObjectsIter = cp.iteratorFor(currentObjects);
                  cp.hasNext(currentObjectsIter);) {
-            Object currentObject = cp.next(currentObjectsIter, query.getSession());
+            Object wrappedObject = cp.nextEntry(currentObjectsIter, query.getSession());
+            Object currentObject = containerPolicy.unwrapIteratorResult(wrappedObject);
             try {
+                Map mapKeyFields = containerPolicy.getKeyMappingDataForWriteQuery(wrappedObject, query.getSession());
                 CacheKey cacheKey = (CacheKey)cacheKeysOfCurrentObjects.get(currentObject);
 
                 if (!(previousObjectsByKey.containsKey(cacheKey))) {
-                    objectAddedDuringUpdate(query, currentObject, null);
+                    objectAddedDuringUpdate(query, currentObject, null, mapKeyFields);
                 } else {
                     objectUnchangedDuringUpdate(query, currentObject, previousObjectsByKey, cacheKey);
                 }
@@ -899,7 +900,8 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         synchronized (valueOfSource) {
             Object sourceIterator = containerPolicy.iteratorFor(valueOfSource);
             while (containerPolicy.hasNext(sourceIterator)) {
-                Object object = containerPolicy.next(sourceIterator, mergeManager.getSession());
+                Object wrappedObject = containerPolicy.nextEntry(sourceIterator, mergeManager.getSession());
+                Object object = containerPolicy.unwrapIteratorResult(wrappedObject);
                 if (object == null) {
                     continue;// skip the null
                 }
@@ -911,13 +913,13 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                         mergeManager.mergeChanges(mergeManager.getObjectToMerge(object), null);
                     }
                 }
-                object = this.referenceDescriptor.getObjectBuilder().wrapObject(mergeManager.getTargetVersionOfSourceObject(object), mergeManager.getSession());
+                wrappedObject = containerPolicy.createWrappedObjectFromExistingWrappedObject(wrappedObject, referenceDescriptor, mergeManager);
                 synchronized (valueOfTarget) {
                     if (fireChangeEvents) {
                         //Collections may not be indirect list or may have been replaced with user collection.
-                        ((ObjectChangeListener)((ChangeTracker)target)._persistence_getPropertyChangeListener()).internalPropertyChange(new CollectionChangeEvent(target, getAttributeName(), valueOfTarget, object, CollectionChangeEvent.ADD));// make the add change event fire.
+                        ((ObjectChangeListener)((ChangeTracker)target)._persistence_getPropertyChangeListener()).internalPropertyChange(new CollectionChangeEvent(target, getAttributeName(), valueOfTarget, wrappedObject, CollectionChangeEvent.ADD));// make the add change event fire.
                     }
-                    containerPolicy.addInto(object, valueOfTarget, mergeManager.getSession());
+                    containerPolicy.addInto(wrappedObject, valueOfTarget, mergeManager.getSession());
                 }
             }
             if (fireChangeEvents && (this.descriptor.getObjectChangePolicy().isAttributeChangeTrackingPolicy())) {
@@ -943,12 +945,48 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         // Must re-set variable to allow for set method to re-morph changes if the collection is not being stored directly.
         setRealAttributeValueInObject(target, valueOfTarget);
     }
-
+    
+    /**
+     * INTERNAL:
+     * Iterate through the collection and merge all the objects in the collection as appropriate.
+     * @param wrappedObject
+     * @param valueOfTarget
+     * @param target
+     * @param mergeManager
+     * @param fireChangeEvents
+     */
+    protected void mergeChangesForCollectionMembers(Object valueOfSource, Object valueOfTarget, Object target, MergeManager mergeManager, boolean fireChangeEvents){
+        Object sourceIterator = containerPolicy.iteratorFor(valueOfSource);
+        while (containerPolicy.hasNext(sourceIterator)) {
+            Object wrappedObject = containerPolicy.nextEntry(sourceIterator, mergeManager.getSession());
+            Object object = containerPolicy.unwrapIteratorResult(wrappedObject);
+            if (object == null) {
+                continue;// skip the null
+            }
+            if (shouldMergeCascadeParts(mergeManager)) {
+                if ((mergeManager.getSession().isUnitOfWork()) && (((UnitOfWorkImpl)mergeManager.getSession()).getUnitOfWorkChangeSet() != null)) {
+                    // If it is a unit of work, we have to check if I have a change Set for this object
+                    mergeManager.mergeChanges(mergeManager.getObjectToMerge(object), (ObjectChangeSet)((UnitOfWorkImpl)mergeManager.getSession()).getUnitOfWorkChangeSet().getObjectChangeSetForClone(object));
+                } else {
+                    mergeManager.mergeChanges(mergeManager.getObjectToMerge(object), null);
+                }
+            }
+            object = this.referenceDescriptor.getObjectBuilder().wrapObject(mergeManager.getTargetVersionOfSourceObject(object), mergeManager.getSession());
+            synchronized (valueOfTarget) {
+                if (fireChangeEvents) {
+                    //Collections may not be indirect list or may have been replaced with user collection.
+                    ((ObjectChangeListener)((ChangeTracker)target)._persistence_getPropertyChangeListener()).internalPropertyChange(new CollectionChangeEvent(target, getAttributeName(), valueOfTarget, object, CollectionChangeEvent.ADD));// make the add change event fire.
+                }
+                containerPolicy.addInto(wrappedObject, valueOfTarget, mergeManager.getSession());
+            }
+        }
+    }
+    
     /**
      * INTERNAL:
      * An object was added to the collection during an update, insert it if private.
      */
-    protected void objectAddedDuringUpdate(ObjectLevelModifyQuery query, Object objectAdded, ObjectChangeSet changeSet) throws DatabaseException, OptimisticLockException {
+    protected void objectAddedDuringUpdate(ObjectLevelModifyQuery query, Object objectAdded, ObjectChangeSet changeSet, Map extraData) throws DatabaseException, OptimisticLockException {
         if (!shouldObjectModifyCascadeToParts(query)) {// Called always for M-M
             return;
         }
@@ -986,7 +1024,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * INTERNAL:
      * An object was removed to the collection during an update, delete it if private.
      */
-    protected void objectRemovedDuringUpdate(ObjectLevelModifyQuery query, Object objectDeleted) throws DatabaseException, OptimisticLockException {
+    protected void objectRemovedDuringUpdate(ObjectLevelModifyQuery query, Object objectDeleted, Map extraData) throws DatabaseException, OptimisticLockException {
         if (isPrivateOwned()) {// Must check ownership for uow and cascading.
             if (query.shouldCascadeOnlyDependentParts()) {
                 // If the session is a unit of work

@@ -23,7 +23,9 @@ import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.descriptors.*;
+import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -52,7 +54,7 @@ import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
  * @author Sati
  * @since TopLink/Java 1.0
  */
-public abstract class AbstractDirectMapping extends DatabaseMapping implements MapKeyMapping {
+public abstract class AbstractDirectMapping extends DatabaseMapping  implements MapKeyMapping {
 
     /** DatabaseField which this mapping represents. */
     protected DatabaseField field;
@@ -70,6 +72,8 @@ public abstract class AbstractDirectMapping extends DatabaseMapping implements M
 
     /** Support specification of the value to use for null. */
     protected transient Object nullValue;
+    
+    protected DatabaseTable keyTableForMapKey = null;
 
     /**
      * PERF: Indicates if this mapping's attribute is a simple atomic value and cannot be modified, only replaced.
@@ -84,6 +88,38 @@ public abstract class AbstractDirectMapping extends DatabaseMapping implements M
     public AbstractDirectMapping() {
         super();
         this.setWeight(WEIGHT_1);
+    }
+
+    /**
+     * INTERNAL:
+     * Used when initializing queries for mappings that use a Map
+     * Called when the selection query is being initialized to add the fields for the map key to the query
+     */
+    public void addAdditionalFieldsToQuery(ReadQuery selectionQuery, Expression baseExpression){
+        if (selectionQuery.isObjectLevelReadQuery()){
+            if (baseExpression == null){
+                ((ObjectLevelReadQuery)selectionQuery).addAdditionalField((DatabaseField)getField().clone());
+            } else {
+                ((ObjectLevelReadQuery)selectionQuery).addAdditionalField(baseExpression.getField(getField()));
+            }
+        
+        } else if (selectionQuery.isDataReadQuery()){
+            if (baseExpression == null){
+                ((SQLSelectStatement)((DataReadQuery)selectionQuery).getSQLStatement()).addField((DatabaseField)getField().clone());
+                ((SQLSelectStatement)((DataReadQuery)selectionQuery).getSQLStatement()).addTable((DatabaseTable)getField().getTable().clone());
+            } else {
+                ((SQLSelectStatement)((DataReadQuery)selectionQuery).getSQLStatement()).addField(baseExpression.getTable((DatabaseTable)getField().getTable()).getField(getField()));
+            }
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Used when initializing queries for mappings that use a Map
+     * Called when the insert query is being initialized to ensure the fields for the map key are in the insert query
+     */
+    public void addFieldsForMapKey(AbstractRecord joinRow){
+        joinRow.put(getField(), null);
     }
 
     /**
@@ -143,7 +179,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping implements M
             this.isMutable = Boolean.FALSE;
         }
     }
-
+    
     /**
      * INTERNAL:
      * Clone the attribute from the clone and assign it to the backup.
@@ -168,24 +204,37 @@ public abstract class AbstractDirectMapping extends DatabaseMapping implements M
      */
     public void buildCloneValue(Object original, Object clone, AbstractSession session) {
         Object attributeValue = getAttributeValueFromObject(original);
+        attributeValue = buildCloneValue(attributeValue, session);
+        setAttributeValueInObject(clone, attributeValue);
+    }
+    
+    /**
+     * INTERNAL:
+     * Clone the actual value represented by this mapping.  Do set the cloned value into the object.
+     * @param attributeValue
+     * @param session
+     * @return
+     */
+    protected Object buildCloneValue(Object attributeValue, AbstractSession session) {
+        Object newAttributeValue = attributeValue;
         if (isMutable() && attributeValue != null) {
             // EL Bug 252047 - Mutable attributes are not cloned when isMutable is enabled on a Direct Mapping
             if (attributeValue instanceof byte[]) {
                 int length = ((byte[]) attributeValue).length;
                 byte[] arrayCopy = new byte[length];
                 System.arraycopy(attributeValue, 0, arrayCopy, 0, length);
-                attributeValue = arrayCopy;
+                newAttributeValue = arrayCopy;
             } else if (attributeValue instanceof Date) {
-                attributeValue = ((Date)attributeValue).clone();
+                newAttributeValue = ((Date)attributeValue).clone();
             } else if (attributeValue instanceof Calendar) {
-                attributeValue = ((Calendar)attributeValue).clone();
+                newAttributeValue = ((Calendar)attributeValue).clone();
             } else {
-                attributeValue = getAttributeValue(getFieldValue(attributeValue, session), session);                    
+                newAttributeValue = getAttributeValue(getFieldValue(attributeValue, session), session);                    
             }
         }
-        setAttributeValueInObject(clone, attributeValue);
+        return newAttributeValue;
     }
-
+    
     /**
      * INTERNAL:
      * Copy of the attribute of the object.
@@ -195,6 +244,17 @@ public abstract class AbstractDirectMapping extends DatabaseMapping implements M
         buildCloneValue(original, copy, policy.getSession());
     }
 
+    /**
+     * Build a clone of the given element in a unitOfWork
+     * @param element
+     * @param unitOfWork
+     * @param isExisting
+     * @return
+     */
+    public Object buildElementClone(Object attributeValue, UnitOfWorkImpl unitOfWork, boolean isExisting){
+        return buildCloneValue(attributeValue, unitOfWork);
+    }
+    
     /**
      * INTERNAL:
      * In case Query By Example is used, this method builds and returns an expression that
@@ -219,6 +279,19 @@ public abstract class AbstractDirectMapping extends DatabaseMapping implements M
         return expression;
     }
 
+    /**
+     * INTERNAL:
+     * Certain key mappings favor different types of selection query.  Return the appropriate
+     * type of selectionQuery
+     * @return
+     */
+    public ReadQuery buildSelectionQueryForDirectCollectionKeyMapping(ContainerPolicy containerPolicy){
+        DataReadQuery query = new DataReadQuery();
+        query.setSQLStatement(new SQLSelectStatement());
+        query.setContainerPolicy(containerPolicy);
+        return query;
+    }
+    
     /**
      * INTERNAL:
      * Cascade perform delete through mappings that require the cascade
@@ -402,7 +475,32 @@ public abstract class AbstractDirectMapping extends DatabaseMapping implements M
             setConverter(converter);
         }
     };
+    
+    /**
+     * INTERNAL
+     * Called when a DatabaseMapping is used to map the key in a collection.  Returns the key.
+     */
+    public Object createMapComponentFromRow(AbstractRecord dbRow, ObjectBuildingQuery query, AbstractSession session){
+        Object key = dbRow.get(getField());
+        key = getAttributeValue(key, session);
+        return key;
+    }
 
+    /**
+     * INTERNAL:
+     * Extract the fields for the Map key from the object to use in a query
+     * @return
+     */
+    public Map extractIdentityFieldsForQuery(Object object, AbstractSession session){
+        Map fields = new HashMap();
+        Object key = object;
+        if (getConverter() != null){
+             key = getConverter().convertObjectValueToDataValue(key , session);
+        }
+        fields.put(getField(), key);
+        return fields;
+    }
+    
     /**
      * INTERNAL:
      * An object has been serialized from the server to the client.
@@ -574,6 +672,19 @@ public abstract class AbstractDirectMapping extends DatabaseMapping implements M
     }
 
     /**
+     * INTERNAL:
+     * Return the fields that make up the identity of the mapped object.  For mappings with
+     * a primary key, it will be the set of fields in the primary key.  For mappings without
+     * a primary key it will likely be all the fields
+     * @return
+     */
+    public List<DatabaseField> getIdentityFieldsForMapKey(){
+        Vector fields = new Vector(1);
+        fields.add(getField());
+        return fields;
+    }
+    
+    /**
      * PUBLIC:
      * Allow for the value used for null to be specified.
      * This can be used to convert database null values to application specific values, when null values
@@ -583,7 +694,18 @@ public abstract class AbstractDirectMapping extends DatabaseMapping implements M
     public Object getNullValue() {
         return nullValue;
     }
-
+    
+    /**
+     * INTERNAL:
+     * If required, get the targetVersion of the source object from the merge manager.
+     * 
+     * Used with MapKeyContainerPolicy to abstract getting the target version of a source key
+     * @return
+     */
+    public Object getTargetVersionOfSourceObject(Object object, MergeManager mergeManager){
+       return object;
+    }
+    
     /**
      * INTERNAL:
      * Return the weight of the mapping, used to sort mappings to ensure that
@@ -659,7 +781,11 @@ public abstract class AbstractDirectMapping extends DatabaseMapping implements M
             session.getIntegrityChecker().handleError(DescriptorException.fieldNameNotSetInMapping(this));
         }
 
-        setField(getDescriptor().buildField(getField()));
+        if (keyTableForMapKey == null){
+            setField(getDescriptor().buildField(getField()));
+        } else {
+            setField(getDescriptor().buildField(getField(), keyTableForMapKey));
+        }
         setFields(collectFields());
 
         if (getConverter() != null) {
@@ -722,6 +848,23 @@ public abstract class AbstractDirectMapping extends DatabaseMapping implements M
         }
     }
 
+    
+    /**
+     * INTERNAL:
+     * Making any mapping changes necessary to use a the mapping as a map key prior to initializing the mapping
+     */
+    public void preinitializeMapKey(DatabaseTable table) throws DescriptorException {
+        keyTableForMapKey = table;
+    }
+
+    /**
+     * INTERNAL:
+     * Allow the selectionQuery to be modified when this MapComponentMapping is used as the value in a Map
+     */
+    public void postInitializeMapValueSelectionQuery(ReadQuery selectionQuery, AbstractSession session){
+        ((SQLSelectStatement)((DataReadQuery)selectionQuery).getSQLStatement()).normalize(session, null);
+    }
+    
     /**
      * PUBLIC:
      * Some databases do not properly support all of the base data types. For these databases,
@@ -799,6 +942,18 @@ public abstract class AbstractDirectMapping extends DatabaseMapping implements M
 
     /**
      * INTERNAL:
+     * Allow the key mapping to unwrap the object
+     * @param key
+     * @param session
+     * @return
+     */
+    
+    public Object unwrapKey(Object key, AbstractSession session){
+        return key;
+    }
+    
+    /**
+     * INTERNAL:
      * Allow for subclasses to perform validation.
      */
     public void validateBeforeInitialization(AbstractSession session) throws DescriptorException {
@@ -807,6 +962,18 @@ public abstract class AbstractDirectMapping extends DatabaseMapping implements M
         }
     }
 
+    /**
+     * INTERNAL:
+     * Allow the key mapping to wrap the object
+     * @param key
+     * @param session
+     * @return
+     */
+    
+    public Object wrapKey(Object key, AbstractSession session){
+        return key;
+    }
+    
     /**
      * INTERNAL:
      * Get the value from the object for this mapping.

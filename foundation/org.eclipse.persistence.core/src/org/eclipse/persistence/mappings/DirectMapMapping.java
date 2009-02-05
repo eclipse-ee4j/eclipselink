@@ -12,8 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.mappings;
 
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.util.*;
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
@@ -30,12 +28,10 @@ import org.eclipse.persistence.internal.expressions.*;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.indirection.*;
 import org.eclipse.persistence.internal.queries.*;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedClassForName;
-import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.mappings.converters.*;
+import org.eclipse.persistence.mappings.foundation.MapComponentMapping;
 import org.eclipse.persistence.queries.*;
 
 /**
@@ -53,31 +49,29 @@ import org.eclipse.persistence.queries.*;
  * @author: Steven Vo
  * @since TopLink 3.5
  */
-public class DirectMapMapping extends DirectCollectionMapping {
-
-    /** The direct key field name is converted and stored */
-    protected DatabaseField directKeyField;
-
-    /** Allows user defined conversion between the object attribute value and the database value. */
-    protected Converter keyConverter;
-    protected String keyConverterClassName;
+public class DirectMapMapping extends DirectCollectionMapping implements MapComponentMapping {
 
     /**
      * DirectMapCollectionMapping constructor
      */
     public DirectMapMapping() {
         super();
-        this.selectionQuery = new DataReadQuery();
+        DataReadQuery query = new DataReadQuery();
+        this.selectionQuery = query;
         this.containerPolicy = new DirectMapContainerPolicy(ClassConstants.Hashtable_Class);
     }
 
+    private DirectMapUsableContainerPolicy getDirectMapUsableContainerPolicy(){
+        return (DirectMapUsableContainerPolicy)containerPolicy;
+    }
+    
     /**
      * PUBLIC:
      * Return the converter on the mapping.
      * A converter can be used to convert between the key's object value and database value.
      */
     public Converter getKeyConverter() {
-        return keyConverter;
+        return getDirectMapUsableContainerPolicy().getKeyConverter();
     }
 
     /**
@@ -86,7 +80,7 @@ public class DirectMapMapping extends DirectCollectionMapping {
      * A converter can be used to convert between the key's object value and database value.
      */
     public void setKeyConverter(Converter keyConverter) {
-        this.keyConverter = keyConverter;
+        getDirectMapUsableContainerPolicy().setKeyConverter(keyConverter, this);
     }
 
     /**
@@ -96,7 +90,7 @@ public class DirectMapMapping extends DirectCollectionMapping {
      * A converter can be used to convert between the key's object value and database value.
      */
     public void setKeyConverterClassName(String keyConverterClassName) {
-        this.keyConverterClassName = keyConverterClassName;
+        getDirectMapUsableContainerPolicy().setKeyConverterClassName(keyConverterClassName, this);
     }
     
     /**
@@ -122,7 +116,6 @@ public class DirectMapMapping extends DirectCollectionMapping {
      * Ignore the objects, use the attribute value.
      */
     public Object buildCloneForPartObject(Object attributeValue, Object original, Object clone, UnitOfWorkImpl unitOfWork, boolean isExisting) {
-        DirectMapContainerPolicy containerPolicy = (DirectMapContainerPolicy)getContainerPolicy();
         if (attributeValue == null) {
             return containerPolicy.containerInstance(1);
         }
@@ -139,9 +132,9 @@ public class DirectMapMapping extends DirectCollectionMapping {
 
         for (Object keysIterator = containerPolicy.iteratorFor(temporaryCollection);
                  containerPolicy.hasNext(keysIterator);) {
-            Object key = containerPolicy.next(keysIterator, unitOfWork);
-            Object cloneKey = buildKeyClone(key, unitOfWork, isExisting);
-            Object cloneValue = buildElementClone(containerPolicy.valueFromKey(key, temporaryCollection), unitOfWork, isExisting);
+            Map.Entry entry = (Map.Entry)containerPolicy.nextEntry(keysIterator, unitOfWork);
+            Object cloneKey = buildKeyClone(entry.getKey(), unitOfWork, isExisting);
+            Object cloneValue = buildElementClone(entry.getValue(), unitOfWork, isExisting);
             containerPolicy.addInto(cloneKey, cloneValue, clonedAttributeValue, unitOfWork);
         }
         return clonedAttributeValue;
@@ -183,8 +176,6 @@ public class DirectMapMapping extends DirectCollectionMapping {
         Object cloneAttribute = null;
         Object backUpAttribute = null;
 
-        DirectMapContainerPolicy cp = (DirectMapContainerPolicy)getContainerPolicy();
-
         cloneAttribute = getAttributeValueFromObject(clone);
         if ((cloneAttribute != null) && (!getIndirectionPolicy().objectIsInstantiated(cloneAttribute))) {
             return null;
@@ -200,23 +191,24 @@ public class DirectMapMapping extends DirectCollectionMapping {
                 return null;
             }
             Map backUpCollection = (Map)getRealCollectionAttributeValueFromObject(backUp, session);
-            Object backUpIter = cp.iteratorFor(backUpCollection);
-            while (cp.hasNext(backUpIter)) {// Make a lookup of the objects
-                Object key = cp.next(backUpIter, session);
-                originalKeyValues.put(key, backUpCollection.get(key));
+            Object backUpIter = containerPolicy.iteratorFor(backUpCollection);
+            while (containerPolicy.hasNext(backUpIter)) {// Make a lookup of the objects
+                Map.Entry entry = (Map.Entry)containerPolicy.nextEntry(backUpIter, session);
+                originalKeyValues.put(entry.getKey(), backUpCollection.get(entry.getKey()));
             }
         }
-        Object cloneIter = cp.iteratorFor(cloneObjectCollection);
-        while (cp.hasNext(cloneIter)) {//Compare them with the objects from the clone
-            Object firstObject = cp.next(cloneIter, session);
-            Object firstValue = cloneObjectCollection.get(firstObject);
-            Object backupValue = originalKeyValues.get(firstObject);
-            if (!originalKeyValues.containsKey(firstObject)) {
-                cloneKeyValues.put(firstObject, cloneObjectCollection.get(firstObject));
+        Object cloneIter = containerPolicy.iteratorFor(cloneObjectCollection);
+        while (containerPolicy.hasNext(cloneIter)) {//Compare them with the objects from the clone
+            Map.Entry wrappedFirstObject = (Map.Entry)containerPolicy.nextEntry(cloneIter, session);
+            Object firstValue = wrappedFirstObject.getValue();
+            Object firstKey = wrappedFirstObject.getKey();
+            Object backupValue = originalKeyValues.get(firstKey);
+            if (!originalKeyValues.containsKey(firstKey)) {
+                cloneKeyValues.put(firstKey, cloneObjectCollection.get(firstKey));
             } else if (((backupValue == null) && (firstValue != null)) || (!backupValue.equals(firstValue))) {//the object was not in the backup
-                cloneKeyValues.put(firstObject, cloneObjectCollection.get(firstObject));
+                cloneKeyValues.put(firstKey, cloneObjectCollection.get(firstKey));
             } else {
-                originalKeyValues.remove(firstObject);
+                originalKeyValues.remove(firstKey);
             }
         }
         if (cloneKeyValues.isEmpty() && originalKeyValues.isEmpty() && (!owner.isNew())) {
@@ -237,68 +229,27 @@ public class DirectMapMapping extends DirectCollectionMapping {
     public boolean compareObjects(Object firstObject, Object secondObject, AbstractSession session) {
         Object firstObjectMap = getRealCollectionAttributeValueFromObject(firstObject, session);
         Object secondObjectMap = getRealCollectionAttributeValueFromObject(secondObject, session);
-        DirectMapContainerPolicy mapContainerPolicy = (DirectMapContainerPolicy)getContainerPolicy();
-
+        DirectMapUsableContainerPolicy mapContainerPolicy = getDirectMapUsableContainerPolicy();
         return mapContainerPolicy.compareContainers(firstObjectMap, secondObjectMap);
     }
 
     /**
-     * INTERNAL:
-     * Convert all the class-name-based settings in this mapping to actual class-based
-     * settings
-     * This method is implemented by subclasses as necessary.
+     * INTERNAL
+     * Called when a DatabaseMapping is used to map the key in a collection.  Returns the key.
      */
-    public void convertClassNamesToClasses(ClassLoader classLoader){
-        super.convertClassNamesToClasses(classLoader);
-        
-        if (keyConverter != null) {
-            if (keyConverter instanceof TypeConversionConverter){
-                ((TypeConversionConverter)keyConverter).convertClassNamesToClasses(classLoader);
-            } else if (keyConverter instanceof ObjectTypeConverter) {
-                // To avoid 1.5 dependencies with the EnumTypeConverter check
-                // against ObjectTypeConverter.
-                ((ObjectTypeConverter) keyConverter).convertClassNamesToClasses(classLoader);
-            }
+    public Object createMapComponentFromRow(AbstractRecord dbRow, ObjectBuildingQuery query, AbstractSession session){
+        Object key = dbRow.get(getDirectField());
+        if (getValueConverter() != null){
+            key = getValueConverter().convertDataValueToObjectValue(key, session);
         }
-        
-        // Instantiate any custom converter class
-        if (keyConverterClassName != null) {
-            Class keyConverterClass;
-            Converter keyConverter;
-    
-            try {
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    try {
-                        keyConverterClass = (Class) AccessController.doPrivileged(new PrivilegedClassForName(keyConverterClassName, true, classLoader));
-                    } catch (PrivilegedActionException exception) {
-                        throw ValidationException.classNotFoundWhileConvertingClassNames(keyConverterClassName, exception.getException());
-                    }
-                    
-                    try {
-                        keyConverter = (Converter) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(keyConverterClass));
-                    } catch (PrivilegedActionException exception) {
-                        throw ValidationException.classNotFoundWhileConvertingClassNames(keyConverterClassName, exception.getException());
-                    }
-                } else {
-                    keyConverterClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(keyConverterClassName, true, classLoader);
-                    keyConverter = (Converter) org.eclipse.persistence.internal.security.PrivilegedAccessHelper.newInstanceFromClass(keyConverterClass);
-                }
-            } catch (ClassNotFoundException exc) {
-                throw ValidationException.classNotFoundWhileConvertingClassNames(keyConverterClassName, exc);
-            } catch (Exception e) {
-                // Catches IllegalAccessException and InstantiationException
-                throw ValidationException.classNotFoundWhileConvertingClassNames(keyConverterClassName, e);
-            }
-            
-            setKeyConverter(keyConverter);
-        }
+        return key;
     }
 
     /**
      * INTERNAL:
      */
     public DatabaseField getDirectKeyField() {
-        return directKeyField;
+        return getDirectMapUsableContainerPolicy().getDirectKeyField();
     }
 
     /**
@@ -306,25 +257,12 @@ public class DirectMapMapping extends DirectCollectionMapping {
      * Initialize and validate the mapping properties.
      */
     public void initialize(AbstractSession session) throws DescriptorException {
+        getDirectMapUsableContainerPolicy().setDescriptorForKeyMapping(this.getDescriptor());
         super.initialize(session);
-        initializeDirectKeyField(session);
-        initializeContainerPolicy(session);
-        if (getKeyConverter() != null) {
-            getKeyConverter().initialize(this, session);
-        }
+        getDirectMapUsableContainerPolicy().setValueField(directField, valueConverter);
         if (getValueConverter() != null) {
             getValueConverter().initialize(this, session);
         }
-    }
-
-    /**
-     * Set the key and value fields that are used to build the container from database rows.
-     */
-    protected void initializeContainerPolicy(AbstractSession session) {
-        ((DirectMapContainerPolicy)getContainerPolicy()).setKeyField(getDirectKeyField());
-        ((DirectMapContainerPolicy)getContainerPolicy()).setValueField(getDirectField());
-        ((DirectMapContainerPolicy)getContainerPolicy()).setKeyConverter(getKeyConverter());
-        ((DirectMapContainerPolicy)getContainerPolicy()).setValueConverter(getValueConverter());
     }
 
     protected void initializeDeleteQuery(AbstractSession session) {
@@ -337,7 +275,18 @@ public class DirectMapMapping extends DirectCollectionMapping {
         }
 
         Expression builder = new ExpressionBuilder();
-        Expression directKeyExp = builder.getField(getDirectKeyField()).equal(builder.getParameter(getDirectKeyField()));
+        Expression directKeyExp = null;
+        List<DatabaseField> identityFields = getContainerPolicy().getIdentityFieldsForMapKey();
+        Iterator<DatabaseField> i = identityFields.iterator();
+        while (i.hasNext()){
+            DatabaseField field = i.next();
+            Expression fieldExpression = builder.getField(field).equal(builder.getParameter(field));
+            if (directKeyExp == null){
+                directKeyExp = fieldExpression;
+            } else {
+                directKeyExp = directKeyExp.and(fieldExpression);
+            }
+         }
         Expression expression = null;
         SQLDeleteStatement statement = new SQLDeleteStatement();
 
@@ -359,34 +308,27 @@ public class DirectMapMapping extends DirectCollectionMapping {
     }
 
     /**
-     * The field name on the reference table is initialized and cached.
-     */
-    protected void initializeDirectKeyField(AbstractSession session) throws DescriptorException {
-        if (getDirectKeyField() == null) {
-            throw DescriptorException.directFieldNameNotSet(this);
-        }
-
-        getDirectKeyField().setTable(getReferenceTable());
-        getDirectKeyField().setIndex(1);
-    }
-
-    /**
      * Initialize insert query. This query is used to insert the collection of objects into the
      * reference table.
      */
     protected void initializeInsertQuery(AbstractSession session) {
         super.initializeInsertQuery(session);
-        getInsertQuery().getModifyRow().put(getDirectKeyField(), null);
+        getContainerPolicy().addFieldsForMapKey(getInsertQuery().getModifyRow());
     }
 
     protected void initializeSelectionStatement(AbstractSession session) {
-        SQLSelectStatement statement = new SQLSelectStatement();
-        statement.addTable(getReferenceTable());
-        statement.addField((DatabaseField)getDirectField().clone());
-        statement.addField((DatabaseField)getDirectKeyField().clone());
-        statement.setWhereClause(getSelectionCriteria());
-        statement.normalize(session, null);
-        getSelectionQuery().setSQLStatement(statement);
+        if (selectionQuery.isReadAllQuery()){
+            ((ReadAllQuery)selectionQuery).addAdditionalField((DatabaseField)getDirectField().clone());
+        } else {
+            SQLSelectStatement statement = (SQLSelectStatement)selectionQuery.getSQLStatement();
+            statement.addTable(getReferenceTable());
+            statement.addField((DatabaseField)getDirectField().clone());
+            getContainerPolicy().addAdditionalFieldsToQuery(selectionQuery, null);
+            statement.normalize(session, null);
+        }
+        if (selectionQuery.isDirectReadQuery()){
+            ((DirectReadQuery)selectionQuery).setResultType(DataReadQuery.MAP);
+        }
     }
 
     /**
@@ -404,7 +346,6 @@ public class DirectMapMapping extends DirectCollectionMapping {
      * collection based on the changeset.
      */
     public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager) {
-        DirectMapContainerPolicy containerPolicy = (DirectMapContainerPolicy)getContainerPolicy();
         Map valueOfTarget = null;
         AbstractSession session = mergeManager.getSession();
 
@@ -428,8 +369,8 @@ public class DirectMapMapping extends DirectCollectionMapping {
             Object valueOfSource = getRealCollectionAttributeValueFromObject(source, session);
             for (Object iterator = containerPolicy.iteratorFor(valueOfSource);
                      containerPolicy.hasNext(iterator);) {
-                Object key = containerPolicy.next(iterator, session);
-                containerPolicy.addInto(key, ((Map)valueOfSource).get(key), valueOfTarget, session);
+                Map.Entry entry = (Map.Entry)containerPolicy.nextEntry(iterator, session);
+                containerPolicy.addInto(entry.getKey(), entry.getValue(), valueOfTarget, session);
             }
         } else {
             Object synchronizationTarget = valueOfTarget;
@@ -496,8 +437,6 @@ public class DirectMapMapping extends DirectCollectionMapping {
 
         Map valueOfSource = (Map)getRealCollectionAttributeValueFromObject(source, mergeManager.getSession());
 
-        DirectMapContainerPolicy containerPolicy = (DirectMapContainerPolicy)getContainerPolicy();
-
         // trigger instantiation of target attribute
         Object valueOfTarget = getRealCollectionAttributeValueFromObject(target, mergeManager.getSession());
         Object newContainer = containerPolicy.containerInstance(containerPolicy.sizeFor(valueOfSource));
@@ -508,8 +447,8 @@ public class DirectMapMapping extends DirectCollectionMapping {
             //Collections may not be indirect list or may have been replaced with user collection.
             Object iterator = containerPolicy.iteratorFor(valueOfTarget);
             while (containerPolicy.hasNext(iterator)) {
-                Object key = containerPolicy.next(iterator, mergeManager.getSession());
-                ((ObjectChangeListener)((ChangeTracker)target)._persistence_getPropertyChangeListener()).internalPropertyChange(new MapChangeEvent(target, getAttributeName(), valueOfTarget, key, ((Map)valueOfTarget).get(key), CollectionChangeEvent.REMOVE));// make the remove change event fire.
+                Map.Entry entry = (Map.Entry)containerPolicy.nextEntry(iterator, mergeManager.getSession());
+                ((ObjectChangeListener)((ChangeTracker)target)._persistence_getPropertyChangeListener()).internalPropertyChange(new MapChangeEvent(target, getAttributeName(), valueOfTarget, entry.getKey(), entry.getValue(), CollectionChangeEvent.REMOVE));// make the remove change event fire.
             }
             if (newContainer instanceof ChangeTracker) {
                 ((ChangeTracker)newContainer)._persistence_setPropertyChangeListener(((ChangeTracker)target)._persistence_getPropertyChangeListener());
@@ -522,12 +461,12 @@ public class DirectMapMapping extends DirectCollectionMapping {
 
         for (Object sourceValuesIterator = containerPolicy.iteratorFor(valueOfSource);
                  containerPolicy.hasNext(sourceValuesIterator);) {
-            Object sourceKey = containerPolicy.next(sourceValuesIterator, mergeManager.getSession());
+            Map.Entry entry = (Map.Entry)containerPolicy.nextEntry(sourceValuesIterator, mergeManager.getSession());
             if (fireChangeEvents) {
                 //Collections may not be indirect list or may have been replaced with user collection.
-                ((ObjectChangeListener)((ChangeTracker)target)._persistence_getPropertyChangeListener()).internalPropertyChange(new MapChangeEvent(target, getAttributeName(), valueOfTarget, sourceKey, valueOfSource.get(sourceKey), CollectionChangeEvent.ADD));// make the add change event fire.
+                ((ObjectChangeListener)((ChangeTracker)target)._persistence_getPropertyChangeListener()).internalPropertyChange(new MapChangeEvent(target, getAttributeName(), valueOfTarget, entry.getKey(), entry.getValue(), CollectionChangeEvent.ADD));// make the add change event fire.
             }
-            containerPolicy.addInto(sourceKey, valueOfSource.get(sourceKey), valueOfTarget, mergeManager.getSession());
+            containerPolicy.addInto(entry.getKey(), entry.getValue(), valueOfTarget, mergeManager.getSession());
         }
         if (fireChangeEvents && (getDescriptor().getObjectChangePolicy().isAttributeChangeTrackingPolicy())) {
             // check that there were changes, if not then remove the record.
@@ -564,7 +503,6 @@ public class DirectMapMapping extends DirectCollectionMapping {
         }
 
         objects = getRealCollectionAttributeValueFromObject(query.getObject(), query.getSession());
-        DirectMapContainerPolicy containerPolicy = (DirectMapContainerPolicy)getContainerPolicy();
         if (containerPolicy.isEmpty(objects)) {
             return;
         }
@@ -581,16 +519,14 @@ public class DirectMapMapping extends DirectCollectionMapping {
         // Extract target field and its value. Construct insert statement and execute it
         Object keyIter = containerPolicy.iteratorFor(objects);
         while (containerPolicy.hasNext(keyIter)) {
-            Object key = containerPolicy.next(keyIter, query.getSession());
-            Object value = containerPolicy.valueFromKey(key, objects);
-            if (getKeyConverter() != null) {
-                key = getKeyConverter().convertObjectValueToDataValue(key, query.getSession());
-            }
+            Map.Entry entry = (Map.Entry)containerPolicy.nextEntry(keyIter, query.getSession());
+            Object value = entry.getValue();
             if (getValueConverter() != null) {
                 value = getValueConverter().convertObjectValueToDataValue(value, query.getSession());
             }
-            databaseRow.put(getDirectKeyField(), key);
             databaseRow.put(getDirectField(), value);
+
+            ContainerPolicy.copyMapDataToRow(getContainerPolicy().getKeyMappingDataForWriteQuery(entry, query.getSession()), databaseRow);
             // In the uow data queries are cached until the end of the commit.
             if (query.shouldCascadeOnlyDependentParts()) {
                 // Hey I might actually want to use an inner class here... ok array for now.
@@ -621,14 +557,11 @@ public class DirectMapMapping extends DirectCollectionMapping {
             Object sourceKeyValue = writeQuery.getTranslationRow().get(sourceKey);
             writeQuery.getTranslationRow().put(referenceKey, sourceKeyValue);
         }
-        for (Iterator iterator = changeRecord.getRemoveObjects().keySet().iterator();
+        for (Iterator iterator = changeRecord.getRemoveObjects().entrySet().iterator();
                  iterator.hasNext();) {
-            Object key = iterator.next();
+            Object entry = iterator.next();
             AbstractRecord thisRow = (AbstractRecord)writeQuery.getTranslationRow().clone();
-            if (getKeyConverter() != null) {
-                key = getKeyConverter().convertObjectValueToDataValue(key, writeQuery.getSession());
-            }
-            thisRow.add(getDirectKeyField(), key);
+            ContainerPolicy.copyMapDataToRow(containerPolicy.getKeyMappingDataForWriteQuery(entry, writeQuery.getSession()), thisRow);
             // Hey I might actually want to use an inner class here... ok array for now.
             Object[] event = new Object[3];
             event[0] = Delete;
@@ -636,18 +569,15 @@ public class DirectMapMapping extends DirectCollectionMapping {
             event[2] = thisRow;
             writeQuery.getSession().getCommitManager().addDataModificationEvent(this, event);
         }
-        for (Iterator iterator = changeRecord.getAddObjects().keySet().iterator();
+        for (Iterator iterator = changeRecord.getAddObjects().entrySet().iterator();
                  iterator.hasNext();) {
-            Object key = iterator.next();
+            Map.Entry entry = (Map.Entry)iterator.next();
             AbstractRecord thisRow = (AbstractRecord)writeQuery.getTranslationRow().clone();
-            Object value = changeRecord.getAddObjects().get(key);
-            if (getKeyConverter() != null) {
-                key = getKeyConverter().convertObjectValueToDataValue(key, writeQuery.getSession());
-            }
+            Object value = changeRecord.getAddObjects().get(entry.getKey());
             if (getValueConverter() != null) {
                 value = getValueConverter().convertObjectValueToDataValue(value, writeQuery.getSession());
             }
-            thisRow.add(getDirectKeyField(), key);
+            ContainerPolicy.copyMapDataToRow(containerPolicy.getKeyMappingDataForWriteQuery(entry, writeQuery.getSession()), thisRow);
             thisRow.add(getDirectField(), value);
             // Hey I might actually want to use an inner class here... ok array for now.
             Object[] event = new Object[3];
@@ -678,7 +608,7 @@ public class DirectMapMapping extends DirectCollectionMapping {
      * INTERNAL:
      */
     public void setDirectKeyField(DatabaseField keyField) {
-        this.directKeyField = keyField;
+        getDirectMapUsableContainerPolicy().setKeyField(keyField, descriptor);
     }
 
     /**
@@ -735,8 +665,7 @@ public class DirectMapMapping extends DirectCollectionMapping {
         if (!Helper.classImplementsInterface(concreteClass, ClassConstants.Map_Class)) {
             throw DescriptorException.illegalContainerClass(concreteClass);
         }
-        DirectMapContainerPolicy policy = new DirectMapContainerPolicy(concreteClass);
-        setContainerPolicy(policy);
+        containerPolicy.setContainerClass(concreteClass);
     }
 
     /**
@@ -771,7 +700,7 @@ public class DirectMapMapping extends DirectCollectionMapping {
      * This returns null if not using a TypeConversionConverter key converter.
      */
     public Class getKeyClass() {
-        if (!(getKeyConverter() instanceof TypeConversionConverter)) {
+        if ((getKeyConverter() == null) || !(getKeyConverter() instanceof TypeConversionConverter)) {
             return null;
         }
         return ((TypeConversionConverter)getKeyConverter()).getObjectClass();
@@ -859,13 +788,18 @@ public class DirectMapMapping extends DirectCollectionMapping {
             referenceDataByKey = (Hashtable)query.getProperty("batched objects");
             mappingContainerPolicy = getContainerPolicy();
             if (referenceDataByKey == null) {
+                
                 Vector rows = (Vector)session.executeQuery(query, argumentRow);
-
                 referenceDataByKey = new Hashtable();
 
                 for (Enumeration rowsEnum = rows.elements(); rowsEnum.hasMoreElements();) {
-                	AbstractRecord referenceRow = (AbstractRecord)rowsEnum.nextElement();
-                    Object referenceKey = referenceRow.get(getDirectKeyField());
+                    AbstractRecord referenceRow = (AbstractRecord)rowsEnum.nextElement();
+                    Object referenceKey = null;
+                    if (query.isObjectBuildingQuery()){
+                        referenceKey = getDirectMapUsableContainerPolicy().buildKey(databaseRow, (ObjectBuildingQuery)query, session);
+                    } else {
+                        referenceKey = getDirectMapUsableContainerPolicy().buildKey(databaseRow, null, session);
+                    }
                     Object referenceValue = referenceRow.get(getDirectField());
                     CacheKey eachCacheKey = new CacheKey(extractKeyFromReferenceRow(referenceRow, session));
 
@@ -873,11 +807,6 @@ public class DirectMapMapping extends DirectCollectionMapping {
                     if (container == null) {
                         container = mappingContainerPolicy.containerInstance();
                         referenceDataByKey.put(eachCacheKey, container);
-                    }
-
-                    // Allow for key conversion.
-                    if (getKeyConverter() != null) {
-                        referenceKey = getKeyConverter().convertDataValueToObjectValue(referenceKey, query.getSession());
                     }
 
                     // Allow for value conversion.

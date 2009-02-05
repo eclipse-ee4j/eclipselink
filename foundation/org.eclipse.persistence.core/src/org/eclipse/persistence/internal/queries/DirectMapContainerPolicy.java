@@ -13,9 +13,26 @@
 package org.eclipse.persistence.internal.queries;
 
 import java.util.*;
+
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+
+import org.eclipse.persistence.internal.queries.MapContainerPolicy.MapContainerPolicyIterator;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedClassForName;
+import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
+
+import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.mappings.Association;
+import org.eclipse.persistence.mappings.DirectMapMapping;
 import org.eclipse.persistence.mappings.converters.*;
+import org.eclipse.persistence.queries.DataReadQuery;
+import org.eclipse.persistence.queries.ObjectBuildingQuery;
+import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -27,13 +44,15 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  * <p><b>Responsibilities</b>:
  * Provide the functionality to operate on an instance of a Map.
  *
+ * @see MappedKeyMapContainerPolicy
  * @see ContainerPolicy
  * @see CollectionContainerPolicy
  */
-public class DirectMapContainerPolicy extends InterfaceContainerPolicy {
+public class DirectMapContainerPolicy extends InterfaceContainerPolicy implements DirectMapUsableContainerPolicy {
     protected DatabaseField keyField;
     protected DatabaseField valueField;
     protected Converter keyConverter;
+    protected String keyConverterClassName;
     protected Converter valueConverter;
 
     /**
@@ -54,6 +73,30 @@ public class DirectMapContainerPolicy extends InterfaceContainerPolicy {
 
     /**
      * INTERNAL:
+     * Called when the selection query is being initialized to add any required additional fields to the
+     * query.  
+     */
+    public void addAdditionalFieldsToQuery(ReadQuery selectionQuery, Expression baseExpression){
+        if (baseExpression == null){
+            ((SQLSelectStatement)((DataReadQuery)selectionQuery).getSQLStatement()).addField((DatabaseField)keyField.clone());
+            ((SQLSelectStatement)((DataReadQuery)selectionQuery).getSQLStatement()).addTable((DatabaseTable)keyField.getTable().clone());
+        } else {
+            ((SQLSelectStatement)((DataReadQuery)selectionQuery).getSQLStatement()).addField(baseExpression.getTable((DatabaseTable)keyField.getTable()).getField(keyField));
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Called when the insert query is being initialized to ensure the fields for the key are in the insert query
+     * 
+     * @see MappedKeyMapContainerPolicy
+     */
+    public void addFieldsForMapKey(AbstractRecord joinRow){
+        joinRow.put(keyField, null);
+    }
+    
+    /**
+     * INTERNAL:
      * Add key, value pair into container which implements the Map interface.
      */
     public boolean addInto(Object key, Object value, Object container, AbstractSession session) {
@@ -70,7 +113,20 @@ public class DirectMapContainerPolicy extends InterfaceContainerPolicy {
      * Add element into container which implements the Map interface. Not used since key is not obtained from the object
      */
     public boolean addInto(Object element, Object container, AbstractSession session) {
-        throw ValidationException.operationNotSupported("addInto(Object element, Object container, Session session)");
+        Object key = null;
+        Object value = null;
+        if (element instanceof AbstractRecord) {
+            AbstractRecord record = (AbstractRecord)element;
+            key = record.get(keyField);
+            value = record.get(valueField);
+            return addInto(key, value, container, session);
+        } else if (element instanceof Association){
+            Association record = (Association)element;
+            key = record.getKey();
+            value = record.getValue();
+            return addInto(key, value, container, session);
+        }
+        return super.addInto(element, container, session);
     }
 
     /**
@@ -88,8 +144,8 @@ public class DirectMapContainerPolicy extends InterfaceContainerPolicy {
             if (getKeyConverter() != null) {
                 key = getKeyConverter().convertDataValueToObjectValue(key, session);
             }
-            if (getValueConverter() != null) {
-                value = getValueConverter().convertDataValueToObjectValue(value, session);
+            if (valueConverter != null) {
+                value = valueConverter.convertDataValueToObjectValue(value, session);
             }
             if (key != null) {
                 container.put(key, value);
@@ -98,6 +154,21 @@ public class DirectMapContainerPolicy extends InterfaceContainerPolicy {
         return container;
     }
 
+    /**
+     * Extract the key for the map from the provided row
+     * @param row
+     * @param query
+     * @param session
+     * @return
+     */
+    public Object buildKey(AbstractRecord row, ObjectBuildingQuery query, AbstractSession session){
+        Object key = row.get(keyField);
+        if (keyConverter != null){
+            key = keyConverter.convertDataValueToObjectValue(key, session);
+        }
+        return key;
+    }
+    
     /**
      * INTERNAL:
      * Remove all the elements from container.
@@ -120,7 +191,8 @@ public class DirectMapContainerPolicy extends InterfaceContainerPolicy {
         }
 
         for (Object firstIterator = iteratorFor(firstObjectMap); hasNext(firstIterator);) {
-            Object key = next(firstIterator);
+            Map.Entry entry = (Map.Entry)nextEntry(firstIterator);
+            Object key = entry.getKey();
             if (!((Map)firstObjectMap).get(key).equals(((Map)secondObjectMap).get(key))) {
                 return false;
             }
@@ -149,37 +221,200 @@ public class DirectMapContainerPolicy extends InterfaceContainerPolicy {
     protected boolean contains(Object element, Object container) {
         return ((Map)container).containsValue(element);
     }
+    
+    
+    /**
+     * INTERNAL:
+     * Convert all the class-name-based settings in this mapping to actual class-based
+     * settings
+     * This method is implemented by subclasses as necessary.
+     */
+    public void convertClassNamesToClasses(ClassLoader classLoader){
+        super.convertClassNamesToClasses(classLoader);
+        
+        if (keyConverter != null) {
+            if (keyConverter instanceof TypeConversionConverter){
+                ((TypeConversionConverter)keyConverter).convertClassNamesToClasses(classLoader);
+            } else if (keyConverter instanceof ObjectTypeConverter) {
+                // To avoid 1.5 dependencies with the EnumTypeConverter check
+                // against ObjectTypeConverter.
+                ((ObjectTypeConverter) keyConverter).convertClassNamesToClasses(classLoader);
+            }
+        }
+        
+        // Instantiate any custom converter class
+        if (keyConverterClassName != null) {
+            Class keyConverterClass;
+            Converter keyConverter;
+            try {
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                    try {
+                        keyConverterClass = (Class) AccessController.doPrivileged(new PrivilegedClassForName(keyConverterClassName, true, classLoader));
+                    } catch (PrivilegedActionException exception) {
+                        throw ValidationException.classNotFoundWhileConvertingClassNames(keyConverterClassName, exception.getException());
+                    }
+                    
+                    try {
+                        keyConverter = (Converter) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(keyConverterClass));
+                    } catch (PrivilegedActionException exception) {
+                        throw ValidationException.classNotFoundWhileConvertingClassNames(keyConverterClassName, exception.getException());
+                    }
+                } else {
+                    keyConverterClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(keyConverterClassName, true, classLoader);
+                    keyConverter = (Converter) org.eclipse.persistence.internal.security.PrivilegedAccessHelper.newInstanceFromClass(keyConverterClass);
+                }
+            } catch (ClassNotFoundException exc) {
+                throw ValidationException.classNotFoundWhileConvertingClassNames(keyConverterClassName, exc);
+            } catch (Exception e) {
+                // Catches IllegalAccessException and InstantiationException
+                throw ValidationException.classNotFoundWhileConvertingClassNames(keyConverterClassName, e);
+            }
+            
+            this.keyConverter = keyConverter;;
+        }
+    }
+
+    
+    /**
+     * INTERNAL:
+     * Return the DatabaseField that represents the key in a DirectMapMapping
+     * @return
+     */
+    public DatabaseField getDirectKeyField(){
+        return keyField;
+    }
 
     public Class getInterfaceType() {
         return ClassConstants.Map_Class;
     }
-
+    
+    /**
+     * INTERNAL:
+     * Return the fields that make up the identity of the mapped object.  For mappings with
+     * a primary key, it will be the set of fields in the primary key.  For mappings without
+     * a primary key it will likely be all the fields
+     * @return
+     */
+    public List<DatabaseField> getIdentityFieldsForMapKey(){
+        ArrayList list = new ArrayList(1);
+        list.add(keyField);
+        return list;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return whether the iterator has more objects.
+     * The iterator is the one returned from #iteratorFor().
+     *
+     * @see ContainerPolicy#iteratorFor(java.lang.Object)
+     */
+    public boolean hasNext(Object iterator){
+        return ((MapContainerPolicyIterator)iterator).hasNext();
+    }
+    
+    /**
+     * INTERNAL:
+     * Add any non-Foreign-key data from an Object describe by a MapKeyMapping to a database row
+     * This is typically used in write queries to ensure all the data stored in the collection table is included
+     * in the query.
+     * @param object
+     * @param databaseRow
+     * @param session
+     */
+    public Map getKeyMappingDataForWriteQuery(Object object, AbstractSession session){
+        Object keyValue = ((Map.Entry)object).getKey();
+        Map fields = new HashMap();
+        if (keyConverter != null){
+            keyValue = keyConverter.convertObjectValueToDataValue(keyValue , session);
+        }
+        fields.put(keyField, keyValue);
+        return fields;
+    }
+    
     public boolean isDirectMapPolicy() {
         return true;
     }
 
     /**
      * INTERNAL:
-     * Return an Iterator for the given container.
+     * Initialize the key mapping
      */
-    public Object iteratorFor(Object container) {
-        if (((Map)container).keySet() == null) {
-            return null;
+    public void initialize(AbstractSession session, DatabaseTable keyTable){
+        if (getDirectKeyField() == null) {
+            throw DescriptorException.directKeyNotSet(elementDescriptor);
         }
-        return ((Map)container).keySet().iterator();
-    }
 
+        getDirectKeyField().setTable(keyTable);
+        getDirectKeyField().setIndex(1);
+    }
+    
     /**
      * INTERNAL:
      * Return an Iterator for the given container.
      */
-    public Object iteratorForValue(Object container) {
-        if (((Map)container).values() == null) {
-            return null;
-        }
-        return ((Map)container).values().iterator();
+    public Object iteratorFor(Object container) {
+        return new MapContainerPolicy.MapContainerPolicyIterator((Map)container);
     }
 
+    
+    public Object keyFromIterator(Object iterator){
+        return ((MapContainerPolicyIterator)iterator).getCurrentKey();
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the next object on the queue. The iterator is the one
+     * returned from #iteratorFor().
+     *
+     * @see ContainerPolicy#iteratorFor(java.lang.Object)
+     */
+    protected Object next(Object iterator){
+        return ((MapContainerPolicyIterator)iterator).next().getValue();
+    }
+
+    /**
+     * INTERNAL:
+     * Return the next object on the queue. The iterator is the one
+     * returned from #iteratorFor().
+     * 
+     * This will return a MapEntry to allow use of the key
+     *
+     * @see ContainerPolicy#iteratorFor(java.lang.Object)
+     * @see MapContainerPolicy.unwrapIteratorResult(Object object)
+     */
+    public Object nextEntry(Object iterator){
+        return ((MapContainerPolicyIterator)iterator).next();
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the next object on the queue. The iterator is the one
+     * returned from #iteratorFor().
+     * 
+     * This will return a MapEntry to allow use of the key
+     *
+     * @see ContainerPolicy#iteratorFor(Object iterator, AbstractSession session)
+     * @see MapContainerPolicy.unwrapIteratorResult(Object object)
+     */
+    public Object nextEntry(Object iterator, AbstractSession session) {
+        return nextEntry(iterator);
+    }
+    
+    /**
+     * INTERNAL: 
+     * MapContainerPolicy's iterator iterates on the Entries of a Map.
+     * This method returns the object from the iterator
+     * 
+     * @see MapContainerPolicy.nextWrapped(Object iterator)
+     */
+    public Object unwrapIteratorResult(Object object){
+        if (object instanceof Map.Entry){
+            return ((Map.Entry)object).getValue();
+        } else {
+            return object;
+        }
+    }
+    
     /**
      * INTERNAL:
      * Remove element from container which implements the Map interface.
@@ -229,12 +464,40 @@ public class DirectMapContainerPolicy extends InterfaceContainerPolicy {
         }
     }
 
+    /**
+     * INTERNAL:
+     * Used during initialization of DirectMapMapping.  Sets the descriptor associated with
+     * the key
+     * @param descriptor
+     */
+    public void setDescriptorForKeyMapping(ClassDescriptor descriptor){
+        this.elementDescriptor = descriptor;
+    }
+    
     public void setKeyField(DatabaseField field) {
         keyField = field;
     }
-
-    public void setValueField(DatabaseField field) {
+    
+    /**
+     * INTERNAL:
+     * Set the DatabaseField that will represent the key in a DirectMapMapping
+     * @param keyField
+     * @param descriptor
+     */
+    public void setKeyField(DatabaseField field, ClassDescriptor descriptor) {
+        setKeyField(field);
+    }
+    
+    /**
+     * INTERNAL:
+     * Used during initialization of DirectMapMapping to make the ContainerPolicy aware of the 
+     * DatabaseField used for the value portion of the mapping
+     * @param directField
+     * @param valueConverter
+     */
+    public void setValueField(DatabaseField field, Converter converter) {
         valueField = field;
+        valueConverter = converter;
     }
 
     /**
@@ -272,25 +535,31 @@ public class DirectMapContainerPolicy extends InterfaceContainerPolicy {
 
     /**
      * INTERNAL:
-     * Return an value of the key from container
+     * Get the Converter for the key of this mapping if one exists
+     * @return
      */
-    public Object valueFromKey(Object key, Object container) {
-        return ((Map)container).get(key);
-    }
-
     public Converter getKeyConverter() {
         return keyConverter;
     }
 
-    public void setKeyConverter(Converter keyConverter) {
+    /**
+     * INTERNAL:
+     * Set a converter on the KeyField of a DirectCollectionMapping
+     * @param keyConverter
+     * @param mapping
+     */
+    public void setKeyConverter(Converter keyConverter, DirectMapMapping mapping) {
         this.keyConverter = keyConverter;
     }
-
-    public void setValueConverter(Converter valueConverter) {
-        this.valueConverter = valueConverter;
+    
+    /**
+     * INTERNAL:
+     * Set the name of the class to be used as a converter for the key of a DirectMapMaping
+     * @param keyConverterClassName
+     * @param mapping
+     */
+    public void setKeyConverterClassName(String keyConverterClassName, DirectMapMapping mapping) {
+        this.keyConverterClassName = keyConverterClassName;
     }
 
-    public Converter getValueConverter() {
-        return valueConverter;
-    }
 }

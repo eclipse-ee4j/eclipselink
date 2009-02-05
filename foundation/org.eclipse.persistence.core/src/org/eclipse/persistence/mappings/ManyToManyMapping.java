@@ -13,6 +13,7 @@
 package org.eclipse.persistence.mappings;
 
 import java.util.*;
+
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.history.*;
@@ -141,6 +142,14 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
         return clone;
     }
 
+    /**
+     * INTERNAL
+     * Called when a DatabaseMapping is used to map the key in a collection.  Returns the key.
+     */
+    public Object createMapComponentFromRow(AbstractRecord dbRow, ObjectBuildingQuery query, AbstractSession session){
+        return session.executeQuery(getSelectionQuery(), dbRow);
+    }
+    
     /**
      * INTERNAL:
      * Extract the source primary key value from the relation row.
@@ -478,12 +487,12 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
                 getRelationTable().setName(quoteChar + getRelationTable().getName() + quoteChar);
             }
         }
-        
+        getContainerPolicy().initialize(session, getRelationTable());
         if (shouldInitializeSelectionCriteria()) {
             if (shouldForceInitializationOfSelectionCriteria()) {
-                initializeSelectionCriteria(session, null);
+                initializeSelectionCriteriaAndAddFieldsToQuery(session, null);
             } else {
-                initializeSelectionCriteria(session, getSelectionCriteria());
+                initializeSelectionCriteriaAndAddFieldsToQuery(session, getSelectionCriteria());
             }
         }
         if (!getSelectionQuery().hasSessionName()) {
@@ -601,6 +610,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
                  sourceEnum.hasMoreElements();) {
             joinRow.put((DatabaseField)sourceEnum.nextElement(), null);
         }
+        getContainerPolicy().addFieldsForMapKey(joinRow);
         statement.setModifyRow(joinRow);
         getInsertQuery().setSQLStatement(statement);
         getInsertQuery().setModifyRow(joinRow);
@@ -629,14 +639,14 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * Selection criteria is created to read target records from the table.
      */
     protected void initializeSelectionCriteria(AbstractSession session) {
-        initializeSelectionCriteria(session, getSelectionCriteria());
+        initializeSelectionCriteriaAndAddFieldsToQuery(session, getSelectionCriteria());
     }
     
     /**
      * INTERNAL:
      * Selection criteria is created to read target records from the table.
      */
-    protected void initializeSelectionCriteria(AbstractSession session, Expression startCriteria) {
+    protected void initializeSelectionCriteriaAndAddFieldsToQuery(AbstractSession session, Expression startCriteria) {
         DatabaseField relationKey;
         DatabaseField sourceKey;
         DatabaseField targetKey;
@@ -689,6 +699,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
             } else {
                 criteria = expression.and(criteria);
             }
+            getContainerPolicy().addAdditionalFieldsToQuery(getSelectionQuery(), linkTable);
 
             setSelectionCriteria(criteria);
         }
@@ -797,10 +808,11 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
         for (int index = 0; index < getTargetRelationKeyFields().size(); index++) {
             DatabaseField targetRelationKey = getTargetRelationKeyFields().elementAt(index);
             DatabaseField targetKey = getTargetKeyFields().elementAt(index);
-            Object targetKeyValue = getReferenceDescriptor().getObjectBuilder().extractValueFromObjectForField(objectAdded, targetKey, query.getSession());
+            Object targetKeyValue = getReferenceDescriptor().getObjectBuilder().extractValueFromObjectForField(containerPolicy.unwrapIteratorResult(objectAdded), targetKey, query.getSession());
             databaseRow.put(targetRelationKey, targetKeyValue);
         }
-
+        ContainerPolicy.copyMapDataToRow(getContainerPolicy().getKeyMappingDataForWriteQuery(objectAdded, query.getSession()), databaseRow);
+        
         query.getSession().executeQuery(getInsertQuery(), databaseRow);
         if ((getHistoryPolicy() != null) && getHistoryPolicy().shouldHandleWrites()) {
             getHistoryPolicy().mappingLogicalInsert(getInsertQuery(), databaseRow, query.getSession());
@@ -840,13 +852,16 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
 
         // Extract target field and its value. Construct insert statement and execute it
         for (Object iter = cp.iteratorFor(objects); cp.hasNext(iter);) {
-            Object object = cp.next(iter, query.getSession());
+            Object wrappedObject = cp.nextEntry(iter, query.getSession());
+            Object object = cp.unwrapIteratorResult(wrappedObject);
             for (int index = 0; index < getTargetRelationKeyFields().size(); index++) {
                 DatabaseField targetRelationKey = getTargetRelationKeyFields().elementAt(index);
                 DatabaseField targetKey = getTargetKeyFields().elementAt(index);
                 Object targetKeyValue = getReferenceDescriptor().getObjectBuilder().extractValueFromObjectForField(object, targetKey, query.getSession());
                 databaseRow.put(targetRelationKey, targetKeyValue);
             }
+
+            ContainerPolicy.copyMapDataToRow(cp.getKeyMappingDataForWriteQuery(wrappedObject, query.getSession()), databaseRow);
 
             query.getSession().executeQuery(getInsertQuery(), databaseRow);
             if ((getHistoryPolicy() != null) && getHistoryPolicy().shouldHandleWrites()) {
@@ -939,9 +954,9 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * INTERNAL:
      * An object was added to the collection during an update, insert it if private.
      */
-    protected void objectAddedDuringUpdate(ObjectLevelModifyQuery query, Object objectAdded, ObjectChangeSet changeSet) throws DatabaseException, OptimisticLockException {
+    protected void objectAddedDuringUpdate(ObjectLevelModifyQuery query, Object objectAdded, ObjectChangeSet changeSet, Map extraData) throws DatabaseException, OptimisticLockException {
         // First insert/update object.
-        super.objectAddedDuringUpdate(query, objectAdded, changeSet);
+        super.objectAddedDuringUpdate(query, objectAdded, changeSet, extraData);
 
         // In the uow data queries are cached until the end of the commit.
         if (query.shouldCascadeOnlyDependentParts()) {
@@ -960,7 +975,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * INTERNAL:
      * An object was removed to the collection during an update, delete it if private.
      */
-    protected void objectRemovedDuringUpdate(ObjectLevelModifyQuery query, Object objectDeleted) throws DatabaseException, OptimisticLockException {
+    protected void objectRemovedDuringUpdate(ObjectLevelModifyQuery query, Object objectDeleted, Map extraData) throws DatabaseException, OptimisticLockException {
         AbstractRecord databaseRow = new DatabaseRecord();
 
         // Extract primary key and value from the source.
@@ -970,12 +985,13 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
             Object sourceKeyValue = query.getTranslationRow().get(sourceKey);
             databaseRow.put(sourceRelationKey, sourceKeyValue);
         }
-
+        
+        Object unwrappedObjectDeleted = getContainerPolicy().unwrapIteratorResult(objectDeleted);
         // Extract target field and its value. Construct insert statement and execute it
         for (int index = 0; index < getTargetRelationKeyFields().size(); index++) {
             DatabaseField targetRelationKey = getTargetRelationKeyFields().elementAt(index);
             DatabaseField targetKey = getTargetKeyFields().elementAt(index);
-            Object targetKeyValue = getReferenceDescriptor().getObjectBuilder().extractValueFromObjectForField(objectDeleted, targetKey, query.getSession());
+            Object targetKeyValue = getReferenceDescriptor().getObjectBuilder().extractValueFromObjectForField(unwrappedObjectDeleted, targetKey, query.getSession());
             databaseRow.put(targetRelationKey, targetKeyValue);
         }
 
@@ -995,7 +1011,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
         }
 
         // Delete object after join entry is delete if private.
-        super.objectRemovedDuringUpdate(query, objectDeleted);
+        super.objectRemovedDuringUpdate(query, objectDeleted, extraData);
     }
 
     /**

@@ -212,6 +212,10 @@ public class ClassDescriptor implements Cloneable, Serializable {
     /** Mappings that require postCalculateChangesOnDeleted method to be called */
     protected List<DatabaseMapping> mappingsPostCalculateChangesOnDeleted;
     
+    /** used by aggregate descriptors to hold additional fields needed when they are stored in an AggregatateCollection
+     *  These fields are generally foreign key fields that are required in addition to the fields in the descriptor's 
+     *  mappings to uniquely identify the Aggregate*/
+    protected transient List<DatabaseField> additionalAggregateCollectionKeyFields;
     /**
      * PUBLIC:
      * Return a new descriptor.
@@ -687,11 +691,17 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * Fields are ensured to be unique so if the field has already been built it is returned.
      */
     public DatabaseField buildField(DatabaseField field) {
+        return buildField(field, null);
+    }
+    
+    public DatabaseField buildField(DatabaseField field, DatabaseTable relationTable) {
         DatabaseField builtField = getObjectBuilder().getFieldsMap().get(field);
         if (builtField == null) {
             builtField = field;
             DatabaseTable table;
-            if (field.hasTableName()) {
+            if (relationTable != null && field.hasTableName() && field.getTableName().equals(relationTable.getName())){
+                table = relationTable;
+            } else if (field.hasTableName()) {
                 table = getTable(field.getTableName());
             } else {
                 table = getDefaultTable();
@@ -1630,6 +1640,20 @@ public class ClassDescriptor implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
+     * additionalAggregateCollectionKeyFields are used by aggregate descriptors to hold additional fields needed when they are stored in an AggregatateCollection
+     * These fields are generally foreign key fields that are required in addition to the fields in the descriptor's 
+     *  mappings to uniquely identify the Aggregate
+     * @return
+     */
+    public List<DatabaseField> getAdditionalAggregateCollectionKeyFields(){
+        if (additionalAggregateCollectionKeyFields == null){
+            additionalAggregateCollectionKeyFields = new ArrayList<DatabaseField>();
+        }
+        return additionalAggregateCollectionKeyFields;
+    }
+    
+    /**
+     * INTERNAL:
      * This is used to map the primary key field names in a multiple table descriptor.
      */
     public Map<DatabaseTable, Map<DatabaseField, DatabaseField>> getAdditionalTablePrimaryKeyFields() {
@@ -2544,7 +2568,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
             DatabaseMapping mapping = (DatabaseMapping)mappingsEnum.nextElement();
             validateMappingType(mapping);
             mapping.initialize(session);
-            if (mapping.isAggregateObjectMapping() || ((mapping.isForeignReferenceMapping() && (!mapping.isDirectCollectionMapping())) && (!((ForeignReferenceMapping)mapping).usesIndirection()))) {
+            if (mapping.isLockableMapping()){
                 getLockableMappings().add(mapping);
             }
 
@@ -2943,6 +2967,14 @@ public class ClassDescriptor implements Cloneable, Serializable {
     }
 
     /**
+     * PUBLIC
+     * return true if this descriptor is any type of aggregate descriptor
+     */
+    public boolean isDescriptorTypeAggregate(){
+        return this.descriptorType == AGGREGATE_COLLECTION || this.descriptorType == AGGREGATE;
+    }
+    
+    /**
      * INTERNAL:
      * Check if the descriptor is finished initialization.
      */
@@ -3247,7 +3279,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
                 // may be conditions where it is not. Need the following checks.
                 if (((ForeignReferenceMapping)mapping).hasCustomSelectionQuery()) {
                     throw ValidationException.unsupportedCascadeLockingMappingWithCustomQuery(mapping);
-                } else if (isAggregateDescriptor() || isAggregateCollectionDescriptor()) {
+                } else if (isDescriptorTypeAggregate()) {
                     throw ValidationException.unsupportedCascadeLockingDescriptor(this);
                 } else {
                     mapping.prepareCascadeLockingPolicy();

@@ -232,7 +232,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
         Object parent = row.getOwningObject();
 
         Vector pk = extractPrimaryKeyFromRow(databaseRow, query.getSession());
-        if (!(isXmlDescriptor() || getDescriptor().isAggregateDescriptor() || getDescriptor().isAggregateCollectionDescriptor())) {
+        if (!(isXmlDescriptor() || getDescriptor().isDescriptorTypeAggregate())) {
             return super.buildObject(query, databaseRow, joinManager);
         }
         query.getSession().startOperationProfile(SessionProfiler.OBJECT_BUILDING, query, SessionProfiler.ALL);
