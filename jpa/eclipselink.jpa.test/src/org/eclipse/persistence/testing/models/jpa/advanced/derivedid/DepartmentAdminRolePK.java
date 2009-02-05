@@ -19,9 +19,25 @@ public class DepartmentAdminRolePK {
     public DepartmentPK department;
 
     public Integer admin;
-    
+
     public DepartmentAdminRolePK(String depName, String depRole, String depLocation, Integer employeeId) {
         this.department = new DepartmentPK(depName, depRole, depLocation);
         this.admin = employeeId;
+    }
+    
+    public Integer getAdmin(){
+        return admin;
+    }
+
+    public DepartmentPK getDepartment(){
+        return department;
+    }
+
+    public void setAdmin(Integer admin){
+        this.admin = admin;
+    }
+
+    public void setDepartment(DepartmentPK department){
+        this.department = department;
     }
 }

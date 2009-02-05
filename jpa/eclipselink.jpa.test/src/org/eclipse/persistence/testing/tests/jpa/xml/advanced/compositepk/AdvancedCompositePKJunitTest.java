@@ -25,9 +25,11 @@ import org.eclipse.persistence.testing.models.jpa.xml.advanced.compositepk.*;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.derivedid.*;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.AdvancedTableCreator;
+import org.eclipse.persistence.testing.tests.jpa.TestingProperties;
 
  
 public class AdvancedCompositePKJunitTest extends JUnitTestCase {
+    String m_persistenceUnit = "default";
     private static DepartmentPK m_departmentPK;
     private static ScientistPK m_scientist1PK, m_scientist2PK, m_scientist3PK, m_jScientistPK; 
     
@@ -39,17 +41,23 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
         super(name);
     }
     
+    public AdvancedCompositePKJunitTest(String name, String persistenceUnit) {
+        super(name);
+        m_persistenceUnit = persistenceUnit;
+    }
+    
     public static Test suite() {
-        TestSuite suite = new TestSuite();
-        suite.setName("AdvancedCompositePKJunitTest");
+        String ormTesting = TestingProperties.getProperty(TestingProperties.ORM_TESTING, TestingProperties.JPA_ORM_TESTING);
+        final String persistenceUnit = ormTesting.equals(TestingProperties.JPA_ORM_TESTING)? "default" : "extended-complex-aggregate";
+        TestSuite suite = new TestSuite("AdvancedCompositePKJunitTest - " + persistenceUnit);
         
-        suite.addTest(new AdvancedCompositePKJunitTest("testSetup"));
-        suite.addTest(new AdvancedCompositePKJunitTest("testCreateDepartment"));
-        suite.addTest(new AdvancedCompositePKJunitTest("testCreateScientists"));
-        suite.addTest(new AdvancedCompositePKJunitTest("testReadDepartment"));
-        suite.addTest(new AdvancedCompositePKJunitTest("testReadJuniorScientist"));
-        suite.addTest(new AdvancedCompositePKJunitTest("testAnyAndAll"));
-        suite.addTest(new AdvancedCompositePKJunitTest("testDepartmentAdmin")); 
+        suite.addTest(new AdvancedCompositePKJunitTest("testSetup", persistenceUnit));
+        suite.addTest(new AdvancedCompositePKJunitTest("testCreateDepartment", persistenceUnit));
+        suite.addTest(new AdvancedCompositePKJunitTest("testCreateScientists", persistenceUnit));
+        suite.addTest(new AdvancedCompositePKJunitTest("testReadDepartment", persistenceUnit));
+        suite.addTest(new AdvancedCompositePKJunitTest("testReadJuniorScientist", persistenceUnit));
+        suite.addTest(new AdvancedCompositePKJunitTest("testAnyAndAll", persistenceUnit));
+        suite.addTest(new AdvancedCompositePKJunitTest("testDepartmentAdmin", persistenceUnit)); 
         
         return suite;
     }
@@ -60,11 +68,11 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
     public void testSetup() {
         new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession());
         new CompositePKTableCreator().replaceTables(JUnitTestCase.getServerSession());
-        clearCache();
+        clearCache(m_persistenceUnit);
     }
     
     public void testCreateDepartment() {
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager(m_persistenceUnit);
         beginTransaction(em);
         try {
             // make sure the department is not left from the previous test run
@@ -77,9 +85,9 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
                 closeEntityManager(em);
                 throw e;
         }
-        clearCache();
+        clearCache(m_persistenceUnit);
         closeEntityManager(em);
-        em = createEntityManager();
+        em = createEntityManager(m_persistenceUnit);
         beginTransaction(em);
         try {
         
@@ -101,7 +109,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
     }
     
     public void testCreateScientists() {
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager(m_persistenceUnit);
         beginTransaction(em);
         
         try {    
@@ -165,7 +173,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
         String location = "Ottawa";
         String depName = "New Product Research";
         String depRole = "R&D new technologies";
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager(m_persistenceUnit);
         beginTransaction(em);
         try {
             Employee emp = new Employee("George", "Smith");
@@ -204,7 +212,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
     }
     
     public void testReadDepartment() {
-        Department department = createEntityManager().find(Department.class, m_departmentPK);
+        Department department = createEntityManager(m_persistenceUnit).find(Department.class, m_departmentPK);
         
         assertTrue("Error on reading back the ordered department list.", department != null);
         assertTrue("The number of scientists were incorrect.", department.getScientists().size() > 0);
@@ -213,13 +221,13 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
     public void testReadJuniorScientist() {
         JuniorScientist jScientist;
         
-        jScientist = createEntityManager().find(JuniorScientist.class, m_jScientistPK);
+        jScientist = createEntityManager(m_persistenceUnit).find(JuniorScientist.class, m_jScientistPK);
         assertTrue("Error on reading back the junior scientist.", jScientist != null);
     }
 
     //bug gf672 - JBQL Select query with IN/ANY in WHERE clause and subselect fails.
     public void testAnyAndAll() {
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager(m_persistenceUnit);
         
         beginTransaction(em);
         try {

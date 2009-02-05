@@ -148,7 +148,7 @@ public class InheritanceMetadata extends ORMetadata {
             // If the root descriptor has an id class, we need to set the same 
             // id class on our descriptor.
             if (descriptor.getInheritanceRootDescriptor().hasCompositePrimaryKey()) {
-                descriptor.setPKClass(descriptor.getInheritanceRootDescriptor().getPKClassName());
+                descriptor.setPKClass(descriptor.getInheritanceRootDescriptor().getPKClass());
             }
         } else {
             // Since Inheritance hierarchies are processed from the top most

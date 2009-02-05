@@ -17,6 +17,7 @@
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -369,8 +370,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
         String attributeName = getAttributeName();
 
         // If this entity has a pk class, we need to validate our ids. 
-        //getOwningDescriptor().validatePKClassId(attributeName, getReferenceClass());
-        String  keyname = this.getReferenceDescriptor().getPKClassName();
+        String keyname = referenceDescriptor.getPKClassName();
 
         if (keyname !=null ){
             //They have a pk class
@@ -380,14 +380,23 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
             }
             if (! ourpkname.equals(keyname)){
                 //validate our pk contains their pk.
-                getOwningDescriptor().validatePKClassId(attributeName, keyname);
+                getOwningDescriptor().validatePKClassId(attributeName, referenceDescriptor.getPKClass());
             } else {
                 //this pk is the reference pk, so all pk attributes are accounted through this relationship
                 getOwningDescriptor().m_pkClassIDs.clear();
             }
-        } else {//validate on their basic mapping:
-            getOwningDescriptor().validatePKClassId(attributeName, 
-                    this.getReferenceDescriptor().m_accessors.get( this.getReferenceDescriptor().getIdAttributeName() ).getRawClass());
+        } else {
+            Type type = null;
+            if (referenceAccessor.hasDerivedId()){
+                //referenced object has a derived ID but no PK class defined
+                //so it must be a simple pk type.  Recurse through to get the simple type
+                ObjectAccessor refIdAccessor = (ObjectAccessor)referenceDescriptor.getAccessorFor( referenceDescriptor.getIdAttributeName() );
+                type = refIdAccessor.getSimplePKType();
+            } else {//validate on their basic mapping:
+                type = referenceDescriptor.getAccessorFor(referenceDescriptor.getIdAttributeName()).getRawClass();
+                //type = referenceDescriptor.m_accessors.get( referenceDescriptor.getIdAttributeName() ).getRawClass();
+            }
+            getOwningDescriptor().validatePKClassId(attributeName, type);
         }
 
         // Store the Id attribute name. Used with validation and OrderBy.
@@ -397,6 +406,24 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
         ObjectReferenceMapping mapping = (ObjectReferenceMapping)this.getMapping();
         for (DatabaseField pkField : mapping.getForeignKeyFields()){
             getOwningDescriptor().addPrimaryKeyField(pkField);
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Used to process primary keys and DerivedIds.
+     */
+    public Class getSimplePKType(){
+        MetadataDescriptor referenceDescriptor = this.getReferenceDescriptor();
+        org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor referenceAccessor;
+        referenceAccessor = referenceDescriptor.getClassAccessor();
+        
+        if (referenceAccessor.hasDerivedId()){
+            //referenced object has a derived ID and must be a simple pk type.  Recurse through to get the simple type
+            ObjectAccessor refIdAccessor = (ObjectAccessor)referenceDescriptor.m_accessors.get( referenceDescriptor.getIdAttributeName() );
+            return refIdAccessor.getSimplePKType();
+        } else {//validate on their basic mapping:
+            return  referenceDescriptor.m_accessors.get( referenceDescriptor.getIdAttributeName() ).getRawClass();
         }
     }
 }

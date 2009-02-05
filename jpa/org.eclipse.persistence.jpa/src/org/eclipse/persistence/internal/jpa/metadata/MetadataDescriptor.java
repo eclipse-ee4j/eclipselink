@@ -120,6 +120,7 @@ public class MetadataDescriptor {
     private List<String> m_idOrderByAttributeNames;
     private List<MetadataDescriptor> m_embeddableDescriptors;
     
+    private Class m_pkClass;
     public Map<String, Type> m_pkClassIDs;
     private Map<String, Type> m_genericTypes;
     public Map<String, MappingAccessor> m_accessors;
@@ -717,6 +718,13 @@ public class MetadataDescriptor {
     public List<DatabaseMapping> getMappings() {
         return m_descriptor.getMappings();
     }
+
+    /**
+     * INTERNAL:
+     */
+    public Class getPKClass(){
+        return m_pkClass;
+    }
     
     /**
      * INTERNAL:
@@ -880,7 +888,7 @@ public class MetadataDescriptor {
      * INTERNAL:
      */
     public boolean hasCompositePrimaryKey() {
-        return getPrimaryKeyFields().size() > 1 || getPKClassName() != null;
+        return getPrimaryKeyFields().size() > 1 || getPKClass() != null;
     }
     
     /**
@@ -1371,13 +1379,14 @@ public class MetadataDescriptor {
      * INTERNAL:
      */
     public void setPKClass(Class pkClass) {
+        m_pkClass = pkClass;
         setPKClass(pkClass.getName());
     }
     
     /**
      * INTERNAL:
      */
-    public void setPKClass(String pkClassName) {
+    private void setPKClass(String pkClassName) {
         CMP3Policy policy = new CMP3Policy();
         policy.setPrimaryKeyClassName(pkClassName);
         m_descriptor.setCMPPolicy(policy);
@@ -1491,24 +1500,6 @@ public class MetadataDescriptor {
                 m_pkClassIDs.remove(attributeName);
             } else {
                 throw ValidationException.invalidCompositePKAttribute(getJavaClass(), getPKClassName(), attributeName, expectedType, type);
-            }
-        }
-    }
-
-    /**
-     * INTERNAL:
-     * This method is used only to validate id fields that were found on a
-     * pk class were also found on the entity.  This is used for DerivedIds where the
-     * Type is only available as a string
-     */
-    public void validatePKClassId(String attributeName, String type) {
-        if (m_pkClassIDs.containsKey(attributeName))  {
-            Type expectedType =  m_pkClassIDs.get(attributeName);
-            
-            if ( expectedType.toString().equals(type) ) {
-                m_pkClassIDs.remove(attributeName);
-            } else {
-                throw ValidationException.invalidCompositePKAttribute(getJavaClass(), getPKClassName(), attributeName, expectedType, null);
             }
         }
     }

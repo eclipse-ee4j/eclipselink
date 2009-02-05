@@ -27,8 +27,11 @@ import org.eclipse.persistence.testing.models.jpa.xml.advanced.Man;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.Woman;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.PartnerLink;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.LargeProject;
+import org.eclipse.persistence.testing.tests.jpa.TestingProperties;
 
 public class AdvancedJunitTest extends JUnitTestCase {
+    String m_persistenceUnit = "default";
+    
     public AdvancedJunitTest() {
         super();
     }
@@ -37,14 +40,22 @@ public class AdvancedJunitTest extends JUnitTestCase {
         super(name);
     }
     
+    public AdvancedJunitTest(String name, String persistenceUnit) {
+        super(name);
+        
+        m_persistenceUnit = persistenceUnit;
+    }
+    
     
     public static Test suite() {
-        TestSuite suite = new TestSuite("AdvancedJunitTest");
+        String ormTesting = TestingProperties.getProperty(TestingProperties.ORM_TESTING, TestingProperties.JPA_ORM_TESTING);
+        final String persistenceUnit = ormTesting.equals(TestingProperties.JPA_ORM_TESTING)? "default" : "extended-complex-aggregate";
+        TestSuite suite = new TestSuite("AdvancedJunitTest - " + persistenceUnit);
 
-        suite.addTest(new AdvancedJunitTest("testSetup"));
-        suite.addTest(new AdvancedJunitTest("testEL254937"));
-        suite.addTest(new AdvancedJunitTest("testGF1894"));
-        suite.addTest(new AdvancedJunitTest("testManAndWoman"));
+        suite.addTest(new AdvancedJunitTest("testSetup", persistenceUnit));
+        suite.addTest(new AdvancedJunitTest("testEL254937", persistenceUnit));
+        suite.addTest(new AdvancedJunitTest("testGF1894", persistenceUnit));
+        suite.addTest(new AdvancedJunitTest("testManAndWoman", persistenceUnit));
         
         return suite;
     }
@@ -55,17 +66,24 @@ public class AdvancedJunitTest extends JUnitTestCase {
     public void testSetup() {
         new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession());
 
-        clearCache();
+        clearCache(m_persistenceUnit);
     }
     
+    /*public static EntityManager createEntityManager() {
+        if (persistenceUnit==null){
+            String ormTesting = TestingProperties.getProperty(TestingProperties.ORM_TESTING, TestingProperties.JPA_ORM_TESTING);
+            persistenceUnit = ormTesting.equals(TestingProperties.JPA_ORM_TESTING)? "default" : "extended-advanced";
+        }
+    }*/
+    
     public void testEL254937(){
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager(m_persistenceUnit);
         beginTransaction(em);
         LargeProject lp1 = new LargeProject();
         lp1.setName("one");
         em.persist(lp1);
         commitTransaction(em);
-        em = createEntityManager();
+        em = createEntityManager(m_persistenceUnit);
         beginTransaction(em);
         em.remove(em.find(LargeProject.class, lp1.getId()));
         em.flush();
@@ -79,14 +97,14 @@ public class AdvancedJunitTest extends JUnitTestCase {
         uow.commitTransaction();
         //duplicate the AfterCompletion call.  This should merge, removing the LargeProject from the shared cache
         uow.mergeClonesAfterCompletion();
-        em = createEntityManager();
+        em = createEntityManager(m_persistenceUnit);
         LargeProject cachedLargeProject = em.find(LargeProject.class, lp1.getId());
         closeEntityManager(em);
         assertTrue("Entity removed during flush was not removed from the shared cache on commit", cachedLargeProject==null);
     }
     
     public void testGF1894() {
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager(m_persistenceUnit);
         beginTransaction(em);
         Employee emp = new Employee("Guy", "Pelletier");
         
@@ -117,7 +135,7 @@ public class AdvancedJunitTest extends JUnitTestCase {
     
     
     public void testManAndWoman() {
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager(m_persistenceUnit);
         beginTransaction(em);
         
         try {
