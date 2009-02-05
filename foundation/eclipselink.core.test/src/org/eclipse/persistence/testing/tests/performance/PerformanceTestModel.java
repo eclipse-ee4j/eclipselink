@@ -274,6 +274,8 @@ public class PerformanceTestModel extends TestModel {
         test.setShouldUseParameterizedSQL(true);
         suite.addTest(test);
 
+        //Comment out all mass insert tests because they hangs when being run with Oracle 11gR1 database
+        /*
         // remove dynamic tests as not recommend usage - suite.addTest(new MassInsertEmployeeUnitOfWorkTest());
         test = new MassInsertEmployeeUnitOfWorkTest();
         test.setShouldBatch(true);
@@ -309,6 +311,7 @@ public class PerformanceTestModel extends TestModel {
         test.setShouldBatch(true);
         test.setShouldUseParameterizedSQL(true);
         suite.addTest(test);
+        */
 
         return suite;
     }
