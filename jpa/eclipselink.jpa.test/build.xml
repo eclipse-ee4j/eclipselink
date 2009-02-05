@@ -36,6 +36,7 @@
 
         - server-start : starts the JEE server
         - server-stop : stops the JEE server
+        - server-restart : stops and restarts the JEE server (match the restart command in Eclipse)
         - server-test : runs the JPA LRG tests in the server
         - server-test-lrg : runs the JPA LRG tests in the server
         - server-test-sessionbean : runs the SessionBean tests in the server
@@ -851,6 +852,11 @@
 
     <target name="server-stop" depends="detect-os">
         <ant antfile="${eclipselink.jpa.test}/${server.name}.xml" target="${server.name}-stop" inheritRefs="true"/>
+    </target>
+
+    <target name="server-restart" depends="detect-os">
+        <ant antfile="${eclipselink.jpa.test}/${server.name}.xml" target="${server.name}-stop" inheritRefs="true"/>
+        <ant antfile="${eclipselink.jpa.test}/${server.name}.xml" target="${server.name}-start" inheritRefs="true"/>
     </target>
 
     <target name="server-deploy">
