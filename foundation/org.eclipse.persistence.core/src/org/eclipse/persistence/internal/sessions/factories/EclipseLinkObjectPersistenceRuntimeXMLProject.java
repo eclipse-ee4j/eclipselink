@@ -18,13 +18,16 @@ import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 
 // EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.mappings.transformers.ConstantTransformer;
 import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
 import org.eclipse.persistence.oxm.schema.XMLSchemaClassPathReference;
+import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import static org.eclipse.persistence.sessions.factories.XMLProjectReader.ECLIPSELINK_SCHEMA;
 import static org.eclipse.persistence.sessions.factories.XMLProjectReader.SCHEMA_DIR;
@@ -82,7 +85,16 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends ObjectPersist
     protected ClassDescriptor buildProjectDescriptor() {
         XMLDescriptor descriptor = (XMLDescriptor)super.buildProjectDescriptor();        
         descriptor.setSchemaReference(new XMLSchemaClassPathReference(SCHEMA_DIR + ECLIPSELINK_SCHEMA));
-
+        
+        XMLCompositeCollectionMapping projectQueriesMapping = new XMLCompositeCollectionMapping();
+        projectQueriesMapping.useCollectionClass(NonSynchronizedVector.class);
+        projectQueriesMapping.setAttributeName("queries");
+        projectQueriesMapping.setSetMethodName("setQueries");
+        projectQueriesMapping.setGetMethodName("getQueries");
+        projectQueriesMapping.setReferenceClass(DatabaseQuery.class);
+        projectQueriesMapping.setXPath(getSecondaryNamespaceXPath() + "queries/" + getSecondaryNamespaceXPath() + "query");
+        descriptor.addMapping(projectQueriesMapping);
+        
         return descriptor;
     }
 

@@ -18,6 +18,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.identitymaps.AbstractIdentityMap;
+import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.SQLResultSetMapping;
 import org.eclipse.persistence.sessions.server.*;
 
@@ -76,6 +77,10 @@ public class Project implements Serializable, Cloneable {
      */
     protected boolean defaultIsIsolated = false;
     
+    /** list of queries - once Project is initialized, these are 
+     */
+    protected transient List<DatabaseQuery> queries = null;
+    
     /**
      * PUBLIC:
      * Create a new project.
@@ -89,6 +94,7 @@ public class Project implements Serializable, Cloneable {
         this.hasGenericHistorySupport = false;
         this.hasProxyIndirection = false;
         this.jpqlParseCache = new ConcurrentFixedCache(200);
+        this.queries = new ArrayList<DatabaseQuery>();
     }
 
     /**
@@ -167,6 +173,21 @@ public class Project implements Serializable, Cloneable {
         this.jpqlParseCache = jpqlParseCache;
     }
 
+    /**
+     * INTERNAL:
+     * List of queries that upon initialization are copied over to the session
+     */
+    public List<DatabaseQuery> getQueries() {
+        return queries;
+    }
+    /**
+     * INTERNAL:
+     * @param queries
+     */
+    public void setQueries(List<DatabaseQuery> queries) {
+        this.queries = queries;
+    }
+    
     /**
      * PUBLIC:
      * Add the read-only class which apply to each UnitOfWork created by default.

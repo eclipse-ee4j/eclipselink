@@ -2,11 +2,11 @@
 <!--
 ******************************************************************************
  Copyright (c) 1998, 2008 Oracle. All rights reserved.
- This program and the accompanying materials are made available under the 
- terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- which accompanies this distribution. 
+ This program and the accompanying materials are made available under the
+ terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ which accompanies this distribution.
  The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- and the Eclipse Distribution License is available at 
+ and the Eclipse Distribution License is available at
  http://www.eclipse.org/org/documents/edl-v10.php.
 
  Contributors:
@@ -57,6 +57,17 @@
           <xsd:documentation>Defines the default for how Date and Calendar types are used with change tracking.</xsd:documentation>
           <xsd:documentation>By default they are assumed not to be changed directly (only replaced).</xsd:documentation>
         </xsd:annotation>
+      </xsd:element>
+      <xsd:element minOccurs="0" name="queries">
+        <xsd:annotation>
+          <xsd:documentation>A list of queries to be stored on the session.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element minOccurs="0" maxOccurs="unbounded" name="query" type="database-query">
+            </xsd:element>
+          </xsd:sequence>
+        </xsd:complexType>
       </xsd:element>
     </xsd:sequence>
     <xsd:attribute default="Eclipse Persistence Services - 1.1 (Build YYMMDD)" name="version" type="xsd:string" />

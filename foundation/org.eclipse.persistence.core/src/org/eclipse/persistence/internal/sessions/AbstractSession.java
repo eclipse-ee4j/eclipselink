@@ -1,15 +1,15 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2008 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.sessions;
 
 import java.util.*;
@@ -103,7 +103,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
 
     /** Stores predefine reusable queries.*/
     transient protected Map queries;
-    
+
     /** Stores predefined not yet parsed JPQL queries.*/
     transient protected List jpaQueries;
 
@@ -157,35 +157,35 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
 
     /** Used to determine If a session is in a profile or not */
     protected boolean isInProfile;
-    
+
     /** PERF: Quick check if logging is OFF entirely. */
     protected boolean isLoggingOff;
-    
+
     /** PERF: Allow for finalizers to be enabled, currently enables client-session finalize. */
     protected boolean isFinalizersEnabled = false;
-    
+
     /** List of active command threads. */
     protected ExposedNodeLinkedList activeCommandThreads;
 
-    /** 
+    /**
      * Indicates whether the session is synchronized.
      * In case external transaction controller is used isSynchronized==true means
      * the session's jta connection will be freed during external transaction callback.
      */
     protected boolean isSynchronized;
-    
+
     /**
      *  Stores the default reference mode that a UnitOfWork will use when referencing
      *  managed objects.
      *  @see org.eclipse.persistence.sessions.factories.ReferenceMode
      */
     protected ReferenceMode defaultReferenceMode = null;
-    
+
     /**
      * Default pessimistic lock timeout value.
      */
     protected Integer pessimisticLockTimeoutDefault;
-    
+
     /**
      * INTERNAL:
      * Create and return a new session.
@@ -236,6 +236,10 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         if (project.getDatasourceLogin() == null) {
             throw ValidationException.projectLoginIsNull(this);
         }
+        // add the Project's queries as session queries
+        for (DatabaseQuery query : project.getQueries()) {
+            addQuery(query.getName(), query);
+        }
     }
 
 
@@ -246,7 +250,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     public boolean isLoggingOff() {
         return isLoggingOff;
     }
-    
+
     /**
      * INTERNAL:
      * Called by a sessions queries to obtain individual query ids.
@@ -263,7 +267,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     public UnitOfWorkImpl acquireNonSynchronizedUnitOfWork() {
     	return acquireNonSynchronizedUnitOfWork(null);
     }
-    
+
     /**
      * INTERNAL:
      * Return a unit of work for this session not registered with the JTS transaction.
@@ -314,11 +318,11 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      *
      * @see UnitOfWorkImpl
      * @param referenceMode The reference type the UOW should use internally when
-     * referencing Working clones.  Setting this to WEAK means the UOW will use 
+     * referencing Working clones.  Setting this to WEAK means the UOW will use
      * weak references to reference clones that support active object change
      * tracking and hard references for deferred change tracked objects.
      * Setting to FORCE_WEAK means that all objects will be referenced by weak
-     * references and if the application no longer references the clone the 
+     * references and if the application no longer references the clone the
      * clone may be garbage collected.  If the clone
      * has uncommitted changes then those changes will be lost.
      */
@@ -386,7 +390,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     protected void basicBeginTransaction() throws DatabaseException {
         basicBeginTransaction(0);
     }
-    
+
     /**
      * INTERNAL:
      * Called by beginTransaction() to start a transaction.
@@ -554,17 +558,17 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         }
     }
 
-    
+
     /**
      * Check to see if the descriptor of a superclass can be used to describe this class
-     * 
+     *
      * @param Class
      * @return ClassDescriptor
      */
     protected ClassDescriptor checkHierarchyForDescriptor(Class theClass){
 	    return getDescriptor(theClass.getSuperclass());
     }
-    
+
     /**
      * PUBLIC:
      * clear the integrityChecker. IntegrityChecker holds all the ClassDescriptor Exceptions.
@@ -650,7 +654,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         getTransactionMutex().release();
 
         // If there is no db transaction in progress
-        // if there is an active external transaction 
+        // if there is an active external transaction
         // which was started internally - it should be committed internally, too.
         if (!isInTransaction()) {
             commitExternalTransaction();
@@ -905,8 +909,8 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * <p>Example:
      * <p>session.executeNonSelectingSQL("Delete from Employee");
      * @see #executeNonSelectingCall(Call)
-	 * Warning: Allowing an unverified SQL string to be passed into this 
-	 * method makes your application vulnerable to SQL injection attacks. 
+	 * Warning: Allowing an unverified SQL string to be passed into this
+	 * method makes your application vulnerable to SQL injection attacks.
      */
     public void executeNonSelectingSQL(String sqlString) throws DatabaseException {
         executeNonSelectingCall(new SQLCall(sqlString));
@@ -997,7 +1001,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         argumentValues.addElement(arg3);
         return executeQuery(queryName, domainClass, argumentValues);
     }
-    
+
     /**
      * PUBLIC:
      * Execute the pre-defined query by name and return the result.
@@ -1010,10 +1014,10 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         if (argumentValues instanceof Vector) {
             return executeQuery(queryName, domainClass, (Vector)argumentValues);
         } else {
-            return executeQuery(queryName, domainClass, new Vector(argumentValues));            
+            return executeQuery(queryName, domainClass, new Vector(argumentValues));
         }
     }
-    
+
     /**
      * PUBLIC:
      * Execute the pre-defined query by name and return the result.
@@ -1079,7 +1083,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         argumentValues.addElement(arg3);
         return executeQuery(queryName, argumentValues);
     }
-    
+
     /**
      * PUBLIC:
      * Execute the pre-defined query by name and return the result.
@@ -1091,10 +1095,10 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         if (argumentValues instanceof Vector) {
             return executeQuery(queryName, (Vector)argumentValues);
         } else {
-            return executeQuery(queryName, new Vector(argumentValues));            
+            return executeQuery(queryName, new Vector(argumentValues));
         }
     }
-    
+
     /**
      * PUBLIC:
      * Execute the pre-defined query by name and return the result.
@@ -1124,7 +1128,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     public Object executeQuery(DatabaseQuery query) throws DatabaseException {
         return executeQuery(query, EmptyRecord.getEmptyRecord());
     }
-    
+
     /**
      * PUBLIC:
      * Return the results from executing the database query.
@@ -1159,8 +1163,8 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         log(SessionLog.FINEST, SessionLog.QUERY, "execute_query", query);
 
         //Make a call to the internal method with a retry count of 0.  This will
-        //initiate a retry call stack if required and supported.  The separation between the 
-        //calling stack and the target method is made because the target method may call itself 
+        //initiate a retry call stack if required and supported.  The separation between the
+        //calling stack and the target method is made because the target method may call itself
         //recursively.
         return this.executeQuery(query, row, 0);
     }
@@ -1210,7 +1214,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
                     //was the failure communication based?  (ie timeout)
                     if (databaseException.isCommunicationFailure()){
                         this.log(SessionLog.INFO, "communication_failure_attempting_query_retry", (Object[])null, null);
-                        
+
                         //attempt to reconnect connection:
                         if (this.isDatabaseSession()) {
                             while (retryCount < getLogin().getQueryRetryAttemptCount()) {
@@ -1290,8 +1294,8 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * Execute the sql on the database and return the result.
      * It must return a value, if no value is return executeNonSelectingSQL must be used.
      * A vector of database rows is returned, database row implements Java 2 Map which should be used to access the data.
- 	 * Warning: Allowing an unverified SQL string to be passed into this 
-	 * method makes your application vulnerable to SQL injection attacks. 
+ 	 * Warning: Allowing an unverified SQL string to be passed into this
+	 * method makes your application vulnerable to SQL injection attacks.
      * <p>Example:
      * <p>session.executeSelectingCall("Select * from Employee");
      *
@@ -1347,10 +1351,10 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         if (activeCommandThreads == null) {
             activeCommandThreads = new ExposedNodeLinkedList();
         }
-        
+
         return activeCommandThreads;
     }
-    
+
     /**
      * PUBLIC:
      * Return the active session for the current active external (JTS) transaction.
@@ -1480,7 +1484,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     public Integer getPessimisticLockTimeoutDefault() {
         return pessimisticLockTimeoutDefault;
     }
-    
+
     /**
      * INTERNAL:
      * Gets the session which this query will be executed on.
@@ -1544,8 +1548,8 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * Return the descriptor specified for the class.
      * If the class does not have a descriptor but implements an interface that is also implemented
      * by one of the classes stored in the hashtable, that descriptor will be stored under the
-     * new class. If a descriptor does not exist for the Class parameter, null is returned. 
-     * If the passed Class parameter is null, then null will be returned. 
+     * new class. If a descriptor does not exist for the Class parameter, null is returned.
+     * If the passed Class parameter is null, then null will be returned.
      */
     public ClassDescriptor getClassDescriptor(Class theClass) {
         if (theClass == null) {
@@ -1557,8 +1561,8 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     /**
      * ADVANCED:
      * Return the descriptor specified for the object's class.
-     * If a descriptor does not exist for the Object parameter, null is returned. 
-     * If the passed Object parameter is null, then null will be returned. 
+     * If a descriptor does not exist for the Object parameter, null is returned.
+     * If the passed Object parameter is null, then null will be returned.
      */
     public ClassDescriptor getClassDescriptor(Object domainObject) {
         if (domainObject == null) {
@@ -1898,7 +1902,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     public ClassLoader getLoader() {
         return getDatasourcePlatform().getConversionManager().getLoader();
     }
-    
+
     /**
      * INTERNAL:
      * Return the database platform currently connected to.
@@ -2020,7 +2024,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     public DatabaseQuery getQuery(String name) {
         return getQuery(name, null);
     }
-    
+
     /**
      * PUBLIC:
      * Return the query from the session pre-defined queries with the given name and argument types.
@@ -2037,7 +2041,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
             return getQuery(name, new Vector(arguments));
         }
     }
-    
+
     /**
      * PUBLIC:
      * Return the query from the session pre-defined queries with the given name and argument types.
@@ -2063,7 +2067,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         // different argument set; we can have only one query with
         // no arguments; Vector queries is not sorted;
         // When asked for the query with no parameters the
-        // old version did return the first query - wrong: 
+        // old version did return the first query - wrong:
         // return (DatabaseQuery) queries.firstElement();
         int argumentTypesSize = 0;
         if (arguments != null) {
@@ -2282,7 +2286,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         }
         return false;
     }
-    
+
     /**
      * PUBLIC:
      * Return if this session is a client session.
@@ -2350,7 +2354,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     public void setIsInProfile(boolean inProfile) {
         this.isInProfile = inProfile;
     }
-    
+
     /**
      * INTERNAL:
      * Set if this session is contained in a SessionBroker.
@@ -2358,7 +2362,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     public void setIsInBroker(boolean isInBroker) {
         this.isInBroker = isInBroker;
     }
-    
+
     /**
      * PUBLIC:
      * Return if this session's decendants should use finalizers.
@@ -2368,7 +2372,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     public boolean isFinalizersEnabled() {
         return isFinalizersEnabled;
     }
-    
+
     /**
      * INTERNAL:
      * Register a finalizer to release this session.
@@ -2377,7 +2381,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         // Ensure the finalizer is referenced until the session is gc'd.
         setProperty("finalizer", new SessionFinalizer(this));
     }
-    
+
     /**
      * INTERNAL:
      * Return if this session is a historical session.
@@ -2518,7 +2522,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
             return query;
         }
     }
-    
+
 
     /**
      * PUBLIC:
@@ -2541,8 +2545,8 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * Read all of the instances of the class from the database return through execution the SQL string.
      * The SQL string must be a valid SQL select statement or selecting stored procedure call.
      * This operation can be customized through using a ReadAllQuery.
- 	 * Warning: Allowing an unverified SQL string to be passed into this 
-	 * method makes your application vulnerable to SQL injection attacks. 
+ 	 * Warning: Allowing an unverified SQL string to be passed into this
+	 * method makes your application vulnerable to SQL injection attacks.
      *
      * @see ReadAllQuery
      */
@@ -2563,7 +2567,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * @see Call
      */
     public Vector readAllObjects(Class referenceClass, Call aCall) throws DatabaseException {
-        ReadAllQuery raq = new ReadAllQuery();        
+        ReadAllQuery raq = new ReadAllQuery();
         raq.setReferenceClass(referenceClass);
         raq.setCall(aCall);
         raq.setIsExecutionClone(true);
@@ -2606,8 +2610,8 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * Read the first instance of the class from the database return through execution the SQL string.
      * The SQL string must be a valid SQL select statement or selecting stored procedure call.
      * This operation can be customized through using a ReadObjectQuery.
- 	 * Warning: Allowing an unverified SQL string to be passed into this 
-	 * method makes your application vulnerable to SQL injection attacks. 
+ 	 * Warning: Allowing an unverified SQL string to be passed into this
+	 * method makes your application vulnerable to SQL injection attacks.
      *
      * @see ReadObjectQuery
      */
@@ -2808,7 +2812,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
             getTransactionMutex().release();
 
             // If there is no db transaction in progress
-            // if there is an active external transaction 
+            // if there is an active external transaction
             // which was started internally - it should be rolled back internally, too.
             if (!isInTransaction()) {
                 rollbackExternalTransaction();
@@ -2937,13 +2941,13 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * PUBLIC:
      * Set the default pessimistic lock timeout value. This value will be used
      * to set the WAIT clause of a SQL SELECT FOR UPDATE statement. It defines
-     * how long EcliseLink should wait for a lock on the database row before 
+     * how long EcliseLink should wait for a lock on the database row before
      * aborting.
      */
     public void setPessimisticLockTimeoutDefault(Integer pessimisticLockTimeoutDefault) {
         this.pessimisticLockTimeoutDefault = pessimisticLockTimeoutDefault;
     }
-    
+
     /**
      * PUBLIC:
      * Set the profiler for the session.
@@ -3795,11 +3799,11 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         //bug 4668234 -- used to only release connections on server sessions but should always release
         //do nothing -- overidden in UnitOfWork,ClientSession and ServerSession
     }
-    
+
     /**
      * INTERNAL:
      * This method will be used to copy all EclipseLink named queries defined in descriptors into the session.
-     * @param allowSameQueryNameDiffArgsCopyToSession  if the value is true, it allow 
+     * @param allowSameQueryNameDiffArgsCopyToSession  if the value is true, it allow
      * multiple queries of the same name but different arguments to be copied to the session.
      */
     public void copyDescriptorNamedQueries(boolean allowSameQueryNameDiffArgsCopyToSession){
@@ -3815,7 +3819,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
                             DatabaseQuery queryToBeAdded = (DatabaseQuery)thisQueriesItr.next();
                             if(allowSameQueryNameDiffArgsCopyToSession){
                                 addQuery(queryToBeAdded);
-                            } else { 
+                            } else {
                                 if(getQuery(queryToBeAdded.getName())==null){
                                     addQuery(queryToBeAdded);
                                 }else{
@@ -3832,7 +3836,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     /**
      * INTERNAL:
      * This method is called in case externalConnectionPooling is used
-     * right after the accessor is connected. 
+     * right after the accessor is connected.
      * Used by the session to rise an appropriate event.
      */
     public void postConnectExternalConnection(Accessor accessor) {
@@ -3841,17 +3845,17 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     /**
      * INTERNAL:
      * This method is called in case externalConnectionPooling is used
-     * right before the accessor is disconnected. 
+     * right before the accessor is disconnected.
      * Used by the session to rise an appropriate event.
      */
     public void preDisconnectExternalConnection(Accessor accessor) {
     }
-    
+
     /**
      * INTERNAL:
      * This method is called in case externalConnectionPooling is used.
      * If returns true, accessor used by the session keeps its
-     * connection open until released by the session. 
+     * connection open until released by the session.
      */
     public boolean isExclusiveConnectionRequired() {
         return false;
