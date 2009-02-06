@@ -19,6 +19,7 @@ import java.util.Vector;
 import static java.sql.Types.OTHER;
 
 // EclipseLink imports
+import org.eclipse.persistence.internal.helper.DatabaseType;
 import org.eclipse.persistence.internal.helper.SimpleDatabaseType;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
@@ -209,5 +210,41 @@ public enum OraclePLSQLTypes implements SimpleDatabaseType, OraclePLSQLType {
     public void logParameter(StringBuilder sb, Integer direction, PLSQLargument arg,
         AbstractRecord translationRow, DatabasePlatform platform) {
         databaseTypeHelper.logParameter(sb, direction, arg, translationRow, platform);
+    }
+
+    public static DatabaseType getDatabaseTypeForCode(String typeName) {
+        DatabaseType databaseType = null;
+        if (BinaryInteger.typeName.equalsIgnoreCase(typeName)) {
+            databaseType = BinaryInteger;
+        }
+        else if (Dec.typeName.equalsIgnoreCase(typeName)) {
+            databaseType = Dec;
+        }
+        else if (Int.typeName.equalsIgnoreCase(typeName)) {
+            databaseType = Int;
+        }
+        else if (Natural.typeName.equalsIgnoreCase(typeName)) {
+            databaseType = Natural;
+        }
+        else if (NaturalN.typeName.equalsIgnoreCase(typeName)) {
+            databaseType = NaturalN;
+        }
+        else if (PLSQLBoolean.typeName.equalsIgnoreCase(typeName) ||
+            "BOOLEAN".equalsIgnoreCase(typeName)) {
+            databaseType = PLSQLBoolean;
+        }
+        else if (PLSQLInteger.typeName.equalsIgnoreCase(typeName)) {
+            databaseType = PLSQLInteger;
+        }
+        else if (Positive.typeName.equalsIgnoreCase(typeName)) {
+            databaseType = Positive;
+        }
+        else if (PositiveN.typeName.equalsIgnoreCase(typeName)) {
+            databaseType = PositiveN;
+        }
+        else if (SignType.typeName.equalsIgnoreCase(typeName)) {
+            databaseType = SignType;
+        }
+        return databaseType;
     }
 }
