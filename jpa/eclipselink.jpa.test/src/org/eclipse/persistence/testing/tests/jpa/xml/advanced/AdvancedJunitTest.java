@@ -49,7 +49,7 @@ public class AdvancedJunitTest extends JUnitTestCase {
     
     public static Test suite() {
         String ormTesting = TestingProperties.getProperty(TestingProperties.ORM_TESTING, TestingProperties.JPA_ORM_TESTING);
-        final String persistenceUnit = ormTesting.equals(TestingProperties.JPA_ORM_TESTING)? "default" : "extended-complex-aggregate";
+        final String persistenceUnit = ormTesting.equals(TestingProperties.JPA_ORM_TESTING)? "default" : "extended-advanced";
         TestSuite suite = new TestSuite("AdvancedJunitTest - " + persistenceUnit);
 
         suite.addTest(new AdvancedJunitTest("testSetup", persistenceUnit));
@@ -64,7 +64,7 @@ public class AdvancedJunitTest extends JUnitTestCase {
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
     public void testSetup() {
-        new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession());
+        new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession(m_persistenceUnit));
 
         clearCache(m_persistenceUnit);
     }

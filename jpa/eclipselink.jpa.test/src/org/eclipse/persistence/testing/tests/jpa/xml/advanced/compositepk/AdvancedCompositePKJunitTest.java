@@ -48,7 +48,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
     
     public static Test suite() {
         String ormTesting = TestingProperties.getProperty(TestingProperties.ORM_TESTING, TestingProperties.JPA_ORM_TESTING);
-        final String persistenceUnit = ormTesting.equals(TestingProperties.JPA_ORM_TESTING)? "default" : "extended-complex-aggregate";
+        final String persistenceUnit = ormTesting.equals(TestingProperties.JPA_ORM_TESTING)? "default" : "extended-advanced";
         TestSuite suite = new TestSuite("AdvancedCompositePKJunitTest - " + persistenceUnit);
         
         suite.addTest(new AdvancedCompositePKJunitTest("testSetup", persistenceUnit));
@@ -66,8 +66,8 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
     public void testSetup() {
-        new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession());
-        new CompositePKTableCreator().replaceTables(JUnitTestCase.getServerSession());
+        new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession(m_persistenceUnit));
+        new CompositePKTableCreator().replaceTables(JUnitTestCase.getServerSession(m_persistenceUnit));
         clearCache(m_persistenceUnit);
     }
     
