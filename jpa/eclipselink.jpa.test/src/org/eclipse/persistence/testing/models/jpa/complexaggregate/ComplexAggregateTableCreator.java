@@ -12,7 +12,9 @@
  *     08/27/2008-1.1 Guy Pelletier 
  *       - 211329: Add sequencing on non-id attribute(s) support to the EclipseLink-ORM.XML Schema
  *     08/28/2008-1.1 Guy Pelletier 
- *       - 245120: unidir one-to-many within embeddable fails to deploy for missing primary key field       
+ *       - 245120: unidir one-to-many within embeddable fails to deploy for missing primary key field 
+ *     02/06/2009-2.0 Guy Pelletier 
+ *       - 248293: JPA 2.0 Element Collections (part 2)      
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.complexaggregate;
 
@@ -49,7 +51,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         table.addField(fieldID);
         
         FieldDefinition fieldFNAME = new FieldDefinition();
-        fieldFNAME.setName("FNAME");
+        fieldFNAME.setName("FIRST_NAME");
         fieldFNAME.setTypeName("VARCHAR2");
         fieldFNAME.setSize(20);
         fieldFNAME.setSubSize(0);

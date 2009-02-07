@@ -25,8 +25,10 @@
  *       - 249329: To remain JPA 1.0 compliant, any new JPA 2.0 annotations should be referenced by name
  *     12/12/2008-1.1 Guy Pelletier 
  *       - 249860: Implement table per class inheritance support.
- *     01/28/2009-1.1 Guy Pelletier 
+ *     01/28/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 1)
+  *     02/06/2009-2.0 Guy Pelletier 
+ *       - 248293: JPA 2.0 Element Collections (part 2)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -500,6 +502,8 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      */
     @Override
     public void process() {
+        setIsProcessed();
+        
         // Discover our mapped superclasses and inheritance parents before
         // doing any processing.
         discoverMappedSuperclassesAndInheritanceParents();
@@ -516,7 +520,6 @@ public class EntityAccessor extends MappedSuperclassAccessor {
             ClassAccessor parentAccessor = getDescriptor().getInheritanceParentDescriptor().getClassAccessor();
             if (! parentAccessor.isProcessed()) {
                 parentAccessor.process();
-                parentAccessor.setIsProcessed();
             }
         }
         
@@ -638,10 +641,9 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         // Validate the optimistic locking setting.
         validateOptimisticLocking();
             
-        //check that we have a simple pk
-        // if it is a derived id, this will be run in a second pass
-        if (getDescriptor().getDerivedIDAccessors().isEmpty()){
-            
+        // Check that we have a simple pk. If it is a derived id, this will be 
+        // run in a second pass
+        if (! hasDerivedId()){
             // Validate we found a primary key.
             validatePrimaryKey();
                 

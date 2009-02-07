@@ -19,8 +19,10 @@
  *       - 241651: JPA 2.0 Access Type support
  *     10/01/2008-1.1 Guy Pelletier 
  *       - 249329: To remain JPA 1.0 compliant, any new JPA 2.0 annotations should be referenced by name
- *     01/28/2009-1.1 Guy Pelletier 
+ *     01/28/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 1)
+ *     02/06/2009-2.0 Guy Pelletier 
+ *       - 248293: JPA 2.0 Element Collections (part 2)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -28,9 +30,9 @@ import java.lang.annotation.Annotation;
 
 import org.eclipse.persistence.annotations.Cache;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
 
 /**
  * INTERNAL:
@@ -60,6 +62,8 @@ public class EmbeddableAccessor extends ClassAccessor {
      */
     @Override
     public void process() {
+        setIsProcessed();
+        
         // If a Cache annotation is present throw an exception.
         if (isAnnotationPresent(Cache.class)) {
             throw ValidationException.cacheNotSupportedWithEmbeddable(getJavaClass());
@@ -94,7 +98,7 @@ public class EmbeddableAccessor extends ClassAccessor {
      * This method processes an embeddable class, if we have not processed it 
      * yet. Be careful while changing the order of processing.
      */
-    public void process(MappingAccessor mappingAccessor) {
+    public void process(MetadataDescriptor owningDescriptor) {
         if (isProcessed()) {
             // We have already processed this embeddable class. Let's validate 
             // that it is not used in entities with conflicting access type
@@ -117,8 +121,8 @@ public class EmbeddableAccessor extends ClassAccessor {
             // in this case (that is, if they opt to share an embeddable).
             if (! hasAccess()) {
                 // We inherited our access from our owning entity.
-                if (getDescriptor().getDefaultAccess() != mappingAccessor.getOwningDescriptor().getDefaultAccess()) {
-                    throw ValidationException.conflictingAccessTypeForEmbeddable(getJavaClass(), usesPropertyAccess(), mappingAccessor.getOwningDescriptor().getJavaClass(), mappingAccessor.getOwningDescriptor().getClassAccessor().usesPropertyAccess());
+                if (getDescriptor().getDefaultAccess() != owningDescriptor.getDefaultAccess()) {
+                    throw ValidationException.conflictingAccessTypeForEmbeddable(getJavaClass(), usesPropertyAccess(), owningDescriptor.getJavaClass(), owningDescriptor.getClassAccessor().usesPropertyAccess());
                 }
             }
             
@@ -127,9 +131,8 @@ public class EmbeddableAccessor extends ClassAccessor {
         } else {
             // Need to set the owning descriptor on the embeddable class before 
             // we proceed any further in the processing.
-            setOwningDescriptor(mappingAccessor.getOwningDescriptor());
-            process();
-            setIsProcessed();    
+            setOwningDescriptor(owningDescriptor);
+            process(); 
         }
     }
     

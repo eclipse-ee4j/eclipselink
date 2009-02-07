@@ -15,8 +15,10 @@
  *       - 232975: Failure when attribute type is generic
  *     09/23/2008-1.1 Guy Pelletier 
  *       - 241651: JPA 2.0 Access Type support
- *     01/28/2009-1.1 Guy Pelletier 
+ *     01/28/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 1)   
+ *     02/06/2009-2.0 Guy Pelletier 
+ *       - 248293: JPA 2.0 Element Collections (part 2)
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
@@ -645,6 +647,46 @@ public class InheritedTableManager extends TableCreator {
         LOCATION_ID_field.setForeignKeyFieldName("JPA2_LOCATION.ID");
         table.addField(LOCATION_ID_field);
         
+        FieldDefinition VENUE_NAME_field = new FieldDefinition();
+        VENUE_NAME_field.setName("VENUE_NAME");
+        VENUE_NAME_field.setTypeName("VARCHAR");
+        VENUE_NAME_field.setSize(40);
+        VENUE_NAME_field.setShouldAllowNull(true);
+        VENUE_NAME_field.setIsPrimaryKey(false);
+        VENUE_NAME_field.setUnique(false);
+        VENUE_NAME_field.setIsIdentity(false);
+        table.addField(VENUE_NAME_field);
+        
+        FieldDefinition WITNESSES_field = new FieldDefinition();
+        WITNESSES_field.setName("WITNESSES");
+        WITNESSES_field.setTypeName("NUMERIC");
+        WITNESSES_field.setSize(15);
+        WITNESSES_field.setIsPrimaryKey(false);
+        WITNESSES_field.setUnique(false);
+        WITNESSES_field.setIsIdentity(false);
+        WITNESSES_field.setShouldAllowNull(true);
+        table.addField(WITNESSES_field);
+        
+        FieldDefinition BUILDER_field = new FieldDefinition();
+        BUILDER_field.setName("BUILDER");
+        BUILDER_field.setTypeName("VARCHAR");
+        BUILDER_field.setSize(40);
+        BUILDER_field.setShouldAllowNull(true);
+        BUILDER_field.setIsPrimaryKey(false);
+        BUILDER_field.setUnique(false);
+        BUILDER_field.setIsIdentity(false);
+        table.addField(BUILDER_field);
+        
+        FieldDefinition YEAR_BUILT_field = new FieldDefinition();
+        YEAR_BUILT_field.setName("YEAR_BUILT");
+        YEAR_BUILT_field.setTypeName("NUMERIC");
+        YEAR_BUILT_field.setSize(4);
+        YEAR_BUILT_field.setIsPrimaryKey(false);
+        YEAR_BUILT_field.setUnique(false);
+        YEAR_BUILT_field.setIsIdentity(false);
+        YEAR_BUILT_field.setShouldAllowNull(true);
+        table.addField(YEAR_BUILT_field);
+        
         return table;
     }
     
@@ -815,6 +857,46 @@ public class InheritedTableManager extends TableCreator {
         LOCATION_ID_field.setShouldAllowNull(false);
         LOCATION_ID_field.setForeignKeyFieldName("JPA2_LOCATION.ID");
         table.addField(LOCATION_ID_field);
+        
+        FieldDefinition VENUE_field = new FieldDefinition();
+        VENUE_field.setName("VENUE");
+        VENUE_field.setTypeName("VARCHAR");
+        VENUE_field.setSize(40);
+        VENUE_field.setShouldAllowNull(true);
+        VENUE_field.setIsPrimaryKey(false);
+        VENUE_field.setUnique(false);
+        VENUE_field.setIsIdentity(false);
+        table.addField(VENUE_field);
+        
+        FieldDefinition VENUE_ATTENDANCE_field = new FieldDefinition();
+        VENUE_ATTENDANCE_field.setName("VENUE_ATTENDANCE");
+        VENUE_ATTENDANCE_field.setTypeName("NUMERIC");
+        VENUE_ATTENDANCE_field.setSize(15);
+        VENUE_ATTENDANCE_field.setIsPrimaryKey(false);
+        VENUE_ATTENDANCE_field.setUnique(false);
+        VENUE_ATTENDANCE_field.setIsIdentity(false);
+        VENUE_ATTENDANCE_field.setShouldAllowNull(true);
+        table.addField(VENUE_ATTENDANCE_field);
+        
+        FieldDefinition VENUE_BUILDER_field = new FieldDefinition();
+        VENUE_BUILDER_field.setName("VENUE_BUILDER");
+        VENUE_BUILDER_field.setTypeName("VARCHAR");
+        VENUE_BUILDER_field.setSize(40);
+        VENUE_BUILDER_field.setShouldAllowNull(true);
+        VENUE_BUILDER_field.setIsPrimaryKey(false);
+        VENUE_BUILDER_field.setUnique(false);
+        VENUE_BUILDER_field.setIsIdentity(false);
+        table.addField(VENUE_BUILDER_field);
+        
+        FieldDefinition VENUE_YEAR_BUILT_field = new FieldDefinition();
+        VENUE_YEAR_BUILT_field.setName("VENUE_YEAR_BUILT");
+        VENUE_YEAR_BUILT_field.setTypeName("NUMERIC");
+        VENUE_YEAR_BUILT_field.setSize(4);
+        VENUE_YEAR_BUILT_field.setIsPrimaryKey(false);
+        VENUE_YEAR_BUILT_field.setUnique(false);
+        VENUE_YEAR_BUILT_field.setIsIdentity(false);
+        VENUE_YEAR_BUILT_field.setShouldAllowNull(true);
+        table.addField(VENUE_YEAR_BUILT_field);
         
         return table;
     }

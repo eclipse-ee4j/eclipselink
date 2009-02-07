@@ -13,8 +13,10 @@
  *       - 232975: Failure when attribute type is generic
  *     09/23/2008-1.1 Guy Pelletier 
  *       - 241651: JPA 2.0 Access Type support
- *     01/28/2009-1.1 Guy Pelletier 
+ *     01/28/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 1)
+ *     02/06/2009-2.0 Guy Pelletier 
+ *       - 248293: JPA 2.0 Element Collections (part 2)
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.inherited;
 
@@ -42,6 +44,7 @@ import org.eclipse.persistence.testing.models.jpa.inherited.Location;
 import org.eclipse.persistence.testing.models.jpa.inherited.NoviceBeerConsumer;
 import org.eclipse.persistence.testing.models.jpa.inherited.Record;
 import org.eclipse.persistence.testing.models.jpa.inherited.SerialNumber;
+import org.eclipse.persistence.testing.models.jpa.inherited.Venue;
  
 public class InheritedModelJunitTest extends JUnitTestCase {
     private static BigDecimal m_blueId;
@@ -172,6 +175,10 @@ public class InheritedModelJunitTest extends JUnitTestCase {
             record1.setDescription("Slowest beer ever consumed - 10 hours");
             record1.setDate(Helper.dateFromYearMonthDate(2008, 1, 1));
             record1.setLocation(new Location("Paris", "France"));
+            Venue venue1 = new Venue();
+            venue1.setAttendance(10);
+            venue1.setName("Champs-Elysees");
+            record1.setVenue(venue1);
             beerConsumer.getRecords().add(record1);
             
             em.persist(beerConsumer);
@@ -222,12 +229,20 @@ public class InheritedModelJunitTest extends JUnitTestCase {
             record1.setDescription("Fastest beer ever consumed - 10 ms");
             record1.setDate(Helper.dateFromYearMonthDate(2009, 10, 10));
             record1.setLocation(new Location("Ottawa", "Canada"));
+            Venue venue1 = new Venue();
+            venue1.setAttendance(10000);
+            venue1.setName("Scotiabank PLace");
+            record1.setVenue(venue1);
             beerConsumer.getRecords().add(record1);
             
             Record record2 = new Record();
             record2.setDescription("Most beers consumed in a second - 5");
             record2.setDate(Helper.dateFromYearMonthDate(2005, 12, 12));
             record2.setLocation(new Location("Miami", "USA"));
+            Venue venue2 = new Venue();
+            venue2.setAttendance(63000);
+            venue2.setName("Dolphin Stadium");
+            record2.setVenue(venue2);
             beerConsumer.getRecords().add(record2);
             
             em.persist(beerConsumer);

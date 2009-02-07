@@ -8,15 +8,20 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     01/28/2009-1.1 Guy Pelletier 
- *       - 248293: JPA 2.0 Element Collections (part 1)       
+ *     01/28/2009-2.0 Guy Pelletier 
+ *       - 248293: JPA 2.0 Element Collections (part 1)     
+ *     02/06/2009-2.0 Guy Pelletier 
+ *       - 248293: JPA 2.0 Element Collections (part 2)  
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
 import java.sql.Date;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import javax.persistence.Embedded;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
@@ -27,7 +32,8 @@ public class Record {
     private Date date;
     private String description;
     private Location location;
-    
+    private Venue venue;
+
     @Column(name="R_DATE")
     public Date getDate() {
         return date;
@@ -44,6 +50,19 @@ public class Record {
         return location;
     }
     
+    @Embedded
+    @AttributeOverrides({
+        @AttributeOverride(name="name", column=@Column(name="VENUE_NAME")),
+        @AttributeOverride(name="attendance", column=@Column(name="VENUE_ATTENDANCE"))
+    })
+    // Novice beer consumer is going to override VENUE_NAME to VENUE and use
+    // VENUE_ATTENDANCE as is.
+    // Expert beer consumer is going to override VENUE_ATTENDANCE to WITNESSES
+    // and user VENUE_NAME as is.
+    public Venue getVenue() {
+        return venue;
+    }
+    
     public void setDescription(String description) {
         this.description = description;
     }
@@ -54,5 +73,9 @@ public class Record {
     
     public void setLocation(Location location) {
         this.location = location;
+    }
+    
+    public void setVenue(Venue venue) {
+        this.venue = venue;
     }
 }

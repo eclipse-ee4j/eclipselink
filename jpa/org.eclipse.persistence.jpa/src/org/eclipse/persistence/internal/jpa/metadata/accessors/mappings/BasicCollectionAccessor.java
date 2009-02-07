@@ -13,7 +13,7 @@
  *       - 218084: Implement metadata merging functionality between mapping files
  *     06/20/2008-1.0 Guy Pelletier 
  *       - 232975: Failure when attribute type is generic
- *     01/28/2009-1.1 Guy Pelletier 
+ *     01/28/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;

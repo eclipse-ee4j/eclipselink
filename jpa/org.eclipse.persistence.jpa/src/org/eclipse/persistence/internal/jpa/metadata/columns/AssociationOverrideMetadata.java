@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
+ *     02/06/2009-2.0 Guy Pelletier 
+ *       - 248293: JPA 2.0 Element Collections (part 2)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
@@ -20,6 +22,7 @@ import java.util.List;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.tables.JoinTableMetadata;
 
 /**
  * Object to hold onto an association override meta data.
@@ -28,7 +31,8 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
  * @since EclipseLink 1.0
  */
 public class AssociationOverrideMetadata extends OverrideMetadata {
-    private List<JoinColumnMetadata> m_joinColumns = new ArrayList<JoinColumnMetadata>();
+    private JoinTableMetadata m_joinTable;
+    private List<JoinColumnMetadata> m_joinColumns;
     
     /**
      * INTERNAL:
@@ -44,9 +48,14 @@ public class AssociationOverrideMetadata extends OverrideMetadata {
     public AssociationOverrideMetadata(Annotation associationOverride, MetadataAccessibleObject accessibleObject) {
         super(associationOverride, accessibleObject);
         
+        // Set the join columns.
+        m_joinColumns = new ArrayList<JoinColumnMetadata>();
         for (Annotation joinColumn : (Annotation[]) MetadataHelper.invokeMethod("joinColumns", associationOverride)) {
             m_joinColumns.add(new JoinColumnMetadata(joinColumn, accessibleObject));
         }
+        
+        // Set the join table.
+        m_joinTable = new JoinTableMetadata((Annotation) MetadataHelper.invokeMethod("joinTable", associationOverride), accessibleObject);
     }
     
     /**
@@ -55,7 +64,13 @@ public class AssociationOverrideMetadata extends OverrideMetadata {
     @Override
     public boolean equals(Object objectToCompare) {
         if (super.equals(objectToCompare) && objectToCompare instanceof AssociationOverrideMetadata) {
-            return valuesMatch(m_joinColumns, ((AssociationOverrideMetadata) objectToCompare).getJoinColumns());
+            AssociationOverrideMetadata associationOverride = (AssociationOverrideMetadata) objectToCompare;
+            
+            if (! valuesMatch(m_joinColumns, associationOverride.getJoinColumns())) {
+                return false;
+            }
+            
+            return valuesMatch(m_joinTable, associationOverride.getJoinTable());
         }
         
         return false;
@@ -81,7 +96,30 @@ public class AssociationOverrideMetadata extends OverrideMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public JoinTableMetadata getJoinTable() {
+        return m_joinTable;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public boolean hasJoinColumns() {
+        return ! m_joinColumns.isEmpty();
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setJoinColumns(List<JoinColumnMetadata> joinColumns) {
         m_joinColumns = joinColumns;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setJoinTable(JoinTableMetadata joinTable) {
+        m_joinTable = joinTable;
     }
 }

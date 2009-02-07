@@ -13,6 +13,8 @@
  *       - 218084: Implement metadata merging functionality between mapping files
  *     12/12/2008-1.1 Guy Pelletier 
  *       - 249860: Implement table per class inheritance support.
+ *     02/06/2009-2.0 Guy Pelletier 
+ *       - 248293: JPA 2.0 Element Collections (part 2)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -148,11 +150,5 @@ public class ManyToManyAccessor extends CollectionAccessor {
             mapping.setTargetKeyFields(ownerMapping.getSourceKeyFields());
             mapping.setTargetRelationKeyFields(ownerMapping.getSourceRelationKeyFields());
         }
-        
-        // Process properties
-        processProperties(mapping);
-
-        // Add the mapping to the descriptor.
-        getDescriptor().addMapping(mapping);
     }
 }

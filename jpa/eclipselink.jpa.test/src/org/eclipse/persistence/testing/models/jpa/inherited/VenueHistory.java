@@ -8,36 +8,34 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     01/28/2009-2.0 Guy Pelletier 
- *       - 248293: JPA 2.0 Element Collections (part 1)       
+ *     02/06/2009-2.0 Guy Pelletier 
+ *       - 248293: JPA 2.0 Element Collections (part 2)       
  ******************************************************************************/
-package org.eclipse.persistence.testing.models.jpa.xml.inherited;
+package org.eclipse.persistence.testing.models.jpa.inherited;
 
-public class Location {
-    private String id;
-    private String city;
-    private String country;
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+
+@Embeddable
+public class VenueHistory {
+    private Integer yearBuilt;
+    private String builder;
     
-    public Location() {}
-    
-    public Location(String city, String country) {
-        this.city = city;
-        this.country = country;
+    @Column(name="BUILDER")
+    public String getBuilder() {
+        return builder;
     }
     
-    public String getCity() {
-        return city;
+    @Column(name="YEAR_BUILT")
+    public Integer getYearBuilt() {
+        return yearBuilt;
     }
     
-    public String getCountry() {
-        return country;
+    public void setBuilder(String builder) {
+        this.builder = builder;
     }
     
-    public void setCity(String city) {
-        this.city = city;
-    }
-    
-    public void setCountry(String country) {
-        this.country = country;
+    public void setYearBuilt(Integer yearBuilt) {
+        this.yearBuilt = yearBuilt;
     }
 }

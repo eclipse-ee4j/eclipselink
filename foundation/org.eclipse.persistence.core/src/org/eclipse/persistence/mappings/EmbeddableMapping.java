@@ -8,8 +8,10 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     01/28/2009-1.1 Guy Pelletier 
+ *     01/28/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 1)
+ *     02/06/2009-2.0 Guy Pelletier 
+ *       - 248293: JPA 2.0 Element Collections (part 2)
  ******************************************************************************/  
 package org.eclipse.persistence.mappings;
 
@@ -29,4 +31,5 @@ package org.eclipse.persistence.mappings;
 public interface EmbeddableMapping {
     public String getAttributeName();
     public void addFieldNameTranslation(String sourceFieldName, String aggregateFieldName);
+    public void addNestedFieldNameTranslation(String attributeName, String sourceFieldName, String aggregateFieldName);
 }

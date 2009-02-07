@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
+ *     02/06/2009-2.0 Guy Pelletier 
+ *       - 248293: JPA 2.0 Element Collections (part 2)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -86,10 +88,7 @@ public class ManyToOneAccessor extends ObjectAccessor {
         // Now process the JoinColumns (if there are any) for this mapping.
         processOwningMappingKeys(mapping);
         
-        // process properties
-        processProperties(mapping);
-        
         // Add the mapping to the descriptor.
-        getDescriptor().addMapping(mapping);
+        addMapping(mapping);
     }
 }

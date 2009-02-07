@@ -13,8 +13,10 @@
  *       - 218084: Implement metadata merging functionality between mapping files
  *     09/23/2008-1.1 Guy Pelletier 
  *       - 241651: JPA 2.0 Access Type support
- *     01/28/2009-1.1 Guy Pelletier 
+ *     01/28/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 1)
+ *     02/06/2009-2.0 Guy Pelletier 
+ *       - 248293: JPA 2.0 Element Collections (part 2)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -28,7 +30,6 @@ import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 
 import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 
@@ -160,19 +161,16 @@ public class EmbeddedAccessor extends MappingAccessor {
         setAccessorMethods(mapping);
         
         // Process attribute overrides.
-        processAttributeOverrides(m_attributeOverrides, mapping);
+        processAttributeOverrides(mapping);
        
         // Process association overrides (this is an annotation only thing).
-        processAssociationOverrides(m_associationOverrides, mapping, getOwningDescriptor().getPrimaryTable());
-        
-        // process properties
-        processProperties(mapping);
+        processAssociationOverrides(mapping);
         
         // Process a @ReturnInsert and @ReturnUpdate (to log a warning message)
         processReturnInsertAndUpdate();
         
         // Add the mapping to the descriptor and we are done.
-        getDescriptor().addMapping(mapping);
+        addMapping(mapping);
     }
 
     /**
@@ -182,69 +180,37 @@ public class EmbeddedAccessor extends MappingAccessor {
      * overrides are used to apply the correct field name translations of 
      * foreign key fields.
      */
-    protected void processAssociationOverrides(List<AssociationOverrideMetadata> associationOverrides, EmbeddableMapping mapping, DatabaseTable defaultTable) {
-        // Process attribute overrides
-        for (AssociationOverrideMetadata associationOverride : associationOverrides) {
-            // If we have a class level association override specified, use it
-            // instead of the association override from the mapping. This case
-            // hits when an Entity defines association overrides to apply to 
-            // mappings in a mapped superclass. Calling getDescriptor() is 
-            // correct here and calling getOwningDescriptor() is incorrect since 
-            // it would allow association overrides defined on the owning entity 
-            // to override nested embedded attributes.
-            // TODO: Overridding nested mappings is done through the dot
-            // notation. New in JPA 2.0 and needs to be handled.
-            if (getDescriptor().hasAssociationOverrideFor(associationOverride.getName())) {
-                processAssociationOverride(getDescriptor().getAssociationOverrideFor(associationOverride.getName()), mapping, defaultTable, getReferenceDescriptor());
+    protected void processAssociationOverrides(EmbeddableMapping mapping) {
+        // Process the list of association overrides for this mapping.
+        for (AssociationOverrideMetadata associationOverride : processAssociationOverrides(m_associationOverrides).values()) {
+            processAssociationOverride(associationOverride, mapping, getReferenceDescriptor().getMappingForAttributeName(associationOverride.getName()), getOwningDescriptor().getPrimaryTable(), getReferenceDescriptor());
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Process the attribute overrides for the given embedded mapping. Attribute 
+     * overrides are used to apply the correct field name translations of direct 
+     * fields.
+     */
+    protected void processAttributeOverrides(AggregateObjectMapping aggregateObjectMapping) {
+        // Process the list of attribute overrides for this mapping. This
+        // includes the immediate specifications (the ones defined on the 
+        // mapping accessor) and those descriptor level ones that were defined
+        // for this accessor.
+        for (AttributeOverrideMetadata attributeOverride : processAttributeOverrides(m_attributeOverrides).values()) {
+            // The getMappingForAttributeName will take care of any dot 
+            // notation attribute names when looking for the mapping. It will
+            // traverse the embeddable chain. 
+            String attributeName = attributeOverride.getName();
+            DatabaseMapping mapping = getReferenceDescriptor().getMappingForAttributeName(attributeName);
+                
+            if (mapping == null) {
+                throw ValidationException.embeddableAttributeOverrideNotFound(getReferenceDescriptor().getJavaClass(), attributeName, getJavaClass(), getAttributeName());
+            } else if (! mapping.isDirectToFieldMapping()) {
+                throw ValidationException.invalidEmbeddableAttributeForAttributeOverride(getReferenceDescriptor().getJavaClass(), attributeName, getJavaClass(), getAttributeName());
             } else {
-                processAssociationOverride(associationOverride, mapping, defaultTable, getReferenceDescriptor());
-            }
-        }
-    }
-    
-    /**
-     * INTERNAL:
-     * Process the attribute overrides for the given embeddable mapping which
-     * is either an embedded or element collection mapping. Attribute overrides
-     * are used to apply the correct field name translations of direct fields.
-     */
-    protected void processAttributeOverride(AttributeOverrideMetadata attributeOverride, EmbeddableMapping embeddableMapping) {
-        // Look for an aggregate mapping for the attribute name.
-        String attributeName = attributeOverride.getName();
-        DatabaseMapping aggregateMapping = getReferenceDescriptor().getMappingForAttributeName(attributeName);
-            
-        if (aggregateMapping == null) {
-            throw ValidationException.embeddableAttributeNotFound(getReferenceDescriptor().getJavaClass(), attributeName, getJavaClass(), getAttributeName());
-        } else if (! aggregateMapping.isDirectToFieldMapping()) {
-            throw ValidationException.invalidEmbeddableAttributeForAttributeOverride(getReferenceDescriptor().getJavaClass(), attributeName, getJavaClass(), getAttributeName());
-        } else {
-            addFieldNameTranslation(embeddableMapping, attributeOverride.getColumn().getDatabaseField(), getOwningDescriptor().getPrimaryTable(), aggregateMapping);
-        }
-    }
-    
-    /**
-     * INTERNAL:
-     * Process the attribute overrides for the given embeddable mapping which
-     * is either an embedded or element collection mapping. Attribute overrides
-     * are used to apply the correct field name translations of direct fields.
-     */
-    protected void processAttributeOverrides(List<AttributeOverrideMetadata> attributeOverrides, EmbeddableMapping embeddableMapping) {
-        // Process attribute overrides
-        for (AttributeOverrideMetadata attributeOverride : attributeOverrides) {
-            // If we have a class level attribute override specified, use it
-            // instead of the attribute override from the mapping. This case
-            // hits when an Entity defines association overrides to apply to 
-            // mappings in a mapped superclass. Calling getDescriptor() is 
-            // correct here and calling getOwningDescriptor() is incorrect since 
-            // it would allow attribute overrides defined on the owning entity 
-            // to override nested embedded attributes.
-            // TODO: Overriding nested mappings is done through the dot
-            // notation. New in JPA 2.0 and needs to be handled.
-            if (getClassAccessor().isMappedSuperclass() && getDescriptor().hasAttributeOverrideFor(attributeOverride.getName())) {
-                // TODO: Log an override message
-                processAttributeOverride(getDescriptor().getAttributeOverrideFor(attributeOverride.getName()), embeddableMapping);
-            }  else {
-                processAttributeOverride(attributeOverride, embeddableMapping);
+                addFieldNameTranslation(aggregateObjectMapping, attributeName, attributeOverride.getColumn().getDatabaseField(), mapping);
             }
         }
     }

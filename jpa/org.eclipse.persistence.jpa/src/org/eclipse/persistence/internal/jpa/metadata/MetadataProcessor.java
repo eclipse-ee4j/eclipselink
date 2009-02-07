@@ -15,7 +15,7 @@
  *       - 211330: Add attributes-complete support to the EclipseLink-ORM.XML Schema
  *     12/10/2008-1.1 Michael O'Brien 
  *       - 257606: Add orm.xml schema validation true/(false) flag support in persistence.xml
- *     01/28/2009-1.1 Guy Pelletier 
+ *     01/28/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;

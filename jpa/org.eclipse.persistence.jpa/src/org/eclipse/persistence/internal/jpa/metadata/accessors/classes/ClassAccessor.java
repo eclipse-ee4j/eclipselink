@@ -23,8 +23,10 @@
  *       - 249329: To remain JPA 1.0 compliant, any new JPA 2.0 annotations should be referenced by name
  *     12/12/2008-1.1 Guy Pelletier 
  *       - 249860: Implement table per class inheritance support.
- *     01/28/2009-1.1 Guy Pelletier 
+ *     01/28/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 1)
+ *     02/06/2009-2.0 Guy Pelletier 
+ *       - 248293: JPA 2.0 Element Collections (part 2)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -109,6 +111,8 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ObjectAc
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public abstract class ClassAccessor extends MetadataAccessor {
+    private boolean m_isProcessed = false;
+    
     private Boolean m_excludeDefaultMappings;
     private Boolean m_metadataComplete;
     
@@ -247,15 +251,13 @@ public abstract class ClassAccessor extends MetadataAccessor {
         } else if (accessibleObject.isBasicMap(getDescriptor())) {
             return new BasicMapAccessor(accessibleObject.getAnnotation(BasicMap.class), accessibleObject, this);
         } else if (accessibleObject.isElementCollection(getDescriptor())) {
-                return new ElementCollectionAccessor(accessibleObject.getAnnotation(ElementCollection.class), accessibleObject, this);
+            return new ElementCollectionAccessor(accessibleObject.getAnnotation(ElementCollection.class), accessibleObject, this);
         } else if (accessibleObject.isVersion(getDescriptor())) {
             return new VersionAccessor(accessibleObject.getAnnotation(Version.class), accessibleObject, this);
+        } else if (accessibleObject.isId(getDescriptor()) && ! accessibleObject.isDerivedId(getDescriptor())) {
+            return new IdAccessor(accessibleObject.getAnnotation(Id.class), accessibleObject, this);
         } else if (accessibleObject.isBasic(getDescriptor())) {
-            if (accessibleObject.isId(getDescriptor())) {
-                return new IdAccessor(accessibleObject.getAnnotation(Id.class), accessibleObject, this);
-            } else {
-                return new BasicAccessor(accessibleObject.getAnnotation(Basic.class), accessibleObject, this);
-            }
+            return new BasicAccessor(accessibleObject.getAnnotation(Basic.class), accessibleObject, this);
         } else if (accessibleObject.isEmbedded(getDescriptor())) {
             return new EmbeddedAccessor(accessibleObject.getAnnotation(Embedded.class), accessibleObject, this);
         } else if (accessibleObject.isEmbeddedId(getDescriptor())) {
@@ -275,9 +277,6 @@ public abstract class ClassAccessor extends MetadataAccessor {
         } else if (accessibleObject.isVariableOneToOne(getDescriptor())) {
             // A VariableOneToOne can default and doesn't require an annotation to be present.
             return new VariableOneToOneAccessor(accessibleObject.getAnnotation(VariableOneToOne.class), accessibleObject, this);
-        } else if (accessibleObject.isId(getDescriptor())) {
-            //its not defined as one of the above, so default it to a basic Id type
-            return new IdAccessor(accessibleObject.getAnnotation(Id.class), accessibleObject, this);
         } else if (getDescriptor().ignoreDefaultMappings() ) {
             return null;
         } else {
@@ -439,22 +438,8 @@ public abstract class ClassAccessor extends MetadataAccessor {
     /**
      * INTERNAL:
      */
-    public boolean isMappedSuperclass() {
-        return false;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public boolean isMetadataComplete() {
-        return m_metadataComplete != null && m_metadataComplete;
-    }
-    
-    /**
-     * INTERNAL:
-     */
     public boolean hasDerivedId(){
-        return !getDescriptor().getDerivedIDAccessors().isEmpty();
+        return ! getDescriptor().getDerivedIDAccessors().isEmpty();
     }
     
     /**
@@ -485,6 +470,28 @@ public abstract class ClassAccessor extends MetadataAccessor {
         }
         
         return false;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public boolean isMappedSuperclass() {
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public boolean isMetadataComplete() {
+        return m_metadataComplete != null && m_metadataComplete;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor has been processed.
+     */
+    public boolean isProcessed() {
+        return m_isProcessed;
     }
     
     /**
@@ -556,8 +563,10 @@ public abstract class ClassAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL: Implemented by EntityAccessor, EmbeddableAccessor and 
-     * MappedSuperclassAccessor
+     * MappedSuperclassAccessor. They must call this method to set the
+     * isProcessed flag.
      */
+    @Override
     public abstract void process();
     
     /**
@@ -759,19 +768,23 @@ public abstract class ClassAccessor extends MetadataAccessor {
 
     /**
      * INTERNAL:
-     * Allows for processing DerivedIds.  All referenced accessors are processed
-     * first to ensure the necessary fields are set before this derivedId is processed 
+     * Allows for processing DerivedIds. All referenced accessors are processed
+     * first to ensure the necessary fields are set before this derivedId is 
+     * processed 
      */
     public void processDerivedIDs(HashSet<ClassAccessor> processing, HashSet<ClassAccessor> processed) {
-        if (hasDerivedId() && !processed.contains(this)){
+        if (hasDerivedId() && !processed.contains(this)) {
             if (processing.contains(this)){
                 //we have a circular pk reference problem
                 throw ValidationException.idRelationshipCircularReference(processing);
             }
+            
             processing.add(this);
+            
             for (ObjectAccessor accessor : getDescriptor().getDerivedIDAccessors()) {
-                accessor.keyProcessing(processing, processed);
+                accessor.processKey(processing, processed);
             }
+            
             processing.remove(this);
             processed.add(this);
         }
@@ -871,6 +884,13 @@ public abstract class ClassAccessor extends MetadataAccessor {
      */
     public void setInstantiationCopyPolicy(InstantiationCopyPolicyMetadata copyPolicy){
         m_instantiationCopyPolicy = copyPolicy;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected void setIsProcessed() {
+        m_isProcessed = true;    
     }
     
     /**

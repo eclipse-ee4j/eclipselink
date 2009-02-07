@@ -11,7 +11,9 @@
  *     Andrei Ilitchev (Oracle), March 7, 2008 
  *        - New file introduced for bug 211300.
  *     05/16/2008-1.0M8 Guy Pelletier 
- *       - 218084: Implement metadata merging functionality between mapping files     
+ *       - 218084: Implement metadata merging functionality between mapping files 
+ *     02/06/2009-2.0 Guy Pelletier 
+ *       - 248293: JPA 2.0 Element Collections (part 2)    
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -135,9 +137,6 @@ public class TransformationAccessor extends BasicAccessor {
         // Will check for PROPERTY access.
         setAccessorMethods(mapping);
 
-        // Process properties
-        processProperties(mapping);
-
         if (m_readTransformer != null) {
             m_readTransformer.process(mapping, getAnnotatedElementName());
         }
@@ -162,7 +161,7 @@ public class TransformationAccessor extends BasicAccessor {
         // TODO: ReturningPolicy
         
         // Add the mapping to the descriptor.
-        getDescriptor().addMapping(mapping);
+        addMapping(mapping);
     }
     
     /**

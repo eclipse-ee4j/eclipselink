@@ -18,6 +18,8 @@
  *       - 241651: JPA 2.0 Access Type support
  *     10/01/2008-1.1 Guy Pelletier 
  *       - 249329: To remain JPA 1.0 compliant, any new JPA 2.0 annotations should be referenced by name
+ *     02/06/2009-2.0 Guy Pelletier 
+ *       - 248293: JPA 2.0 Element Collections (part 2)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
@@ -363,6 +365,14 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     }
     
     /**
+     * INTERNAL:
+     * Return true if this accessor represents an id mapping.
+     */
+    public boolean isDerivedId(MetadataDescriptor descriptor) {
+        return isId(descriptor) && (isOneToOne(descriptor) || isManyToOne(descriptor));
+    }
+    
+    /**
      * INTERNAL: 
      * Return true if this accessor represents an element collection mapping.
      */
@@ -478,16 +488,34 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * INTERNAL:
      * Method to return whether a class is a supported Collection. EJB 3.0 spec 
      * currently only supports Collection, Set, List and Map.  Changed in 221577
-     * to allow types assignable to Collection, Set, List and Map rather than strict
-     * equality.
+     * to allow types assignable to Collection, Set, List and Map rather than 
+     * strict equality.
      */
     public boolean isSupportedCollectionClass(MetadataDescriptor descriptor) {
+        return isSupportedDirectCollectionClass(descriptor) || isSupportedDirectMapClass(descriptor);
+    }
+    
+    /**
+     * INTERNAL:
+     * Method to return whether a class is a supported direct collection class.
+     */
+    public boolean isSupportedDirectCollectionClass(MetadataDescriptor descriptor) {
         Class rawClass = getRawClass(descriptor);
         
         return Collection.class.isAssignableFrom(rawClass) || 
             Set.class.isAssignableFrom(rawClass) || 
-            List.class.isAssignableFrom(rawClass) || 
-            Map.class.isAssignableFrom(rawClass);
+            List.class.isAssignableFrom(rawClass); 
+    }
+    
+    /**
+     * INTERNAL:
+     * Method to return whether a class is a supported direct map collection
+     * class.
+     */
+    public boolean isSupportedDirectMapClass(MetadataDescriptor descriptor) {
+        Class rawClass = getRawClass(descriptor);
+        
+        return Map.class.isAssignableFrom(rawClass); 
     }
 
     /**

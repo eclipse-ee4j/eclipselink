@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -243,6 +243,10 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "metadata_warning_ignore_serialized", "Ignoring default serialization on element [{1}] within entity class [{0}] since a @Convert is specified." },
         { "metadata_warning_ignore_enumerated", "Ignoring enumerated specification on element [{1}] within entity class [{0}] since a @Convert is specified." },
         { "metadata_warning_ignore_version_locking", "Optimistic locking metadata is already defined on the descriptor for the entity [{0}]. Ignoring version specification on element [{1}]." },
+
+        { "metadata_warning_ignore_attribute_override", "Ignoring the attribute override named [{0}] on the element [{1}] of the mapped superclass [{2}] since an attribute override with the same name has been specified on the entity class [{3}]." },
+        { "metadata_warning_ignore_association_override", "Ignoring the association override named [{0}] on the element [{1}] of the mapped superclass [{2}] since an association override with the same name has been specified on the entity class [{3}]." },
+        
         { "metadata_warning_ignore_inheritance_subclass_cache", "Ignoring the cache metadata on the inheritance subclass [{0}]. Cache metadata should only be specified on the root of the inheritance hierarchy and can not be overidden in an inheritance subclass." },
         { "metadata_warning_ignore_inheritance_subclass_cache_interceptor", "Ignoring the cache interceptor metadata on the inheritance subclass [{0}]. Cache interceptor metadata should only be specified on the root of the inheritance hierarchy and can not be overidden in an inheritance subclass." },
         { "metadata_warning_ignore_inheritance_subclass_default_redirectors", "Ignoring the default redirector metadata on the inheritance subclass [{0}]. Default redirector metadata should only be specified on the root of the inheritance hierarchy and can not be overidden in an inheritance subclass." },

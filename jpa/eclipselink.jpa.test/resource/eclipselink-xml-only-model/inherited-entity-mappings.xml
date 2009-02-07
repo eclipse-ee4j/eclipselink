@@ -183,26 +183,26 @@
     <entity name="XML_NBC" class="org.eclipse.persistence.testing.models.jpa.xml.inherited.NoviceBeerConsumer" access="PROPERTY">
         <table name="XML_NOVICE_CONSUMER"/>
         <discriminator-value>NBC</discriminator-value>
-        <attribute-override name="date">
+        <attribute-override name="records.date">
             <column name="REC_DATE"/>
         </attribute-override>
-        <attribute-override name="description">
+        <attribute-override name="records.description">
             <column name="DESCRIP"/>
         </attribute-override>
-        <association-override name="location">
+        <association-override name="records.location">
             <join-column name="LOC_ID" referenced-column-name="ID"/>
         </association-override>
     </entity>
     <entity name="XML_EBC" class="org.eclipse.persistence.testing.models.jpa.xml.inherited.ExpertBeerConsumer" access="PROPERTY">
         <table name="XML_EXPERT_CONSUMER"/>
         <discriminator-value>EBC</discriminator-value>
-        <attribute-override name="date">
+        <attribute-override name="records.date">
             <column name="RECORD_DATE"/>
         </attribute-override>
-        <attribute-override name="description">
+        <attribute-override name="records.description">
             <column name="DESCRIPTION"/>
         </attribute-override>
-        <association-override name="location">
+        <association-override name="records.location">
             <join-column name="LOCATION_ID" referenced-column-name="ID"/>
         </association-override>
         <attributes>

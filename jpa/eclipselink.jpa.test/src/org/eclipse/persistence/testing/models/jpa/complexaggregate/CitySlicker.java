@@ -9,11 +9,14 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     02/06/2009-2.0 Guy Pelletier 
+ *       - 248293: JPA 2.0 Element Collections (part 2)
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.complexaggregate;
 
 import java.io.Serializable;
 
+import javax.persistence.AttributeOverride;
 import javax.persistence.Table;
 import javax.persistence.Entity;
 import javax.persistence.Column;
@@ -41,6 +44,7 @@ public class CitySlicker implements Serializable {
     }
         
     @EmbeddedId
+    @AttributeOverride(name="firstName", column=@Column(name="FIRST_NAME"))
 	public Name getName() { 
         return name; 
     }

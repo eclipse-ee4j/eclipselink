@@ -11,7 +11,9 @@
  *     03/26/2008-1.0M6 Guy Pelletier 
  *       - 211302: Add variable 1-1 mapping support to the EclipseLink-ORM.XML Schema
  *     05/16/2008-1.0M8 Guy Pelletier 
- *       - 218084: Implement metadata merging functionality between mapping files     
+ *       - 218084: Implement metadata merging functionality between mapping files  
+ *     02/06/2009-2.0 Guy Pelletier 
+ *       - 248293: JPA 2.0 Element Collections (part 2)   
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -231,11 +233,8 @@ public class VariableOneToOneAccessor extends ObjectAccessor {
         // Process the foreign query keys from the join columns.
         processForeignQueryKeyNames(mapping);
         
-        // Process properties
-        processProperties(mapping);
-        
         // Add the mapping to the descriptor.
-        getDescriptor().addMapping(mapping);
+        addMapping(mapping);
     }
     
     /**

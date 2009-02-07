@@ -10,8 +10,10 @@
  * Contributors:
  *     06/20/2008-1.0 Guy Pelletier 
  *       - 232975: Failure when attribute type is generic
- *     01/28/2009-1.1 Guy Pelletier 
+ *     01/28/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 1)
+ *     02/06/2009-2.0 Guy Pelletier 
+ *       - 248293: JPA 2.0 Element Collections (part 2)
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
@@ -26,10 +28,13 @@ import javax.persistence.JoinColumn;
 @Entity(name="NOVICE_CONSUMER")
 @DiscriminatorValue(value="NBC")
 @AttributeOverrides({
-    @AttributeOverride(name="date", column=@Column(name="REC_DATE")),
-    @AttributeOverride(name="description", column=@Column(name="DESCRIP"))
+    @AttributeOverride(name="records.date", column=@Column(name="REC_DATE")),
+    @AttributeOverride(name="records.description", column=@Column(name="DESCRIP")),
+    @AttributeOverride(name="records.venue.name", column=@Column(name="VENUE")),
+    @AttributeOverride(name="records.venue.history.yearBuilt", column=@Column(name="VENUE_YEAR_BUILT")),
+    @AttributeOverride(name="records.venue.history.builder", column=@Column(name="VENUE_BUILDER"))
 })
-@AssociationOverride(name="location", joinColumns=@JoinColumn(name="LOC_ID", referencedColumnName="ID"))
+@AssociationOverride(name="records.location", joinColumns=@JoinColumn(name="LOC_ID", referencedColumnName="ID"))
 public class NoviceBeerConsumer extends RatedBeerConsumer<Integer, Integer, Integer> {
     public NoviceBeerConsumer() {
         super();

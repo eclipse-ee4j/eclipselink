@@ -15,8 +15,10 @@
  *       - 241651: JPA 2.0 Access Type support
  *     12/12/2008-1.1 Guy Pelletier 
  *       - 249860: Implement table per class inheritance support.
- *     01/28/2009-1.1 Guy Pelletier 
- *       - 248293: JPA 2.0 Element Collections (part 1)       
+ *     01/28/2009-2.0 Guy Pelletier 
+ *       - 248293: JPA 2.0 Element Collections (part 1)   
+ *     02/06/2009-2.0 Guy Pelletier 
+ *       - 248293: JPA 2.0 Element Collections (part 2)    
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -64,6 +66,9 @@ public class MetadataLogger {
     public static final String IGNORE_ENUMERATED = "metadata_warning_ignore_enumerated";
     public static final String IGNORE_SERIALIZED = "metadata_warning_ignore_serialized";
     public static final String IGNORE_TEMPORAL = "metadata_warning_ignore_temporal";
+    
+    public static final String IGNORE_ATTRIBUTE_OVERRIDE = "metadata_warning_ignore_attribute_override";
+    public static final String IGNORE_ASSOCIATION_OVERRIDE = "metadata_warning_ignore_association_override";
     
     public static final String IGNORE_VERSION_LOCKING = "metadata_warning_ignore_version_locking";
     public static final String IGNORE_INHERITANCE_SUBCLASS_CACHE = "metadata_warning_ignore_inheritance_subclass_cache";
@@ -181,6 +186,9 @@ public class MetadataLogger {
         m_ctxStrings.put(IGNORE_ENUMERATED, IGNORE_ENUMERATED);
         m_ctxStrings.put(IGNORE_SERIALIZED, IGNORE_SERIALIZED);
         m_ctxStrings.put(IGNORE_VERSION_LOCKING, IGNORE_VERSION_LOCKING);
+        
+        m_ctxStrings.put(IGNORE_ATTRIBUTE_OVERRIDE, IGNORE_ATTRIBUTE_OVERRIDE);
+        m_ctxStrings.put(IGNORE_ASSOCIATION_OVERRIDE, IGNORE_ASSOCIATION_OVERRIDE);
         
         m_ctxStrings.put(IGNORE_INHERITANCE_SUBCLASS_CACHE, IGNORE_INHERITANCE_SUBCLASS_CACHE);
         m_ctxStrings.put(IGNORE_INHERITANCE_SUBCLASS_CACHE_INTERCEPTOR, IGNORE_INHERITANCE_SUBCLASS_CACHE_INTERCEPTOR);

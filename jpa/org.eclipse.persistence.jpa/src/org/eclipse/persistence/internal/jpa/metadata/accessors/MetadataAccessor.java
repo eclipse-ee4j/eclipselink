@@ -19,6 +19,8 @@
  *       - 249329: To remain JPA 1.0 compliant, any new JPA 2.0 annotations should be referenced by name
  *     12/12/2008-1.1 Guy Pelletier 
  *       - 249860: Implement table per class inheritance support.
+ *     02/06/2009-2.0 Guy Pelletier 
+ *       - 248293: JPA 2.0 Element Collections (part 2)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
@@ -64,8 +66,6 @@ import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public abstract class MetadataAccessor extends ORMetadata {
-    private boolean m_isProcessed = false;
-   
     private String m_access;
     
     private List<ConverterMetadata> m_converters = new ArrayList<ConverterMetadata>();
@@ -409,12 +409,10 @@ public abstract class MetadataAccessor extends ORMetadata {
     }
     
     /**
-     * INTERNAL:
-     * Return true if this accessor has been processed.
+     * Subclasses must handle this flag.
+     * @return
      */
-    public boolean isProcessed() {
-        return m_isProcessed;
-    }
+    public abstract boolean isProcessed();
     
     /**
      * INTERNAL:
@@ -592,13 +590,6 @@ public abstract class MetadataAccessor extends ORMetadata {
      */
     public void setDescriptor(MetadataDescriptor descriptor) {
         m_descriptor = descriptor;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public void setIsProcessed() {
-        m_isProcessed = true;    
     }
     
     /**

@@ -19,6 +19,8 @@
  *       - 211329: Add sequencing on non-id attribute(s) support to the EclipseLink-ORM.XML Schema
  *     09/23/2008-1.1 Guy Pelletier 
  *       - 241651: JPA 2.0 Access Type support    
+ *     02/06/2009-2.0 Guy Pelletier 
+ *       - 248293: JPA 2.0 Element Collections (part 2)
  *******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
@@ -261,7 +263,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.setJavaClass(AssociationOverrideMetadata.class);
         
         descriptor.addMapping(getJoinColumnMapping());
-        // TODO: join-table
+        descriptor.addMapping(getJoinTableMapping());
         descriptor.addMapping(getNameAttributeMapping());
         
         return descriptor;
@@ -1363,7 +1365,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         
         // Element mappings - must remain in order of definition in XML.
         descriptor.addMapping(getJoinColumnMapping());
-        // TODO: join-table
+        descriptor.addMapping(getJoinTableMapping());
         descriptor.addMapping(getCascadeMapping());
         descriptor.addMapping(getJoinFetchMapping());
         descriptor.addMapping(getPropertiesMapping());
@@ -1566,7 +1568,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         // Element mappings - must remain in order of definition in XML.
         descriptor.addMapping(getPrimaryKeyJoinColumnMapping());
         descriptor.addMapping(getJoinColumnMapping());
-        // TODO: join-table
+        descriptor.addMapping(getJoinTableMapping());
         descriptor.addMapping(getCascadeMapping());
         descriptor.addMapping(getPrivateOwnedMapping());
         descriptor.addMapping(getJoinFetchMapping());
@@ -2677,9 +2679,9 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
      */
     protected XMLDirectMapping getIdAttributeMapping() {
         XMLDirectMapping mappedByMapping = new XMLDirectMapping();
-        mappedByMapping.setAttributeName("m_isId");
-        mappedByMapping.setGetMethodName("getIsId");
-        mappedByMapping.setSetMethodName("setIsId");
+        mappedByMapping.setAttributeName("m_id");
+        mappedByMapping.setGetMethodName("getId");
+        mappedByMapping.setSetMethodName("setId");
         mappedByMapping.setXPath("@id");
         return mappedByMapping;
     }

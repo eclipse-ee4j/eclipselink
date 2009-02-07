@@ -10,8 +10,10 @@
  * Contributors:
  *     06/20/2008-1.0 Guy Pelletier 
  *       - 232975: Failure when attribute type is generic
- *     01/28/2009-1.1 Guy Pelletier 
+ *     01/28/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 1)   
+ *     02/06/2009-2.0 Guy Pelletier 
+ *       - 248293: JPA 2.0 Element Collections (part 2)
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
@@ -38,10 +40,11 @@ import org.eclipse.persistence.annotations.BasicCollection;
 @Entity(name="EXPERT_CONSUMER")
 @DiscriminatorValue(value="EBC")
 @AttributeOverrides({
-    @AttributeOverride(name="date", column=@Column(name="RECORD_DATE")),
-    @AttributeOverride(name="description", column=@Column(name="DESCRIPTION"))
+    @AttributeOverride(name="records.date", column=@Column(name="RECORD_DATE")),
+    @AttributeOverride(name="records.description", column=@Column(name="DESCRIPTION")),
+    @AttributeOverride(name="records.venue.attendance", column=@Column(name="WITNESSES"))
 })
-@AssociationOverride(name="location", joinColumns=@JoinColumn(name="LOCATION_ID", referencedColumnName="ID"))
+@AssociationOverride(name="records.location", joinColumns=@JoinColumn(name="LOCATION_ID", referencedColumnName="ID"))
 public class ExpertBeerConsumer extends RatedBeerConsumer<String, String, String> {
     private Map<Date, String> quotes;
     private Collection<byte[]> audio;

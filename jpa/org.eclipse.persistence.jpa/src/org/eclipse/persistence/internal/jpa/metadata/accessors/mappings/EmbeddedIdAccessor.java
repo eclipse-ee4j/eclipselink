@@ -15,8 +15,10 @@
  *       - 241651: JPA 2.0 Access Type support
  *     10/01/2008-1.1 Guy Pelletier 
  *       - 249329: To remain JPA 1.0 compliant, any new JPA 2.0 annotations should be referenced by name
- *     01/28/2009-1.1 Guy Pelletier 
+ *     01/28/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 1)
+ *     02/06/2009-2.0 Guy Pelletier 
+ *       - 248293: JPA 2.0 Element Collections (part 2)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -28,8 +30,6 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
-
-import org.eclipse.persistence.internal.jpa.metadata.columns.AttributeOverrideMetadata;
 
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.EmbeddableMapping;
@@ -59,6 +59,22 @@ public class EmbeddedIdAccessor extends EmbeddedAccessor {
      */
     public EmbeddedIdAccessor(Annotation embeddedId, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(embeddedId, accessibleObject, classAccessor);
+    }
+    
+    
+    /**
+     * INTERNAL:
+     * Process an attribute override for an embedded object, that is, an 
+     * aggregate object mapping in EclipseLink.
+     */
+    @Override
+    protected void addFieldNameTranslation(EmbeddableMapping embeddableMapping, String overrideName, DatabaseField overrideField, DatabaseMapping aggregatesMapping) {
+       super.addFieldNameTranslation(embeddableMapping, overrideName, overrideField, aggregatesMapping);
+       
+       // Update our primary key field with the attribute override field.
+       // The super class will ensure the correct field is on the metadata
+       // column.
+       m_idFields.put(aggregatesMapping.getAttributeName(), overrideField);
     }
     
     /**
@@ -135,20 +151,5 @@ public class EmbeddedIdAccessor extends EmbeddedAccessor {
                 }
             }
         }
-    }
-    
-    /**
-     * INTERNAL:
-     * Process an attribute override for an embedded object, that is, an 
-     * aggregate object mapping in EclipseLink.
-     */
-    @Override
-    protected void processAttributeOverride(AttributeOverrideMetadata attributeOverride, EmbeddableMapping mapping) {
-        super.processAttributeOverride(attributeOverride, mapping);
-        
-        // Update our primary key field with the attribute override field.
-        // The super class will ensure the correct field is on the metadata
-        // column.
-        m_idFields.put(attributeOverride.getName(), attributeOverride.getColumn().getDatabaseField());
     }
 }

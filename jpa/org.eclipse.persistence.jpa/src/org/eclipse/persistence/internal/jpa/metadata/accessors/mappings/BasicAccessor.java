@@ -17,8 +17,10 @@
  *       - 211329: Add sequencing on non-id attribute(s) support to the EclipseLink-ORM.XML Schema
  *     09/23/2008-1.1 Guy Pelletier 
  *       - 241651: JPA 2.0 Access Type support
- *     01/28/2009-1.1 Guy Pelletier 
+ *     01/28/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 1)
+ *     02/06/2009-2.0 Guy Pelletier 
+ *       - 248293: JPA 2.0 Element Collections (part 2)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -292,9 +294,6 @@ public class BasicAccessor extends DirectAccessor {
         // TODO: Expand this configuration to the eclipselink-orm.xsd
         processReturnInsertAndUpdate();
         
-        // Process any properties.
-        processProperties(mapping);
-        
         // Process a generated value setting.
         processGeneratedValue();
         
@@ -309,7 +308,7 @@ public class BasicAccessor extends DirectAccessor {
         }
         
         // Add the mapping to the descriptor.
-        getDescriptor().addMapping(mapping);
+        addMapping(mapping);
     }
 
     /**

@@ -239,7 +239,7 @@ public class ValidationException extends EclipseLinkException {
     public static final int CANNOT_CAST_TO_CLASS = 7196;
     public static final int CLASS_NOT_FOUND_WHILE_CONVERTING_CLASSNAMES = 7198;
     public static final int PRIMARY_TABLE_NOT_DEFINED_FOR_RELATIONSHIP = 7199;    
-    public static final int EMBEDDABLE_ATTRIBUTE_NOT_FOUND = 7200;
+    public static final int EMBEDDABLE_ATTRIBUTE_OVERRIDE_NOT_FOUND = 7200;
     public static final int INVALID_ENTITY_MAPPINGS_DOCUMENT = 7201;    
     public static final int INVALID_ATTRIBUTE_OVERRIDE_NAME = 7202;    
     public static final int INVALID_COLLECTION_TYPE_FOR_RELATIONSHIP = 7203;
@@ -378,6 +378,7 @@ public class ValidationException extends EclipseLinkException {
     public static final int UNABLE_TO_DETERMINE_TARGET_CLASS = 7310;
     public static final int INVALID_TARGET_CLASS = 7311;
     public static final int INVALID_EMBEDDABLE_CLASS_FOR_ELEMENT_COLLECTION = 7312;
+    public static final int EMBEDDABLE_ASSOCIATION_OVERRIDE_NOT_FOUND = 7313;
     
     /**
      * INTERNAL:
@@ -1138,11 +1139,19 @@ public class ValidationException extends EclipseLinkException {
         return validationException;
     }
     
-    public static ValidationException embeddableAttributeNotFound(Class aggregateClass, String aggregateAttributeName, Class owningClass, String owningAttributeName) {
+    public static ValidationException embeddableAssociationOverrideNotFound(Class aggregateClass, String aggregateAttributeName, Class owningClass, String owningAttributeName) {
         Object[] args = { aggregateClass, aggregateAttributeName,  owningClass, owningAttributeName};
 
-        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, EMBEDDABLE_ATTRIBUTE_NOT_FOUND, args));
-        validationException.setErrorCode(EMBEDDABLE_ATTRIBUTE_NOT_FOUND);
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, EMBEDDABLE_ASSOCIATION_OVERRIDE_NOT_FOUND, args));
+        validationException.setErrorCode(EMBEDDABLE_ASSOCIATION_OVERRIDE_NOT_FOUND);
+        return validationException;
+    }
+    
+    public static ValidationException embeddableAttributeOverrideNotFound(Class aggregateClass, String aggregateAttributeName, Class owningClass, String owningAttributeName) {
+        Object[] args = { aggregateClass, aggregateAttributeName,  owningClass, owningAttributeName};
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, EMBEDDABLE_ATTRIBUTE_OVERRIDE_NOT_FOUND, args));
+        validationException.setErrorCode(EMBEDDABLE_ATTRIBUTE_OVERRIDE_NOT_FOUND);
         return validationException;
     }
 

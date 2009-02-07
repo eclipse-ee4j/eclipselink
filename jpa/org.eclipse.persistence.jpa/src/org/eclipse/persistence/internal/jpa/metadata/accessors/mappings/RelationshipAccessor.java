@@ -11,8 +11,10 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
- *     01/28/2009-1.1 Guy Pelletier 
+ *     01/28/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 1)
+ *     02/06/2009-2.0 Guy Pelletier 
+ *       - 248293: JPA 2.0 Element Collections (part 2)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -24,10 +26,11 @@ import javax.persistence.FetchType;
 import javax.persistence.CascadeType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
+import javax.persistence.JoinTable;
 
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
-import org.eclipse.persistence.mappings.UnidirectionalOneToManyMapping;
+import org.eclipse.persistence.mappings.ManyToManyMapping;
 
 import org.eclipse.persistence.annotations.JoinFetch;
 import org.eclipse.persistence.annotations.PrivateOwned;
@@ -39,6 +42,7 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
 import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.tables.JoinTableMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
@@ -53,13 +57,13 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 public abstract class RelationshipAccessor extends MappingAccessor {
     private boolean m_privateOwned;
     private CascadeTypes m_cascadeTypes;
-  
     protected Class m_referenceClass;
     private Class m_targetEntity;
     
     private Enum m_fetch;
     private Enum m_joinFetch;
    
+    private JoinTableMetadata m_joinTable;
     private List<JoinColumnMetadata> m_joinColumns = new ArrayList<JoinColumnMetadata>();
   
     private String m_targetEntityName;
@@ -81,10 +85,9 @@ public abstract class RelationshipAccessor extends MappingAccessor {
         m_targetEntity = (annotation == null) ? void.class : (Class) MetadataHelper.invokeMethod("targetEntity", annotation);         
         m_cascadeTypes = (annotation == null) ? null : new CascadeTypes((Enum[]) MetadataHelper.invokeMethod("cascade", annotation), accessibleObject);
         
-        // Set the join fetch if one is present.
-        Annotation joinFetch = getAnnotation(JoinFetch.class);            
-        if (joinFetch != null) {
-            m_joinFetch = (Enum) MetadataHelper.invokeMethod("value", joinFetch);
+        // Set the join fetch if one is present.           
+        if (isAnnotationPresent(JoinFetch.class)) {
+            m_joinFetch = (Enum) MetadataHelper.invokeMethod("value", getAnnotation(JoinFetch.class));
         }
         
         // Set the private owned if one is present.
@@ -92,17 +95,70 @@ public abstract class RelationshipAccessor extends MappingAccessor {
         
         // Set the join columns if some are present. 
         // Process all the join columns first.
-        Annotation joinColumns = getAnnotation(JoinColumns.class);
-        if (joinColumns != null) {
-            for (Annotation jColumn : (Annotation[]) MetadataHelper.invokeMethod("value", joinColumns)) {
+        if (isAnnotationPresent(JoinColumns.class)) {
+            for (Annotation jColumn : (Annotation[]) MetadataHelper.invokeMethod("value", getAnnotation(JoinColumns.class))) {
                 m_joinColumns.add(new JoinColumnMetadata(jColumn, accessibleObject));
             }
         }
         
         // Process the single key join column second.
-        Annotation joinColumn = getAnnotation(JoinColumn.class);
-        if (joinColumn != null) {
-            m_joinColumns.add(new JoinColumnMetadata(joinColumn, accessibleObject));
+        if (isAnnotationPresent(JoinColumn.class)) {
+            m_joinColumns.add(new JoinColumnMetadata(getAnnotation(JoinColumn.class), accessibleObject));
+        }
+        
+        // Set the join table if one is present.
+        if (isAnnotationPresent(JoinTable.class)) {
+            m_joinTable = new JoinTableMetadata(getAnnotation(JoinTable.class), accessibleObject);
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * 
+     * Add the relation key fields to a many to many mapping.
+     */
+    protected void addManyToManyRelationKeyFields(List<JoinColumnMetadata> joinColumns, ManyToManyMapping mapping, String defaultFieldName, MetadataDescriptor descriptor, boolean isSource) {
+        // Set the right context level.
+        String PK_CTX, FK_CTX;
+        if (isSource) {
+            PK_CTX = MetadataLogger.SOURCE_PK_COLUMN;
+            FK_CTX = MetadataLogger.SOURCE_FK_COLUMN;
+        } else {
+            PK_CTX = MetadataLogger.TARGET_PK_COLUMN;
+            FK_CTX = MetadataLogger.TARGET_FK_COLUMN;
+        }
+        
+        for (JoinColumnMetadata joinColumn : joinColumns) {
+            // If the pk field (referencedColumnName) is not specified, it 
+            // defaults to the primary key of the referenced table.
+            String defaultPKFieldName = descriptor.getPrimaryKeyFieldName();
+            DatabaseField pkField = joinColumn.getPrimaryKeyField();
+            pkField.setName(getName(pkField, defaultPKFieldName, PK_CTX));
+            pkField.setTable(descriptor.getPrimaryKeyTable());
+            
+            // If the fk field (name) is not specified, it defaults to the 
+            // name of the referencing relationship property or field of the 
+            // referencing entity + "_" + the name of the referenced primary 
+            // key column. If there is no such referencing relationship 
+            // property or field in the entity (i.e., a join table is used), 
+            // the join column name is formed as the concatenation of the 
+            // following: the name of the entity + "_" + the name of the 
+            // referenced primary key column.
+            DatabaseField fkField = joinColumn.getForeignKeyField();
+            String defaultFKFieldName = defaultFieldName + "_" + defaultPKFieldName;
+            fkField.setName(getName(fkField, defaultFKFieldName, FK_CTX));
+            // Target table name here is the join table name.
+            // If the user had specified a different table name in the join
+            // column, it is ignored. Perhaps an error or warning should be
+            // fired off.
+            fkField.setTable(mapping.getRelationTable());
+            
+            // Add a target relation key to the mapping.
+            if (isSource) {
+                mapping.addSourceRelationKeyField(fkField, pkField);
+            } else {
+                mapping.addTargetRelationKeyField(fkField, pkField);
+            }
         }
     }
     
@@ -141,6 +197,14 @@ public abstract class RelationshipAccessor extends MappingAccessor {
      */
     public Enum getJoinFetch() {
         return m_joinFetch;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public JoinTableMetadata getJoinTable() {
+        return m_joinTable;
     }
     
     /**
@@ -227,6 +291,7 @@ public abstract class RelationshipAccessor extends MappingAccessor {
         initXMLObjects(m_joinColumns, accessibleObject);
         
         // Initialize single objects.
+        initXMLObject(m_joinTable, accessibleObject);
         initXMLObject(m_cascadeTypes, accessibleObject);
         
         // Initialize the target entity name we read from XML.
@@ -280,6 +345,40 @@ public abstract class RelationshipAccessor extends MappingAccessor {
     
     /**
      * INTERNAL:
+     * Process a MetadataJoinTable.
+     */
+    protected void processJoinTable(ManyToManyMapping mapping) {
+        // Check that we loaded a join table otherwise default one.
+        if (m_joinTable == null) {
+            // TODO: Log a defaulting message.
+            m_joinTable = new JoinTableMetadata(null, getAccessibleObject());
+        }
+        
+        // Build the default table name
+        String defaultName = getDescriptor().getPrimaryTableName() + "_" + getReferenceDescriptor().getPrimaryTableName();
+        
+        // Process any table defaults and log warning messages.
+        processTable(m_joinTable, defaultName);
+        
+        // Set the table on the mapping.
+        mapping.setRelationTable(m_joinTable.getDatabaseTable());
+        
+        // Add all the joinColumns (source foreign keys) to the mapping.
+        String defaultSourceFieldName;
+        if (getReferenceDescriptor().hasBiDirectionalManyToManyAccessorFor(getJavaClassName(), getAttributeName())) {
+            defaultSourceFieldName = getReferenceDescriptor().getBiDirectionalManyToManyAccessor(getJavaClassName(), getAttributeName()).getAttributeName();
+        } else {
+            defaultSourceFieldName = getDescriptor().getAlias();
+        }
+        addManyToManyRelationKeyFields(processJoinColumns(m_joinTable.getJoinColumns(), getOwningDescriptor()), mapping, defaultSourceFieldName, getOwningDescriptor(), true);
+        
+        // Add all the inverseJoinColumns (target foreign keys) to the mapping.
+        String defaultTargetFieldName = getAttributeName();
+        addManyToManyRelationKeyFields(processJoinColumns(m_joinTable.getInverseJoinColumns(), getReferenceDescriptor()), mapping, defaultTargetFieldName, getReferenceDescriptor(), false);
+    }
+    
+    /**
+     * INTERNAL:
      * Front end validation before actually processing the relationship 
      * accessor. The process() method should not be called directly.
      */
@@ -303,53 +402,6 @@ public abstract class RelationshipAccessor extends MappingAccessor {
                 // do nothing ... I'm too lazy (or too stupid) to do the negation of this expression :-)
             } else { 
                 process();
-            }
-            
-            // Set its processing completed flag to avoid double processing.
-            setIsProcessed();
-        }
-    }
-
-    /**
-     * INTERNAL:
-     * Process the @JoinColumn(s) for the owning side of a unidirectional one to many mapping.
-     * The default pk used only with single primary key 
-     * entities. The processor should never get as far as to use them with 
-     * entities that have a composite primary key (validation exception will be 
-     * thrown).
-     */
-    protected void processUnidirectionalOneToManyTargetForeignKeyRelationship(UnidirectionalOneToManyMapping mapping) {         
-        // If the pk field (name) is not specified, it 
-        // defaults to the primary key of the source table.
-        String defaultPKFieldName = getDescriptor().getPrimaryKeyFieldName();
-        
-        // If the fk field (name) is not specified, it defaults to the 
-        // concatenation of the following: the name of the referencing 
-        // relationship property or field of the referencing entity; "_"; 
-        // the name of the referenced primary key column.
-        String defaultFKFieldName = getUpperCaseAttributeName() + "_" + defaultPKFieldName;
-            
-        // Join columns will come from a @JoinColumn(s).
-        // Add the source foreign key fields to the mapping.
-        for (JoinColumnMetadata joinColumn : processJoinColumns()) {
-            DatabaseField pkField = joinColumn.getPrimaryKeyField();
-            pkField.setName(getName(pkField, defaultPKFieldName, MetadataLogger.PK_COLUMN));
-            pkField.setTable(getDescriptor().getPrimaryKeyTable());
-            
-            DatabaseField fkField = joinColumn.getForeignKeyField();
-            fkField.setName(getName(fkField, defaultFKFieldName, MetadataLogger.FK_COLUMN));
-            // Set the table name if one is not already set.
-            if (fkField.getTableName().equals("")) {
-                fkField.setTable(getReferenceDescriptor().getPrimaryTable());
-            }
-            
-            // Add target foreign key to the mapping.
-            mapping.addTargetForeignKeyField(fkField, pkField);
-            
-            // If any of the join columns is marked read-only then set the 
-            // mapping to be read only.
-            if (fkField.isReadOnly()) {
-                mapping.setIsReadOnly(true);
             }
         }
     }
@@ -420,6 +472,14 @@ public abstract class RelationshipAccessor extends MappingAccessor {
      */
     public void setJoinFetch(Enum joinFetch) {
         m_joinFetch = joinFetch;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setJoinTable(JoinTableMetadata joinTable) {
+        m_joinTable = joinTable;
     }
     
     /**

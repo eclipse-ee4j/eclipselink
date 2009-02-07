@@ -481,6 +481,10 @@
 		</xsd:annotation>
 		<xsd:sequence>
 			<xsd:element name="column" type="orm:column" minOccurs="0" />
+			<xsd:element name="attribute-override" type="orm:attribute-override" 
+			    minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="association-override" type="orm:association-override" 
+                minOccurs="0" maxOccurs="unbounded"/>
 			<xsd:choice>
 				<xsd:element name="order-by" type="orm:order-by" minOccurs="0" />
 				<xsd:element name="order-column" type="orm:order-column"
@@ -503,7 +507,7 @@
 				minOccurs="0" />
 		</xsd:sequence>
 		<xsd:attribute name="name" type="xsd:string" use="required" />
-		<xsd:attribute name="target-entity" type="xsd:string" />
+		<xsd:attribute name="target-class" type="xsd:string" />
 		<xsd:attribute name="fetch" type="orm:fetch-type" />
 		<xsd:attribute name="access" type="orm:access-type" />
 	</xsd:complexType>

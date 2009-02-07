@@ -17,8 +17,10 @@
  *       - 241651: JPA 2.0 Access Type support
  *     12/12/2008-1.1 Guy Pelletier 
  *       - 249860: Implement table per class inheritance support.
- *     01/28/2009-1.1 Guy Pelletier 
+ *     01/28/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 1)
+ *     02/06/2009-2.0 Guy Pelletier 
+ *       - 248293: JPA 2.0 Element Collections (part 2)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -360,6 +362,8 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      */
     @Override
     public void process() {
+        setIsProcessed();
+        
         // Process the common class level attributes that an entity or
         // mapped superclass may define.
         processClassMetadata();

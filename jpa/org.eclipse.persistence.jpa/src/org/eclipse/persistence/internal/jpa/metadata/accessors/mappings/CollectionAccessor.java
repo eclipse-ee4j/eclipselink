@@ -13,18 +13,18 @@
  *       - 218084: Implement metadata merging functionality between mapping files
  *     06/20/2008-1.0 Guy Pelletier 
  *       - 232975: Failure when attribute type is generic
- *     01/28/2009-1.1 Guy Pelletier 
+ *     01/28/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 1)
+ *     02/06/2009-2.0 Guy Pelletier 
+ *       - 248293: JPA 2.0 Element Collections (part 2)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
 import java.lang.annotation.Annotation;
-import java.util.Map;
 import java.util.List;
 import java.util.StringTokenizer;
 
 import javax.persistence.FetchType;
-import javax.persistence.JoinTable;
 import javax.persistence.MapKey;
 import javax.persistence.MapKeyClass;
 import javax.persistence.MapKeyColumn;
@@ -32,7 +32,6 @@ import javax.persistence.OrderBy;
 import javax.persistence.OrderColumn;
 
 import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.helper.DatabaseField;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
@@ -42,12 +41,8 @@ import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
-
-import org.eclipse.persistence.internal.jpa.metadata.tables.JoinTableMetadata;
 
 import org.eclipse.persistence.mappings.CollectionMapping;
-import org.eclipse.persistence.mappings.ManyToManyMapping;
 
 /**
  * INTERNAL:
@@ -77,8 +72,6 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
     private String m_orderBy;
     private String m_mapKeyClassName;
     
-    private JoinTableMetadata m_joinTable;
-    
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -95,21 +88,14 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
         
         m_mappedBy = (annotation == null) ? "" : (String) MetadataHelper.invokeMethod("mappedBy", annotation);
         
-        // Set the join table if one is present.
-        if (isAnnotationPresent(JoinTable.class)) {
-            m_joinTable = new JoinTableMetadata(getAnnotation(JoinTable.class), accessibleObject);
-        }
-        
         // Set the order if one is present.
-        Annotation orderBy = getAnnotation(OrderBy.class);
-        if (orderBy != null) {
-            m_orderBy = (String) MetadataHelper.invokeMethod("value", orderBy);
+        if (isAnnotationPresent(OrderBy.class)) {
+            m_orderBy = (String) MetadataHelper.invokeMethod("value", getAnnotation(OrderBy.class));
         }
         
         // Set the map key if one is present.
-        Annotation mapKey = getAnnotation(MapKey.class);
-        if (mapKey != null) {
-            m_mapKey = (String) MetadataHelper.invokeMethod("name", mapKey);
+        if (isAnnotationPresent(MapKey.class)) {
+            m_mapKey = (String) MetadataHelper.invokeMethod("name", getAnnotation(MapKey.class));
         }
         
         // Set the map key column if one is defined.
@@ -130,68 +116,10 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
     
     /**
      * INTERNAL:
-     * 
-     * Add the relation key fields to a many to many mapping.
-     */
-    protected void addManyToManyRelationKeyFields(List<JoinColumnMetadata> joinColumns, ManyToManyMapping mapping, String defaultFieldName, MetadataDescriptor descriptor, boolean isSource) {
-        // Set the right context level.
-        String PK_CTX, FK_CTX;
-        if (isSource) {
-            PK_CTX = MetadataLogger.SOURCE_PK_COLUMN;
-            FK_CTX = MetadataLogger.SOURCE_FK_COLUMN;
-        } else {
-            PK_CTX = MetadataLogger.TARGET_PK_COLUMN;
-            FK_CTX = MetadataLogger.TARGET_FK_COLUMN;
-        }
-        
-        for (JoinColumnMetadata joinColumn : joinColumns) {
-            // If the pk field (referencedColumnName) is not specified, it 
-            // defaults to the primary key of the referenced table.
-            String defaultPKFieldName = descriptor.getPrimaryKeyFieldName();
-            DatabaseField pkField = joinColumn.getPrimaryKeyField();
-            pkField.setName(getName(pkField, defaultPKFieldName, PK_CTX));
-            pkField.setTable(descriptor.getPrimaryKeyTable());
-            
-            // If the fk field (name) is not specified, it defaults to the 
-            // name of the referencing relationship property or field of the 
-            // referencing entity + "_" + the name of the referenced primary 
-            // key column. If there is no such referencing relationship 
-            // property or field in the entity (i.e., a join table is used), 
-            // the join column name is formed as the concatenation of the 
-            // following: the name of the entity + "_" + the name of the 
-            // referenced primary key column.
-            DatabaseField fkField = joinColumn.getForeignKeyField();
-            String defaultFKFieldName = defaultFieldName + "_" + defaultPKFieldName;
-            fkField.setName(getName(fkField, defaultFKFieldName, FK_CTX));
-            // Target table name here is the join table name.
-            // If the user had specified a different table name in the join
-            // column, it is ignored. Perhaps an error or warning should be
-            // fired off.
-            fkField.setTable(mapping.getRelationTable());
-            
-            // Add a target relation key to the mapping.
-            if (isSource) {
-                mapping.addSourceRelationKeyField(fkField, pkField);
-            } else {
-                mapping.addTargetRelationKeyField(fkField, pkField);
-            }
-        }
-    }
-    
-    /**
-     * INTERNAL:
      * Return the default fetch type for a collection mapping.
      */
     public Enum getDefaultFetchType() {
         return FetchType.valueOf("LAZY");
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public JoinTableMetadata getJoinTable() {
-        return m_joinTable;
     }
     
     /**
@@ -300,7 +228,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
      * Return true if this accessor uses a Map.
      */
     public boolean isMapCollectionAccessor() {
-        return getRawClass().equals(Map.class);
+        return getAccessibleObject().isSupportedDirectMapClass(getDescriptor());
     }
     
     /**
@@ -311,7 +239,6 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
         super.initXMLObject(accessibleObject);
         
         // Initialize single ORMetadata objects.
-        initXMLObject(m_joinTable, accessibleObject);
         initXMLObject(m_mapKeyColumn, accessibleObject);
         initXMLObject(m_orderColumn, accessibleObject);
         
@@ -361,40 +288,9 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
         
         // Process a @ReturnInsert and @ReturnUpdate (to log a warning message)
         processReturnInsertAndUpdate();
-    }
-    
-    /**
-     * INTERNAL:
-     * Process a MetadataJoinTable.
-     */
-    protected void processJoinTable(ManyToManyMapping mapping) {
-        // Check that we loaded a join table otherwise default one.
-        if (m_joinTable == null) {
-            // TODO: Log a defaulting message.
-            m_joinTable = new JoinTableMetadata(null, getAccessibleObject());
-        }
         
-        // Build the default table name
-        String defaultName = getDescriptor().getPrimaryTableName() + "_" + getReferenceDescriptor().getPrimaryTableName();
-        
-        // Process any table defaults and log warning messages.
-        processTable(m_joinTable, defaultName);
-        
-        // Set the table on the mapping.
-        mapping.setRelationTable(m_joinTable.getDatabaseTable());
-        
-        // Add all the joinColumns (source foreign keys) to the mapping.
-        String defaultSourceFieldName;
-        if (getReferenceDescriptor().hasBiDirectionalManyToManyAccessorFor(getJavaClassName(), getAttributeName())) {
-            defaultSourceFieldName = getReferenceDescriptor().getBiDirectionalManyToManyAccessor(getJavaClassName(), getAttributeName()).getAttributeName();
-        } else {
-            defaultSourceFieldName = getDescriptor().getAlias();
-        }
-        addManyToManyRelationKeyFields(processJoinColumns(m_joinTable.getJoinColumns(), getOwningDescriptor()), mapping, defaultSourceFieldName, getOwningDescriptor(), true);
-        
-        // Add all the inverseJoinColumns (target foreign keys) to the mapping.
-        String defaultTargetFieldName = getAttributeName();
-        addManyToManyRelationKeyFields(processJoinColumns(m_joinTable.getInverseJoinColumns(), getReferenceDescriptor()), mapping, defaultTargetFieldName, getReferenceDescriptor(), false);
+        // Add the mapping to the descriptor.
+        addMapping(mapping);
     }
     
     /**
@@ -501,14 +397,6 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
             }
         }
     } 
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public void setJoinTable(JoinTableMetadata joinTable) {
-        m_joinTable = joinTable;
-    }
     
     /**
      * INTERNAL:

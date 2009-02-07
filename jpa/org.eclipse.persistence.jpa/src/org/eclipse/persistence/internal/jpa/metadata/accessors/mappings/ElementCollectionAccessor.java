@@ -8,14 +8,15 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     01/28/2009-1.1 Guy Pelletier 
+ *     01/28/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 1) 
+ *     02/06/2009-2.0 Guy Pelletier 
+ *       - 248293: JPA 2.0 Element Collections (part 2)
  ******************************************************************************/ 
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -100,7 +101,6 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor {
         
         // Set the attribute overrides if some are present.
         m_attributeOverrides = new ArrayList<AttributeOverrideMetadata>();
-        
         // Set the attribute overrides first if defined.
         if (isAnnotationPresent(AttributeOverrides.class)) {
             for (Annotation attributeOverride : (Annotation[]) MetadataHelper.invokeMethod("value", getAnnotation(AttributeOverrides.class))) {
@@ -115,7 +115,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor {
         
         // Set the association overrides if some are present.
         m_associationOverrides = new ArrayList<AssociationOverrideMetadata>();
-        
+        // Set the association overrides first if defined.
         if (isAnnotationPresent(AssociationOverrides.class)) {
             for (Annotation associationOverride : (Annotation[]) MetadataHelper.invokeMethod("value", getAnnotation(AssociationOverrides.class))) {
                 m_associationOverrides.add(new AssociationOverrideMetadata(associationOverride, accessibleObject));
@@ -398,7 +398,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor {
     @Override
     public void process() {
         if (isDirectEmbeddableCollection()) { 
-            processDirectEmbeddableCollectionMapping();
+            processDirectEmbeddableCollectionMapping(getReferenceDescriptor());
         } else if (isValidDirectCollectionType()) {
             processDirectCollectionMapping();
         } else if (isValidDirectMapType()) {
@@ -406,78 +406,6 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor {
         } else {
             throw ValidationException.invalidTargetClass(getAttributeName(), getJavaClass());
         }
-    }
-    
-    /**
-     * INTERNAL:
-     * Process the list of association overrides into a map, merging and 
-     * overriding any attribute overrides where necessary.
-     * TODO: This code should look for duplicates??
-     */
-    protected Map<String, AssociationOverrideMetadata> processAssociationOverrides() {
-        HashMap<String, AssociationOverrideMetadata> associationOverrides = new HashMap<String, AssociationOverrideMetadata>();
-        
-        for (AssociationOverrideMetadata associationOverride : m_associationOverrides) {
-            String name = associationOverride.getName();
-            
-            if (getClassAccessor().isMappedSuperclass() && getDescriptor().hasAssociationOverrideFor(name)) {
-                // TODO: Log an override message.
-                associationOverrides.put(name, getDescriptor().getAssociationOverrideFor(name));
-            } else {
-                associationOverrides.put(name, associationOverride);
-            }
-        }
-        
-        // Now add every other descriptor association override that didn't 
-        // override a mapping level one (if we are processing a mapping from
-        // a mapped superclass level)
-        if (getClassAccessor().isMappedSuperclass()) {
-            for (AssociationOverrideMetadata associationOverride : getDescriptor().getAssociationOverrides()) {
-                String name = associationOverride.getName();
-                
-                if (! associationOverrides.containsKey(name)) {
-                    associationOverrides.put(name, associationOverride);
-                }
-            }
-        }
-        
-        return associationOverrides;
-    }
-    
-    /**
-     * INTERNAL:
-     * Process the list of attribute overrides into a map, merging and 
-     * overriding any attribute overrides where necessary.
-     * TODO: This code should look for duplicates??
-     */
-    protected Map<String, AttributeOverrideMetadata> processAttributeOverrides() {
-        HashMap<String, AttributeOverrideMetadata> attributeOverrides = new HashMap<String, AttributeOverrideMetadata>();
-        
-        for (AttributeOverrideMetadata attributeOverride : m_attributeOverrides) {
-            String name = attributeOverride.getName();
-            
-            if (getClassAccessor().isMappedSuperclass() && getDescriptor().hasAttributeOverrideFor(name)) {
-                // TODO: Log an override message
-                attributeOverrides.put(name, getDescriptor().getAttributeOverrideFor(name));
-            } else {
-                attributeOverrides.put(name, attributeOverride);
-            }
-        }
-        
-        // Now add every other descriptor attribute override that didn't 
-        // override a mapping level one (if we are processing a mapping from
-        // a mapped superclass level)
-        if (getClassAccessor().isMappedSuperclass()) {
-            for (AttributeOverrideMetadata attributeOverride : getDescriptor().getAttributeOverrides()) {
-                String name = attributeOverride.getName();
-                
-                if (! attributeOverrides.containsKey(name)) {
-                    attributeOverrides.put(name, attributeOverride);
-                }
-            }
-        }
-        
-        return attributeOverrides;
     }
     
     /**
@@ -527,68 +455,100 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor {
     /**
      * INTERNAL:
      */
-    protected void processDirectEmbeddableCollectionMapping() {
-        // Get the embeddable accessor from the project.
-        EmbeddableAccessor embeddableAccessor = getEmbeddableAccessor();
-        
+    protected void processDirectEmbeddableCollectionMapping(MetadataDescriptor referenceDescriptor) {
         // Initialize our mapping.
-        AggregateCollectionMapping embeddableMapping = new AggregateCollectionMapping();
-        
-        // Make sure to mark the descriptor as an embeddable collection descriptor.
-        embeddableAccessor.getDescriptor().setIsEmbeddableCollection();
+        AggregateCollectionMapping mapping = new AggregateCollectionMapping();
         
         // Process common direct collection metadata. This must be done 
         // before any field processing since field processing requires that 
         // the collection table be processed before hand.
-        process(embeddableMapping);
+        process(mapping);
 
         // Set the reference class name.
-        embeddableMapping.setReferenceClassName(getReferenceClassName());
+        mapping.setReferenceClassName(getReferenceClassName());
         
         // Process the fetch type and set the correct indirection on the mapping.
-        setIndirectionPolicy(embeddableMapping, null, usesIndirection());
+        setIndirectionPolicy(mapping, null, usesIndirection());
+        
+        // Make sure to mark the descriptor as an embeddable collection descriptor.
+        referenceDescriptor.setIsEmbeddableCollection();
         
         // Process the mappings from the embeddable to setup the field name 
         // translations. Before we do that lets process the attribute and
         // association overrides that are available to us and that may be used
         // to override any field name translations.
-        processMappingsFromEmbeddable(embeddableAccessor, embeddableMapping, processAttributeOverrides(), processAssociationOverrides(), "");
+        processMappingsFromEmbeddable(referenceDescriptor, null, mapping, processAttributeOverrides(m_attributeOverrides), processAssociationOverrides(m_associationOverrides), "");
         
-        // TODO: if it is an aggregate map, then we need to set the key field
-        // and process a converter for it. Value converter would not apply.
-        
-        // Process properties.
-        processProperties(embeddableMapping);
+        // TODO: Need to implement support this functionality.
+        if (isValidDirectMapType()) {
+            // TODO: Need the notion of a direct key field
+            // TODO: Need to process the ConvertKey annotation.
+        }
     }
     
     /**
      * INTERNAL:
      */
-    protected void processMappingsFromEmbeddable(EmbeddableAccessor embeddableAccessor, EmbeddableMapping embeddableMapping, Map<String, AttributeOverrideMetadata> attributeOverrides, Map<String, AssociationOverrideMetadata> associationOverrides, String dotNotation) {        
-        for (DatabaseMapping mapping : (List<DatabaseMapping>) embeddableAccessor.getDescriptor().getMappings()) {
-            String overrideName = dotNotation + mapping.getAttributeName();
+    protected void processMappingsFromEmbeddable(MetadataDescriptor embeddableDescriptor, AggregateObjectMapping nestedAggregateObjectMapping, EmbeddableMapping embeddableMapping, Map<String, AttributeOverrideMetadata> attributeOverrides, Map<String, AssociationOverrideMetadata> associationOverrides, String dotNotationName) {        
+        for (MappingAccessor mappingAccessor : embeddableDescriptor.getAccessors()) {
+            // Fast track any mapping accessor that hasn't been processed at
+            // this point. The only accessors that can't be processed here are
+            // nested embedded or element collection accessors.
+            if (! mappingAccessor.isProcessed()) {
+                mappingAccessor.process();
+            }
+            
+            // Now you can safely grab the mapping off the accessor.
+            DatabaseMapping mapping = mappingAccessor.getMapping();
+            
+            // Figure out what our override name is to ensure we find and 
+            // apply the correct override metadata.
+            String overrideName = (dotNotationName.equals("")) ? mapping.getAttributeName() : dotNotationName + "." + mapping.getAttributeName();
             
             if (mapping.isDirectToFieldMapping()) {
-                AttributeOverrideMetadata attributeOverride = attributeOverrides.get(overrideName);
+                // Regardless if we have an attribute override or not we
+                // add field name translations for every mapping to ensure
+                // we have the correct table name set for each field.
+                DirectToFieldMapping directMapping = (DirectToFieldMapping) mapping;
                 
-                if (attributeOverride == null) {
-                    DatabaseField directFieldClone = (DatabaseField) ((DirectToFieldMapping) mapping).getField().clone();
-                    addFieldNameTranslation(embeddableMapping, directFieldClone, m_collectionTable.getDatabaseTable(), mapping);
+                DatabaseField overrideField;
+                if (attributeOverrides.containsKey(overrideName)) {
+                    // We have an explicit attribute override we must apply.
+                    overrideField = attributeOverrides.get(overrideName).getOverrideField();
                 } else {
-                    addFieldNameTranslation(embeddableMapping, attributeOverride.getOverrideField(), m_collectionTable.getDatabaseTable(), mapping);
+                    // If the nested aggregate object mapping defined an 
+                    // attribute override use the override field it set (and 
+                    // qualify it with our collection table. Otherwise, default 
+                    // a field name translation using the name of the field on 
+                    // the mapping.
+                    overrideField = (DatabaseField) directMapping.getField().clone();
+                    
+                    if (nestedAggregateObjectMapping != null && nestedAggregateObjectMapping.getAggregateToSourceFieldNames().containsKey(overrideField.getName())) {
+                        overrideField = new DatabaseField(nestedAggregateObjectMapping.getAggregateToSourceFieldNames().get(overrideField.getName()));
+                    } 
                 }
+                
+                // Add the aggregate collection table field if one hasn't 
+                // already been set.
+                if (! overrideField.hasTableName()) {
+                    overrideField.setTable(m_collectionTable.getDatabaseTable());
+                }
+                
+                addFieldNameTranslation(embeddableMapping, overrideName, overrideField, mapping);
             } else if (mapping.isOneToOneMapping()) {
-                if (((OneToOneMapping) mapping).isForeignKeyRelationship()) {
+                OneToOneMapping oneToOneMapping = (OneToOneMapping) mapping;
+                
+                if (oneToOneMapping.isForeignKeyRelationship()) {
                     AssociationOverrideMetadata associationOverride = associationOverrides.get(overrideName);
                     
                     if (associationOverride == null) {
-                        for (DatabaseField fkField : ((OneToOneMapping) mapping).getForeignKeyFields()) {
+                        for (DatabaseField fkField : oneToOneMapping.getForeignKeyFields()) {
                             DatabaseField collectionTableField = (DatabaseField) fkField.clone();
                             collectionTableField.setTable(m_collectionTable.getDatabaseTable());
                             embeddableMapping.addFieldNameTranslation(collectionTableField.getQualifiedName(), fkField.getName());
                         }
                     } else {
-                        processAssociationOverride(associationOverride, embeddableMapping, m_collectionTable.getDatabaseTable(), embeddableAccessor.getDescriptor());
+                        processAssociationOverride(associationOverride, embeddableMapping, mapping, m_collectionTable.getDatabaseTable(), embeddableDescriptor);
                     }
                 } else {
                     // Section 2.6 of the spec states: "An embeddable class (including an embeddable class within 
@@ -596,15 +556,15 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor {
                     // collection, nor may it contain a relationship to an entity other than a many-to-one or 
                     // one-to-one relationship. The embeddable class must be on the owning side of such a 
                     // relationship and the relationship must be mapped by a foreign key mapping."
-                    throw ValidationException.invalidEmbeddableClassForElementCollection(embeddableAccessor.getJavaClass(), getAttributeName(), getJavaClass(), mapping.getAttributeName());
+                    throw ValidationException.invalidEmbeddableClassForElementCollection(embeddableDescriptor.getJavaClass(), getAttributeName(), getJavaClass(), mapping.getAttributeName());
                 }
             } else if (mapping.isAggregateObjectMapping()) {
-                EmbeddableAccessor nestedEmbeddableAccessor = getProject().getEmbeddableAccessor(((AggregateObjectMapping) mapping).getReferenceClass());
-                nestedEmbeddableAccessor.getDescriptor().setIsEmbeddableCollection();
-                processMappingsFromEmbeddable(nestedEmbeddableAccessor, embeddableMapping, attributeOverrides, associationOverrides, overrideName + ".");
+                MappingAccessor accessor = embeddableDescriptor.getAccessorFor(mapping.getAttributeName());
+                processMappingsFromEmbeddable(accessor.getReferenceDescriptor(), (AggregateObjectMapping) mapping, embeddableMapping, attributeOverrides, associationOverrides, overrideName);
             } else {
+                // TODO: mapping.isAggregateCollectionMapping. We could handle this case.
                 // See comment above about section 2.6
-                throw ValidationException.invalidEmbeddableClassForElementCollection(embeddableAccessor.getJavaClass(), getAttributeName(), getJavaClass(), mapping.getAttributeName());
+                throw ValidationException.invalidEmbeddableClassForElementCollection(embeddableDescriptor.getJavaClass(), getAttributeName(), getJavaClass(), mapping.getAttributeName());
             }
         }
     }

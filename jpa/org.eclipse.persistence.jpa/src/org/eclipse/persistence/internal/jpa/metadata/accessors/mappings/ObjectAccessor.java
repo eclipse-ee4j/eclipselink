@@ -13,6 +13,8 @@
  *       - 218084: Implement metadata merging functionality between mapping files
  *     09/23/2008-1.1 Guy Pelletier 
  *       - 241651: JPA 2.0 Access Type support
+ *     02/06/2009-2.0 Guy Pelletier 
+ *       - 248293: JPA 2.0 Element Collections (part 2)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -23,6 +25,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import javax.persistence.FetchType;
+import javax.persistence.Id;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.PrimaryKeyJoinColumns;
 
@@ -52,26 +55,10 @@ import org.eclipse.persistence.mappings.OneToOneMapping;
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public abstract class ObjectAccessor extends RelationshipAccessor {
-    private Boolean m_isId;
+    private Boolean m_id;
     private Boolean m_isOptional;
     private List<PrimaryKeyJoinColumnMetadata> m_primaryKeyJoinColumns = new ArrayList<PrimaryKeyJoinColumnMetadata>();
     private String m_mappedById;
-    
-    /**
-     * INTERNAL:
-     * Checks if this accessor is part of the Id
-     */
-    public boolean isId(){
-        if (m_isId == null) {
-            return false;
-        } else {
-            return m_isId.booleanValue();
-        }
-    }
-
-    public void setIsId(Boolean isId){
-        this.m_isId = isId;
-    }
     
     /**
      * INTERNAL:
@@ -102,6 +89,9 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
         if (primaryKeyJoinColumn != null) {
             m_primaryKeyJoinColumns.add(new PrimaryKeyJoinColumnMetadata(primaryKeyJoinColumn, accessibleObject));
         }
+        
+        // Check for a derived id (@Id) setting.
+        m_id = isAnnotationPresent(Id.class);
     }
     
     /**
@@ -112,8 +102,11 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
         return FetchType.valueOf("EAGER");
     }
     
-    public Boolean getIsId(){
-        return this.m_isId;
+    /**
+     * INTERNAL:
+     */
+    public Boolean getId(){
+        return m_id;
     }
     
     /**
@@ -162,6 +155,24 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
     
     /**
      * INTERNAL:
+     * Used to process primary keys and DerivedIds.
+     */
+    protected Class getSimplePKType(){
+        MetadataDescriptor referenceDescriptor = this.getReferenceDescriptor();
+        org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor referenceAccessor;
+        referenceAccessor = referenceDescriptor.getClassAccessor();
+        
+        if (referenceAccessor.hasDerivedId()){
+            //referenced object has a derived ID and must be a simple pk type.  Recurse through to get the simple type
+            ObjectAccessor refIdAccessor = (ObjectAccessor)referenceDescriptor.getAccessorFor(referenceDescriptor.getIdAttributeName());
+            return refIdAccessor.getSimplePKType();
+        } else {//validate on their basic mapping:
+            return  referenceDescriptor.getAccessorFor(referenceDescriptor.getIdAttributeName()).getRawClass();
+        }
+    }
+    
+    /**
+     * INTERNAL:
      * Initialize a OneToOneMapping.
      */
     protected OneToOneMapping initOneToOneMapping() {
@@ -172,8 +183,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
         mapping.setIsOptional(isOptional());
         mapping.setAttributeName(getAttributeName());
         mapping.setReferenceClassName(getReferenceClassName());
-        //Derived ID: set if this mapping has been marked as an ID 
-        mapping.setIsIDMapping(isId());
+        mapping.setIsIDMapping(isDerivedId());
         
         // Process the indirection.
         processIndirection(mapping);
@@ -203,6 +213,15 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
     
     /**
      * INTERNAL:
+     * Return true is this accessor is a derived id accessor.
+     */
+    @Override
+    public boolean isDerivedId() {
+        return m_id != null && m_id;
+    }
+    
+    /**
+     * INTERNAL:
      * Return true if this accessor represents a 1-1 primary key relationship.
      */
     public boolean isOneToOnePrimaryKeyRelationship() {
@@ -213,11 +232,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
      * INTERNAL:
      */
     public boolean isOptional() {
-        if (m_isOptional == null) {
-            return true;
-        } else {
-            return m_isOptional.booleanValue();
-        }
+        return m_isOptional != null && m_isOptional;
     }
     
     /**
@@ -238,6 +253,62 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
         }
         
         mapping.setIsLazy(isLazy());
+    }
+    
+    /**
+     * INTERNAL:
+     * Used to process primary keys and DerivedIds.
+     */
+    public void processKey(HashSet<ClassAccessor> processing, HashSet<ClassAccessor> processed){
+        MetadataDescriptor referenceDescriptor = this.getReferenceDescriptor();
+        ClassAccessor referenceAccessor = referenceDescriptor.getClassAccessor();
+        
+        if (!processed.contains(referenceAccessor)){
+            referenceAccessor.processDerivedIDs(processing, processed);
+        }
+
+        processRelationship();
+        String attributeName = getAttributeName();
+
+        // If this entity has a pk class, we need to validate our ids. 
+        String keyname = referenceDescriptor.getPKClassName();
+
+        if (keyname != null) {
+            //They have a pk class
+            String ourpkname = this.getDescriptor().getPKClassName();
+            if (ourpkname == null){
+                throw ValidationException.invalidCompositePKSpecification(getJavaClass(), ourpkname);
+            }
+            
+            if (! ourpkname.equals(keyname)){
+                //validate our pk contains their pk.
+                getOwningDescriptor().validatePKClassId(attributeName, referenceDescriptor.getPKClass());
+            } else {
+                //this pk is the reference pk, so all pk attributes are accounted through this relationship
+                getOwningDescriptor().getPKClassIDs().clear();
+            }
+        } else {
+            Type type = null;
+            if (referenceAccessor.hasDerivedId()){
+                //referenced object has a derived ID but no PK class defined
+                //so it must be a simple pk type.  Recurse through to get the simple type
+                ObjectAccessor refIdAccessor = (ObjectAccessor)referenceDescriptor.getAccessorFor(referenceDescriptor.getIdAttributeName() );
+                type = refIdAccessor.getSimplePKType();
+            } else {//validate on their basic mapping:
+                type = referenceDescriptor.getAccessorFor(referenceDescriptor.getIdAttributeName()).getRawClass();
+            }
+            
+            getOwningDescriptor().validatePKClassId(attributeName, type);
+        }
+
+        // Store the Id attribute name. Used with validation and OrderBy.
+        getOwningDescriptor().addIdAttributeName(attributeName);
+
+        // Add the primary key fields to the descriptor.  
+        ObjectReferenceMapping mapping = (ObjectReferenceMapping)this.getMapping();
+        for (DatabaseField pkField : mapping.getForeignKeyFields()){
+            getOwningDescriptor().addPrimaryKeyField(pkField);
+        }
     }
     
     /**
@@ -332,6 +403,15 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setId(Boolean id){
+        m_id = id;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
      */
     public void setMappedById(String mappedById){
         this.m_mappedById = mappedById;
@@ -357,6 +437,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
      * INTERNAL:
      * Used to process primary keys and DerivedIds.
      */
+    /*
     public void keyProcessing(HashSet<ClassAccessor> processing, HashSet<ClassAccessor> processed){
         MetadataDescriptor referenceDescriptor = this.getReferenceDescriptor();
         org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor referenceAccessor;
@@ -408,22 +489,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
             getOwningDescriptor().addPrimaryKeyField(pkField);
         }
     }
+    */
     
-    /**
-     * INTERNAL:
-     * Used to process primary keys and DerivedIds.
-     */
-    public Class getSimplePKType(){
-        MetadataDescriptor referenceDescriptor = this.getReferenceDescriptor();
-        org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor referenceAccessor;
-        referenceAccessor = referenceDescriptor.getClassAccessor();
-        
-        if (referenceAccessor.hasDerivedId()){
-            //referenced object has a derived ID and must be a simple pk type.  Recurse through to get the simple type
-            ObjectAccessor refIdAccessor = (ObjectAccessor)referenceDescriptor.m_accessors.get( referenceDescriptor.getIdAttributeName() );
-            return refIdAccessor.getSimplePKType();
-        } else {//validate on their basic mapping:
-            return  referenceDescriptor.m_accessors.get( referenceDescriptor.getIdAttributeName() ).getRawClass();
-        }
-    }
+
 }

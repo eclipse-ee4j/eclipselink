@@ -15,8 +15,10 @@
  *       - 211330: Add attributes-complete support to the EclipseLink-ORM.XML Schema
  *     09/23/2008-1.1 Guy Pelletier 
  *       - 241651: JPA 2.0 Access Type support
- *     01/28/2009-1.1 Guy Pelletier 
+ *     01/28/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 1)
+ *     02/06/2009-2.0 Guy Pelletier 
+ *       - 248293: JPA 2.0 Element Collections (part 2)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -704,12 +706,7 @@ public class MetadataProject {
             // EntityAccessor may get fast tracked if it is an inheritance
             // parent.
             if (! entity.isProcessed()) {
-                // Tell the entity to process itself ...
                 entity.process();
-                
-                // Once it's done, set the flag to processed to avoid multiple
-                // processing of the same entity.
-                entity.setIsProcessed();
             }
         }
     }
@@ -723,8 +720,9 @@ public class MetadataProject {
      * invocation here is very important here, see the comments.
      */
     public void processStage2() {
-        // 1 - Process accessors with IDs derived from relationships. This will finish
-        // up any stage1 processing that relied on the PK processing being complete as well
+        // 1 - Process accessors with IDs derived from relationships. This will 
+        // finish up any stage1 processing that relied on the PK processing 
+        // being complete as well
         processAccessorsWithDerivedIDs();
 
         // 2 - Process all the direct collection accessors we found. This list
@@ -761,30 +759,28 @@ public class MetadataProject {
      * Process the embeddable mapping accessors.
      */
     protected void processEmbeddableMappingAccessors() {
-        for (MappingAccessor mappingAccessor : this.m_embeddableMappingAccessors) {
+        for (MappingAccessor mappingAccessor : m_embeddableMappingAccessors) {
             if (! mappingAccessor.isProcessed()) {
                 mappingAccessor.process();
-                mappingAccessor.setIsProcessed();
             }
         }
     }
     
     /**
      * INTERNAL:
-     * Process descriptors with IDs derived from relationships.  This will also complete unfinished validation as well as 
-     * secondary table and basic collection processing
+     * Process descriptors with IDs derived from relationships.  This will also 
+     * complete unfinished validation as well as secondary table and basic 
+     * collection processing
      */
     protected void processAccessorsWithDerivedIDs() {
-        java.util.Iterator<ClassAccessor> i = getAccessorsWithDerivedIDs().iterator();
         HashSet<ClassAccessor> processed = new HashSet();
         HashSet<ClassAccessor> processing = new HashSet();
-        while (i.hasNext()) {
-            ClassAccessor classAccessor = i.next();
+        
+        for (ClassAccessor classAccessor : getAccessorsWithDerivedIDs()) {
             classAccessor.processDerivedIDs(processing, processed);
         }
     }
   
-
     /**
      * INTERNAL:
      * Process those accessors that have a convert value. A convert value is 
@@ -806,7 +802,6 @@ public class MetadataProject {
     public void processDirectCollectionAccessors() {
         for (DirectCollectionAccessor accessor : m_directCollectionAccessors) {
             accessor.process();
-            accessor.setIsProcessed();
         }
     }
     

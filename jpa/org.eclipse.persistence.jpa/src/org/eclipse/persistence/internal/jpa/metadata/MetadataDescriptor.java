@@ -25,8 +25,10 @@
  *       - 249329: To remain JPA 1.0 compliant, any new JPA 2.0 annotations should be referenced by name
  *     12/12/2008-1.1 Guy Pelletier 
  *       - 249860: Implement table per class inheritance support.
- *     01/28/2009-1.1 Guy Pelletier 
+ *     01/28/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 1)
+ *     02/06/2009-2.0 Guy Pelletier 
+ *       - 248293: JPA 2.0 Element Collections (part 2)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -119,18 +121,18 @@ public class MetadataDescriptor {
     private List<String> m_orderByAttributeNames;
     private List<String> m_idOrderByAttributeNames;
     private List<MetadataDescriptor> m_embeddableDescriptors;
+    private List<ObjectAccessor> m_derivedIDAccessors;
     
     private Class m_pkClass;
-    public Map<String, Type> m_pkClassIDs;
+    private Map<String, Type> m_pkClassIDs;
     private Map<String, Type> m_genericTypes;
-    public Map<String, MappingAccessor> m_accessors;
+    private Map<String, MappingAccessor> m_accessors;
     private Map<String, PropertyMetadata> m_properties;
     private Map<String, String> m_pkJoinColumnAssociations;
     private Map<String, AttributeOverrideMetadata> m_attributeOverrides;
     private Map<String, AssociationOverrideMetadata> m_associationOverrides;
     private Map<String, Map<String, MetadataAccessor>> m_biDirectionalManyToManyAccessors;
-    
-    private List<ObjectAccessor> m_derivedIDAccessors;
+
     /**
      * INTERNAL: 
      */
@@ -265,13 +267,6 @@ public class MetadataDescriptor {
      */
     public void addIdAttributeName(String idAttributeName) {
         m_idAttributeNames.add(idAttributeName);    
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public void addMapping(DatabaseMapping mapping) {
-        m_descriptor.addMapping(mapping);
     }
     
     /**
@@ -694,18 +689,28 @@ public class MetadataDescriptor {
         // We didn't find a mapping on our descriptor (or a parent descriptor), 
         // check our aggregate descriptors now.
         for (MetadataDescriptor embeddableDescriptor : m_embeddableDescriptors) {
-            DatabaseMapping mapping = embeddableDescriptor.getMappingForAttributeName(attributeName, referencingAccessor);
+            // If the attribute name employs the dot notation, rip off the first 
+            // bit (up to the first dot and keep burying down the embeddables)
+            String subAttributeName = new String(attributeName);
+            if (subAttributeName.contains(".")) {
+                subAttributeName = subAttributeName.substring(attributeName.indexOf(".") + 1);
+            }
+            
+            DatabaseMapping mapping = embeddableDescriptor.getMappingForAttributeName(subAttributeName, referencingAccessor);
             
             if (mapping != null) {
                 return mapping;
             }
         }
         
-        // We didn't find a mapping on the aggregate descriptors. If we are an
-        // inheritance subclass, check for a mapping on the inheritance root
-        // descriptor metadata.
-        if (isInheritanceSubclass()) {
-            return getInheritanceParentDescriptor().getMappingForAttributeName(attributeName, referencingAccessor);
+        // This is kinda catch all functionality. Probably could handle it a 
+        // bit better? 
+        // TODO; When do we hit this?
+        String subAttributeName = new String(attributeName);
+        if (subAttributeName.contains(".")) {
+            subAttributeName = subAttributeName.substring(attributeName.indexOf(".") + 1);
+            
+            return getMappingForAttributeName(subAttributeName, referencingAccessor);
         }
         
         // Found nothing ... return null.
@@ -737,6 +742,13 @@ public class MetadataDescriptor {
         }
         
         return pkClassName;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public Map<String, Type> getPKClassIDs() {
+        return m_pkClassIDs;
     }
     
     /**
@@ -1091,14 +1103,12 @@ public class MetadataDescriptor {
         
                 // Process any converters on this accessor.
                 accessor.processConverters();
-                if ( accessor.isId() || accessor.getAccessibleObject().isId(this) ){
-                    if (accessor.isManyToOne() || accessor.isOneToOne()) {
-                        ObjectAccessor objectAccessor = (ObjectAccessor)accessor;
-                        objectAccessor.setIsId(true);
-                        m_derivedIDAccessors.add(objectAccessor);
-                        m_classAccessor.getProject().addAccessorWithDerivedIDs(m_classAccessor);
-                    }
+                
+                if (accessor.isDerivedId()){
+                    m_derivedIDAccessors.add((ObjectAccessor) accessor);
+                    getProject().addAccessorWithDerivedIDs(m_classAccessor);
                 }
+                
                 //TODO: add mappedbyid handling
                 
                 // We need to defer the processing of some mappings to stage
@@ -1118,9 +1128,7 @@ public class MetadataDescriptor {
                         throw ValidationException.invalidEmbeddedAttribute(getJavaClass(), accessor.getAttributeName(), accessor.getReferenceClass());
                     } else {
                         // Process the embeddable class now.
-                        // Change this around a bit? Order seems to be backwards.
-                        embeddableAccessor.process(accessor);
-                        //accessor.processEmbeddableAccessor(embeddableAccessor);
+                        embeddableAccessor.process(owningDescriptor);
                     
                         // Store this descriptor metadata. It may be needed again 
                         // later on to look up a mappedBy attribute etc.
@@ -1135,7 +1143,6 @@ public class MetadataDescriptor {
                         if (accessor.isEmbeddedId()) {
                             // Process it right now ...
                             accessor.process();
-                            accessor.setIsProcessed();
                         } else {
                             // Otherwise defer it because of association overrides.
                             // We can't process this mapping till all the
@@ -1149,7 +1156,6 @@ public class MetadataDescriptor {
                     addRelationshipAccessor(accessor);
                 } else {
                     accessor.process();
-                    accessor.setIsProcessed();
                 }
             }
         }

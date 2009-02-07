@@ -128,6 +128,19 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         String unQualifiedAggregateFieldName = aggregateFieldName.substring(aggregateFieldName.lastIndexOf('.') + 1);// -1 is returned for no ".".
         getAggregateToSourceFieldNames().put(unQualifiedAggregateFieldName, sourceFieldName);
     }
+    
+    /**
+     * INTERNAL:
+     * Add a nested field name translation that maps from a field name in the
+     * source table to a field name in a nested aggregate descriptor. This 
+     * method is implemented only to satisfy the interface requirements and 
+     * calling this method yields the same result as calling 
+     * addFieldNameTranslation directly.
+     * @see addFieldNameTranslation
+     */
+    public void addNestedFieldNameTranslation(String attributeName, String sourceFieldName, String aggregateFieldName) {
+        addFieldNameTranslation(sourceFieldName, aggregateFieldName);
+    }
 
     /**
      * INTERNAL:
@@ -552,6 +565,23 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
 
     /**
      * INTERNAL:
+     * Clone the aggregate to source field names. AggregateCollectionMapping
+     * needs each nested embedded mapping to have its own  list of aggregate
+     * to source field names so that it can apply nested override names to
+     * shared aggregate object mappings.
+     */
+    public Object clone() {
+        AggregateObjectMapping mappingObject = (AggregateObjectMapping) super.clone();
+        
+        Map<String, String> aggregateToSourceFieldNames = new HashMap<String, String>();
+        aggregateToSourceFieldNames.putAll(getAggregateToSourceFieldNames());
+        mappingObject.setAggregateToSourceFieldNames(aggregateToSourceFieldNames);
+
+        return mappingObject;
+    }
+    
+    /**
+     * INTERNAL:
      * Return the fields handled by the mapping.
      */
     protected Vector<DatabaseField> collectFields() {
@@ -911,8 +941,9 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
                     && getReferenceDescriptor().getObjectChangePolicy().getClass().equals(AttributeChangeTrackingPolicy.class)) {
                 getReferenceDescriptor().setObjectChangePolicy(new ObjectChangeTrackingPolicy());
             }
+            
             getReferenceDescriptor().postInitialize(session);
-        }
+        } 
     }
     
     /**

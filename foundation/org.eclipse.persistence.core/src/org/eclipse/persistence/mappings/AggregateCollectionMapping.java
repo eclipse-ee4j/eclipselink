@@ -71,6 +71,8 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * Default constructor.
      */
     public AggregateCollectionMapping() {
+        this.aggregateToSourceFieldNames = new HashMap(5);
+        this.nestedAggregateToSourceFieldNames = new HashMap<String, Map<String, String>>(5);
         this.targetForeignKeyToSourceKeys = new HashMap(5);
         this.sourceKeyFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
         this.targetForeignKeyFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
@@ -92,9 +94,6 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * to a field name in the source table.
      */
     public void addFieldNameTranslation(String sourceFieldName, String aggregateFieldName) {
-        if(aggregateToSourceFieldNames == null) {
-            aggregateToSourceFieldNames = new HashMap(5); 
-        }
         aggregateToSourceFieldNames.put(aggregateFieldName, sourceFieldName);
     }
 
@@ -104,11 +103,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * to a field name in the source table.
      */
     public void addFieldNameTranslations(Map<String, String> map) {
-        if(aggregateToSourceFieldNames == null) {
-            aggregateToSourceFieldNames = map; 
-        } else {
-            aggregateToSourceFieldNames.putAll(map);
-        }
+        aggregateToSourceFieldNames.putAll(map);
     }
 
     /**
@@ -117,14 +112,13 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * that should be applied to this mapping.
      */
     public void addNestedFieldNameTranslation(String attributeName, String sourceFieldName, String aggregateFieldName) {
-        if(nestedAggregateToSourceFieldNames == null) {
-            nestedAggregateToSourceFieldNames = new HashMap<String, Map<String, String>>(5); 
-        }
         Map<String, String> attributeFieldNameTranslation = nestedAggregateToSourceFieldNames.get(attributeName);
-        if(attributeFieldNameTranslation == null) {
+        
+        if (attributeFieldNameTranslation == null) {
             attributeFieldNameTranslation = new HashMap<String, String>(5);
             nestedAggregateToSourceFieldNames.put(attributeName, attributeFieldNameTranslation);
         }
+        
         attributeFieldNameTranslation.put(aggregateFieldName, sourceFieldName);
     }
 
@@ -134,11 +128,8 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * that should be applied to this mapping.
      */
     public void addNestedFieldNameTranslations(String attributeName, Map<String, String> map) {
-        if(nestedAggregateToSourceFieldNames == null) {
-            nestedAggregateToSourceFieldNames = new HashMap<String, Map<String, String>>(5); 
-        }
         Map<String, String> attributeFieldNameTranslation = nestedAggregateToSourceFieldNames.get(attributeName);
-        if(attributeFieldNameTranslation == null) {
+        if (attributeFieldNameTranslation == null) {
             nestedAggregateToSourceFieldNames.put(attributeName, map);
         } else {
             attributeFieldNameTranslation.putAll(map);
@@ -836,7 +827,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         if(getReferenceDescriptor().getTables() != null) {
             nAggregateTables = getReferenceDescriptor().getTables().size();
         }
-        if(this.aggregateToSourceFieldNames != null) {
+        if (! aggregateToSourceFieldNames.isEmpty()) {
             DatabaseTable aggregateDefaultTable = null;
             if(nAggregateTables != 0) {
                 aggregateDefaultTable = getReferenceDescriptor().getTables().get(0);
@@ -879,9 +870,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
             translateTablesAndFields(clonedDescriptor, fieldTranslation, tableTranslation); 
         }
         
-        if(this.nestedAggregateToSourceFieldNames != null) {
-            updateNestedAggregateCollectionMappings(clonedDescriptor);
-        }
+        updateNestedAggregateMappings(clonedDescriptor, session);
         
         if (clonedDescriptor.isChildDescriptor()) {
             ClassDescriptor parentDescriptor = session.getDescriptor(clonedDescriptor.getInheritancePolicy().getParentClass());
@@ -969,72 +958,71 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     /**
      * INTERNAL:
      * Called in case nestedAggregateToSourceFieldNames != null
-     * Updates AggregateCollectionMappings of the reference descriptor.  
+     * Updates AggregateObjectMappings and AggregateCollectionMappings of the 
+     * reference descriptor.  
      */
-    protected void updateNestedAggregateCollectionMappings(ClassDescriptor descriptor) {
-        Iterator<Map.Entry<String, Map<String, String>>> it = nestedAggregateToSourceFieldNames.entrySet().iterator();
-        while(it.hasNext()) {
-            Map.Entry<String, Map<String, String>> entry = it.next();
-            String attribute = entry.getKey();
-            String nestedAttribute = null;
-            int indexOfDot = attribute.indexOf('.'); 
-            // attribute "homes.sellingPonts" is divided into attribute "homes" and nestedAttribute "sellingPoints" 
-            if(indexOfDot >= 0) {
-                nestedAttribute = attribute.substring(indexOfDot + 1, attribute.length());
-                attribute = attribute.substring(0, indexOfDot);
-            }
-            DatabaseMapping mapping = descriptor.getMappingForAttributeName(attribute);
-            if(mapping == null) {
-                //TODO: may have been already processed by the parent, may be processed later by a child.
-                //Should add method verifyNestedAggregateToSourceFieldNames that would go through
-                //all the children and detect the wrong attribute.
-                continue;
-            }
-            if(!mapping.isAggregateCollectionMapping()) {
-                //TODO: throw exception: mapping corresponding to attribute is not AggregateCollectionMapping
-            }
-            AggregateCollectionMapping nestedAggregateCollectionMapping = (AggregateCollectionMapping)mapping;
-            if(nestedAttribute == null) {
-                nestedAggregateCollectionMapping.addFieldNameTranslations(entry.getValue());
-            } else {
-                nestedAggregateCollectionMapping.addNestedFieldNameTranslations(nestedAttribute, entry.getValue());
-            }
-        }
-    }
-    
-    /**
-     * INTERNAL:
-     * If field names are different in the source and aggregate objects then the translation
-     * is done here. The aggregate field name is converted to source field name from the
-     * field name mappings stored.
-     */
-    protected void translateFields(ClassDescriptor clonedDescriptor, AbstractSession session) {
-        if(aggregateToSourceFieldNames != null) {
-            for (Enumeration entry = clonedDescriptor.getFields().elements(); entry.hasMoreElements();) {
-                DatabaseField field = (DatabaseField)entry.nextElement();
-                String nameInAggregate = field.getName();
-                String nameInSource = aggregateToSourceFieldNames.get(nameInAggregate);
-    
-                // Do not modify non-translated fields.
-                if (nameInSource != null) {
-                    DatabaseField fieldInSource = new DatabaseField(nameInSource);
-    
-                    // Check if the translated field specified a table qualifier.
-                    if (fieldInSource.getName().equals(nameInSource)) {
-                        // No table so just set the field name.
-                        field.setName(nameInSource);
+    protected void updateNestedAggregateMappings(ClassDescriptor descriptor, AbstractSession session) {
+        if (! nestedAggregateToSourceFieldNames.isEmpty()) {
+            Iterator<Map.Entry<String, Map<String, String>>> it = nestedAggregateToSourceFieldNames.entrySet().iterator();
+            
+            while (it.hasNext()) {
+                Map.Entry<String, Map<String, String>> entry = it.next();
+                String attribute = entry.getKey();
+                String nestedAttribute = null;
+                int indexOfDot = attribute.indexOf('.');
+                
+                // attribute "homes.sellingPonts" is divided into attribute "homes" and nestedAttribute "sellingPoints" 
+                if (indexOfDot >= 0) {
+                    nestedAttribute = attribute.substring(indexOfDot + 1, attribute.length());
+                    attribute = attribute.substring(0, indexOfDot);
+                }
+                
+                DatabaseMapping mapping = descriptor.getMappingForAttributeName(attribute);
+                if (mapping == null) {
+                    //TODO: may have been already processed by the parent, may be processed later by a child.
+                    //Should add method verifyNestedAggregateToSourceFieldNames that would go through
+                    //all the children and detect the wrong attribute.
+                    continue;
+                }
+            
+                if (mapping.isAggregateCollectionMapping()) {
+                    AggregateCollectionMapping nestedAggregateCollectionMapping = (AggregateCollectionMapping)mapping;
+                    if (nestedAttribute == null) {
+                        nestedAggregateCollectionMapping.addFieldNameTranslations(entry.getValue());
                     } else {
-                        // There is a table, so set the name and table.
-                        field.setName(fieldInSource.getName());
-                        field.setTable(clonedDescriptor.getTable(fieldInSource.getTable().getName()));
+                        nestedAggregateCollectionMapping.addNestedFieldNameTranslations(nestedAttribute, entry.getValue());
                     }
+                } else if (mapping.isAggregateObjectMapping()) {
+                    // We have a nested aggregate object mapping (which in turn may have more nested aggregate object mappings). 
+                    // However, at this point we have all the field name translations in the nested list. Since we have the clone 
+                    // of the first nested aggregate object from the aggregate collection mapping, we will add all the field name 
+                    // translations to it since we do not need to look up nested mappings field names. The way nested aggregate 
+                    // object mappings handle field name translations will work if we set all the translations on the root of the 
+                    // nested objects. This in turn allows sharing nested aggregate objects and allowing different name translations 
+                    // for each different chain. Given this aggregate chain "record.location.venue.history" where record is an 
+                    // aggregate collection mapping, metadata processing from JPA will (and a direct user may opt to) add all the 
+                    // attribute overrides from location, venue and history under separate attribute names, that is,
+                    //  - addNestedFieldNameTranslation("location", ..., ...);
+                    //  - addNestedFieldNameTranslation("location.venue", ..., ...);
+                    //  - addNestedFieldNameTranslation("location.venue.history", ..., ...);
+                    // 
+                    // This will add all the field name translations to the 'location' aggregate object mapping since we extract
+                    // the attribute name as the string up to the first dot.
+                    // Simply adding all the nestedFieldNameTranslations to 'location' would work as well.
+                    AggregateObjectMapping nestedAggregateObjectMapping = (AggregateObjectMapping) mapping;
+                    
+                    Map<String, String> entries = entry.getValue();
+                    for (String aggregateFieldName : entries.keySet()) {
+                        String sourceFieldName = entries.get(aggregateFieldName);
+                        nestedAggregateObjectMapping.addFieldNameTranslation(sourceFieldName, aggregateFieldName);
+                    }
+                } else {
+                    // TODO: throw exception: mapping corresponding to attribute is not a mapping that accepts field name translations.
                 }
             }
-    
-            clonedDescriptor.rehashFieldDependancies(session);
         }
     }
-
+    
     /**
      * INTERNAL:
      * For aggregate mapping the reference descriptor is cloned. Also the involved inheritance descriptor, its children
@@ -1056,9 +1044,8 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
                 if(fieldTranslation != null) {
                     translateTablesAndFields(clonedChildDescriptor, fieldTranslation, tableTranslation); 
                 }
-                if(this.nestedAggregateToSourceFieldNames != null) {
-                    updateNestedAggregateCollectionMappings(clonedChildDescriptor);
-                }
+                
+                updateNestedAggregateMappings(clonedChildDescriptor, session);
                 
                 if(clonedChildDescriptor.isAggregateDescriptor()) {
                     clonedChildDescriptor.descriptorIsAggregateCollection();
@@ -1118,9 +1105,8 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         if (fieldTranslation != null) {
             translateTablesAndFields(clonedParentDescriptor, fieldTranslation, tableTranslation); 
         }
-        if(this.nestedAggregateToSourceFieldNames != null) {
-            updateNestedAggregateCollectionMappings(clonedParentDescriptor);
-        }
+        
+        updateNestedAggregateMappings(clonedParentDescriptor, session);
         
         //recursive call to the further parent descriptors
         if (clonedParentDescriptor.getInheritancePolicy().isChildDescriptor()) {

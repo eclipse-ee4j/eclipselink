@@ -8,16 +8,14 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     01/28/2009-1.1 Guy Pelletier 
+ *     01/28/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 1)
+ *     02/06/2009-2.0 Guy Pelletier 
+ *       - 248293: JPA 2.0 Element Collections (part 2)
  ******************************************************************************/ 
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
 import java.lang.annotation.Annotation;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import javax.persistence.FetchType;
 
@@ -162,11 +160,7 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
      * Returns true if the given class is a valid basic collection type.
      */ 
     protected boolean isValidDirectCollectionType() {
-        Class rawClass = getRawClass();
-        
-        return rawClass.equals(Collection.class) || 
-               rawClass.equals(Set.class) ||
-               rawClass.equals(List.class);
+        return getAccessibleObject().isSupportedDirectCollectionClass(getDescriptor());
     }
     
     /**
@@ -174,7 +168,7 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
      * Returns true if the given class is a valid basic map type.
      */ 
     protected boolean isValidDirectMapType() {
-        return getRawClass().equals(Map.class);
+        return getAccessibleObject().isSupportedDirectMapClass(getDescriptor());
     }
     
     /**
@@ -197,7 +191,7 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
         processReturnInsertAndUpdate();
         
         // Add the mapping to the descriptor.
-        getDescriptor().addMapping(mapping);
+        addMapping(mapping);
     }
     
     /**
@@ -252,9 +246,6 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
         // is, Enumerated, Lob and Temporal. With everything falling into 
         // a serialized mapping if no converter whatsoever is found.
         processMappingConverter(mapping, getValueConverter());
-        
-        // Process properties.
-        processProperties(mapping);
     }
     
     /**
@@ -270,12 +261,7 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
         process(mapping);
         
         // Process the fetch type
-        if (usesIndirection()) {
-            mapping.useTransparentMap();
-        } else {
-            mapping.dontUseIndirection();
-            mapping.useMapClass(java.util.Hashtable.class);
-        }
+        setIndirectionPolicy(mapping, null, usesIndirection());
         
         // Process the key column (we must process this field before the call
         // to processConverter, since it may set a field classification)
@@ -290,9 +276,6 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
         
         // Process a converter for value column of this mapping.
         processMappingConverter(mapping, getValueConverter());    
-        
-        // process properties
-        processProperties(mapping);
     }
     
     /**
