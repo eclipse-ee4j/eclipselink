@@ -31,6 +31,7 @@ import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.helper.ListWrapper;
 
 import commonj.sdo.DataObject;
+import commonj.sdo.Property;
 
 public class JAXBListWrapper extends ListWrapper {
 
@@ -87,6 +88,15 @@ public class JAXBListWrapper extends ListWrapper {
         // update containment    	
         updateContainment(item, updateSequence);
 
+        // update opposite property
+        if (property != null && item != null) {
+            Property oppositeProp = property.getOpposite();
+            if (oppositeProp != null) {
+            	((DataObject) item).set(oppositeProp, dataObject);
+                dataObject.set(oppositeProp, null);
+            }
+        }
+
         return result;
     }
 
@@ -119,6 +129,15 @@ public class JAXBListWrapper extends ListWrapper {
 
         // update containment
         updateContainment(item, updateSequence);
+
+        // update opposite property
+        if (property != null && item != null) {
+            Property oppositeProp = property.getOpposite();
+            if (oppositeProp != null) {
+            	((DataObject) item).set(oppositeProp, dataObject);
+                dataObject.set(oppositeProp, null);
+            }
+        }
     }
 
     protected void copyElements() {
@@ -221,6 +240,21 @@ public class JAXBListWrapper extends ListWrapper {
          */
         dataObject.updateContainment(property, items, updateSequence);
 
+        // update opposite property
+        if (property != null) {
+	        Property oppositeProp = property.getOpposite();
+	        if (oppositeProp != null) {
+			    Iterator itemsIterator = items.iterator();
+			    while(itemsIterator.hasNext()) {
+			        Object item = itemsIterator.next();
+			        if (item != null) {
+				        ((DataObject) item).set(oppositeProp, dataObject);
+			            dataObject.set(oppositeProp, null);
+			        }
+			    }
+		    }
+        }
+        
         // create new settings outside of updateContainment as we do earlier in currentElements.add
         updateSequence(property, items, updateSequence);
 
@@ -260,6 +294,21 @@ public class JAXBListWrapper extends ListWrapper {
 
         // update containment
         dataObject.updateContainment(property, items);
+
+        // update opposite property
+        if (property != null) {
+	        Property oppositeProp = property.getOpposite();
+	        if (oppositeProp != null) {
+			    Iterator itemsIterator = items.iterator();
+			    while(itemsIterator.hasNext()) {
+			        Object item = itemsIterator.next();
+			        if (item != null) {
+				        ((DataObject) item).set(oppositeProp, dataObject);
+			            dataObject.set(oppositeProp, null);
+			        }
+			    }
+		    }
+        }
 
         // create new settings outside of updateContainment as we do earlier in currentElements.add
         updateSequence(property, items, updateSequence);

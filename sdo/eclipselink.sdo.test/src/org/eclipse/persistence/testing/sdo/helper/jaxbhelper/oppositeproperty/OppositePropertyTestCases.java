@@ -101,8 +101,6 @@ public class OppositePropertyTestCases extends SDOTestCase {
         this.assertNotNull(newChild2.getChild1());        
     }
 
-    /*
-     * Uncomment when bug #261575 has been fixed. 
     public void testOppositePropertySetCollectionCaseAdd() {
         DataObject rootDO = jaxbHelperContext.getDataFactory().create("urn:opposite", "root");
         DataObject child1DO = rootDO.createDataObject("child1");
@@ -132,9 +130,7 @@ public class OppositePropertyTestCases extends SDOTestCase {
         Child2 child2 = (Child2) jaxbHelperContext.unwrap(child2DO);
         this.assertNotNull(child2.getChild1());
     }
-    */
 
     public void tearDown() {
     }
-
 }

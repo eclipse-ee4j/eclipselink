@@ -131,6 +131,15 @@ public class ListWrapper implements List, Serializable, Cloneable {
         // update containment    	
         updateContainment(item, updateSequence);
 
+        // update opposite property
+        if (property != null && item != null) {
+            Property oppositeProp = property.getOpposite();
+            if (oppositeProp != null) {
+            	((DataObject) item).set(oppositeProp, dataObject);
+                dataObject.set(oppositeProp, null);
+            }
+        }
+
         return result;
     }
 
@@ -170,6 +179,15 @@ public class ListWrapper implements List, Serializable, Cloneable {
 
         // update containment
         updateContainment(item, updateSequence);
+        
+        // update opposite property
+        if (property != null && item != null) {
+            Property oppositeProp = property.getOpposite();
+            if (oppositeProp != null) {
+            	((DataObject) item).set(oppositeProp, dataObject);
+                dataObject.set(oppositeProp, null);
+            }
+        }
     }
 
     /**
@@ -277,7 +295,6 @@ public class ListWrapper implements List, Serializable, Cloneable {
         		dataObject._setModified(true);
         	}
         }
-
         // update sequence for containment and non-containment objects
         if ((property != null) && updateSequence) {
             updateSequenceSettingInternal(property, item);
@@ -292,7 +309,6 @@ public class ListWrapper implements List, Serializable, Cloneable {
         		dataObject._setModified(true);
         	}
         }
-    	
     }
 
     /**
@@ -422,6 +438,21 @@ public class ListWrapper implements List, Serializable, Cloneable {
          */
        	updateContainment(items, updateSequence);
 
+        // update opposite property
+        if (property != null) {
+	        Property oppositeProp = property.getOpposite();
+	        if (oppositeProp != null) {
+			    Iterator itemsIterator = items.iterator();
+			    while(itemsIterator.hasNext()) {
+			        Object item = itemsIterator.next();
+			        if (item != null) {
+				        ((DataObject) item).set(oppositeProp, dataObject);
+			            dataObject.set(oppositeProp, null);
+			        }
+			    }
+		    }
+        }
+        
         // create new settings outside of updateContainment as we do earlier in currentElements.add
         updateSequence(property, items, updateSequence);
 
@@ -480,6 +511,21 @@ public class ListWrapper implements List, Serializable, Cloneable {
         // update containment
         updateContainment(items, updateSequence);
 
+        // update opposite property
+        if (property != null) {
+	        Property oppositeProp = property.getOpposite();
+	        if (oppositeProp != null) {
+			    Iterator itemsIterator = items.iterator();
+			    while(itemsIterator.hasNext()) {
+			        Object item = itemsIterator.next();
+			        if (item != null) {
+				        ((DataObject) item).set(oppositeProp, dataObject);
+			            dataObject.set(oppositeProp, null);
+			        }
+			    }
+		    }
+        }
+        
         // create new settings outside of updateContainment as we do earlier in currentElements.add
         updateSequence(property, items, updateSequence);
 
