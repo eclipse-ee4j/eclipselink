@@ -29,8 +29,8 @@ import org.eclipse.persistence.annotations.PrivateOwned;
 import org.eclipse.persistence.annotations.TypeConverter;
 import org.eclipse.persistence.annotations.OptimisticLocking;
 
-import static org.eclipse.persistence.annotations.CacheCoordinationType.INVALIDATE_CHANGED_OBJECTS;
-import static org.eclipse.persistence.annotations.CacheType.SOFT_WEAK;
+import static org.eclipse.persistence.annotations.CacheCoordinationType.SEND_NEW_OBJECTS_WITH_CHANGES;//INVALIDATE_CHANGED_OBJECTS;
+import static org.eclipse.persistence.annotations.CacheType.FULL;//SOFT_WEAK;
 import static javax.persistence.CascadeType.*;
 import static javax.persistence.FetchType.*;
 import static javax.persistence.GenerationType.*;
@@ -107,12 +107,12 @@ import static org.eclipse.persistence.annotations.OptimisticLockingType.VERSION_
     objectType=Long.class
 )
 @Cache(
-    type=SOFT_WEAK,
+    type=FULL,
     shared=true,
     expiry=100000,
     alwaysRefresh=false, // some test dependencies for this to be false.
     disableHits=true, // Employee customizer should set it back to false.
-    coordinationType=INVALIDATE_CHANGED_OBJECTS
+    coordinationType=SEND_NEW_OBJECTS_WITH_CHANGES
 )
 @Customizer(org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.EmployeeCustomizer.class)
 public class Employee implements Serializable, Cloneable {

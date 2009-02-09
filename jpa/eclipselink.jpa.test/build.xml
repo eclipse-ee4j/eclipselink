@@ -1405,5 +1405,11 @@
             <param name="eclipselink.jpa.test.dir" value="./../../foundation/eclipselink.extension.oracle.test"/>
         </antcall>
     </target>
-
+    <!-- *********** CacheCoordination Test Targets -->
+    <target name="server-start-cachecoordination" depends="detect-os,config-trunk, config-flat">
+      <ant antfile="${eclipselink.jpa.test}/cachecoordination_${server.name}.xml" target="${server.name}-start-cachecoordination" inheritRefs="true"/>
+    </target>
+    <target name="server-run-test-cachecoordination" depends="detect-os,config-trunk, config-flat">
+      <ant antfile="${eclipselink.jpa.test}/cachecoordination.xml" target="${server.name}-run-test-cachecoordination" inheritRefs="true"/>
+    </target>
 </project>

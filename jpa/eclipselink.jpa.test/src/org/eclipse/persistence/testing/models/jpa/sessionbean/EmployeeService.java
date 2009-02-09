@@ -24,9 +24,11 @@ public interface EmployeeService {
     
     Employee findById(int id);
     
+    List findByFirstName(String fname);
     Employee fetchById(int id);
     
     void update(Employee employee);
     
     int insert(Employee employee);
+    void delete(Employee employee);
 }

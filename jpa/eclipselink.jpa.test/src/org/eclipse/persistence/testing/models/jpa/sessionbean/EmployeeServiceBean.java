@@ -43,6 +43,12 @@ public class EmployeeServiceBean implements EmployeeService {
         return employee;
     }
     
+    public List findByFirstName(String fname) {
+        //NamedQuery("findAllFieldAccessEmployeesByFirstName")
+        Query query = entityManager.createQuery("SELECT e FROM Employee e where e.firstName = :fname").setParameter("fname", fname);
+	query.setHint("eclipselink.cache-usage", "CheckCacheOnly");
+        return query.getResultList();
+    }
     public Employee fetchById(int id) {
         Employee employee = entityManager.find(Employee.class, new Integer(id));
         employee.getAddress();
@@ -63,4 +69,8 @@ public class EmployeeServiceBean implements EmployeeService {
         return employee.getId();
     }
     
+   public void delete(Employee employee) {
+         Employee emp = entityManager.find(Employee.class, employee.getId());       
+        entityManager.remove(emp);
+    }
 }
