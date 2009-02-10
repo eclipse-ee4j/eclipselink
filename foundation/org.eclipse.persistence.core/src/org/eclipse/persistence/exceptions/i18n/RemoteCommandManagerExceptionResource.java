@@ -36,7 +36,7 @@ public class RemoteCommandManagerExceptionResource extends ListResourceBundle {
                                            { "22110", "Failed to discover local host IP address." },
                                            { "22111", "Failed to get ServerPlatform. The ServerPlatform must be set either on Session or RemoteCommandManager." },
                                            { "22112", "Could not create local JMS connection with Topic {0}, Topic Factory {1}, and Context properties {2}" },
-                                           { "22113", "Could not create Oc4jJGroupsRemoteConnection service id {0}, topic {1}, using factory {2} and Context properties {3}." },
+                                           { "22113", "Could not create Oc4jJGroupsRemoteConnection service ID {0}, topic {1}, using factory {2} and Context properties {3}." },
                                            { "22114", "{0}: failed to deserialize retrieved message {1}." },
                                            { "22115", "{0}: failed to process remote command retrieved from message {1}, from {2}, command type {3}" },
                                            { "22116", "Received JMS message is null. Treating it as a JMSException" }

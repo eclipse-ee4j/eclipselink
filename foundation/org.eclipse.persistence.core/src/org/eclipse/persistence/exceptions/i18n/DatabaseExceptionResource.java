@@ -27,7 +27,7 @@ public class DatabaseExceptionResource extends ListResourceBundle {
                                            { "4005", "DatabaseAccessor not connected." },
                                            { "4006", "Error reading BLOB data from stream in getObject()." },
                                            { "4007", "Could not convert object type due to an internal error. {0}java.sql.TYPES: [{1}]" },
-                                           { "4008", "You cannot logout while a transaction is in progress." },
+                                           { "4008", "You cannot log out while a transaction is in progress." },
                                            { "4009", "The sequence table information is not complete." },
                                            { "4011", "Error preallocating sequence numbers.  The sequence table information is not complete." },
                                            { "4014", "Cannot register SynchronizationListener." },
