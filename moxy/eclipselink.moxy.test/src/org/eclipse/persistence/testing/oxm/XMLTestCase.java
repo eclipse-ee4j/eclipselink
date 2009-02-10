@@ -24,7 +24,25 @@ public class XMLTestCase extends junit.framework.TestCase {
     }
     
     public void assertXMLIdentical(Document control, Document test) {
-        assertTrue("Node " + control + " is not equal to node " + test, xmlComparer.isNodeEqual(control, test));
+        boolean isEqual = xmlComparer.isNodeEqual(control, test);
+        String controlString = "";
+        String testString = "";
+        
+        if (!isEqual) {
+            org.eclipse.persistence.platform.xml.XMLTransformer t = 
+                org.eclipse.persistence.platform.xml.XMLPlatformFactory.getInstance().getXMLPlatform().newXMLTransformer();
+            java.io.StringWriter controlWriter = new java.io.StringWriter();
+            t.transform(control, controlWriter);
+            
+            t = org.eclipse.persistence.platform.xml.XMLPlatformFactory.getInstance().getXMLPlatform().newXMLTransformer();
+            java.io.StringWriter testWriter = new java.io.StringWriter();
+            t.transform(test, testWriter);
+
+            controlString = controlWriter.toString();
+            testString = testWriter.toString();
+        }
+        
+        assertTrue("Documents are not equal.\nCONTROL:\n" + controlString + "\nTEST:\n" + testString, isEqual);
     }
     
     public XMLComparer getXMLComparer() {
