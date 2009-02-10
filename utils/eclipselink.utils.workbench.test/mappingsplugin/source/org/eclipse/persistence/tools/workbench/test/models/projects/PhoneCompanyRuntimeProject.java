@@ -97,7 +97,7 @@ public class PhoneCompanyRuntimeProject {
 		// Descriptor properties.
 		descriptor.useFullIdentityMap();
 		descriptor.setIdentityMapSize(405);
-
+		descriptor.setIsIsolated(false);
 		descriptor.setAlias("Company");
 
 		// Query manager.
@@ -178,11 +178,11 @@ public class PhoneCompanyRuntimeProject {
 		// Descriptor properties.
 		descriptor.useWeakIdentityMap();
 		descriptor.setIdentityMapSize(98);
-
+		descriptor.setIsIsolated(false);
 		descriptor.setSequenceNumberFieldName("EMAIL.ID");
 		descriptor.setSequenceNumberName("org.eclipse.persistence.tools.workbench.test.models.phone.EmailAddress");
 		descriptor.setAlias("EmailAddress");
-
+		
 		// Query manager.
 		descriptor.getDescriptorQueryManager().assumeExistenceForDoesExist();
 		//Named Queries
@@ -222,9 +222,9 @@ public class PhoneCompanyRuntimeProject {
 		// Descriptor properties.
 		descriptor.useFullIdentityMap();
 		descriptor.setIdentityMapSize(405);
-
+		descriptor.setIsIsolated(false);
 		descriptor.setAlias("Household");
-
+		
 		// Query manager.
 		descriptor.getDescriptorQueryManager().checkDatabaseForDoesExist();
 		//Named Queries
@@ -278,7 +278,7 @@ public class PhoneCompanyRuntimeProject {
 		// Descriptor properties.
 		descriptor.useFullIdentityMap();
 		descriptor.setIdentityMapSize(405);
-
+		descriptor.setIsIsolated(false);
 		descriptor.setAlias("Person");
 
 		// Query manager.
@@ -325,7 +325,7 @@ public class PhoneCompanyRuntimeProject {
 		// Descriptor properties.
 		descriptor.useWeakIdentityMap();
 		descriptor.setIdentityMapSize(98);
-
+		descriptor.setIsIsolated(false);
 		descriptor.setSequenceNumberFieldName("PHONE_NUMBER.ID");
 		descriptor.setSequenceNumberName("org.eclipse.persistence.tools.workbench.test.models.phone.PhoneNumber");
 		descriptor.setAlias("PhoneNumber");
@@ -363,7 +363,7 @@ public class PhoneCompanyRuntimeProject {
 		// Descriptor properties.
 		descriptor.useFullIdentityMap();
 		descriptor.setIdentityMapSize(405);
-
+		descriptor.setIsIsolated(false);
 		descriptor.setAlias("ServiceCall");
 
 		// Query manager.

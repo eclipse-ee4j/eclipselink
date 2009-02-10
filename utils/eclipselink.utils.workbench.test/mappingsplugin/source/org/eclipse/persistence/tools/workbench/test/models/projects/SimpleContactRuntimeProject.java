@@ -98,6 +98,7 @@ public class SimpleContactRuntimeProject {
 		descriptor.getInterfacePolicy().addParentInterfaceName(org.eclipse.persistence.tools.workbench.test.models.contact.Contact.class.getName());
 
 		// Descriptor properties.
+		descriptor.setIsIsolated(false);
 		descriptor.useSoftCacheWeakIdentityMap();
 		descriptor.setIdentityMapSize(100);
 		descriptor.setAlias("EmailAddress");
@@ -139,6 +140,7 @@ public class SimpleContactRuntimeProject {
 		descriptor.getInterfacePolicy().addParentInterfaceName(org.eclipse.persistence.tools.workbench.test.models.contact.Person.class.getName());
 
 		// Descriptor properties.
+		descriptor.setIsIsolated(false);
 		descriptor.useSoftCacheWeakIdentityMap();
 		descriptor.setIdentityMapSize(100);
 		descriptor.setAlias("PersonImpl");
@@ -177,6 +179,7 @@ public class SimpleContactRuntimeProject {
 		descriptor.getInterfacePolicy().addParentInterfaceName(org.eclipse.persistence.tools.workbench.test.models.contact.Contact.class.getName());
 
 		// Descriptor properties.
+		descriptor.setIsIsolated(false);
 		descriptor.useSoftCacheWeakIdentityMap();
 		descriptor.setIdentityMapSize(100);
 		descriptor.setAlias("PhoneNumber");

@@ -157,6 +157,9 @@ public final class EmployeeEisRuntimeProject
 		employeeDescriptor.setShouldAlwaysConformResultsInUnitOfWork(true);
 		employeeDescriptor.setShouldAlwaysRefreshCache(true);
 		employeeDescriptor.setShouldDisableCacheHits(true);
+		employeeDescriptor.setIsIsolated(false);
+		employeeDescriptor.useSoftCacheWeakIdentityMap();
+		employeeDescriptor.setIdentityMapSize(100);
 				
 		XMLInteraction readObjectCall = new XMLInteraction();
 		readObjectCall.setFunctionName("readEmployeeById");
@@ -298,6 +301,9 @@ public final class EmployeeEisRuntimeProject
 		projectDescriptor.setShouldAlwaysConformResultsInUnitOfWork(true);
 		projectDescriptor.setShouldAlwaysRefreshCache(true);
 		projectDescriptor.setShouldDisableCacheHits(true);
+		projectDescriptor.setIsIsolated(false);
+		projectDescriptor.useSoftCacheWeakIdentityMap();
+		projectDescriptor.setIdentityMapSize(100);
 		
 		projectDescriptor.getDescriptorInheritancePolicy().setClassIndicatorField(new XMLField("@xsi:type"));
 		projectDescriptor.getDescriptorInheritancePolicy().addClassNameIndicator(Project.class.getName(), "project");
@@ -365,7 +371,8 @@ public final class EmployeeEisRuntimeProject
 		projectDescriptor.setShouldAlwaysConformResultsInUnitOfWork(true);
 		projectDescriptor.setShouldAlwaysRefreshCache(true);
 		projectDescriptor.setShouldDisableCacheHits(true);
-
+		projectDescriptor.setIsIsolated(false);
+		
 		projectDescriptor.getDescriptorInheritancePolicy().setParentClassName(Project.class.getName());
 
 		//force initialization

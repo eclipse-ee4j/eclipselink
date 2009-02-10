@@ -79,13 +79,16 @@ import org.eclipse.persistence.mappings.VariableOneToOneMapping;
 import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
 import org.eclipse.persistence.mappings.converters.SerializedObjectConverter;
 import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
+import org.eclipse.persistence.mappings.foundation.AbstractCompositeDirectCollectionMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
 import org.eclipse.persistence.mappings.querykeys.QueryKey;
 import org.eclipse.persistence.mappings.transformers.MethodBasedAttributeTransformer;
+import org.eclipse.persistence.mappings.xdb.DirectToXMLTypeMapping;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
+import org.eclipse.persistence.oxm.mappings.XMLFragmentCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLObjectReferenceMapping;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
@@ -550,6 +553,7 @@ public class MappingsModelTestTools {
 			});
 		rd = diffEngine.addReflectiveDifferentiator(DatasourcePlatform.class);
 			rd.ignoreFieldNamed("conversionManager");
+			rd.ignoreFieldNamed("platformOperators");
 		rd = diffEngine.addReflectiveDifferentiator(DefaultConnector.class);
 		
 
@@ -659,9 +663,18 @@ public class MappingsModelTestTools {
         rd = diffEngine.addReflectiveDifferentiator(JPQLCallQueryMechanism.class);
         	rd.ignoreFieldNamed("ejbqlCall");
             
-        rd = diffEngine.addReflectiveDifferentiator(InterfaceContainerPolicy.class);
-            rd.ignoreFieldNamed("containerClass");
-        
+        rd = diffEngine.addReflectiveDifferentiator(AbstractCompositeDirectCollectionMapping.class);
+        	rd.addReferenceFieldNamed("containerPolicy");
+        	
+     	rd = diffEngine.addReflectiveDifferentiator(InterfaceContainerPolicy.class);
+			rd.setKeyDifferentiator(new ReflectiveDifferentiator.KeyDifferentiator() {
+				public Diff keyDiff(Object object1, Object object2) {
+					return EqualityDifferentiator.instance().diff(((InterfaceContainerPolicy) object1).getContainerClassName(), ((InterfaceContainerPolicy) object2).getContainerClassName());
+				}
+			});
+			rd.ignoreFieldNamed("containerClass");
+			rd.ignoreFieldNamed("containerClassName");
+
         rd = diffEngine.addReflectiveDifferentiator(NullPolicy.class);
             
 		rd = diffEngine.addReflectiveDifferentiator(InMemoryQueryIndirectionPolicy.class);
@@ -678,6 +691,9 @@ public class MappingsModelTestTools {
 		
 		rd = diffEngine.addReflectiveDifferentiator(VariableOneToOneMapping.class);
 			rd.addReferenceMapFieldsNamed("sourceToTargetQueryKeyNames");
+		
+		rd = diffEngine.addReflectiveDifferentiator(DirectToXMLTypeMapping.class);
+			rd.ignoreFieldNamed("xmlParser");
 		
 		rd = diffEngine.addReflectiveDifferentiator(EISOneToOneMapping.class);
 			rd.addReferenceMapFieldsNamed("sourceToTargetKeyFields", "targetToSourceKeyFields");
@@ -786,6 +802,7 @@ public class MappingsModelTestTools {
 			});
 		rd = (ReflectiveDifferentiator) diffEngine.getUserDifferentiator(DatasourcePlatform.class);
 			rd.ignoreFieldNamed("conversionManager");
+			rd.ignoreFieldNamed("platformOperators");
 			rd.setFieldDifferentiator("sequences", new ContainerDifferentiator(MapAdapter.instance(), new MapEntryDifferentiator()) {
 				public Diff diff(Object object1, Object object2) {
 					if (object1 == object2) {
@@ -1168,7 +1185,7 @@ public class MappingsModelTestTools {
 		rd = diffEngine.addReflectiveDifferentiator(InterfaceContainerPolicy.class);
 			rd.setKeyDifferentiator(new ReflectiveDifferentiator.KeyDifferentiator() {
 				public Diff keyDiff(Object object1, Object object2) {
-					return EqualityDifferentiator.instance().diff(((InterfaceContainerPolicy) object1).getContainerClass().getName(), ((InterfaceContainerPolicy) object2).getContainerClassName());
+					return EqualityDifferentiator.instance().diff(((InterfaceContainerPolicy) object1).getContainerClassName(), ((InterfaceContainerPolicy) object2).getContainerClassName());
 				}
 			});
 			rd.ignoreFieldNamed("containerClass");

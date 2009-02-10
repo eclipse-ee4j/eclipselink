@@ -77,6 +77,7 @@ public class CurrencyRuntimeProject {
 		descriptor.addPrimaryKeyFieldName("COMMODITY_PRICE.ID");
 
 		// Descriptor properties.
+		descriptor.setIsIsolated(false);
 		descriptor.setAlias("CommodityPrice");
 
 		descriptor.useFullIdentityMap();
@@ -188,7 +189,8 @@ public class CurrencyRuntimeProject {
 		descriptor.useFullIdentityMap();
 		descriptor.setIdentityMapSize(405);
 		descriptor.setAlias("ExchangeRate");
-
+		descriptor.setIsIsolated(false);
+		
 		// Query manager.
 		descriptor.getDescriptorQueryManager().checkDatabaseForDoesExist();
 

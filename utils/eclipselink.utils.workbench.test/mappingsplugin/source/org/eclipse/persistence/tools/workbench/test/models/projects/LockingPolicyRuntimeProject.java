@@ -60,6 +60,10 @@ public class LockingPolicyRuntimeProject
 
 		descriptor.setSequenceNumberFieldName("EMPLOYEE.EMP_ID");
 		descriptor.setSequenceNumberName("EMP_SEQ");
+		
+		descriptor.setIsIsolated(false);
+		descriptor.setIdentityMapClass(org.eclipse.persistence.internal.identitymaps.SoftCacheWeakIdentityMap.class);
+		descriptor.setIdentityMapSize(100);
 
 	    SelectedFieldsLockingPolicy lockingPolicy = new SelectedFieldsLockingPolicy();
 	    lockingPolicy.addLockFieldName("EMPLOYEE.L_NAME");

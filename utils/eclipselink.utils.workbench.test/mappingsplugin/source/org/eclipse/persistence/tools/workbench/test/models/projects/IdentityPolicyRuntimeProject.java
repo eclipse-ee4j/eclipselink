@@ -60,6 +60,7 @@ public class IdentityPolicyRuntimeProject
 
 		descriptor.setIdentityMapClass(org.eclipse.persistence.internal.identitymaps.FullIdentityMap.class);
 		descriptor.setIdentityMapSize(100);
+		descriptor.setIsIsolated(false);
 		descriptor.getDescriptorQueryManager().checkCacheForDoesExist();
 		descriptor.setCacheInvalidationPolicy(new TimeToLiveCacheInvalidationPolicy(10000));
 

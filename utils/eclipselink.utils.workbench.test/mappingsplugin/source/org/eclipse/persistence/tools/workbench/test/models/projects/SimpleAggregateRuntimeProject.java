@@ -155,6 +155,7 @@ public class SimpleAggregateRuntimeProject {
 //		descriptor.useRemoteFullIdentityMap();
 //		descriptor.setRemoteIdentityMapSize(100);
 		descriptor.setAlias("Person");
+		descriptor.setIsIsolated(false);
 
 		// Query manager.
 		descriptor.getDescriptorQueryManager().checkCacheForDoesExist();

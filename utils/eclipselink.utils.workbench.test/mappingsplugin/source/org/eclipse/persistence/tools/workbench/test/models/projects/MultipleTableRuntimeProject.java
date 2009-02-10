@@ -85,6 +85,7 @@ public class MultipleTableRuntimeProject {
         descriptor.setSequenceNumberFieldName("MULTI_CALFS.ID");
         descriptor.setSequenceNumberName("CALF_COUNT_SEQ");
         descriptor.setAlias("Cow");
+		descriptor.setIsIsolated(false);
 
         // Query Manager.
         descriptor.getQueryManager().checkCacheForDoesExist();
@@ -127,6 +128,7 @@ public class MultipleTableRuntimeProject {
         descriptor.setSequenceNumberFieldName("MULTI_HORSE.ID");
         descriptor.setSequenceNumberName("MULTI_HORSE_SEQ");
         descriptor.setAlias("Horse");
+		descriptor.setIsIsolated(false);
 
         // Query Manager.
         descriptor.getQueryManager().checkCacheForDoesExist();
@@ -164,6 +166,7 @@ public class MultipleTableRuntimeProject {
         descriptor.setSequenceNumberFieldName("MULTI_HUMAN.ID");
         descriptor.setSequenceNumberName("MULTI_HUMAN_SEQ");
         descriptor.setAlias("Human");
+		descriptor.setIsIsolated(false);
 
         // Query Manager.
         descriptor.getQueryManager().checkCacheForDoesExist();
@@ -201,6 +204,7 @@ public class MultipleTableRuntimeProject {
         descriptor.setSequenceNumberFieldName("MULTI_SWAN.ID");
         descriptor.setSequenceNumberName("MULTI_SWAN_SEQ");
         descriptor.setAlias("Swan");
+		descriptor.setIsIsolated(false);
 
         // Query Manager.
         descriptor.getQueryManager().checkCacheForDoesExist();

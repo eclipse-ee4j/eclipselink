@@ -53,9 +53,9 @@ public class AbstractApplicationTests extends TestCase {
 
 	public void testGetFullProductName() {
 		if (this.executingFromClassDir) {
-			assertEquals("Oracle TopLink Workbench", this.application.getFullProductName());
+			assertEquals("EclipseLink Project EclipseLink Workbench", this.application.getFullProductName());
 		} else {
-			assertEquals("Oracle TopLink Workbench Tests (debug)", this.application.getFullProductName());
+			assertEquals("EclipseLink Project EclipseLink Workbench Tests (debug)", this.application.getFullProductName());
 		}
 	}
 
@@ -68,14 +68,14 @@ public class AbstractApplicationTests extends TestCase {
 	}
 
 	public void testGetVersionNumber() {
-		assertEquals("10.1.3.1.0", this.application.getVersionNumber());
+		assertEquals("1.1.0", this.application.getVersionNumber());
 	}
 
 	public void testGetFullProductNameAndVersionNumber() {
 		if (this.executingFromClassDir) {
-			assertEquals("Oracle TopLink Workbench 10.1.3.1.0", this.application.getFullProductNameAndVersionNumber());
+			assertEquals("EclipseLink Project EclipseLink Workbench 1.1.0", this.application.getFullProductNameAndVersionNumber());
 		} else {
-			assertEquals("Oracle TopLink Workbench Tests (debug) 10.1.3.1.0", this.application.getFullProductNameAndVersionNumber());
+			assertEquals("EclipseLink Project EclipseLink Workbench Tests (debug) 1.1.0", this.application.getFullProductNameAndVersionNumber());
 		}
 	}
 
@@ -101,15 +101,15 @@ public class AbstractApplicationTests extends TestCase {
 private class TestApplication extends AbstractApplication {
 
 	public String defaultSpecificationTitle() {
-		return "TopLink";
+		return "EclipseLink Workbench";
 	}
 
 	public String defaultSpecificationVendor() {
-		return "Oracle";
+		return "EclipseLink Project";
 	}
 
 	public String defaultReleaseDesignation() {
-		return "10g Release 3";
+		return "1.1";
 	}
 
 	public String defaultLibraryDesignation() {
@@ -117,11 +117,11 @@ private class TestApplication extends AbstractApplication {
 	}
 
 	public String defaultSpecificationVersion() {
-		return "10.1.3.1.0";
+		return "1.1.0";
 	}
 
 	public String defaultImplementationVersion() {
-		return "10.1.3.1.0.060326";
+		return "1.1.0<dev>";
 	}
 
 	public boolean isFirstExecution() {

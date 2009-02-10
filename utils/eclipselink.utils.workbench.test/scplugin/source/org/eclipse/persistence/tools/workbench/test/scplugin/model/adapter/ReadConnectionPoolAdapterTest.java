@@ -38,9 +38,10 @@ public class ReadConnectionPoolAdapterTest extends AbstractAdapterTest
 		TopLinkSessionsAdapter sessions = AllSCTests.createNewSessions();
 		DataSource ds = buildOracleDataSource();
 		ServerSessionAdapter session = sessions.addServerSessionNamed("MyServerSession", noServerPlatform(), ds);
+		session.addReadConnectionPool();
 		ReadConnectionPoolAdapter pool = session.getReadConnectionPool();
 
-		pool.setUseNonTransactionalReadLogin( true);
+		pool.setUseNonTransactionalReadLogin(true);
 
 		assertTrue("useNonTransactionalReadLogin - Should not have problem", pool.usesNonTransactionalReadLogin());
 

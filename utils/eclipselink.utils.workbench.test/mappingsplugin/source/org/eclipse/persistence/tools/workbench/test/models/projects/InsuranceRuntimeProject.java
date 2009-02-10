@@ -83,7 +83,7 @@ public class InsuranceRuntimeProject {
 		descriptor.addPrimaryKeyFieldName("INS_ADDR.SSN");
 
 		// Descriptor properties.
-
+		descriptor.setIsIsolated(false);
 		descriptor.useFullIdentityMap();
 		descriptor.setIdentityMapSize(0);
 		descriptor.alwaysConformResultsInUnitOfWork();
@@ -159,6 +159,7 @@ public class InsuranceRuntimeProject {
 		descriptor.getDescriptorInheritancePolicy().setShouldReadSubclasses(true);
 
 		// Descriptor properties.
+		descriptor.setIsIsolated(false);
 		descriptor.useFullIdentityMap();
 		descriptor.setIdentityMapSize(0);
 		descriptor.setReadOnly();
@@ -209,6 +210,7 @@ public class InsuranceRuntimeProject {
 		descriptor.getDescriptorInheritancePolicy().setShouldReadSubclasses(true);
 
 		// Descriptor properties.
+		descriptor.setIsIsolated(false);
 		descriptor.alwaysRefreshCache();
 		descriptor.disableCacheHits();
 		descriptor.setAlias("HC");
@@ -243,6 +245,7 @@ public class InsuranceRuntimeProject {
 		descriptor.getDescriptorInheritancePolicy().dontReadSubclassesOnQueries();
 
 		// Descriptor properties.
+		descriptor.setIsIsolated(false);
 		descriptor.setAlias("HealthPolicy");
 		descriptor.getInstantiationPolicy().useFactoryInstantiationPolicy(org.eclipse.persistence.tools.workbench.test.models.insurance.HealthPolicy.class.getName(), "clone", "example1");
 
@@ -275,6 +278,7 @@ public class InsuranceRuntimeProject {
 		descriptor.getDescriptorInheritancePolicy().setShouldReadSubclasses(true);
 
 		// Descriptor properties.
+		descriptor.setIsIsolated(false);
 		descriptor.setAlias("HouseClaim");
 		descriptor.useCloneCopyPolicy("example3");
 
@@ -307,6 +311,7 @@ public class InsuranceRuntimeProject {
 		descriptor.getDescriptorInheritancePolicy().dontReadSubclassesOnQueries();
 
 		// Descriptor properties.
+		descriptor.setIsIsolated(false);
 		descriptor.setAlias("HousePolicy");
 
 		// Query manager.
@@ -341,6 +346,7 @@ public class InsuranceRuntimeProject {
 		descriptor.getDescriptorInheritancePolicy().setShouldReadSubclasses(true);
 
 		// Descriptor properties.
+		descriptor.setIsIsolated(false);
 		descriptor.useFullIdentityMap();
 		descriptor.setIdentityMapSize(0);
 		descriptor.alwaysConformResultsInUnitOfWork();
@@ -407,6 +413,7 @@ public class InsuranceRuntimeProject {
 		descriptor.addPrimaryKeyFieldName("HOLDER.SSN");
 
 		// Descriptor properties.
+		descriptor.setIsIsolated(false);
 		descriptor.useFullIdentityMap();
 		descriptor.setIdentityMapSize(0);
 		descriptor.setAlias("PolicyHolder");
@@ -515,6 +522,7 @@ public class InsuranceRuntimeProject {
 		descriptor.getDescriptorInheritancePolicy().setShouldReadSubclasses(true);
 
 		// Descriptor properties.
+		descriptor.setIsIsolated(false);
 		descriptor.setAlias("VehicleClaim");
 
 		// Query manager.
@@ -552,6 +560,7 @@ public class InsuranceRuntimeProject {
 		descriptor.getDescriptorInheritancePolicy().dontReadSubclassesOnQueries();
 
 		// Descriptor properties.
+		descriptor.setIsIsolated(false);
 		descriptor.setAlias("VehiclePolicy");
 
 		// Query manager.

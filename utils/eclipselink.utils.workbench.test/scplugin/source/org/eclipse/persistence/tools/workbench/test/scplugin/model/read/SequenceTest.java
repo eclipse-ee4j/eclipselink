@@ -51,7 +51,7 @@ public class SequenceTest extends TestCase
 	{
 		LoginAdapter login = loadTopLinkSessions("/sequence/DefaultSequence_DefaultSequence.xml");
 
-		assertTrue (login.sequencingIsDefault());
+		assertFalse(login.sequencingIsDefault());
 		assertFalse(login.sequencingIsNative());
 		assertFalse(login.sequencingIsCustom());
 		assertTrue (login.sequencesSize() == 0);
@@ -98,7 +98,7 @@ public class SequenceTest extends TestCase
 
 		assertFalse(login.sequencingIsDefault());
 		assertFalse(login.sequencingIsNative());
-		assertTrue(login.sequencingIsCustom());
+		assertFalse(login.sequencingIsCustom());
 		assertTrue(login.sequencesSize() == 0);
 		assertTrue(login.getSequencePreallocationSize() == 2);
 		assertEquals(login.getSequenceTable(),        "MY_SEQUENCE");
@@ -110,7 +110,7 @@ public class SequenceTest extends TestCase
 	public void test_DefaultSequence_UnaryTableSequence() throws Exception
 	{
 		LoginAdapter login = loadTopLinkSessions("/sequence/DefaultSequence_UnaryTableSequence.xml");
-		assertTrue(login.sequencingIsDefault());
+		assertFalse(login.sequencingIsDefault());
 		assertFalse(login.sequencingIsNative());
 		assertFalse(login.sequencingIsCustom());
 		assertTrue(login.sequencesSize() == 1);

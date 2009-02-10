@@ -90,6 +90,7 @@ public class QueryRuntimeProject {
 		// Descriptor properties.
 		descriptor.useSoftCacheWeakIdentityMap();
 		descriptor.setIdentityMapSize(100);
+		descriptor.setIsIsolated(false);
 		descriptor.setAlias("Employee");
 
 		// Query manager.
@@ -507,6 +508,7 @@ public class QueryRuntimeProject {
 
 		// Descriptor properties.
 		descriptor.useFullIdentityMap();
+		descriptor.setIsIsolated(false);
 		descriptor.setIdentityMapSize(100);
 
 		// Locking Policy

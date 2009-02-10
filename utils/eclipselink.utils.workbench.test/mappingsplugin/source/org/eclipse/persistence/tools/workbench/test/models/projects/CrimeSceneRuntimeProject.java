@@ -153,6 +153,7 @@ public class CrimeSceneRuntimeProject {
 		descriptor.addPrimaryKeyFieldName("CRIME_SCENE.ID");
 
 		// Descriptor properties.
+		descriptor.setIsIsolated(false);
 		descriptor.useWeakIdentityMap();
 		descriptor.setIdentityMapSize(98);
 		descriptor.setSequenceNumberFieldName("CRIME_SCENE.ID");
@@ -248,6 +249,7 @@ public class CrimeSceneRuntimeProject {
 		descriptor.getDescriptorInheritancePolicy().setShouldReadSubclasses(true);
 
 		// Descriptor properties.
+		descriptor.setIsIsolated(false);
 		descriptor.setAlias("Detective");
 
 		// Query manager.
@@ -280,7 +282,8 @@ public class CrimeSceneRuntimeProject {
 
 		// Descriptor properties.
 		descriptor.setAlias("Fingerprint");
-
+		descriptor.setIsIsolated(false);
+		
 		// Query manager.
 		descriptor.getDescriptorQueryManager().getDoesExistQuery().setExistencePolicy(DoesExistQuery.AssumeExistence);
 
@@ -312,6 +315,7 @@ public class CrimeSceneRuntimeProject {
 		descriptor.getDescriptorInheritancePolicy().setShouldReadSubclasses(true);
 
 		// Descriptor properties.
+		descriptor.setIsIsolated(false);
 		descriptor.setAlias("Firearm");
 		descriptor.setShouldAlwaysRefreshCache(true);
 		descriptor.setShouldDisableCacheHits(false);
@@ -369,6 +373,7 @@ public class CrimeSceneRuntimeProject {
 		descriptor.getDescriptorInheritancePolicy().setShouldReadSubclasses(true);
 
 		// Descriptor properties.
+		descriptor.setIsIsolated(false);
 		descriptor.useFullIdentityMap();
 		descriptor.setIdentityMapSize(400);
 		descriptor.setSequenceNumberFieldName("PERSON.ID");
@@ -474,6 +479,7 @@ public class CrimeSceneRuntimeProject {
 		descriptor.getDescriptorInheritancePolicy().setShouldReadSubclasses(true);
 
 		// Descriptor properties.
+		descriptor.setIsIsolated(false);
 		descriptor.useFullIdentityMap();
 		descriptor.setIdentityMapSize(405);
 		descriptor.setSequenceNumberFieldName("EVIDENCE.ID");
@@ -536,7 +542,8 @@ public class CrimeSceneRuntimeProject {
 
 		// Descriptor properties.
 		descriptor.setAlias("Suspect");
-
+		descriptor.setIsIsolated(false);
+		
 		// Query manager.
 		descriptor.getDescriptorQueryManager().getDoesExistQuery().setExistencePolicy(DoesExistQuery.AssumeExistence);
 
@@ -575,6 +582,7 @@ public class CrimeSceneRuntimeProject {
 		descriptor.getDescriptorInheritancePolicy().setShouldReadSubclasses(true);
 
 		// Descriptor properties.
+		descriptor.setIsIsolated(false);
 		descriptor.setAlias("Victim");
 
 		// Query manager.
@@ -626,6 +634,7 @@ public class CrimeSceneRuntimeProject {
 		descriptor.getDescriptorInheritancePolicy().setShouldReadSubclasses(true);
 
 		// Descriptor properties.
+		descriptor.setIsIsolated(false);
 		descriptor.setAlias("Weapon");
 
 		// Query manager.

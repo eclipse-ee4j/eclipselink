@@ -26,8 +26,6 @@ import org.eclipse.persistence.tools.workbench.test.models.projects.CurrencyProj
 import org.eclipse.persistence.tools.workbench.test.models.projects.CurrencyRuntimeProject;
 import org.eclipse.persistence.tools.workbench.test.models.projects.EmployeeEisProject;
 import org.eclipse.persistence.tools.workbench.test.models.projects.EmployeeEisRuntimeProject;
-import org.eclipse.persistence.tools.workbench.test.models.projects.EmployeeJAXBProject;
-import org.eclipse.persistence.tools.workbench.test.models.projects.EmployeeJAXBRuntimeProject;
 import org.eclipse.persistence.tools.workbench.test.models.projects.EmployeeOXProject;
 import org.eclipse.persistence.tools.workbench.test.models.projects.EmployeeOXRuntimeProject;
 import org.eclipse.persistence.tools.workbench.test.models.projects.IdentityPolicyProject;
@@ -129,9 +127,6 @@ public class ProjectConverterTests
 		this.convertAndVerifyRuntime(new EmployeeEisProject().getProject(), new EmployeeEisRuntimeProject().getRuntimeProject());
 	}
 
-	public void testEmployeeJaxbProjectConversion() {
-		this.convertAndVerifyRuntime(new EmployeeJAXBProject().getProject(), new EmployeeJAXBRuntimeProject().getRuntimeProject());
-	}
 
 	public void testEmployeeOXProjectConversion() {
 		this.convertAndVerifyRuntime(new EmployeeOXProject().getProject(), new EmployeeOXRuntimeProject().getRuntimeProject());

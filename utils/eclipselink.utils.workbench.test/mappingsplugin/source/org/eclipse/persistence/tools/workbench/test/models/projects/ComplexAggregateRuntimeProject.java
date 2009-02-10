@@ -138,6 +138,7 @@ public class ComplexAggregateRuntimeProject {
 		descriptor.setSequenceNumberFieldName("AGG_ADD.ID");
 		descriptor.setSequenceNumberName("SEQ");
 		descriptor.setAlias("Address");
+		descriptor.setIsIsolated(false);
 
 		// Query manager.
 		descriptor.getDescriptorQueryManager().assumeNonExistenceForDoesExist();
@@ -178,6 +179,7 @@ public class ComplexAggregateRuntimeProject {
 		descriptor.setSequenceNumberName("SEQ");
 		descriptor.setReadOnly();
 		descriptor.setAlias("Client");
+		descriptor.setIsIsolated(false);
 
 		// Query manager.
 		descriptor.getDescriptorQueryManager().assumeNonExistenceForDoesExist();
@@ -349,6 +351,7 @@ public class ComplexAggregateRuntimeProject {
 		descriptor.setSequenceNumberFieldName("AGG_COM.ID");
 		descriptor.setSequenceNumberName("SEQ");
 		descriptor.setAlias("Computer");
+		descriptor.setIsIsolated(false);
 
 		// Query manager.
 		descriptor.getDescriptorQueryManager().assumeNonExistenceForDoesExist();
@@ -383,6 +386,7 @@ public class ComplexAggregateRuntimeProject {
 		descriptor.setSequenceNumberFieldName("AGG_EMP.EM_ID");
 		descriptor.setSequenceNumberName("SEQ");
 		descriptor.setAlias("Employee");
+		descriptor.setIsIsolated(false);
 
 		// Query manager.
 		descriptor.getDescriptorQueryManager().assumeNonExistenceForDoesExist();
@@ -446,6 +450,7 @@ public class ComplexAggregateRuntimeProject {
 
 		// Descriptor properties.
 		descriptor.setAlias("EvaluationClient");
+		descriptor.setIsIsolated(false);
 
 		// Query manager.
 
@@ -474,7 +479,7 @@ public class ComplexAggregateRuntimeProject {
 		// Descriptor properties.
 		descriptor.useFullIdentityMap();
 		descriptor.setIdentityMapSize(100);
-
+		descriptor.setIsIsolated(false);
 		descriptor.setSequenceNumberFieldName("AGG_LAN.ID");
 		descriptor.setSequenceNumberName("SEQ");
 		descriptor.setAlias("Language");
@@ -623,6 +628,7 @@ public class ComplexAggregateRuntimeProject {
 		descriptor.setSequenceNumberFieldName("AGG_RES.ID");
 		descriptor.setSequenceNumberName("SEQ");
 		descriptor.setAlias("Responsibility");
+		descriptor.setIsIsolated(false);
 
 		// Query manager.
 		descriptor.getDescriptorQueryManager().assumeNonExistenceForDoesExist();
