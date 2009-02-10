@@ -68,8 +68,10 @@ abstract class NamedSchemaComponentNodeStructure
 	
 	private void qNameChanged() {
 		String oldQName = this.qName;
-		this.qName = ((MWNamedSchemaComponent) this.getComponent()).qName();
-		this.firePropertyChanged(DISPLAY_STRING_PROPERTY, oldQName, this.qName);
+		if (this.getComponent() != null) {
+			this.qName = ((MWNamedSchemaComponent) this.getComponent()).qName();
+			this.firePropertyChanged(DISPLAY_STRING_PROPERTY, oldQName, this.qName);
+		}
 	}
 	
 	

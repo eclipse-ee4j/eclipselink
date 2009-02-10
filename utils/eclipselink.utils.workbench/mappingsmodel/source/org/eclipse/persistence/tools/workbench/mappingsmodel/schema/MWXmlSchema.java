@@ -369,8 +369,8 @@ public final class MWXmlSchema extends MWModel
 	}
 	
 	public MWAttributeDeclaration attribute(String namespaceUrl, String attributeName) {
-		if (namespaceUrl == null) {
-			namespaceUrl = "";
+		if (namespaceUrl == null || "".equals(namespaceUrl)) {
+			namespaceUrl = targetNamespaceUrl();
 		}
 		return this.namespaceForUrl(namespaceUrl).attribute(attributeName);	
 	}
@@ -390,8 +390,8 @@ public final class MWXmlSchema extends MWModel
 	}
 	
 	public MWElementDeclaration element(String namespaceUrl, String elementName) {
-		if (namespaceUrl == null) {
-			namespaceUrl = "";
+		if (namespaceUrl == null || "".equals(namespaceUrl)) {
+			namespaceUrl = targetNamespaceUrl();
 		}
 		return this.namespaceForUrl(namespaceUrl).element(elementName);	
 	}
@@ -411,8 +411,8 @@ public final class MWXmlSchema extends MWModel
 	}
 	
 	public MWComplexTypeDefinition complexType(String namespaceUrl, String complexTypeName) {
-		if (namespaceUrl == null) {
-			namespaceUrl = "";
+		if (namespaceUrl == null || "".equals(namespaceUrl)) {
+			namespaceUrl = targetNamespaceUrl();
 		}
 		return this.namespaceForUrl(namespaceUrl).complexType(complexTypeName);
 	}
@@ -434,8 +434,8 @@ public final class MWXmlSchema extends MWModel
 	}
 	
 	public MWSimpleTypeDefinition simpleType(String namespaceUrl, String simpleTypeName) {
-		if (namespaceUrl == null) {
-			namespaceUrl = "";
+		if (namespaceUrl == null || "".equals(namespaceUrl)) {
+			namespaceUrl = targetNamespaceUrl();
 		}
 		return this.namespaceForUrl(namespaceUrl).simpleType(simpleTypeName);
 	}
@@ -467,6 +467,9 @@ public final class MWXmlSchema extends MWModel
 	}
 	
 	public MWModelGroupDefinition modelGroupDefinition(String namespaceUrl, String modelGroupDefName) {
+		if (namespaceUrl == null || "".equals(namespaceUrl)) {
+			namespaceUrl = targetNamespaceUrl();
+		}
 		return this.namespaceForUrl(namespaceUrl).modelGroupDefinition(modelGroupDefName);
 	}
 	
@@ -475,8 +478,8 @@ public final class MWXmlSchema extends MWModel
 	}
 	
 	public MWModelGroup modelGroup(String namespaceUrl, String modelGroupDefName) {
-		if (namespaceUrl == null) {
-			namespaceUrl = "";
+		if (namespaceUrl == null || "".equals(namespaceUrl)) {
+			namespaceUrl = targetNamespaceUrl();
 		}
 		return this.modelGroupDefinition(namespaceUrl, modelGroupDefName).getModelGroup();
 	}
