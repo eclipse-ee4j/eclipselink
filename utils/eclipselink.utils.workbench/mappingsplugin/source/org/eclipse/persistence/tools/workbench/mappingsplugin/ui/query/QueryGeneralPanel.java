@@ -22,9 +22,11 @@ import java.util.Iterator;
 import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JRootPane;
 
 import org.eclipse.persistence.tools.workbench.framework.context.WorkbenchContextHolder;
 import org.eclipse.persistence.tools.workbench.framework.ui.view.AbstractPanel;
@@ -234,16 +236,28 @@ final public class QueryGeneralPanel
 		PropertyValueModel dontAskAgainHolder = new SimplePropertyValueModel(new Boolean(false));
 		JComponent dontAskAgainPanel = 
 			SwingComponentFactory.buildDoNotAskAgainPanel(message, dontAskAgainHolder, this.resourceRepository());
+		
+		JOptionPane queryChangePane = new JOptionPane(dontAskAgainPanel, JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
+		JDialog queryChangeDialog = queryChangePane.createDialog(this.getWorkbenchContext().getCurrentWindow(), title);
+		queryChangeDialog.setSize(400, 150);
+		queryChangeDialog.setResizable(false);
+		queryChangeDialog.show();
+		queryChangeDialog.dispose();
+		int response = -1;
+		Object value = queryChangePane.getValue();
+		if (value != null && value instanceof Integer) {
+			response = ((Integer)value).intValue();
+		}
 
 		// prompt user for response
-		int response = 
-			JOptionPane.showConfirmDialog(
-				this.getWorkbenchContext().getCurrentWindow(),
-				dontAskAgainPanel,
-				title,
-				JOptionPane.YES_NO_OPTION,
-				JOptionPane.WARNING_MESSAGE
-			);
+//		int response = 
+//			JOptionPane.showConfirmDialog(
+//				this.getWorkbenchContext().getCurrentWindow(),
+//				dontAskAgainPanel,
+//				title,
+//				JOptionPane.YES_NO_OPTION,
+//				JOptionPane.WARNING_MESSAGE
+//			);
 
 		if (dontAskAgainHolder.getValue().equals(Boolean.TRUE)) {
 			if (response == JOptionPane.YES_OPTION) {
