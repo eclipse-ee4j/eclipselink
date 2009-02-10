@@ -45,6 +45,9 @@ public class DeletePoolAction extends AbstractEnablableFrameworkAction {
 			if( pool.isWriteConnectionPool()) {
 				session.removeWriteConnectionPool();
 			}
+			else if ( pool.isReadConnectionPool()) {
+				session.removeReadConnectionPool();
+			}
 			else if( pool.isSequenceConnectionPool()) {
 				session.removeSequenceConnectionPool();
 			}
@@ -67,8 +70,6 @@ public class DeletePoolAction extends AbstractEnablableFrameworkAction {
 	}
 	
 	protected boolean shouldBeEnabled(ApplicationNode selectedNode) {
-		ConnectionPoolAdapter pool = (ConnectionPoolAdapter) selectedNode.getValue();
-
-		return !(pool.isReadConnectionPool());
+		return true;
 	}
 }
