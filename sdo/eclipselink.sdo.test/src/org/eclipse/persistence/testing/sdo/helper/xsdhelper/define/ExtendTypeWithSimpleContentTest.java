@@ -37,8 +37,10 @@ public class ExtendTypeWithSimpleContentTest extends XSDHelperDefineTestCases {
 
     public void testDefine() {
         try {
+            DefaultSchemaResolver schemaResolver = new DefaultSchemaResolver();
+            schemaResolver.setBaseSchemaLocation(getSchemaLocation());
             Source xsdSource = new StreamSource(getSchemaToDefine());
-            ((SDOXSDHelper) HelperProvider.getDefaultContext().getXSDHelper()).define(xsdSource, null);
+            ((SDOXSDHelper) HelperProvider.getDefaultContext().getXSDHelper()).define(xsdSource, schemaResolver);
         } catch (Exception x) {
             fail(x.getMessage());
             throw new RuntimeException(x);

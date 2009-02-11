@@ -55,6 +55,10 @@ public class SDODataFactoryDelegate implements SDODataFactory {
     }
 
     public DataObject create(Type type) {
+        if (type == null) {
+            throw new IllegalArgumentException(SDOException.cannotPerformOperationWithNullInputParameter("create", "type"));
+        }
+        
         if (type.isAbstract()) {
             //throw illegal arg exception 
             //spec page 40                        

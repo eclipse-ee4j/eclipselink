@@ -31,6 +31,7 @@ public class SDOXMLHelperTestSuite {
         suite.addTest(new SDOXMLHelperLoadTestSuite().suite());
         suite.addTest(new SDOXMLHelperSaveTestSuite().suite());
         suite.addTest(new SDOXMLHelperThreadSafetyTestSuite().suite());
+        suite.addTestSuite(SDOXMLHelperExceptionTestCases.class);
         return suite;
     }
 }

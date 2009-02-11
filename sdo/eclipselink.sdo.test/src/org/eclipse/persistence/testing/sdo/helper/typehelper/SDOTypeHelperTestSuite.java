@@ -30,14 +30,15 @@ public class SDOTypeHelperTestSuite {
     }
 
     /**
-    *  Inherited suite mthod for generating all test cases.
-    * @return
-    */
+     * Inherited suite method for generating all test cases.
+     * @return
+     */
     public static Test suite() {
         TestSuite suite = new TestSuite("All TypHelper Tests");
         suite.addTest(new TestSuite(SDOTypeHelperBuiltinCommonjMapTestCases.class));
-				suite.addTest(new SDOTypeHelperDefineTestSuite().suite());			
+		suite.addTest(new SDOTypeHelperDefineTestSuite().suite());			
         suite.addTest(new TestSuite(OpenContentPropertiesByNameTestCases.class));
+        suite.addTestSuite(SDOTypeHelperExceptionTestCases.class);
         return suite;
     }
 }

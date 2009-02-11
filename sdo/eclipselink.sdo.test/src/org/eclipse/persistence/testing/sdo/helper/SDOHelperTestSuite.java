@@ -17,8 +17,7 @@ import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
 import org.eclipse.persistence.testing.sdo.helper.datafactory.SDODataFactoryTestSuite;
 import org.eclipse.persistence.testing.sdo.helper.typehelper.SDOTypeHelperTestSuite;
 import org.eclipse.persistence.testing.sdo.helper.xmlhelper.SDOXMLHelperTestSuite;
-import org.eclipse.persistence.testing.sdo.helper.xsdhelper.define.XSDHelperDefineTestSuite;
-import org.eclipse.persistence.testing.sdo.helper.xsdhelper.generate.XSDHelperGenerateTestSuite;
+import org.eclipse.persistence.testing.sdo.helper.xsdhelper.SDOXSDHelperTestSuite;
 
 /**
  *  The general location where we perform all corresponding testing based on
@@ -38,8 +37,7 @@ public class SDOHelperTestSuite extends TestCase {
      */
     public static Test suite() {
         TestSuite suite = new TestSuite("All Helper Tests");
-        suite.addTest(new XSDHelperDefineTestSuite().suite());
-        suite.addTest(new XSDHelperGenerateTestSuite().suite());
+        suite.addTest(new SDOXSDHelperTestSuite().suite());
         suite.addTest(new SDOTypeHelperTestSuite().suite());
         suite.addTest(new SDODataFactoryTestSuite().suite());
         //suite.addTest(new SDOClassGenTestSuite().suite());

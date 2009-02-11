@@ -893,6 +893,9 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
      * @throws IllegalArgumentException if the Types could not be defined.
      */
     public synchronized List define(List types) {
+        if (types == null) {
+            throw new IllegalArgumentException(SDOException.cannotPerformOperationWithNullInputParameter("define", "types"));
+        }
         List definedTypes = new ArrayList();
         for (int i = 0; i < types.size(); i++) {
             Type definedType = define((DataObject)types.get(i));
@@ -981,8 +984,11 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
     @throws IllegalArgumentException if the Property could not be defined.
     */
     public Property defineOpenContentProperty(String uri, DataObject propertyDO) {
+        if (propertyDO == null) {
+            throw new IllegalArgumentException(SDOException.cannotPerformOperationWithNullInputParameter("defineOpenContentProperty", "propertyDO"));
+        }
+        
         String name = propertyDO.getString("name");
-
         Property propertyToReturn = aHelperContext.getXSDHelper().getGlobalProperty(uri, name, true);
         if (propertyToReturn == null) {
             propertyToReturn = aHelperContext.getXSDHelper().getGlobalProperty(uri, name, false);

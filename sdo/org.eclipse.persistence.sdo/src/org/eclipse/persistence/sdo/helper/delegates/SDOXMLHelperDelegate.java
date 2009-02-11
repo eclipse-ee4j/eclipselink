@@ -372,6 +372,10 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
      *    is not closed or has no container.
      */
     public void save(XMLDocument xmlDocument, OutputStream outputStream, Object options) throws IOException {
+        if (xmlDocument == null) {
+            throw new IllegalArgumentException(SDOException.cannotPerformOperationWithNullInputParameter("save", "xmlDocument"));
+        }
+        
         String encoding = this.getXmlMarshaller().getEncoding();
         if(xmlDocument.getEncoding() != null) {
             encoding = xmlDocument.getEncoding();
@@ -396,6 +400,10 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
      *    is not closed or has no container.
      */
     public void save(XMLDocument xmlDocument, Writer outputWriter, Object options) throws IOException {
+        if (xmlDocument == null) {
+            throw new IllegalArgumentException(SDOException.cannotPerformOperationWithNullInputParameter("save", "xmlDocument"));
+        }
+        
         // get XMLMarshaller once - as we may create a new instance if this helper isDirty=true
         XMLMarshaller anXMLMarshaller = getXmlMarshaller();
 
@@ -424,7 +432,11 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
     }
 
     public void save(XMLDocument xmlDocument, Result result, Object options) throws IOException {
-        if(result instanceof StreamResult) {
+        if (xmlDocument == null) {
+            throw new IllegalArgumentException(SDOException.cannotPerformOperationWithNullInputParameter("save", "xmlDocument"));
+        }
+
+        if (result instanceof StreamResult) {
             StreamResult streamResult = (StreamResult)result;
             Writer writer = streamResult.getWriter();
             if (null == writer) {

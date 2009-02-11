@@ -77,6 +77,9 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
      * @return the local name as declared in the XSD.
      */
     public String getLocalName(Type type) {
+        if (type == null) {
+            return null;
+        }
         return ((SDOType)type).getXsdLocalName();
     }
 
@@ -86,6 +89,9 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
      * @return the local name as declared in the XSD.
      */
     public String getLocalName(Property property) {
+        if (property == null) {
+            return null;
+        }
         return ((SDOProperty)property).getXsdLocalName();
     }
 
@@ -95,6 +101,9 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
      * @return the namespace URI as declared in the XSD.
      */
     public String getNamespaceURI(Type type) {
+        if (type == null) {
+            return null;
+        }
         return type.getURI();
     }
 
@@ -104,6 +113,9 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
      * @return the namespace URI as declared in the XSD.
      */
     public String getNamespaceURI(Property property) {
+        if (property == null) {
+            return null;
+        }
         String uri = null;
         if (property.isOpenContent()) {
             uri = ((SDOProperty)property).getUri();
@@ -128,6 +140,9 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
      * @return true if the property is declared as an attribute in the XSD.
      */
     public boolean isAttribute(Property property) {
+        if (property == null) {
+            return false;
+        }
         Object value = property.get(SDOConstants.XMLELEMENT_PROPERTY);
         if ((value != null) && value instanceof Boolean) {
             boolean isElement = ((Boolean)value).booleanValue();
@@ -155,6 +170,9 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
      * @return true if the property is declared as an element in the XSD.
      */
     public boolean isElement(Property property) {
+        if (property == null) {
+            return false;
+        }
         Object value = property.get(SDOConstants.XMLELEMENT_PROPERTY);
         if ((value != null) && value instanceof Boolean) {
             return ((Boolean)value).booleanValue();
@@ -176,6 +194,9 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
      * @return true if the Type is declared to contain mixed content.
      */
     public boolean isMixed(Type type) {
+        if (type == null) {
+            return false;
+        }
         return type.isSequenced();
     }
 
@@ -185,6 +206,9 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
      * @return true if this helper contains XSD information for the specified type.
      */
     public boolean isXSD(Type type) {
+        if (type == null) {
+            return false;
+        }
         return ((SDOType)type).isXsd();
     }
 

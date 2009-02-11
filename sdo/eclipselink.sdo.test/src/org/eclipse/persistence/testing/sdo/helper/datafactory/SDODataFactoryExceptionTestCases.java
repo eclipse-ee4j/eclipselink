@@ -58,7 +58,7 @@ public class SDODataFactoryExceptionTestCases extends SDOXMLHelperTestCases {
         }
     }
     
-     public void testNullType() throws Exception {
+    public void testNullType() throws Exception {
         Type theType = null;
         try {
             dataFactory.create(theType);
@@ -66,4 +66,12 @@ public class SDODataFactoryExceptionTestCases extends SDOXMLHelperTestCases {
         } catch (Exception e) {
         }
     }
+
+     public void testCreateWithNullType() throws Exception {
+         Type type = null;
+         try {
+             dataFactory.create(type);
+             fail("An IllegalArugmentException should have occurred");
+         } catch (Exception e) {}
+     }
 }

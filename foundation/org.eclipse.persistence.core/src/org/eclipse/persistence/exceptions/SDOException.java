@@ -75,6 +75,7 @@ public class SDOException extends EclipseLinkException {
     public static final int PREFIX_USED_BUT_NOT_DEFINED = 45037;
     public static final int CANNOT_PERFORM_OPERATION_ON_PROPERTY = 45038;
     public static final int ERROR_ACCESSING_EXTERNALIZABLEDELEGATOR = 45039;
+    public static final int CANNOT_PERFORM_OP_WITH_NULL_PARAM = 45040;
     public static final int ERROR_PERFORMING_WLS_LOOKUP = 45100;
     public static final int ERROR_MAKING_WLS_REFLECTIVE_CALL = 45101;
     public static final int ERROR_GETTING_OBJECTNAME = 45102;
@@ -307,6 +308,17 @@ public class SDOException extends EclipseLinkException {
         Object[] args = { uri, name };
         SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(SDOException.class, ERROR_CREATING_DATAOBJECT_FOR_TYPE, args));
         exception.setErrorCode(ERROR_CREATING_DATAOBJECT_FOR_TYPE);
+        return exception;
+    }
+
+    /**
+     * INTERNAL:
+     * Exception trying to call a method with a null input parameter 
+     */
+    public static SDOException cannotPerformOperationWithNullInputParameter(String operation, String parameter) {
+        Object[] args = { operation, parameter };
+        SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(SDOException.class, CANNOT_PERFORM_OP_WITH_NULL_PARAM, args));
+        exception.setErrorCode(CANNOT_PERFORM_OP_WITH_NULL_PARAM);
         return exception;
     }
 
