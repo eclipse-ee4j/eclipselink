@@ -158,6 +158,10 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             return convertObjectToTimestamp(sourceObject, XMLConstants.DATE_TIME_QNAME);
         } else if ((javaClass == java.net.URI.class)) {
             return convertObjectToURI(sourceObject);
+        } else if ((javaClass == ClassConstants.XML_GREGORIAN_CALENDAR)) {
+            return convertObjectToXMLGregorianCalendar(sourceObject);
+        } else if ((javaClass == ClassConstants.DURATION)) {
+            return convertObjectToDuration(sourceObject);
         } else {
             try {
                 return super.convertObject(sourceObject, javaClass);
@@ -228,6 +232,10 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             return convertObjectToString(sourceObject, schemaTypeQName);
         } else if ((javaClass == java.net.URI.class)) {
             return convertObjectToURI(sourceObject);
+        } else if ((javaClass == ClassConstants.XML_GREGORIAN_CALENDAR)) {
+            return convertObjectToXMLGregorianCalendar(sourceObject);
+        } else if ((javaClass == ClassConstants.DURATION)) {
+            return convertObjectToDuration(sourceObject);
         } else {
             try {
                 return super.convertObject(sourceObject, javaClass);
@@ -242,6 +250,37 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         throw ConversionException.couldNotBeConverted(sourceObject, javaClass);
     }
 
+    /**
+     * Build a valid instance of XMLGregorianCalendar from the provided sourceObject.
+     *
+     * @param sourceObject
+     */
+    protected XMLGregorianCalendar convertObjectToXMLGregorianCalendar(Object sourceObject) throws ConversionException {
+        if (sourceObject instanceof XMLGregorianCalendar) {
+            return (XMLGregorianCalendar) sourceObject;
+        }
+        
+        if (sourceObject instanceof String) {
+            return convertStringToXMLGregorianCalendar((String) sourceObject);
+        }
+        throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.XML_GREGORIAN_CALENDAR);
+    }
+
+    /**
+     * Build a valid instance of Duration from the provided sourceObject.
+     *
+     * @param sourceObject
+     */
+    protected Duration convertObjectToDuration(Object sourceObject) throws ConversionException {
+        if (sourceObject instanceof Duration) {
+            return (Duration) sourceObject;
+        }
+        if (sourceObject instanceof String) {
+            return convertStringToDuration((String) sourceObject);
+        }
+        throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.DURATION);
+    }
+    
     /**
      * Build a valid instance of Character from the provided sourceObject.
      *
@@ -335,6 +374,13 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         if (sourceObject instanceof java.util.Date) {
             return stringFromDate((java.util.Date) sourceObject);
         }
+        if (sourceObject instanceof XMLGregorianCalendar) {
+            return stringFromXMLGregorianCalendar((XMLGregorianCalendar) sourceObject);
+        }
+        if (sourceObject instanceof Duration) {
+            return stringFromDuration((Duration) sourceObject);
+        }
+
         return super.convertObjectToString(sourceObject);
     }
 
@@ -356,6 +402,12 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         }
         if (sourceObject instanceof java.util.Date) {
             return stringFromDate((java.util.Date) sourceObject, schemaTypeQName);
+        }
+        if (sourceObject instanceof XMLGregorianCalendar) {
+            return stringFromXMLGregorianCalendar((XMLGregorianCalendar) sourceObject);
+        }
+        if (sourceObject instanceof Duration) {
+            return stringFromDuration((Duration) sourceObject);
         }
 
         return super.convertObjectToString(sourceObject);
@@ -390,7 +442,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
                 throw e1;
             }
         }
-
+                
         return calToReturn;
     }
 
@@ -406,8 +458,9 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
 
     public Calendar convertStringToCalendar(String sourceString, QName schemaTypeQName) {
         java.util.Date date = convertStringToDate(sourceString, schemaTypeQName);
-        applyTimeZone(date, sourceString);
-        return Helper.calendarFromUtilDate(date);
+        Calendar cal = Helper.calendarFromUtilDate(date);
+        cal.setTimeZone(getTimeZone());
+        return cal;
     }
 
     private Date convertObjectToUtilDate(Object sourceObject, QName schemaTypeQName) {
@@ -1349,6 +1402,14 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         return appendTimeZone(string);
     }
 
+    private String stringFromXMLGregorianCalendar(XMLGregorianCalendar cal) {
+        return cal.toXMLFormat();
+    }
+
+    private String stringFromDuration(Duration dur) {
+        return dur.toString();
+    }
+
     private String stringFromQName(QName sourceQName) {
         // String will be formatted as: {namespaceURI}localPart
         return sourceQName.toString();
@@ -1562,36 +1623,6 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         }
         stringBuilder.append(minuteOffset);
         return stringBuilder.toString();
-    }
-
-    private void applyTimeZone(java.util.Date date, String string) {
-        if (null == string) {
-            return;
-        }
-
-        int stringTimeZoneRawOffset;
-        if (string.charAt(string.length() - 1) == 'Z') {
-            stringTimeZoneRawOffset = 0;
-        } else {
-            int timeZoneIndex = string.lastIndexOf('+');
-            if (-1 == timeZoneIndex) {
-                timeZoneIndex = string.lastIndexOf('-');
-                if (-1 == timeZoneIndex) {
-                    return;
-                } else {
-                    int lastColonIndex = string.lastIndexOf(':');
-                    if ((lastColonIndex - timeZoneIndex) != 3) {
-                        return;
-                    }
-                }
-            }
-            TimeZone stringTimeZone = convertStringToTimeZone(string.substring(timeZoneIndex));
-            stringTimeZoneRawOffset = stringTimeZone.getRawOffset();
-        }
-
-        int formatTimeZoneRawOffset = getTimeZone().getRawOffset();
-        int timeZoneAdjustment = formatTimeZoneRawOffset - stringTimeZoneRawOffset;
-        date.setTime(date.getTime() + timeZoneAdjustment);
     }
 
     /**
