@@ -23,6 +23,7 @@ import javax.xml.namespace.QName;
 import java.util.HashMap;
 
 import org.eclipse.persistence.oxm.XMLContext;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jaxb.compiler.Generator;
 import org.eclipse.persistence.jaxb.compiler.MarshalCallback;
 import org.eclipse.persistence.jaxb.compiler.UnmarshalCallback;
@@ -125,4 +126,13 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     public void setGeneratedClassesToQName(HashMap<Class, QName> classesToQName) {
     	this.generatedClassesToQName = classesToQName;
     }
+    
+    /**
+     * ADVANCED:
+     * Adjust the OXM metadata to take into accound ORM mapping metadata,
+     */
+     public void applyORMMetadata(AbstractSession ormSession) {
+    	 this.xmlContext.applyORMMetadata(ormSession);
+     }
+    
 }

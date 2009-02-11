@@ -21,14 +21,22 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 import java.util.Collection;
 import javax.xml.namespace.QName;
+
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.oxm.accessor.OrmAttributeAccessor;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.documentpreservation.DescriptorLevelDocumentPreservationPolicy;
 import org.eclipse.persistence.internal.oxm.documentpreservation.NoDocumentPreservationPolicy;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.mappings.AttributeAccessor;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.oxm.documentpreservation.DocumentPreservationPolicy;
+import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
+import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.platform.SAXPlatform;
 import org.eclipse.persistence.oxm.platform.XMLPlatform;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
@@ -599,4 +607,72 @@ public class XMLContext {
     public boolean hasDocumentPreservation() {
         return this.hasDocumentPreservation;
     }
+    
+    /**
+    * ADVANCED:
+    * Adjust the OXM metadata to take into accound ORM mapping metadata,
+    */
+    public void applyORMMetadata(AbstractSession ormSession) {
+        //Iterate over the ORM descriptors and check for matching OXM descriptors
+        Iterator ormDescriptors = ormSession.getDescriptors().values().iterator();
+        while(ormDescriptors.hasNext()) {
+            ClassDescriptor ormDescriptor = (ClassDescriptor)ormDescriptors.next();
+            Class javaClass = ormDescriptor.getJavaClass();
+            AbstractSession oxmSession = null;
+            try {
+                oxmSession = this.getSession(javaClass);
+            } catch(XMLMarshalException ex) {
+                //if we couldn't find a session for this class, we
+                //don't have an OX descriptor for it. 
+            }
+            if(oxmSession != null) {
+                ClassDescriptor oxmDescriptor = oxmSession.getDescriptor(javaClass);
+                //If we have an oxmDescriptor for this ORM descriptor, iterate over
+                //mappings, and update the required OXM mappings attribute accessors
+                Iterator<DatabaseMapping> ormMappings = ormDescriptor.getMappings().iterator();
+                while(ormMappings.hasNext()) {
+                    DatabaseMapping ormMapping = ormMappings.next();
+                    DatabaseMapping oxmMapping = oxmDescriptor.getMappingForAttributeName(ormMapping.getAttributeName());
+                    if(oxmMapping != null) {
+                        AttributeAccessor oxmAccessor = oxmMapping.getAttributeAccessor();
+                        OrmAttributeAccessor newAccessor = new OrmAttributeAccessor(ormMapping.getAttributeAccessor(), oxmAccessor);
+                        if(ormMapping.isOneToOneMapping() && ((OneToOneMapping)ormMapping).usesIndirection()) {
+                            newAccessor.setValueHolderProperty(true);
+                        }
+                        newAccessor.setChangeTracking(ormDescriptor.getObjectChangePolicy().isAttributeChangeTrackingPolicy());
+                        oxmMapping.setAttributeAccessor(newAccessor);
+                        
+                        //check to see if we need to deal with containerAccessor
+                        AttributeAccessor containerAccessor = null;
+                        Class containerClass = null;
+                        if(oxmMapping instanceof XMLCompositeObjectMapping) {
+                            containerAccessor = ((XMLCompositeObjectMapping)oxmMapping).getContainerAccessor();
+                            containerClass = ((XMLCompositeObjectMapping)oxmMapping).getReferenceClass();
+                        } else if(oxmMapping instanceof XMLCompositeCollectionMapping) {
+                            containerAccessor = ((XMLCompositeCollectionMapping)oxmMapping).getContainerAccessor();
+                            containerClass = ((XMLCompositeCollectionMapping)oxmMapping).getReferenceClass();
+                        }
+                        if(containerAccessor != null) {
+                            ClassDescriptor containerDescriptor = ormSession.getDescriptor(containerClass);
+                            if(containerDescriptor != null) {
+                                DatabaseMapping ormContainerMapping = containerDescriptor.getMappingForAttributeName(containerAccessor.getAttributeName());
+                                if(ormContainerMapping != null) {
+                                    //Check for indirection on the container mapping
+                                    OrmAttributeAccessor ormAccessor = new OrmAttributeAccessor(ormContainerMapping.getAttributeAccessor(), containerAccessor);
+                                    ormAccessor.setChangeTracking(containerDescriptor.getObjectChangePolicy().isAttributeChangeTrackingPolicy());
+                                    ormAccessor.setValueHolderProperty(ormContainerMapping instanceof OneToOneMapping && ((OneToOneMapping)ormContainerMapping).usesIndirection());
+                                    if(oxmMapping instanceof XMLCompositeObjectMapping) {
+                                        ((XMLCompositeObjectMapping)oxmMapping).setContainerAccessor(ormAccessor);
+                                    } else if(oxmMapping instanceof XMLCompositeCollectionMapping) {
+                                        ((XMLCompositeCollectionMapping)oxmMapping).setContainerAccessor(ormAccessor);
+                                    }
+                                    
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    } 
 }
