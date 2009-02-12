@@ -446,13 +446,6 @@ public class JAXBListWrapper extends ListWrapper {
             XMLCompositeCollectionMapping compositeMapping = (XMLCompositeCollectionMapping) mapping;
             if(compositeMapping.getContainerAccessor() != null) {
                 Object itemEntity = jaxbValueStore.getJAXBHelperContext().unwrap((DataObject) item);
-                if (itemEntity instanceof ChangeTracker) {
-                    PropertyChangeListener listener = ((ChangeTracker) itemEntity)._persistence_getPropertyChangeListener();
-                    if (listener != null) {
-                        Object itemEntityOldContainer = compositeMapping.getContainerAccessor().getAttributeValueFromObject(itemEntity);
-                        listener.propertyChange(new PropertyChangeEvent(itemEntity, compositeMapping.getContainerAttributeName(), jaxbValueStore.getEntity(), itemEntityOldContainer));
-                    }
-                }
                 compositeMapping.getContainerAccessor().setAttributeValueInObject(itemEntity, jaxbValueStore.getEntity());
             }
         }

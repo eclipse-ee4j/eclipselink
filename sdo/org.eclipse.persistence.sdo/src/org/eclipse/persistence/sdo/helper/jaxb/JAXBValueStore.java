@@ -190,13 +190,6 @@ public class JAXBValueStore implements ValueStore {
             if (mapping.isAbstractCompositeObjectMapping()) {
                 XMLCompositeObjectMapping compositeMapping = (XMLCompositeObjectMapping) mapping;
                 if (oldValue != null && compositeMapping.getContainerAccessor() != null) {
-                    if(oldValue instanceof ChangeTracker) {
-                        PropertyChangeListener listener = ((ChangeTracker) oldValue)._persistence_getPropertyChangeListener();
-                        if(null != listener) {
-                           Object oldValueOldContainer = compositeMapping.getContainerAccessor().getAttributeValueFromObject(oldValue);
-                           listener.propertyChange(new PropertyChangeEvent(oldValue, compositeMapping.getContainerAttributeName(), null, oldValueOldContainer));
-                        }
-                    }
                     compositeMapping.getContainerAccessor().setAttributeValueInObject(oldValue, null);
                 }
             }
@@ -207,26 +200,11 @@ public class JAXBValueStore implements ValueStore {
             if (mapping.isAbstractCompositeObjectMapping()) {
                 XMLCompositeObjectMapping compositeMapping = (XMLCompositeObjectMapping) mapping;
                 if (value != null && compositeMapping.getContainerAccessor() != null) {
-                    if(newValue instanceof ChangeTracker) {
-                        PropertyChangeListener listener = ((ChangeTracker) newValue)._persistence_getPropertyChangeListener();
-                        if(null != listener) {
-                            Object newValueOldContainer = compositeMapping.getContainerAccessor().getAttributeValueFromObject(newValue);
-                            listener.propertyChange(new PropertyChangeEvent(newValue, compositeMapping.getContainerAttributeName(), entity, newValueOldContainer));
-                        }
-                    }
                     compositeMapping.getContainerAccessor().setAttributeValueInObject(newValue, entity);
                 }
             }
         }
 
-        // If the target entity is using attribute change tracking then we need
-        // to force the property event to be fired
-        if (entity instanceof ChangeTracker) {
-            PropertyChangeListener listener = ((ChangeTracker) entity)._persistence_getPropertyChangeListener();
-            if (listener != null) {
-                listener.propertyChange(new PropertyChangeEvent(entity, mapping.getAttributeName(), newValue, oldValue));
-            }
-        }
     }
 
     /**
@@ -285,25 +263,12 @@ public class JAXBValueStore implements ValueStore {
                 XMLCompositeObjectMapping compositeMapping = (XMLCompositeObjectMapping) mapping;
                 if (compositeMapping.getContainerAccessor() != null) {
                     if (oldValue != null) {
-                        if (oldValue instanceof ChangeTracker) {
-                            PropertyChangeListener listener = ((ChangeTracker) oldValue)._persistence_getPropertyChangeListener();
-                            if (listener != null) {
-                                Object oldValueOldContainer = compositeMapping.getContainerAccessor().getAttributeValueFromObject(oldValue); 
-                                listener.propertyChange(new PropertyChangeEvent(oldValue, compositeMapping.getContainerAttributeName(), null, oldValueOldContainer));
-                            }
-                        }
                         compositeMapping.getContainerAccessor().setAttributeValueInObject(oldValue, null);
                     }
                 }
             }
 
             // NEW VALUE
-            if (entity instanceof ChangeTracker) {
-                PropertyChangeListener listener = ((ChangeTracker) entity)._persistence_getPropertyChangeListener();
-                if (listener != null) {
-                    listener.propertyChange(new PropertyChangeEvent(entity, mapping.getAttributeName(), null, oldValue));
-                }
-            }
             mapping.getAttributeAccessor().setAttributeValueInObject(entity, null);
         }
     }
