@@ -66,8 +66,8 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
     public void testSetup() {
-        new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession());
         new CompositePKTableCreator().replaceTables(JUnitTestCase.getServerSession());
+        new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession());
         clearCache();
     }
     
@@ -197,7 +197,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
 
             em.persist(depAdmin);
             commitTransaction(em);
-            org.eclipse.persistence.internal.jpa.EntityManagerImpl emImpl = (org.eclipse.persistence.internal.jpa.EntityManagerImpl) em;
+            //org.eclipse.persistence.internal.jpa.EntityManagerImpl emImpl = (org.eclipse.persistence.internal.jpa.EntityManagerImpl) em;
             DepartmentAdminRolePK depAdminPk= new DepartmentAdminRolePK(depName, depRole, location, adminEmp.getEmployee().getId()); 
  
             DepartmentAdminRole cacheObject = em.find(DepartmentAdminRole.class, depAdminPk);
