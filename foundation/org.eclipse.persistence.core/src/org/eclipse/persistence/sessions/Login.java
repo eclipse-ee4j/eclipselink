@@ -21,10 +21,10 @@ import org.eclipse.persistence.platform.database.DatabasePlatform;
 
 /**
  * <p>
- * <b>Purpose</b>: Define the information required to connect to a EclipseLink session.
+ * <b>Purpose</b>: Define the information required to connect to an EclipseLink session.
  * <p>
  * <b>Description</b>: This interface represents a generic concept of a login to be used
- * when connecting to a data-store.  It is independant of JDBC so that the EclipseLink
+ * when connecting to a data-store.  It is independent of JDBC so that the EclipseLink
  * session interface can be used for JCA, XML, non-relational or three-tiered frameworks.
  * <p>
  * @see DatabaseLogin

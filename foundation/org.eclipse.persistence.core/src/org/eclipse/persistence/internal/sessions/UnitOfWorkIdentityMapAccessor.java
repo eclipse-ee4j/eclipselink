@@ -130,7 +130,7 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
         }
 
         Object objectFromCache = null;
-        // this check could be simplfied to one line but would create a window
+        // this check could be simplified to one line but would create a window
         // in which GC could remove the object and we would end up with a null pointer
         // as well we must inspect the cacheKey without locking on it.
         if ((cacheKey != null) && (shouldReturnInvalidatedObjects || !descriptor.getCacheInvalidationPolicy().isInvalidated(cacheKey))) {

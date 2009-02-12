@@ -361,7 +361,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
 
     /**
      * INTERNAL:
-     * This is internal to the uow, transactions should not be used explictly in a uow.
+     * This is internal to the uow, transactions should not be used explicitly in a uow.
      * The uow shares its parents transactions.
      */
     public void rollbackTransaction() throws DatabaseException {

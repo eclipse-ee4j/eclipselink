@@ -9,6 +9,9 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     02/11/2009-1.1 Michael O'Brien 
+ *        - 259993: As part 2) During mergeClonesAfterCompletion() If the the acquire and release threads are different 
+ *                           switch back to the stored acquire thread stored on the mergeManager.
  ******************************************************************************/  
 package org.eclipse.persistence.internal.helper;
 
@@ -64,6 +67,7 @@ public class WriteLockManager {
         IdentityHashMap lockedObjects = new IdentityHashMap();
         IdentityHashMap refreshedObjects = new IdentityHashMap();
         try {
+            
             // if the descriptor has indirection for all mappings then wait as there will be no deadlock risks
             CacheKey toWaitOn = acquireLockAndRelatedLocks(objectForClone, lockedObjects, refreshedObjects, cacheKey, descriptor, session, unitOfWork);
             int tries = 0;
@@ -118,6 +122,7 @@ public class WriteLockManager {
         if (!refreshedObjects.containsKey(objectForClone) && this.checkInvalidObject(objectForClone, cacheKey, descriptor, unitOfWork)) {
             return cacheKey;
         }
+
         // Attempt to get a read-lock, null is returned if cannot be read-locked.
         if (cacheKey.acquireReadLockNoWait()) {
             if (cacheKey.getObject() == null) {
@@ -126,8 +131,8 @@ public class WriteLockManager {
             } else {
                 objectForClone = cacheKey.getObject();
                 if (lockedObjects.containsKey(objectForClone)) {
-                    // This is a check for loss of identity, the orignal check in
-                    // checkAndLockObject() will shortcircut in the usual case.
+                    // This is a check for loss of identity, the original check in
+                    // checkAndLockObject() will shortcircuit in the usual case.
                     cacheKey.releaseReadLock();
                     return null;
                 }
@@ -234,6 +239,10 @@ public class WriteLockManager {
 
         //while that thread has locks to acquire continue to loop.
         try {
+            // initialize the MergeManager during this commit or merge for insert/updates only
+            // this call is not required in acquireLocksForClone() or acquireLockAndRelatedLocks()
+            mergeManager.setLockThread(Thread.currentThread());
+
             AbstractSession session = mergeManager.getSession();
             if (session.isUnitOfWork()) {
                 session = ((UnitOfWorkImpl)session).getParent();
