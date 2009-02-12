@@ -30,7 +30,7 @@ public class SDOExceptionResource extends ListResourceBundle {
                                            { "45007", "A type was not set on the property with name [{0}]" },
                                            { "45008", "An IOException occurred." },
                                            { "45009", "Type not found with uri [{0}] and name [{1}]" },
-                                           { "45010", "Type not found for interface [{0}]" },
+                                           { "45010", "A type could not be found for interface class [{0}]. Please make sure that the type has been defined.  In addition,  the interface classloader should be a member of the helper context classloader hierarchy:  it appears as if this is [{1}]." },
                                            { "45011", "Could not create a DataObject for type with uri [{0}] and name [{1}] because type.isAbstract() returns true." },
                                            { "45012", "Could not create a DataObject for interface [{0}], trying to create a DataObject for type with uri [{1}] and name [{2}] " },
                                            { "45013", "Cannot look up app info for null argument." },

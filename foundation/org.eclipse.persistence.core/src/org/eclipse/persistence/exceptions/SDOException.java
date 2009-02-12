@@ -290,11 +290,11 @@ public class SDOException extends EclipseLinkException {
     }
 
     /**
-      * INTERNAL:
-      * Exception trying to lookup a type with the given interface
-      */
-    public static SDOException typeNotFoundForInterface(String className) {
-        Object[] args = { className };
+     * INTERNAL:
+     * Exception trying to lookup a type with the given interface
+     */
+    public static SDOException typeNotFoundForInterface(String className, boolean loadersAreRelated) {
+        Object[] args = { className, loadersAreRelated };
         SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(SDOException.class, TYPE_NOT_FOUND_FOR_INTERFACE, args));
         exception.setErrorCode(TYPE_NOT_FOUND_FOR_INTERFACE);
         return exception;

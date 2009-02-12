@@ -17,6 +17,7 @@ import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.helper.SDODataFactory;
 import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
+import org.eclipse.persistence.sdo.helper.SDOXMLHelper;
 
 import commonj.sdo.DataObject;
 import commonj.sdo.Type;
@@ -45,13 +46,29 @@ public class SDODataFactoryDelegate implements SDODataFactory {
 
     public DataObject create(Class interfaceClass) {
         if (interfaceClass == null) {
-            throw new IllegalArgumentException(SDOException.typeNotFoundForInterface(null));
+            throw new IllegalArgumentException(SDOException.cannotPerformOperationWithNullInputParameter("create", "interfaceClass"));
         }
         Type type = getHelperContext().getTypeHelper().getType(interfaceClass);
-        if ((type != null) && (type.getInstanceClass() != null)) {
+        if (type != null) {
             return create(type);
         }
-        throw new IllegalArgumentException(SDOException.typeNotFoundForInterface(interfaceClass.getName()));
+        
+        // at this point the type may not have been defined or there could be a classloader issue
+        SDOXMLHelper xmlHelper = (SDOXMLHelper) getHelperContext().getXMLHelper();
+        ClassLoader contextLoader = xmlHelper.getLoader();
+        ClassLoader interfaceLoader = interfaceClass.getClassLoader();
+        ClassLoader parentLoader = contextLoader;
+        boolean loadersAreRelated = false;
+
+        // check the hierarchy to see if the interface loader is a parent of the context loader
+        while (parentLoader != null && !loadersAreRelated) {
+            if (parentLoader == interfaceLoader) {
+                loadersAreRelated = true;
+            }
+            parentLoader = contextLoader.getParent();
+        }
+        
+        throw new IllegalArgumentException(SDOException.typeNotFoundForInterface(interfaceClass.getName(), loadersAreRelated));
     }
 
     public DataObject create(Type type) {

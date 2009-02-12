@@ -74,4 +74,20 @@ public class SDODataFactoryExceptionTestCases extends SDOXMLHelperTestCases {
              fail("An IllegalArugmentException should have occurred");
          } catch (Exception e) {}
      }
+
+     public void testCreateWithNullInterfaceClass() throws Exception {
+         Class theClass = null;
+         try {
+             dataFactory.create(theClass);
+             fail("An IllegalArugmentException should have occurred");
+         } catch (Exception e) {}
+     }
+
+     public void testInvalidInterfaceClass() throws Exception {
+         Class theClass = this.getClass();
+         try {
+             dataFactory.create(theClass);
+             fail("An IllegalArugmentException should have occurred");
+         } catch (Exception e) {}
+     }
 }
