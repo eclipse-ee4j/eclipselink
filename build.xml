@@ -101,7 +101,7 @@
         <contains string="${java.version}" substring="1.5"/>
     </condition>
     <echo message="${jdk_message}"/>
-    <echo message="jdbc.driver='${jdbc.driver}'"/>
+    <echo message="jdbc.driver.jar='${jdbc.driver.jar}'"/>
 
     <!-- versioning -->
     <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
