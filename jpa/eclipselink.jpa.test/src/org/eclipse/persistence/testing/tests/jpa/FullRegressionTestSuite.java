@@ -78,7 +78,7 @@ public class FullRegressionTestSuite extends TestSuite{
         // Advanced model
         TestSuite suite = new TestSuite();
         suite.setName("advanced");
-        suite.addTest(LifecycleJUnitTest.suite());
+        suite.addTest(LifecycleJUnitTest.suite()); // uses jpa.advanced model        
         suite.addTest(NamedNativeQueryJUnitTest.suite());
         suite.addTest(CacheImplJUnitTest.suite());
         suite.addTest(CallbackEventJUnitTestSuite.suite());

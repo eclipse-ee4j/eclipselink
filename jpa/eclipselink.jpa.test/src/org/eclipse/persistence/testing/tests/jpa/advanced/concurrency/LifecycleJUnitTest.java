@@ -25,6 +25,7 @@ import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.advanced.Department;
+import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 
 /**
  *  This test suite verifies that the state/lifecycle on a unitOfWork does not reset to 0 (Birth)
@@ -44,11 +45,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.Department;
  *        - 259993: Defer a clear() call to release() if uow lifecycle is 1,2 or 4 (*Pending).
  */
 public class LifecycleJUnitTest extends JUnitTestCase {
-    
-    // used by entity callbacks
-    public static EntityManagerFactory staticEmf = getEntityManagerFactory();
-    public static EntityManager staticEntityManager = null;
-    
+
     public LifecycleJUnitTest() {
         super();
     }
@@ -62,7 +59,8 @@ public class LifecycleJUnitTest extends JUnitTestCase {
         suite.addTest(new LifecycleJUnitTest("testSetup"));
         suite.addTest(new LifecycleJUnitTest("testClearWhileEntityManagerInFakeMergePendingState4"));        
         suite.addTest(new LifecycleJUnitTest("testClearWhileEntityManagerInFakeBirthState0"));        
-        //suite.addTest(new LifecycleJUnitTest("testClearWhileEntityManagerInCommitPendingState"));
+        suite.addTest(new LifecycleJUnitTest("testClearWhileEntityManagerInCommitPendingStateWithClearAfterCommit"));
+        suite.addTest(new LifecycleJUnitTest("testClearWhileEntityManagerInCommitPendingStateWithNoClearAfterCommit"));        
         suite.addTest(new LifecycleJUnitTest("testClearAfterEntityManagerCommitFinished"));
                 
         return suite;
@@ -75,7 +73,7 @@ public class LifecycleJUnitTest extends JUnitTestCase {
     
     public void testSetup() {
         clearCache();
-        //staticEntityManager = staticEmf.createEntityManager();
+        new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession());
     }
 
     public void finalize() {
@@ -189,7 +187,7 @@ public class LifecycleJUnitTest extends JUnitTestCase {
      * (Birth == 0, WriteChangesFailed==3, Death==5 or AfterExternalTransactionRolledBack==6).
      * If we are in one of the following *Pending states we defer the clear() to the release() call later  
      */
-/*    public void testClearWhileEntityManagerInCommitPendingState() {
+    public void testClearWhileEntityManagerInCommitPendingStateWithClearAfterCommit() {
         EntityManagerFactory emf = getEntityManagerFactory();
         EntityManager em = emf.createEntityManager();
         Department dept = null;   
@@ -197,9 +195,10 @@ public class LifecycleJUnitTest extends JUnitTestCase {
         try {
             em.getTransaction().begin();
             dept = new Department();
-            // copy em to staticEM so that entity callbacks can pick it up
-            staticEntityManager = em;
-            em.merge(dept);
+            // A merge will not populate the @Id field
+            //em.merge(dept);
+            // A persist will populate the @Id field
+            em.persist(dept);
         
             // simulate an attempt to call close() while we are in the middle of a commit
             UnitOfWorkImpl uow = getUnitOfWorkFromEntityManager(em);
@@ -214,8 +213,10 @@ public class LifecycleJUnitTest extends JUnitTestCase {
         
             //em.flush();
             em.getTransaction().commit();
-                
+
+            // clear em
             uow.clearForClose(false);
+            
             int lifecycleAfterCommit = uow.getLifecycle();
             assertEquals("Birth state 0 is not set after commit ", 0, lifecycleAfterCommit);
         } catch (RuntimeException ex){
@@ -226,14 +227,71 @@ public class LifecycleJUnitTest extends JUnitTestCase {
             throw ex;
         } finally {
             // return database to previous state
-            em = emf.createEntityManager();
+            //em = emf.createEntityManager();
             em.getTransaction().begin();
-            //em.remove(em.find(Department.class, dept.getId()));
+            // a find should goto the database
+            // Execute query ReadObjectQuery(referenceClass=Department sql="SELECT ID, NAME FROM CMP3_DEPT WHERE (ID = ?)")
+            // The remove operation has been performed on: org.eclipse.persistence.testing.models.jpa.advanced.Department@34ea34ea
+            em.remove(em.find(Department.class, dept.getId()));
+            // Execute query DeleteObjectQuery(org.eclipse.persistence.testing.models.jpa.advanced.Department@d5c0d5c)
+            // Execute query DataModifyQuery(sql="DELETE FROM CMP3_DEPT_CMP3_EMPLOYEE WHERE (ADV_DEPT_ID = ?)")
             em.getTransaction().commit();
         }
-    }*/
+    }
+
+    public void testClearWhileEntityManagerInCommitPendingStateWithNoClearAfterCommit() {
+        EntityManagerFactory emf = getEntityManagerFactory();
+        EntityManager em = emf.createEntityManager();
+        Department dept = null;   
+        //Equipment equip = null;
+        try {
+            em.getTransaction().begin();
+            dept = new Department();
+            // A merge will not populate the @Id field and will result in a PK null exception in any find later
+            //em.merge(dept);
+            // A persist will populate the @Id field
+            em.persist(dept);
+        
+            // simulate an attempt to call close() while we are in the middle of a commit
+            UnitOfWorkImpl uow = getUnitOfWorkFromEntityManager(em);
+
+            // get lifecycle state
+            int lifecycleBefore = uow.getLifecycle();
+            assertEquals("Birth state 0 is not set ", 0, lifecycleBefore);            
+            
+            uow.clearForClose(false);
+            int lifecycleAfter = uow.getLifecycle();
+            assertEquals("Birth state 0 is not set after a clear on state Birth  ", 0, lifecycleAfter);            
+        
+            //em.flush();
+            em.getTransaction().commit();
+
+            // don't clear em
+            //uow.clearForClose(false);
+            
+            int lifecycleAfterCommit = uow.getLifecycle();
+            assertEquals("Birth state 0 is not set after commit ", 0, lifecycleAfterCommit);
+        } catch (RuntimeException ex){
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+            throw ex;
+        } finally {
+            // return database to previous state
+            //em = emf.createEntityManager();
+            em.getTransaction().begin();
+            // perform the following
+            // Execute query ReadObjectQuery(referenceClass=Department sql="SELECT ID, NAME FROM CMP3_DEPT WHERE (ID = ?)")
+            // The remove operation has been performed on: org.eclipse.persistence.testing.models.jpa.advanced.Department@34ea34ea
+            em.remove(em.find(Department.class, dept.getId()));
+            // Execute query DeleteObjectQuery(org.eclipse.persistence.testing.models.jpa.advanced.Department@d5c0d5c)
+            // Execute query DataModifyQuery()
+            em.getTransaction().commit();
+        }
+    }
     
-    // This clear should pass because the sate is 0 Begin
+    // This clear should pass because the state is always 0 Begin except for inside the commit()
     public void testClearAfterEntityManagerCommitFinished() {
         EntityManagerFactory emf = getEntityManagerFactory();
         EntityManager em = emf.createEntityManager();
@@ -270,6 +328,7 @@ public class LifecycleJUnitTest extends JUnitTestCase {
             // return database to previous state
             em = emf.createEntityManager();
             em.getTransaction().begin();
+            // If you get a PK null exception in any find then the entity was only merged and not persisted
             em.remove(em.find(Department.class, dept.getId()));
             //em.remove(em.find(Equipment.class, equip.getId()));
             em.getTransaction().commit();
