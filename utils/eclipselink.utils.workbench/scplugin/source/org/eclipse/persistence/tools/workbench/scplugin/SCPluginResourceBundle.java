@@ -469,7 +469,7 @@ public final class SCPluginResourceBundle extends ListResourceBundle {
 		{ "CLUSTERING_CLUSTERING_COMBO_BOX",                 "Cache C&oordination:" },
 		{ "CLUSTERING_TYPE_COMBO_BOX",                       "T&ype:" },
 		{ "CLUSTERING_CHANNEL_FIELD",                        "Channe&l:" },
-		{ "CLUSTERING_REMOVE_CONNECTION_ON_ERROR_CHECK_BOX", "&Remove Connection on Error" },
+		{ "CLUSTERING_REMOVE_CONNECTION_ON_ERROR_CHECK_BOX", "&Remove Connection On Error" },
 
 		// ui.session.clustering.SessionClusteringPropertiesPage - Clustering choices
 		{ "CACHE_SYNCHRONIZATION", "Cache Synchronization" },
