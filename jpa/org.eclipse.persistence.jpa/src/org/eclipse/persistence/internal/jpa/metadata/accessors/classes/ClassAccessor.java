@@ -209,10 +209,23 @@ public abstract class ClassAccessor extends MetadataAccessor {
                     }
                 }
                 
-                // Initialize the accessor with its real accessible object,
+                // Initialize the accessor with its real accessible object now,
                 // that is a field or method since it will currently hold a 
                 // reference to its owning class' accessible object.
                 accessor.initXMLObject(accessibleObject);
+                
+                // It's now safe to init the correct access type for this
+                // mapping accessor since we now have set the actual accessible
+                // object for this mapping accessor. Note: the initAccess call
+                // was originally in initXMLObject, but with the current
+                // processing setup that isn't valid since mapping accessors
+                // have their accessible object 'faked' out for xml merging
+                // purposes during XMLAttributes initXMLObject call. Doing the
+                // access initialization there could cause one of two problems: 
+                // Firstly, an incorrect access type setting and secondly and
+                // more importantly, a null pointer exception (bug 264596) since
+                // our descriptor hasn't been set.
+                accessor.initAccess();
                 
                 // Add the accessor to the descriptor's list
                 getDescriptor().addAccessor(accessor);
@@ -467,6 +480,11 @@ public abstract class ClassAccessor extends MetadataAccessor {
     public void initXMLClassAccessor(MetadataAccessibleObject accessibleObject, MetadataDescriptor descriptor, MetadataProject project) {
         initXMLAccessor(descriptor, project);
         initXMLObject(accessibleObject);
+        
+        // Since the the descriptor, project and accessible object are all 
+        // available at this point, it is now safe to initialize our access
+        // type.
+        initAccess();
     }
     
     /**

@@ -359,7 +359,7 @@ public abstract class MetadataAccessor extends ORMetadata {
      * INTERNAL: 
      * Called from annotation and xml initialization.
      */
-    protected void initAccess() {
+    public void initAccess() {
         // Look for an annotation as long as an access type hasn't already been 
         // loaded from XML (meaning m_access will not be null at this point)
         if (m_access == null) {
@@ -393,9 +393,6 @@ public abstract class MetadataAccessor extends ORMetadata {
         initXMLObjects(m_structConverters, accessibleObject);
         initXMLObjects(m_typeConverters, accessibleObject);
         initXMLObjects(m_properties, accessibleObject);
-
-        // Make sure our access type is set.
-        initAccess();
     }
     
     /** 
