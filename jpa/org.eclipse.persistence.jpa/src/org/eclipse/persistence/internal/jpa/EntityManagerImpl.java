@@ -1293,9 +1293,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 	 */
 	public void lock(Object entity, LockModeType lockMode, Map properties) {
 		try {
-                       if(lockMode.name().contains(ObjectLevelReadQuery.NONE)){
-                       return;
-                       }
 			verifyOpen();
 
 			if (lockMode.name().contains(ObjectLevelReadQuery.PESSIMISTIC)) {
