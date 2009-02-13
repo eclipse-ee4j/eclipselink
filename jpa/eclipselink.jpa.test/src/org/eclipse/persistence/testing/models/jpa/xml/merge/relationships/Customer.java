@@ -20,6 +20,7 @@ import javax.persistence.*;
 import org.eclipse.persistence.annotations.PrivateOwned;
 
 import static javax.persistence.AccessType.FIELD;
+import static javax.persistence.AccessType.PROPERTY;
 import static javax.persistence.GenerationType.*;
 import static javax.persistence.CascadeType.*;
 
@@ -32,6 +33,7 @@ import static javax.persistence.CascadeType.*;
  */
 @Entity(name="XMLMergeCustomer")
 @Table(name="CMP3_XML_MERGE_CUSTOMER")
+@Access(PROPERTY)
 public class Customer implements java.io.Serializable{
 	private Integer customerId;
 	

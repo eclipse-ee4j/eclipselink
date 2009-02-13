@@ -13,7 +13,7 @@
     <named-query name="findAllXMLMergeItemsByName">
         <query>SELECT OBJECT(item) FROM XMLMergeItem item WHERE item.name = ?1</query>
     </named-query>
-    <entity name="XMLMergeCustomer" class="Customer" access="PROPERTY">
+    <entity name="XMLMergeCustomer" class="Customer">
         <table-generator name="XML_MERGE_CUSTOMER_TABLE_GENERATOR" table="CMP3_XML_MERGE_CUSTOMER_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="CUST_SEQ"/>
         <exclude-default-listeners/>
         <exclude-superclass-listeners/>
