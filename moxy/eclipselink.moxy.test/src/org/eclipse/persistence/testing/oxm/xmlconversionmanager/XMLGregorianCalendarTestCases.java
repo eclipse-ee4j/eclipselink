@@ -20,11 +20,16 @@ import java.util.Calendar;
 import java.util.TimeZone;
 
 import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.eclipse.persistence.Version;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.JavaPlatform;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
+import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
@@ -136,6 +141,73 @@ public class XMLGregorianCalendarTestCases extends XMLMappingTestCases {
         sreader.close();
         
         assertXMLIdentical(controlDoc, testDoc);
+    }
+    
+    public void testConversionFromObjectWithSchemaType() throws Exception {
+        XMLGregorianCalendar aCal = DatatypeFactory.newInstance().newXMLGregorianCalendar();
+        aCal.setYear(2009);
+        aCal.setMonth(2);
+        aCal.setDay(17);
+        aCal.setHour(07);
+        aCal.setMinute(30);
+        aCal.setSecond(0);
+        aCal.setMillisecond(0);
+        aCal.setTimezone(+180);
+
+        String testString;
+        
+        String gDayString       = "---17+03:00";
+        String gMonthString16   = "--02+03:00";
+        String gMonthString15   = "--02--+03:00";
+        String gMonthDayString  = "--02-17+03:00";
+        String gYearString      = "2009+03:00";
+        String gYearMonthString = "2009-02+03:00";
+        String dateString       = "2009-02-17+03:00";
+        String timeString       = "07:30:00.0+03:00";
+        String dateTimeString   = "2009-02-17T07:30:00.0+03:00";
+        
+        testString = (String) getXmlConversionManager().convertObject(aCal, String.class, XMLConstants.G_DAY_QNAME);
+        assertEquals("Object to String conversion failed.", gDayString, testString);
+        
+        testString = (String) getXmlConversionManager().convertObject(aCal, String.class, XMLConstants.G_MONTH_QNAME);
+        if (System.getProperty("java.version").startsWith("1.5")) {
+            assertEquals("Object to String conversion failed.", gMonthString15, testString);
+        } else {
+            assertEquals("Object to String conversion failed.", gMonthString16, testString);
+        }
+            
+        testString = (String) getXmlConversionManager().convertObject(aCal, String.class, XMLConstants.G_MONTH_DAY_QNAME);
+        assertEquals("Object to String conversion failed.", gMonthDayString, testString);
+        
+        testString = (String) getXmlConversionManager().convertObject(aCal, String.class, XMLConstants.G_YEAR_QNAME);
+        assertEquals("Object to String conversion failed.", gYearString, testString);
+        
+        testString = (String) getXmlConversionManager().convertObject(aCal, String.class, XMLConstants.G_YEAR_MONTH_QNAME);
+        assertEquals("Object to String conversion failed.", gYearMonthString, testString);
+        
+        testString = (String) getXmlConversionManager().convertObject(aCal, String.class, XMLConstants.DATE_QNAME);
+        assertEquals("Object to String conversion failed.", dateString, testString);
+        
+        testString = (String) getXmlConversionManager().convertObject(aCal, String.class, XMLConstants.TIME_QNAME);
+        assertEquals("Object to String conversion failed.", timeString, testString);
+        
+        testString = (String) getXmlConversionManager().convertObject(aCal, String.class, XMLConstants.DATE_TIME_QNAME);
+        assertEquals("Object to String conversion failed.", dateTimeString, testString);        
+    }
+    
+    public void testConversionFromStringWithSchemaType() throws Exception {
+        String aString = "2009-02-17T07:30:00.000+03:00";
+        
+        XMLGregorianCalendar c = (XMLGregorianCalendar) getXmlConversionManager().convertStringToXMLGregorianCalendar(aString, XMLConstants.DATE_QNAME);
+        
+        assertEquals("Calendar's 'hour' field was not cleared.", c.getHour(), DatatypeConstants.FIELD_UNDEFINED);
+        assertEquals("Calendar's 'minute' field was not cleared.", c.getMinute(), DatatypeConstants.FIELD_UNDEFINED);
+        assertEquals("Calendar's 'second' field was not cleared.", c.getSecond(), DatatypeConstants.FIELD_UNDEFINED);
+        assertEquals("Calendar's 'millisecond' field was not cleared.", c.getMillisecond(), DatatypeConstants.FIELD_UNDEFINED);
+        
+        assertNotSame("Calendar's 'year' field was not set.", c.getYear(), DatatypeConstants.FIELD_UNDEFINED);
+        assertNotSame("Calendar's 'month' field was not set.", c.getMonth(), DatatypeConstants.FIELD_UNDEFINED);
+        assertNotSame("Calendar's 'day' field was not set.", c.getDay(), DatatypeConstants.FIELD_UNDEFINED);
     }
     
     public XMLConversionManager getXmlConversionManager() {
