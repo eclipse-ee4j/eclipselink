@@ -4554,6 +4554,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * set UoW lifecycle state variable to PENDING_MERGE
      */
     public void setPendingMerge() {
+        // implemented only by transaction.AbstractSynchronizationListener.beforeCompletion()
         setLifecycle(MergePending);
     }
 
@@ -5364,7 +5365,10 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 || this.getLifecycle() == this.CommitTransactionPending 
                 || this.getLifecycle() == this.MergePending) {
             // Perform a partial clear() by clearing the identityMaps but leaving all other fields and lifecycle set.
-            // Later in release a clear(false) will clear everything else except the identityMaps
+            // Later in release a clear(false) will clear everything else except the identityMaps.
+            // Certain application servers like WebSphere 7 will call em.clear() during commit()
+            // in order that the entityManager is cleared before returning the em to their server pool.
+            // Any entities that were managed will still be in the shared cache and database.            
             if(shouldClearCache) {
                 clearIdentityMapCache();
             }
