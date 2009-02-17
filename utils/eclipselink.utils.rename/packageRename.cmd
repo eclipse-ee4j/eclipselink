@@ -1,6 +1,6 @@
 @echo off
 @setlocal
-call "%~dp0../../../bin/setenv.cmd"
+call "%~dp0../../bin/setenv.cmd"
 
 @REM User may increase Java memory setting(s) if desired:
 set JVM_ARGS=-Xmx256M
