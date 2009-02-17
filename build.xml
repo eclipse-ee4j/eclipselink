@@ -78,6 +78,7 @@
     <echo message="trunk.build.location = '${trunk.build.location}'"/>
     <property environment="env"/>
     <echo message="env.CLASSPATH        = '${env.CLASSPATH}'"/>
+    <echo message="java.class.path      = '${java.class.path}'"/>
     <!-- Allows a user to overide certain user specific properties. -->
     <echo message="user.home            = '${user.home}'"/>
     <echo message="Loading user properties from: '${user.home}/build.properties'"/>
