@@ -77,8 +77,9 @@
     <dirname  property="trunk.build.location" file="${ant.file.trunk}"/>
     <echo message="trunk.build.location = '${trunk.build.location}'"/>
     <property environment="env"/>
+    <echo message="env.CLASSPATH        = '${env.CLASSPATH}'"/>
     <!-- Allows a user to overide certain user specific properties. -->
-    <echo message="user.home = '${user.home}'"/>
+    <echo message="user.home            = '${user.home}'"/>
     <echo message="Loading user properties from: '${user.home}/build.properties'"/>
     <property file="${user.home}/build.properties"/>
     <!-- Sets default junit.lib and all extensions.depend dir locations to static paths -->
@@ -86,9 +87,9 @@
     <property name="oracle.extensions.depend.dir" value="${trunk.build.location}/../extension.oracle.lib.external"/>
     <echo message="oracle.extensions.depend.dir = '${oracle.extensions.depend.dir}'"/>
     <property name="extensions.depend.dir" value="${trunk.build.location}/../extension.lib.external"/>
-    <echo message="extensions.depend.dir = '${extensions.depend.dir}'"/>
+    <echo message="extensions.depend.dir        = '${extensions.depend.dir}'"/>
     <property name="junit.lib" value="${extensions.depend.dir}/junit.jar"/>
-    <echo message="junit.lib='${junit.lib}'"/>
+    <echo message="junit.lib = '${junit.lib}'"/>
     <echo message="Loading default properties from: '${trunk.build.location}/build.properties'"/>
     <property file="${trunk.build.location}/build.properties"/>
 
