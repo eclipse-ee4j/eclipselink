@@ -530,7 +530,6 @@ public class ConcurrencyManager implements Serializable {
         }
         lockManager.incrementDepth();
         lockManager.addActiveLock(this);
-        --this.depth;
     }
 
     /**

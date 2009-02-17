@@ -28,6 +28,7 @@ import org.eclipse.persistence.testing.tests.jpa.advanced.ExtendedPersistenceCon
 import org.eclipse.persistence.testing.tests.jpa.advanced.ReportQueryConstructorExpressionTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.advanced.OptimisticConcurrencyJUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.advanced.compositepk.AdvancedCompositePKJunitTest;
+import org.eclipse.persistence.testing.tests.jpa.advanced.concurrency.ConcurrencyTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.concurrency.LifecycleJUnitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.ReportQueryAdvancedJUnitTest;
 
@@ -93,6 +94,7 @@ public class FullRegressionTestSuite extends TestSuite{
         suite.addTest(AdvancedJPAJunitTest.suite());
         suite.addTest(AdvancedJunitTest.suite());
         suite.addTest(AdvancedCompositePKJunitTest.suite());
+        suite.addTest(ConcurrencyTest.suite());
         fullSuite.addTest(suite);
 
         // FieldAccess advanced model

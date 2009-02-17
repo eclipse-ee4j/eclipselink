@@ -2461,7 +2461,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 original = cacheKey.getObject();
                 cacheKey.releaseReadLock();
             }else{
-                if (getMergeManager().isTransitionedToDeferredLocks())
+                if (!getMergeManager().isTransitionedToDeferredLocks())
                 getParent().getIdentityMapAccessorInstance().getWriteLockManager().transitionToDeferredLocks(getMergeManager());
                 cacheKey.acquireDeferredLock();
                 original = cacheKey.getObject();
