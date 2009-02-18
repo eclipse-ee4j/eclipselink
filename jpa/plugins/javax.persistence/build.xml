@@ -97,6 +97,9 @@
             <fileset dir="."
                 includes="readme.txt"
             />
+			<fileset dir="${src.dir}"
+                includes="**/*.xsd"
+            />
             <fileset dir="${classes.dir}"
                 includes="**"
             />
