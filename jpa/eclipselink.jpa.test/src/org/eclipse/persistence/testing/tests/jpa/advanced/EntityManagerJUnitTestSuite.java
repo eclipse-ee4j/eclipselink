@@ -6966,11 +6966,22 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         project.getTeamMembers().add(employee);
         commitTransaction(em);
 
-        verifyObject(project);
-        verifyObject(employee);
+
+        // 264768: Certain application servers like WebSphere 7 will call em.clear() during commit()
+        // in order that the entityManager is cleared before returning the em to their server pool.
+        // We will want to verify that the entity is managed before accessing its properties and causing 
+        // the object to be rebuilt with any non-direct fields uninstantiated.
+        // Note: even in this case the entity should still be in the shared cache and database below
+        if(em.contains(employee)) {
+            verifyObject(project);
+            verifyObject(employee);
+        }
+        
         clearCache();
-        verifyObject(project);
-        verifyObject(employee);
+        if(em.contains(employee)) {
+            verifyObject(project);
+            verifyObject(employee);
+        }
     }
     
     /**
@@ -7022,8 +7033,16 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 fail("commit fetched object.");
             }
         }
-        if (employee.getVersion() != version) {
-            fail("un-fetched object was updated");
+        
+        // 264768: Certain application servers like WebSphere 7 will call em.clear() during commit()
+        // in order that the entityManager is cleared before returning the em to their server pool.
+        // We will want to verify that the entity is managed before accessing its properties and causing 
+        // the object to be rebuilt with any non-direct fields uninstantiated.
+        // Note: even in this case the entity should still be in the shared cache and database below
+        if(em.contains(employee)) {
+            if (employee.getVersion() != version) {
+                fail("un-fetched object was updated");
+            }
         }
 
         verifyObjectInCacheAndDatabase(newEmployee);

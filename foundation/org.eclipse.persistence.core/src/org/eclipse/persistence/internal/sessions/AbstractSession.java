@@ -1612,7 +1612,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
 
         if (descriptor == null) {
             // This allows for the correct descriptor to be found if the class implements an interface,
-            // or extends a class that a descriptor is register for.
+            // or extends a class that a descriptor is registered for.
             // This is used by EJB to find the descriptor for a stub and remote to unwrap it,
             // and by inheritance to allow for subclasses that have no additional state to not require a descriptor.
             if (!theClass.isInterface()) {

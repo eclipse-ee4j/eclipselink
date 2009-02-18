@@ -9,6 +9,10 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     02/11/2009-1.1 Michael O'Brien 
+ *        - 259993: As part 2) During mergeClonesAfterCompletion() 
+ *        If the the acquire and release threads are different 
+ *        switch back to the stored acquire thread stored on the mergeManager.
  ******************************************************************************/  
 package org.eclipse.persistence.internal.sessions;
 
@@ -88,6 +92,9 @@ public class MergeManager {
     /** records that deferred locks have been employed for the merge process */
     protected boolean isTransitionedToDeferredLocks = false;
 
+    /** save the currentThread for later comparison to the activeThread in case they don't match */
+    protected Thread lockThread;
+    
     public MergeManager(AbstractSession session) {
         this.session = session;
         this.mergedNewObjects = new IdentityHashMap();
@@ -1046,7 +1053,22 @@ public class MergeManager {
                 }
             }
         }
-
     }
-    
+
+    /**
+     * INTERNAL:
+     * @return lockThread
+     */
+    public Thread getLockThread() {
+        return lockThread;
+    }
+
+    /**
+     * INTERNAL:
+     * Save the currentThread for later comparison to the activeThread in case they don't match
+     * @param lockThread
+     */
+    public void setLockThread(Thread lockThread) {
+        this.lockThread = lockThread;
+    }
 }

@@ -270,8 +270,8 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
     }
 
     /**
-     * Aquire a lock for the sequence name.
-     * A lock should be, and only be, aquired when allocating new sequences from the database.
+     * Acquire a lock for the sequence name.
+     * A lock should be, and only be, acquired when allocating new sequences from the database.
      */
     protected void acquireLock(String sequenceName) {
         ConcurrencyManager manager = getLocks().get(sequenceName);

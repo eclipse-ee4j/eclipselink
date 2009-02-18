@@ -37,7 +37,7 @@ public class CacheKey implements Serializable, Cloneable {
     protected int hash;
     protected Object object;
     
-    //used to store a reference to the map this cachkey is in in cases where the
+    //used to store a reference to the map this cachekey is in in cases where the
     //cache key is to be removed, prevents us from having to track down the owning
     //map
     protected IdentityMap mapOwner;

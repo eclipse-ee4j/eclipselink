@@ -9,6 +9,10 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     02/11/2009-1.1 Michael O'Brien 
+ *        - 259993: As part 2) During mergeClonesAfterCompletion() 
+ *           If the the acquire and release threads are different 
+ *           switch back to the stored acquire thread stored on the mergeManager.
  ******************************************************************************/  
 package org.eclipse.persistence.internal.helper;
 
@@ -126,8 +130,8 @@ public class WriteLockManager {
             } else {
                 objectForClone = cacheKey.getObject();
                 if (lockedObjects.containsKey(objectForClone)) {
-                    // This is a check for loss of identity, the orignal check in
-                    // checkAndLockObject() will shortcircut in the usual case.
+                    // This is a check for loss of identity, the original check in
+                    // checkAndLockObject() will shortcircuit in the usual case.
                     cacheKey.releaseReadLock();
                     return null;
                 }
@@ -234,6 +238,10 @@ public class WriteLockManager {
 
         //while that thread has locks to acquire continue to loop.
         try {
+            // initialize the MergeManager during this commit or merge for insert/updates only
+            // this call is not required in acquireLocksForClone() or acquireLockAndRelatedLocks()
+            mergeManager.setLockThread(Thread.currentThread());
+            
             AbstractSession session = mergeManager.getSession();
             if (session.isUnitOfWork()) {
                 session = ((UnitOfWorkImpl)session).getParent();

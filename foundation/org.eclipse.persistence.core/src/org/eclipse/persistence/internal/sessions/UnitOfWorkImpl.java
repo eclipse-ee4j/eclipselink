@@ -14,6 +14,11 @@
  *        The class was amended to allow it to instantiate ValueHolders after release method has been called
  *        (internalExecuteQuery method no longer throws exception if the uow is dead).
  *        Note that release method clears change sets but keeps the cache.
+ *     02/11/2009-1.1 Michael O'Brien 
+ *        - 259993: 1) Defer a full clear(true) call from entityManager.clear() to release() 
+ *          only if uow lifecycle is 1,2 or 4 (*Pending) and perform a clear of the cache only in this case.
+ *          2) During mergeClonesAfterCompletion() If the the acquire and release threads are different 
+ *          switch back to the stored acquire thread stored on the mergeManager.
  ******************************************************************************/  
 package org.eclipse.persistence.internal.sessions;
 
@@ -33,6 +38,7 @@ import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.sequencing.Sequencing;
 import org.eclipse.persistence.sessions.coordination.MergeChangeSetCommand;
 import org.eclipse.persistence.sessions.factories.ReferenceMode;
+import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.internal.localization.LoggingLocalization;
@@ -3195,6 +3201,34 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * for synchronized units of work, merge changes into parent
      */
     public void mergeClonesAfterCompletion() {
+        // Before we merge
+        // Check that the current thread is the active thread on all lock managers by checking the cached lockThread on the mergeManager.
+        // If we find that these 2 threads are different - then all threads in the acquired locks list are different.
+        // Switch the activeThread on the mutex to this current thread for each lock
+        Thread currentThread = Thread.currentThread();
+        if(null != this.getMergeManager()) { // mergeManager may be null in a com.ibm.tx.jta.RegisteredSyncs.coreDistributeAfter() afterCompletion() callback
+            Thread lockThread = this.getMergeManager().getLockThread();
+            if(currentThread != lockThread) {
+                ArrayList<CacheKey> locks = this.getMergeManager().getAcquiredLocks();        
+                if(null != locks) {                
+                    Iterator<CacheKey> locksIterator = locks.iterator();
+                    AbstractSessionLog.getLog().log(SessionLog.FINER, "active_thread_is_different_from_current_thread", 
+                        lockThread, this.getMergeManager(), currentThread);                                
+                    while(locksIterator.hasNext()) {
+                        ConcurrencyManager lockMutex = locksIterator.next().getMutex();
+                        if(null != lockMutex) {
+                            Thread activeThread = lockMutex.getActiveThread();
+                            // check for different acquire and release threads
+                            if(currentThread != activeThread) {
+                                // Switch activeThread to currentThread - we will release the lock later
+                                lockMutex.setActiveThread(currentThread);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
         mergeChangesIntoParent();
         // CR#... call event and log.
         getEventManager().postCommitUnitOfWork();
@@ -3952,6 +3986,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Return if the object was deleted previously (in a flush).
      */
     public boolean wasDeleted(Object original) {
+        // Implemented by subclass
         return false;
     }
     
@@ -5289,17 +5324,25 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         this.optimisticReadLockObjects = null;
         this.batchReadObjects = null;
         if(shouldClearCache) {
-            this.getIdentityMapAccessor().initializeIdentityMaps();
-            if (this.getParent() instanceof IsolatedClientSession) {
-                this.getParent().getIdentityMapAccessor().initializeIdentityMaps();
-            }
+            clearIdentityMapCache();
         }
     }
     
     /**
      * INTERNAL:
-     * Call this method if the uow will no longer used for committing transactions:
-     * all the changes sets will be dereferenced, and (optionally) the cache cleared.
+     * Clear the identityMaps
+     */
+    private void clearIdentityMapCache() {
+        this.getIdentityMapAccessor().initializeIdentityMaps();
+        if (this.getParent() instanceof IsolatedClientSession) {
+            this.getParent().getIdentityMapAccessor().initializeIdentityMaps();
+        }
+    }
+        
+    /**
+     * INTERNAL:
+     * Call this method if the uow will no longer be used for committing transactions:
+     * all the change sets will be dereferenced, and (optionally) the cache cleared.
      * If the uow is not released, but rather kept around for ValueHolders, then identity maps shouldn't be cleared:
      * the parameter value should be 'false'. The lifecycle set to Birth so that uow ValueHolder still could be used.
      * Alternatively, if called from release method then everything should go and therefore parameter value should be 'true'.
@@ -5307,8 +5350,31 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * The reason for calling this method from release is to free maximum memory right away:
      * the uow might still be referenced by objects using UOWValueHolders (though they shouldn't be around
      * they still might).
+     * We defer a clear() call to release() if the uow lifecycle is 1,2 or 4 (*Pending).
      */
     public void clearForClose(boolean shouldClearCache) {
+        //     259993: WebSphere 7.0 during a JPAEMPool.putEntityManager() afterCompletion callback
+        // may attempt to clear an entityManager in lifecyle/state 4 with a transaction commit active  
+        // that is in the middle of a commit for an insert or update by calling em.clear(true).  
+        //     We only clear the entityManager if we are in the states 
+        // (Birth == 0, WriteChangesFailed==3, Death==5 or AfterExternalTransactionRolledBack==6).
+        // If we are in one of the following *Pending states (1,2 and 4) we defer the clear() to the release() call later.
+        // Note: the single state CommitTransactionPending==2 may never happen as a result of an em.cler
+        if(this.getLifecycle() == this.CommitPending 
+                || this.getLifecycle() == this.CommitTransactionPending 
+                || this.getLifecycle() == this.MergePending) {
+            // Perform a partial clear() by clearing the identityMaps but leaving all other fields and lifecycle set.
+            // Later in release a clear(false) will clear everything else except the identityMaps.
+            // Certain application servers like WebSphere 7 will call em.clear() during commit()
+            // in order that the entityManager is cleared before returning the em to their server pool.
+            // Any entities that were managed will still be in the shared cache and database.            
+            if(shouldClearCache) {
+                clearIdentityMapCache();
+            }
+            // We must exit before we perform a full clear
+            return;
+        }
+        
         clear(shouldClearCache);
         if(isActive()) {
             //Reset lifecycle
