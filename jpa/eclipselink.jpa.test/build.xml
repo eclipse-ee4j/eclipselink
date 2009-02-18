@@ -719,7 +719,7 @@
 
         <echo>Running test on ${db.url}</echo>
         <java classname="org.eclipse.persistence.testing.framework.PromptTestRunner"
-             fork="true"
+             fork="false"
              maxmemory="512m"
              failonerror="false"
              dir="${eclipselink.jpa.test}/${run.dir}">
