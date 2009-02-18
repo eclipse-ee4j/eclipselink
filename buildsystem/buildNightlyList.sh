@@ -53,6 +53,9 @@ for version in `ls -dr [0-9]*` ; do
         echo "          <tr>"  >> $tmp/index.xml
         echo "            <td align=\"center\"> ${contentdir} </td>" >> $tmp/index.xml
         echo "            <td align=\"center\">" >> $tmp/index.xml
+
+        # list all files in dir, reverse sort to put newer on top
+        # and look for the first matching filename to generate html link
         file=`ls | sort -r | grep -m1 eclipselink-[0-9]`
         if [ "${file}" != "" ] ; then
             echo "              <a href=\"${BaseDownloadURL}/${version}/${contentdir}/${file}\"> Install Archive </a> <br/>" >> $tmp/index.xml

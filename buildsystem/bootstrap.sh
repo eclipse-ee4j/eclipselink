@@ -193,7 +193,7 @@ fi
 
 #Set appropriate max Heap for VM and let Ant inherit JavaVM (OS's) proxy settings
 ANT_ARGS=" "
-ANT_OPTS="-Xmx128m"
+ANT_OPTS="-Xmx512m"
 ANT_BASEARG="-f \"${BOOTSTRAP_BLDFILE}\" -Dbranch.name=\"${BRANCH}\""
 
 # May need to add "milestone" flag to alert build
