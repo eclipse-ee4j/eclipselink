@@ -53,19 +53,19 @@ for version in `ls -dr [0-9]*` ; do
         echo "          <tr>"  >> $tmp/index.xml
         echo "            <td align=\"center\"> ${contentdir} </td>" >> $tmp/index.xml
         echo "            <td align=\"center\">" >> $tmp/index.xml
-        file=`ls | grep eclipselink-[0-9]*zip`
+        file=`ls | sort -r | grep -m1 eclipselink-[0-9]`
         if [ "${file}" != "" ] ; then
             echo "              <a href=\"${BaseDownloadURL}/${version}/${contentdir}/${file}\"> Install Archive </a> <br/>" >> $tmp/index.xml
         else
             echo "              Install archive not available <br/>" >> $tmp/index.xml
         fi
-        file=`ls | grep eclipselink-src-[0-9]*zip`
+        file=`ls | sort -r | grep -m1 eclipselink-src-[0-9]`
         if [ "${file}" != "" ] ; then
             echo "              <a href=\"${BaseDownloadURL}/${version}/${contentdir}/${file}\"> Source Archive </a> <br/>" >> $tmp/index.xml
         else
             echo "              Source archive not available <br/>" >> $tmp/index.xml
         fi
-        file=`ls | grep eclipselink-plugins-[0-9]*zip`
+        file=`ls | sort -r | grep -m1 eclipselink-plugins-[0-9]`
         if [ "${file}" != "" ] ; then
             echo "              <a href=\"${BaseDownloadURL}/${version}/${contentdir}/${file}\"> OSGi Plugins Archive </a> <br/>" >> $tmp/index.xml
         else
@@ -73,43 +73,43 @@ for version in `ls -dr [0-9]*` ; do
         fi
         echo "            </td>" >> $tmp/index.xml
         echo "            <td align=\"center\"> </td>" >> $tmp/index.xml
-        file=`ls | grep eclipselink-core-[l,s]rg-[0-9]*html`
+        file=`ls | sort -r | grep -m1 eclipselink-core-[l,s]rg-[0-9]`
         if [ "${file}" != "" ] ; then
             echo "            <td align=\"center\"> <a href=\"${BaseDisplayURL}/${version}/${contentdir}/${file}\"> CoreSRG </a> </td>" >> $tmp/index.xml
         else
             echo "            <td align=\"center\"> Core </td>" >> $tmp/index.xml
         fi
-        file=`ls | grep eclipselink-jpa-[l,s]rg-[0-9]*html`
+        file=`ls | sort -r | grep -m1 eclipselink-jpa-[l,s]rg-[0-9]`
         if [ "${file}" != "" ] ; then
             echo "            <td align=\"center\"> <a href=\"${BaseDisplayURL}/${version}/${contentdir}/${file}\"> JPA </a> </td>" >> $tmp/index.xml
         else
             echo "            <td align=\"center\"> JPA </td>" >> $tmp/index.xml
         fi
-        file=`ls | grep eclipselink-jaxb-[l,s]rg-[0-9]*html`
+        file=`ls | sort -r | grep -m1 eclipselink-jaxb-[l,s]rg-[0-9]`
         if [ "${file}" != "" ] ; then
             echo "            <td align=\"center\"> <a href=\"${BaseDisplayURL}/${version}/${contentdir}/${file}\"> Moxy (JAXB) </a> </td>" >> $tmp/index.xml
         else
             echo "            <td align=\"center\"> Moxy (JAXB) </td>" >> $tmp/index.xml
         fi
-        file=`ls | grep eclipselink-oxm-[l,s]rg-[0-9]*html`
+        file=`ls | sort -r | grep -m1 eclipselink-oxm-[l,s]rg-[0-9]`
         if [ "${file}" != "" ] ; then
             echo "            <td align=\"center\"> <a href=\"${BaseDisplayURL}/${version}/${contentdir}/${file}\"> Moxy (OXM) </a> </td>" >> $tmp/index.xml
         else
             echo "            <td align=\"center\"> Moxy (OXM) </td>" >> $tmp/index.xml
         fi
-        file=`ls | grep eclipselink-sdo-[l,s]rg-[0-9]*html`
+        file=`ls | sort -r | grep -m1 eclipselink-sdo-[l,s]rg-[0-9]`
         if [ "${file}" != "" ] ; then
             echo "            <td align=\"center\"> <a href=\"${BaseDisplayURL}/${version}/${contentdir}/${file}\"> SDO </a> </td>" >> $tmp/index.xml
         else
             echo "            <td align=\"center\"> SDO </td>" >> $tmp/index.xml
         fi
-        file=`ls | grep eclipselink-dbws-[l,s]rg-[0-9]*html`
+        file=`ls | sort -r | grep -m1 eclipselink-dbws-[l,s]rg-[0-9]`
         if [ "${file}" != "" ] ; then
             echo "            <td align=\"center\"> <a href=\"${BaseDisplayURL}/${version}/${contentdir}/${file}\"> DBWS </a> </td>" >> $tmp/index.xml
         else
             echo "            <td align=\"center\"> DBWS </td>" >> $tmp/index.xml
         fi
-        file=`ls | grep eclipselink-dbws-util-[l,s]rg-[0-9]*html`
+        file=`ls | sort -r | grep -m1 eclipselink-dbws-util-[l,s]rg-[0-9]`
         if [ "${file}" != "" ] ; then
             echo "            <td align=\"center\"> <a href=\"${BaseDisplayURL}/${version}/${contentdir}/${file}\"> DBWS Util </a> </td>" >> $tmp/index.xml
         else
