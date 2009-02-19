@@ -53,7 +53,7 @@ public class PerformanceProfiler implements Serializable, Cloneable, SessionProf
      * OBSOLETE:
      * Create a new profiler.
      * The profiler can be registered with a session to log performance information on queries.
-     * @depricated replaced by PerformanceProfiler()
+     * @deprecated replaced by PerformanceProfiler()
      */
     public PerformanceProfiler(org.eclipse.persistence.sessions.Session session) {
         this(session, true);
@@ -63,7 +63,7 @@ public class PerformanceProfiler implements Serializable, Cloneable, SessionProf
      * OBSOLETE:
      * Create a new profiler.
      * The profiler can be registered with a session to log performance information on queries.
-     * @depricated replaced by PerformanceProfiler()
+     * @deprecated replaced by PerformanceProfiler()
      */
     public PerformanceProfiler(org.eclipse.persistence.sessions.Session session, boolean shouldLogProfile) {
         super();
@@ -237,7 +237,7 @@ public class PerformanceProfiler implements Serializable, Cloneable, SessionProf
     /**
      * PUBLIC:
      * Set whether after each query execution the profile result should be logged.
-     * Bu default this is true.
+     * By default this is false.
      */
     public void dontLogProfile() {
         setShouldLogProfile(false);
@@ -343,7 +343,7 @@ public class PerformanceProfiler implements Serializable, Cloneable, SessionProf
     /**
      * PUBLIC:
      * Set whether after each query execution the profile result should be logged.
-     * Bu default this is true.
+     * By default this is true.
      */
     public void logProfile() {
         setShouldLogProfile(true);
@@ -401,7 +401,7 @@ public class PerformanceProfiler implements Serializable, Cloneable, SessionProf
     /**
      * INTERNAL:
      * Finish a profile operation if profiling.
-     * This assumes the start operation preceeds on the stack.
+     * This assumes the start operation proceeds on the stack.
      * The session must be passed to allow units of work etc. to share their parents profiler.
      *
      * @return the execution result of the query.
@@ -536,7 +536,7 @@ public class PerformanceProfiler implements Serializable, Cloneable, SessionProf
     /**
      * PUBLIC:
      * Set whether after each query execution the profile result should be logged.
-     * Bu default this is true.
+     * By default this is true.
      */
     public void setShouldLogProfile(boolean shouldLogProfile) {
         this.shouldLogProfile = shouldLogProfile;
