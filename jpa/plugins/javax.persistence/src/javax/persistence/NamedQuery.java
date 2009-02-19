@@ -37,7 +37,6 @@ package javax.persistence;
 
 import java.lang.annotation.Target;
 import java.lang.annotation.Retention;
-import static javax.persistence.LockModeType.NONE;
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
@@ -82,9 +81,6 @@ public @interface NamedQuery {
     /** The query string in the Java Persistence query language */
     String query();
 
-    /** The lock mode type to use on query execution */
-    LockModeType lockMode() default NONE;
-    
     /** Vendor-specific query hints */
     QueryHint[] hints() default {};
 }

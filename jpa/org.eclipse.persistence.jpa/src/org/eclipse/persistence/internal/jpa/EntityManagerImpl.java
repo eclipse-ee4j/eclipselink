@@ -27,14 +27,11 @@ import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.FlushModeType;
 import javax.persistence.LockModeType;
-import javax.persistence.LockTimeoutException;
 import javax.persistence.PersistenceException;
-import javax.persistence.PessimisticLockException;
 import javax.persistence.Query;
 
 import javax.sql.DataSource;
 
-import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.JPQLException;
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -429,8 +426,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("unknown_bean_class", new Object[] { entityClass }));
             }
             return (T) findInternal(descriptor, session, primaryKey, lockMode, properties);
-        } catch (LockTimeoutException e) {
-            throw e;
         } catch (RuntimeException e) { 
             setRollbackOnly();
             throw e;
@@ -454,8 +449,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("unknown_entitybean_name", new Object[] { entityName }));
             }
             return findInternal(descriptor, session, primaryKey, null, null);
-        } catch (LockTimeoutException e) {
-            throw e;
         } catch (RuntimeException e) { 
             setRollbackOnly();
             throw e;
@@ -565,29 +558,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             throw new PersistenceException(ExceptionLocalization.buildMessage("ejb30-wrong-lock_called_without_version_locking-index", null));
         }
         
-        Object result = null;
-        
-        try {
-            result = uow.executeQuery(query);
-        } catch (DatabaseException e) {
-            // If we catch a database exception as a result of executing a
-            // pessimistic locking query we need to ask the platform which
-            // JPA 2.0 locking exception we should throw. It will be either
-            // be a PessimisticLockException or a LockTimeoutException (if
-            // the query was executed using a wait timeout value)
-            if (lockMode != null && lockMode.name().contains(ObjectLevelReadQuery.PESSIMISTIC)) {
-                // ask the platform if it is a lock timeout
-                if (uow.getPlatform().isLockTimeoutException(e)) {
-                    throw new LockTimeoutException(e);
-                } else {
-                    throw new PessimisticLockException(e);
-                }
-            } else {
-                throw e;
-            }
-        }
-        
-        return result;
+        return uow.executeQuery(query);
     }
     
     /**
@@ -687,8 +658,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
                 // bug5955326, ReadObjectQuery will now ensure the object is invalidated if refresh returns null.
                 throw new EntityNotFoundException(ExceptionLocalization.buildMessage("entity_no_longer_exists_in_db", new Object[] { entity }));
             }
-        } catch (LockTimeoutException e) {
-            throw e;
         } catch (RuntimeException exception) { 
             setRollbackOnly();
             throw exception;
@@ -1230,8 +1199,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             
                 context.forceUpdateToVersionField(entity, (lockMode == LockModeType.WRITE || lockMode.name().equals(ObjectLevelReadQuery.OPTIMISTIC_FORCE_INCREMENT)));
             }
-        } catch (LockTimeoutException e) {
-            throw e;
         } catch (RuntimeException e) {
             setRollbackOnly();
             throw e;

@@ -13,7 +13,6 @@
 package org.eclipse.persistence.internal.jpa;
 
 import java.util.Vector;
-import javax.persistence.Cache;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.sessions.IdentityMapAccessor;
@@ -23,7 +22,7 @@ import org.eclipse.persistence.sessions.server.ServerSession;
  *@inheritDoc
  *@author DaraniY
  */
-public class CacheImpl implements Cache {
+public class CacheImpl {
 
     private IdentityMapAccessor imap;
     private EntityManagerFactoryImpl emf;

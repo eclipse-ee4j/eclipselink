@@ -9,8 +9,6 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     09/23/2008-1.1 Guy Pelletier 
- *       - 241651: JPA 2.0 Access Type support
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.xml.merge.relationships;
 
@@ -19,8 +17,6 @@ import javax.persistence.*;
 
 import org.eclipse.persistence.annotations.PrivateOwned;
 
-import static javax.persistence.AccessType.FIELD;
-import static javax.persistence.AccessType.PROPERTY;
 import static javax.persistence.GenerationType.*;
 import static javax.persistence.CascadeType.*;
 
@@ -33,15 +29,9 @@ import static javax.persistence.CascadeType.*;
  */
 @Entity(name="XMLMergeCustomer")
 @Table(name="CMP3_XML_MERGE_CUSTOMER")
-@Access(PROPERTY)
 public class Customer implements java.io.Serializable{
 	private Integer customerId;
-	
-	@Access(FIELD)
-	@Version
-	@Column(name="CUST_VERSION")
 	private int version;
-	
 	private String city;
 	private String name;
 	private Collection<Order> orders;
@@ -68,6 +58,16 @@ public class Customer implements java.io.Serializable{
     public void setCustomerId(Integer id) { 
         this.customerId = id; 
     }
+
+	@Version
+	@Column(name="CUST_VERSION")
+	public int getVersion() { 
+        return version; 
+    }
+    
+	protected void setVersion(int version) {
+		this.version = version;
+	}
 
 	/**
 	 * City is mapped in XML, therefore, the Lob annotation should be ignored. 

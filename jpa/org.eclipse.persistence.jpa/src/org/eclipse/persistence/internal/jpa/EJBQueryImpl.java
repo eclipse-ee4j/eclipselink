@@ -17,8 +17,6 @@ import java.util.*;
 
 import javax.persistence.LockModeType;
 import javax.persistence.PersistenceException;
-import javax.persistence.LockTimeoutException;
-import javax.persistence.PessimisticLockException;
 import javax.persistence.Query;
 import javax.persistence.TemporalType;
 import javax.persistence.FlushModeType;
@@ -28,7 +26,6 @@ import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.jpa.JpaEntityManager;
-import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
@@ -390,23 +387,6 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
             
             // Execute the query and return the result.
             return session.executeQuery(getDatabaseQuery(), parameterValues);
-        } catch (DatabaseException e) {
-            // If we catch a database exception as a result of executing a
-            // pessimistic locking query we need to ask the platform which
-            // JPA 2.0 locking exception we should throw. It will be either
-            // be a PessimisticLockException or a LockTimeoutException (if
-            // the query was executed using a wait timeout value)
-            if (lockMode != null && lockMode.name().contains(ObjectLevelReadQuery.PESSIMISTIC)) {
-                // ask the platform if it is a lock timeout
-                if (session.getPlatform().isLockTimeoutException(e)) {
-                    throw new LockTimeoutException(e);
-                } else {
-                    throw new PessimisticLockException(e);
-                }
-            } else {
-                setRollbackOnly();
-                throw e;
-            }
         } catch (RuntimeException e) {
             setRollbackOnly();
             throw e;
@@ -524,8 +504,6 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
         try {
             Object result = executeReadQuery();
             return (Cursor)result;
-        } catch (LockTimeoutException e) {
-            throw e;
         } catch (RuntimeException e) {
             setRollbackOnly();
             throw e;
@@ -558,8 +536,6 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
         try {
             Object result = executeReadQuery();
             return (Collection)result;
-        } catch (LockTimeoutException e) {
-            throw e;
         } catch (RuntimeException e) {
             setRollbackOnly();
             throw e;
@@ -591,8 +567,6 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
             }
             Object result = executeReadQuery();
             return (List)result;
-        } catch (LockTimeoutException e) {
-            throw e;
         } catch (RuntimeException e) {
             setRollbackOnly();
             throw e;
@@ -635,8 +609,6 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
                 }
                 return result;
             }
-        } catch (LockTimeoutException e) {
-            throw e;
         } catch (RuntimeException e) {
             if (rollbackOnException) {
                 setRollbackOnly();

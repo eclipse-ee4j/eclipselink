@@ -82,20 +82,5 @@ public enum LockModeType  {
     READ,
 
     /** Write lock */
-    WRITE,
-    
-    /** Equivalent to READ lock */
-    OPTIMISTIC,
-    
-    /** Equivalent to WRITE lock */
-    OPTIMISTIC_FORCE_INCREMENT,
-    
-    /** Read lock */
-    PESSIMISTIC,
-    
-    /** Write lock */
-    PESSIMISTIC_FORCE_INCREMENT,
-    
-    /** No locking */
-    NONE
+    WRITE
 }

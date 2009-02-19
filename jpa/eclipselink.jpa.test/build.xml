@@ -144,8 +144,6 @@
             <pathelement path="${eclipselink.jpa}/${classes.dir}"/>
             <pathelement path="${eclipselink.core.test.dir}/${classes.dir}"/>
             <pathelement path="${eclipselink.core.test.dir}/${eclipselink.tests.jar}"/>
-            <fileset dir="${eclipselink.jpa}/../${plugins.dir}"
-                includes="${eclipselink.jpa.depend}"/>
             <fileset
                 dir="${eclipselink.core.lib.dir}"
                 includes="${eclipselink.core.depend}"/>
@@ -401,6 +399,8 @@
     <target name="config-run-path">
         <path id="run.classpath">
             <pathelement path="${eclipselink.jpa.test}/${classes.dir}"/>
+			<fileset dir="${eclipselink.jpa}/../${plugins.dir}"
+                includes="${eclipselink.jpa.depend}"/>
             <path refid="compile.path"/>
             <!-- Currently the Oracle extensions are included to allow running Oracle extensions tests from here. -->
             <pathelement path="${eclipselink.extension.oracle.test.dir}/${classes.dir}"/>

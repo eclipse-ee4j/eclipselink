@@ -470,17 +470,6 @@ public class XMLEntityMappings extends ORMetadata {
     
     /**
      * INTERNAL:
-     * Return a new XMLEntityMappings instance. Used for reloading entities
-     * and mapped superclasses.
-     */
-    protected XMLEntityMappings newXMLEntityMappingsObject() {
-        XMLEntityMappings entityMappingsOut = new XMLEntityMappings();
-        entityMappingsOut.setVersion(getVersion());
-        return entityMappingsOut;
-    }
-    
-    /**
-     * INTERNAL:
      * Process the metadata from the <entity-mappings> level except for the
      * classes themselves. They will be processed afterwards and controlled
      * by the MetadataProcessor. Note: this method does a few things of
@@ -619,7 +608,7 @@ public class XMLEntityMappings extends ORMetadata {
      */
     public EntityAccessor reloadEntity(EntityAccessor accessor, MetadataDescriptor descriptor) {
         // Create entity mappings object to write out.
-        XMLEntityMappings xmlEntityMappings = newXMLEntityMappingsObject();
+    	XMLEntityMappings xmlEntityMappings = new XMLEntityMappings();
             
         ArrayList list = new ArrayList();
         list.add(accessor);
@@ -643,7 +632,7 @@ public class XMLEntityMappings extends ORMetadata {
      */
     public MappedSuperclassAccessor reloadMappedSuperclass(MappedSuperclassAccessor accessor, MetadataDescriptor descriptor) {
         // Create entity mappings object to write out.
-        XMLEntityMappings xmlEntityMappings = newXMLEntityMappingsObject();
+    	XMLEntityMappings xmlEntityMappings = new XMLEntityMappings();
 
         ArrayList list = new ArrayList();
         list.add(accessor);

@@ -14,9 +14,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.xml.merge.inherited;
 
-import javax.persistence.Access;
-import static javax.persistence.AccessType.FIELD;
-import static javax.persistence.AccessType.PROPERTY;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -26,9 +23,8 @@ import javax.persistence.Embeddable;
  * property access we must specify the Access(PROPERTY) 
  */
 @Embeddable
-@Access(PROPERTY)
 public class EmbeddedSerialNumber {
-    @Access(FIELD)
+
     @Column(name="ES_NUMBER")
     public Integer number;
     

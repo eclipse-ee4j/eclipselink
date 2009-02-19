@@ -14,11 +14,11 @@ package org.eclipse.persistence.internal.jpa;
 
 import java.util.Map;
 
-import javax.persistence.Cache;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.FlushModeType;
 
+import org.eclipse.persistence.internal.jpa.CacheImpl;
 import org.eclipse.persistence.sessions.factories.ReferenceMode;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.config.EntityManagerProperties;
@@ -45,7 +45,7 @@ import org.eclipse.persistence.internal.sessions.PropertiesHandler;
 */
 public class EntityManagerFactoryImpl implements EntityManagerFactory {
     /** Reference to Cache Interface. */
-    protected Cache myCache;
+    protected CacheImpl myCache;
     /** Reference to the ServerSession for this deployment. */
     protected volatile ServerSession serverSession;
     /** EntityManagerSetupImpl that deployed this factory. */
@@ -334,7 +334,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory {
         this.shouldValidateExistence = shouldValidateExistence;
     }
 
-    public Cache getCache(){
+    public CacheImpl getCache(){
         verifyOpen();
         if (myCache == null){
             ServerSession session=this.getServerSession();

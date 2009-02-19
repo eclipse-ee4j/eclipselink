@@ -80,7 +80,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
         commitTransaction(em1);
         closeEntityManager(em1);
         try {
-            boolean result = getEntityManagerFactory("default1").getCache().contains(Employee.class, 101);
+            boolean result = ((org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl)getEntityManagerFactory("default1")).getCache().contains(Employee.class, 101);
             assertTrue("Assertion Error",result);
         } catch (Exception e) {
             e.printStackTrace();
@@ -108,7 +108,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             Employee emp1 = (Employee) ((EntityManagerFactoryImpl) getEntityManagerFactory("default1")).getServerSession().getIdentityMapAccessor().getFromIdentityMap(e2);
             emp1.setFirstName("foo");
             beforeCache = em3.find(Employee.class, 121).getFirstName();
-            getEntityManagerFactory("default1").getCache().evict(Employee.class, 121);
+            ((org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl)getEntityManagerFactory("default1")).getCache().evict(Employee.class, 121);
             Employee e3 = (Employee) em4.find(Employee.class, 121);
             afterCache = e3.getFirstName();
             assertNotSame("Assertion Error", beforeCache, afterCache);
@@ -139,7 +139,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             Employee emp2 = (Employee) ((EntityManagerFactoryImpl) getEntityManagerFactory("default1")).getServerSession().getIdentityMapAccessor().getFromIdentityMap(e4);
             emp2.setFirstName("food");
             String expected = em6.find(Employee.class, 131).getFirstName();
-            getEntityManagerFactory("default1").getCache().evict(Employee.class);
+            ((org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl)getEntityManagerFactory("default1")).getCache().evict(Employee.class);
             Employee e5 = (Employee) em7.find(Employee.class, 131);
             String actual = e5.getFirstName();
             assertNotSame("Assertion Error", expected, actual);
@@ -176,7 +176,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             Department dept1 = (Department) ((EntityManagerFactoryImpl) getEntityManagerFactory("default1")).getServerSession().getIdentityMapAccessor().getFromIdentityMap(d1);
             emp3.setFirstName("foo");
             dept1.setName("science");
-            getEntityManagerFactory("default1").getCache().evictAll();
+            ((org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl)getEntityManagerFactory("default1")).getCache().evictAll();
             Employee e4 = (Employee) em9.find(Employee.class, 141);
             String actualEmp = e4.getFirstName();
             Department d2 = (Department) em9.find(Department.class, 3);

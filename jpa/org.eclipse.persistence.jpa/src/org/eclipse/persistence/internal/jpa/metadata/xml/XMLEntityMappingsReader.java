@@ -49,21 +49,18 @@ import org.xml.sax.SAXException;
 public class XMLEntityMappingsReader {
     public static final String ORM_1_0_XSD = "org/eclipse/persistence/jpa/orm_1_0.xsd";
     public static final String ORM_1_0_NAMESPACE = "http://java.sun.com/xml/ns/persistence/orm";
-    public static final String ORM_2_0_XSD = "org/eclipse/persistence/jpa/orm_2_0.xsd";
-    public static final String ORM_2_0_NAMESPACE = "http://java.sun.com/xml/ns/persistence/orm";
-    public static final String ECLIPSELINK_ORM_XSD = "xsd/eclipselink_orm_1_1.xsd";
+    public static final String ECLIPSELINK_ORM_XSD_VERSION = "1.1";
+    public static final String ECLIPSELINK_ORM_XSD_NAME = "eclipselink_orm_1_1.xsd";
+    public static final String ECLIPSELINK_ORM_XSD ="xsd/" + ECLIPSELINK_ORM_XSD_NAME; 
     public static final String ECLIPSELINK_ORM_NAMESPACE = "http://www.eclipse.org/eclipselink/xsds/persistence/orm";
     
-    //private static XMLContext m_xmlContext;
-    // TODO: Should we retain the 1.0 orm project? Or, just validate against the latest?
     private static XMLContext m_orm1_0Project;
-    private static XMLContext m_orm2_0Project;
     private static XMLContext m_eclipseLinkOrmProject;
 
     /**
      * INTERNAL:
      */
-    protected static XMLEntityMappings read(URL mappingFileUrl, Reader reader1, Reader reader2, Reader reader3, 
+    protected static XMLEntityMappings read(URL mappingFileUrl, Reader reader1, Reader reader2, 
             ClassLoader classLoader, Properties properties) {
         // We are going to go through this method twice - once for NoServerPlatform and then for the actual ServerPlatfom implementation
         // Get the schema validation flag if present in the persistence unit properties
@@ -72,7 +69,6 @@ public class XMLEntityMappingsReader {
         // -------------- Until bug 218047 is fixed. -----------------
         if (m_orm1_0Project == null) {
             m_orm1_0Project = new XMLContext(new XMLEntityMappingsMappingProject(ORM_1_0_NAMESPACE, ORM_1_0_XSD));
-            m_orm2_0Project = new XMLContext(new XMLEntityMappingsMappingProject(ORM_2_0_NAMESPACE, ORM_2_0_XSD));
             m_eclipseLinkOrmProject = new XMLContext(new XMLEntityMappingsMappingProject(ECLIPSELINK_ORM_NAMESPACE, ECLIPSELINK_ORM_XSD));
         }
         
@@ -80,49 +76,20 @@ public class XMLEntityMappingsReader {
         XMLEntityMappings xmlEntityMappings;
         
         try {
-            XMLUnmarshaller unmarshaller = m_orm2_0Project.createUnmarshaller();
-            useLocalSchemaForUnmarshaller(unmarshaller, ORM_2_0_XSD, validateORMSchema);
+        	XMLUnmarshaller unmarshaller = m_orm1_0Project.createUnmarshaller();
+            useLocalSchemaForUnmarshaller(unmarshaller, ORM_1_0_XSD, validateORMSchema);
             xmlEntityMappings = (XMLEntityMappings) unmarshaller.unmarshal(reader1);
-        } catch (Exception eee) {
-            try {
-                XMLUnmarshaller unmarshaller = m_orm1_0Project.createUnmarshaller();
-                useLocalSchemaForUnmarshaller(unmarshaller, ORM_1_0_XSD, validateORMSchema);
+        } catch (Exception e) {
+        	try {
+        		XMLUnmarshaller unmarshaller = m_eclipseLinkOrmProject.createUnmarshaller();
+                useLocalSchemaForUnmarshaller(unmarshaller, ECLIPSELINK_ORM_XSD, validateORMSchema);
                 xmlEntityMappings = (XMLEntityMappings) unmarshaller.unmarshal(reader2);
-            } catch (Exception e) {
-                try {
-                    XMLUnmarshaller unmarshaller = m_eclipseLinkOrmProject.createUnmarshaller();
-                    useLocalSchemaForUnmarshaller(unmarshaller, ECLIPSELINK_ORM_XSD, validateORMSchema);
-                    xmlEntityMappings = (XMLEntityMappings) unmarshaller.unmarshal(reader3);
-                } catch (Exception ee) {
-                    throw ValidationException.errorParsingMappingFile(mappingFileUrl, ee);
-                }
+        	} catch (Exception ee) {
+        		throw ValidationException.errorParsingMappingFile(mappingFileUrl, ee);
             }
         }
         
         return xmlEntityMappings;
-
-        // ---------- When bug 218047 is fixed. -----------------
-        
-/*                
-        if (m_xmlContext == null) {
-            List<Project> projects = new ArrayList<Project>();
-            projects.add(new XMLEntityMappingsMappingProject(ORM_1_0_NAMESPACE, ORM_1_0_XSD));
-            projects.add(new XMLEntityMappingsMappingProject(ORM_2_0_NAMESPACE, ORM_2_0_XSD));            
-            projects.add(new XMLEntityMappingsMappingProject(ECLIPSELINK_ORM_NAMESPACE, ECLIPSELINK_ORM_XSD));
-            
-            m_xmlContext = new XMLContext(projects);
-        }
-        
-        // Unmarshall JPA format.
-        XMLUnmarshaller unmarshaller = m_xmlContext.createUnmarshaller();
-        // We will default schema validation to false unless the user has turned it on in the eclipselink.orm.validate.schema property
-        if(validateORMSchema) {
-            unmarshaller.setValidationMode(XMLUnmarshaller.SCHEMA_VALIDATION);
-        } else {
-            unmarshaller.setValidationMode(XMLUnmarshaller.NONVALIDATING);
-        }
-        return (XMLEntityMappings) unmarshaller.unmarshal(reader);
-        */
     }
    
     /**
@@ -150,19 +117,17 @@ public class XMLEntityMappingsReader {
     public static XMLEntityMappings read(URL url, ClassLoader classLoader, Properties properties) throws IOException {
         InputStreamReader reader1 = null;
         InputStreamReader reader2 = null;
-        InputStreamReader reader3 = null;
         
         try {
             try {
                 //Get separate readers as the read method below is coded to seek through both of them
                 reader1 = getInputStreamReader(url);
                 reader2 = getInputStreamReader(url);
-                reader3 = getInputStreamReader(url);
             } catch (UnsupportedEncodingException exception) {
                 throw ValidationException.fatalErrorOccurred(exception);
             }
 
-            XMLEntityMappings entityMappings = read(url, reader1, reader2, reader3, classLoader, properties);
+            XMLEntityMappings entityMappings = read(url, reader1, reader2, classLoader, properties);
             // Setting the mapping file here is very important! Do not remove.
             entityMappings.setMappingFile(url);
             return entityMappings;
@@ -175,11 +140,6 @@ public class XMLEntityMappingsReader {
                 if (reader2 != null) {
                     reader2.close();
                 }
-
-                if (reader3 != null) {
-                    reader3.close();
-                }
-
             } catch (IOException exception) {
                 throw ValidationException.fileError(exception);
             }

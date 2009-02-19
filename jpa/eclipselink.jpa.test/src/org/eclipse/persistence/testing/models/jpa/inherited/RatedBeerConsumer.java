@@ -20,30 +20,22 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Vector;
 
-import javax.persistence.Access;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
 
-import static javax.persistence.AccessType.FIELD;
-import static javax.persistence.AccessType.PROPERTY;
-
 import org.eclipse.persistence.annotations.BasicCollection;
 import org.eclipse.persistence.annotations.BasicMap;
 
 @MappedSuperclass
-@Access(FIELD)
 public abstract class RatedBeerConsumer<X, Y, Z> extends BeerConsumer {
-    @BasicCollection(valueColumn=@Column(name="ACCLAIM"))
     private Collection<X> acclaims;
     
     // Let the key column default. Should default to AWARDS_KEY
     // A keyColumn specification is tested in org.eclipse.persistence.testing.models.jpa.advanced.Buyer
-    @BasicMap(valueColumn=@Column(name="AWARD_CODE"))
     private Map<Y, Z> awards;
     
-    @Transient
     private int iq;
     
     protected RatedBeerConsumer() {
@@ -52,17 +44,18 @@ public abstract class RatedBeerConsumer<X, Y, Z> extends BeerConsumer {
         awards = new Hashtable<Y, Z>();
     }
     
+    @BasicCollection(valueColumn=@Column(name="ACCLAIM"))
     public Collection<X> getAcclaims() {
         return acclaims;
     }
     
+    @BasicMap(valueColumn=@Column(name="AWARD_CODE"))
     public Map<Y, Z> getAwards() {
         return awards;
     }
 
     @Basic
     @Column(name="CONSUMER_IQ")
-    @Access(PROPERTY)
     public int getIQ() {
         return iq;
     }

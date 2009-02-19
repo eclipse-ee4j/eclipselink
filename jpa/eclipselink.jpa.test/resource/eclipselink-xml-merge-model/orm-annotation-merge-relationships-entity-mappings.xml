@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<entity-mappings version="2.0" xmlns="http://java.sun.com/xml/ns/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm orm_2_0.xsd">
+<entity-mappings version="1.1" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <description>Merge Relationships Test Model Instance Document</description>
     <package>org.eclipse.persistence.testing.models.jpa.xml.merge.relationships</package>
     <access>PROPERTY</access>
@@ -13,7 +13,7 @@
     <named-query name="findAllXMLMergeItemsByName">
         <query>SELECT OBJECT(item) FROM XMLMergeItem item WHERE item.name = ?1</query>
     </named-query>
-    <entity name="XMLMergeCustomer" class="Customer">
+    <entity name="XMLMergeCustomer" class="Customer" access="PROPERTY">
         <table-generator name="XML_MERGE_CUSTOMER_TABLE_GENERATOR" table="CMP3_XML_MERGE_CUSTOMER_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="CUST_SEQ"/>
         <exclude-default-listeners/>
         <exclude-superclass-listeners/>

@@ -57,15 +57,10 @@
         <pathelement path="${jpa.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
         <pathelement path="${jpa.2.common.plugins.dir}/osgi.core.zip"/>
         <fileset
-            dir="../${plugins.dir}"
-            includes="${eclipselink.jpa.depend}"/>
-        <fileset
             dir="${jpa.2.common.plugins.dir}"
             includes="${eclipselink.core.depend}"/>
     </path>
     <available file="${jpa.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar" property="core.bundle.exist"/>
-    <available file="../${plugins.dir}/javax.persistence_2.0_preview.jar" property="jpa2.jar.exist"/>
-    <available file="../${plugins.dir}/javax.persistence/${classes.dir}" type="dir" property="jpa2.classes.exist"/>
 
     <!-- all -->
     <target name="build" depends="clean, compile, generate-manifest, package" description="build JPA component"/>
@@ -81,7 +76,6 @@
     <!-- compile -->
     <target name="compile" description="Compile EclipseLink JPA">
         <fail message="Cannot find Core: '${jpa.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar'." unless="core.bundle.exist"/>
-        <fail message="Cannot find JPA 2.0:'../plugins/javax.persistence_2.0_preview.jar'." unless="jpa2.jar.exist"/>
         <mkdir dir="${classes.dir}"/>
         <javac srcdir="${src.dir}"
                destdir="${classes.dir}"
@@ -100,7 +94,6 @@
 
     <!-- package -->
     <target name="package" description="jar OSGI bundle">
-        <fail message="Cannot find JAXB 2.0 class dir:'../plugins/javax.persistence/${classes.dir}'" unless="jpa2.classes.exist"/>
         <jar jarfile="${jpa.2.common.plugins.dir}/${eclipselink.jpa.bndl.prefix}_${version.string}.jar" manifest="META-INF/MANIFEST.MF">
             <fileset dir="${jpa.2.base.dir}">
                 <include name="about.html"/>
