@@ -16,9 +16,11 @@ package org.eclipse.persistence.testing.models.jpa.inheritance;
 import javax.persistence.AttributeOverride;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Table;
 
 @Entity
 @AttributeOverride(name="id", column = @Column(name="SMALL_ID"))
+@Table(name="TPC_SMALL_ASSIGNMENT")
 public class SmallAssignment extends Assignment {
 
 }
