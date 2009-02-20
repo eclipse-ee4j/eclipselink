@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -10,6 +10,8 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     stardif - updates for Cacaded locking and inheritance
+ *     02/20/2009-1.1 Guy Pelletier 
+ *       - 259829: TABLE_PER_CLASS with abstract classes does not work
  ******************************************************************************/  
 package org.eclipse.persistence.descriptors;
 
@@ -2417,6 +2419,9 @@ public class ClassDescriptor implements Cloneable, Serializable {
     /**
      * INTERNAL:
      * Return if this descriptor is involved in inheritance, (is child or parent).
+     * Note: If this class is part of table per class inheritance strategy this
+     * method will return false. 
+     * @see hasTablePerClassPolicy()
      */
     public boolean hasInheritance() {
         return (inheritancePolicy != null);
@@ -2895,6 +2900,14 @@ public class ClassDescriptor implements Cloneable, Serializable {
     }
 
     /**
+     * INTERNAL:
+     * Convenience method to return true if the java class from this descriptor is abstract.
+     */
+    protected boolean isAbstract() {
+    	return java.lang.reflect.Modifier.isAbstract(getJavaClass().getModifiers());
+    }
+    
+    /**
      * PUBLIC:
      * Return true if this descriptor is an aggregate collection descriptor
      */
@@ -3361,17 +3374,20 @@ public class ClassDescriptor implements Cloneable, Serializable {
      */
     protected void selfValidationAfterInitialization(AbstractSession session) throws DescriptorException {
         // This has to be done after, because read subclasses must be initialized.
-        if (!(hasInheritance() && (getInheritancePolicy().shouldReadSubclasses() || java.lang.reflect.Modifier.isAbstract(getJavaClass().getModifiers())))) {
-            if (session.getIntegrityChecker().shouldCheckInstantiationPolicy()) {
-                getInstantiationPolicy().buildNewInstance();
-            }
-        }
+    	if ( (hasInheritance() && (getInheritancePolicy().shouldReadSubclasses() || isAbstract())) || hasTablePerClassPolicy() && isAbstract() ) {
+    		// Avoid building a new instance if the inheritance class is abstract.
+    		// There is an empty statement here, and this was done if anything for the 
+    		// readability sake of the statement logic.
+    	} else if (session.getIntegrityChecker().shouldCheckInstantiationPolicy()) {
+    		getInstantiationPolicy().buildNewInstance();
+    	}
+    	
         if (hasReturningPolicy()) {
             getReturningPolicy().validationAfterDescriptorInitialization(session);
         }
         getObjectBuilder().validate(session);
     }
-
+    
     /**
      * INTERNAL:
      * Validate that the descriptor's non-mapping attribute are defined correctly.

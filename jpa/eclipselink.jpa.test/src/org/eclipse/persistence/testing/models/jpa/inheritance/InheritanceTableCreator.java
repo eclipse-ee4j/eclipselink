@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     02/20/2009-1.1 Guy Pelletier 
+ *       - 259829: TABLE_PER_CLASS with abstract classes does not work
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.inheritance;
 
@@ -64,6 +66,7 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
         addTableDefinition(buildSPECIALASSASSINTable());
         addTableDefinition(buildSOCIALCLUBTable());
         addTableDefinition(buildPERSONELCLUBTable());
+        addTableDefinition(buildSMALLASSIGNMENTTable());
     }
 
     public TableDefinition buildBICYCLETable() {
@@ -1609,7 +1612,6 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
         TableDefinition table = new TableDefinition();
         table.setName("TPC_PERSONEL_CLUB");
 
-        // SECTION: FIELD
         FieldDefinition fieldPERSONELID = new FieldDefinition();
         fieldPERSONELID.setName("PERSONEL_ID");
         fieldPERSONELID.setTypeName("NUMERIC");
@@ -1622,7 +1624,6 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
         //fieldPERSONELID.setForeignKeyFieldName("CMP3_PERSONEL.ID");
         table.addField(fieldPERSONELID);
     
-        // SECTION: FIELD
         FieldDefinition fieldCLUBID = new FieldDefinition();
         fieldCLUBID.setName("CLUB_ID");
         fieldCLUBID.setTypeName("NUMERIC");
@@ -1634,6 +1635,33 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
         // Can't set foreign key field constraints.
         //fieldCLUBID.setForeignKeyFieldName("CMP3_SOCIAL_CLUB.ID");
         table.addField(fieldCLUBID);
+
+        return table;
+    }
+
+    public TableDefinition buildSMALLASSIGNMENTTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("TPC_SMALL_ASSIGNMENT");
+
+        FieldDefinition fieldSMALLID = new FieldDefinition();
+        fieldSMALLID.setName("SMALL_ID");
+        fieldSMALLID.setTypeName("NUMERIC");
+        fieldSMALLID.setSize(10);
+        fieldSMALLID.setShouldAllowNull(false);
+        fieldSMALLID.setIsPrimaryKey(true);
+        fieldSMALLID.setUnique(false);
+        fieldSMALLID.setIsIdentity(false);
+        table.addField(fieldSMALLID);
+    
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("NAME");
+        fieldNAME.setTypeName("VARCHAR");
+        fieldNAME.setSize(50);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setIsIdentity(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setShouldAllowNull(true);
+        table.addField(fieldNAME);
 
         return table;
     }
