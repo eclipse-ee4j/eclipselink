@@ -472,7 +472,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             // Delete must occur first, in case object with same pk is removed and added,
             // (technically should not happen, but same applies to unique constraints)
             if (!currentObjectsByKey.containsKey(key)) {
-                objectRemovedDuringUpdate(query, previousObject, mapKeyFields);
+                objectRemovedDuringUpdate(query, wrappedObject, mapKeyFields);
             }
         }
 
@@ -624,6 +624,19 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         return deleteAllQuery;
     }
 
+    /**
+     * INTERNAL:
+     * Returns the join criteria stored in the mapping selection query. This criteria
+     * is used to read reference objects across the tables from the database.
+     */
+    public Expression getJoinCriteria(QueryKeyExpression exp) {
+        Expression selectionCriteria = getSelectionCriteria();
+        Expression keySelectionCriteria = containerPolicy.getKeySelectionCriteria();
+        if (keySelectionCriteria != null){
+            selectionCriteria = selectionCriteria.and(keySelectionCriteria);
+        }
+        return exp.getBaseExpression().twist(selectionCriteria, exp);
+    }
 
     /**
      * INTERNAL:
@@ -1001,7 +1014,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         if (isPrivateOwned()) {
             InsertObjectQuery insertQuery = new InsertObjectQuery();
             insertQuery.setIsExecutionClone(true);
-            insertQuery.setObject(objectAdded);
+            insertQuery.setObject(containerPolicy.unwrapIteratorResult(objectAdded));
             insertQuery.setCascadePolicy(query.getCascadePolicy());
             query.getSession().executeQuery(insertQuery);
         } else {
@@ -1013,7 +1026,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             }
             WriteObjectQuery writeQuery = new WriteObjectQuery();
             writeQuery.setIsExecutionClone(true);
-            writeQuery.setObject(objectAdded);
+            writeQuery.setObject(containerPolicy.unwrapIteratorResult(objectAdded));
             writeQuery.setObjectChangeSet(changeSet);
             writeQuery.setCascadePolicy(query.getCascadePolicy());
             query.getSession().executeQuery(writeQuery);
@@ -1031,13 +1044,13 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                 if (query.getSession().isUnitOfWork()) {
                     // ...and the object has not been explicitly deleted in the unit of work
                     if (!(((UnitOfWorkImpl)query.getSession()).getDeletedObjects().containsKey(objectDeleted))) {
-                        query.getSession().getCommitManager().addObjectToDelete(objectDeleted);
+                        containerPolicy.addToDeletedObjectsList(objectDeleted, query.getSession().getCommitManager());
                     }
                 } else {
-                    query.getSession().getCommitManager().addObjectToDelete(objectDeleted);
+                    containerPolicy.addToDeletedObjectsList(objectDeleted, query.getSession().getCommitManager());
                 }
             } else {
-                query.getSession().deleteObject(objectDeleted);
+                containerPolicy.deleteWrappedObject(objectDeleted, query.getSession());
             }
         }
     }
@@ -1689,7 +1702,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         // For each rows, extract the target row and build the target object and add to the collection.
         for (int index = 0; index < rows.size(); index++) {
             AbstractRecord sourceRow = (AbstractRecord)rows.get(index);
-            AbstractRecord targetRow = sourceRow;            
+            AbstractRecord targetRow = sourceRow;
             // The field for many objects may be in the row,
             // so build the subpartion of the row through the computed values in the query,
             // this also helps the field indexing match.
@@ -1709,8 +1722,13 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                 nestedQuery.setTranslationRow(targetRow);
                 targetCacheKeys.add(targetCacheKey);
                 Object targetObject = getReferenceDescriptor().getObjectBuilder().buildObject(nestedQuery, targetRow);
+                Object targetMapKey = getContainerPolicy().buildKeyFromJoinedRow(targetRow, joinManager, nestedQuery, executionSession);
                 nestedQuery.setTranslationRow(null);
-                getContainerPolicy().addInto(targetObject, value, executionSession);
+                if (targetMapKey == null){
+                    getContainerPolicy().addInto(targetObject, value, executionSession);
+                } else {
+                    getContainerPolicy().addInto(targetMapKey, targetObject, value, executionSession);
+                }
             }
         }
         return getIndirectionPolicy().valueFromRow(value);

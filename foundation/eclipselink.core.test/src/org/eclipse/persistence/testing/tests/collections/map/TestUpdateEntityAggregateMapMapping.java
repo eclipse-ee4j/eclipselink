@@ -12,6 +12,12 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.collections.map;
 
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
+import org.eclipse.persistence.mappings.AggregateCollectionMapping;
+import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.models.collections.map.EntityAggregateMapHolder;
@@ -19,7 +25,30 @@ import org.eclipse.persistence.testing.models.collections.map.EntityMapKey;
 import org.eclipse.persistence.testing.models.collections.map.AggregateMapValue;
 
 public class TestUpdateEntityAggregateMapMapping extends TestReadEntityAggregateMapMapping {
-
+    
+    private boolean usePrivateOwned = false;
+    protected ForeignReferenceMapping keyMapping = null;
+    private boolean oldKeyPrivateOwnedValue = false;
+    
+    public TestUpdateEntityAggregateMapMapping(){
+        super();
+    }
+    
+    public TestUpdateEntityAggregateMapMapping(boolean usePrivateOwned){
+        this();
+        this.usePrivateOwned = usePrivateOwned;
+        setName("TestUpdateEntityAggregateMapMapping privateOwned=" + usePrivateOwned);
+    }
+    
+    public void setup(){
+        AggregateCollectionMapping mapping = (AggregateCollectionMapping)getSession().getProject().getDescriptor(EntityAggregateMapHolder.class).getMappingForAttributeName("entityToAggregateMap");
+        keyMapping = (ForeignReferenceMapping)((MappedKeyMapContainerPolicy)mapping.getContainerPolicy()).getKeyMapping();
+        oldKeyPrivateOwnedValue = keyMapping.isPrivateOwned();
+        keyMapping.setIsPrivateOwned(usePrivateOwned);
+        super.setup();
+    }
+    
+    
     public void test(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         holders = uow.readAllObjects(EntityAggregateMapHolder.class);
@@ -51,6 +80,20 @@ public class TestUpdateEntityAggregateMapMapping extends TestReadEntityAggregate
         if (value.getValue() != 3){
             throw new TestErrorException("Item was not correctly added to map");
         }
+        if (keyMapping.isPrivateOwned()){
+            ReadObjectQuery query = new ReadObjectQuery(EntityMapKey.class);
+            ExpressionBuilder keys = new ExpressionBuilder();
+            Expression keycriteria = keys.get("id").equal(1);
+            query.setSelectionCriteria(keycriteria);
+            key = (EntityMapKey)getSession().executeQuery(query);
+            if (key != null){
+                throw new TestErrorException("PrivateOwned EntityMapKey was not deleted.");
+            }
+        }
     }
     
+    public void reset(){
+        super.reset();
+        keyMapping.setIsPrivateOwned(oldKeyPrivateOwnedValue);
+    }    
 }

@@ -14,6 +14,12 @@ package org.eclipse.persistence.testing.tests.collections.map;
 
 import java.util.List;
 
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
+import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+import org.eclipse.persistence.mappings.ManyToManyMapping;
+import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.TestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
@@ -25,7 +31,30 @@ public class TestUpdateEntityEntityMapMapping extends TestCase {
     
     private EntityEntityMapHolder holder = null;
     
+    protected ManyToManyMapping mapping = null;
+    private boolean usePrivateOwned = false;
+    private boolean oldPrivateOwnedValue = false;
+    protected ForeignReferenceMapping keyMapping = null;
+    private boolean oldKeyPrivateOwnedValue = false;
+    
+    public TestUpdateEntityEntityMapMapping(){
+        super();
+    }
+    
+    public TestUpdateEntityEntityMapMapping(boolean usePrivateOwned){
+        this();
+        this.usePrivateOwned = usePrivateOwned;
+        setName("TestUpdateEntityEntityMapMapping privateOwned=" + usePrivateOwned);
+    }
+    
     public void setup(){
+        mapping = (ManyToManyMapping)getSession().getProject().getDescriptor(EntityEntityMapHolder.class).getMappingForAttributeName("entityToEntityMap");
+        oldPrivateOwnedValue = mapping.isPrivateOwned();
+        mapping.setIsPrivateOwned(usePrivateOwned);
+        keyMapping = (ForeignReferenceMapping)((MappedKeyMapContainerPolicy)mapping.getContainerPolicy()).getKeyMapping();
+        oldKeyPrivateOwnedValue = keyMapping.isPrivateOwned();
+        keyMapping.setIsPrivateOwned(usePrivateOwned);
+        
         UnitOfWork uow = getSession().acquireUnitOfWork();
         holder = new EntityEntityMapHolder();
         EntityMapValue value = new EntityMapValue();
@@ -86,6 +115,25 @@ public class TestUpdateEntityEntityMapMapping extends TestCase {
         if (value != null){
             throw new TestErrorException("Deleted EntityMapValue still around.");
         }
+        
+        if (mapping.isPrivateOwned()){
+            ReadObjectQuery query = new ReadObjectQuery(EntityMapValue.class);
+            ExpressionBuilder values = new ExpressionBuilder();
+            Expression criteria = values.get("id").equal(1);
+            query.setSelectionCriteria(criteria);
+            value = (EntityMapValue)getSession().executeQuery(query);
+            if (value != null){
+                throw new TestErrorException("PrivateOwned EntityMapValue was not deleted.");
+            }
+            query = new ReadObjectQuery(EntityMapKey.class);
+            ExpressionBuilder keys = new ExpressionBuilder();
+            Expression keycriteria = keys.get("id").equal(11);
+            query.setSelectionCriteria(keycriteria);
+            EntityMapKey key = (EntityMapKey)getSession().executeQuery(query);
+            if (key != null){
+                throw new TestErrorException("PrivateOwned EntityMapKey was not deleted.");
+            }
+        }
     }
     
     public void reset(){
@@ -94,6 +142,8 @@ public class TestUpdateEntityEntityMapMapping extends TestCase {
         List keys = uow.readAllObjects(EntityMapValue.class);
         uow.deleteAllObjects(keys);
         uow.commit();
+        mapping.setIsPrivateOwned(oldPrivateOwnedValue);
+        keyMapping.setIsPrivateOwned(oldKeyPrivateOwnedValue);
     }
 
 }

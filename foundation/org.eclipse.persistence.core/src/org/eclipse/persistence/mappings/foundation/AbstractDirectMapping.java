@@ -123,6 +123,20 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
     }
 
     /**
+     * INTERNAL:
+     * For mappings used as MapKeys in MappedKeyContainerPolicy.  Add the target of this mapping to the deleted 
+     * objects list if necessary
+     *
+     * This method is used for removal of private owned relationships
+     * DirectMappings are dealt with in their parent delete, so this is a no-op.
+     * 
+     * @param object
+     * @param manager
+     */
+    public void addKeyToDeletedObjectsList(Object object, CommitManager manager){
+    }
+    
+    /**
      * PUBLIC:
      * Return the converter on the mapping.
      * A converter can be used to convert between the object's value and database value of the attribute.
@@ -345,6 +359,20 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
         return null;
     }
 
+    
+    /**
+     * INTERNAL:
+     * For mappings used as MapKeys in MappedKeyContainerPolicy, Delete the passed object if necessary.
+     * 
+     * This method is used for removal of private owned relationships
+     * DirectMappings are dealt with in their parent delete, so this is a no-op.
+     * 
+     * @param objectDeleted
+     * @param session
+     */
+    public void deleteMapKey(Object objectDeleted, AbstractSession session){
+    }
+    
     /**
      * INTERNAL:
      * Directly build a change record without comparison
@@ -487,6 +515,14 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
     }
 
     /**
+     * INTERNAL
+     * Called when a DatabaseMapping is used to map the key in a collection and a join query is executed.  Returns the key.
+     */
+    public Object createMapComponentFromJoinedRow(AbstractRecord dbRow, JoinedAttributeManager joinManger, ObjectBuildingQuery query, AbstractSession session){
+        return createMapComponentFromRow(dbRow, query, session);
+    }
+    
+    /**
      * INTERNAL:
      * Extract the fields for the Map key from the object to use in a query
      * @return
@@ -510,6 +546,17 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
     public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, RemoteSession session) {
     }
 
+    /**
+     * INTERNAL:
+     * Return any tables that will be required when this mapping is used as part of a join query
+     * @return
+     */
+    public List<DatabaseTable> getAdditionalTablesForJoinQuery(){
+        List tables = new ArrayList(1);
+        tables.add(getField().getTable());
+        return tables;
+    }
+    
     /**
      * PUBLIC:
      * Some databases do not properly support all of the base data types. For these databases,
@@ -679,9 +726,28 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * @return
      */
     public List<DatabaseField> getIdentityFieldsForMapKey(){
+        return getAllFieldsForMapKey();
+    }
+    
+    /**
+     * INTERNAL:
+     * Get all the fields for the map key
+     */
+    public List<DatabaseField> getAllFieldsForMapKey(){
         Vector fields = new Vector(1);
         fields.add(getField());
         return fields;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the query that is used when this mapping is part of a joined relationship
+     * 
+     * This method is used when this mapping is used to map the key in a Map
+     * @return
+     */
+    public ObjectLevelReadQuery getNestedJoinQuery(JoinedAttributeManager joinManager, ObjectLevelReadQuery query, AbstractSession session){
+        return null;
     }
     
     /**
@@ -693,6 +759,18 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      */
     public Object getNullValue() {
         return nullValue;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the selection criteria necessary to select the target object when this mapping
+     * is a map key.
+     * 
+     * DirectMappings do not need any additional selection criteria when they are map keys
+     * @return
+     */
+    public Expression getAdditionalSelectionCriteriaForMapKey(){
+        return null;
     }
     
     /**

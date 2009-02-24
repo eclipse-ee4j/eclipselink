@@ -14,6 +14,8 @@ package org.eclipse.persistence.testing.tests.collections.map;
 
 import java.util.List;
 
+import org.eclipse.persistence.indirection.IndirectMap;
+import org.eclipse.persistence.mappings.DirectCollectionMapping;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.TestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
@@ -23,8 +25,26 @@ import org.eclipse.persistence.testing.models.collections.map.EntityMapKey;
 public class TestReadEntityDirectMapMapping extends TestCase {
     
     protected List holders = null;
+    protected int fetchJoinRelationship = 0;
+    protected int oldFetchJoinValue = 0;
+    protected DirectCollectionMapping mapping = null;
+    
+    public TestReadEntityDirectMapMapping(){
+        super();
+    }
+    
+    public TestReadEntityDirectMapMapping(int fetchJoin){
+        this();
+        fetchJoinRelationship = fetchJoin;
+        setName("TestReadEntityDirectMapMapping fetchJoin = " + fetchJoin);
+    }
     
     public void setup(){
+        mapping = (DirectCollectionMapping)getSession().getProject().getDescriptor(EntityDirectMapHolder.class).getMappingForAttributeName("entityToDirectMap");
+        oldFetchJoinValue = mapping.getJoinFetch();
+        mapping.setJoinFetch(fetchJoinRelationship);
+        getSession().getProject().getDescriptor(EntityDirectMapHolder.class).reInitializeJoinedAttributes();
+        
         UnitOfWork uow = getSession().acquireUnitOfWork();
         EntityDirectMapHolder holder = new EntityDirectMapHolder();
         EntityMapKey mapKey = new EntityMapKey();
@@ -53,6 +73,9 @@ public class TestReadEntityDirectMapMapping extends TestCase {
         }
         EntityDirectMapHolder holder = (EntityDirectMapHolder)holders.get(0);
         
+        if (!((IndirectMap)holder.getEntityToDirectMap()).getValueHolder().isInstantiated() && fetchJoinRelationship >0){
+            throw new TestErrorException("Relationship was not properly joined.");
+        }
         if (holder.getEntityToDirectMap().size() != 2){
             throw new TestErrorException("Incorrect Number of Map values was read.");
         }
@@ -70,6 +93,7 @@ public class TestReadEntityDirectMapMapping extends TestCase {
         List keys = uow.readAllObjects(EntityMapKey.class);
         uow.deleteAllObjects(keys);
         uow.commit();
+        mapping.setJoinFetch(oldFetchJoinValue);
     }
 }
 

@@ -37,6 +37,20 @@ public class TableExpression extends DataExpression {
     
     /**
      * INTERNAL:
+     * Alias a particular table within this node
+     */
+    protected void assignAlias(DatabaseTable alias, DatabaseTable table) {
+        if (baseExpression.isQueryKeyExpression()){
+            QueryKeyExpression qkExpression = ((QueryKeyExpression)baseExpression);
+            if (qkExpression.getTableAliases() != null && qkExpression.getTableAliases().keyAtValue(table) != null ){
+                return;
+            }
+        }
+        super.assignAlias(alias, table);
+    }
+    
+    /**
+     * INTERNAL:
      * Return if the expression is equal to the other.
      * This is used to allow dynamic expression's SQL to be cached.
      */

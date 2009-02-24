@@ -293,8 +293,7 @@ public class ValidationExceptionResource extends ListResourceBundle {
                                            { "7311", "An invalid target class is being used with the element collection attribute [{0}] on the class [{1}].  Only basic types and embeddable classes are allowed."},
                                            { "7312", "An invalid embeddable class [{0}] is being used with the element collection attribute [{1}] on the class [{2}]. See section 2.6 of the spec: \" An embeddable class (including an embeddable class within another embeddable class) contained within an element collection must not contain an element collection, nor may it contain a relationship to an entity other than a many-to-one or one-to-one relationship. The embeddable class must be on the owning side of such a relationship and the relationship must be mapped by a foreign key mapping. The mapping for the attribute [{3}] on the embeddable class is in violation of this."},
                                            { "7313", "The attribute [{1}] was not found on the embeddable class [{0}]. It is referenced in an association override for the embedded attribute [{3}] on class [{2}]."},
-                                           
-                                           
+                                           { "7314", "The mapping [{0}] is being used to map the key in a MappedKeyMapContainerPolicy and uses indirection.  Mappings used for Map Keys cannot use indirection."}
  };
     
     /**

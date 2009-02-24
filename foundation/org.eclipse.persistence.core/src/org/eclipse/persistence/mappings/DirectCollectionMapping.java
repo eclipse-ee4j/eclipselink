@@ -1989,6 +1989,10 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
             return batchedValueFromRow(row, (ReadAllQuery)sourceQuery);
         }
 
+        if (shouldUseValueFromRowWithJoin(joinManager, sourceQuery)) {
+            return valueFromRowInternalWithJoin(row, joinManager, sourceQuery, session);
+        }
+        
         ReadQuery targetQuery = getSelectionQuery();
 
         if ((getHistoryPolicy() != null) || (sourceQuery.getSession().getAsOfClause() != null) || ((sourceQuery.isObjectLevelReadQuery() && ((ObjectLevelReadQuery)sourceQuery).hasAsOfClause()) && (sourceQuery.shouldCascadeAllParts() || (sourceQuery.shouldCascadePrivateParts() && isPrivateOwned()) || (sourceQuery.shouldCascadeByMapping() && this.cascadeRefresh)))) {

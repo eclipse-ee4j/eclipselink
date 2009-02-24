@@ -14,6 +14,8 @@ package org.eclipse.persistence.testing.tests.collections.map;
 
 import java.util.List;
 
+import org.eclipse.persistence.indirection.IndirectMap;
+import org.eclipse.persistence.mappings.AggregateCollectionMapping;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.TestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
@@ -24,8 +26,26 @@ import org.eclipse.persistence.testing.models.collections.map.AggregateMapValue;
 public class TestReadEntityAggregateMapMapping extends TestCase {
     
     protected List holders = null;
+    protected int fetchJoinRelationship = 0;
+    protected int oldFetchJoinValue = 0;
+    protected AggregateCollectionMapping mapping = null;
+    
+    public TestReadEntityAggregateMapMapping(){
+        super();
+    }
+    
+    public TestReadEntityAggregateMapMapping(int fetchJoin){
+        this();
+        fetchJoinRelationship = fetchJoin;
+        setName("TestReadEntityAggregateMapMapping fetchJoin = " + fetchJoin);
+    }
     
     public void setup(){
+        mapping = (AggregateCollectionMapping)getSession().getProject().getDescriptor(EntityAggregateMapHolder.class).getMappingForAttributeName("entityToAggregateMap");
+        oldFetchJoinValue = mapping.getJoinFetch();
+        mapping.setJoinFetch(fetchJoinRelationship);
+        getSession().getProject().getDescriptor(EntityAggregateMapHolder.class).reInitializeJoinedAttributes();
+        
         UnitOfWork uow = getSession().acquireUnitOfWork();
         EntityAggregateMapHolder holder = new EntityAggregateMapHolder();
         AggregateMapValue value = new AggregateMapValue();
@@ -59,6 +79,9 @@ public class TestReadEntityAggregateMapMapping extends TestCase {
         }
         EntityAggregateMapHolder holder = (EntityAggregateMapHolder)holders.get(0);
         
+        if (!((IndirectMap)holder.getEntityToAggregateMap()).getValueHolder().isInstantiated() && fetchJoinRelationship >0){
+            throw new TestErrorException("Relationship was not properly joined.");
+        }
         if (holder.getEntityToAggregateMap().size() != 2){
             throw new TestErrorException("Incorrect Number of MapEntityValues was read.");
         }
@@ -75,6 +98,7 @@ public class TestReadEntityAggregateMapMapping extends TestCase {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         uow.deleteAllObjects(holders);
         uow.commit();
+        mapping.setJoinFetch(oldFetchJoinValue);
     }
 
 }

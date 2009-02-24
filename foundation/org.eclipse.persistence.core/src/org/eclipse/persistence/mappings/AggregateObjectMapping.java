@@ -144,6 +144,20 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
 
     /**
      * INTERNAL:
+     * For mappings used as MapKeys in MappedKeyContainerPolicy.  Add the target of this mapping to the deleted 
+     * objects list if necessary
+     *
+     * This method is used for removal of private owned relationships.  
+     * AggregateObjectMappings are dealt with in their parent delete, so this is a no-op.
+     * 
+     * @param object
+     * @param manager
+     */
+    public void addKeyToDeletedObjectsList(Object object, CommitManager manager){
+    }
+    
+    /**
+     * INTERNAL:
      * Return whether all the aggregate fields in the specified
      * row are NULL.
      */
@@ -598,7 +612,27 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         return key;
     }
     
+    /**
+     * INTERNAL
+     * Called when a DatabaseMapping is used to map the key in a collection and a join query is executed.  Returns the key.
+     */
+    public Object createMapComponentFromJoinedRow(AbstractRecord dbRow, JoinedAttributeManager joinManger, ObjectBuildingQuery query, AbstractSession session){
+        return createMapComponentFromRow(dbRow, query, session);
+    }
     
+    /**
+     * INTERNAL:
+     * For mappings used as MapKeys in MappedKeyContainerPolicy, Delete the passed object if necessary.
+     * 
+     * This method is used for removal of private owned relationships. 
+     * AggregateObjectMappings are dealt with in their parent delete, so this is a no-op.
+     * 
+     * @param objectDeleted
+     * @param session
+     */
+    public void deleteMapKey(Object objectDeleted, AbstractSession session){
+    }
+
     /**
      * PUBLIC:
      * If <em>all</em> the fields in the database row for the aggregate object are NULL,
@@ -631,6 +665,27 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
             keyFields.put(field, value);
         }
         return keyFields;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return any tables that will be required when this mapping is used as part of a join query
+     * @return
+     */
+    public List<DatabaseTable> getAdditionalTablesForJoinQuery(){
+        return getReferenceDescriptor().getTables();
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the selection criteria necessary to select the target object when this mapping
+     * is a map key.
+     * 
+     * AggregateObjectMappings do not need any additional selection criteria when they are map keys
+     * @return
+     */
+    public Expression getAdditionalSelectionCriteriaForMapKey(){
+        return null;
     }
     
     /**
@@ -677,6 +732,14 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * @return
      */
     public List<DatabaseField> getIdentityFieldsForMapKey(){
+        return getAllFieldsForMapKey();
+    }
+    
+    /**
+     * INTERNAL:
+     * Get all the fields for the map key
+     */
+    public List<DatabaseField> getAllFieldsForMapKey(){
         return getReferenceDescriptor().getAllFields();
     }
     
@@ -700,6 +763,17 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         return getAttributeValueFromObject(query.getBackupClone());
     }
 
+    /**
+     * INTERNAL:
+     * Return the query that is used when this mapping is part of a joined relationship
+     * 
+     * This method is used when this mapping is used to map the key in a Map
+     * @return
+     */
+    public ObjectLevelReadQuery getNestedJoinQuery(JoinedAttributeManager joinManager, ObjectLevelReadQuery query, AbstractSession session){
+        return null;
+    }
+    
     /**
      * INTERNAL:
      * Since aggregate object mappings clone their descriptors, for inheritance the correct child clone must be found.

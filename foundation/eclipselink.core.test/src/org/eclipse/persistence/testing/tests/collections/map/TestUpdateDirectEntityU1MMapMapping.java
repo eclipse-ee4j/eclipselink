@@ -12,13 +12,38 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.collections.map;
 
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.mappings.OneToManyMapping;
+import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.models.collections.map.EntityMapValue;
 import org.eclipse.persistence.testing.models.collections.map.DirectEntityU1MMapHolder;
 
 public class TestUpdateDirectEntityU1MMapMapping extends TestReadDirectEntityU1MMapMapping{
-
+    
+    protected OneToManyMapping mapping = null;
+    private boolean usePrivateOwned = false;
+    private boolean oldPrivateOwnedValue = false;
+    
+    public TestUpdateDirectEntityU1MMapMapping(){
+        super();
+    }
+    
+    public TestUpdateDirectEntityU1MMapMapping(boolean usePrivateOwned){
+        this();
+        this.usePrivateOwned = usePrivateOwned;
+        setName("TestUpdateDirectEntity1MMapMapping privateOwned=" + usePrivateOwned);
+    }
+    
+    public void setup(){
+        mapping = (OneToManyMapping)getSession().getProject().getDescriptor(DirectEntityU1MMapHolder.class).getMappingForAttributeName("directToEntityMap");
+        oldPrivateOwnedValue = mapping.isPrivateOwned();
+        mapping.setIsPrivateOwned(usePrivateOwned);
+        super.setup();
+    }
+    
     public void test(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         holders = uow.readAllObjects(DirectEntityU1MMapHolder.class);
@@ -42,6 +67,20 @@ public class TestUpdateDirectEntityU1MMapMapping extends TestReadDirectEntityU1M
         if (value.getId() != 3){
             throw new TestErrorException("Item was not correctly added to map");
         }
+        if (mapping.isPrivateOwned()){
+            ReadObjectQuery query = new ReadObjectQuery(EntityMapValue.class);
+            ExpressionBuilder values = new ExpressionBuilder();
+            Expression criteria = values.get("id").equal(1);
+            query.setSelectionCriteria(criteria);
+            value = (EntityMapValue)getSession().executeQuery(query);
+            if (value != null){
+                throw new TestErrorException("PrivateOwned EntityMapValue was not deleted.");
+            }
+        }
     }
     
+    public void reset(){
+        super.reset();
+        mapping.setIsPrivateOwned(oldPrivateOwnedValue);
+    }
 }

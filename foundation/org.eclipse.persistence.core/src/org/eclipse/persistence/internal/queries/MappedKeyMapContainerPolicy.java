@@ -22,12 +22,14 @@ import java.util.Vector;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.CollectionChangeRecord;
+import org.eclipse.persistence.internal.sessions.CommitManager;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
@@ -36,11 +38,13 @@ import org.eclipse.persistence.mappings.Association;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectMapMapping;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
+import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.mappings.foundation.MapKeyMapping;
 import org.eclipse.persistence.mappings.foundation.MapComponentMapping;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadQuery;
 
 /**
@@ -176,8 +180,32 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements D
         }
         return addInto(key, value, container, session);
     }
-
     
+    /**
+     * INTERNAL:
+     * Used for joining.  Add any queries necessary for joining to the join manager
+     */
+    public void addNestedJoinsQueriesForMapKey(JoinedAttributeManager joinManager, ObjectLevelReadQuery query, AbstractSession session){
+        ObjectLevelReadQuery nestedQuery= keyMapping.getNestedJoinQuery(joinManager, query, session);
+        if (nestedQuery != null){
+            joinManager.getJoinedMappingQueries_().put((DatabaseMapping)keyMapping, nestedQuery);
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Add the key and value from provided association to the deleted objects list on the commit manager.
+     * 
+     * @see MappedKeyMapContainerPolicy
+     * @param object
+     * @param manager
+     */
+    public void addToDeletedObjectsList(Object object, CommitManager manager){
+        if (((DatabaseMapping)keyMapping).isPrivateOwned()){
+            keyMapping.addKeyToDeletedObjectsList(((Map.Entry)object).getKey(), manager);
+        }
+        manager.addObjectToDelete(unwrapIteratorResult(object));
+    }
     
     /**
      * Build a clone for the key of a Map represented by this container policy 
@@ -232,6 +260,17 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements D
          */
         public Object buildKey(AbstractRecord row, ObjectBuildingQuery query, AbstractSession session){
             return keyMapping.createMapComponentFromRow(row, query, session);
+        }
+        
+        /**
+         * Extract the key for the map from the provided row
+         * @param row
+         * @param query
+         * @param session
+         * @return
+         */
+        public Object buildKeyFromJoinedRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, AbstractSession session){
+            return keyMapping.createMapComponentFromJoinedRow(row, joinManager, query, session);
         }
         
         /**
@@ -352,6 +391,39 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements D
         ((DatabaseMapping)keyMapping).convertClassNamesToClasses(classLoader);
     }
     
+    
+    /**
+     * INTERNAL:
+     * Delete the key and value of the passed association passed object
+     * 
+     * @param objectDeleted
+     * @param session
+     */
+    public void deleteWrappedObject(Object objectDeleted, AbstractSession session){
+        if (((DatabaseMapping)keyMapping).isPrivateOwned()){
+            keyMapping.deleteMapKey(((Map.Entry)objectDeleted).getKey(), session);
+        }
+        session.deleteObject(unwrapIteratorResult(objectDeleted));
+    }
+    
+    /**
+     * INTERNAL:
+     * Return any tables that will be required when this mapping is used as part of a join query
+     * @return
+     */
+    public List<DatabaseTable> getAdditionalTablesForJoinQuery(){
+        return keyMapping.getAdditionalTablesForJoinQuery();
+    }
+    
+    /**
+     * INTERNAL:
+     * Return all the fields in the key
+     * @return
+     */
+    public List<DatabaseField> getAllFieldsForMapKey(){
+        return keyMapping.getAllFieldsForMapKey();
+    }
+    
     /**
      * INTERNAL:
      * Used when objects are added or removed during an update.
@@ -417,6 +489,14 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements D
         return keyQuery;
     }
     
+    /**
+     * INTERNAL:
+     * Get the selection criteria for the map key
+     */
+    public Expression getKeySelectionCriteria(){
+        return keyMapping.getAdditionalSelectionCriteriaForMapKey();
+    }
+    
 
     public MapComponentMapping getValueMapping(){
         return valueMapping;
@@ -467,7 +547,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements D
         }
         return super.keyFrom(element, session);
     }
-
+    
     /**
      * INTERNAL:
      * Set the DatabaseField that will represent the key in a DirectMapMapping
@@ -526,6 +606,9 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements D
     }
     
     public void setKeyMapping(MapKeyMapping mapping){
+        if (((DatabaseMapping)mapping).isForeignReferenceMapping() && ((ForeignReferenceMapping)mapping).getIndirectionPolicy().usesIndirection()){
+            throw ValidationException.mapKeyCannotUseIndirection((DatabaseMapping)mapping);
+        }
         this.keyMapping = mapping;
     }
     
@@ -554,6 +637,18 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements D
     public void setValueMapping(MapComponentMapping mapping){
         this.valueMapping = mapping;
     }
+    
+    /**
+     * INTERNAL:
+     * Return whether data for a map key must be included on a Delete datamodification event
+     * If the keyMapping is privateOwned, that data sould b
+     * 
+     * @return
+     */
+    public boolean shouldIncludeKeyInDeleteEvent(){
+        return ((DatabaseMapping)keyMapping).isPrivateOwned();
+    }
+    
     
     /**
      * INTERNAL:

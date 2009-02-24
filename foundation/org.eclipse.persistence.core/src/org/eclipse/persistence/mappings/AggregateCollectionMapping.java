@@ -885,7 +885,6 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         
         clonedDescriptor.preInitialize(session);
         getContainerPolicy().initialize(session, clonedDescriptor.getDefaultTable());
-        clonedDescriptor.getAdditionalAggregateCollectionKeyFields().addAll(getTargetForeignKeyFields());
         List<DatabaseField> identityFields = getContainerPolicy().getIdentityFieldsForMapKey();
         if (identityFields != null){
             clonedDescriptor.getAdditionalAggregateCollectionKeyFields().addAll(identityFields);
@@ -1369,12 +1368,18 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * An object was removed to the collection during an update, delete it if private.
      */
     protected void objectRemovedDuringUpdate(ObjectLevelModifyQuery query, Object objectDeleted, Map extraData) throws DatabaseException, OptimisticLockException {
+        Object valueToDelete = containerPolicy.unwrapIteratorResult(objectDeleted);
+
         // Delete must not be done for uow or cascaded queries and we must cascade to cascade policy.
         DeleteObjectQuery deleteQuery = new DeleteObjectQuery();
         deleteQuery.setIsExecutionClone(true);
-        prepareModifyQueryForDelete(query, deleteQuery, objectDeleted);
+        prepareModifyQueryForDelete(query, deleteQuery, valueToDelete);
         ContainerPolicy.copyMapDataToRow(extraData, deleteQuery.getTranslationRow());
         query.getSession().executeQuery(deleteQuery, deleteQuery.getTranslationRow());
+        
+        if (containerPolicy.shouldIncludeKeyInDeleteEvent()){
+            query.getSession().deleteObject(containerPolicy.keyFromEntry(objectDeleted));
+        }
     }
 
     /**

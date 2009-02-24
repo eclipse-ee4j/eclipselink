@@ -14,6 +14,7 @@ package org.eclipse.persistence.internal.expressions;
 
 import java.io.*;
 import java.util.*;
+
 import org.eclipse.persistence.descriptors.FetchGroupManager;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
@@ -52,7 +53,7 @@ public class QueryKeyExpression extends ObjectExpression {
     
     /** PERF: Cache if the expression is an attribute expression. */
     protected Boolean isAttributeExpression;
-
+    
     public QueryKeyExpression() {
         this.shouldQueryToManyRelationship = false;
         this.hasQueryKey = true;
@@ -196,6 +197,12 @@ public class QueryKeyExpression extends ObjectExpression {
         
         // For direct-collection mappings the alias is store on the table expression.
         if ((mapping != null) && (mapping.isDirectCollectionMapping())) {
+            if (tableAliases != null){
+                DatabaseTable aliasedTable = tableAliases.keyAtValue(table);
+                if (aliasedTable != null){
+                    return aliasedTable;
+                }
+            }
             return getTable(table).aliasForTable(table);
         }
 
@@ -217,6 +224,19 @@ public class QueryKeyExpression extends ObjectExpression {
         shouldQueryToManyRelationship = true;
     }
 
+    /**
+     * INTERNAL:
+     * Return any additional tables that belong to this expression
+     * An example of how this method is used is to return any tables that belong to the map key
+     * when this expression traverses a mapping that uses a Map
+     */
+    public List<DatabaseTable> getAdditionalTables(){
+        if (mapping != null && mapping.isCollectionMapping()){
+            return ((CollectionMapping)mapping).getContainerPolicy().getAdditionalTablesForJoinQuery();
+        }
+        return null;
+    }
+    
     /**
      * INTERNAL:
      * Return the field appropriately aliased
@@ -275,7 +295,12 @@ public class QueryKeyExpression extends ObjectExpression {
             }
             return result;
         } else {
-            return super.getFields();
+            Vector result = new Vector();
+            result.addAll(super.getFields());
+            if (mapping.isCollectionMapping() && mapping.getContainerPolicy().getAllFieldsForMapKey() != null){
+                result.addAll((mapping.getContainerPolicy().getAllFieldsForMapKey()));
+            }
+            return result;
         }
     }
 

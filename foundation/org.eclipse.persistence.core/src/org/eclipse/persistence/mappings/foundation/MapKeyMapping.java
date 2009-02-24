@@ -20,10 +20,15 @@ import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
+import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
+import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.CommitManager;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.queries.ObjectBuildingQuery;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadQuery;
 
 /**
@@ -56,6 +61,18 @@ public interface MapKeyMapping extends MapComponentMapping {
     public void addFieldsForMapKey(AbstractRecord joinRow);
 
     /**
+     * INTERNAL:
+     * For mappings used as MapKeys in MappedKeyContainerPolicy.  Add the target of this mapping to the deleted 
+     * objects list if necessary
+     *
+     * This method is used for removal of private owned relationships
+     * 
+     * @param object
+     * @param manager
+     */
+    public void addKeyToDeletedObjectsList(Object object, CommitManager manager);
+    
+    /**
      * Build a clone of the given element in a unitOfWork
      * @param element
      * @param unitOfWork
@@ -72,6 +89,40 @@ public interface MapKeyMapping extends MapComponentMapping {
      */
     public ReadQuery buildSelectionQueryForDirectCollectionKeyMapping(ContainerPolicy containerPolicy);
     
+
+    /**
+     * INTERNAL
+     * Called when a DatabaseMapping is used to map the key in a collection and a join query is used.  
+     * Returns the key.
+     */
+    public Object createMapComponentFromJoinedRow(AbstractRecord dbRow, JoinedAttributeManager joinManager, ObjectBuildingQuery query, AbstractSession session);
+
+    
+    
+    /**
+     * INTERNAL:
+     * For mappings used as MapKeys in MappedKeyContainerPolicy, Delete the passed object if necessary.
+     * 
+     * This method is used for removal of private owned relationships
+     * 
+     * @param objectDeleted
+     * @param session
+     */
+    public void deleteMapKey(Object objectDeleted, AbstractSession session);
+    
+    /**
+     * INTERNAL:
+     * Return any tables that will be required when this mapping is used as part of a join query
+     * @return
+     */
+    public List<DatabaseTable> getAdditionalTablesForJoinQuery();
+    
+    /**
+     * INTERNAL:
+     * Get all the fields for the map key
+     */
+    public List<DatabaseField> getAllFieldsForMapKey();
+    
     /**
      * INTERNAL:
      * Return the fields that make up the identity of the mapped object.  For mappings with
@@ -81,6 +132,20 @@ public interface MapKeyMapping extends MapComponentMapping {
      */
     public List<DatabaseField> getIdentityFieldsForMapKey();
     
+    /**
+     * INTERNAL:
+     * Return the query that is used when this mapping is part of a joined relationship
+     * @return
+     */
+    public ObjectLevelReadQuery getNestedJoinQuery(JoinedAttributeManager joinManager, ObjectLevelReadQuery query, AbstractSession session);
+    
+    /**
+     * INTERNAL:
+     * Return the selection criteria necessary to select the target object
+     * @return
+     */
+    public Expression getAdditionalSelectionCriteriaForMapKey();
+
     /**
      * INTERNAL:
      * If required, get the targetVersion of the source object from the merge manager

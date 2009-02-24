@@ -14,18 +14,39 @@ package org.eclipse.persistence.testing.tests.collections.map;
 
 import java.util.List;
 
+import org.eclipse.persistence.indirection.IndirectMap;
+import org.eclipse.persistence.mappings.OneToManyMapping;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.TestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.models.collections.map.AggregateEntity1MMapHolder;
 import org.eclipse.persistence.testing.models.collections.map.AggregateMapKey;
-import org.eclipse.persistence.testing.models.collections.map.AEOTMMapValue;;
+import org.eclipse.persistence.testing.models.collections.map.AEOTMMapValue;
 
 public class TestReadAggregateEntity1MMapMapping extends TestCase {
     
     protected List holders = null;
+    protected int fetchJoinRelationship = 0;
+    protected int oldFetchJoinValue = 0;
+    protected OneToManyMapping mapping = null;
+    
+    
+    public TestReadAggregateEntity1MMapMapping(){
+        super();
+    }
+    
+    public TestReadAggregateEntity1MMapMapping(int fetchJoin){
+        this();
+        fetchJoinRelationship = fetchJoin;
+        setName("TestReadAggregateEntity1MMapMapping fetchJoin = " + fetchJoin);
+    }
     
     public void setup(){
+        mapping = (OneToManyMapping)getSession().getProject().getDescriptor(AggregateEntity1MMapHolder.class).getMappingForAttributeName("aggregateToEntityMap");
+        oldFetchJoinValue = mapping.getJoinFetch();
+        mapping.setJoinFetch(fetchJoinRelationship);
+        getSession().getProject().getDescriptor(AggregateEntity1MMapHolder.class).reInitializeJoinedAttributes();
+
         UnitOfWork uow = getSession().acquireUnitOfWork();
         AggregateEntity1MMapHolder holder = new AggregateEntity1MMapHolder();
         AEOTMMapValue value = new AEOTMMapValue();
@@ -59,6 +80,9 @@ public class TestReadAggregateEntity1MMapMapping extends TestCase {
         }
         AggregateEntity1MMapHolder holder = (AggregateEntity1MMapHolder)holders.get(0);
         
+        if (!((IndirectMap)holder.getAggregateToEntityMap()).getValueHolder().isInstantiated() && fetchJoinRelationship > 0){
+            throw new TestErrorException("Relationship was not properly joined.");
+        }
         if (holder.getAggregateToEntityMap().size() != 2){
             throw new TestErrorException("Incorrect Number of MapEntityValues was read.");
         }
@@ -76,6 +100,7 @@ public class TestReadAggregateEntity1MMapMapping extends TestCase {
         List keys = uow.readAllObjects(AEOTMMapValue.class);
         uow.deleteAllObjects(keys);
         uow.commit();
+        mapping.setJoinFetch(oldFetchJoinValue);
     }
 
 }

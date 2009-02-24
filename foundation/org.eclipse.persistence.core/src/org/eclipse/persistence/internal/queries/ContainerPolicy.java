@@ -24,6 +24,7 @@ import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.sessions.CollectionChangeRecord;
+import org.eclipse.persistence.internal.sessions.CommitManager;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
@@ -191,6 +192,14 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
     public void addIntoWithOrder(Vector indexes, Hashtable elements, Object container, AbstractSession session) {
         throw QueryException.methodDoesNotExistInContainerClass("set", getContainerClass());
     }
+    
+    /**
+     * INTERNAL:
+     * Used for joining.  Add any queries necessary for joining to the join manager
+     * This method will be overridden by subclasses that handle map keys
+     */
+    public void addNestedJoinsQueriesForMapKey(JoinedAttributeManager joinManager, ObjectLevelReadQuery query, AbstractSession session){
+    }
 
     /**
      * INTERNAL:
@@ -209,6 +218,19 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
     public void addNextValueFromIteratorInto(Object valuesIterator, Object toCollection, CollectionMapping mapping, UnitOfWorkImpl unitOfWork, boolean isExisting){
         Object cloneValue = mapping.buildElementClone(next(valuesIterator, unitOfWork), unitOfWork, isExisting);
         addInto(cloneValue, toCollection, unitOfWork);
+    }
+    
+    /**
+     * INTERNAL:
+     * Add the provided object to the deleted objects list on the commit manager.
+     * This may be overridden by subclasses to process a composite object
+     * 
+     * @see MappedKeyMapContainerPolicy
+     * @param object
+     * @param manager
+     */
+    public void addToDeletedObjectsList(Object object, CommitManager manager){
+        manager.addObjectToDelete(object);
     }
     
     /**
@@ -239,6 +261,30 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
         return container;
     }
 
+    /**
+     * Extract the key for the map from the provided row
+     * overridden by subclasses that deal with map keys
+     * @param row
+     * @param query
+     * @param session
+     * @return
+     */
+    public Object buildKey(AbstractRecord row, ObjectBuildingQuery query, AbstractSession session){
+        return null;
+    }
+    
+    /**
+     * Extract the key for the map from the provided row
+     * overridden by subclasses that deal with map keys
+     * @param row
+     * @param query
+     * @param session
+     * @return
+     */
+    public Object buildKeyFromJoinedRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, AbstractSession session){
+        return null;
+    }
+    
     /**
      * INTERNAL:
      * Return the appropriate container policy for the default container class.
@@ -560,12 +606,44 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
     
     /**
      * INTERNAL:
+     * Delete the passed object
+     * This may be overridden by subclasses to deal with composite objects
+     * 
+     * @see MappedKeyMapContainerPolicy
+     * @param objectDeleted
+     * @param session
+     */
+    public void deleteWrappedObject(Object objectDeleted, AbstractSession session){
+        session.deleteObject(objectDeleted);
+    }
+    
+    /**
+     * INTERNAL:
      * This can be used by collection such as cursored stream to gain control over execution.
      */
     public Object execute() {
         throw QueryException.methodNotValid(this, "execute()");
     }
 
+    /**
+     * INTERNAL:
+     * Return any tables that will be required when this mapping is used as part of a join query
+     * @return
+     */
+    public List<DatabaseTable> getAdditionalTablesForJoinQuery(){
+        return null;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return all the fields in the key
+     * This method will be overridden by ContainerPolicies that handle map keys
+     * @return
+     */
+    public List<DatabaseField> getAllFieldsForMapKey(){
+        return null;
+    }
+    
     /**
      * INTERNAL:
      * Used when objects are added or removed during an update.
@@ -629,6 +707,16 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      * @param session
      */
     public Map getKeyMappingDataForWriteQuery(Object object, AbstractSession session){
+        return null;
+    }
+    
+    
+    /**
+     * INTERNAL:
+     * Get the selection criteria for the map key
+     * This will be overridden by container policies that allow maps
+     */
+    public Expression getKeySelectionCriteria(){
         return null;
     }
     
@@ -768,6 +856,16 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      * @return java.lang.Object
      */
     public Object keyFrom(Object element, AbstractSession session) {
+        return null;
+    }
+    
+    /**
+     * Get the key from the passed in Map.Entry
+     * This method will be overridden by ContainerPolicies that allows maps
+     * @param entry
+     * @return
+     */
+    public Object keyFromEntry(Object entry){
         return null;
     }
     
@@ -1126,6 +1224,17 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
         throw ValidationException.containerPolicyDoesNotUseKeys(this, instanceVariableName);
     }
 
+    /**
+     * INTERNAL:
+     * Return whether data for a map key must be included on a Delete datamodification event
+     * This will be overridden by subclasses that handle maps
+     * 
+     * @return
+     */
+    public boolean shouldIncludeKeyInDeleteEvent(){
+        return false;
+    }
+    
     /**
      * INTERNAL:
      * Certain types of container policies require an extra update statement after a relationship

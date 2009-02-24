@@ -14,6 +14,8 @@ package org.eclipse.persistence.testing.tests.collections.map;
 
 import java.util.List;
 
+import org.eclipse.persistence.indirection.IndirectMap;
+import org.eclipse.persistence.mappings.DirectCollectionMapping;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.TestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
@@ -22,8 +24,26 @@ import org.eclipse.persistence.testing.models.collections.map.DirectDirectMapHol
 public class TestReadDirectDirectMapMapping extends TestCase {
     
     protected List holders = null;
+    protected int fetchJoinRelationship = 0;
+    protected int oldFetchJoinValue = 0;
+    protected DirectCollectionMapping mapping = null;
+    
+    public TestReadDirectDirectMapMapping(){
+        super();
+    }
+    
+    public TestReadDirectDirectMapMapping(int fetchJoin){
+        this();
+        fetchJoinRelationship = fetchJoin;
+        setName("TestReadDirectDirectMapMapping fetchJoin = " + fetchJoin);
+    }
     
     public void setup(){
+        mapping = (DirectCollectionMapping)getSession().getProject().getDescriptor(DirectDirectMapHolder.class).getMappingForAttributeName("directToDirectMap");
+        oldFetchJoinValue = mapping.getJoinFetch();
+        mapping.setJoinFetch(fetchJoinRelationship);
+        getSession().getProject().getDescriptor(DirectDirectMapHolder.class).reInitializeJoinedAttributes();
+        
         UnitOfWork uow = getSession().acquireUnitOfWork();
         DirectDirectMapHolder holder = new DirectDirectMapHolder();
         holder.addDirectToDirectMapItem(new Integer(1), new Integer(1));
@@ -43,6 +63,9 @@ public class TestReadDirectDirectMapMapping extends TestCase {
         }
         DirectDirectMapHolder holder = (DirectDirectMapHolder)holders.get(0);
         
+        if (!((IndirectMap)holder.getDirectToDirectMap()).getValueHolder().isInstantiated() && fetchJoinRelationship >0){
+            throw new TestErrorException("Relationship was not properly joined.");
+        }
         if (holder.getDirectToDirectMap().size() != 2){
             throw new TestErrorException("Incorrect Number of Map values was read.");
         }
@@ -56,6 +79,7 @@ public class TestReadDirectDirectMapMapping extends TestCase {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         uow.deleteAllObjects(holders);
         uow.commit();
+        mapping.setJoinFetch(oldFetchJoinValue);
     }
 
 }

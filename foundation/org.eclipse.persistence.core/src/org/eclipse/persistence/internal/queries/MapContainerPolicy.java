@@ -410,6 +410,19 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
         }
     }
     
+
+    /**
+     * Get the key from the passed in Map.Entry
+     * @param entry
+     * @return
+     */
+    public Object keyFromEntry(Object entry){
+        if (entry instanceof Map.Entry){
+            return ((Map.Entry)entry).getKey();
+        }
+        return null;
+    }
+    
     public Object keyFromIterator(Object iterator){
         return ((MapContainerPolicyIterator)iterator).getCurrentKey();
     }

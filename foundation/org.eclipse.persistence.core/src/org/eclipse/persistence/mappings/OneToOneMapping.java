@@ -187,6 +187,20 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     }
 
     /**
+     * INTERNAL:
+     * For mappings used as MapKeys in MappedKeyContainerPolicy.  Add the target of this mapping to the deleted 
+     * objects list if necessary
+     *
+     * This method is used for removal of private owned relationships
+     * 
+     * @param object
+     * @param manager
+     */
+    public void addKeyToDeletedObjectsList(Object object, CommitManager manager){
+        manager.addObjectToDelete(object);
+    }
+    
+    /**
      * Build a clone of the given element in a unitOfWork
      * @param element
      * @param unitOfWork
@@ -379,13 +393,34 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
         }
         return clone;
     }
-
+    
     /**
      * INTERNAL
      * Called when a DatabaseMapping is used to map the key in a collection.  Returns the key.
      */
     public Object createMapComponentFromRow(AbstractRecord dbRow, ObjectBuildingQuery query, AbstractSession session){
         return session.executeQuery(getSelectionQuery(), dbRow);
+    }
+
+    /**
+     * INTERNAL
+     * Called when a DatabaseMapping is used to map the key in a collection.  Returns the key.
+     */
+    public Object createMapComponentFromJoinedRow(AbstractRecord dbRow, JoinedAttributeManager joinManager, ObjectBuildingQuery query, AbstractSession session){
+        return valueFromRowInternalWithJoin(dbRow, joinManager, query, session);
+    }
+    
+    /**
+     * INTERNAL:
+     * For mappings used as MapKeys in MappedKeyContainerPolicy, Delete the passed object if necessary.
+     * 
+     * This method is used for removal of private owned relationships
+     * 
+     * @param objectDeleted
+     * @param session
+     */
+    public void deleteMapKey(Object objectDeleted, AbstractSession session){
+        session.deleteObject(objectDeleted);
     }
     
     /**
@@ -509,6 +544,31 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
         return referenceObjectsByKey.get(new CacheKey(extractForeignKeyFromRow(databaseRow, session)));
     }
 
+    
+    /**
+     * INTERNAL:
+     * Return the selection criteria necessary to select the target object when this mapping
+     * is a map key.
+     * @return
+     */
+    public Expression getAdditionalSelectionCriteriaForMapKey(){
+        return buildSelectionCriteria(false, false);
+    }
+
+    /**
+     * INTERNAL:
+     * Return any tables that will be required when this mapping is used as part of a join query
+     * @return
+     */
+    public List<DatabaseTable> getAdditionalTablesForJoinQuery(){
+        List<DatabaseTable> tables = new ArrayList<DatabaseTable>(getReferenceDescriptor().getTables().size() + 1);
+        tables.addAll(getReferenceDescriptor().getTables());
+        if (keyTableForMapKey != null){
+            tables.add(keyTableForMapKey);
+        }
+        return tables;
+    }
+    
     /**
      * INTERNAL:
      * Return the classifiction for the field contained in the mapping.
@@ -562,7 +622,30 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * @return
      */
     public List<DatabaseField> getIdentityFieldsForMapKey(){
-        return getForeignKeyFields();
+            return getForeignKeyFields();
+    }
+    
+    
+    /**
+     * INTERNAL:
+     * Return the query that is used when this mapping is part of a joined relationship
+     * 
+     * This method is used when this mapping is used to map the key in a Map
+     * @return
+     */
+    public ObjectLevelReadQuery getNestedJoinQuery(JoinedAttributeManager joinManager, ObjectLevelReadQuery query, AbstractSession session){
+        return prepareNestedJoins(joinManager, query, session);
+    }
+    
+    /**
+     * INTERNAL:
+     * Get all the fields for the map key
+     */
+    public List<DatabaseField> getAllFieldsForMapKey(){
+        List<DatabaseField> fields = new ArrayList(getReferenceDescriptor().getAllFields().size() + getForeignKeyFields().size());
+        fields.addAll(getReferenceDescriptor().getAllFields());
+        fields.addAll(getForeignKeyFields());
+        return fields;
     }
     
     /**
@@ -688,7 +771,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
             if (shouldForceInitializationOfSelectionCriteria()) {
                 setSelectionCriteria(buildSelectionCriteria());
             } else {
-                initializeSelectionCriteria(session);
+                buildSelectionCriteria(true, true);
             }
         } else {
             setShouldVerifyDelete(false);
@@ -796,32 +879,6 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
 
     /**
      * INTERNAL:
-     * Selection criteria is created with source foreign keys and target keys.
-     * This criteria is then used to read target records from the table.
-     *
-     * CR#3922 - This method is almost the same as buildSelectionCriteria() the difference
-     * is that getSelectionCriteria() is called
-     */
-    protected void initializeSelectionCriteria(AbstractSession session) {
-        if (getSourceToTargetKeyFields().isEmpty()) {
-            throw DescriptorException.noForeignKeysAreSpecified(this);
-        }
-
-        Expression criteria;
-        Expression builder = new ExpressionBuilder();
-        for (Iterator entries = getSourceToTargetKeyFields().entrySet().iterator(); entries.hasNext();) {
-            Map.Entry entry = (Map.Entry) entries.next();
-            DatabaseField foreignKey = (DatabaseField)entry.getKey();
-            DatabaseField targetKey = (DatabaseField)entry.getValue();
-
-            Expression expression = builder.getField(targetKey).equal(builder.getParameter(foreignKey));
-            criteria = expression.and(getSelectionCriteria());
-            setSelectionCriteria(criteria);
-        }
-    }
-
-    /**
-     * INTERNAL:
      * Making any mapping changes necessary to use a the mapping as a map key prior to initializing the mapping
      */
     public void preinitializeMapKey(DatabaseTable table) throws DescriptorException {
@@ -849,11 +906,23 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * This method would allow customers to get the potential selection criteria for a mapping
      * prior to initialization.  This would allow them to more easily create an ammendment method
      * that would ammend the SQL for the join.
-     *
-     * CR#3922 - This method is almost the same as initializeSelectionCriteria() the difference
-     * is that getSelectionCriteria() is not called
      */
     public Expression buildSelectionCriteria() {
+        return buildSelectionCriteria(true, false);
+    }
+    
+    /**
+     * INTERNAL:
+     * Build the selection criteria for this mapping.  Allows several variations.
+     * 
+     * Either a parameter can be used for the join or simply the database field
+     * 
+     * The existing selection criteria can be built upon or a whole new criteria can be built.
+     * @param useParameter
+     * @param usePreviousSelectionCriteria
+     * @return
+     */
+    public Expression buildSelectionCriteria(boolean useParameter, boolean usePreviousSelectionCriteria){
         // CR3922
         if (getSourceToTargetKeyFields().isEmpty()) {
             throw DescriptorException.noForeignKeysAreSpecified(this);
@@ -866,11 +935,21 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
             DatabaseField foreignKey = (DatabaseField)keys.next();
             DatabaseField targetKey = getSourceToTargetKeyFields().get(foreignKey);
 
-            Expression expression = builder.getField(targetKey).equal(builder.getParameter(foreignKey));
-            if (criteria == null) {
-                criteria = expression;
+            Expression expression = null;
+            if (useParameter){
+                expression = builder.getField(targetKey).equal(builder.getParameter(foreignKey));
             } else {
-                criteria = expression.and(criteria);
+                expression = builder.getField(targetKey).equal(builder.getField(foreignKey));
+            }
+            
+            if (usePreviousSelectionCriteria){
+                setSelectionCriteria(expression.and(getSelectionCriteria()));
+            } else {
+                if (criteria == null) {
+                    criteria = expression;
+                } else {
+                    criteria = expression.and(criteria);
+                }
             }
         }
         return criteria;

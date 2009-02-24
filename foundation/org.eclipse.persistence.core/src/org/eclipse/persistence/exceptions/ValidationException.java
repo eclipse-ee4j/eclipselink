@@ -379,6 +379,7 @@ public class ValidationException extends EclipseLinkException {
     public static final int INVALID_TARGET_CLASS = 7311;
     public static final int INVALID_EMBEDDABLE_CLASS_FOR_ELEMENT_COLLECTION = 7312;
     public static final int EMBEDDABLE_ASSOCIATION_OVERRIDE_NOT_FOUND = 7313;
+    public static final int MAP_KEY_CANNOT_USE_INDIRECTION = 7314;
     
     /**
      * INTERNAL:
@@ -2664,6 +2665,17 @@ public class ValidationException extends EclipseLinkException {
         Object[] args = { unknownProxyType, knownProxyType1, knownProxyType2, knownProxyType3 };
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, UNKNOWN_PROXY_TYPE, args));
         validationException.setErrorCode(UNKNOWN_PROXY_TYPE);
+        return validationException;
+    }    
+    
+    /**
+     * PUBLIC:
+     * Proxy property corresponding to the specified proxy type was not found.
+     */
+    public static ValidationException  mapKeyCannotUseIndirection(DatabaseMapping mapping){
+        Object[] args = { mapping };
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, MAP_KEY_CANNOT_USE_INDIRECTION, args));
+        validationException.setErrorCode(MAP_KEY_CANNOT_USE_INDIRECTION);
         return validationException;
     }    
 }

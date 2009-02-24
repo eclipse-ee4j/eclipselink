@@ -492,6 +492,19 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
 
     /**
      * INTERNAL:
+     * Perform the commit event.
+     * This is used in the uow to delay data modifications.
+     * This is mostly dealt with in the superclass.  Private Owned deletes require extra functionality
+     */
+    public void performDataModificationEvent(Object[] event, AbstractSession session) throws DatabaseException, DescriptorException {
+        super.performDataModificationEvent(event, session);
+        if (event[0] == Delete && containerPolicy.shouldIncludeKeyInDeleteEvent()) {
+            session.deleteObject(event[3]);
+        }
+    }
+    
+    /**
+     * INTERNAL:
      * Insert the private owned object.
      */
     public void postInsert(WriteObjectQuery query) throws DatabaseException {
@@ -563,7 +576,13 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
             AbstractRecord thisRow = (AbstractRecord)writeQuery.getTranslationRow().clone();
             ContainerPolicy.copyMapDataToRow(containerPolicy.getKeyMappingDataForWriteQuery(entry, writeQuery.getSession()), thisRow);
             // Hey I might actually want to use an inner class here... ok array for now.
-            Object[] event = new Object[3];
+            Object[] event = null;
+            if (containerPolicy.shouldIncludeKeyInDeleteEvent()){
+                event = new Object[4];
+                event[3] = containerPolicy.keyFromEntry(entry);
+            } else {
+                event = new Object[3];
+            }
             event[0] = Delete;
             event[1] = getDeleteQuery();
             event[2] = thisRow;
@@ -860,7 +879,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
             targetRow = trimRowForJoin(targetRow, joinManager, executionSession);
             // Partial object queries must select the primary key of the source and related objects.
             // If the target joined rows in null (outerjoin) means an empty collection.
-            Object directKey = targetRow.get(getDirectKeyField());
+            Object directKey = getContainerPolicy().buildKeyFromJoinedRow(targetRow, joinManager, sourceQuery, executionSession);
             if (directKey == null) {
                 // A null direct value means an empty collection returned as nulls from an outerjoin.
                 return getIndirectionPolicy().valueFromRow(value);
@@ -868,10 +887,6 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
             // Only build/add the target object once, skip duplicates from multiple 1-m joins.
             if (!directValues.contains(directKey)) {
                 directValues.add(directKey);
-                // Allow for key conversion.
-                if (keyConverter != null) {
-                    directKey = keyConverter.convertDataValueToObjectValue(directKey, executionSession);
-                }
                 Object directValue = targetRow.get(getDirectField());
                 // Allow for value conversion.
                 if (valueConverter != null) {

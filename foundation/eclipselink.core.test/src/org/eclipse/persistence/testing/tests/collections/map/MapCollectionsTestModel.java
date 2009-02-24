@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.collections.map;
 
+import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.testing.framework.TestModel;
 import org.eclipse.persistence.testing.framework.TestSuite;
 import org.eclipse.persistence.testing.models.collections.map.MapCollectionsSystem;
@@ -30,7 +31,7 @@ public class MapCollectionsTestModel extends TestModel {
         addTest(getDirectMapMappingTestSuite());
         addTest(getAggregateCollectionMappingTestSuite());
         addTest(getOneToManyMappingTestSuite());
-        addTest(getUnidirectionalMoneToManyMappingTestSuite());
+        addTest(getUnidirectionalOneToManyMappingTestSuite());
         addTest(getManyToManyMappingTestSuite());
     }
     public static TestSuite getDirectMapMappingTestSuite(){
@@ -48,13 +49,15 @@ public class MapCollectionsTestModel extends TestModel {
         suite.addTest(new TestUpdateAggregateDirectMapMapping());
         suite.addTest(new TestUpdateEntityDirectMapMapping());
         
-        // Batch and Join and private owned
-      //  suite.addTest(new TestBatchReadDirectDirectMapMapping());
-      //  suite.addTest(new TestBatchReadAggregateDirectMapMapping());
-      //  suite.addTest(new TestBatchReadEntityDirectMapMapping());
-      //  suite.addTest(new TestJoinDirectMapMapping());
-        //suite.addTest(new TestPrivateOwnedDirectMapMapping());
+        // Private Owned - DirectMapMappings are automatically private owned
+        // as a result, the only relevant test here is one with an EntityKey
+        suite.addTest(new TestUpdateEntityDirectMapMapping(true));
         
+        // Join
+        suite.addTest(new TestReadDirectDirectMapMapping(ForeignReferenceMapping.INNER_JOIN));
+        suite.addTest(new TestReadAggregateDirectMapMapping(ForeignReferenceMapping.INNER_JOIN));
+        suite.addTest(new TestReadEntityDirectMapMapping(ForeignReferenceMapping.INNER_JOIN));
+
         return suite;
     }
     
@@ -72,6 +75,15 @@ public class MapCollectionsTestModel extends TestModel {
         suite.addTest(new TestUpdateDirectAggregateMapMapping());
         suite.addTest(new TestUpdateAggregateAggregateMapMapping());
         suite.addTest(new TestUpdateEntityAggregateMapMapping());
+        
+        // Private Owned - AggregateCollectionMappings are automatically private owned
+        // as a result, the only relevant test here is one with an EntityKey
+        suite.addTest(new TestUpdateEntityAggregateMapMapping(true));
+        
+        // Join
+        suite.addTest(new TestReadDirectAggregateMapMapping(ForeignReferenceMapping.INNER_JOIN));
+        suite.addTest(new TestReadAggregateAggregateMapMapping(ForeignReferenceMapping.INNER_JOIN));
+        suite.addTest(new TestReadEntityAggregateMapMapping(ForeignReferenceMapping.INNER_JOIN));
         
         return suite;
     }
@@ -91,10 +103,20 @@ public class MapCollectionsTestModel extends TestModel {
         suite.addTest(new TestUpdateAggregateEntity1MMapMapping());
         suite.addTest(new TestUpdateEntityEntity1MMapMapping());
         
+        // Private Owned
+        suite.addTest(new TestUpdateDirectEntity1MMapMapping(true));
+        suite.addTest(new TestUpdateAggregateEntity1MMapMapping(true));
+        suite.addTest(new TestUpdateEntityEntity1MMapMapping(true));
+        
+        // Joining
+        suite.addTest(new TestReadDirectEntity1MMapMapping(ForeignReferenceMapping.INNER_JOIN));
+        suite.addTest(new TestReadAggregateEntity1MMapMapping(ForeignReferenceMapping.INNER_JOIN));
+        suite.addTest(new TestReadEntityEntity1MMapMapping(ForeignReferenceMapping.INNER_JOIN));
+        
         return suite;
     }
     
-    public static TestSuite getUnidirectionalMoneToManyMappingTestSuite(){
+    public static TestSuite getUnidirectionalOneToManyMappingTestSuite(){
         TestSuite suite = new TestSuite();
         suite.setName("UnidirectionalOneToManyMapping Map Test Suite");
         suite.setDescription("This suite tests using UnidirectionalOneToManyMapping with a Map");
@@ -109,6 +131,16 @@ public class MapCollectionsTestModel extends TestModel {
         suite.addTest(new TestUpdateAggregateEntityU1MMapMapping());
         suite.addTest(new TestUpdateEntityEntityU1MMapMapping());
         
+        // Private Owned
+        suite.addTest(new TestUpdateDirectEntityU1MMapMapping(true));
+        suite.addTest(new TestUpdateAggregateEntityU1MMapMapping(true));
+        suite.addTest(new TestUpdateEntityEntityU1MMapMapping(true));
+        
+        // Joining
+        suite.addTest(new TestReadDirectEntityU1MMapMapping(ForeignReferenceMapping.INNER_JOIN));
+        suite.addTest(new TestReadAggregateEntityU1MMapMapping(ForeignReferenceMapping.INNER_JOIN));
+        suite.addTest(new TestReadEntityEntityU1MMapMapping(ForeignReferenceMapping.INNER_JOIN));
+
         return suite;
     }
     
@@ -122,9 +154,20 @@ public class MapCollectionsTestModel extends TestModel {
         suite.addTest(new TestReadAggregateEntityMapMapping());
         suite.addTest(new TestReadEntityEntityMapMapping());
         
+        // Update
         suite.addTest(new TestUpdateDirectEntityMapMapping());
         suite.addTest(new TestUpdateAggregateEntityMapMapping());
         suite.addTest(new TestUpdateEntityEntityMapMapping());
+        
+        // private owned
+        suite.addTest(new TestUpdateDirectEntityMapMapping(true));
+        suite.addTest(new TestUpdateAggregateEntityMapMapping(true));
+        suite.addTest(new TestUpdateEntityEntityMapMapping(true));
+        
+        // Joining
+        suite.addTest(new TestReadDirectEntityMapMapping(ForeignReferenceMapping.INNER_JOIN));
+        suite.addTest(new TestReadAggregateEntityMapMapping(ForeignReferenceMapping.INNER_JOIN));
+        suite.addTest(new TestReadEntityEntityMapMapping(ForeignReferenceMapping.INNER_JOIN));
         
         return suite;
     }

@@ -12,6 +12,10 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.collections.map;
 
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.mappings.OneToManyMapping;
+import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.models.collections.map.AEOTMMapValue;
@@ -20,6 +24,28 @@ import org.eclipse.persistence.testing.models.collections.map.AggregateMapKey;
 
 public class TestUpdateAggregateEntity1MMapMapping extends TestReadAggregateEntity1MMapMapping{
 
+    
+    protected OneToManyMapping mapping = null;
+    private boolean usePrivateOwned = false;
+    private boolean oldPrivateOwnedValue = false;
+    
+    public TestUpdateAggregateEntity1MMapMapping(){
+        super();
+    }
+    
+    public TestUpdateAggregateEntity1MMapMapping(boolean usePrivateOwned){
+        this();
+        this.usePrivateOwned = usePrivateOwned;
+        setName("TestUpdateAggregateEntity1MMapMapping privateOwned=" + usePrivateOwned);
+    }
+    
+    public void setup(){
+        mapping = (OneToManyMapping)getSession().getProject().getDescriptor(AggregateEntity1MMapHolder.class).getMappingForAttributeName("aggregateToEntityMap");
+        oldPrivateOwnedValue = mapping.isPrivateOwned();
+        mapping.setIsPrivateOwned(usePrivateOwned);
+        super.setup();
+    }
+    
     public void test(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         holders = uow.readAllObjects(AggregateEntity1MMapHolder.class);
@@ -52,6 +78,20 @@ public class TestUpdateAggregateEntity1MMapMapping extends TestReadAggregateEnti
         if (value.getId() != 3){
             throw new TestErrorException("Item was not correctly added to map");
         }
+        if (mapping.isPrivateOwned()){
+            ReadObjectQuery query = new ReadObjectQuery(AEOTMMapValue.class);
+            ExpressionBuilder values = new ExpressionBuilder();
+            Expression criteria = values.get("id").equal(1);
+            query.setSelectionCriteria(criteria);
+            value = (AEOTMMapValue)getSession().executeQuery(query);
+            if (value != null){
+                throw new TestErrorException("PrivateOwned DEOTMMapValue was not deleted.");
+            }
+        }
     }
     
+    public void reset(){
+        super.reset();
+        mapping.setIsPrivateOwned(oldPrivateOwnedValue);
+    }
 }

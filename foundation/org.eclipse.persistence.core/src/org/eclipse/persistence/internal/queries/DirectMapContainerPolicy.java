@@ -362,6 +362,18 @@ public class DirectMapContainerPolicy extends InterfaceContainerPolicy implement
     }
     
     /**
+     * Get the key from the passed in Map.Entry
+     * @param entry
+     * @return
+     */
+    public Object keyFromEntry(Object entry){
+        if (entry instanceof Map.Entry){
+            return ((Map.Entry)entry).getKey();
+        }
+        return null;
+    }
+    
+    /**
      * INTERNAL:
      * Return the next object on the queue. The iterator is the one
      * returned from #iteratorFor().

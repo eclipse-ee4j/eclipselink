@@ -16,6 +16,7 @@ import java.util.*;
 
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.indirection.IndirectMap;
+import org.eclipse.persistence.internal.indirection.TransparentIndirectionPolicy;
 import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
 import org.eclipse.persistence.mappings.AggregateObjectMapping;
 import org.eclipse.persistence.mappings.DirectMapMapping;
@@ -158,13 +159,12 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
         // SECTION: AGGREGATECOLLECTIONMAPPING
         org.eclipse.persistence.mappings.AggregateCollectionMapping aggregatecollectionmapping = new org.eclipse.persistence.mappings.AggregateCollectionMapping();
         aggregatecollectionmapping.setAttributeName("aggregateToAggregateMap");
-        aggregatecollectionmapping.setUsesIndirection(false);
+        aggregatecollectionmapping.setIndirectionPolicy(new TransparentIndirectionPolicy());
         aggregatecollectionmapping.setGetMethodName("getAggregateToAggregateMap");
         aggregatecollectionmapping.setSetMethodName("setAggregateToAggregateMap");
         aggregatecollectionmapping.setReferenceClass(AggregateMapValue.class);
         aggregatecollectionmapping.addTargetForeignKeyFieldName("AGG_AGG_MAP_REL.HOLDER_ID", "AGG_AGG_MAP_HOLDER.ID");
         aggregatecollectionmapping.addFieldNameTranslation("AGG_AGG_MAP_REL.MAP_VALUE", "value->DIRECT");
-        descriptor.addMapping(aggregatecollectionmapping);
         
         AggregateObjectMapping keyMapping = new AggregateObjectMapping();
         keyMapping.setReferenceClass(AggregateMapKey.class);
@@ -215,7 +215,7 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
         directMapMapping.setDirectFieldName("AGG_DIR_MAP_REL.MAP_VALUE");
         directMapMapping.addReferenceKeyFieldName("AGG_DIR_MAP_REL.HOLDER_ID", "AGG_DIR_MAP_HOLDER.ID");
         directMapMapping.setDirectFieldClassification(Integer.class);
-        directMapMapping.setUsesIndirection(false);
+        directMapMapping.setIndirectionPolicy(new TransparentIndirectionPolicy());
 
         AggregateObjectMapping keyMapping = new AggregateObjectMapping();
         keyMapping.setReferenceClass(AggregateMapKey.class);
@@ -259,8 +259,8 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
         descriptor.addMapping(directtofieldmapping);
 
         ManyToManyMapping mapMapping = new ManyToManyMapping();
-        mapMapping.setAttributeName("entityToEntityMap");
-        mapMapping.setUsesIndirection(false);
+        mapMapping.setAttributeName("aggregateToEntityMap");
+        mapMapping.setIndirectionPolicy(new TransparentIndirectionPolicy());
         mapMapping.setReferenceClass(EntityMapValue.class);
         mapMapping.setRelationTableName("AGG_ENT_MAP_REL");
         mapMapping.setGetMethodName("getAggregateToEntityMap");
@@ -273,7 +273,7 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
         keyMapping.addFieldNameTranslation("AGG_ENT_MAP_REL.MAP_KEY", "key->DIRECT");
         keyMapping.setDescriptor(descriptor);
         
-        MappedKeyMapContainerPolicy policy = new MappedKeyMapContainerPolicy(HashMap.class);
+        MappedKeyMapContainerPolicy policy = new MappedKeyMapContainerPolicy(IndirectMap.class);
         policy.setKeyMapping(keyMapping);
         policy.setValueMapping(mapMapping);
         mapMapping.setContainerPolicy(policy);
@@ -311,9 +311,9 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
         descriptor.addMapping(directtofieldmapping);
 
         OneToManyMapping mapMapping = new OneToManyMapping();
-        mapMapping.setAttributeName("entityToEntityMap");
+        mapMapping.setAttributeName("aggregateToEntityMap");
         mapMapping.setReferenceClass(AEOTMMapValue.class);
-        mapMapping.setUsesIndirection(false);
+        mapMapping.setIndirectionPolicy(new TransparentIndirectionPolicy());
         mapMapping.setGetMethodName("getAggregateToEntityMap");
         mapMapping.setSetMethodName("setAggregateToEntityMap");
         mapMapping.addTargetForeignKeyFieldName("AE_OM_ENT_MAP_VALUE.HOLDER_ID", "AGG_ENT_1M_MAP_HOLDER.ID");
@@ -323,7 +323,7 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
         keyMapping.addFieldNameTranslation("AE_OM_ENT_MAP_VALUE.MAP_KEY", "key->DIRECT");
         keyMapping.setDescriptor(descriptor);
         
-        MappedKeyMapContainerPolicy policy = new MappedKeyMapContainerPolicy(HashMap.class);
+        MappedKeyMapContainerPolicy policy = new MappedKeyMapContainerPolicy(IndirectMap.class);
         policy.setKeyMapping(keyMapping);
         policy.setValueMapping(mapMapping);
         mapMapping.setContainerPolicy(policy);
@@ -362,7 +362,7 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
         UnidirectionalOneToManyMapping mapMapping = new UnidirectionalOneToManyMapping();
         mapMapping.setAttributeName("aggregateToEntityMap");
         mapMapping.setReferenceClass(EntityMapValue.class);
-        mapMapping.setUsesIndirection(false);
+        mapMapping.setIndirectionPolicy(new TransparentIndirectionPolicy());
         mapMapping.setGetMethodName("getAggregateToEntityMap");
         mapMapping.setSetMethodName("setAggregateToEntityMap");
         mapMapping.addTargetForeignKeyFieldName("ENT_MAP_VALUE.HOLDER_ID", "AGG_ENT_U1M_MAP_HOLDER.ID");
@@ -372,7 +372,7 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
         keyMapping.addFieldNameTranslation("ENT_MAP_VALUE.MAP_KEY", "key->DIRECT");
         keyMapping.setDescriptor(descriptor);
         
-        MappedKeyMapContainerPolicy policy = new MappedKeyMapContainerPolicy(HashMap.class);
+        MappedKeyMapContainerPolicy policy = new MappedKeyMapContainerPolicy(IndirectMap.class);
         policy.setKeyMapping(keyMapping);
         policy.setValueMapping(mapMapping);
         mapMapping.setContainerPolicy(policy);
@@ -484,20 +484,19 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
         // SECTION: AGGREGATECOLLECTIONMAPPING
         org.eclipse.persistence.mappings.AggregateCollectionMapping aggregatecollectionmapping = new org.eclipse.persistence.mappings.AggregateCollectionMapping();
         aggregatecollectionmapping.setAttributeName("directToAggregateMap");
-        aggregatecollectionmapping.setUsesIndirection(false);
+        aggregatecollectionmapping.setIndirectionPolicy(new TransparentIndirectionPolicy());
         aggregatecollectionmapping.setGetMethodName("getDirectToAggregateMap");
         aggregatecollectionmapping.setSetMethodName("setDirectToAggregateMap");
         aggregatecollectionmapping.setReferenceClass(AggregateMapValue.class);
         aggregatecollectionmapping.addTargetForeignKeyFieldName("DIR_AGG_MAP_REL.HOLDER_ID", "DIR_AGG_MAP_HOLDER.ID");
         aggregatecollectionmapping.addFieldNameTranslation("DIR_AGG_MAP_REL.MAP_VALUE", "value->DIRECT");
-        descriptor.addMapping(aggregatecollectionmapping);
         
         org.eclipse.persistence.mappings.DirectToFieldMapping keyMapping = new org.eclipse.persistence.mappings.DirectToFieldMapping();
         keyMapping.setFieldName("DIR_AGG_MAP_REL.MAP_KEY");
         keyMapping.setAttributeClassification(Integer.class);
         keyMapping.setDescriptor(descriptor);
         
-        MappedKeyMapContainerPolicy policy = new MappedKeyMapContainerPolicy(HashMap.class);
+        MappedKeyMapContainerPolicy policy = new MappedKeyMapContainerPolicy(IndirectMap.class);
         policy.setKeyMapping(keyMapping);
         policy.setValueMapping(aggregatecollectionmapping);
         aggregatecollectionmapping.setContainerPolicy(policy);
@@ -539,7 +538,7 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
         directMapMapping.setDirectFieldName("DIR_DIR_MAP_REL.MAP_VALUE");
         directMapMapping.addReferenceKeyFieldName("DIR_DIR_MAP_REL.HOLDER_ID", "DIR_DIR_MAP_HOLDER.ID");
         directMapMapping.setDirectFieldClassification(Integer.class);
-        directMapMapping.setUsesIndirection(false);
+        directMapMapping.setIndirectionPolicy(new TransparentIndirectionPolicy());
 
         org.eclipse.persistence.mappings.DirectToFieldMapping keyMapping = new org.eclipse.persistence.mappings.DirectToFieldMapping();
         keyMapping.setFieldName("DIR_DIR_MAP_REL.MAP_KEY");
@@ -583,8 +582,8 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
         descriptor.addMapping(directtofieldmapping);
 
         ManyToManyMapping mapMapping = new ManyToManyMapping();
-        mapMapping.setAttributeName("entityToEntityMap");
-        mapMapping.setUsesIndirection(false);
+        mapMapping.setAttributeName("directToEntityMap");
+        mapMapping.setIndirectionPolicy(new TransparentIndirectionPolicy());
         mapMapping.setReferenceClass(EntityMapValue.class);
         mapMapping.setRelationTableName("DIR_ENT_MAP_REL");
         mapMapping.setGetMethodName("getDirectToEntityMap");
@@ -597,7 +596,7 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
         keyMapping.setAttributeClassification(Integer.class);
         keyMapping.setDescriptor(descriptor);
         
-        MappedKeyMapContainerPolicy policy = new MappedKeyMapContainerPolicy(HashMap.class);
+        MappedKeyMapContainerPolicy policy = new MappedKeyMapContainerPolicy(IndirectMap.class);
         policy.setKeyMapping(keyMapping);
         policy.setValueMapping(mapMapping);
         mapMapping.setContainerPolicy(policy);
@@ -634,9 +633,9 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
         descriptor.addMapping(directtofieldmapping);
 
         OneToManyMapping mapMapping = new OneToManyMapping();
-        mapMapping.setAttributeName("entityToEntityMap");
+        mapMapping.setAttributeName("directToEntityMap");
         mapMapping.setReferenceClass(DEOTMMapValue.class);
-        mapMapping.setUsesIndirection(false);
+        mapMapping.setIndirectionPolicy(new TransparentIndirectionPolicy());
         mapMapping.setGetMethodName("getDirectToEntityMap");
         mapMapping.setSetMethodName("setDirectToEntityMap");
         mapMapping.addTargetForeignKeyFieldName("DE_OM_ENT_MAP_VALUE.HOLDER_ID", "DIR_ENT_1M_MAP_HOLDER.ID");
@@ -646,7 +645,7 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
         keyMapping.setAttributeClassification(Integer.class);
         keyMapping.setDescriptor(descriptor);
         
-        MappedKeyMapContainerPolicy policy = new MappedKeyMapContainerPolicy(HashMap.class);
+        MappedKeyMapContainerPolicy policy = new MappedKeyMapContainerPolicy(IndirectMap.class);
         policy.setKeyMapping(keyMapping);
         policy.setValueMapping(mapMapping);
         mapMapping.setContainerPolicy(policy);
@@ -683,9 +682,9 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
         descriptor.addMapping(directtofieldmapping);
 
         UnidirectionalOneToManyMapping mapMapping = new UnidirectionalOneToManyMapping();
-        mapMapping.setAttributeName("entityToEntityMap");
+        mapMapping.setAttributeName("directToEntityMap");
         mapMapping.setReferenceClass(EntityMapValue.class);
-        mapMapping.setUsesIndirection(false);
+        mapMapping.setIndirectionPolicy(new TransparentIndirectionPolicy());
         mapMapping.setGetMethodName("getDirectToEntityMap");
         mapMapping.setSetMethodName("setDirectToEntityMap");
         mapMapping.addTargetForeignKeyFieldName("ENT_MAP_VALUE.HOLDER_ID", "DIR_ENT_U1M_MAP_HOLDER.ID");
@@ -695,7 +694,7 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
         keyMapping.setAttributeClassification(Integer.class);
         keyMapping.setDescriptor(descriptor);
         
-        MappedKeyMapContainerPolicy policy = new MappedKeyMapContainerPolicy(HashMap.class);
+        MappedKeyMapContainerPolicy policy = new MappedKeyMapContainerPolicy(IndirectMap.class);
         policy.setKeyMapping(keyMapping);
         policy.setValueMapping(mapMapping);
         mapMapping.setContainerPolicy(policy);
@@ -770,18 +769,17 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
         // SECTION: AGGREGATECOLLECTIONMAPPING
         org.eclipse.persistence.mappings.AggregateCollectionMapping aggregatecollectionmapping = new org.eclipse.persistence.mappings.AggregateCollectionMapping();
         aggregatecollectionmapping.setAttributeName("entityToAggregateMap");
-        aggregatecollectionmapping.setUsesIndirection(false);
+        aggregatecollectionmapping.setIndirectionPolicy(new TransparentIndirectionPolicy());
         aggregatecollectionmapping.setGetMethodName("getEntityToAggregateMap");
         aggregatecollectionmapping.setSetMethodName("setEntityToAggregateMap");
         aggregatecollectionmapping.setReferenceClass(AggregateMapValue.class);
         aggregatecollectionmapping.addTargetForeignKeyFieldName("ENT_AGG_MAP_REL.HOLDER_ID", "ENT_AGG_MAP_HOLDER.ID");
         aggregatecollectionmapping.addFieldNameTranslation("ENT_AGG_MAP_REL.MAP_VALUE", "value->DIRECT");
-        descriptor.addMapping(aggregatecollectionmapping);
         
         org.eclipse.persistence.mappings.OneToOneMapping keyMapping = new org.eclipse.persistence.mappings.OneToOneMapping();
         keyMapping.setReferenceClass(EntityMapKey.class);
         keyMapping.addForeignKeyFieldName("ENT_AGG_MAP_REL.KEY_ID", "ENT_MAP_KEY.ID");
-        //keyMapping.setKeyTableForMapKey(new DatabaseTable("ENT_AGG_MAP_REL"));
+        keyMapping.dontUseIndirection();
         keyMapping.setDescriptor(descriptor);
 
         MappedKeyMapContainerPolicy policy = new MappedKeyMapContainerPolicy(IndirectMap.class);
@@ -828,11 +826,12 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
         directMapMapping.setDirectFieldName("ENT_DIR_MAP_REL.MAP_VALUE");
         directMapMapping.addReferenceKeyFieldName("ENT_DIR_MAP_REL.HOLDER_ID", "ENT_DIR_MAP_HOLDER.ID");
         directMapMapping.setDirectFieldClassification(Integer.class);
-        directMapMapping.setUsesIndirection(false);
+        directMapMapping.setIndirectionPolicy(new TransparentIndirectionPolicy());
         
         org.eclipse.persistence.mappings.OneToOneMapping keyMapping = new org.eclipse.persistence.mappings.OneToOneMapping();
         keyMapping.setReferenceClass(EntityMapKey.class);
         keyMapping.addForeignKeyFieldName("ENT_DIR_MAP_REL.KEY_ID", "ENT_MAP_KEY.ID");
+        keyMapping.dontUseIndirection();
         keyMapping.setDescriptor(descriptor);
         
         MappedKeyMapContainerPolicy policy = new MappedKeyMapContainerPolicy(IndirectMap.class);
@@ -874,7 +873,7 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
 
         ManyToManyMapping mapMapping = new ManyToManyMapping();
         mapMapping.setAttributeName("entityToEntityMap");
-        mapMapping.setUsesIndirection(false);
+        mapMapping.setIndirectionPolicy(new TransparentIndirectionPolicy());
         mapMapping.setReferenceClass(EntityMapValue.class);
         mapMapping.setRelationTableName("ENT_ENT_MAP_REL");
         mapMapping.setGetMethodName("getEntityToEntityMap");
@@ -885,9 +884,10 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
         org.eclipse.persistence.mappings.OneToOneMapping keyMapping = new org.eclipse.persistence.mappings.OneToOneMapping();
         keyMapping.setReferenceClass(EntityMapKey.class);
         keyMapping.addForeignKeyFieldName("ENT_ENT_MAP_REL.KEY_ID", "ENT_MAP_KEY.ID");
+        keyMapping.dontUseIndirection();
         keyMapping.setDescriptor(descriptor);
         
-        MappedKeyMapContainerPolicy policy = new MappedKeyMapContainerPolicy(HashMap.class);
+        MappedKeyMapContainerPolicy policy = new MappedKeyMapContainerPolicy(IndirectMap.class);
         policy.setKeyMapping(keyMapping);
         policy.setValueMapping(mapMapping);
         mapMapping.setContainerPolicy(policy);
@@ -926,17 +926,18 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
         OneToManyMapping mapMapping = new OneToManyMapping();
         mapMapping.setAttributeName("entityToEntityMap");
         mapMapping.setReferenceClass(EEOTMMapValue.class);
-        mapMapping.setUsesIndirection(false);
+        mapMapping.setIndirectionPolicy(new TransparentIndirectionPolicy());
         mapMapping.setGetMethodName("getEntityToEntityMap");
         mapMapping.setSetMethodName("setEntityToEntityMap");
         mapMapping.addTargetForeignKeyFieldName("EE_OM_ENT_MAP_VALUE.HOLDER_ID", "ENT_ENT_1M_MAP_HOLDER.ID");
         
         org.eclipse.persistence.mappings.OneToOneMapping keyMapping = new org.eclipse.persistence.mappings.OneToOneMapping();
         keyMapping.setReferenceClass(EntityMapKey.class);
+        keyMapping.dontUseIndirection();
         keyMapping.addForeignKeyFieldName("EE_OM_ENT_MAP_VALUE.KEY_ID", "ENT_MAP_KEY.ID");
         keyMapping.setDescriptor(descriptor);
         
-        MappedKeyMapContainerPolicy policy = new MappedKeyMapContainerPolicy(HashMap.class);
+        MappedKeyMapContainerPolicy policy = new MappedKeyMapContainerPolicy(IndirectMap.class);
         policy.setKeyMapping(keyMapping);
         policy.setValueMapping(mapMapping);
         mapMapping.setContainerPolicy(policy);
@@ -976,7 +977,7 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
         UnidirectionalOneToManyMapping mapMapping = new UnidirectionalOneToManyMapping();
         mapMapping.setAttributeName("entityToEntityMap");
         mapMapping.setReferenceClass(EntityMapValue.class);
-        mapMapping.setUsesIndirection(false);
+        mapMapping.setIndirectionPolicy(new TransparentIndirectionPolicy());
         mapMapping.setGetMethodName("getEntityToEntityMap");
         mapMapping.setSetMethodName("setEntityToEntityMap");
         mapMapping.addTargetForeignKeyFieldName("ENT_MAP_VALUE.HOLDER_ID", "ENT_ENT_U1M_MAP_HOLDER.ID");
@@ -984,9 +985,10 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
         org.eclipse.persistence.mappings.OneToOneMapping keyMapping = new org.eclipse.persistence.mappings.OneToOneMapping();
         keyMapping.setReferenceClass(EntityMapKey.class);
         keyMapping.addForeignKeyFieldName("ENT_MAP_VALUE.KEY_ID", "ENT_MAP_KEY.ID");
+        keyMapping.dontUseIndirection();
         keyMapping.setDescriptor(descriptor);
 
-        MappedKeyMapContainerPolicy policy = new MappedKeyMapContainerPolicy(HashMap.class);
+        MappedKeyMapContainerPolicy policy = new MappedKeyMapContainerPolicy(IndirectMap.class);
         policy.setKeyMapping(keyMapping);
         policy.setValueMapping(mapMapping);
         mapMapping.setContainerPolicy(policy);

@@ -26,6 +26,7 @@ import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
 import org.eclipse.persistence.internal.expressions.ObjectExpression;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
@@ -251,6 +252,9 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
                 if (nestedQuery != null) {
                     // Register the nested query to be used by the mapping for all the objects.
                     getJoinedMappingQueries_().put(mapping, nestedQuery);
+                }
+                if (mapping.isCollectionMapping()){
+                    ((CollectionMapping)mapping).getContainerPolicy().addNestedJoinsQueriesForMapKey(this, readQuery, session);
                 }
             }
         }

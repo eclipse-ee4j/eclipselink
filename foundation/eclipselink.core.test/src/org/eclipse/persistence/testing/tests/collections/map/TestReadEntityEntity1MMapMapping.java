@@ -14,6 +14,8 @@ package org.eclipse.persistence.testing.tests.collections.map;
 
 import java.util.List;
 
+import org.eclipse.persistence.indirection.IndirectMap;
+import org.eclipse.persistence.mappings.OneToManyMapping;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.TestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
@@ -22,10 +24,29 @@ import org.eclipse.persistence.testing.models.collections.map.EntityMapKey;
 import org.eclipse.persistence.testing.models.collections.map.EEOTMMapValue;;
 
 public class TestReadEntityEntity1MMapMapping extends TestCase {
-    
+
     protected List holders = null;
+    protected int fetchJoinRelationship = 0;
+    protected int oldFetchJoinValue = 0;
+    protected OneToManyMapping mapping = null;
+    
+    
+    public TestReadEntityEntity1MMapMapping(){
+        super();
+    }
+    
+    public TestReadEntityEntity1MMapMapping(int fetchJoin){
+        this();
+        fetchJoinRelationship = fetchJoin;
+        setName("TestReadEntityEntity1MMapMapping fetchJoin = " + fetchJoin);
+    }
     
     public void setup(){
+        mapping = (OneToManyMapping)getSession().getProject().getDescriptor(EntityEntity1MMapHolder.class).getMappingForAttributeName("entityToEntityMap");
+        oldFetchJoinValue = mapping.getJoinFetch();
+        mapping.setJoinFetch(fetchJoinRelationship);
+        getSession().getProject().getDescriptor(EntityEntity1MMapHolder.class).reInitializeJoinedAttributes();
+        
         UnitOfWork uow = getSession().acquireUnitOfWork();
         EntityEntity1MMapHolder holder = new EntityEntity1MMapHolder();
         EEOTMMapValue value = new EEOTMMapValue();
@@ -61,6 +82,10 @@ public class TestReadEntityEntity1MMapMapping extends TestCase {
         }
         EntityEntity1MMapHolder holder = (EntityEntity1MMapHolder)holders.get(0);
         
+        if (!((IndirectMap)holder.getEntityToEntityMap()).getValueHolder().isInstantiated() && fetchJoinRelationship > 0){
+            throw new TestErrorException("Relationship was not properly joined.");
+        }
+        
         if (holder.getEntityToEntityMap().size() != 2){
             throw new TestErrorException("Incorrect Number of MapEntityValues was read.");
         }
@@ -82,6 +107,7 @@ public class TestReadEntityEntity1MMapMapping extends TestCase {
         List keys = uow.readAllObjects(EEOTMMapValue.class);
         uow.deleteAllObjects(keys);
         uow.commit();
+        mapping.setJoinFetch(oldFetchJoinValue);
     }
 
 }
