@@ -30,7 +30,7 @@
         - package : jars JPA persistent units and tests jars
         - test : runs JPA LRG (FullRegressionTestSuite)
         - test-lrg : runs JPA LRG (FullRegressionTestSuite, if database is Oracle, OracleJPATestSuite as well)
-        - test-oracle : runs JPA Oracle-specific tests (OracleJPATestSuite)
+        - test-oracle : runs JPA Oracle-specific tests (OracleJPATestSuite and OracleJPACustomfeaturesTestSuite)
         - test-no-weave : runs JPA LRG using no weaving (no agent)
         - test-static-weave : runs JPA LRG using static weaving
 
@@ -90,6 +90,19 @@
     <!-- This checks if the Apllication Server is JBoss -->
     <condition property="is.jboss">
         <contains string="${server.name}" substring="jboss"/>
+    </condition>
+
+    <!-- This checks if the Apllication Server is WebLogic -->
+    <condition property="is.weblogic">
+        <contains string="${server.name}" substring="weblogic"/>
+    </condition>
+
+    <!-- This checks if the Apllication Server is WebLogic and running against oracle db-->
+    <condition property="is.weblogic.and.oracle">
+        <and>
+            <contains string="${server.name}" substring="weblogic"/>
+            <contains string="${db.driver}" substring="oracle"/>
+        </and>
     </condition>
 
     <target name="set-app-name">
@@ -408,6 +421,8 @@
             <pathelement path="${eclipselink.extension.oracle.dir}/${classes.dir}"/>
             <pathelement path="${eclipselink.extension.oracle.dir}/eclipselink-extension-oracle.jar"/>
             <pathelement path="${jdbc.driver.jar}"/>
+            <pathelement path="${oracle.extensions.depend.dir}/${oracle.xdb.lib}"/>
+            <pathelement path="${oracle.extensions.depend.dir}/${oracle.xmlparserv2.lib}"/>
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.tests.jar}"/>
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.annotation.model}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.ddl.generation.model}.jar"/>
@@ -420,7 +435,8 @@
             <!--pathelement path="${eclipselink.jpa.test}/${eclipselink.pu.with.multibyte}.jar"/-->
             <pathelement path="${eclipselink.jpa.test}/${jpa.performance}.jar"/>
             <pathelement path="${eclipselink.extension.oracle.test.dir}/${eclipselink.struct.converter.model}.jar"/>
-            <pathelement path="${eclipselink.extension.oracle.test.dir}/${eclipselink.struct.converter.model}-tests.jar"/>
+            <pathelement path="${eclipselink.extension.oracle.test.dir}/${eclipselink.customfeatures.model}.jar"/>
+            <pathelement path="${eclipselink.extension.oracle.test.dir}/${eclipselink.jpa.oracle}-tests.jar"/>
             <pathelement path="${oracle.extensions.depend.dir}/${oracle.spatial.lib}"/>
         </path>
         <path id="run.extended.classpath">
@@ -448,6 +464,7 @@
             <param name="TEST_WEAVING" value="${test.weaving}"/>
             <param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
             <param name="RUN_PATH" value="run.classpath"/>
+            <param name="DB_URL" value="${db.url}"/>
         </antcall>
         <antcall target="generate-report" inheritRefs="true"/>
     </target>
@@ -460,6 +477,7 @@
             <param name="TEST_WEAVING" value="${test.weaving}"/>
             <param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
             <param name="RUN_PATH" value="run.classpath"/>
+            <param name="DB_URL" value="${db.url}"/>
         </antcall>
         <antcall target="run-test" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.xml.EntityMappingsJUnitTestSuite"/>
@@ -467,6 +485,7 @@
             <param name="TEST_WEAVING" value="${test.weaving}"/>
             <param name="ORM_TESTING" value="-Dorm.testing=eclipselink"/>
             <param name="RUN_PATH" value="run.extended.classpath"/>
+            <param name="DB_URL" value="${db.url}"/>
         </antcall>
         <antcall target="test-oracle" inheritRefs="true"/>
         <antcall target="generate-report" inheritRefs="true"/>
@@ -480,6 +499,15 @@
             <param name="TEST_WEAVING" value="${test.weaving}"/>
             <param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
             <param name="RUN_PATH" value="run.classpath"/>
+            <param name="DB_URL" value="${db.url}"/>
+        </antcall>
+        <antcall target="run-test" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.OracleJPACustomFeaturesTestSuite"/>
+            <param name="TEST_AGENT" value="${test.agent}"/>
+            <param name="TEST_WEAVING" value="${test.weaving}"/>
+            <param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
+            <param name="RUN_PATH" value="run.classpath"/>
+            <param name="DB_URL" value="${db.oci.url}"/>
         </antcall>
     </target>
 
@@ -491,6 +519,7 @@
             <param name="TEST_WEAVING" value="${test.weaving}"/>
             <param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
             <param name="RUN_PATH" value="run.classpath"/>
+            <param name="DB_URL" value="${db.url}"/>
         </antcall>
         <antcall target="generate-report" inheritRefs="true"/>
     </target>
@@ -503,6 +532,7 @@
             <param name="TEST_WEAVING" value="-DTEST_NO_WEAVING=true"/>
             <param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
             <param name="RUN_PATH" value="run.classpath"/>
+            <param name="DB_URL" value="${db.url}"/>
         </antcall>
         <antcall target="generate-report" inheritRefs="true"/>
     </target>
@@ -538,6 +568,7 @@
             <param name="TEST_WEAVING" value="-Dignore"/>
             <param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
             <param name="RUN_PATH" value="run.classpath.static"/>
+            <param name="DB_URL" value="${db.url}"/>
         </antcall>
         <antcall target="run-test" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.xml.EntityMappingsJUnitTestSuite"/>
@@ -545,6 +576,7 @@
             <param name="TEST_WEAVING" value="-Dignore"/>
             <param name="ORM_TESTING" value="-Dorm.testing=eclipselink"/>
             <param name="RUN_PATH" value="run.extended.classpath.static"/>
+            <param name="DB_URL" value="${db.url}"/>
         </antcall>
         <antcall target="generate-report" inheritRefs="true"/>
     </target>
@@ -665,7 +697,7 @@
 
     <!-- Generic target for running tests. -->
     <target name="run-test" depends="config-trunk, config-flat">
-        <echo>Running test on ${db.url}</echo>
+        <echo>Running test on ${DB_URL}</echo>
 
         <condition property="jvmarg.db.platform" value="-Ddb.platform=${db.platform}">
             <isset property="db.platform"/>
@@ -682,7 +714,7 @@
             <jvmarg value="${ORM_TESTING}"/>
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
             <jvmarg value="-Ddb.driver=${db.driver}"/>
-            <jvmarg value="-Ddb.url=${db.url}"/>
+            <jvmarg value="-Ddb.url=${DB_URL}"/>
             <jvmarg value="-Ddb.user=${db.user}"/>
             <jvmarg value="-Ddb.pwd=${db.pwd}"/>
             <jvmarg value="${jvmarg.db.platform}"/>
@@ -1137,6 +1169,7 @@
         <antcall target="server-test-xml-mergeinherited" inheritRefs="true"/>
         <antcall target="server-test-xmltest" inheritRefs="true"/>
         <antcall target="server-test-oracle-timestamptz" inheritRefs="true"/>
+        <antcall target="server-test-custom-features" inheritRefs="true"/>
         <antcall target="generate-report" inheritRefs="true"/>
     </target>
 
@@ -1411,6 +1444,20 @@
             <param name="eclipselink.jpa.test.dir" value="./../../foundation/eclipselink.extension.oracle.test"/>
         </antcall>
     </target>
+
+    <target name="server-test-custom-features" if="is.weblogic.and.oracle">
+        <antcall target="server-run-all" inheritRefs="true">
+            <param name="PERSISTENCE_UNIT_NAME" value="customfeatures"/>
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/customfeatures"/>
+            <param name="MODEL_NAME" value="eclipselink-customfeatures-model"/>
+            <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/customfeatures"/>
+            <param name="TEST_NAME" value="eclipselink-customfeatures-model"/>
+            <param name="EAR_NAME" value="eclipselink-customfeatures-model"/>
+            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.customfeatures.CustomFeaturesJUnitTestSuite"/>
+            <param name="eclipselink.jpa.test.dir" value="./../../foundation/eclipselink.extension.oracle.test"/>
+        </antcall>
+    </target>
+
     <!-- *********** CacheCoordination Test Targets -->
     <target name="server-start-cachecoordination" depends="detect-os,config-trunk, config-flat">
       <ant antfile="${eclipselink.jpa.test}/cachecoordination_${server.name}.xml" target="${server.name}-start-cachecoordination" inheritRefs="true"/>

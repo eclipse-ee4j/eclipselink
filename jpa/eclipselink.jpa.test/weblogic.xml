@@ -75,6 +75,7 @@
         <copy file="${junit.lib}" todir="${weblogic.domain}/lib"/>
         <copy file="${eclipselink.jar.name}" todir="${weblogic.domain}/lib"/>
         <copy file="${jdbc.driver.jar}" todir="${weblogic.domain}/lib"/>
+        <copy file="${oracle.extensions.depend.dir}/${oracle.xdb.lib}" todir="${weblogic.domain}/lib"/>
         <antcall target="weblogic-stop" inheritRefs="true"/>
     </target>
 
@@ -123,6 +124,21 @@
             <create type="JDBCTxDataSource" name="EclipseLinkDS">
                 <set attribute="JNDIName" value="jdbc/EclipseLinkDS"/>
                 <set attribute="PoolName" value="ejbPool"/>
+                <set attribute="Targets" value="${myserver}"/>
+            </create>
+            <create type="JDBCConnectionPool" name="ejbPool_oci">
+                <set attribute="CapacityIncrement" value="2"/>
+                <set attribute="DriverName" value="${db.driver}"/>
+                <set attribute="InitialCapacity" value="1"/>
+                <set attribute="MaxCapacity" value="50"/>
+                <set attribute="Password" value="${db.pwd}"/>
+                <set attribute="Properties" value="user=${db.user}"/>
+                <set attribute="URL" value="${db.oci.url}"/>
+                <set attribute="Targets" value="${myserver}"/>
+            </create>
+            <create type="JDBCTxDataSource" name="EclipseLinkDS_OCI">
+                <set attribute="JNDIName" value="jdbc/EclipseLinkDS_OCI"/>
+                <set attribute="PoolName" value="ejbPool_oci"/>
                 <set attribute="Targets" value="${myserver}"/>
             </create>
         </wlconfig>

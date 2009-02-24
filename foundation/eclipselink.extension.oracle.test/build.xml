@@ -119,8 +119,9 @@
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${classes.dir}"/>
             <fileset file="${eclipselink.oracle.depend.test.jar}"/>
-            <fileset file="eclipselink-struct-converter-model-tests.jar"/>
             <fileset file="eclipselink-struct-converter-model.jar"/>
+            <fileset file="eclipselink-customfeatures-model.jar"/>
+            <fileset file="eclipselink-jpa-oracle-tests.jar"/>
         </delete>
     </target>
 
@@ -154,8 +155,14 @@
             <fileset dir="${classes.dir}"
                      includes="org/eclipse/persistence/testing/models/jpa/**"/>
         </jar>
-        <!-- Package the structconverter JPA tests jar. -->
-        <jar jarfile="eclipselink-struct-converter-model-tests.jar">
+        <!-- Package the customfeatures JPA model jar. -->
+        <jar jarfile="eclipselink-customfeatures-model.jar">
+            <zipfileset dir="resource/customfeatures" includes="*.xml" prefix="META-INF"/>
+            <fileset dir="${classes.dir}"
+                     includes="org/eclipse/persistence/testing/models/jpa/customfeatures/**"/>
+        </jar>
+        <!-- Package the JPA oracle specific tests jar. -->
+        <jar jarfile="eclipselink-jpa-oracle-tests.jar">
             <fileset dir="${classes.dir}"
                      includes="org/eclipse/persistence/testing/tests/jpa/**"/>
         </jar>
