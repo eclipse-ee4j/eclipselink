@@ -45,7 +45,7 @@ import org.w3c.dom.Element;
  * <p>An EIS one-to-many mapping is a reference mapping that represents the relationship between 
  * a single source object and a collection of mapped persistent Java objects.  The source object usually 
  * contains a foreign key (pointer) to the target objects (key on source); alternatively, the target 
- * objects may contiain a foreign key to the source object (key on target).  Because both the source 
+ * objects may contain a foreign key to the source object (key on target).  Because both the source 
  * and target objects use interactions, they must all be configured as root object types.  
  * 
  * <p><table border="1">
