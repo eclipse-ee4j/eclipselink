@@ -67,16 +67,18 @@ then
     fi
 fi
 
-echo "Target=${TARGET}"
-
+##-- Convert "BRANCH" to BRANCH_NM (version or trunk) and BRANCH (svn branch path)
 if [ ! "${BRANCH}" = "" ]
 then
     BRANCH_NM=${BRANCH}
     BRANCH=branches/${BRANCH}/
-    echo "Branch=${BRANCH}"
 else
     BRANCH_NM="trunk"
 fi
+
+echo "Target     ='${TARGET}'"
+echo "Branch name='${BRANCH_NM}'"
+echo "Branch     ='${BRANCH}'"
 
 SVN_EXEC=`which svn`
 if [ $? -ne 0 ]
@@ -258,5 +260,48 @@ echo "ant ${ANT_BASEARG} ${TARGET}" >> ${DATED_LOG}
 ant ${ANT_BASEARG} -Ddb.user="${DB_USER}" -Ddb.pwd="${DB_PWD}" -Ddb.url="${DB_URL}" ${TARGET} >> ${DATED_LOG} 2>&1
 echo "Build completed at: `date`" >> ${DATED_LOG}
 echo "Build complete."
+
+### Do some status calculations and send email
+set -x
+MAIL_EXEC=/bin/mail
+MAILLIST="eric.gwin@oracle.com eric.gwin@oracle.com"
+MAILBODY=${LOG_DIR}/mailbody-${BRANCH_NM}_${TARG_NM}.txt
+DATA_FILE=${LOG_DIR}/data-${BRANCH_NM}_${TARG_NM}.txt
+TESTDATA_FILE=${LOG_DIR}/testsummary-${BRANCH_NM}_${TARG_NM}.txt
+cat ${DATED_LOG} | grep echo > ${DATA_FILE}
+
+if [ "`cat $DATA_FILE | grep unnece | tr -d '[:punct:]'`" = "" ]
+then
+    # find the current version
+    VERSION=`cat ${DATA_FILE} | grep -m1 "EL version" | cut -d= -f2 | tr -d '\047'`
+    echo $VERSION
+
+    # find the curent revision
+    CUR_REV=`cat ${DATA_FILE} | grep revision | grep -m1 svn | cut -d= -f2 | tr -d '\047'`
+    echo CUR_REV=$CUR_REV
+
+    # find the revision of the last build
+    PREV_REV=`find /home/data/httpd/download.eclipse.org/rt/eclipselink/. -print | grep ${TARG_NM}/${VERSION} | grep core | cut -d- -f2 | cut -dr -f4 | sort -n -r | grep -v -m1 ${CUR_REV}-   | cut -d- -f1`
+    echo PREV_REV=$PREV_REV
+    
+    # Build Body text of email
+    rm ${MAILBODY}
+    if [ -f ${TESTDATA_FILE} ]
+    then
+        cp ${TESTDATA_FILE} ${MAILBODY}
+        echo "" >> ${MAILBODY}
+        echo "-----------------------------------" >> ${MAILBODY}
+        echo "" >> ${MAILBODY}
+        rm ${TESTDATA_FILE}
+    else
+        touch ${MAILBODY}
+    fi
+    echo "SVN Changes since Last Build:" >> ${MAILBODY}
+    echo "" >> ${MAILBODY}
+    svn log -r ${CUR_REV}:${PREV_REV} -q -v  http://dev.eclipse.org/svnroot/rt/org.eclipse.persistence/${BRANCH}trunk >> ${MAILBODY}
+    
+    # Send Subversion log (changes since last build)
+    cat ${MAILBODY} | ${MAIL_EXEC} -s "${BRANCH_NM} ${TARG_NM} build complete..." ${MAILLIST}
+fi
 
 CLASSPATH=${OLD_CLASSPATH}
