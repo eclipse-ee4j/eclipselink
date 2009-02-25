@@ -92,6 +92,15 @@ then
     fi
 fi
 
+# safe temp directory
+tmp=${TMPDIR-/tmp}
+tmp=$tmp/somedir.$RANDOM.$RANDOM.$RANDOM.$$
+(umask 077 && mkdir $tmp) || {
+  echo "Could not create temporary directory! Exiting." 1>&2 
+  exit 1
+}
+echo "results stored in: '${tmp}'"
+
 #Define common variables
 BOOTSTRAP_BLDFILE=bootstrap.xml
 UD2M_BLDFILE=uploadDepsToMaven.xml
@@ -115,6 +124,7 @@ OLD_CLASSPATH=${CLASSPATH}
 CLASSPATH=${JUNIT_HOME}/junit.jar:${ANT_HOME}/lib/ant-junit.jar:${MAILLIB_DIR}/mail.jar:${MAILLIB_DIR}/activation.jar:${MAVENANT_DIR}/maven-ant-tasks-2.0.8.jar
 
 #------- Subroutines -------#
+unset CreatePath
 CreatePath() {
     #echo "Running CreateHome!"
     newdir=
@@ -132,6 +142,66 @@ CreatePath() {
             fi
         fi
     done
+}
+
+unset genTestSummary
+genTestSummary()
+{
+    infile=$1
+    outfile=$2
+    
+    if [ -f ${infile} ]
+    then
+        if [ -n ${infile} ]
+        then
+            tests=0
+            errors=0
+            failures=0
+            Ttests=0
+            Terrors=0
+            Tfailures=0
+            first_line=1
+            for line in `cat ${infile}`
+            do
+                if [ "`echo $line | grep 'test-'`" = "" ]
+                then
+                    # if a test result line, accumulate counts
+                    T=`echo $line | cut -d: -f3`
+                    E=`echo $line | cut -d: -f7`
+                    F=`echo $line | cut -d: -f5`
+                    tests=`expr "$tests" + "$T"`
+                    errors=`expr "$errors" + "$E"`
+                    failures=`expr "$failures" + "$F"`
+                    Ttests=`expr "$Ttests" + "$T"`
+                    Terrors=`expr "$Terrors" + "$E"`
+                    Tfailures=`expr "$Tfailures" + "$F"`
+                else
+                    # If a header line, and not the first line print totals, next header, and zero out counts
+                    if [ ! "$first_line" -eq 0 ]
+                    then
+                        echo "  Tests run:${tests} Failures:${failures} Errors:${errors}" >> ${outfile}
+                    else
+                        first_line=0
+                    fi
+                    echo `echo $line | cut -d: -f2 | tr "[:lower:]" "[:upper:]"` >> ${outfile}
+                    tests=0; errors=0; failures=0
+                fi
+            done
+            # print out final totals
+            echo "  Tests run:${tests} Failures:${failures} Errors:${errors}" >> ${outfile}
+        else
+            echo "No test results to summarize!"
+        fi
+    fi
+    
+    # Return status based upon existence of test success (all pass="true (0)" else="fail (1)")
+    if [ \( "$Terrors" -gt 0 \) -o \( "$Tfailures" -gt 0 \) ]
+    then
+        returncode=1
+    else
+        returncode=0
+    fi
+    return $returncode
 }
 
 #--------- MAIN --------#
@@ -261,32 +331,71 @@ ant ${ANT_BASEARG} -Ddb.user="${DB_USER}" -Ddb.pwd="${DB_PWD}" -Ddb.url="${DB_UR
 echo "Build completed at: `date`" >> ${DATED_LOG}
 echo "Build complete."
 
-### Do some status calculations and send email
-set -x
+##
+## Post-build Processing
+##
+PARSE_RESULT_FILE=${tmp}/raw-summary.txt
+SORTED_RESULT_FILE=${tmp}/sorted-summary.txt
+TESTDATA_FILE=${LOG_DIR}/testsummary-${BRANCH_NM}_${TARG_NM}.txt
 MAIL_EXEC=/bin/mail
 MAILLIST="eric.gwin@oracle.com eric.gwin@oracle.com"
 MAILBODY=${LOG_DIR}/mailbody-${BRANCH_NM}_${TARG_NM}.txt
 DATA_FILE=${LOG_DIR}/data-${BRANCH_NM}_${TARG_NM}.txt
-TESTDATA_FILE=${LOG_DIR}/testsummary-${BRANCH_NM}_${TARG_NM}.txt
-cat ${DATED_LOG} | grep echo > ${DATA_FILE}
 
-if [ "`cat $DATA_FILE | grep unnece | tr -d '[:punct:]'`" = "" ]
+#set -x
+## Verify Compile complete before bothering with post-build processing (skip if build failed, or cb detected no change)
+##
+if [ \( ! "`tail ${DATED_LOG} | grep 'BUILD SUCCESSFUL'`" = "" \) -o \( "`cat $DATA_FILE | grep unnece | tr -d '[:punct:]'`" = "" \) ]
 then
-    # find the current version
+    ## Ant log preprocessing to generate intermediate results files
+    ##
+    cat ${DATED_LOG} | grep -n '^test-' | grep -v "\-jar" | grep -v "\-errors:" | grep -v lrg | grep -v t-srg | tr -d ' ' > ${PARSE_RESULT_FILE}
+    cat ${DATED_LOG} | grep -n 'Errors: [0-9]' | tr -d ' ' | tr -d ' ' | tr ',' ':' >> ${PARSE_RESULT_FILE}
+    cat ${PARSE_RESULT_FILE} | sort -n -t: > ${SORTED_RESULT_FILE}
+    cat ${DATED_LOG} | grep echo > ${DATA_FILE}
+    
+    ## make sure TESTDATA_FILE is empty
+    ##
+    if [ -f ${TESTDATA_FILE} ]
+    then
+        rm -f ${TESTDATA_FILE}
+    fi
+    touch ${TESTDATA_FILE}
+    
+    ## run routine to generate test results file and generate MAIL_SUBJECT based upon exit status
+    ##
+    genTestSummary ${SORTED_RESULT_FILE} ${TESTDATA_FILE}
+    if [ $? -eq 0  ]
+    then
+        MAIL_SUBJECT="${BRANCH_NM} ${TARG_NM} build complete."
+    else
+        MAIL_SUBJECT="${BRANCH_NM} ${TARG_NM} build has test failures!"
+    fi
+   
+    set -x
+    ## find the current version (cannot use $BRANCH, because need current version stored in ANT buildfiles)
+    ##
     VERSION=`cat ${DATA_FILE} | grep -m1 "EL version" | cut -d= -f2 | tr -d '\047'`
     echo $VERSION
-
-    # find the curent revision
+    
+    ## find the curent revision
+    ##
     CUR_REV=`cat ${DATA_FILE} | grep revision | grep -m1 svn | cut -d= -f2 | tr -d '\047'`
     echo CUR_REV=$CUR_REV
-
-    # find the revision of the last build
+    
+    ## find the revision of the last build
+    ##
     PREV_REV=`find /home/data/httpd/download.eclipse.org/rt/eclipselink/. -print | grep ${TARG_NM}/${VERSION} | grep core | cut -d- -f2 | cut -dr -f4 | sort -n -r | grep -v -m1 ${CUR_REV}-   | cut -d- -f1`
+    if [ ! "$PREV_REV" = "" ]
+    then
+        PREV_REV=:${PREV_REV}
+    fi
     echo PREV_REV=$PREV_REV
     
-    # Build Body text of email
+    ## Build Body text of email
+    ##
     rm ${MAILBODY}
-    if [ -f ${TESTDATA_FILE} ]
+    if [ \( -f ${TESTDATA_FILE} \) -a \( -n ${TESTDATA_FILE} \) ]
     then
         cp ${TESTDATA_FILE} ${MAILBODY}
         echo "" >> ${MAILBODY}
@@ -298,10 +407,18 @@ then
     fi
     echo "SVN Changes since Last Build:" >> ${MAILBODY}
     echo "" >> ${MAILBODY}
-    svn log -r ${CUR_REV}:${PREV_REV} -q -v  http://dev.eclipse.org/svnroot/rt/org.eclipse.persistence/${BRANCH}trunk >> ${MAILBODY}
-    
-    # Send Subversion log (changes since last build)
-    cat ${MAILBODY} | ${MAIL_EXEC} -s "${BRANCH_NM} ${TARG_NM} build complete..." ${MAILLIST}
+    svn log -r ${CUR_REV}${PREV_REV} -q -v  http://dev.eclipse.org/svnroot/rt/org.eclipse.persistence/${BRANCH}trunk >> ${MAILBODY}
+else
+    MAIL_SUBJECT="${BRANCH_NM} ${TARG_NM} build failed!"
+    echo "See ${DATED_LOG} for results." > ${MAILBODY}
 fi
+
+## Send result email
+##
+cat ${MAILBODY} | ${MAIL_EXEC} -s "${MAIL_SUBJECT}" ${MAILLIST}
+
+## Remove tmp directory
+##
+#rm -rf $tmp
 
 CLASSPATH=${OLD_CLASSPATH}
