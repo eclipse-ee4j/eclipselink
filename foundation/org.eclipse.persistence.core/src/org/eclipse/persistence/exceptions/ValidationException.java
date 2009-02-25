@@ -380,6 +380,7 @@ public class ValidationException extends EclipseLinkException {
     public static final int INVALID_EMBEDDABLE_CLASS_FOR_ELEMENT_COLLECTION = 7312;
     public static final int EMBEDDABLE_ASSOCIATION_OVERRIDE_NOT_FOUND = 7313;
     public static final int MAP_KEY_CANNOT_USE_INDIRECTION = 7314;
+    public static final int UNABLE_TO_DETERMINE_MAP_KEY_CLASS = 7315;
     
     /**
      * INTERNAL:
@@ -1847,6 +1848,14 @@ public class ValidationException extends EclipseLinkException {
 
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, UNABLE_TO_DETERMINE_TARGET_CLASS, args));
         validationException.setErrorCode(UNABLE_TO_DETERMINE_TARGET_CLASS);
+        return validationException;
+    }
+
+    public static ValidationException unableToDetermineMayKeyClass(String attributeName, Class cls) {
+        Object[] args = { attributeName, cls };
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, UNABLE_TO_DETERMINE_MAP_KEY_CLASS, args));
+        validationException.setErrorCode(UNABLE_TO_DETERMINE_MAP_KEY_CLASS);
         return validationException;
     }
     

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,12 +9,15 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     02/25/2009-2.0 Guy Pelletier 
+ *       - 265359: JPA 2.0 Element Collections - Metadata processing portions
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.complexaggregate;
 
 import java.util.List;
 import java.util.ArrayList;
 import javax.persistence.*;
+
 import java.io.Serializable;
 import static javax.persistence.GenerationType.*;
 
@@ -26,15 +29,25 @@ public class HockeyTeam implements Serializable {
     private String level;
     private String homeColor;
     private String awayColor;
+    private List<HockeyCoach> coaches;
     private List<HockeyPlayer> players;
     
     public HockeyTeam() {
-        players = new ArrayList();
+        coaches = new ArrayList<HockeyCoach>();
+        players = new ArrayList<HockeyPlayer>();
     }
     
     @Column(name="AWAY_COLOR")
     public String getAwayColor() {
         return awayColor;    
+    }
+    
+    // This is a mapping within an embeddable. Test finding it using the
+    // dot notation qualification.
+    @OneToMany(mappedBy="vitals.hockeyTeam")
+    @OrderBy("vitals.personalVitals.age DESC")
+    public List<HockeyCoach> getCoaches() {
+        return coaches;
     }
     
     @Column(name="HOME_COLOR")
@@ -66,6 +79,8 @@ public class HockeyTeam implements Serializable {
         return name;
     }
     
+    // This is a mapping within an embeddable. Test finding it using NO
+    // dot notation qualification.
     @OneToMany(mappedBy="hockeyTeam")
     public List<HockeyPlayer> getPlayers() {
         return players;
@@ -73,6 +88,10 @@ public class HockeyTeam implements Serializable {
     
     public void setAwayColor(String awayColor) {
         this.awayColor = awayColor;
+    }
+    
+    public void setCoaches(List<HockeyCoach> coaches) {
+        this.coaches = coaches;
     }
     
     public void setHomeColor(String homeColor) {

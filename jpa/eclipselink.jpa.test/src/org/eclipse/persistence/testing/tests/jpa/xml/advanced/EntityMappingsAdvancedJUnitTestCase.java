@@ -70,6 +70,10 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
     private static long amex = 1987654321;
     private static long diners = 1192837465;
     private static long mastercard = 1647382910;
+    private static long rbc = 4783;
+    private static long scotia = 8732;
+    private static long td = 839362;
+    private static long cibc = 948274;
     private String m_persistenceUnit;
     
     public EntityMappingsAdvancedJUnitTestCase() {
@@ -405,6 +409,10 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             employee.addAmex(amex);
             employee.addDinersClub(diners);
             employee.addMastercard(mastercard);
+            employee.addRoyalBankCreditLine(rbc);
+            employee.addScotiabankCreditLine(scotia);
+            employee.addTorontoDominionCreditLine(td);
+            employee.addCanadianImperialCreditLine(cibc);
             employee.setAddress(address);
             employee.setSalary(20000);
             employee.setPeriod(new EmploymentPeriod());
@@ -428,6 +436,10 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             assertTrue("Amex card did not persist correctly.", emp.hasAmex(amex));
             assertTrue("Diners Club card did not persist correctly.", emp.hasDinersClub(diners));
             assertTrue("Mastercard card did not persist correctly.", emp.hasMastercard(mastercard));
+            assertTrue("RBC credit line did not persist correctly.", emp.hasRoyalBankCreditLine(rbc));
+            assertTrue("Scotia credit line did not persist correctly.", emp.hasScotiabankCreditLine(scotia));
+            assertTrue("TD credit line did not persist correctly.", emp.hasTorontoDominionCreditLine(td));
+            assertTrue("CIBC credit line did not persist correctly.", emp.hasCanadianImperialCreditLine(cibc));
             
             boolean found = false;
             for (String responsibility : (Collection<String>) emp.getResponsibilities()) {

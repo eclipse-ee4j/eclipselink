@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,12 +9,15 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     02/25/2009-2.0 Guy Pelletier 
+ *       - 265359: JPA 2.0 Element Collections - Metadata processing portions
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.advanced;
 
 import java.util.*;
 import java.io.Serializable;
 import javax.persistence.*;
+
 import static javax.persistence.GenerationType.*;
 import static javax.persistence.InheritanceType.*;
 import static javax.persistence.FetchType.*;
@@ -22,6 +25,7 @@ import static javax.persistence.FetchType.*;
 import org.eclipse.persistence.annotations.BasicMap;
 import org.eclipse.persistence.annotations.ConversionValue;
 import org.eclipse.persistence.annotations.Convert;
+import org.eclipse.persistence.annotations.ConvertKey;
 import org.eclipse.persistence.annotations.Converter;
 import org.eclipse.persistence.annotations.ObjectTypeConverter;
 import org.eclipse.persistence.annotations.OptimisticLocking;
@@ -74,12 +78,23 @@ public class Buyer implements Serializable {
     private static final String MASTERCARD = "Mastercard";
     private static final String VISA = "Visa";
 
+    private Map<String, Long> creditLines;
+    private static final String ROYAL_BANK = "RoyalBank";
+    private static final String CANADIAN_IMPERIAL = "CanadianImperial";
+    private static final String SCOTIABANK = "Scotiabank";
+    private static final String TORONTO_DOMINION = "TorontoDominion";
+    
     public Buyer() {
         creditCards = new HashMap<String, Long>();
+        creditLines = new HashMap<String, Long>();
     }
     
     public void addAmex(long number) {
         getCreditCards().put(AMEX, new Long(number));
+    }
+    
+    public void addCanadianImperialCreditLine(long number) {
+        getCreditLines().put(CANADIAN_IMPERIAL, new Long(number));
     }
     
     public void addDinersClub(long number) {
@@ -88,6 +103,18 @@ public class Buyer implements Serializable {
     
     public void addMastercard(long number) {
         getCreditCards().put(MASTERCARD, new Long(number));
+    }
+    
+    public void addRoyalBankCreditLine(long number) {
+        getCreditLines().put(ROYAL_BANK, new Long(number));
+    }
+    
+    public void addScotiabankCreditLine(long number) {
+        getCreditLines().put(SCOTIABANK, new Long(number));
+    }
+    
+    public void addTorontoDominionCreditLine(long number) {
+        getCreditLines().put(TORONTO_DOMINION, new Long(number));
     }
     
     public void addVisa(long number) {
@@ -131,9 +158,32 @@ public class Buyer implements Serializable {
         }
     )
     @PrivateOwned
-    // Default the collection table CREDITCARDS
+    // Default the collection table BUYER_CREDITCARDS
     public Map<String, Long> getCreditCards() {
         return creditCards;
+    }
+    
+    @ElementCollection
+    @MapKeyColumn(name="BANK")
+    @Column(name="ACCOUNT")
+    @CollectionTable(
+        name="BUYER_CREDITLINES",
+        joinColumns=@JoinColumn(name="BUYER_ID")
+    )
+    @Convert("Long2String")
+    @ConvertKey("CreditLine")
+    @ObjectTypeConverter(
+       name="CreditLine",
+       conversionValues={
+           @ConversionValue(dataValue="RBC", objectValue=ROYAL_BANK),
+           @ConversionValue(dataValue="CIBC", objectValue=CANADIAN_IMPERIAL),
+           @ConversionValue(dataValue="SB", objectValue=SCOTIABANK),
+           @ConversionValue(dataValue="TD", objectValue=TORONTO_DOMINION)
+       }
+    )
+    @PrivateOwned
+    public Map<String, Long> getCreditLines() {
+        return creditLines;
     }
     
     @Column(name="DESCRIP")
@@ -173,11 +223,23 @@ public class Buyer implements Serializable {
         return hasCard(creditCards.get(AMEX), number);
     }
     
+    public boolean hasCanadianImperialCreditLine(long number) {
+        return hasCreditLine(creditLines.get(CANADIAN_IMPERIAL), number);
+    }
+    
     private boolean hasCard(Long cardNumber, long number) {
         if (cardNumber == null) {
             return false;
         } else {
             return cardNumber.longValue() == number;
+        }
+    }
+    
+    private boolean hasCreditLine(Long creditLineNumber, long number) {
+        if (creditLineNumber == null) {
+            return false;
+        } else {
+            return creditLineNumber.longValue() == number;
         }
     }
     
@@ -187,6 +249,18 @@ public class Buyer implements Serializable {
     
     public boolean hasMastercard(long number) {
         return hasCard(creditCards.get(MASTERCARD), number);
+    }
+    
+    public boolean hasRoyalBankCreditLine(long number) {
+        return hasCreditLine(creditLines.get(ROYAL_BANK), number);
+    }
+    
+    public boolean hasScotiabankCreditLine(long number) {
+        return hasCreditLine(creditLines.get(SCOTIABANK), number);
+    }
+    
+    public boolean hasTorontoDominionCreditLine(long number) {
+        return hasCreditLine(creditLines.get(TORONTO_DOMINION), number);
     }
     
     public boolean hasVisa(long number) {
@@ -243,6 +317,10 @@ public class Buyer implements Serializable {
     protected void setCreditCards(Map<String, Long> creditCards) {
         this.creditCards = creditCards;
     }    
+    
+    protected void setCreditLines(Map<String, Long> creditLines) {
+        this.creditLines = creditLines;
+    }
     
     public void setDescription(String description) { 
         this.description = description; 

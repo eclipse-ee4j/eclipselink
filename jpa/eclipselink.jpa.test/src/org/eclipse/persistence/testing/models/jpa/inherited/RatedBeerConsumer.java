@@ -13,7 +13,9 @@
  *     09/23/2008-1.1 Guy Pelletier 
  *       - 241651: JPA 2.0 Access Type support
  *     01/28/2009-2.0 Guy Pelletier 
- *       - 248293: JPA 2.0 Element Collections (part 1)   
+ *       - 248293: JPA 2.0 Element Collections (part 1)
+ *     02/25/2009-2.0 Guy Pelletier 
+ *       - 265359: JPA 2.0 Element Collections - Metadata processing portions   
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
@@ -24,6 +26,7 @@ import java.util.Map;
 import java.util.Vector;
 
 import javax.persistence.Access;
+import javax.persistence.AttributeOverride;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -61,6 +64,7 @@ public abstract class RatedBeerConsumer<X, Y, Z> extends BeerConsumer {
     // JoinColumns will default.
     // Both expert and novice consumers will define attribute overrides and
     // association overrides to apply to their respective tables.
+    @AttributeOverride(name="description", column=@Column(name="DESCRIP"))
     private Collection<Record> records;
     
     @Transient

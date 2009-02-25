@@ -20,6 +20,8 @@
  *       - 248293: JPA 2.0 Element Collections (part 1)
  *     02/06/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 2)
+ *     02/25/2009-2.0 Guy Pelletier 
+ *       - 265359: JPA 2.0 Element Collections - Metadata processing portions
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -189,7 +191,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * INTERNAL:
      * Return the mapping that this accessor is associated to.
      */
-    protected DatabaseMapping getMapping(){
+    public DatabaseMapping getMapping(){
         return m_mapping;
     }
     

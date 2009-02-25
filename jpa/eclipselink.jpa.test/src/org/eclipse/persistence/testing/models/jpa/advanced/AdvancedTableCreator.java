@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     02/25/2009-2.0 Guy Pelletier 
+ *       - 265359: JPA 2.0 Element Collections - Metadata processing portions
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.advanced;
 
@@ -21,6 +23,7 @@ public class AdvancedTableCreator extends TableCreator {
         addTableDefinition(buildADDRESSTable());
         addTableDefinition(buildBUYERTable());
         addTableDefinition(buildCREDITCARDSTable());
+        addTableDefinition(buildCREDITLINESTable());
         addTableDefinition(buildCUSTOMERTable());
         addTableDefinition(buildDEALERTable());
         addTableDefinition(buildDEPTTable());
@@ -225,7 +228,7 @@ public class AdvancedTableCreator extends TableCreator {
         return table;
     }
     
-     public static TableDefinition buildCREDITCARDSTable() {
+    public static TableDefinition buildCREDITCARDSTable() {
         TableDefinition table = new TableDefinition();
         table.setName("BUYER_CREDITCARDS");
     
@@ -262,6 +265,44 @@ public class AdvancedTableCreator extends TableCreator {
     
         return table;
     }
+     
+    public static TableDefinition buildCREDITLINESTable() {
+         TableDefinition table = new TableDefinition();
+         table.setName("BUYER_CREDITLINES");
+     
+         FieldDefinition fieldID = new FieldDefinition();
+         fieldID.setName("BUYER_ID");
+         fieldID.setTypeName("NUMERIC");
+         fieldID.setSize(15);
+         fieldID.setShouldAllowNull(false);
+         fieldID.setIsPrimaryKey(false);
+         fieldID.setUnique(false);
+         fieldID.setIsIdentity(false);
+         fieldID.setForeignKeyFieldName("CMP3_BUYER.BUYER_ID");
+         table.addField(fieldID);
+     
+         FieldDefinition fieldBANK = new FieldDefinition();
+         fieldBANK.setName("BANK");
+         fieldBANK.setTypeName("VARCHAR");
+         fieldBANK.setSize(4);
+         fieldBANK.setShouldAllowNull(false);
+         fieldBANK.setIsPrimaryKey(false);
+         fieldBANK.setUnique(true);
+         fieldBANK.setIsIdentity(false);
+         table.addField(fieldBANK);
+         
+         FieldDefinition fieldACCOUNT = new FieldDefinition();
+         fieldACCOUNT.setName("ACCOUNT");
+         fieldACCOUNT.setTypeName("VARCHAR");
+         fieldACCOUNT.setSize(10);
+         fieldACCOUNT.setShouldAllowNull(false);
+         fieldACCOUNT.setIsPrimaryKey(false);
+         fieldACCOUNT.setUnique(false);
+         fieldACCOUNT.setIsIdentity(false);
+         table.addField(fieldACCOUNT);
+     
+         return table;
+     }
     
      public static TableDefinition buildCUSTOMERTable() {
          TableDefinition table = new TableDefinition();

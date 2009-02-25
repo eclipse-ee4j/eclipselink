@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -14,7 +14,9 @@
  *     08/28/2008-1.1 Guy Pelletier 
  *       - 245120: unidir one-to-many within embeddable fails to deploy for missing primary key field 
  *     02/06/2009-2.0 Guy Pelletier 
- *       - 248293: JPA 2.0 Element Collections (part 2)      
+ *       - 248293: JPA 2.0 Element Collections (part 2)    
+ *     02/25/2009-2.0 Guy Pelletier 
+ *       - 265359: JPA 2.0 Element Collections - Metadata processing portions  
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.complexaggregate;
 
@@ -28,6 +30,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         addTableDefinition(buildCOUNTRYDWELLERTable());
         addTableDefinition(buildWORLDTable());
         
+        addTableDefinition(buildHOCKEYCOACHTable());
         addTableDefinition(buildHOCKEYPLAYERTable());
         addTableDefinition(buildHOCKEYTEAMTable());
         
@@ -179,6 +182,91 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         fieldWORLDID.setShouldAllowNull(true);
         fieldWORLDID.setForeignKeyFieldName("CMP3_WORLD.ID");
         table.addField(fieldWORLDID);
+        
+        return table;
+    }
+    
+    public TableDefinition buildHOCKEYCOACHTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_HOCKEY_COACH");
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(19);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+        
+        FieldDefinition fieldFNAME = new FieldDefinition();
+        fieldFNAME.setName("FNAME");
+        fieldFNAME.setTypeName("VARCHAR2");
+        fieldFNAME.setSize(20);
+        fieldFNAME.setSubSize(0);
+        fieldFNAME.setIsPrimaryKey(false);
+        fieldFNAME.setIsIdentity(false);
+        fieldFNAME.setUnique(false);
+        fieldFNAME.setShouldAllowNull(false);
+        table.addField(fieldFNAME);
+        
+        FieldDefinition fieldLNAME = new FieldDefinition();
+        fieldLNAME.setName("LNAME");
+        fieldLNAME.setTypeName("VARCHAR2");
+        fieldLNAME.setSize(20);
+        fieldLNAME.setSubSize(0);
+        fieldLNAME.setIsPrimaryKey(false);
+        fieldLNAME.setIsIdentity(false);
+        fieldLNAME.setUnique(false);
+        fieldLNAME.setShouldAllowNull(false);
+        table.addField(fieldLNAME);
+        
+        FieldDefinition fieldAGE = new FieldDefinition();
+        fieldAGE.setName("AGE");
+        fieldAGE.setTypeName("NUMBER");
+        fieldAGE.setSize(15);
+        fieldAGE.setSubSize(0);
+        fieldAGE.setIsPrimaryKey(false);
+        fieldAGE.setIsIdentity(false);
+        fieldAGE.setUnique(false);
+        fieldAGE.setShouldAllowNull(true);
+        table.addField(fieldAGE);
+        
+        FieldDefinition fieldHEIGHT = new FieldDefinition();
+        fieldHEIGHT.setName("HEIGHT");
+        fieldHEIGHT.setTypeName("DOUBLE PRECIS");
+        fieldHEIGHT.setSize(15);
+        fieldHEIGHT.setSubSize(0);
+        fieldHEIGHT.setIsPrimaryKey(false);
+        fieldHEIGHT.setIsIdentity(false);
+        fieldHEIGHT.setUnique(false);
+        fieldHEIGHT.setShouldAllowNull(true);
+        table.addField(fieldHEIGHT);
+        
+        FieldDefinition fieldWEIGHT = new FieldDefinition();
+        fieldWEIGHT.setName("WEIGHT");
+        fieldWEIGHT.setTypeName("DOUBLE PRECIS");
+        fieldWEIGHT.setSize(15);
+        fieldWEIGHT.setSubSize(0);
+        fieldWEIGHT.setIsPrimaryKey(false);
+        fieldWEIGHT.setIsIdentity(false);
+        fieldWEIGHT.setUnique(false);
+        fieldWEIGHT.setShouldAllowNull(true);
+        table.addField(fieldWEIGHT);
+        
+        FieldDefinition fieldTEAMID = new FieldDefinition();
+        fieldTEAMID.setName("TEAM_ID");
+        fieldTEAMID.setTypeName("NUMBER");
+        fieldTEAMID.setSize(19);
+        fieldTEAMID.setSubSize(0);
+        fieldTEAMID.setIsPrimaryKey(false);
+        fieldTEAMID.setIsIdentity(false);
+        fieldTEAMID.setUnique(false);
+        fieldTEAMID.setShouldAllowNull(true);
+        fieldTEAMID.setForeignKeyFieldName("CMP3_HOCKEY_TEAM.ID");
+        table.addField(fieldTEAMID);
         
         return table;
     }

@@ -12,6 +12,8 @@
  *       - 248293: JPA 2.0 Element Collections (part 1) 
  *     02/06/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 2)
+ *     02/25/2009-2.0 Guy Pelletier 
+ *       - 265359: JPA 2.0 Element Collections - Metadata processing portions
  ******************************************************************************/ 
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -159,7 +161,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor {
         
         // Set the convert key if one is defined.
         if (isAnnotationPresent(ConvertKey.class)) {
-            m_convertKey = (String) MetadataHelper.invokeMethod("name", getAnnotation(ConvertKey.class));
+            m_convertKey = (String) MetadataHelper.invokeMethod("value", getAnnotation(ConvertKey.class));
         }
         
         // Set the order column if one is defined.
@@ -308,26 +310,36 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor {
      */
     @Override
     public Class getReferenceClass() {
-        if (m_referenceClass == null) {
-            m_referenceClass = getTargetClass();
+        if (isKeyContextProcessing()) {
+            Class referenceClass = getAccessibleObject().getMapKeyClass(getDescriptor());
+            
+            if (referenceClass == null) {
+                throw ValidationException.unableToDetermineMayKeyClass(getAttributeName(), getJavaClass());
+            }
+            
+            return referenceClass;
+        } else {
+            if (m_referenceClass == null) {
+                m_referenceClass = getTargetClass();
         
-            if (m_referenceClass == void.class) {
-                // This call will attempt to extract the reference class from generics.
-                m_referenceClass = getReferenceClassFromGeneric();
+                if (m_referenceClass == void.class) {
+                    // This call will attempt to extract the reference class from generics.
+                    m_referenceClass = getReferenceClassFromGeneric();
         
-                if (m_referenceClass == null) {
-                    // Throw an exception. An element collection accessor must 
-                    // have a reference class either through generics or a 
-                    // specified target class on the mapping metadata.
-                    throw ValidationException.unableToDetermineTargetClass(getAttributeName(), getJavaClass());
-                } else {
-                    // Log the defaulting contextual reference class.
-                    getLogger().logConfigMessage(getLogger().ELEMENT_COLLECTION_MAPPING_REFERENCE_CLASS, getAnnotatedElement(), m_referenceClass);
+                    if (m_referenceClass == null) {
+                        // Throw an exception. An element collection accessor must 
+                        // have a reference class either through generics or a 
+                        // specified target class on the mapping metadata.
+                        throw ValidationException.unableToDetermineTargetClass(getAttributeName(), getJavaClass());
+                    } else {
+                        // Log the defaulting contextual reference class.
+                        getLogger().logConfigMessage(getLogger().ELEMENT_COLLECTION_MAPPING_REFERENCE_CLASS, getAnnotatedElement(), m_referenceClass);
+                    }
                 }
-            } 
+            }
+            
+            return m_referenceClass;
         }
-        
-        return m_referenceClass;
     }
     
     /**

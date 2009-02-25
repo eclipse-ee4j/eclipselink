@@ -67,6 +67,10 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
     private static long amex = 1987654321;
     private static long diners = 1192837465;
     private static long mastercard = 1647382910;
+    private static long rbc = 4783;
+    private static long scotia = 8732;
+    private static long td = 839362;
+    private static long cibc = 948274;
     private static String newResponsibility = "The most useless responsibility ever.";
     
     public AdvancedJPAJunitTest() {
@@ -328,11 +332,19 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             buyer.setName("Guy Pelletier");
             buyer.setGender("Made of testosterone");
             buyer.setDescription("Loves to spend");
+            
             buyer.addVisa(visa);
             buyer.addAmex(amex);
             buyer.addDinersClub(diners);
             buyer.addMastercard(mastercard);
+            
+            buyer.addRoyalBankCreditLine(rbc);
+            buyer.addScotiabankCreditLine(scotia);
+            buyer.addTorontoDominionCreditLine(td);
+            buyer.addCanadianImperialCreditLine(cibc);
+            
             buyer.setSaturdayToSundayBuyingDays();
+            
             em.persist(buyer);
             commitTransaction(em);   
             buyerId = buyer.getId();
@@ -369,6 +381,12 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             assertTrue("Amex card did not persist correctly.", buyer.hasAmex(amex));
             assertTrue("Diners Club card did not persist correctly.", buyer.hasDinersClub(diners));
             assertTrue("Mastercard card did not persist correctly.", buyer.hasMastercard(mastercard));
+            
+            assertTrue("RBC credit line did not persist correctly.", buyer.hasRoyalBankCreditLine(rbc));
+            assertTrue("Scotia credit line did not persist correctly.", buyer.hasScotiabankCreditLine(scotia));
+            assertTrue("TD credit line did not persist correctly.", buyer.hasTorontoDominionCreditLine(td));
+            assertTrue("CIBC credit line did not persist correctly.", buyer.hasCanadianImperialCreditLine(cibc));
+            
             assertTrue("The serialized enum set was not persisted correctly.", buyer.buysSaturdayToSunday());
             commitTransaction(em);
         } catch (RuntimeException e) {

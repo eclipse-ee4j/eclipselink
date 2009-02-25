@@ -138,6 +138,22 @@
                 </cascade>
                 <property name="attributeName" value="projects"/>
             </many-to-many>
+            <element-collection name="creditLines" fetch="EAGER">
+                <column name="ACCOUNT"/>
+                <map-key-column name="BANK"/>
+                <collection-table name="EMP_CREDITLINES">
+                    <join-column name="EMP_ID"/>
+                </collection-table>
+                <convert>Long2String</convert>
+                <convert-key>CreditLine</convert-key>
+                <object-type-converter name="CreditLine">
+                    <conversion-value data-value="RBC" object-value="RoyalBank"/>
+                    <conversion-value data-value="CIBC" object-value="CanadianImperial"/>
+                    <conversion-value data-value="SB" object-value="Scotiabank"/>
+                    <conversion-value data-value="TD" object-value="TorontoDominion"/>
+                </object-type-converter>
+                <property name="attributeName" value="creditLines"/>
+            </element-collection>
             <embedded name="period">
                 <attribute-override name="startDate">
                     <column name="START_DATE" nullable="false"/>

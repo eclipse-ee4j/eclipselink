@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -15,6 +15,8 @@
  *       - 241651: JPA 2.0 Access Type support
  *     02/06/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 2)
+ *     02/25/2009-2.0 Guy Pelletier 
+ *       - 265359: JPA 2.0 Element Collections - Metadata processing portions
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -158,16 +160,16 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
      * Used to process primary keys and DerivedIds.
      */
     protected Class getSimplePKType(){
-        MetadataDescriptor referenceDescriptor = this.getReferenceDescriptor();
-        org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor referenceAccessor;
-        referenceAccessor = referenceDescriptor.getClassAccessor();
+        MetadataDescriptor referenceDescriptor = getReferenceDescriptor();
+        ClassAccessor referenceAccessor = referenceDescriptor.getClassAccessor();
         
-        if (referenceAccessor.hasDerivedId()){
-            //referenced object has a derived ID and must be a simple pk type.  Recurse through to get the simple type
-            ObjectAccessor refIdAccessor = (ObjectAccessor)referenceDescriptor.getAccessorFor(referenceDescriptor.getIdAttributeName());
-            return refIdAccessor.getSimplePKType();
-        } else {//validate on their basic mapping:
-            return  referenceDescriptor.getAccessorFor(referenceDescriptor.getIdAttributeName()).getRawClass();
+        if (referenceAccessor.hasDerivedId()) {
+            // Referenced object has a derived ID and must be a simple pk type.  
+            // Recurse through to get the simple type.
+            return ((ObjectAccessor) referenceDescriptor.getAccessorFor(referenceDescriptor.getIdAttributeName())).getSimplePKType();
+        } else {
+            // Validate on their basic mapping.
+            return referenceDescriptor.getAccessorFor(referenceDescriptor.getIdAttributeName()).getRawClass();
         }
     }
     
@@ -290,11 +292,12 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
         } else {
             Type type = null;
             if (referenceAccessor.hasDerivedId()){
-                //referenced object has a derived ID but no PK class defined
-                //so it must be a simple pk type.  Recurse through to get the simple type
-                ObjectAccessor refIdAccessor = (ObjectAccessor)referenceDescriptor.getAccessorFor(referenceDescriptor.getIdAttributeName() );
-                type = refIdAccessor.getSimplePKType();
-            } else {//validate on their basic mapping:
+                // Referenced object has a derived ID but no PK class defined,
+                // so it must be a simple pk type. Recurse through to get the 
+                // simple type
+                type = ((ObjectAccessor) referenceDescriptor.getAccessorFor(referenceDescriptor.getIdAttributeName())).getSimplePKType();
+            } else {
+                // Validate on their basic mapping.
                 type = referenceDescriptor.getAccessorFor(referenceDescriptor.getIdAttributeName()).getRawClass();
             }
             

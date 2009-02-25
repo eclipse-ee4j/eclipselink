@@ -12,6 +12,8 @@
  *       - 248293: JPA 2.0 Element Collections (part 1)
  *     02/06/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 2)
+ *     02/25/2009-2.0 Guy Pelletier 
+ *       - 265359: JPA 2.0 Element Collections - Metadata processing portions
  ******************************************************************************/ 
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -206,11 +208,11 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
      * (Converter, TypeConverter, ObjectTypeConverter) to the given mapping.
      * 
      * This method is called in second stage processing and should only be
-     * called on accessors that have a @Convert specified.
+     * called on accessors that have a convert value specified.
      */
     @Override
     public void processConvert() {
-        DatabaseMapping mapping = getDescriptor().getMappingForAttributeName(getAttributeName());
+        DatabaseMapping mapping = getMapping();
         
         if (mapping.isDirectMapMapping()) {
             m_keyContextProcessing = true;

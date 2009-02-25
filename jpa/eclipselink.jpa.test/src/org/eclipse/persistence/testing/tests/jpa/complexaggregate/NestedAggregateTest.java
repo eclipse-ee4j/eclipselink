@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     02/25/2009-2.0 Guy Pelletier 
+ *       - 265359: JPA 2.0 Element Collections - Metadata processing portions
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.complexaggregate;
 
@@ -197,6 +199,54 @@ public class NestedAggregateTest extends EntityContainerTestBase {
             vitals6.setTeamVitals(teamVitals6);
             player6.setVitals(vitals6);
             
+            //////// Coach 1 ////////
+            HockeyCoach coach1 = new HockeyCoach();
+            coach1.setFirstName("Don");
+            coach1.setLastName("Hyslop");
+            
+            PersonalVitals coachPersonalVitals1 = new PersonalVitals();
+            coachPersonalVitals1.setAge(55);
+            coachPersonalVitals1.setHeight(1.85);
+            coachPersonalVitals1.setWeight(200);
+            
+            CoachVitals coachVitals1 = new CoachVitals();
+            coachVitals1.setPersonalVitals(coachPersonalVitals1);
+            coachVitals1.setHockeyTeam(team1);
+            team1.getCoaches().add(coach1);
+            coach1.setVitals(coachVitals1);
+            
+            //////// Coach 2 ////////
+            HockeyCoach coach2 = new HockeyCoach();
+            coach2.setFirstName("Al");
+            coach2.setLastName("Montoya");
+            
+            PersonalVitals coachPersonalVitals2 = new PersonalVitals();
+            coachPersonalVitals2.setAge(63);
+            coachPersonalVitals2.setHeight(1.86);
+            coachPersonalVitals2.setWeight(213);
+            
+            CoachVitals coachVitals2 = new CoachVitals();
+            coachVitals2.setPersonalVitals(coachPersonalVitals2);
+            coachVitals2.setHockeyTeam(team2);
+            team2.getCoaches().add(coach2);
+            coach2.setVitals(coachVitals2);
+            
+            //////// Coach 3 ////////
+            HockeyCoach coach3 = new HockeyCoach();
+            coach3.setFirstName("Guy");
+            coach3.setLastName("Carbonneau");
+            
+            PersonalVitals coachPersonalVitals3 = new PersonalVitals();
+            coachPersonalVitals3.setAge(47);
+            coachPersonalVitals3.setHeight(1.91);
+            coachPersonalVitals3.setWeight(191);
+            
+            CoachVitals coachVitals3 = new CoachVitals();
+            coachVitals3.setPersonalVitals(coachPersonalVitals3);
+            coachVitals3.setHockeyTeam(team3);
+            team3.getCoaches().add(coach3);
+            coach3.setVitals(coachVitals3);
+            
             //////// Commit the new objects ////////
             beginTransaction();
             
@@ -214,6 +264,9 @@ public class NestedAggregateTest extends EntityContainerTestBase {
                 getEntityManager().persist(player4);
                 getEntityManager().persist(player5);
                 getEntityManager().persist(player6);
+                getEntityManager().persist(coach1);
+                getEntityManager().persist(coach2);
+                getEntityManager().persist(coach3);
                 
                 commitTransaction();
             }catch (RuntimeException ex){
@@ -251,7 +304,11 @@ public class NestedAggregateTest extends EntityContainerTestBase {
         }
         
         if (team.getPlayers().size() != 2) {
-            throw new TestErrorException("Hockey team with ID: " + id + ", did not have 2 players added.");
+            throw new TestErrorException("Hockey team with ID: " + id + ", did not have 2 players, had: " + team.getPlayers().size());
+        }
+        
+        if (team.getCoaches().size() != 1) {
+            throw new TestErrorException("Hockey team with ID: " + id + ", did not have 1 coach, had: " + team.getCoaches().size());
         }
     }
 }

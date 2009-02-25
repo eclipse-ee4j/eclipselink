@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     09/23/2008-1.1 Guy Pelletier 
  *       - 241651: JPA 2.0 Access Type support
+ *     02/25/2009-2.0 Guy Pelletier 
+ *       - 265359: JPA 2.0 Element Collections - Metadata processing portions
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.xml.advanced;
 
@@ -79,6 +81,12 @@ public class Employee implements Serializable {
     private static final String MASTERCARD = "Mastercard";
     private static final String VISA = "Visa";
     
+    private Map<String, Long> creditLines;
+    private static final String ROYAL_BANK = "RoyalBank";
+    private static final String CANADIAN_IMPERIAL = "CanadianImperial";
+    private static final String SCOTIABANK = "Scotiabank";
+    private static final String TORONTO_DOMINION = "TorontoDominion";
+    
     /** Transformation mapping, a two(2) element array holding the employee's normal working hours (START_TIME & END_TIME),
     this is stored into two different fields in the employee table. */
     private Time[] normalHours;
@@ -95,8 +103,9 @@ public class Employee implements Serializable {
         projects = new Vector<Project>();
         managedEmployees = new Vector<Employee>();
         responsibilities = new Vector<String>();
-        this.dealers = new ArrayList<Dealer>();
+        dealers = new ArrayList<Dealer>();
         creditCards = new HashMap<String, Long>();
+        creditLines = new HashMap<String, Long>();
         normalHours = new Time[2];
         overtimeHours = new Time[2];
 	}
@@ -109,6 +118,10 @@ public class Employee implements Serializable {
 
     public void addAmex(long number) {
         getCreditCards().put(AMEX, new Long(number));
+    }
+    
+    public void addCanadianImperialCreditLine(long number) {
+        getCreditLines().put(CANADIAN_IMPERIAL, new Long(number));
     }
     
     public void addDealer(Dealer dealer) {
@@ -141,6 +154,18 @@ public class Employee implements Serializable {
         getResponsibilities().add(responsibility);
     }
 
+    public void addRoyalBankCreditLine(long number) {
+        getCreditLines().put(ROYAL_BANK, new Long(number));
+    }
+    
+    public void addScotiabankCreditLine(long number) {
+        getCreditLines().put(SCOTIABANK, new Long(number));
+    }
+    
+    public void addTorontoDominionCreditLine(long number) {
+        getCreditLines().put(TORONTO_DOMINION, new Long(number));
+    }
+    
     public void addVisa(long number) {
         getCreditCards().put(VISA, new Long(number));
     }
@@ -189,6 +214,12 @@ public class Employee implements Serializable {
     @Transient
     public Map<String, Long> getCreditCards() {
         return creditCards;
+    }
+    
+    // EclipseLink feature, mark it transient so JPA ORM doesn't process it.
+    @Transient
+    public Map<String, Long> getCreditLines() {
+        return creditLines;
     }
     
     public List<Dealer> getDealers() {
@@ -295,11 +326,23 @@ public class Employee implements Serializable {
         return hasCard(creditCards.get(AMEX), number);
     }
     
+    public boolean hasCanadianImperialCreditLine(long number) {
+        return hasCreditLine(creditLines.get(CANADIAN_IMPERIAL), number);
+    }
+    
     private boolean hasCard(Long cardNumber, long number) {
         if (cardNumber == null) {
             return false;
         } else {
             return cardNumber.longValue() == number;
+        }
+    }
+    
+    private boolean hasCreditLine(Long creditLineNumber, long number) {
+        if (creditLineNumber == null) {
+            return false;
+        } else {
+            return creditLineNumber.longValue() == number;
         }
     }
     
@@ -309,6 +352,18 @@ public class Employee implements Serializable {
     
     public boolean hasMastercard(long number) {
         return hasCard(creditCards.get(MASTERCARD), number);
+    }
+    
+    public boolean hasRoyalBankCreditLine(long number) {
+        return hasCreditLine(creditLines.get(ROYAL_BANK), number);
+    }
+    
+    public boolean hasScotiabankCreditLine(long number) {
+        return hasCreditLine(creditLines.get(SCOTIABANK), number);
+    }
+    
+    public boolean hasTorontoDominionCreditLine(long number) {
+        return hasCreditLine(creditLines.get(TORONTO_DOMINION), number);
     }
     
     public boolean hasVisa(long number) {
@@ -363,6 +418,10 @@ public class Employee implements Serializable {
     protected void setCreditCards(Map<String, Long> creditCards) {
         this.creditCards = creditCards;
     }  
+    
+    protected void setCreditLines(Map<String, Long> creditLines) {
+        this.creditLines = creditLines;
+    } 
     
     public void setDealers(List<Dealer> dealers) {
         this.dealers = dealers;

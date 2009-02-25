@@ -14,6 +14,8 @@
  *       - 248293: JPA 2.0 Element Collections (part 1)
  *     02/06/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 2)
+ *     02/25/2009-2.0 Guy Pelletier 
+ *       - 265359: JPA 2.0 Element Collections - Metadata processing portions
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
@@ -29,7 +31,6 @@ import javax.persistence.JoinColumn;
 @DiscriminatorValue(value="NBC")
 @AttributeOverrides({
     @AttributeOverride(name="records.date", column=@Column(name="REC_DATE")),
-    @AttributeOverride(name="records.description", column=@Column(name="DESCRIP")),
     @AttributeOverride(name="records.venue.name", column=@Column(name="VENUE")),
     @AttributeOverride(name="records.venue.history.yearBuilt", column=@Column(name="VENUE_YEAR_BUILT")),
     @AttributeOverride(name="records.venue.history.builder", column=@Column(name="VENUE_BUILDER"))

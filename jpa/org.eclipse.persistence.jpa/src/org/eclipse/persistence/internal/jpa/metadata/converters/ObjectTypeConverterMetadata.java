@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
+ *     02/25/2009-2.0 Guy Pelletier 
+ *       - 265359: JPA 2.0 Element Collections - Metadata processing portions
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
@@ -225,18 +227,6 @@ public class ObjectTypeConverterMetadata extends TypeConverterMetadata {
     public void setConversionValues(List<ConversionValueMetadata> conversionValues) {
         m_conversionValues = conversionValues;
     }
-    
-    /**
-     * INTERNAL:
-     * Called from annotation population.
-     */
-    //protected void setConversionValues(Annotation[] conversionValues) {
-        //m_conversionValues = new ArrayList<ConversionValueMetadata>();
-        //    
-        //for (Annotation conversionValue: conversionValues) {
-          //  m_conversionValues.add(new ConversionValueMetadata(conversionValue, getLocation()));
-           //}
-    //}
     
     /**
      * INTERNAL:

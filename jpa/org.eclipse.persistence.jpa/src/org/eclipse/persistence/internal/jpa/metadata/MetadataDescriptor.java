@@ -29,6 +29,8 @@
  *       - 248293: JPA 2.0 Element Collections (part 1)
  *     02/06/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 2)
+ *     02/25/2009-2.0 Guy Pelletier 
+ *       - 265359: JPA 2.0 Element Collections - Metadata processing portions
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -377,6 +379,26 @@ public class MetadataDescriptor {
             }
         }
         
+        if (accessor == null) {
+            // We didn't find an accessor on our descriptor (or a parent descriptor), 
+            // check our aggregate descriptors now.
+            for (MetadataDescriptor embeddableDescriptor : m_embeddableDescriptors) {
+                // If the attribute name employs the dot notation, rip off the first 
+                // bit (up to the first dot and keep burying down the embeddables)
+                String subAttributeName = new String(fieldOrPropertyName);
+                if (subAttributeName.contains(".")) {
+                    subAttributeName = subAttributeName.substring(fieldOrPropertyName.indexOf(".") + 1);
+                }
+            
+                accessor = embeddableDescriptor.getAccessorFor(subAttributeName);
+            
+                if (accessor != null) {
+                    // Found one, stop looking ...
+                    return accessor;
+                }
+            }
+        }
+        
         return accessor;
     }
     
@@ -558,7 +580,7 @@ public class MetadataDescriptor {
                     m_idOrderByAttributeNames = getInheritanceRootDescriptor().getIdAttributeNames();
                 } else {
                     // We must have a composite primary key as a result of an embedded id.
-                    m_idOrderByAttributeNames = (getAccessorFor(getEmbeddedIdAttributeName())).getReferenceDescriptor().getOrderByAttributeNames();
+                    m_idOrderByAttributeNames = getAccessorFor(getEmbeddedIdAttributeName()).getReferenceDescriptor().getOrderByAttributeNames();
                 } 
             } else {
                 m_idOrderByAttributeNames = m_idAttributeNames;
@@ -680,37 +702,8 @@ public class MetadataDescriptor {
                 relationshipAccessor.processRelationship();
             }
             
-            // Return the mapping from the accessors descriptor since it may
-            // be our descriptor or a parent descriptor from an inheritance 
-            // hierarchy.
-            return accessor.getDescriptor().getClassDescriptor().getMappingForAttributeName(attributeName);
-        }
-        
-        // We didn't find a mapping on our descriptor (or a parent descriptor), 
-        // check our aggregate descriptors now.
-        for (MetadataDescriptor embeddableDescriptor : m_embeddableDescriptors) {
-            // If the attribute name employs the dot notation, rip off the first 
-            // bit (up to the first dot and keep burying down the embeddables)
-            String subAttributeName = new String(attributeName);
-            if (subAttributeName.contains(".")) {
-                subAttributeName = subAttributeName.substring(attributeName.indexOf(".") + 1);
-            }
-            
-            DatabaseMapping mapping = embeddableDescriptor.getMappingForAttributeName(subAttributeName, referencingAccessor);
-            
-            if (mapping != null) {
-                return mapping;
-            }
-        }
-        
-        // This is kinda catch all functionality. Probably could handle it a 
-        // bit better? 
-        // TODO; When do we hit this?
-        String subAttributeName = new String(attributeName);
-        if (subAttributeName.contains(".")) {
-            subAttributeName = subAttributeName.substring(attributeName.indexOf(".") + 1);
-            
-            return getMappingForAttributeName(subAttributeName, referencingAccessor);
+            // Return the mapping stored on the accessor.
+            return accessor.getMapping();
         }
         
         // Found nothing ... return null.

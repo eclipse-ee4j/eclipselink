@@ -312,6 +312,8 @@
                    minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="many-to-many" type="orm:many-to-many" 
                    minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="element-collection" type="orm:element-collection"
+                   minOccurs="0" maxOccurs="unbounded" />             
       <xsd:element name="embedded" type="orm:embedded"
                    minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="transformation" type="orm:transformation"
@@ -1530,6 +1532,108 @@
   </xsd:complexType>
 
   <!-- **************************************************** -->
+  
+  <xsd:complexType name="map-key-class">
+    <xsd:annotation>
+      <xsd:documentation>
+        @Target({METHOD, FIELD}) @Retention(RUNTIME)
+        public @interface MapKeyClass {
+          Class value();
+        }
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="class" type="xsd:string" use="required" />
+  </xsd:complexType>
+  
+  <!-- **************************************************** -->
+  
+  <xsd:complexType name="map-key-column">
+    <xsd:annotation>
+      <xsd:documentation>
+        @Target({METHOD, FIELD}) @Retention(RUNTIME)
+        public @interface MapKeyColumn {
+          String name() default "";
+          boolean unique() default false;
+          boolean nullable() default false;
+          boolean insertable() default true;
+          boolean updatable() default true;
+          String columnDefinition() default "";
+          String table() default "";
+          int length() default 255;
+          int precision() default 0; // decimal precision
+          int scale() default 0; // decimal scale
+        }
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="name" type="xsd:string" />
+    <xsd:attribute name="unique" type="xsd:boolean" />
+    <xsd:attribute name="nullable" type="xsd:boolean" />
+    <xsd:attribute name="insertable" type="xsd:boolean" />
+    <xsd:attribute name="updatable" type="xsd:boolean" />
+    <xsd:attribute name="column-definition" type="xsd:string" />
+    <xsd:attribute name="table" type="xsd:string" />
+    <xsd:attribute name="length" type="xsd:int" />
+    <xsd:attribute name="precision" type="xsd:int" />
+    <xsd:attribute name="scale" type="xsd:int" />
+  </xsd:complexType>
+    
+  <!-- **************************************************** -->
+    
+  <xsd:complexType name="map-key-join-column">
+    <xsd:annotation>
+      <xsd:documentation>
+        @Target({METHOD, FIELD}) @Retention(RUNTIME)
+        public @interface MapKeyJoinColumn {
+          String name() default "";
+          String referencedColumnName() default "";
+          boolean unique() default false;
+          boolean nullable() default false;
+          boolean insertable() default true;
+          boolean updatable() default true;
+          String columnDefinition() default "";
+          String table() default "";
+        }
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="name" type="xsd:string" />
+    <xsd:attribute name="referenced-column-name" type="xsd:string" />
+    <xsd:attribute name="unique" type="xsd:boolean" />
+    <xsd:attribute name="nullable" type="xsd:boolean" />
+    <xsd:attribute name="insertable" type="xsd:boolean" />
+    <xsd:attribute name="updatable" type="xsd:boolean" />
+    <xsd:attribute name="column-definition" type="xsd:string" />
+    <xsd:attribute name="table" type="xsd:string" />
+  </xsd:complexType>
+      
+  <!-- **************************************************** -->
+  
+  <xsd:complexType name="order-column">
+    <xsd:annotation>
+      <xsd:documentation>
+        @Target({METHOD, FIELD}) @Retention(RUNTIME)
+        public @interface OrderColumn {
+          String name() default "";
+          boolean nullable() default true;
+          boolean insertable() default true;
+          boolean updatable() default true;
+          String columnDefinition() default "";
+          boolean contiguous() default true;
+          int base() default 0;
+          String table() default "";
+        }
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="name" type="xsd:string" />
+    <xsd:attribute name="nullable" type="xsd:boolean" />
+    <xsd:attribute name="insertable" type="xsd:boolean" />
+    <xsd:attribute name="updatable" type="xsd:boolean" />
+    <xsd:attribute name="column-definition" type="xsd:string" />
+    <xsd:attribute name="contiguous" type="xsd:boolean" />
+    <xsd:attribute name="base" type="xsd:int" />
+    <xsd:attribute name="table" type="xsd:string" />
+  </xsd:complexType>
+    
+  <!-- **************************************************** -->
 
   <xsd:simpleType name="order-by">
     <xsd:annotation>
@@ -1654,6 +1758,58 @@
     <xsd:attribute name="length" type="xsd:int"/>
   </xsd:complexType>
 
+  <!-- **************************************************** -->
+  
+  <xsd:complexType name="element-collection">
+    <xsd:annotation>
+      <xsd:documentation>
+        @Target({METHOD, FIELD}) @Retention(RUNTIME)
+        public @interface ElementCollection {
+          Class targetClass() default void.class;
+          FetchType fetch() default LAZY;
+        }
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="column" type="orm:column" minOccurs="0"/>
+      <xsd:element name="attribute-override" type="orm:attribute-override" 
+                   minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="association-override" type="orm:association-override" 
+                   minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:choice>
+        <xsd:element name="order-by" type="orm:order-by" minOccurs="0"/>
+        <xsd:element name="order-column" type="orm:order-column" minOccurs="0"/>
+      </xsd:choice>
+      <xsd:choice>
+        <xsd:element name="map-key" type="orm:map-key" minOccurs="0"/>
+        <xsd:sequence>
+          <xsd:element name="map-key-class" type="orm:map-key-class" minOccurs="0"/>
+          <xsd:choice>
+            <xsd:element name="map-key-column" type="orm:map-key-column"
+                         minOccurs="0"/>
+            <xsd:element name="map-key-join-column" type="orm:map-key-join-column"
+                         minOccurs="0" maxOccurs="unbounded"/>
+          </xsd:choice>
+        </xsd:sequence>
+      </xsd:choice>
+      <xsd:element name="collection-table" type="orm:collection-table" minOccurs="0"/>
+      <xsd:element name="convert" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="convert-key" type="xsd:string" minOccurs="0"/>
+      <xsd:choice minOccurs="0" maxOccurs="2">
+        <xsd:element name="converter" type="orm:converter"/>
+        <xsd:element name="type-converter" type="orm:type-converter"/>
+        <xsd:element name="object-type-converter" type="orm:object-type-converter"/>
+        <xsd:element name="struct-converter" type="orm:struct-converter"/>
+      </xsd:choice>
+      <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="access-methods" type="orm:access-methods" minOccurs="0" maxOccurs="1"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="target-class" type="xsd:string"/>
+    <xsd:attribute name="fetch" type="orm:fetch-type"/>
+    <xsd:attribute name="access" type="orm:access-type"/>
+  </xsd:complexType>
+    
   <!-- **************************************************** -->
 
   <xsd:complexType name="embeddable">
@@ -2143,6 +2299,32 @@
   <xsd:complexType name="collection-table">
     <xsd:annotation>
       <xsd:documentation>
+        @Target({METHOD, FIELD}) @Retention(RUNTIME)
+        public @interface CollectionTable {
+          String name() default "";
+          String catalog() default "";
+          String schema() default "";
+          JoinColumn[] joinColumns() default {};
+          UniqueConstraint[] uniqueConstraints() default {};
+        }
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="join-column" type="orm:join-column" minOccurs="0"
+        maxOccurs="unbounded" />
+      <xsd:element name="unique-constraint" type="orm:unique-constraint"
+        minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string" />
+    <xsd:attribute name="catalog" type="xsd:string" />
+    <xsd:attribute name="schema" type="xsd:string" />
+    </xsd:complexType>
+    
+  <!-- **************************************************** -->
+  
+  <xsd:complexType name="eclipselink-collection-table">
+    <xsd:annotation>
+      <xsd:documentation>
 
         @Target({METHOD, FIELD})
         @Retention(RUNTIME)
@@ -2235,7 +2417,7 @@
         <xsd:element name="object-type-converter" type="orm:object-type-converter"/>
         <xsd:element name="struct-converter" type="orm:struct-converter"/>
       </xsd:choice>
-      <xsd:element name="collection-table" type="orm:collection-table" minOccurs="0"/>
+      <xsd:element name="collection-table" type="orm:eclipselink-collection-table" minOccurs="0"/>
       <xsd:element name="join-fetch" type="orm:join-fetch-type" minOccurs="0"/>
       <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="access-methods" type="orm:access-methods" minOccurs="0" maxOccurs="1"/>
@@ -2305,7 +2487,7 @@
         <xsd:element name="object-type-converter" type="orm:object-type-converter"/>
         <xsd:element name="struct-converter" type="orm:struct-converter"/>
       </xsd:choice>    
-      <xsd:element name="collection-table" type="orm:collection-table" minOccurs="0"/>
+      <xsd:element name="collection-table" type="orm:eclipselink-collection-table" minOccurs="0"/>
       <xsd:element name="join-fetch" type="orm:join-fetch-type" minOccurs="0"/>
       <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="access-methods" type="orm:access-methods" minOccurs="0" maxOccurs="1"/>

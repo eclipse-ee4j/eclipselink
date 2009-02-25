@@ -21,6 +21,8 @@
  *       - 241651: JPA 2.0 Access Type support    
  *     02/06/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 2)
+ *     02/25/2009-2.0 Guy Pelletier 
+ *       - 265359: JPA 2.0 Element Collections - Metadata processing portions
  *******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
@@ -892,6 +894,14 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getMapKeyColumnMapping());
         descriptor.addMapping(getMapKeyJoinColumnMapping());
         descriptor.addMapping(getCollectionTableMapping());
+        descriptor.addMapping(getConvertMapping());
+        descriptor.addMapping(getConvertKeyMapping());
+        descriptor.addMapping(getConverterMapping());
+        descriptor.addMapping(getTypeConverterMapping());
+        descriptor.addMapping(getObjectTypeConverterMapping());
+        descriptor.addMapping(getStructConverterMapping());
+        descriptor.addMapping(getPropertiesMapping());
+        descriptor.addMapping(getAccessMethodsMapping());
         
         // Attribute mappings.
         descriptor.addMapping(getNameAttributeMapping());
@@ -2255,13 +2265,13 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
      * INTERNAL:
      */
     protected XMLCompositeObjectMapping getAccessMethodsMapping() {
-        XMLCompositeObjectMapping columnMapping = new XMLCompositeObjectMapping();
-        columnMapping.setAttributeName("m_accessMethods");
-        columnMapping.setGetMethodName("getAccessMethods");
-        columnMapping.setSetMethodName("setAccessMethods");
-        columnMapping.setReferenceClass(AccessMethodsMetadata.class);
-        columnMapping.setXPath("orm:access-methods");
-        return columnMapping;
+        XMLCompositeObjectMapping accessMethodsMapping = new XMLCompositeObjectMapping();
+        accessMethodsMapping.setAttributeName("m_accessMethods");
+        accessMethodsMapping.setGetMethodName("getAccessMethods");
+        accessMethodsMapping.setSetMethodName("setAccessMethods");
+        accessMethodsMapping.setReferenceClass(AccessMethodsMetadata.class);
+        accessMethodsMapping.setXPath("orm:access-methods");
+        return accessMethodsMapping;
     }
     
     /**
@@ -2464,6 +2474,18 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         convertersMapping.setReferenceClass(ConverterMetadata.class);
         convertersMapping.setXPath("orm:converter");
         return convertersMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getConvertKeyMapping() {
+        XMLDirectMapping convertKeyMapping = new XMLDirectMapping();
+        convertKeyMapping.setAttributeName("m_convertKey");
+        convertKeyMapping.setGetMethodName("getConvertKey");
+        convertKeyMapping.setSetMethodName("setConvertKey");
+        convertKeyMapping.setXPath("orm:convert-key/text()");
+        return convertKeyMapping;
     }
     
     /**

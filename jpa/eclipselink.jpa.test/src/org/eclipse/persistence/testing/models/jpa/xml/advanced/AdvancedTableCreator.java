@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     01/28/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 1)
+ *     02/25/2009-2.0 Guy Pelletier 
+ *       - 265359: JPA 2.0 Element Collections - Metadata processing portions
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.xml.advanced;
 
@@ -22,6 +24,7 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
 
         addTableDefinition(buildADDRESSTable());
         addTableDefinition(buildCREDITCARDSTable());
+        addTableDefinition(buildCREDITLINESTable());
         addTableDefinition(buildCUSTOMERTable());
         addTableDefinition(buildDEALERTable());
         addTableDefinition(buildEMPLOYEETable());
@@ -174,6 +177,44 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         fieldNUMB.setUnique(false);
         fieldNUMB.setIsIdentity(false);
         table.addField(fieldNUMB);
+    
+        return table;
+    }
+    
+    public static TableDefinition buildCREDITLINESTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("EMP_CREDITLINES");
+    
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("EMP_ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setIsPrimaryKey(false);
+        fieldID.setUnique(false);
+        fieldID.setIsIdentity(false);
+        fieldID.setForeignKeyFieldName("CMP3_XML_EMPLOYEE.EMP_ID");
+        table.addField(fieldID);
+    
+        FieldDefinition fieldBANK = new FieldDefinition();
+        fieldBANK.setName("BANK");
+        fieldBANK.setTypeName("VARCHAR");
+        fieldBANK.setSize(4);
+        fieldBANK.setShouldAllowNull(false);
+        fieldBANK.setIsPrimaryKey(false);
+        fieldBANK.setUnique(true);
+        fieldBANK.setIsIdentity(false);
+        table.addField(fieldBANK);
+        
+        FieldDefinition fieldACCOUNT = new FieldDefinition();
+        fieldACCOUNT.setName("ACCOUNT");
+        fieldACCOUNT.setTypeName("VARCHAR");
+        fieldACCOUNT.setSize(10);
+        fieldACCOUNT.setShouldAllowNull(false);
+        fieldACCOUNT.setIsPrimaryKey(false);
+        fieldACCOUNT.setUnique(false);
+        fieldACCOUNT.setIsIdentity(false);
+        table.addField(fieldACCOUNT);
     
         return table;
     }
