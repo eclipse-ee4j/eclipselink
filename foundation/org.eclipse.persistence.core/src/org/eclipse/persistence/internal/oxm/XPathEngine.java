@@ -470,7 +470,7 @@ public class XPathEngine {
         XPathFragment nextFragment = fragment.getNextFragment();
         if ((nextFragment != null) && nextFragment.isAttribute()) {
             addAttribute(nextFragment, xmlField, element, value, session);
-        } else if (value instanceof String) {
+        } else if (value instanceof String && !"".equals(value)) {
             addText(xmlField, element, (String)value);
         }
         return element;

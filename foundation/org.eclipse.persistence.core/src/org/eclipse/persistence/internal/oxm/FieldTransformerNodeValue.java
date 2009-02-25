@@ -75,10 +75,6 @@ public class FieldTransformerNodeValue extends NodeValue {
     }    
     
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord) {
-        if (!xmlField.getLastXPathFragment().nameIsText()) {
-            //unmarshalRecord.resetStringBuffer();
-            return;
-        }
         Object value = unmarshalRecord.getStringBuffer().toString();
         boolean isCDATA = unmarshalRecord.isBufferCDATA();
         unmarshalRecord.resetStringBuffer();
