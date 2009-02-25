@@ -120,8 +120,9 @@ public abstract class MarshalRecord extends XMLRecord {
         } else if (lastFragment.isAttribute()) {
             String stringValue = (String)xcm.convertObject(value, String.class);
             attribute(lastFragment, xmlField.getNamespaceResolver(), stringValue);
+        } else {
+            element(lastFragment.getNamespaceURI(), lastFragment.getXPath(), lastFragment.getShortName());
         }
-        // Do nothing for elements        
     }
 
     /**

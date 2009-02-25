@@ -16,31 +16,33 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.transformation.element.ElementNSTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.transformation.element.ElementTestCases;
 
 /**
  *  @version $Header: TransformationMappingTestSuite.java 17-apr-2007.11:15:15 mmacivor Exp $
  *  @author  mmacivor
- *  @since   release specific (what release of product did this appear in)
  */
+public class TransformationMappingTestSuite extends TestCase {
 
-public class TransformationMappingTestSuite extends TestCase 
-{
-	public static Test suite() 
-	{    
-		TestSuite suite = new TestSuite("Transformation Mapping Suite");
-		suite.addTestSuite(TransformationMappingTestCases.class);
-		suite.addTestSuite(TransformationMappingErrorTestCases.class);
-    suite.addTestSuite(TransformationMappingAnyCollectionTestCases.class);
-    suite.addTestSuite(TransformationMappingAnyObjectTestCases.class);
-    suite.addTestSuite(TransformationMappingCompositeCollectionTestCases.class);
-    suite.addTestSuite(TransformationMappingCompositeObjectTestCases.class);
-    suite.addTestSuite(TransformationMappingNullTestCases.class);
-    
-		return suite;
-	}
-  
+    public static Test suite() {
+        TestSuite suite = new TestSuite("Transformation Mapping Suite");
+        suite.addTestSuite(TransformationMappingTestCases.class);
+        suite.addTestSuite(TransformationMappingErrorTestCases.class);
+        suite.addTestSuite(TransformationMappingAnyCollectionTestCases.class);
+        suite.addTestSuite(TransformationMappingAnyObjectTestCases.class);
+        suite.addTestSuite(TransformationMappingCompositeCollectionTestCases.class);
+        suite.addTestSuite(TransformationMappingCompositeObjectTestCases.class);
+        suite.addTestSuite(TransformationMappingNullTestCases.class);
+        suite.addTestSuite(ElementTestCases.class);
+        suite.addTestSuite(ElementNSTestCases.class);
+
+        return suite;
+    }
+
     public static void main(String[] args) {
         String[] arguments = { "-c", "org.eclipse.persistence.testing.oxm.mappings.transformation.TransformationMappingTestSuite" };
         junit.textui.TestRunner.main(arguments);
     }
+
 }
