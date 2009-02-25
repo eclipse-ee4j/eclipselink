@@ -873,6 +873,12 @@ public class XMLMarshaller {
     }
 
     private Document objectToXML(Object object, Node rootNode, XMLDescriptor descriptor, XMLRecord xmlRow, boolean isXMLRoot) {
+        if(null != rootNode) {
+            int rootNodeType = rootNode.getNodeType();
+            if(rootNodeType != Node.DOCUMENT_NODE && rootNodeType != Node.ELEMENT_NODE && rootNodeType != Node.DOCUMENT_FRAGMENT_NODE ) {
+                throw XMLMarshalException.marshalException(null);
+            }
+        }
         Document document = null;
         NamespaceResolver resolver = new NamespaceResolver();
         resolver.setDOM(rootNode);

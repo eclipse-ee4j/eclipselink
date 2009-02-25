@@ -15,6 +15,8 @@ package org.eclipse.persistence.platform.xml.jaxp;
 import java.io.OutputStream;
 import java.io.Writer;
 import java.net.URL;
+
+import javax.xml.transform.ErrorListener;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
@@ -133,6 +135,7 @@ public class JAXPTransformer implements XMLTransformer {
     public void transform(Document sourceDocument, Node resultParentNode, URL stylesheet) throws XMLPlatformException {
         try {
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            transformerFactory.setErrorListener(new TransformErrorListener());
             StreamSource stylesheetSource = new StreamSource(stylesheet.openStream());
             Transformer transformer = transformerFactory.newTransformer(stylesheetSource);
             DOMSource source = new DOMSource(sourceDocument);
@@ -150,4 +153,21 @@ public class JAXPTransformer implements XMLTransformer {
     public boolean isFragment() {
         return fragment;
     }
+
+    private static class TransformErrorListener implements ErrorListener {
+
+        public void error(TransformerException exception) throws TransformerException {
+            throw XMLPlatformException.xmlPlatformTransformException(exception);
+        }
+
+        public void fatalError(TransformerException exception) throws TransformerException {
+            throw XMLPlatformException.xmlPlatformTransformException(exception);
+        }
+
+        public void warning(TransformerException exception) throws TransformerException {
+            throw XMLPlatformException.xmlPlatformTransformException(exception);
+        }
+
+    }
+
 }
