@@ -12,8 +12,6 @@
 ******************************************************************************/
 package org.eclipse.persistence.sdo.helper.jaxb;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -22,7 +20,6 @@ import java.util.WeakHashMap;
 
 import javax.xml.namespace.QName;
 
-import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.oxm.MappingNodeValue;
