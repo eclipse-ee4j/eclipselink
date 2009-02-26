@@ -419,6 +419,6 @@ cat ${MAILBODY} | ${MAIL_EXEC} -s "${MAIL_SUBJECT}" ${MAILLIST}
 
 ## Remove tmp directory
 ##
-#rm -rf $tmp
+rm -rf $tmp
 
 CLASSPATH=${OLD_CLASSPATH}
