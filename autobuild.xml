@@ -46,6 +46,9 @@
     <target name="build-nightly"    description="Trigger the nightly automated build and lrg tests"
             depends="clean, build, test-lrg, publish-build, publish-results, test-for-errors"
     />
+    <target name="test-browser" description="Trigger the nightly automated build and lrg tests"
+            depends="run-browser"
+    />
     <target name="build-milestone"  description="Trigger build, testing, and publishing of a milestone release ('release' is a milestone in this case)"
             depends="clean, build, test-lrg, test-for-errors, create-tag, publish-build, publish-results"
     />
@@ -307,6 +310,14 @@
             <property name="eclipselink.logging.level" value="${test.logging.level}"/>
         </ant>
         <!-- delete file="${coretest.prop.file}"/ -->
+    </target>
+
+    <target name="run-browser">
+        <echo message="db.platform=${db.platform}${line.separator}"         file="${coretest.prop.file}" append="true"/>
+
+        <ant antfile="build.xml" dir="${build.root.dir}" target="test-browser">
+            <property name="eclipselink.logging.level" value="${test.logging.level}"/>
+        </ant>
     </target>
 
     <target name="publish-build">
