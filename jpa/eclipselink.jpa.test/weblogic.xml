@@ -76,6 +76,7 @@
         <copy file="${eclipselink.jar.name}" todir="${weblogic.domain}/lib"/>
         <copy file="${jdbc.driver.jar}" todir="${weblogic.domain}/lib"/>
         <copy file="${oracle.extensions.depend.dir}/${oracle.xdb.lib}" todir="${weblogic.domain}/lib"/>
+        <copy file="${oracle.extensions.depend.dir}/${oracle.spatial.lib}" todir="${weblogic.domain}/lib"/>
         <antcall target="weblogic-stop" inheritRefs="true"/>
     </target>
 

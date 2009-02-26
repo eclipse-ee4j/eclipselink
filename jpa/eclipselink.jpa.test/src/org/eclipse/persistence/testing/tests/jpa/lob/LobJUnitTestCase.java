@@ -64,7 +64,7 @@ public class LobJUnitTestCase extends JUnitTestCase {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
-            Image image = ImageSimulator.generateImage(1000, 800);
+            Image image = ImageSimulator.generateImage(4800, 4500);
             originalImage = image;
             em.persist(image);
             imageId = image.getId();

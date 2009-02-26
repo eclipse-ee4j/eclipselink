@@ -174,6 +174,7 @@
         <path id="compile.server.path">
             <path refid="compile.path"/>
             <pathelement path="${jdbc.driver.jar}"/>
+            <pathelement path="${oracle.extensions.depend.dir}/${oracle.spatial.lib}"/>
         </path>
     </target>
 
@@ -1170,6 +1171,7 @@
         <antcall target="server-test-xmltest" inheritRefs="true"/>
         <antcall target="server-test-oracle-timestamptz" inheritRefs="true"/>
         <antcall target="server-test-custom-features" inheritRefs="true"/>
+        <antcall target="server-test-struct-converter" inheritRefs="true"/>
         <antcall target="generate-report" inheritRefs="true"/>
     </target>
 
@@ -1454,6 +1456,31 @@
             <param name="TEST_NAME" value="eclipselink-customfeatures-model"/>
             <param name="EAR_NAME" value="eclipselink-customfeatures-model"/>
             <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.customfeatures.CustomFeaturesJUnitTestSuite"/>
+            <param name="eclipselink.jpa.test.dir" value="./../../foundation/eclipselink.extension.oracle.test"/>
+        </antcall>
+    </target>
+
+    <target name="server-test-struct-converter" if="is.oracle">
+        <echo message="Creating MY_GEOMETRY datatype for spatial tests: ${db.url}..."/>
+        <sql driver="${db.driver}"
+            url="${db.url}"
+            userid="${db.user}"
+            password="${db.pwd}"
+            onerror="continue"
+            >
+            <classpath>
+                <pathelement location="${jdbc.driver.jar}"/>
+            </classpath>
+CREATE OR REPLACE TYPE MY_GEOMETRY AS OBJECT (id NUMBER, geom MDSYS.SDO_GEOMETRY);
+        </sql>
+        <antcall target="server-run-all" inheritRefs="true">
+            <param name="PERSISTENCE_UNIT_NAME" value="structConverter"/>
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/structconverter"/>
+            <param name="MODEL_NAME" value="eclipselink-structconverter-model"/>
+            <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/structconverter"/>
+            <param name="TEST_NAME" value="eclipselink-structconverter-model"/>
+            <param name="EAR_NAME" value="eclipselink-structconverter-model"/>
+            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.structconverter.StructConverterServerTestSuite"/>
             <param name="eclipselink.jpa.test.dir" value="./../../foundation/eclipselink.extension.oracle.test"/>
         </antcall>
     </target>
