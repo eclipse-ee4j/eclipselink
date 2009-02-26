@@ -192,7 +192,7 @@ public class SchemaGenerator {
                 } else {
                     if (helper.isAnnotationPresent(valueField.getElement(), XmlSchemaType.class)) {
                         XmlSchemaType schemaType = (XmlSchemaType) helper.getAnnotation(valueField.getElement(), XmlSchemaType.class);
-                        baseType = new QName(XMLConstants.SCHEMA_INSTANCE_URL, schemaType.name());
+                        baseType = new QName(schemaType.namespace(), schemaType.name());
                     }
                     restriction.setBaseType(XMLConstants.SCHEMA_PREFIX + ":" + baseType.getLocalPart());
                     type.setRestriction(restriction);
@@ -217,7 +217,7 @@ public class SchemaGenerator {
             QName extensionType = getSchemaTypeFor(valueField.getType());
             if (helper.isAnnotationPresent(valueField.getElement(), XmlSchemaType.class)) {
                 XmlSchemaType schemaType = (XmlSchemaType) helper.getAnnotation(valueField.getElement(), XmlSchemaType.class);
-                extensionType = new QName(XMLConstants.SCHEMA_INSTANCE_URL, schemaType.name());
+                extensionType = new QName(schemaType.namespace(), schemaType.name());
             }
             Extension extension = new Extension();
             extension.setBaseType(XMLConstants.SCHEMA_PREFIX + ":" + extensionType.getLocalPart());

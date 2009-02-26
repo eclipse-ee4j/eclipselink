@@ -435,7 +435,7 @@ public class AnnotationsProcessor {
                     // Get schema-type info if specified and set it on the property for later use:
                     if (helper.isAnnotationPresent(property.getElement(), XmlSchemaType.class)) {
                         XmlSchemaType schemaType = (XmlSchemaType) helper.getAnnotation(property.getElement(), XmlSchemaType.class);
-                        QName schemaTypeQname = new QName(XMLConstants.SCHEMA_INSTANCE_URL, schemaType.name());
+                        QName schemaTypeQname = new QName(schemaType.namespace(), schemaType.name());
                         property.setSchemaType(schemaTypeQname);
                     }
                     if(helper.isAnnotationPresent(property.getElement(), XmlAttribute.class)) {
@@ -564,7 +564,7 @@ public class AnnotationsProcessor {
             // Get schema-type info if specified and set it on the property for later use:
             if (helper.isAnnotationPresent(property.getElement(), XmlSchemaType.class)) {
                 XmlSchemaType schemaType = (XmlSchemaType) helper.getAnnotation(property.getElement(), XmlSchemaType.class);
-                QName schemaTypeQname = new QName(XMLConstants.SCHEMA_INSTANCE_URL, schemaType.name());
+                QName schemaTypeQname = new QName(schemaType.namespace(), schemaType.name());
                 property.setSchemaType(schemaTypeQname);
             }            
             if (helper.isAnnotationPresent(property.getElement(), XmlAttachmentRef.class) && areEquals(ptype, JAVAX_ACTIVATION_DATAHANDLER)) {
@@ -735,7 +735,7 @@ public class AnnotationsProcessor {
         JavaClass jClass = helper.getJavaClass(javaType);
         if (jClass == null) { return; }
         
-        QName typeQName = new QName(XMLConstants.SCHEMA_INSTANCE_URL, schemaTypeName);
+        QName typeQName = new QName(type.namespace(), schemaTypeName);
         this.userDefinedSchemaTypes.put(jClass.getQualifiedName(), typeQName);
     }
     

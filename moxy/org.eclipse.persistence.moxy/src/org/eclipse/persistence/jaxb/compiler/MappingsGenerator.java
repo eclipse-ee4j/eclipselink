@@ -942,7 +942,7 @@ public class MappingsGenerator {
         if (javaType == null) {
             return;
         }
-        QName typeQName = new QName(XMLConstants.SCHEMA_INSTANCE_URL, schemaTypeName);
+        QName typeQName = new QName(type.namespace(), schemaTypeName);
         this.userDefinedSchemaTypes.put(javaType, typeQName);
     }
 
