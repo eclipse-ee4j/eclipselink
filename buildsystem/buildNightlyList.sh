@@ -87,15 +87,15 @@ for version in `ls -dr [0-9]*` ; do
         fi
         file=`ls | grep eclipselink-jaxb-[l,s]rg-[0-9]*html`
         if [ "${file}" != "" ] ; then
-            echo "            <td align=\"center\"> <a href=\"${BaseDisplayURL}/${version}/${contentdir}/${file}\"> Moxy (JAXB) </a> </td>" >> $tmp/index.xml
+            echo "            <td align=\"center\"> <a href=\"${BaseDisplayURL}/${version}/${contentdir}/${file}\"> MOXy (JAXB) </a> </td>" >> $tmp/index.xml
         else
-            echo "            <td align=\"center\"> Moxy (JAXB) </td>" >> $tmp/index.xml
+            echo "            <td align=\"center\"> MOXy (JAXB) </td>" >> $tmp/index.xml
         fi
         file=`ls | grep eclipselink-oxm-[l,s]rg-[0-9]*html`
         if [ "${file}" != "" ] ; then
-            echo "            <td align=\"center\"> <a href=\"${BaseDisplayURL}/${version}/${contentdir}/${file}\"> Moxy (OXM) </a> </td>" >> $tmp/index.xml
+            echo "            <td align=\"center\"> <a href=\"${BaseDisplayURL}/${version}/${contentdir}/${file}\"> MOXy (OXM) </a> </td>" >> $tmp/index.xml
         else
-            echo "            <td align=\"center\"> Moxy (OXM) </td>" >> $tmp/index.xml
+            echo "            <td align=\"center\"> MOXy (OXM) </td>" >> $tmp/index.xml
         fi
         file=`ls | grep eclipselink-sdo-[l,s]rg-[0-9]*html`
         if [ "${file}" != "" ] ; then
