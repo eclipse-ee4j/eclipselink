@@ -48,6 +48,7 @@ public class XMLConstants {
     public static final Class QNAME_CLASS = QName.class;
 
     // Built-in Schema Types    
+    public static final String ANY = "any";
     public static final String BASE_64_BINARY = "base64Binary";
     public static final String BOOLEAN = "boolean";
     public static final String BYTE = "byte";
@@ -78,6 +79,7 @@ public class XMLConstants {
     public static final String SWA_REF = "swaRef";
 
     // Schema Type QNames
+    public static final QName ANY_QNAME = new QName(SCHEMA_URL, ANY);
     public static final QName ANY_SIMPLE_TYPE_QNAME = new QName(SCHEMA_URL, ANY_SIMPLE_TYPE);
     public static final QName ANY_URI_QNAME = new QName(SCHEMA_URL, ANY_URI);
     public static final QName BASE_64_BINARY_QNAME = new QName(SCHEMA_URL, BASE_64_BINARY);
