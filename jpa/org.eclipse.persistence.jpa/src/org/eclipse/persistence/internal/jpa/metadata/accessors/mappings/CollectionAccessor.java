@@ -17,6 +17,8 @@
  *       - 248293: JPA 2.0 Element Collections (part 1)
  *     02/06/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 2)
+ *     02/26/2009-2.0 Guy Pelletier 
+ *       - 264001: dot notation for mapped-by and order-by
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -388,8 +390,18 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
 
                     if (referenceAccessor.isEmbedded()) {
                         for (String orderByAttributeName : referenceDescriptor.getOrderByAttributeNames()) {
-                            mapping.addAggregateOrderBy(attributeName, orderByAttributeName, ordering.equals(DESCENDING));        
+                            mapping.addAggregateOrderBy(m_orderBy, orderByAttributeName, ordering.equals(DESCENDING));        
                         }
+                    } else if (referenceAccessor.getClassAccessor().isEmbeddableAccessor()) {
+                        // We have a specific order by from an embeddable, we need to rip off 
+                        // the last bit of a dot notation if specified and pass in the chained 
+                        // string names of the nested embeddables only.
+                        String embeddableChain = m_orderBy;
+                        if (embeddableChain.contains(".")) {
+                            embeddableChain = embeddableChain.substring(0, embeddableChain.lastIndexOf("."));
+                        }
+                        
+                        mapping.addAggregateOrderBy(embeddableChain, attributeName, ordering.equals(DESCENDING)); 
                     } else {
                         mapping.addOrderBy(attributeName, ordering.equals(DESCENDING));    
                     }

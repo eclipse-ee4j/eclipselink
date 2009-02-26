@@ -23,6 +23,8 @@
  *       - 248293: JPA 2.0 Element Collections (part 1)
  *     02/06/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 2)
+ *     02/26/2009-2.0 Guy Pelletier 
+ *       - 264001: dot notation for mapped-by and order-by
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -54,6 +56,15 @@ public class EmbeddableAccessor extends ClassAccessor {
      */
     public EmbeddableAccessor(Annotation annotation, Class cls, MetadataProject project) {
         super(annotation, cls, project);
+    }
+    
+    /** 
+     * INTERNAL:
+     * Return true if this accessor represents an embeddable accessor.
+     */
+    @Override
+    public boolean isEmbeddableAccessor() {
+        return true;
     }
     
     /**

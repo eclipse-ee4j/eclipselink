@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     02/26/2009-2.0 Guy Pelletier 
+ *       - 264001: dot notation for mapped-by and order-by
  ******************************************************************************/  
 package org.eclipse.persistence.mappings;
 
@@ -90,7 +92,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     /**
      * PUBLIC:
      * Provide order support for queryKeyName in descending or ascending order.
-     * Called from the EJBAnnotationsProcessor when an @OrderBy is found.
+     * Called from the jpa metadata processing of an order by value.
      */
     public void addOrderBy(String queryKeyName, boolean isDescending) {
         if (isDescending) {
@@ -102,16 +104,31 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     
     /**
      * PUBLIC:
-     * Provide order support for queryKeyName in ascending order.
-     * Called from the EJBAnnotationsProcessor when an @OrderBy on an
-     * aggregate is found.
+     * Provide order support for queryKeyName in ascending or descending order.
+     * Called from the jpa metadata processing of an order by value. The 
+     * aggregate name may be chained through the dot notation.
      */
     public void addAggregateOrderBy(String aggregateName, String queryKeyName, boolean isDescending) {
         this.hasOrderBy = true;
         
         ReadAllQuery readAllQuery = (ReadAllQuery) getSelectionQuery();
         ExpressionBuilder builder = readAllQuery.getExpressionBuilder();
-        Expression expression = builder.get(aggregateName).get(queryKeyName);
+        Expression expression = null;
+        
+        if (aggregateName.contains(".")) {
+            StringTokenizer st = new StringTokenizer(aggregateName, ".");
+            while (st.hasMoreTokens()) {
+                if (expression == null) {
+                    expression = builder.get(st.nextToken());
+                } else {
+                    expression = expression.get(st.nextToken());
+                }
+            }
+            
+            expression = expression.get(queryKeyName);
+        } else {
+            expression = builder.get(aggregateName).get(queryKeyName);
+        }
         
         if (isDescending) {
             readAllQuery.addOrdering(expression.descending());

@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     02/25/2009-2.0 Guy Pelletier 
  *       - 265359: JPA 2.0 Element Collections - Metadata processing portions
+ *     02/26/2009-2.0 Guy Pelletier 
+ *       - 264001: dot notation for mapped-by and order-by
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.complexaggregate;
 
@@ -247,6 +249,54 @@ public class NestedAggregateTest extends EntityContainerTestBase {
             team3.getCoaches().add(coach3);
             coach3.setVitals(coachVitals3);
             
+            //////// Coach 4 ////////
+            HockeyCoach coach4 = new HockeyCoach();
+            coach4.setFirstName("Walter");
+            coach4.setLastName("Mullen");
+            
+            PersonalVitals coachPersonalVitals4 = new PersonalVitals();
+            coachPersonalVitals4.setAge(67);
+            coachPersonalVitals4.setHeight(1.94);
+            coachPersonalVitals4.setWeight(187);
+            
+            CoachVitals coachVitals4 = new CoachVitals();
+            coachVitals4.setPersonalVitals(coachPersonalVitals4);
+            coachVitals4.setHockeyTeam(team1);
+            team1.getCoaches().add(coach4);
+            coach4.setVitals(coachVitals4);
+            
+            //////// Coach 5 ////////
+            HockeyCoach coach5 = new HockeyCoach();
+            coach5.setFirstName("Ben");
+            coach5.setLastName("Gasket");
+            
+            PersonalVitals coachPersonalVitals5 = new PersonalVitals();
+            coachPersonalVitals5.setAge(33);
+            coachPersonalVitals5.setHeight(1.67);
+            coachPersonalVitals5.setWeight(155);
+            
+            CoachVitals coachVitals5 = new CoachVitals();
+            coachVitals5.setPersonalVitals(coachPersonalVitals5);
+            coachVitals5.setHockeyTeam(team2);
+            team2.getCoaches().add(coach5);
+            coach5.setVitals(coachVitals5);
+            
+            //////// Coach 6 ////////
+            HockeyCoach coach6 = new HockeyCoach();
+            coach6.setFirstName("Jim");
+            coach6.setLastName("Balogna");
+            
+            PersonalVitals coachPersonalVitals6 = new PersonalVitals();
+            coachPersonalVitals6.setAge(37);
+            coachPersonalVitals6.setHeight(1.77);
+            coachPersonalVitals6.setWeight(179);
+            
+            CoachVitals coachVitals6 = new CoachVitals();
+            coachVitals6.setPersonalVitals(coachPersonalVitals5);
+            coachVitals6.setHockeyTeam(team3);
+            team3.getCoaches().add(coach6);
+            coach6.setVitals(coachVitals6);
+            
             //////// Commit the new objects ////////
             beginTransaction();
             
@@ -264,12 +314,16 @@ public class NestedAggregateTest extends EntityContainerTestBase {
                 getEntityManager().persist(player4);
                 getEntityManager().persist(player5);
                 getEntityManager().persist(player6);
+                
                 getEntityManager().persist(coach1);
                 getEntityManager().persist(coach2);
                 getEntityManager().persist(coach3);
+                getEntityManager().persist(coach4);
+                getEntityManager().persist(coach5);
+                getEntityManager().persist(coach6);
                 
                 commitTransaction();
-            }catch (RuntimeException ex){
+            } catch (RuntimeException ex) {
                 rollbackTransaction();
                 throw ex;
             }
@@ -292,9 +346,17 @@ public class NestedAggregateTest extends EntityContainerTestBase {
         
         // Initialize the identity map to make sure they were persisted
         m_session.getIdentityMapAccessor().initializeAllIdentityMaps();
+        
         checkTeam(teamIDs[0]);
         checkTeam(teamIDs[1]);
         checkTeam(teamIDs[2]);
+        
+        // Verify the order by on coaches worked for team 1 (teamIDs[0])
+        HockeyTeam team = getEntityManager().find(HockeyTeam.class, teamIDs[0]);
+
+        if (((HockeyCoach) team.getCoaches().get(0)).getVitals().getPersonalVitals().getAge() != 67) {
+            throw new TestErrorException("The order by specification on age for hockey coaches was not observed.");
+        }
     }
     
     private void checkTeam(int id) {
@@ -307,8 +369,8 @@ public class NestedAggregateTest extends EntityContainerTestBase {
             throw new TestErrorException("Hockey team with ID: " + id + ", did not have 2 players, had: " + team.getPlayers().size());
         }
         
-        if (team.getCoaches().size() != 1) {
-            throw new TestErrorException("Hockey team with ID: " + id + ", did not have 1 coach, had: " + team.getCoaches().size());
+        if (team.getCoaches().size() != 2) {
+            throw new TestErrorException("Hockey team with ID: " + id + ", did not have 2 coach, had: " + team.getCoaches().size());
         }
     }
 }
