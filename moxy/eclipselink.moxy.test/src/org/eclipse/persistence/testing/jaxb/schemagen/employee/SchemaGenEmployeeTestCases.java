@@ -17,12 +17,22 @@ import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelImpl;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelInputImpl;
 
 import java.io.File;
+import java.io.InputStream;
+import java.io.StringReader;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 import junit.framework.TestCase;
 import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.platform.xml.XMLComparer;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
+
+import sun.util.logging.resources.logging;
 
 /**
  * Schema generation tests - based on the JAXB 2.0 TCK: 
@@ -53,8 +63,31 @@ public class SchemaGenEmployeeTestCases extends TestCase {
             msg = ex.toString();
         }
         assertTrue("Schema validation failed unexpectedly: " + msg, exception==false);
+                        
+        DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+        builderFactory.setIgnoringElementContentWhitespace(true);
+        DocumentBuilder parser = builderFactory.newDocumentBuilder();
+            
+        InputStream stream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/schemagen/employee/schema0.xsd");
+        Document control = parser.parse(stream);
+            
+        stream = ClassLoader.getSystemResourceAsStream("schema0.xsd");
+        Document test = parser.parse(stream);
+            
+        XMLComparer xmlComparer = new XMLComparer();
+        assertTrue("schema0.xsd did not match control document", xmlComparer.isNodeEqual(control, test));
+        	
+        stream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/schemagen/employee/schema1.xsd");
+        control = parser.parse(stream);
+            
+        stream = ClassLoader.getSystemResourceAsStream("schema1.xsd");
+        test = parser.parse(stream);
+                        
+        assertTrue("schema1.xsd did not match control document", xmlComparer.isNodeEqual(control, test));     
+        
     }
-
+    
+    
     /**
      * The following test expects a schema validation exception to occur.
      * This is due to the fact that the supplied instance document does

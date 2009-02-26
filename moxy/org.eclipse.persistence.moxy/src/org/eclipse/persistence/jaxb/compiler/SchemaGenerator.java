@@ -509,8 +509,8 @@ public class SchemaGenerator {
                     boolean isCollectionType = isCollectionType(next);
                     if (isCollectionType) {
                         JavaClass gType = next.getGenericType();
-                        if (gType != null && gType.hasActualTypeArguments()) {
-                            Object[] params = gType.getActualTypeArguments().toArray();
+                        if (gType != null && javaType.hasActualTypeArguments()) {
+                             Object[] params = javaType.getActualTypeArguments().toArray();
                             javaType = (JavaClass) params[0];
                         }
                     }

@@ -46,6 +46,6 @@ public class Employee
     @XmlList
     public java.util.Collection<String> responsibilities;
 
-    @XmlElement(name="peep", required=true, namespace="examplenamespace")
+    @XmlElement(name="peep", namespace="examplenamespace")
     public java.util.Collection<Employee> peeps;
 }
