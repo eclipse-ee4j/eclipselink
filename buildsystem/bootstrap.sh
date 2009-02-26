@@ -160,7 +160,7 @@ genTestSummary()
             Ttests=0
             Terrors=0
             Tfailures=0
-            first_line=1
+            first_line="true"
             for line in `cat ${infile}`
             do
                 if [ "`echo $line | grep 'test-'`" = "" ]
@@ -177,11 +177,11 @@ genTestSummary()
                     Tfailures=`expr "$Tfailures" + "$F"`
                 else
                     # If a header line, and not the first line print totals, next header, and zero out counts
-                    if [ ! "$first_line" -eq 0 ]
+                    if [ ! "$first_line" = "true" ]
                     then
                         echo "  Tests run:${tests} Failures:${failures} Errors:${errors}" >> ${outfile}
                     else
-                        first_line=0
+                        first_line="false"
                     fi
                     echo `echo $line | cut -d: -f2 | tr "[:lower:]" "[:upper:]"` >> ${outfile}
                     tests=0; errors=0; failures=0
@@ -342,7 +342,7 @@ MAILLIST="eric.gwin@oracle.com eric.gwin@oracle.com"
 MAILBODY=${LOG_DIR}/mailbody-${BRANCH_NM}_${TARG_NM}.txt
 DATA_FILE=${LOG_DIR}/data-${BRANCH_NM}_${TARG_NM}.txt
 
-#set -x
+set -x
 ## Verify Compile complete before bothering with post-build processing (skip if build failed, or cb detected no change)
 ##
 if [ \( ! "`tail ${DATED_LOG} | grep 'BUILD SUCCESSFUL'`" = "" \) -o \( "`cat $DATA_FILE | grep unnece | tr -d '[:punct:]'`" = "" \) ]
@@ -372,7 +372,7 @@ then
         MAIL_SUBJECT="${BRANCH_NM} ${TARG_NM} build has test failures!"
     fi
    
-    set -x
+    #set -x
     ## find the current version (cannot use $BRANCH, because need current version stored in ANT buildfiles)
     ##
     VERSION=`cat ${DATA_FILE} | grep -m1 "EL version" | cut -d= -f2 | tr -d '\047'`
