@@ -98,19 +98,17 @@ public class LoadAndSaveMixedContentTestCases extends LoadAndSaveTestCases {
         }
     }
 
-    // TODO: Uncomment this test when support for mixed text w/open sequenced type is added
-    /*
     public void testNoSchemaLoadAndSaveMixedComplexType() throws Exception {
         // registerTypes();
-        FileInputStream inputStream = new FileInputStream(getNoSchemaControlFileName());
+        String controlFileName = "./org/eclipse/persistence/testing/sdo/helper/xmlhelper/loadandsave/mixed/EmployeeNoXsiNamespace.xml";
+        FileInputStream inputStream = new FileInputStream(controlFileName);
         XMLDocument document = xmlHelper.load(inputStream, null, getOptions());
         verifyAfterLoad(document);
         StringWriter writer = new StringWriter();
         xmlHelper.save(document, writer, null);
-        compareXML(getNoSchemaControlWriteFileName(), writer.toString());
+        compareXML(controlFileName, writer.toString());
     }
-    */
-    
+
     public void testLoadAndSaveMixedComplexTypeFromDO() throws Exception {
         registerTypes();
         FileInputStream inputStream = new FileInputStream(getControlFileName());
