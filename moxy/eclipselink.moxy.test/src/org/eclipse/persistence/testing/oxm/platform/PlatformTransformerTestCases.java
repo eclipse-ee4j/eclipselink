@@ -89,6 +89,7 @@ public class PlatformTransformerTestCases extends OXTestCase {
 		
 	}
 	
+	/*
 	public void testTransformWithInvalidStyleSheet() throws Exception{
 		
 		try{
@@ -112,6 +113,7 @@ public class PlatformTransformerTestCases extends OXTestCase {
 		}
 		fail("An exception should have been caught but wasn't");	
 	}
+	*/
 	
 		
 	public void testTransformToOutputStream() throws Exception{		
