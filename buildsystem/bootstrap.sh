@@ -102,11 +102,11 @@ tmp=$tmp/somedir.$RANDOM.$RANDOM.$RANDOM.$$
 echo "results stored in: '${tmp}'"
 
 #Define common variables
+HOME_DIR=/shared/rt/eclipselink/staging
 BOOTSTRAP_BLDFILE=bootstrap.xml
 UD2M_BLDFILE=uploadDepsToMaven.xml
 JAVA_HOME=/shared/common/ibm-java-jdk-ppc-60
 ANT_HOME=/shared/common/apache-ant-1.7.0
-HOME_DIR=/shared/rt/eclipselink
 LOG_DIR=${HOME_DIR}/logs
 BRANCH_PATH=${HOME_DIR}/${BRANCH}trunk
 BLD_DEPS_DIR=${HOME_DIR}/bld_deps/${BRANCH_NM}
@@ -188,7 +188,10 @@ genTestSummary()
                 fi
             done
             # print out final totals
-            echo "  Tests run:${tests} Failures:${failures} Errors:${errors}" >> ${outfile}
+            if [ ! "$first_line" = "true" ]
+            then
+                echo "  Tests run:${tests} Failures:${failures} Errors:${errors}" >> ${outfile}
+            fi
         else
             echo "No test results to summarize!"
         fi
@@ -334,51 +337,31 @@ echo "Build complete."
 ##
 ## Post-build Processing
 ##
+MAIL_EXEC=/bin/mail
+MAILLIST="eric.gwin@oracle.com ejgwin@gmail.com tom.ware@oracle.com"
 PARSE_RESULT_FILE=${tmp}/raw-summary.txt
 SORTED_RESULT_FILE=${tmp}/sorted-summary.txt
-TESTDATA_FILE=${LOG_DIR}/testsummary-${BRANCH_NM}_${TARG_NM}.txt
-MAIL_EXEC=/bin/mail
-MAILLIST="eric.gwin@oracle.com eric.gwin@oracle.com"
-MAILBODY=${LOG_DIR}/mailbody-${BRANCH_NM}_${TARG_NM}.txt
-DATA_FILE=${LOG_DIR}/data-${BRANCH_NM}_${TARG_NM}.txt
+TESTDATA_FILE=${tmp}/testsummary-${BRANCH_NM}_${TARG_NM}.txt
+SVN_LOG_FILE=${tmp}/svnlog-${BRANCH_NM}_${TARG_NM}.txt
+MAILBODY=${tmp}/mailbody-${BRANCH_NM}_${TARG_NM}.txt
+DATA_FILE=${tmp}/data-${BRANCH_NM}_${TARG_NM}.txt
 
-set -x
-## Verify Compile complete before bothering with post-build processing (skip if build failed, or cb detected no change)
+#set -x
+## Verify Build Started bothering with setting up for an email or post-processing
+## if [ not "build unnecessary" (cb) ]
 ##
-if [ \( ! "`tail ${DATED_LOG} | grep 'BUILD SUCCESSFUL'`" = "" \) -o \( "`cat $DATA_FILE | grep unnece | tr -d '[:punct:]'`" = "" \) ]
+if [ "`tail ${DATED_LOG} | grep unnece | tr -d '[:punct:]'`" = "" ]
 then
-    ## Ant log preprocessing to generate intermediate results files
+    ## Ant log preprocessing to generate build data file
     ##
-    cat ${DATED_LOG} | grep -n '^test-' | grep -v "\-jar" | grep -v "\-errors:" | grep -v lrg | grep -v t-srg | tr -d ' ' > ${PARSE_RESULT_FILE}
-    cat ${DATED_LOG} | grep -n 'Errors: [0-9]' | tr -d ' ' | tr -d ' ' | tr ',' ':' >> ${PARSE_RESULT_FILE}
-    cat ${PARSE_RESULT_FILE} | sort -n -t: > ${SORTED_RESULT_FILE}
     cat ${DATED_LOG} | grep echo > ${DATA_FILE}
-    
-    ## make sure TESTDATA_FILE is empty
-    ##
-    if [ -f ${TESTDATA_FILE} ]
-    then
-        rm -f ${TESTDATA_FILE}
-    fi
-    touch ${TESTDATA_FILE}
-    
-    ## run routine to generate test results file and generate MAIL_SUBJECT based upon exit status
-    ##
-    genTestSummary ${SORTED_RESULT_FILE} ${TESTDATA_FILE}
-    if [ $? -eq 0  ]
-    then
-        MAIL_SUBJECT="${BRANCH_NM} ${TARG_NM} build complete."
-    else
-        MAIL_SUBJECT="${BRANCH_NM} ${TARG_NM} build has test failures!"
-    fi
-   
-    #set -x
+
     ## find the current version (cannot use $BRANCH, because need current version stored in ANT buildfiles)
     ##
     VERSION=`cat ${DATA_FILE} | grep -m1 "EL version" | cut -d= -f2 | tr -d '\047'`
     echo $VERSION
     
-    ## find the curent revision
+    ## find the current revision
     ##
     CUR_REV=`cat ${DATA_FILE} | grep revision | grep -m1 svn | cut -d= -f2 | tr -d '\047'`
     echo CUR_REV=$CUR_REV
@@ -391,6 +374,43 @@ then
         PREV_REV=:${PREV_REV}
     fi
     echo PREV_REV=$PREV_REV
+
+    ## Generate transaction log for this revision
+    ##
+    svn log -r ${CUR_REV}${PREV_REV} -q -v  http://dev.eclipse.org/svnroot/rt/org.eclipse.persistence/${BRANCH}trunk >> ${SVN_LOG_FILE}
+    
+    ## Verify Compile complete before bothering with post-build processing for test results
+    ## if [ not build failed ]
+    ##
+    if [ ! "`tail ${DATED_LOG} | grep 'BUILD SUCCESSFUL'`" = "" ]
+    then
+        ## Ant log preprocessing to generate test results files
+        ##
+        cat ${DATED_LOG} | grep -n '^test-' | grep -v "\-jar" | grep -v "\-errors:" | grep -v lrg | grep -v t-srg | tr -d ' ' > ${PARSE_RESULT_FILE}
+        cat ${DATED_LOG} | grep -n 'Errors: [0-9]' | tr -d ' ' | tr ',' ':' >> ${PARSE_RESULT_FILE}
+        cat ${PARSE_RESULT_FILE} | sort -n -t: > ${SORTED_RESULT_FILE}
+        
+        ## make sure TESTDATA_FILE is empty
+        ##
+        if [ -f ${TESTDATA_FILE} ]
+        then
+            rm -f ${TESTDATA_FILE}
+        fi
+        touch ${TESTDATA_FILE}
+        
+        ## run routine to generate test results file and generate MAIL_SUBJECT based upon exit status
+        ##
+        genTestSummary ${SORTED_RESULT_FILE} ${TESTDATA_FILE}
+        if [ $? -eq 0  ]
+        then
+            MAIL_SUBJECT="${BRANCH_NM} ${TARG_NM} build complete."
+        else
+            MAIL_SUBJECT="${BRANCH_NM} ${TARG_NM} build has test failures!"
+        fi
+       
+    else
+        MAIL_SUBJECT="${BRANCH_NM} ${TARG_NM} build failed!"
+    fi
     
     ## Build Body text of email
     ##
@@ -405,17 +425,17 @@ then
     else
         touch ${MAILBODY}
     fi
+    echo "Full Build log can be found on the build machine at:" >> ${MAILBODY}
+    echo "    ${DATED_LOG}" >> ${MAILBODY}
+    echo "-----------------------------------" >> ${MAILBODY}
     echo "SVN Changes since Last Build:" >> ${MAILBODY}
     echo "" >> ${MAILBODY}
-    svn log -r ${CUR_REV}${PREV_REV} -q -v  http://dev.eclipse.org/svnroot/rt/org.eclipse.persistence/${BRANCH}trunk >> ${MAILBODY}
-else
-    MAIL_SUBJECT="${BRANCH_NM} ${TARG_NM} build failed!"
-    echo "See ${DATED_LOG} for results." > ${MAILBODY}
+    cat ${SVN_LOG_FILE} >> ${MAILBODY}
+    
+    ## Send result email
+    ##
+    cat ${MAILBODY} | ${MAIL_EXEC} -s "${MAIL_SUBJECT}" ${MAILLIST}  
 fi
-
-## Send result email
-##
-cat ${MAILBODY} | ${MAIL_EXEC} -s "${MAIL_SUBJECT}" ${MAILLIST}
 
 ## Remove tmp directory
 ##
