@@ -102,7 +102,7 @@ tmp=$tmp/somedir.$RANDOM.$RANDOM.$RANDOM.$$
 echo "results stored in: '${tmp}'"
 
 #Define common variables
-HOME_DIR=/shared/rt/eclipselink/staging
+HOME_DIR=/shared/rt/eclipselink
 BOOTSTRAP_BLDFILE=bootstrap.xml
 UD2M_BLDFILE=uploadDepsToMaven.xml
 JAVA_HOME=/shared/common/ibm-java-jdk-ppc-60
