@@ -230,7 +230,7 @@ public class AdvancedTableCreator extends TableCreator {
     
     public static TableDefinition buildCREDITCARDSTable() {
         TableDefinition table = new TableDefinition();
-        table.setName("BUYER_CREDITCARDS");
+        table.setName("Buyer_CREDITCARDS");
     
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("BUYER_ID");
