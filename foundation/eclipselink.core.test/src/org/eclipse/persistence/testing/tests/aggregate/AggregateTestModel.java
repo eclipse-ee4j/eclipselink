@@ -187,6 +187,7 @@ public class AggregateTestModel extends TestModel {
         suite.setDescription("This suite tests descriptor properties on the aggregate model.");
 
         suite.addTest(new DescriptorRefreshCacheTest(manager.getObject(Employee.class, "example2")));
+        suite.addTest(new AgentBuilderTablesTest());
         return suite;
     }
 

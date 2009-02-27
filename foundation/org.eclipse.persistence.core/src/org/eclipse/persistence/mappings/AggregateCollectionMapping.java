@@ -340,6 +340,8 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         mappingObject.setTargetForeignKeyToSourceKeys(new HashMap(getTargetForeignKeyToSourceKeys()));
         mappingObject.setSourceKeyFields(org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(getSourceKeyFields()));
         mappingObject.setTargetForeignKeyFields(org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(getTargetForeignKeyFields()));
+        mappingObject.aggregateToSourceFieldNames = new HashMap(this.aggregateToSourceFieldNames);
+        mappingObject.nestedAggregateToSourceFieldNames = new HashMap(this.nestedAggregateToSourceFieldNames);
         return mappingObject;
     }
 
