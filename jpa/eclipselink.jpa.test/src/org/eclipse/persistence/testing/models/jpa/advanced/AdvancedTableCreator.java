@@ -1334,7 +1334,7 @@ public class AdvancedTableCreator extends TableCreator {
     
     public static TableDefinition buildWORKWEEKTable() {
         TableDefinition table = new TableDefinition();
-        table.setName("EMPLOYEE_WORKWEEK");
+        table.setName("Employee_WORKWEEK");
     
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("EMP_ID");
@@ -1344,7 +1344,7 @@ public class AdvancedTableCreator extends TableCreator {
         fieldID.setIsPrimaryKey(false);
         fieldID.setUnique(false);
         fieldID.setIsIdentity(false);
-        //fieldID.setForeignKeyFieldName("CMP3_EMPLOYEE.EMP_ID");
+        fieldID.setForeignKeyFieldName("CMP3_EMPLOYEE.EMP_ID");
         table.addField(fieldID);
     
         FieldDefinition fieldWORKWEEK = new FieldDefinition();
