@@ -301,18 +301,21 @@ public abstract class MarshalRecord extends XMLRecord {
     */
     protected String resolveNamespacePrefix(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
         String uri = xPathFragment.getNamespaceURI();
-        if ((uri == null) && (xPathFragment.getPrefix() != null)) {
+        if (uri == null) {
             if (null == namespaceResolver) {
-                // throw an exception if the name has a : in it but the namespaceresolver is null
-                throw XMLMarshalException.namespaceResolverNotSpecified(xPathFragment.getShortName());
+                if(null != xPathFragment.getPrefix()) {
+                    throw XMLMarshalException.namespaceResolverNotSpecified(xPathFragment.getShortName());
+                }
+            } else {
+                if(!xPathFragment.isAttribute() || xPathFragment.isAttribute() && xPathFragment.getPrefix() != null) {
+                    uri = namespaceResolver.resolveNamespacePrefix(xPathFragment.getPrefix());
+                }
             }
-            uri = namespaceResolver.resolveNamespacePrefix(xPathFragment.getPrefix());            
-            if (null == uri) {
+            if (null == uri && null != xPathFragment.getPrefix()) {
                 throw XMLMarshalException.namespaceNotFound(xPathFragment.getShortName());
             }
             xPathFragment.setNamespaceURI(uri);
         }
-
         return uri;
     }
 
