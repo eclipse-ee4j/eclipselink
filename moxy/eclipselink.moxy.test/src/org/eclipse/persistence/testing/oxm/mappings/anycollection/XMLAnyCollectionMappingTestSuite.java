@@ -59,6 +59,8 @@ public class XMLAnyCollectionMappingTestSuite extends TestCase {
         
         suite.addTestSuite(AnyCollectionKeepUnknownAsElementNSTestCases.class);
         suite.addTestSuite(AnyCollectionKeepUnknownAsElementNS2TestCases.class);
+        
+        suite.addTestSuite(org.eclipse.persistence.testing.oxm.mappings.anycollection.defaultnamespace.AnyCollectionComplexChildrenTestCases.class);
         return suite;
     }
 
