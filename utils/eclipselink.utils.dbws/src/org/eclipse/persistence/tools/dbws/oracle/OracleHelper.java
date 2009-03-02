@@ -10,13 +10,13 @@ import javax.xml.namespace.QName;
 
 //EclipseLink imports
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
-import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.Method;
+import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.ProcedureMethod;
 import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.Name;
 import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.OracleTypes;
 import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.SqlName;
 import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.SqlReflector;
 import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.SqlTypeWithMethods;
-import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.Type;
+import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.TypeClass;
 import org.eclipse.persistence.tools.dbws.Util;
 import org.eclipse.persistence.tools.dbws.Util.InOut;
 import org.eclipse.persistence.tools.dbws.jdbc.DbStoredArgument;
@@ -46,10 +46,10 @@ public class OracleHelper {
             SqlTypeWithMethods typ = (SqlTypeWithMethods)sqlReflector.addSqlUserType(schemaPattern,
                 packageName, 4, true, 0, 0, null);
             boolean found = false;
-            Method m = null;
-            Method[] methods = typ.getDeclaredMethods();
+            ProcedureMethod m = null;
+            ProcedureMethod[] methods = typ.getDeclaredMethods();
             for (int i = 0, l = methods.length; i < l; i ++) {
-                Method method = methods[i];
+            	ProcedureMethod method = methods[i];
                 if (method.getName().equalsIgnoreCase(procedurePattern)) {
                     found = true;
                     m = method;
@@ -59,7 +59,7 @@ public class OracleHelper {
             if (found) {
                 dbStoredProcedures = new ArrayList<DbStoredProcedure>();
                 DbStoredProcedure dbStoredProcedure = null;
-                Type returnType = m.getReturnType();
+                TypeClass returnType = m.getReturnType();
                 if (returnType == null) {
                     dbStoredProcedure = new DbStoredProcedure(procedurePattern);
                 }
@@ -84,7 +84,7 @@ public class OracleHelper {
                 dbStoredProcedure.setSchema(originalSchemaPattern);
                 for (int i = 0, l = m.getParamNames().length; i < l; i ++) {
                     String argName = m.getParamNames()[i];
-                    Type parameterType = m.getParamTypes()[i];
+                    TypeClass parameterType = m.getParamTypes()[i];
                     DbStoredArgument dbStoredArgument = null;
                     if (parameterType.isPrimitive()) {
                         dbStoredArgument = new DbStoredArgument(argName);
@@ -94,10 +94,10 @@ public class OracleHelper {
                     }
                     int mode = m.getParamModes()[i];
                     InOut inOut = IN;
-                    if (mode == Method.OUT) {
+                    if (mode == ProcedureMethod.OUT) {
                         inOut = OUT; 
                     }
-                    else if (mode == Method.INOUT) {
+                    else if (mode == ProcedureMethod.INOUT) {
                         inOut = INOUT;
                     }
                     dbStoredArgument.setInOut(inOut);
