@@ -537,7 +537,7 @@ public class InheritedTableManager extends TableCreator {
     
     public static TableDefinition build_EXPERT_BEER_CONSUMER_DESIGNATIONS_Table() {
         TableDefinition table = new TableDefinition();
-        table.setName("EXPERT_CONSUMER_Designations");
+        table.setName("EXPERT_CONSUMER_DESIGNATIONS");
     
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("EXPERT_CONSUMER_ID");
@@ -786,7 +786,7 @@ public class InheritedTableManager extends TableCreator {
     
     public static TableDefinition build_NOVICE_BEER_CONSUMER_DESIGNATIONS_Table() {
         TableDefinition table = new TableDefinition();
-        table.setName("NOVICE_CONSUMER_Designations");
+        table.setName("NOVICE_CONSUMER_DESIGNATIONS");
     
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("NOVICE_CONSUMER_ID");
