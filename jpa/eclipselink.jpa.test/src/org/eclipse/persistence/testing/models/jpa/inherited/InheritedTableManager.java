@@ -470,7 +470,7 @@ public class InheritedTableManager extends TableCreator {
     
     public static TableDefinition build_EXPERT_BEER_CONSUMER_AUDIO_Table() {
         TableDefinition table = new TableDefinition();
-        table.setName("EXPERT_CONSUMER_Audio");
+        table.setName("EXPERT_CONSUMER_AUDIO");
     
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
@@ -499,7 +499,7 @@ public class InheritedTableManager extends TableCreator {
     
     public static TableDefinition build_EXPERT_BEER_CONSUMER_AWARDS_Table() {
         TableDefinition table = new TableDefinition();
-        table.setName("EXPERT_CONSUMER_Awards");
+        table.setName("EXPERT_CONSUMER_AWARDS");
     
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
@@ -748,7 +748,7 @@ public class InheritedTableManager extends TableCreator {
     
     public static TableDefinition build_NOVICE_BEER_CONSUMER_AWARDS_Table() {
         TableDefinition table = new TableDefinition();
-        table.setName("NOVICE_CONSUMER_Awards");
+        table.setName("NOVICE_CONSUMER_AWARDS");
     
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
