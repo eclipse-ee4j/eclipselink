@@ -1,12 +1,26 @@
+/*******************************************************************************
+ * Copyright (c) 1998-2009 Oracle. All rights reserved.
+ * This program and the accompanying materials are made available under the 
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
+ * which accompanies this distribution. 
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at 
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * Contributors:
+ *     Mike Norman - from Proof-of-concept, become production code
+ *     quwang - Aug 9, 2006
+ ******************************************************************************/
 package org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl;
 
 import java.util.Hashtable;
 import org.eclipse.persistence.platform.database.oracle.publisher.Util;
 
 /**
+ * NB - this class does <b>NOT</b> implement the {@link java.util.Map} API
  */
 @SuppressWarnings("unchecked")
-public class Map {
+public class Typemap {
     public static final int UNSUPPORTED_TYPE = 0;
 
     public static final int BYTE_ARRAY = UNSUPPORTED_TYPE + 1;
@@ -89,7 +103,7 @@ public class Map {
 
     /**
      */
-    public Map(Type s, SqlReflector reflector) {
+    public Typemap(TypeClass s, SqlReflector reflector) {
         if (s != null && (s instanceof JavaType)) {
             m_field_map = null;
             m_package = s.getNameObject().getDeclPackage();
@@ -136,11 +150,11 @@ public class Map {
     /**
      * Determine the programming language type for a given SQL type.
      */
-    public String writeTypeName(Type type) {
+    public String writeTypeName(TypeClass type) {
         return null;
     }
 
-    public String writeTypeName(Type type, boolean itfIfPossible) {
+    public String writeTypeName(TypeClass type, boolean itfIfPossible) {
         return null;
     }
 
@@ -278,7 +292,7 @@ public class Map {
     }
 
     // Comparable to oracle.sqlj.codegen.engine.CGUnparser#accessorMethod
-    public String accessorMethod(Type type) {
+    public String accessorMethod(TypeClass type) {
         if ("boolean".equals(writeTypeName(type)) || "Boolean".equals(writeTypeName(type))
             || "java.lang.Boolean".equals(writeTypeName(type))) {
             return "Boolean";
@@ -336,7 +350,7 @@ public class Map {
         return "Object";
     }
 
-    private boolean isOpaque(Type type) {
+    private boolean isOpaque(TypeClass type) {
         boolean opaque = false;
         if (type instanceof SqlType) {
             SqlType sqlType = (SqlType)type;

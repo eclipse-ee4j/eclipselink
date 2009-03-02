@@ -1,5 +1,15 @@
-/* 1998 (c) Oracle Corporation */
-
+/*******************************************************************************
+ * Copyright (c) 1998-2009 Oracle. All rights reserved.
+ * This program and the accompanying materials are made available under the 
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
+ * which accompanies this distribution. 
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at 
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * Contributors:
+ *     Mike Norman - from Proof-of-concept, become production code
+ ******************************************************************************/
 package org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl;
 
 import java.lang.reflect.Modifier;
@@ -16,7 +26,7 @@ import org.eclipse.persistence.platform.database.oracle.publisher.PublisherExcep
  * This class is analogous to java.lang.Class.
  */
 @SuppressWarnings("unchecked")
-public abstract class Type {
+public abstract class TypeClass {
 
     protected Name m_name;
     private boolean m_isPrimitive;
@@ -31,44 +41,36 @@ public abstract class Type {
      * If this Type has a component type, return the Type object that represents the component type;
      * otherwise returns null.
      */
-    public Type getComponentType() throws SQLException, PublisherException {
+    public TypeClass getComponentType() throws SQLException, PublisherException {
         return null;
-    }
-
-    /**
-     * Returns an array of Constructor objects reflecting all the constructors declared by this
-     * Type. Returns an array of length 0 if this Type object does not declare any constructors.
-     */
-    public Constructor[] getDeclaredConstructors() throws SecurityException, SQLException {
-        return new Constructor[0];
     }
 
     /**
      * Returns an array of Field objects reflecting all the fields declared by this Type object.
      * Returns an array of length 0 if this Type object declares no fields.
      */
-    public Field[] getDeclaredFields(boolean publishedOnly) throws SecurityException, SQLException,
+    public AttributeField[] getDeclaredFields(boolean publishedOnly) throws SecurityException, SQLException,
         PublisherException {
         /* derived classes that have fields override this */
-        return new Field[0];
+        return new AttributeField[0];
     }
 
     /**
      * Returns an array of Method objects reflecting all the methods declared by this Type object.
      * Returns an array of length 0 if the Type declares no methods
      */
-    public Method[] getDeclaredMethods() throws SecurityException, SQLException, PublisherException {
-        return new Method[0];
+    public ProcedureMethod[] getDeclaredMethods() throws SecurityException, SQLException, PublisherException {
+        return new ProcedureMethod[0];
     }
 
     /**
      * Returns an array of Field objects reflecting all the accessible fields of this Type object.
      * Returns an array of length 0 if this Type object has no accesible fields.
      */
-    public Field[] getFields(boolean publishedOnly) throws SecurityException, SQLException,
+    public AttributeField[] getFields(boolean publishedOnly) throws SecurityException, SQLException,
         PublisherException {
         /* derived classes that have fields override this */
-        return new Field[0];
+        return new AttributeField[0];
     }
 
     /**
@@ -93,7 +95,7 @@ public abstract class Type {
      * supertype, returns null
      */
 
-    public Type getSupertype() throws SQLException, PublisherException {
+    public TypeClass getSupertype() throws SQLException, PublisherException {
         return null;
     }
 
@@ -131,7 +133,7 @@ public abstract class Type {
             return false;
         }
 
-        return getName().equals(((Type)obj).getName());
+        return getName().equals(((TypeClass)obj).getName());
     }
 
     /**
@@ -236,7 +238,7 @@ public abstract class Type {
         m_name = name;
     }
 
-    protected Type(Name name, int typecode, boolean isPrimitive) {
+    protected TypeClass(Name name, int typecode, boolean isPrimitive) {
         m_name = name;
         m_typecode = typecode;
         m_isPrimitive = isPrimitive;

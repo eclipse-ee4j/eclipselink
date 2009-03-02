@@ -1,3 +1,15 @@
+/*******************************************************************************
+ * Copyright (c) 1998-2009 Oracle. All rights reserved.
+ * This program and the accompanying materials are made available under the 
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
+ * which accompanies this distribution. 
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at 
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * Contributors:
+ *     Mike Norman - from Proof-of-concept, become production code
+ ******************************************************************************/
 package org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl;
 
 import java.sql.SQLException;
@@ -25,7 +37,7 @@ public abstract class SqlTypeWithFields extends SqlType {
      */
     // [3190197] Add publishedOnly: false - return Fields including
     // those not published as well
-    public Field[] getDeclaredFields(boolean publishedOnly) throws java.sql.SQLException,
+    public AttributeField[] getDeclaredFields(boolean publishedOnly) throws java.sql.SQLException,
         PublisherException {
         if (publishedOnly) {
             if (m_fieldsPublishedOnly == null) {
@@ -42,16 +54,16 @@ public abstract class SqlTypeWithFields extends SqlType {
         }
     }
 
-    private Field[] reflectFields(boolean publishedOnly) throws SQLException, PublisherException {
+    private AttributeField[] reflectFields(boolean publishedOnly) throws SQLException, PublisherException {
         return reflectFields(publishedOnly, getFieldInfo(), m_reflector, this, false);
     }
 
-    static Field[] reflectFields(boolean publishedOnly, FieldInfo[] sfi, SqlReflector reflector,
+    static AttributeField[] reflectFields(boolean publishedOnly, FieldInfo[] sfi, SqlReflector reflector,
         SqlType parent, boolean isGrandparent) throws SQLException, PublisherException {
         ArrayList fieldsCS = new ArrayList();
         ViewCache viewCache = reflector.getViewCache();
         // JavaMap map = new JavaMap(parent, reflector);
-        Map map = new Map(parent, reflector);
+        Typemap map = new Typemap(parent, reflector);
         for (int ii = 0; sfi != null && ii < sfi.length; ii++) {
             try {
                 @SuppressWarnings("unused")
@@ -74,7 +86,7 @@ public abstract class SqlTypeWithFields extends SqlType {
                         }
                     }
                 }
-                fieldsCS.add(new Field(sfi[ii].fieldName, reflector.addPlsqlDBType(fieldTypeOwner,
+                fieldsCS.add(new AttributeField(sfi[ii].fieldName, reflector.addPlsqlDBType(fieldTypeOwner,
                     sfi[ii].fieldTypeName, sfi[ii].fieldTypeSubname, sfi[ii].fieldTypeMod,
                     false, // No NCHAR-considerations for fields!
                     sfi[ii].fieldPackageName, sfi[ii].fieldMethodName, sfi[ii].fieldMethodNo,
@@ -87,17 +99,17 @@ public abstract class SqlTypeWithFields extends SqlType {
             }
             ;
         }
-        Field[] sqlFields = new Field[fieldsCS.size()];
+        AttributeField[] sqlFields = new AttributeField[fieldsCS.size()];
         for (int i = 0; i < sqlFields.length; i++) {
-            sqlFields[i] = (Field)fieldsCS.get(i);
+            sqlFields[i] = (AttributeField)fieldsCS.get(i);
         }
         return sqlFields;
     }
 
     protected abstract FieldInfo[] getFieldInfo() throws SQLException;
 
-    protected Field[] m_fieldsPublishedOnly;
-    protected Field[] m_fields;
+    protected AttributeField[] m_fieldsPublishedOnly;
+    protected AttributeField[] m_fields;
     protected static HashMap m_builtin;
 
     static {

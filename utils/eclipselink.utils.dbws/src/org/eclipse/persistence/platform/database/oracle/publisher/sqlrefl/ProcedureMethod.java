@@ -1,29 +1,65 @@
-/* 1998 (c) Oracle Corporation */
+/*******************************************************************************
+ * Copyright (c) 1998-2009 Oracle. All rights reserved.
+ * This program and the accompanying materials are made available under the 
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
+ * which accompanies this distribution. 
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at 
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * Contributors:
+ *     Mike Norman - from Proof-of-concept, become production code
+ ******************************************************************************/
 package org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl;
 
 /**
  * A Method provides information about a single method of a type.
  */
-public class Method extends Member implements Sortable {
+public class ProcedureMethod implements Sortable {
 
     public static final int IN = 1;
     public static final int OUT = 2;
     public static final int INOUT = IN ^ OUT;
     public static final int RETURN = 4;
     public static final int ALL = 0;
-
+    
     /**
      * Construct a Method
      */
-    public Method(String name, String overloadNumber, int modifiers, Type returnType,
-        Type[] parameterTypes, String[] parameterNames, int[] parameterModes,
+    public ProcedureMethod(String name, int modifiers) {
+        m_name = name;
+        m_modifiers = modifiers;
+    }
+
+    /**
+     * Returns the simple name of the underlying member or constructor represented by this JSMember.
+     */
+    public String getName() {
+        return m_name;
+    }
+
+    /**
+     * Returns the source language modifiers for the member or constructor represented by this
+     * Member, as an integer. The Modifier class should be used to decode the modifiers in the
+     * integer.
+     */
+    public int getModifiers() {
+        return m_modifiers;
+    }
+
+    
+    /**
+     * Construct a Method
+     */
+    public ProcedureMethod(String name, String overloadNumber, int modifiers, TypeClass returnType,
+        TypeClass[] parameterTypes, String[] parameterNames, int[] parameterModes,
         boolean[] parameterDefaults, int paramLen) {
-        super(name, modifiers);
+        this(name, modifiers);
         m_returnType = returnType;
         m_overloadNumber = overloadNumber;
         if (paramLen > -1 && parameterTypes != null && parameterNames != null
             && parameterModes != null && parameterDefaults != null) {
-            m_paramTypes = new Type[paramLen];
+            m_paramTypes = new TypeClass[paramLen];
             m_paramNames = new String[paramLen];
             m_paramModes = new int[paramLen];
             m_paramDefaults = new boolean[paramLen];
@@ -45,7 +81,7 @@ public class Method extends Member implements Sortable {
      * this Method object. If the method does not return anything, getReturnType() may return null
      * or a representation of the void type.
      */
-    public Type getReturnType() {
+    public TypeClass getReturnType() {
         return m_returnType;
     }
 
@@ -63,7 +99,7 @@ public class Method extends Member implements Sortable {
      * order, of the method represented by this Method object. Returns an array of length 0 if the
      * underlying method takes no parameters.
      */
-    public Type[] getParamTypes() {
+    public TypeClass[] getParamTypes() {
         return m_paramTypes;
     }
 
@@ -127,12 +163,15 @@ public class Method extends Member implements Sortable {
         return key;
     }
 
-    protected Type m_returnType;
-    protected Type[] m_paramTypes;
+    protected String m_name;
+    protected int m_modifiers;
+    protected TypeClass m_returnType;
+    protected TypeClass[] m_paramTypes;
     protected String[] m_paramNames;
     protected int[] m_paramModes;
     protected boolean[] m_paramDefaults;
     protected boolean m_hasDefault;
     protected boolean m_keepMethodName = false;
     protected String m_overloadNumber;
+
 }

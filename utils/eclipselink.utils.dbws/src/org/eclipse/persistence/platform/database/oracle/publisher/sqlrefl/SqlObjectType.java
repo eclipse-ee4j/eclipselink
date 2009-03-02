@@ -1,7 +1,20 @@
+/*******************************************************************************
+ * Copyright (c) 1998-2009 Oracle. All rights reserved.
+ * This program and the accompanying materials are made available under the 
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
+ * which accompanies this distribution. 
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at 
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * Contributors:
+ *     Mike Norman - from Proof-of-concept, become production code
+ ******************************************************************************/
 package org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl;
 
 import java.sql.SQLException;
 import java.util.Iterator;
+
 import org.eclipse.persistence.platform.database.oracle.publisher.PublisherException;
 import org.eclipse.persistence.platform.database.oracle.publisher.Util;
 import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.AllTypes;
@@ -26,16 +39,16 @@ public class SqlObjectType extends SqlTypeWithMethods {
     /*
      * BEGIN No database reflection. Currently used by oracle.j2ee.ws.db.genproxy.PlsqlProxy.
      */
-    public SqlObjectType(SqlName sqlName, Field[] fields, SqlReflector reflector)
+    public SqlObjectType(SqlName sqlName, AttributeField[] fields, SqlReflector reflector)
         throws SQLException {
         super(sqlName, OracleTypes.STRUCT, true, null, null, reflector);
-        m_modifiers = Modifier.PUBLIC;
+        m_modifiers = PublisherModifier.PUBLIC;
         m_fields = fields;
         m_fieldsPublishedOnly = fields;
-        m_methods = new Method[]{};
+        m_methods = new ProcedureMethod[]{};
     }
 
-    public void setFields(Field[] fields) {
+    public void setFields(AttributeField[] fields) {
         m_fields = fields;
         m_fieldsPublishedOnly = fields;
     }
@@ -46,7 +59,7 @@ public class SqlObjectType extends SqlTypeWithMethods {
 
     // Type filters and Mode filters is enabled
     // protected boolean acceptMethod(Method method) { return true; }
-    public Type getSupertype() throws SQLException, PublisherException {
+    public TypeClass getSupertype() throws SQLException, PublisherException {
         if (m_supertypeKnown) {
             return m_supertype;
         }
@@ -79,7 +92,7 @@ public class SqlObjectType extends SqlTypeWithMethods {
      */
     public int getModifiers() throws SQLException {
         if (m_modifiers == 0) {
-            m_modifiers = Modifier.PUBLIC;
+            m_modifiers = PublisherModifier.PUBLIC;
 
             SqlName name = (SqlName)getNameObject();
             String schemaName = name.getSchemaName();
@@ -91,17 +104,17 @@ public class SqlObjectType extends SqlTypeWithMethods {
                 AllTypes fi = (AllTypes)iter.next();
                 String isFinal = fi.finalProp;
                 if (isFinal.equals("YES")) {
-                    m_modifiers += Modifier.FINAL;
+                    m_modifiers += PublisherModifier.FINAL;
                 }
 
                 String isInstantiable = fi.instantiable;
                 if (isInstantiable.equals("NO")) {
-                    m_modifiers += Modifier.ABSTRACT;
+                    m_modifiers += PublisherModifier.ABSTRACT;
                 }
 
                 String isIncomplete = fi.incomplete;
                 if (isIncomplete.equals("YES")) {
-                    m_modifiers += Modifier.INCOMPLETE;
+                    m_modifiers += PublisherModifier.INCOMPLETE;
                 }
             }
         }
@@ -112,14 +125,14 @@ public class SqlObjectType extends SqlTypeWithMethods {
      * Returns an array of Field objects reflecting all the accessible fields of this Type object.
      * Returns an array of length 0 if this Type object has no accesible fields.
      */
-    public Field[] getFields(boolean publishedOnly) throws SecurityException,
+    public AttributeField[] getFields(boolean publishedOnly) throws SecurityException,
         java.sql.SQLException, PublisherException {
         return getFields(0, publishedOnly);
     }
 
-    protected Field[] getFields(int subtypeFieldCount, boolean publishedOnly)
+    protected AttributeField[] getFields(int subtypeFieldCount, boolean publishedOnly)
         throws SecurityException, java.sql.SQLException, PublisherException {
-        Field[] declaredFields = getDeclaredFields(publishedOnly);
+        AttributeField[] declaredFields = getDeclaredFields(publishedOnly);
         SqlObjectType supertype = (SqlObjectType)getSupertype();
 
         if (supertype == null && subtypeFieldCount == 0) {
@@ -129,7 +142,7 @@ public class SqlObjectType extends SqlTypeWithMethods {
         int declaredFieldCount = declaredFields.length;
         int nonSuperFieldCount = declaredFieldCount + subtypeFieldCount;
 
-        Field[] fields = supertype == null ? new Field[nonSuperFieldCount] : supertype.getFields(
+        AttributeField[] fields = supertype == null ? new AttributeField[nonSuperFieldCount] : supertype.getFields(
             nonSuperFieldCount, publishedOnly);
 
         int fieldsX = fields.length - nonSuperFieldCount;
@@ -181,7 +194,7 @@ public class SqlObjectType extends SqlTypeWithMethods {
             new String[]{"PARAM_NO"});
         return ParamInfo.getParamInfo(iter);
     }
-
+    
     SqlType m_supertype = null;
     boolean m_supertypeKnown = false;
     boolean m_isFinal = true;

@@ -1,8 +1,21 @@
+/*******************************************************************************
+ * Copyright (c) 1998-2009 Oracle. All rights reserved.
+ * This program and the accompanying materials are made available under the 
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
+ * which accompanies this distribution. 
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at 
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * Contributors:
+ *     Mike Norman - from Proof-of-concept, become production code
+ ******************************************************************************/
 package org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl;
 
 import java.sql.SQLException;
 import java.util.Hashtable;
 import java.util.Vector;
+
 import org.eclipse.persistence.platform.database.oracle.publisher.PublisherException;
 import org.eclipse.persistence.platform.database.oracle.publisher.Util;
 import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.ViewCache;
@@ -10,7 +23,7 @@ import static org.eclipse.persistence.platform.database.oracle.publisher.Util.SC
 import static org.eclipse.persistence.platform.database.oracle.publisher.Util.printTypeWithLength;
 
 @SuppressWarnings("unchecked")
-public class SqlType extends Type {
+public class SqlType extends TypeClass {
     // The following type constants are used by the database
     // to distinguish the various Opaque and SQLJ Object type
     // flavours
@@ -188,7 +201,7 @@ public class SqlType extends Type {
             m_dependTypes = new Vector();
             if (isPlsqlRecord() || this instanceof DefaultArgsHolderType) {
                 try {
-                    Field[] fields = getDeclaredFields(true);
+                    AttributeField[] fields = getDeclaredFields(true);
                     for (int i = 0; i < fields.length; i++) {
                         SqlType st = (SqlType)fields[i].getType();
                         if (st.isPlsqlRecord() || st.isPlsqlTable()) {
@@ -302,7 +315,7 @@ public class SqlType extends Type {
         String sqlTypeDecl = "";
         if (isPlsqlRecord() && !getSqlName().isReused()) {
             sqlTypeDecl += "CREATE OR REPLACE TYPE " + getTargetTypeName() + " AS OBJECT (\n";
-            Field[] fields = ((PlsqlRecordType)this).getFields(true);
+            AttributeField[] fields = ((PlsqlRecordType)this).getFields(true);
             for (int i = 0; i < fields.length; i++) {
                 if (i != 0) {
                     sqlTypeDecl += ",\n";
@@ -324,7 +337,7 @@ public class SqlType extends Type {
         else if ((this instanceof DefaultArgsHolderType) && !getSqlName().isReused()) {
             DefaultArgsHolderType holder = (DefaultArgsHolderType)this;
             sqlTypeDecl += "CREATE OR REPLACE TYPE " + getTypeName() + " AS OBJECT (\n";
-            Field vfield = holder.getFields(false)[0];
+            AttributeField vfield = holder.getFields(false)[0];
             sqlTypeDecl += "      " + vfield.getName() + " ";
             sqlTypeDecl += vfield.printTypeWithLength();
             sqlTypeDecl += "\n);";
@@ -351,7 +364,7 @@ public class SqlType extends Type {
             sqlConvPkgDecl += "\t-- Redefine a PL/SQL RECORD type originally defined via CURSOR%ROWTYPE"
                 + "\n";
             sqlConvPkgDecl += "\tTYPE " + getTypeName() + " IS RECORD (\n";
-            Field[] fields = ((PlsqlRecordType)this).getFields(true);
+            AttributeField[] fields = ((PlsqlRecordType)this).getFields(true);
             for (int i = 0; i < fields.length; i++) {
                 if (i != 0) {
                     sqlConvPkgDecl += ",\n";
@@ -415,7 +428,7 @@ public class SqlType extends Type {
         }
         String stmts = "";
         if (isPlsqlRecord()) {
-            Field[] fields = getFields(true);
+            AttributeField[] fields = getFields(true);
             for (int i = 0; i < java.lang.reflect.Array.getLength(fields); i++) {
                 stmts += formatPrefix
                     + maybePlsql
@@ -429,7 +442,7 @@ public class SqlType extends Type {
             }
         }
         else { // if (isPlsqlTable())
-            Type compType = ((PlsqlTableType)this).getComponentType();
+            TypeClass compType = ((PlsqlTableType)this).getComponentType();
             if (getTypecode() == OracleTypes.PLSQL_NESTED_TABLE
                 || getTypecode() == OracleTypes.PLSQL_VARRAY_TABLE) {
                 stmts += formatPrefix + maybePlsql + " := " + getTypeName() + "();\n";
@@ -464,7 +477,7 @@ public class SqlType extends Type {
         }
         String stmts = "";
         if (isPlsqlRecord()) {
-            Field[] fields = getFields(true);
+            AttributeField[] fields = getFields(true);
             stmts += formatPrefix + maybeSql + " := " + getTargetTypeName() + "(NULL";
             for (int i = 1; i < fields.length; i++) {
                 stmts += ", NULL";
@@ -484,7 +497,7 @@ public class SqlType extends Type {
             }
         }
         else { // if (isPlsqlTable())
-            Type compType = ((PlsqlTableType)this).getComponentType();
+            TypeClass compType = ((PlsqlTableType)this).getComponentType();
             stmts += formatPrefix
                 + maybeSql
                 + " := "
@@ -525,4 +538,5 @@ public class SqlType extends Type {
     protected ViewCache m_viewCache;
     protected SqlType m_parentType;
     protected boolean m_isReused;
+
 }

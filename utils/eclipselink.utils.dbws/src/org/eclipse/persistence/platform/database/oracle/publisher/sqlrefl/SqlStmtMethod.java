@@ -1,4 +1,15 @@
-/* 1998 (c) Oracle Corporation */
+/*******************************************************************************
+ * Copyright (c) 1998-2009 Oracle. All rights reserved.
+ * This program and the accompanying materials are made available under the 
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
+ * which accompanies this distribution. 
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at 
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * Contributors:
+ *     Mike Norman - from Proof-of-concept, become production code
+ ******************************************************************************/
 package org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl;
 
 import java.sql.SQLException;
@@ -13,7 +24,7 @@ import static org.eclipse.persistence.platform.database.oracle.publisher.Util.IS
  * DML or Query Method
  */
 @SuppressWarnings("unchecked")
-public abstract class SqlStmtMethod extends Method {
+public abstract class SqlStmtMethod extends ProcedureMethod {
 
     public SqlStmtMethod(String name, int modifiers, String sqlStmt, SqlReflector reflector)
         throws SQLException,
@@ -90,7 +101,7 @@ public abstract class SqlStmtMethod extends Method {
                         schema = typeName.substring(0, typeName.indexOf('.'));
                         typeName = typeName.substring(typeName.indexOf('.') + 1);
                     }
-                    Type tmpType = m_reflector.addSqlUserType(schema, typeName, IS_TYPE_OR_PACKAGE,
+                    TypeClass tmpType = m_reflector.addSqlUserType(schema, typeName, IS_TYPE_OR_PACKAGE,
                         false, 0, 0, null);
                     sqlStmtParamTypesV.addElement(tmpType);
                     if (unique) {
@@ -101,9 +112,9 @@ public abstract class SqlStmtMethod extends Method {
                     // e.printStackTrace(); //D+
                     throw new SQLException(e.getMessage());
                 }
-                sqlStmtParamModesV.addElement(new Integer(Method.IN));
+                sqlStmtParamModesV.addElement(new Integer(ProcedureMethod.IN));
                 if (unique) {
-                    uniqueParamModesV.addElement(new Integer(Method.IN));
+                    uniqueParamModesV.addElement(new Integer(ProcedureMethod.IN));
                 }
                 m_sqlStmtTmp = m_sqlStmtTmp.substring(0, idx0) + "?"
                     + m_sqlStmtTmp.substring(idx1 + 1);
@@ -119,21 +130,21 @@ public abstract class SqlStmtMethod extends Method {
             }
         }
         m_sqlStmtParamNames = new String[sqlStmtParamNamesV.size()];
-        m_sqlStmtParamTypes = new Type[sqlStmtParamNamesV.size()];
+        m_sqlStmtParamTypes = new TypeClass[sqlStmtParamNamesV.size()];
         m_sqlStmtParamModes = new int[sqlStmtParamNamesV.size()];
         for (int j = 0; j < sqlStmtParamNamesV.size(); j++) {
             int jj = sqlStmtParamNamesV.size() - j - 1;
             m_sqlStmtParamNames[jj] = (String)sqlStmtParamNamesV.elementAt(j);
-            m_sqlStmtParamTypes[jj] = (Type)sqlStmtParamTypesV.elementAt(j);
+            m_sqlStmtParamTypes[jj] = (TypeClass)sqlStmtParamTypesV.elementAt(j);
             m_sqlStmtParamModes[jj] = ((Integer)(sqlStmtParamModesV.elementAt(j))).intValue();
         }
         m_paramNames = new String[uniqueParamNamesV.size()];
-        m_paramTypes = new Type[uniqueParamNamesV.size()];
+        m_paramTypes = new TypeClass[uniqueParamNamesV.size()];
         m_paramModes = new int[uniqueParamNamesV.size()];
         for (int j = 0; j < uniqueParamNamesV.size(); j++) {
             int jj = uniqueParamNamesV.size() - j - 1;
             m_paramNames[jj] = (String)uniqueParamNamesV.elementAt(j);
-            m_paramTypes[jj] = (Type)uniqueParamTypesV.elementAt(j);
+            m_paramTypes[jj] = (TypeClass)uniqueParamTypesV.elementAt(j);
             m_paramModes[jj] = ((Integer)(uniqueParamModesV.elementAt(j))).intValue();
         }
     }
@@ -153,12 +164,12 @@ public abstract class SqlStmtMethod extends Method {
         return m_sqlStmtParamNames;
     }
 
-    public Type[] getSqlStmtParamTypes() {
+    public TypeClass[] getSqlStmtParamTypes() {
         return m_sqlStmtParamTypes;
     }
 
     protected String[] m_sqlStmtParamNames;
-    protected Type[] m_sqlStmtParamTypes;
+    protected TypeClass[] m_sqlStmtParamTypes;
     protected int[] m_sqlStmtParamModes;
 
     protected String m_sqlStmt; // ? represents host variables

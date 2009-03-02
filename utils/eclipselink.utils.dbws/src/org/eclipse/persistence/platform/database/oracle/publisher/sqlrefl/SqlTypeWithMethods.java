@@ -1,3 +1,15 @@
+/*******************************************************************************
+ * Copyright (c) 1998-2009 Oracle. All rights reserved.
+ * This program and the accompanying materials are made available under the 
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
+ * which accompanies this distribution. 
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at 
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * Contributors:
+ *     Mike Norman - from Proof-of-concept, become production code
+ ******************************************************************************/
 package org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl;
 
 import java.sql.Connection;
@@ -29,7 +41,7 @@ public abstract class SqlTypeWithMethods extends SqlTypeWithFields {
      * SqlTypeWithMethods object. Returns an array of length 0 if the SqlTypeWithMethods declares no
      * methods
      */
-    public Method[] getDeclaredMethods() throws java.sql.SQLException, PublisherException {
+    public ProcedureMethod[] getDeclaredMethods() throws java.sql.SQLException, PublisherException {
         if (m_methods == null) {
             m_methods = reflectMethods(getSqlName());
         }
@@ -37,11 +49,11 @@ public abstract class SqlTypeWithMethods extends SqlTypeWithFields {
     }
 
     public boolean hasMethods() throws java.sql.SQLException, PublisherException {
-        Method[] m = getDeclaredMethods();
+        ProcedureMethod[] m = getDeclaredMethods();
         return m.length > 0;
     }
 
-    private Method[] reflectMethods(SqlName sqlName) throws SQLException, PublisherException {
+    private ProcedureMethod[] reflectMethods(SqlName sqlName) throws SQLException, PublisherException {
         String schema = sqlName.getSchemaName();
         String type = sqlName.getTypeName();
         ArrayList methodl = new ArrayList();
@@ -58,7 +70,7 @@ public abstract class SqlTypeWithMethods extends SqlTypeWithFields {
             // Pre-approve the method, to avoid unwanted methods during Toplevel publishing.
             boolean preApproved = true;
             if (m_methodFilter != null) {
-                preApproved = m_methodFilter.acceptMethod(new Method(methodName, null, -1, null,
+                preApproved = m_methodFilter.acceptMethod(new ProcedureMethod(methodName, null, -1, null,
                     null, null, null, null, 0), true);
             }
             if (!preApproved) {
@@ -66,15 +78,15 @@ public abstract class SqlTypeWithMethods extends SqlTypeWithFields {
             }
 
             int modifiers;
-            modifiers = Modifier.PUBLIC;
+            modifiers = PublisherModifier.PUBLIC;
             if (methodType.equals("MAP")) {
-                modifiers = modifiers ^ Modifier.MAP;
+                modifiers = modifiers ^ PublisherModifier.MAP;
             }
             else if (methodType.equals("ORDER")) {
-                modifiers = modifiers ^ Modifier.ORDER;
+                modifiers = modifiers ^ PublisherModifier.ORDER;
             }
 
-            Type returnType = null;
+            TypeClass returnType = null;
             ResultInfo resultInfo = null;
 
             /* get return type information */
@@ -150,9 +162,9 @@ public abstract class SqlTypeWithMethods extends SqlTypeWithFields {
                     try {
                         paramNames_v.addElement(paramName[i]);
                         String mode = paramMode[i];
-                        paramModes_v.addElement(new Integer((mode == null) ? Method.INOUT : (mode
-                            .equals("IN") ? Method.IN : (mode.equals("OUT") ? Method.OUT
-                            : Method.INOUT))));
+                        paramModes_v.addElement(new Integer((mode == null) ? ProcedureMethod.INOUT : (mode
+                            .equals("IN") ? ProcedureMethod.IN : (mode.equals("OUT") ? ProcedureMethod.OUT
+                            : ProcedureMethod.INOUT))));
                         paramTypes_v.addElement(m_reflector.addPlsqlDBType(paramTypeOwner[i],
                             paramTypeName[i], paramTypeSubname[i], paramTypeMod[i],
                             mcharFormOfUse[i], type, paramMethodName[i], paramMethodNo[i],
@@ -172,12 +184,12 @@ public abstract class SqlTypeWithMethods extends SqlTypeWithFields {
 
             }
 
-            Type[] paramTypes = new Type[len];
+            TypeClass[] paramTypes = new TypeClass[len];
             String[] paramNames = new String[len];
             int[] paramModes = new int[len];
             boolean[] paramNCharFormOfUse = new boolean[len];
             for (int i = 0; i < len; i++) {
-                paramTypes[i] = (Type)(paramTypes_v.elementAt(i));
+                paramTypes[i] = (TypeClass)(paramTypes_v.elementAt(i));
                 paramNames[i] = (String)(paramNames_v.elementAt(i));
                 paramModes[i] = ((Integer)(paramModes_v.elementAt(i))).intValue();
                 paramNCharFormOfUse[i] = ((Boolean)(paramNCharFormOfUse_v.elementAt(i)))
@@ -186,7 +198,7 @@ public abstract class SqlTypeWithMethods extends SqlTypeWithFields {
 
             paramTypes = generateDefaultArgsHolderParamTypes(paramTypes, paramDefaults,
                 paramNCharFormOfUse);
-            Method method = null;
+            ProcedureMethod method = null;
             for (int paramLen = firstNoDefault + 1; paramLen <= paramCount; paramLen++) {
                 if (this instanceof SqlPackageType && returnType != null && resultInfo != null
                     && returnType.equals(SqlReflector.REF_CURSOR_TYPE)) {
@@ -199,7 +211,7 @@ public abstract class SqlTypeWithMethods extends SqlTypeWithFields {
                         paramTypes, paramNames, paramModes, paramDefaults, paramLen);
                 }
                 else {
-                    method = new Method(methodName, methodNo, modifiers, returnType, paramTypes,
+                    method = new ProcedureMethod(methodName, methodNo, modifiers, returnType, paramTypes,
                         paramNames, paramModes, paramDefaults, paramLen);
                 }
 
@@ -218,16 +230,16 @@ public abstract class SqlTypeWithMethods extends SqlTypeWithFields {
                 }
             }
         }
-        Method[] methods = new Method[methodl.size()];
+        ProcedureMethod[] methods = new ProcedureMethod[methodl.size()];
         for (int i = 0; i < methods.length; i++) {
-            methods[i] = (Method)methodl.get(i);
+            methods[i] = (ProcedureMethod)methodl.get(i);
         }
-        return (Method[])Util.sort(methods);
+        return (ProcedureMethod[])Util.sort(methods);
     }
 
     protected abstract MethodInfo[] getMethodInfo(String schema, String name) throws SQLException;
 
-    protected boolean acceptMethod(Method method, boolean preApprove) {
+    protected boolean acceptMethod(ProcedureMethod method, boolean preApprove) {
         boolean accept = true;
         if (m_methodFilter != null) {
             accept = m_methodFilter.acceptMethod(method, preApprove);
@@ -355,10 +367,10 @@ public abstract class SqlTypeWithMethods extends SqlTypeWithFields {
         return false;
     }
 
-    Type[] generateDefaultArgsHolderParamTypes(Type[] paramTypes, boolean[] paramDefaults,
+    TypeClass[] generateDefaultArgsHolderParamTypes(TypeClass[] paramTypes, boolean[] paramDefaults,
         boolean[] ncharFormOfUse) throws SQLException, PublisherException {
 
-        Type[] defaultParamTypes = paramTypes;
+        TypeClass[] defaultParamTypes = paramTypes;
         boolean hasDefault = false;
         for (int i = 0; i < paramDefaults.length; i++) {
             if (paramDefaults[i]) {
@@ -366,7 +378,7 @@ public abstract class SqlTypeWithMethods extends SqlTypeWithFields {
             }
         }
         if (hasDefault) {
-            defaultParamTypes = new Type[paramTypes.length];
+            defaultParamTypes = new TypeClass[paramTypes.length];
             for (int i = 0; i < paramTypes.length; i++) {
                 if (paramDefaults[i]) {
                     defaultParamTypes[i] = m_reflector.addDefaultArgsHolderType(
@@ -381,6 +393,6 @@ public abstract class SqlTypeWithMethods extends SqlTypeWithFields {
         return defaultParamTypes;
     }
 
-    protected Method[] m_methods;
+    protected ProcedureMethod[] m_methods;
     protected MethodFilter m_methodFilter = null;
 }

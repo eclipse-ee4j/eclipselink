@@ -1,3 +1,15 @@
+/*******************************************************************************
+ * Copyright (c) 1998-2009 Oracle. All rights reserved.
+ * This program and the accompanying materials are made available under the 
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
+ * which accompanies this distribution. 
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at 
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * Contributors:
+ *     Mike Norman - from Proof-of-concept, become production code
+ ******************************************************************************/
 package org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl;
 
 import java.sql.Connection;
@@ -252,8 +264,8 @@ public class SqlReflector {
     }
 
     // Determine the SQL type name for a PL/SQL type
-    public String determineSqlName(String packageName, String[] sourceName, Type parentType,
-        boolean[] isRowType, Field[] fields, SqlType elemType, SqlType valueType)
+    public String determineSqlName(String packageName, String[] sourceName, TypeClass parentType,
+        boolean[] isRowType, AttributeField[] fields, SqlType elemType, SqlType valueType)
         throws SQLException {
         String parentName = null; // Java name for the PL/SQL package
         if (parentType != null) {
@@ -289,7 +301,7 @@ public class SqlReflector {
         return determineSqlName(name, toBeDistinguished, fields, elemType, valueType);
     }
 
-    private String determineSqlName(String name, boolean toBeDistinguished, Field[] fields,
+    private String determineSqlName(String name, boolean toBeDistinguished, AttributeField[] fields,
         SqlType elemType, SqlType valueType) throws SQLException {
 
         String origName = name;
@@ -665,7 +677,7 @@ public class SqlReflector {
 
                         new SqlRefType(sqlName, result, parentType, generateMe, this);
                     }
-                    if (Modifier.isIncomplete(result.getModifiers())) { /*
+                    if (PublisherModifier.isIncomplete(result.getModifiers())) { /*
                                                                          * give warning about
                                                                          * incomplete type and
                                                                          * continue
@@ -829,7 +841,7 @@ public class SqlReflector {
             rowtypeInfoA = reflectRowtypeInfo(packageName, methodName, methodNo, sequence);
             for (int i = 0; i < m_userTypes.size(); i++) {
                 boolean found = true;
-                Type p = (Type)m_userTypes.elementAt(i);
+                TypeClass p = (TypeClass)m_userTypes.elementAt(i);
                 if (!(p instanceof PlsqlRecordType)) {
                     continue;
                 }
@@ -892,7 +904,7 @@ public class SqlReflector {
         if (modifier != null && modifier.equals("PL/SQL RECORD")) {
             FieldInfo[] fieldInfo = PlsqlRecordType.getFieldInfo(packageName, methodName, methodNo,
                 sequence, this);
-            Field[] fields = PlsqlRecordType
+            AttributeField[] fields = PlsqlRecordType
                 .reflectFields(false, fieldInfo, this, parentType, true /* isGrandparent */);
             // if predefined, overwrite entry already in m_predefiendTypes
             if (predefined) {
@@ -1150,7 +1162,7 @@ public class SqlReflector {
         return st;
     }
 
-    public void addType(Name name, Type type, boolean generateMe) {
+    public void addType(Name name, TypeClass type, boolean generateMe) {
         m_allTypes.put(name, type);
         if (generateMe) {
             m_userTypes.addElement(type);
@@ -1231,7 +1243,7 @@ public class SqlReflector {
         return plsqlUserTypes.elements();
     }
 
-    public boolean isUserType(Type t) {
+    public boolean isUserType(TypeClass t) {
         if (t instanceof SqlType) {
             for (int i = 0; i < m_userTypes.size(); i++) {
                 if (m_userTypes.elementAt(i).equals(t)) {
@@ -1332,8 +1344,8 @@ public class SqlReflector {
     }
 
     /* Add Java non-array types for publishing */
-    public JavaType addJavaType(String typeName, Field[] fields, Method[] methods,
-        boolean genPattern, Type sqlType) throws SQLException {
+    public JavaType addJavaType(String typeName, AttributeField[] fields, ProcedureMethod[] methods,
+        boolean genPattern, TypeClass sqlType) throws SQLException {
         if (typeName == null) {
             return null;
         }
@@ -1363,7 +1375,7 @@ public class SqlReflector {
      * Search among userTypes, and return a boolean indicating whether a subclass of the receiver
      * type has methods
      */
-    public boolean hasMethodsInSubclasses(Type who) throws SQLException, PublisherException {
+    public boolean hasMethodsInSubclasses(TypeClass who) throws SQLException, PublisherException {
         Enumeration v = m_userTypes.elements();
         while (v.hasMoreElements()) {
             Object t = v.nextElement();

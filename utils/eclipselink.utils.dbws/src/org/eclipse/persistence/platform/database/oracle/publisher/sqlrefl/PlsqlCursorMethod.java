@@ -1,4 +1,15 @@
-/* 1998 (c) Oracle Corporation */
+/*******************************************************************************
+ * Copyright (c) 1998-2009 Oracle. All rights reserved.
+ * This program and the accompanying materials are made available under the 
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
+ * which accompanies this distribution. 
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at 
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * Contributors:
+ *     Mike Norman - from Proof-of-concept, become production code
+ ******************************************************************************/
 package org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl;
 
 import java.sql.SQLException;
@@ -10,7 +21,7 @@ import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.Rowt
  */
 public class PlsqlCursorMethod extends PlsqlMethod implements CursorMethod {
     public PlsqlCursorMethod(String packageName, String methodName, String methodNo, int modifiers,
-        int sequence, Type[] parameterTypes, String[] parameterNames, int[] parameterModes,
+        int sequence, TypeClass[] parameterTypes, String[] parameterNames, int[] parameterModes,
         boolean[] parameterDefaults, int paramLen, boolean returnBeans, SqlReflector reflector)
         throws SQLException {
         super(methodName, null, /* overloadNumber */
@@ -31,7 +42,7 @@ public class PlsqlCursorMethod extends PlsqlMethod implements CursorMethod {
         RowtypeInfo[] rowtypeInfo = m_reflector.reflectRowtypeInfo(packageName, methodName,
             methodNo, sequence + 1);
         m_returnColCount = rowtypeInfo.length;
-        Type[] returnColTypes = new Type[m_returnColCount];
+        TypeClass[] returnColTypes = new TypeClass[m_returnColCount];
         String[] returnColNames = new String[m_returnColCount];
         for (int j = 0; j < m_returnColCount; j++) {
             returnColNames[j] = rowtypeInfo[j].argument_name;
@@ -51,33 +62,33 @@ public class PlsqlCursorMethod extends PlsqlMethod implements CursorMethod {
         }
         String returnEleTypeName = Util.uniqueResultTypeName(SqlName
             .sqlIdToJavaId(methodName, true), "Row");
-        Field[] fields = null;
+        AttributeField[] fields = null;
         m_returnEleType = null;
         if (returnColTypes != null && returnColTypes.length == 1) {
             m_singleColName = returnColNames[0];
             m_returnEleType = returnColTypes[0];
         }
         else if (returnColTypes != null) {
-            fields = new Field[returnColTypes.length];
+            fields = new AttributeField[returnColTypes.length];
             for (int i = 0; i < returnColTypes.length; i++) {
                 // MYOBJ(ENAME, SAL) => MYOBJ
                 String returnColName = returnColNames[i];
                 if (returnColName.indexOf("(") > -1) {
                     returnColName = returnColName.substring(0, returnColName.indexOf("("));
                 }
-                fields[i] = new Field(returnColName, returnColTypes[i], 0, 0, 0,
+                fields[i] = new AttributeField(returnColName, returnColTypes[i], 0, 0, 0,
                     null /* CHARACTER_SET_NAME */, m_reflector);
             }
             m_returnEleType = m_reflector.addJavaType(returnEleTypeName, fields, null, true, null);
         }
         else {
-            m_returnEleType = m_reflector.addJavaType(returnEleTypeName, new Field[0], null, true,
+            m_returnEleType = m_reflector.addJavaType(returnEleTypeName, new AttributeField[0], null, true,
                 null);
         }
         m_returnType = new JavaArrayType(m_returnEleType, m_reflector, SqlReflector.REF_CURSOR_TYPE);
     }
 
-    public Type getReturnEleType() {
+    public TypeClass getReturnEleType() {
         return m_returnEleType;
     }
 
@@ -104,7 +115,7 @@ public class PlsqlCursorMethod extends PlsqlMethod implements CursorMethod {
 
     private SqlReflector m_reflector;
     private String m_singleColName;
-    private Type m_returnEleType;
+    private TypeClass m_returnEleType;
     private boolean m_returnBeans;
     private int m_returnColCount;
 }
