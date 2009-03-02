@@ -14,8 +14,11 @@
 package org.eclipse.persistence.platform.database.jdbc;
 
 //javase imports
+import java.sql.Array;
+import java.sql.Struct;
 import java.util.ListIterator;
 import java.util.Vector;
+import static java.lang.Integer.MIN_VALUE;
 import static java.sql.Types.ARRAY;
 import static java.sql.Types.BIGINT;
 import static java.sql.Types.BINARY;
@@ -46,9 +49,9 @@ import static java.sql.Types.TIMESTAMP;
 import static java.sql.Types.TINYINT;
 import static java.sql.Types.VARBINARY;
 import static java.sql.Types.VARCHAR;
-import static java.lang.Integer.MIN_VALUE;
 
 //EclipseLink imports
+import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseType;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
@@ -56,6 +59,14 @@ import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredProcedu
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLargument;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.sessions.DatabaseRecord;
+import static org.eclipse.persistence.internal.helper.ClassConstants.BIGDECIMAL;
+import static org.eclipse.persistence.internal.helper.ClassConstants.JavaSqlDate_Class;
+import static org.eclipse.persistence.internal.helper.ClassConstants.JavaSqlTime_Class;
+import static org.eclipse.persistence.internal.helper.ClassConstants.JavaSqlTimestamp_Class;
+import static org.eclipse.persistence.internal.helper.ClassConstants.Object_Class;
+import static org.eclipse.persistence.internal.helper.ClassConstants.SHORT;
+import static org.eclipse.persistence.internal.helper.ClassConstants.STRING;
+import static org.eclipse.persistence.internal.helper.ClassConstants.Void_Class;
 import static org.eclipse.persistence.internal.helper.DatabaseType.DatabaseTypeHelper.databaseTypeHelper;
 import static org.eclipse.persistence.internal.helper.Helper.NL;
 
@@ -324,5 +335,69 @@ public enum JDBCTypes implements JDBCType {
                 break;
             }
             return databaseType;
+        }
+
+        public static Class<?> getClassForCode(int typeCode) {
+            Class<?> clz = STRING;
+            switch (typeCode) {
+                case ARRAY :
+                    clz = Array.class;
+                    break;
+                case DECIMAL :
+                case BIGINT :
+                case NUMERIC :
+                    clz = BIGDECIMAL;
+                    break;
+                case BLOB :
+                case BINARY :
+                case LONGVARBINARY :
+                case VARBINARY :
+                    clz = ClassConstants.BLOB;
+                    break;
+                case CLOB :
+                    clz =  ClassConstants.CLOB;
+                    break;
+                case BOOLEAN :
+                    clz = ClassConstants.BOOLEAN;
+                    break;
+                case DISTINCT :
+                case DATALINK :
+                case JAVA_OBJECT :
+                case OTHER :
+                case REF :
+                    clz = Object_Class;
+                    break;
+                case NULL :
+                    clz = Void_Class;
+                    break;
+                case DATE :
+                    clz = JavaSqlDate_Class;
+                    break;
+                case TIMESTAMP :
+                    clz = JavaSqlTimestamp_Class;
+                    break;
+                case DOUBLE :
+                    clz = ClassConstants.DOUBLE;
+                    break;
+                case REAL :
+                case FLOAT :
+                    clz = ClassConstants.FLOAT;
+                    break;
+                case INTEGER :
+                    clz = ClassConstants.INTEGER;
+                    break;
+                case BIT :
+                case SMALLINT :
+                case TINYINT :
+                    clz = SHORT;
+                    break;
+                case STRUCT :
+                    clz = Struct.class;
+                    break;
+                case TIME :
+                    clz = JavaSqlTime_Class;
+                    break;
+                }
+            return clz;
         }
 }
