@@ -35,8 +35,6 @@ import org.eclipse.persistence.platform.xml.XMLTransformer;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
-import sun.util.logging.resources.logging;
-
 /**
  * Schema generation tests - based on the JAXB 2.0 TCK: 
  *     java2schema/CustomizedMapping/classes/XMLRootElement 
