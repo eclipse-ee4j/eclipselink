@@ -157,8 +157,7 @@ public class XMLGregorianCalendarTestCases extends XMLMappingTestCases {
         String testString;
         
         String gDayString       = "---17+03:00";
-        String gMonthString16   = "--02+03:00";
-        String gMonthString15   = "--02--+03:00";
+        String gMonthString     = "--02+03:00";
         String gMonthDayString  = "--02-17+03:00";
         String gYearString      = "2009+03:00";
         String gYearMonthString = "2009-02+03:00";
@@ -170,11 +169,7 @@ public class XMLGregorianCalendarTestCases extends XMLMappingTestCases {
         assertEquals("Object to String conversion failed.", gDayString, testString);
         
         testString = (String) getXmlConversionManager().convertObject(aCal, String.class, XMLConstants.G_MONTH_QNAME);
-        if (System.getProperty("java.version").startsWith("1.5")) {
-            assertEquals("Object to String conversion failed.", gMonthString15, testString);
-        } else {
-            assertEquals("Object to String conversion failed.", gMonthString16, testString);
-        }
+        assertEquals("Object to String conversion failed.", gMonthString, testString);
             
         testString = (String) getXmlConversionManager().convertObject(aCal, String.class, XMLConstants.G_MONTH_DAY_QNAME);
         assertEquals("Object to String conversion failed.", gMonthDayString, testString);

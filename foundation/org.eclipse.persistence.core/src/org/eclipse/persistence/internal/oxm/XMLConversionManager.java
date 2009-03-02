@@ -692,15 +692,27 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             if (XMLConstants.G_MONTH_QNAME.equals(schemaTypeQName)) {
                 xgc.setMonth(cal.get(Calendar.MONTH) + 1);
                 // Note: 'XML Schema:  Datatypes' indicates that the lexical representation is "--MM--"
-                // but the truncated representation as described in 5.2.1.3 of ISO 8601:1988 is "--MM"
+                // but the truncated representation as described in 5.2.1.3 of ISO 8601:1988 is "--MM".
+                // We always want to return the 1.6 syntax ("--MM").
                 String xmlFormat = xgc.toXMLFormat();
-                String pre  = xmlFormat.substring(0, 4);
+                String pre  = xmlFormat.substring(0, 4); // will always be --MM
                 String post = "";
-                if (xmlFormat.length() == 6) {
-                    post = xmlFormat.substring(6, xmlFormat.length());
-                } else {
-                    post = xmlFormat.substring(4, xmlFormat.length());
+                
+                // --MM or --MM--
+                if (xmlFormat.length() == 4 && xmlFormat.length() == 6) {
+                    post = "";
                 }
+
+                // --MMZ or --MM+03:00
+                if (xmlFormat.length() == 5 || xmlFormat.length() == 10) {
+                    post = xmlFormat.substring(4);
+                }
+
+                // --MM--Z or --MM--+03:00
+                if (xmlFormat.length() == 7 || xmlFormat.length() == 12) {
+                    post = xmlFormat.substring(6);
+                }
+
                 return pre + post;
             }
             // gMonthDay
