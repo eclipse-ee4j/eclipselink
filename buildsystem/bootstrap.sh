@@ -96,7 +96,7 @@ fi
 tmp=${TMPDIR-/tmp}
 tmp=$tmp/somedir.$RANDOM.$RANDOM.$RANDOM.$$
 (umask 077 && mkdir $tmp) || {
-  echo "Could not create temporary directory! Exiting." 1>&2 
+  echo "Could not create temporary directory! Exiting." 1>&2
   exit 1
 }
 echo "results stored in: '${tmp}'"
@@ -166,7 +166,7 @@ genTestSummary()
 {
     infile=$1
     outfile=$2
-    
+
     if [ -f ${infile} ]
     then
         if [ -n ${infile} ]
@@ -213,7 +213,7 @@ genTestSummary()
             echo "Postprocessing Error: No test results to summarize!"
         fi
     fi
-    
+
     # Return status based upon existence of test success (all pass="true (0)" else="fail (1)")
     if [ \( "$Terrors" -gt 0 \) -o \( "$Tfailures" -gt 0 \) ]
     then
@@ -228,7 +228,7 @@ unset cleanFailuresDir
 cleanFailuresDir()
 {
     num_files=10
-    
+
     # leave only the last 10 failed build logs on the download server
     index=0
     for logs in `ls ${FailedNFSDir} | grep log | sort -t_ -k3 -r` ; do
@@ -389,11 +389,11 @@ then
     ##
     VERSION=`head -175 ${DATED_LOG} | grep -m1 "EL version" | cut -d= -f2 | tr -d '\047'`
     echo "Generating summary email for ${VERSION} build."
-    
+
     ## find the current revision
     ##
     CUR_REV=`head -175 ${DATED_LOG} | grep revision | grep -m1 svn | cut -d= -f2 | tr -d '\047'`
-    
+
     ## find the revision of the last build
     ##
     getPrevRevision
@@ -409,7 +409,7 @@ then
     ## Generate transaction log for this revision
     ##
     svn log -r ${CUR_REV}${PREV_REV} -q -v  http://dev.eclipse.org/svnroot/rt/org.eclipse.persistence/${BRANCH}trunk >> ${SVN_LOG_FILE}
-    
+
     ## Verify Compile complete before bothering with post-build processing for test results
     ## if [ not build failed ]
     ##
@@ -420,7 +420,7 @@ then
         cat ${DATED_LOG} | grep -n '^test-' | grep -v "\-jar" | grep -v "\-errors:" | grep -v lrg | grep -v t-srg | tr -d ' ' > ${PARSE_RESULT_FILE}
         cat ${DATED_LOG} | grep -n 'Errors: [0-9]' | tr -d ' ' | tr ',' ':' >> ${PARSE_RESULT_FILE}
         cat ${PARSE_RESULT_FILE} | sort -n -t: > ${SORTED_RESULT_FILE}
-        
+
         ## make sure TESTDATA_FILE is empty
         ##
         if [ -f ${TESTDATA_FILE} ]
@@ -428,7 +428,7 @@ then
             rm -f ${TESTDATA_FILE}
         fi
         touch ${TESTDATA_FILE}
-        
+
         ## run routine to generate test results file and generate MAIL_SUBJECT based upon exit status
         ##
         genTestSummary ${SORTED_RESULT_FILE} ${TESTDATA_FILE}
@@ -440,12 +440,12 @@ then
             MAIL_SUBJECT="${BRANCH_NM} ${TARG_NM} build has test failures!"
             BUILD_FAILED="true"
         fi
-       
+
     else
         MAIL_SUBJECT="${BRANCH_NM} ${TARG_NM} build failed!"
         BUILD_FAILED="true"
     fi
-    
+
     if [ "${BUILD_FAILED}" = "true" ]
     then
         cp ${DATED_LOG} ${FailedNFSDir}/${LOGFILE_NAME}
@@ -454,7 +454,7 @@ then
         MAILLIST=${FAIL_MAILLIST}
         echo "Build had issues to be resolved."
     fi
-    
+
     ## Build Body text of email
     ##
     if [ -f ${MAILBODY} ]; then rm ${MAILBODY}; fi
@@ -473,16 +473,16 @@ then
     then
         echo "or on the download server at:" >> ${MAILBODY}
         echo "    http://www.eclipse.org/eclipselink/downloads/build-failures.php" >> ${MAILBODY}
-	fi
+    fi
     echo "-----------------------------------" >> ${MAILBODY}
     echo "" >> ${MAILBODY}
-	echo "SVN Changes since Last Build:" >> ${MAILBODY}
+    echo "SVN Changes since Last Build:" >> ${MAILBODY}
     cat ${SVN_LOG_FILE} >> ${MAILBODY}
-    
+
     ## Send result email
     ##
     echo "Sending email..."
-    cat ${MAILBODY} | ${MAIL_EXEC} -s "${MAIL_SUBJECT}" ${MAILLIST}  
+    cat ${MAILBODY} | ${MAIL_EXEC} -s "${MAIL_SUBJECT}" ${MAILLIST}
     if [ $? -eq 0  ]
     then
        echo "     complete."
