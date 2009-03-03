@@ -617,14 +617,22 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
             info = generateNestedFunction((ComplexDatabaseType)type);
         }
         if (argument.direction == IN) {
-            functions.add(info.sql2PlConv);
+            if (!functions.contains(info.sql2PlConv)) {
+                functions.add(info.sql2PlConv);
+            }
         }
         else if (argument.direction == INOUT) {
-            functions.add(info.sql2PlConv);
-            functions.add(info.pl2SqlConv);
+            if (!functions.contains(info.sql2PlConv)) {
+                functions.add(info.sql2PlConv);
+            }
+            if (!functions.contains(info.pl2SqlConv)) {
+                functions.add(info.pl2SqlConv);
+            }
         }
         else if (argument.direction == OUT) {
-            functions.add(info.pl2SqlConv);
+            if (!functions.contains(info.pl2SqlConv)) {
+                functions.add(info.pl2SqlConv);
+            }
         }
     }
 
