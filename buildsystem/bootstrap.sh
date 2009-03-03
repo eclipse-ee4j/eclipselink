@@ -369,8 +369,8 @@ echo "Build complete."
 ## Post-build Processing
 ##
 MAIL_EXEC=/bin/mail
-MAILLIST="eric.gwin@oracle.com ejgwin@gmail.com tom.ware@oracle.com"
-SUCC_MAILLIST="eric.gwin@oracle.com ejgwin@gmail.com tom.ware@oracle.com"
+MAILLIST="eric.gwin@oracle.com ejgwin@gmail.com"
+SUCC_MAILLIST="eric.gwin@oracle.com ejgwin@gmail.com"
 FAIL_MAILLIST="eclipselink-dev@eclipse.org ejgwin@gmail.com"
 PARSE_RESULT_FILE=${tmp}/raw-summary.txt
 SORTED_RESULT_FILE=${tmp}/sorted-summary.txt
