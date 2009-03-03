@@ -478,7 +478,6 @@ then
     echo "-----------------------------------" >> ${MAILBODY}
     echo "" >> ${MAILBODY}
 	echo "SVN Changes since Last Build:" >> ${MAILBODY}
-    echo "" >> ${MAILBODY}
     cat ${SVN_LOG_FILE} >> ${MAILBODY}
     
     ## Send result email
