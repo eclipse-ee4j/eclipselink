@@ -75,10 +75,6 @@ public class DescriptorExceptionTest extends AutoVerifyTestCase {
             desc.setOptimisticLockingPolicy(null);
             desc.getReturningPolicy().addFieldForInsert("EMPLOYEE.VERSION");
             break;
-        case DescriptorException.RETURNING_POLICY_MAPPED_FIELD_TYPE_NOT_SET:
-            desc = getDescriptor(project, Employee.class);
-            desc.getReturningPolicy().addFieldForInsert("EMPLOYEE.START_TIME");
-            break;
         case DescriptorException.RETURNING_POLICY_MAPPING_NOT_SUPPORTED:
             desc = getDescriptor(project, Employee.class);
             desc.getReturningPolicy().addFieldForInsert("EMPLOYEE.ADDR_ID");

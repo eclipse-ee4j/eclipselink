@@ -136,6 +136,20 @@ public abstract class PerformanceComparisonTestCase extends TestCase implements 
         getTests().add(test);
     }
 
+
+    /**
+     * Executes this test case.
+     * Log some debug info as perf tests sometimes take a long time or hang.
+     */
+    public void execute(TestExecutor executor) {
+        System.out.println("Begin:" + getName());
+        try {
+            super.execute(executor);
+        } finally {
+            System.out.println("End:" + getName() + ":" + getTestResult().getTotalTime());
+        }
+    }
+    
     /**
      * Executes this test comparison with the base-line.
      * Static allow reuse with EJB tests.

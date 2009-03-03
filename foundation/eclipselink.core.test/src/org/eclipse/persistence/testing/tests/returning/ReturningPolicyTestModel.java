@@ -169,7 +169,6 @@ public class ReturningPolicyTestModel extends TestModel {
         suite.addTest(new DescriptorExceptionTest(DescriptorException.RETURNING_POLICY_FIELD_INSERT_CONFLICT));
         suite.addTest(new DescriptorExceptionTest(DescriptorException.RETURNING_POLICY_AND_DESCRIPTOR_FIELD_TYPE_CONFLICT));
         suite.addTest(new DescriptorExceptionTest(DescriptorException.RETURNING_POLICY_UNMAPPED_FIELD_TYPE_NOT_SET));
-        suite.addTest(new DescriptorExceptionTest(DescriptorException.RETURNING_POLICY_MAPPED_FIELD_TYPE_NOT_SET));
         suite.addTest(new DescriptorExceptionTest(DescriptorException.RETURNING_POLICY_MAPPING_NOT_SUPPORTED));
         suite.addTest(new DescriptorExceptionTest(DescriptorException.RETURNING_POLICY_FIELD_NOT_SUPPORTED, "sequence"));
         suite.addTest(new DescriptorExceptionTest(DescriptorException.RETURNING_POLICY_FIELD_NOT_SUPPORTED, "locking"));

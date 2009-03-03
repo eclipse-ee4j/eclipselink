@@ -13,6 +13,8 @@
 package org.eclipse.persistence.testing.tests.customsqlstoredprocedures;
 
 import java.util.*;
+
+import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.tools.schemaframework.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.testing.framework.*;
@@ -206,6 +208,7 @@ public class CustomSQLTestModel extends TestModel {
         suite.addTest(new StoredProcedureVARRAYParametersTest(false));
         suite.addTest(new StoredProcedureVARRAYParametersTest(true));
         suite.addTest(new StoredProcedureORParametersClientSessionTest());
+        suite.addTest(buildSQLTransactionTest());
         return suite;
     }
 
@@ -249,5 +252,30 @@ public class CustomSQLTestModel extends TestModel {
         // Setup complex mapping employee as well.
         ClassDescriptor empDescriptor = getSession().getClassDescriptor(org.eclipse.persistence.testing.models.legacy.Employee.class);
         empDescriptor.getQueryManager().setReadObjectSQLString("select LEG_EMP.*, LEG_ADD.* FROM LEG_EMP, LEG_ADD WHERE (((LEG_EMP.FNAME = #LEG_EMP.FNAME) AND (LEG_EMP.LNAME = #LEG_EMP.LNAME)) AND ((LEG_ADD.FIRST_NM = #LEG_EMP.FNAME) AND (LEG_ADD.LNAME = #LEG_EMP.LNAME)))");
+    }
+    
+    /**
+     * Test that transaction with only SQL queries commit.
+     */
+    public static TestCase buildSQLTransactionTest() {
+        TestCase test = new TestCase() {
+            public void test() {
+                UnitOfWork uow = getSession().acquireUnitOfWork();
+                uow.executeNonSelectingSQL("Insert into ADDRESS (ADDRESS_ID) values (999999)");
+                uow.commit();
+                try {
+                    if (getAbstractSession().isInTransaction()
+                            || (getSession().executeSQL("Select * from ADDRESS where ADDRESS_ID = 999999").size() == 0)) {
+                        throwError("Database transaction not committed.");
+                    }
+                } finally {
+                    uow = getSession().acquireUnitOfWork();
+                    uow.executeNonSelectingSQL("Delete from ADDRESS where ADDRESS_ID = 999999");
+                    uow.commit();
+                }
+            }
+        };
+        test.setName("SQLTransactionTest");
+        return test;
     }
 }

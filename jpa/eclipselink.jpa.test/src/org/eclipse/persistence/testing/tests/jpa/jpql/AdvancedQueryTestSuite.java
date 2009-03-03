@@ -17,6 +17,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.FlushModeType;
 import javax.persistence.Query;
 import javax.persistence.EntityManager;
 
@@ -105,6 +106,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         suite.addTest(new AdvancedQueryTestSuite("testCursors"));
         suite.addTest(new AdvancedQueryTestSuite("testFetchGroups"));
         suite.addTest(new AdvancedQueryTestSuite("testMultipleNamedJoinFetchs"));
+        suite.addTest(new AdvancedQueryTestSuite("testNativeQueryTransactions"));
         
         return suite;
     }
@@ -566,6 +568,32 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             if (counter != null) {
                 counter.remove();
             }
+        }
+    }
+
+    /**
+     * Test that the transaction is committed for a single native query transaction.
+     */
+    public void testNativeQueryTransactions() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try {
+            em.setFlushMode(FlushModeType.COMMIT);
+            Query query = em.createNativeQuery("Update CMP3_EMPLOYEE set F_NAME = 'Bobo'");
+            query.executeUpdate();
+            commitTransaction(em);
+            closeEntityManager(em);
+            em = createEntityManager();
+            beginTransaction(em);
+            query = em.createNativeQuery("Select * from CMP3_EMPLOYEE where F_NAME = 'Bobo'");
+            if (query.getResultList().size() == 0) {
+                fail("Native query did not commit transaction.");
+            }
+        } finally {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
         }
     }
 

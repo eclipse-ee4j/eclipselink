@@ -1339,36 +1339,37 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * not to finalize the transaction.
      */
     protected void commitToDatabaseWithChangeSet(boolean commitTransaction) throws DatabaseException, OptimisticLockException {
-        // PERF: If this is an empty unit of work, do nothing.
-        if ((this.unitOfWorkChangeSet == null) && !(hasCloneMapping() || hasDeletedObjects() || hasModifyAllQueries() || hasDeferredModifyAllQueries())) {
-            return;
-        }
         
         try {
             startOperationProfile(SessionProfiler.UowCommit);
-            try{
-                // The sequence numbers are assigned outside of the commit transaction.
-                // This improves concurrency, avoids deadlock and in the case of three-tier will
-                // not leave invalid cached sequences on rollback.
-                // Also must first set the commit manager active.
-                getCommitManager().setIsActive(true);
-    
-                // Iterate over each clone and let the object build merge to clones into the originals.
-                // The change set may already exist if using change tracking.
-                if (this.unitOfWorkChangeSet == null) {
-                    this.unitOfWorkChangeSet = new UnitOfWorkChangeSet(this);
+            // PERF: If this is an empty unit of work, do nothing (but still may need to commit SQL changes).
+            boolean hasChanges = (this.unitOfWorkChangeSet != null) || hasCloneMapping() || hasDeletedObjects() || hasModifyAllQueries() || hasDeferredModifyAllQueries();
+            if (hasChanges) {                
+                try{
+                    // The sequence numbers are assigned outside of the commit transaction.
+                    // This improves concurrency, avoids deadlock and in the case of three-tier will
+                    // not leave invalid cached sequences on rollback.
+                    // Also must first set the commit manager active.
+                    getCommitManager().setIsActive(true);
+        
+                    // Iterate over each clone and let the object build merge to clones into the originals.
+                    // The change set may already exist if using change tracking.
+                    if (this.unitOfWorkChangeSet == null) {
+                        this.unitOfWorkChangeSet = new UnitOfWorkChangeSet(this);
+                    }
+                    // PERF: clone is faster than new.
+                    calculateChanges((IdentityHashMap)((IdentityHashMap)getCloneMapping()).clone(), this.unitOfWorkChangeSet, true);
+                } catch (RuntimeException exception){
+                    // The number of SQL statements been prepared need be stored into UOW 
+                    // before any exception being thrown.
+                    copyStatementsCountIntoProperties();
+                    throw exception;
                 }
-                // PERF: clone is faster than new.
-                calculateChanges((IdentityHashMap)((IdentityHashMap)getCloneMapping()).clone(), this.unitOfWorkChangeSet, true);
-            } catch (RuntimeException exception){
-                // The number of SQL statements been prepared need be stored into UOW 
-                // before any exception being thrown.
-                copyStatementsCountIntoProperties();
-                throw exception;
+                hasChanges = hasModifications();
             }
 
             // Bug 2834266 only commit to the database if changes were made, avoid begin/commit of transaction
-            if (hasModifications()) {
+            if (hasChanges) {
                 commitToDatabase(commitTransaction);
             } else {
                 try{

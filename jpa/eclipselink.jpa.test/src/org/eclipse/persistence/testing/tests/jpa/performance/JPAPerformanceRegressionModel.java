@@ -21,6 +21,33 @@ import javax.persistence.EntityManager;
 import javax.persistence.spi.PersistenceProvider;
 
 import org.eclipse.persistence.testing.models.jpa.performance.*;
+import org.eclipse.persistence.testing.tests.jpa.performance.reading.JPAReadAllAddressNamedQueryPerformanceComparisonTest;
+import org.eclipse.persistence.testing.tests.jpa.performance.reading.JPAReadAllAddressPerformanceComparisonTest;
+import org.eclipse.persistence.testing.tests.jpa.performance.reading.JPAReadAllAddressSimpleExpressionPerformanceComparisonTest;
+import org.eclipse.persistence.testing.tests.jpa.performance.reading.JPAReadAllEmployeeCompletelyJoinedPerformanceComparisonTest;
+import org.eclipse.persistence.testing.tests.jpa.performance.reading.JPAReadAllEmployeeCompletelyPerformanceComparisonTest;
+import org.eclipse.persistence.testing.tests.jpa.performance.reading.JPAReadAllEmployeeComplexDynamicExpressionPerformanceComparisonTest;
+import org.eclipse.persistence.testing.tests.jpa.performance.reading.JPAReadAllEmployeeComplexExpressionPerformanceComparisonTest;
+import org.eclipse.persistence.testing.tests.jpa.performance.reading.JPAReadAllEmployeePerformanceComparisonTest;
+import org.eclipse.persistence.testing.tests.jpa.performance.reading.JPAReadAllLargeProjectPerformanceComparisonTest;
+import org.eclipse.persistence.testing.tests.jpa.performance.reading.JPAReadAllProjectPerformanceComparisonTest;
+import org.eclipse.persistence.testing.tests.jpa.performance.reading.JPAReadAllSmallProjectPerformanceComparisonTest;
+import org.eclipse.persistence.testing.tests.jpa.performance.reading.JPAReadObjectAddressExpressionPerformanceComparisonTest;
+import org.eclipse.persistence.testing.tests.jpa.performance.reading.JPAReadObjectAddressNamedQueryPerformanceComparisonTest;
+import org.eclipse.persistence.testing.tests.jpa.performance.reading.JPAReadObjectAddressPerformanceComparisonTest;
+import org.eclipse.persistence.testing.tests.jpa.performance.reading.JPAReadObjectCompletelyEmployeePerformanceComparisonTest;
+import org.eclipse.persistence.testing.tests.jpa.performance.reading.JPAReadObjectEmployeePerformanceComparisonTest;
+import org.eclipse.persistence.testing.tests.jpa.performance.reading.JPAReadObjectGetAddressPerformanceComparisonTest;
+import org.eclipse.persistence.testing.tests.jpa.performance.writing.JPAComplexUpdateEmployeePerformanceComparisonTest;
+import org.eclipse.persistence.testing.tests.jpa.performance.writing.JPAInsertAddressPerformanceComparisonTest;
+import org.eclipse.persistence.testing.tests.jpa.performance.writing.JPAInsertDeleteAddressPerformanceComparisonTest;
+import org.eclipse.persistence.testing.tests.jpa.performance.writing.JPAInsertDeleteEmployeePerformanceComparisonTest;
+import org.eclipse.persistence.testing.tests.jpa.performance.writing.JPAInsertEmployeePerformanceComparisonTest;
+import org.eclipse.persistence.testing.tests.jpa.performance.writing.JPAMassInsertAddressPerformanceComparisonTest;
+import org.eclipse.persistence.testing.tests.jpa.performance.writing.JPAMassInsertEmployeePerformanceComparisonTest;
+import org.eclipse.persistence.testing.tests.jpa.performance.writing.JPAMassInsertOrMergeEmployeeWithManagementLevelsPerformanceComparisonTest;
+import org.eclipse.persistence.testing.tests.jpa.performance.writing.JPAUpdateAddressPerformanceComparisonTest;
+import org.eclipse.persistence.testing.tests.jpa.performance.writing.JPAUpdateEmployeePerformanceComparisonTest;
 import org.eclipse.persistence.testing.tests.performance.emulateddb.EmulatedDriver;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.jpa.JpaEntityManager;
@@ -98,10 +125,6 @@ public class JPAPerformanceRegressionModel extends TestModel {
         suite.addTest(new JPAUpdateEmployeePerformanceComparisonTest());
         suite.addTest(new JPAComplexUpdateEmployeePerformanceComparisonTest());
         suite.addTest(new JPAMassInsertEmployeePerformanceComparisonTest());
-        /* It seems the reset of MassInsert/Merge test which deletes the rows is taking a very long time. 
-        It started occurring when James enabled batch writing. Comment out the test for now.
-        */
-        /*
         // number of management levels:
         int nLevels = 2;
         // mumber of direct employees each manager has
@@ -114,7 +137,7 @@ public class JPAPerformanceRegressionModel extends TestModel {
         suite.addTest(new JPAMassInsertOrMergeEmployeeWithManagementLevelsPerformanceComparisonTest(false, false, nLevels, nDirects));
         // false == merge; true == use sequencing.
         suite.addTest(new JPAMassInsertOrMergeEmployeeWithManagementLevelsPerformanceComparisonTest(false, true, nLevels, nDirects));
-        */
+
         return suite;        
     }
 
@@ -228,7 +251,7 @@ public class JPAPerformanceRegressionModel extends TestModel {
         properties.put("eclipselink.jdbc.user", getSession().getLogin().getUserName());
         properties.put("eclipselink.jdbc.password", getSession().getLogin().getPassword());*/
 
-        properties.put("eclipselink.jdbc.batch-writing", "JDBC");
+        //properties.put("eclipselink.jdbc.batch-writing", "JDBC");
         //properties.put("eclipselink.persistence-context.close-on-commit", "true");
         properties.put("eclipselink.logging.level", getSession().getSessionLog().getLevelString());
         // This line should be commented out when comparing against Hibernate as they do not have statement caching support.

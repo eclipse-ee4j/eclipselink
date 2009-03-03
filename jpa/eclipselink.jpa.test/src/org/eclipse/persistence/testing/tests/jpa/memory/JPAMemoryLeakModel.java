@@ -153,7 +153,7 @@ public class JPAMemoryLeakModel extends TestModel {
             }
             
             public void reset() {
-                getSession().executeNonSelectingSQL("Delete from EMPLOYEE where F_NAME = 'NewGuy'");
+                getSession().executeNonSelectingSQL("Delete from P_EMPLOYEE where F_NAME = 'NewGuy'");
             }
         };
         test.setName("InsertMemoryLeakTest");
@@ -256,7 +256,7 @@ public class JPAMemoryLeakModel extends TestModel {
             }
             
             public void reset() {
-                getSession().executeNonSelectingSQL("Delete from EMPLOYEE where F_NAME = 'NewBatchGuy'");
+                getSession().executeNonSelectingSQL("Delete from P_EMPLOYEE where F_NAME = 'NewBatchGuy'");
             }
         };
         test.setName("ParametrizedBatchWriteMemoryLeakTest");
