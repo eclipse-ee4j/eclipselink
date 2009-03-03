@@ -379,7 +379,6 @@ SORTED_RESULT_FILE=${tmp}/sorted-summary.txt
 TESTDATA_FILE=${tmp}/testsummary-${BRANCH_NM}_${TARG_NM}.txt
 SVN_LOG_FILE=${tmp}/svnlog-${BRANCH_NM}_${TARG_NM}.txt
 MAILBODY=${tmp}/mailbody-${BRANCH_NM}_${TARG_NM}.txt
-DATA_FILE=${tmp}/data-${BRANCH_NM}_${TARG_NM}.txt
 FailedNFSDir="/home/data/httpd/download.eclipse.org/rt/eclipselink/recent-failure-logs"
 BUILD_FAILED="false"
 
@@ -391,12 +390,12 @@ if [ "`tail ${DATED_LOG} | grep unnece | tr -d '[:punct:]'`" = "" ]
 then
     ## find the current version (cannot use $BRANCH, because need current version stored in ANT buildfiles)
     ##
-    VERSION=`head -175 ${DATA_FILE} | grep -m1 "EL version" | cut -d= -f2 | tr -d '\047'`
+    VERSION=`head -175 ${DATED_LOG} | grep -m1 "EL version" | cut -d= -f2 | tr -d '\047'`
     echo $VERSION
     
     ## find the current revision
     ##
-    CUR_REV=`head -175 ${DATA_FILE} | grep revision | grep -m1 svn | cut -d= -f2 | tr -d '\047'`
+    CUR_REV=`head -175 ${DATED_LOG} | grep revision | grep -m1 svn | cut -d= -f2 | tr -d '\047'`
     echo CUR_REV=$CUR_REV
     
     ## find the revision of the last build
@@ -463,7 +462,6 @@ then
     if [ \( -f ${TESTDATA_FILE} \) -a \( -n ${TESTDATA_FILE} \) ]
     then
         cp ${TESTDATA_FILE} ${MAILBODY}
-        echo "" >> ${MAILBODY}
         echo "-----------------------------------" >> ${MAILBODY}
         echo "" >> ${MAILBODY}
         rm ${TESTDATA_FILE}
@@ -472,10 +470,14 @@ then
     fi
     echo "Full Build log can be found on the build machine at:" >> ${MAILBODY}
     echo "    ${DATED_LOG}" >> ${MAILBODY}
-    echo "or on the download server at:" >> ${MAILBODY}
-    echo "    http://www.eclipse.org/eclipselink/downloads/build-failures.php" >> ${MAILBODY}
+    if [ "${BUILD_FAILED}" = "true" ]
+    then
+        echo "or on the download server at:" >> ${MAILBODY}
+        echo "    http://www.eclipse.org/eclipselink/downloads/build-failures.php" >> ${MAILBODY}
+	fi
     echo "-----------------------------------" >> ${MAILBODY}
-    echo "SVN Changes since Last Build:" >> ${MAILBODY}
+    echo "" >> ${MAILBODY}
+	echo "SVN Changes since Last Build:" >> ${MAILBODY}
     echo "" >> ${MAILBODY}
     cat ${SVN_LOG_FILE} >> ${MAILBODY}
     
