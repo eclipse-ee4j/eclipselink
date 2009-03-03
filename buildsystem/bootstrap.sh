@@ -334,8 +334,6 @@ fi
 if [ "${TEST}" = "true" ]
 then
     ANT_BASEARG="${ANT_BASEARG} -D_DoNotUpdate=1"
-#else
-    #ANT_BASEARG="${ANT_BASEARG} -DMailLogger.properties.file=${BRANCH_PATH}/buildsystem/maillogger.properties -logger org.apache.tools.ant.listener.MailLogger"
 fi
 
 if [ "${UD2M}" = "true" ]
@@ -384,7 +382,7 @@ BUILD_FAILED="false"
 
 #set -x
 ## Verify Build Started bothering with setting up for an email or post-processing
-## if [ not "build unnecessary" (cb) ]
+## if [ not "build unnecessary"  ] - (an aborted cb attempt due to no changes)
 ##
 if [ "`tail ${DATED_LOG} | grep unnece | tr -d '[:punct:]'`" = "" ]
 then
@@ -401,9 +399,11 @@ then
     ## find the revision of the last build
     ##
     getPrevRevision
-    #PREV_REV=`find /home/data/httpd/download.eclipse.org/rt/eclipselink/. -print | grep ${TARG_NM}/${VERSION} | grep core | cut -d- -f2 | cut -dr -f4 | sort -n -r | grep -v -m1 ${CUR_REV}-   | cut -d- -f1`
     if [ ! "$PREV_REV" = "" ]
     then
+        ## Include everything but the revision of the last build (jump 1 up from it)
+        PREV_REV=`expr "${PREV_REV}" + "1"`
+        ## Prepend the ":" for the "to" syntax of the "svn log" command
         PREV_REV=:${PREV_REV}
     fi
     echo PREV_REV=$PREV_REV
