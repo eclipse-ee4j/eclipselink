@@ -156,7 +156,6 @@ getPrevRevision()
         if [ "`tail ${LOG_DIR}/${prev_log} | grep unnece | tr -d '[:punct:]'`" = "" ]
         then
             PREV_REV=`head -175 ${LOG_DIR}/${prev_log} | grep revision | grep -m1 svn | cut -d= -f2 | tr -d '\047'`
-            echo "prev_rev='${PREV_REV}'" 
             break
         fi
     done
@@ -211,7 +210,7 @@ genTestSummary()
                 echo "  Tests run:${tests} Failures:${failures} Errors:${errors}" >> ${outfile}
             fi
         else
-            echo "No test results to summarize!"
+            echo "Postprocessing Error: No test results to summarize!"
         fi
     fi
     
@@ -389,12 +388,11 @@ then
     ## find the current version (cannot use $BRANCH, because need current version stored in ANT buildfiles)
     ##
     VERSION=`head -175 ${DATED_LOG} | grep -m1 "EL version" | cut -d= -f2 | tr -d '\047'`
-    echo $VERSION
+    echo "Generating summary email for ${VERSION} build."
     
     ## find the current revision
     ##
     CUR_REV=`head -175 ${DATED_LOG} | grep revision | grep -m1 svn | cut -d= -f2 | tr -d '\047'`
-    echo CUR_REV=$CUR_REV
     
     ## find the revision of the last build
     ##
@@ -406,7 +404,7 @@ then
         ## Prepend the ":" for the "to" syntax of the "svn log" command
         PREV_REV=:${PREV_REV}
     fi
-    echo PREV_REV=$PREV_REV
+    echo "  changes included are from current revision to earliest not previously built (${CUR_REV}:${PREV_REV}) inclusive."
 
     ## Generate transaction log for this revision
     ##
@@ -454,11 +452,12 @@ then
         cleanFailuresDir
         .${BRANCH_PATH}/buildsystem/buildFailuresList.sh
         MAILLIST=${FAIL_MAILLIST}
+        echo "Build had issues to be resolved."
     fi
     
     ## Build Body text of email
     ##
-    rm ${MAILBODY}
+    if [ -f ${MAILBODY} ]; then rm ${MAILBODY}; fi
     if [ \( -f ${TESTDATA_FILE} \) -a \( -n ${TESTDATA_FILE} \) ]
     then
         cp ${TESTDATA_FILE} ${MAILBODY}
@@ -482,7 +481,14 @@ then
     
     ## Send result email
     ##
+    echo "Sending email..."
     cat ${MAILBODY} | ${MAIL_EXEC} -s "${MAIL_SUBJECT}" ${MAILLIST}  
+    if [ $? -eq 0  ]
+    then
+       echo "     complete."
+    else
+       echo "     failed."
+    fi
 fi
 
 ## Remove tmp directory
