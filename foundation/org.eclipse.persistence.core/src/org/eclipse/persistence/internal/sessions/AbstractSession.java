@@ -186,6 +186,8 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      */
     protected Integer pessimisticLockTimeoutDefault;
 
+    protected int queryTimeoutDefault;
+
     /**
      * INTERNAL:
      * Create and return a new session.
@@ -1483,6 +1485,10 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      */
     public Integer getPessimisticLockTimeoutDefault() {
         return pessimisticLockTimeoutDefault;
+    }
+
+    public int getQueryTimeoutDefault() {
+        return queryTimeoutDefault;
     }
 
     /**
@@ -2946,6 +2952,10 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      */
     public void setPessimisticLockTimeoutDefault(Integer pessimisticLockTimeoutDefault) {
         this.pessimisticLockTimeoutDefault = pessimisticLockTimeoutDefault;
+    }
+
+     public void setQueryTimeoutDefault(int queryTimeoutDefault) {
+        this.queryTimeoutDefault = queryTimeoutDefault;
     }
 
     /**

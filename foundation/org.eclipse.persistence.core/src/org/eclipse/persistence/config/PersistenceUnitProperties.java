@@ -39,13 +39,13 @@ public class PersistenceUnitProperties {
     public static final String NON_JTA_DATASOURCE = "javax.persistence.nonJtaDataSource";
     
     /** JDBC DriverManager class name. */
-    public static final String JDBC_DRIVER = "eclipselink.jdbc.driver";
+    public static final String JDBC_DRIVER = "javax.persistence.jdbc.driver";
     /** JDBC DriverManager driver URL. */
-    public static final String JDBC_URL = "eclipselink.jdbc.url";
+    public static final String JDBC_URL = "javax.persistence.jdbc.url";
     /** DataSource or JDBC DriverManager user name. */
-    public static final String JDBC_USER = "eclipselink.jdbc.user";
+    public static final String JDBC_USER = "javax.persistence.jdbc.user";
     /** DataSource or JDBC DriverManager password. */
-    public static final String JDBC_PASSWORD = "eclipselink.jdbc.password";
+    public static final String JDBC_PASSWORD = "javax.persistence.jdbc.password";
 
     /**
      * EclipseLink JDBC (internal) connection pools properties. Ignored in case external connection pools are used.
@@ -462,6 +462,8 @@ public class PersistenceUnitProperties {
      * parsed to int values.
      */
     public static final String PESSIMISTIC_LOCK_TIMEOUT = "javax.persistence.lock.timeout";
+
+    public static final String QUERY_TIMEOUT = "javax.persistence.query.timeout";
     
     /**
      * Specifies that the EntityManager will be closed or not used after commit (not extended).

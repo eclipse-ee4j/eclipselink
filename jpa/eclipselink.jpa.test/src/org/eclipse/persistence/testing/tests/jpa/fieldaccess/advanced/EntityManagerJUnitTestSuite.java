@@ -65,6 +65,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 import org.eclipse.persistence.internal.descriptors.PersistenceEntity;
+import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.internal.weaving.PersistenceWeaved;
 import org.eclipse.persistence.internal.weaving.PersistenceWeavedLazy;
 import org.eclipse.persistence.queries.FetchGroupTracker;
@@ -155,6 +156,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testFetchQueryHint"));
         suite.addTest(new EntityManagerJUnitTestSuite("testBatchQueryHint"));
         suite.addTest(new EntityManagerJUnitTestSuite("testQueryHints"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testQueryTimeOut"));
         suite.addTest(new EntityManagerJUnitTestSuite("testParallelMultipleFactories"));
         suite.addTest(new EntityManagerJUnitTestSuite("testMultipleFactories"));
         suite.addTest(new EntityManagerJUnitTestSuite("testPersistenceProperties"));
@@ -2278,7 +2280,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         EntityManager em = getEntityManagerFactory("fieldaccess").createEntityManager();
         Query query = em.createQuery("SELECT OBJECT(e) FROM Employee e WHERE e.firstName = 'testQueryHints'");
         ObjectLevelReadQuery olrQuery = (ObjectLevelReadQuery)((EJBQueryImpl)query).getDatabaseQuery();
-        
+
         // binding
         // original state = default state
         assertTrue(olrQuery.shouldIgnoreBindAllParameters());
@@ -2350,7 +2352,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         
         query.setHint(QueryHints.JDBC_TIMEOUT, new Integer(100));
         assertTrue("Timeout not set.", olrQuery.getQueryTimeout() == 100);
-        
         query.setHint(QueryHints.JDBC_FETCH_SIZE, new Integer(101));
         assertTrue("Fetch-size not set.", olrQuery.getFetchSize() == 101);
         
@@ -2376,7 +2377,22 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
         closeEntityManager(em);
     }
-    
+
+    public void testQueryTimeOut() {
+        EntityManager em = getEntityManagerFactory("fieldaccess").createEntityManager();
+        Query query = em.createQuery("SELECT d FROM Department d");
+        ObjectLevelReadQuery olrQuery = (ObjectLevelReadQuery)((EJBQueryImpl)query).getDatabaseQuery();
+
+        //testing for query timeout specified in persistence.xml
+        assertTrue("Timeout overriden or not set in persistence.xml",olrQuery.getQueryTimeout() == 100);
+        query.setHint(QueryHints.JDBC_TIMEOUT, 500);
+        olrQuery = (ObjectLevelReadQuery)((EJBQueryImpl)query).getDatabaseQuery();
+        assertTrue( olrQuery.getQueryTimeout() == 500);
+
+        closeEntityManager(em);
+
+    }
+
     /**
      * This test ensures that the eclipselink.batch query hint works.
      * It tests two things. 

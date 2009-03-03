@@ -274,7 +274,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         this.eventManager = parent.getEventManager().clone(this);
         this.exceptionHandler = parent.getExceptionHandler();
         this.pessimisticLockTimeoutDefault = parent.getPessimisticLockTimeoutDefault();
-        
+        this.queryTimeoutDefault=parent.getQueryTimeoutDefault();
         // Initialize the readOnlyClasses variable.
         this.setReadOnlyClasses(parent.copyReadOnlyClasses());
         this.validationLevel = Partial;
@@ -3387,7 +3387,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 existQuery.setPrimaryKey(primaryKey);
                 existQuery.setDescriptor(descriptor);
                 existQuery.setIsExecutionClone(true);
-        
+
                 existQuery.setCheckCacheFirst(true);
                 if (((Boolean)executeQuery(existQuery)).booleanValue()){
                     throw new IllegalArgumentException(ExceptionLocalization.buildMessage("cannot_remove_detatched_entity", new Object[]{toBeDeleted}));

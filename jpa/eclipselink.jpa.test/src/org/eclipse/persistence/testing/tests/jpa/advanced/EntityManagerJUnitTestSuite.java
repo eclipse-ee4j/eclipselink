@@ -3669,6 +3669,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             Employee emp3 = new Employee();
             Employee emp4 = new Employee();
             Employee emp5 = new Employee();
+            Employee emp6= new Employee();
             emp.setFirstName("Douglas");
             emp.setLastName("McRae");
             emp1.setFirstName("kaul");
@@ -3681,12 +3682,15 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             emp4.setLastName("Gaur");
             emp5.setFirstName("Eliot");
             emp5.setLastName("Morrison");
+            emp6.setFirstName("Edward");
+            emp6.setLastName("Bratt");
             em.persist(emp);
             em.persist(emp1);
             em.persist(emp2);
             em.persist(emp3);
             em.persist(emp4);
             em.persist(emp5);
+            em.persist(emp6);
             commitTransaction(em);
             beginTransaction(em);
             em.lock(emp, LockModeType.OPTIMISTIC);
@@ -3701,12 +3705,15 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             LockModeType lt4 = em.getLockMode(emp4);
             em.lock(emp5, LockModeType.WRITE);
             LockModeType lt5 = em.getLockMode(emp5);
+            em.lock(emp6, LockModeType.NONE);
+            LockModeType lt6 = em.getLockMode(emp6);
             assertEquals("Did not return correct LockModeType", LockModeType.OPTIMISTIC, lt);
             assertEquals("Did not return correct LockModeType", LockModeType.OPTIMISTIC_FORCE_INCREMENT, lt1);
             assertEquals("Did not return correct LockModeType", LockModeType.PESSIMISTIC, lt2);
             assertEquals("Did not return correct LockModeType", LockModeType.PESSIMISTIC_FORCE_INCREMENT, lt3);
             assertEquals("Did not return correct LockModeType", LockModeType.OPTIMISTIC, lt4);
             assertEquals("Did not return correct LockModeType", LockModeType.OPTIMISTIC_FORCE_INCREMENT, lt5);
+            assertEquals("Did not return correct LockModeType", LockModeType.NONE, lt6);
         } catch (UnsupportedOperationException use) {
             return;
         } catch (Exception e) {
@@ -7520,6 +7527,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         
         // cache the driver name
         String driverName = ((EntityManagerFactoryImpl)getEntityManagerFactory()).getServerSession().getLogin().getDriverClassName();
+        String originalConnectionString = ((EntityManagerFactoryImpl)getEntityManagerFactory()).getServerSession().getLogin().getConnectionString();
         
         // disconnect the session
         closeEntityManagerFactory();
@@ -7530,7 +7538,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         // connect the session using the wrapper driver
         HashMap properties = new HashMap(JUnitTestCaseHelper.getDatabaseProperties());
         properties.put(PersistenceUnitProperties.JDBC_DRIVER, DriverWrapper.class.getName());
-        properties.put(PersistenceUnitProperties.JDBC_URL, DriverWrapper.codeUrl((String)properties.get(PersistenceUnitProperties.JDBC_URL)));
+        properties.put(PersistenceUnitProperties.JDBC_URL, DriverWrapper.codeUrl(originalConnectionString));
         getEntityManagerFactory(properties);
 
         // this connects the session

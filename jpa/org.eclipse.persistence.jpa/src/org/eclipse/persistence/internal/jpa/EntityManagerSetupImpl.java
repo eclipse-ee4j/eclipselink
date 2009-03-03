@@ -721,10 +721,6 @@ public class EntityManagerSetupImpl {
             updateServerPlatform(predeployProperties, realClassLoader);
             // Update loggers and settings for the singleton logger and the session logger.
             updateLoggers(predeployProperties, true, false, realClassLoader);
-            
-            // Update the default pessimistic lock timeout value.
-            updatePessimisticLockTimeout(predeployProperties);
-            
             // If it's SE case and the pu has been undeployed weaving again here is impossible:
             // the classes were loaded already. Therefore using temporaryClassLoader is no longer required.
             // Moreover, it causes problem in case the same factory is opened and closed many times:
@@ -1210,7 +1206,8 @@ public class EntityManagerSetupImpl {
         updateCacheStatementSettings(m);
         updateTemporalMutableSetting(m);
         updateAllowZeroIdSetting(m);
-        
+        updatePessimisticLockTimeout(m);
+        updateQueryTimeout(m);
         // Customizers should be processed last
         processDescriptorCustomizers(m, loader);
         processSessionCustomizer(m, loader);
@@ -1532,7 +1529,7 @@ public class EntityManagerSetupImpl {
      * @param persistenceProperties the properties map
      */
     protected void updatePessimisticLockTimeout(Map persistenceProperties) {
-        String pessimisticLockTimeout = PropertiesHandler.getPropertyValueLogDebug(PersistenceUnitProperties.PESSIMISTIC_LOCK_TIMEOUT, persistenceProperties, session);
+        String pessimisticLockTimeout = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.PESSIMISTIC_LOCK_TIMEOUT, persistenceProperties, session);
 
         if (pessimisticLockTimeout != null) {
             try {
@@ -1646,5 +1643,12 @@ public class EntityManagerSetupImpl {
         this.persistenceInitializationHelper = persistenceInitializationHelper;
     }
 
+    private void updateQueryTimeout(Map persistenceProperties) {
+        String QueryTimeout = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.QUERY_TIMEOUT, persistenceProperties, session);
+
+        if (QueryTimeout != null) {
+            session.setQueryTimeoutDefault(Integer.parseInt(QueryTimeout));
+        }
+    }
     
 }

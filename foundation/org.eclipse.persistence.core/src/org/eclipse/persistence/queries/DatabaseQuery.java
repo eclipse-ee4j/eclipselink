@@ -1493,6 +1493,12 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
                 setQueryTimeout(getDescriptor().getQueryManager().getQueryTimeout());
             }
         }
+ 
+        if(getQueryTimeout() == DescriptorQueryManager.DefaultTimeout ||  getQueryTimeout() == DescriptorQueryManager.NoTimeout  ){
+            // Timeout not overridden at descriptor level. Use session timeout
+            setQueryTimeout(session.getQueryTimeoutDefault());
+        }
+         
         this.argumentFields = buildArgumentFields();
 
         getQueryMechanism().prepare();
@@ -1503,7 +1509,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * Copy all setting from the query.
      * This is used to morph queries from one type to the other.
      * By default this calls prepareFromQuery, but additional properties may be required
-     * to be copied as prepareFromQuery only copies properties that affect the SQL.
+     * to be copied as prepareFromQuery o nly copies properties that affect the SQL.
      */
     public void copyFromQuery(DatabaseQuery query) {
         prepareFromQuery(query);

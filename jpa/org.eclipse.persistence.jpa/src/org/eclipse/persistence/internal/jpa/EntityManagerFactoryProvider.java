@@ -48,7 +48,11 @@ public class EntityManagerFactoryProvider {
         {PersistenceUnitProperties.JDBC_BIND_PARAMETERS, "eclipselink.bind-all-parameters"},
         {PersistenceUnitProperties.TARGET_DATABASE, "eclipselink.platform.class.name"},
         {PersistenceUnitProperties.TARGET_SERVER, "eclipselink.server.platform.class.name"},
-        {PersistenceUnitProperties.CACHE_SIZE_DEFAULT, "eclipselink.cache.default-size"}
+        {PersistenceUnitProperties.CACHE_SIZE_DEFAULT, "eclipselink.cache.default-size"},
+        {PersistenceUnitProperties.JDBC_USER , "eclipselink.jdbc.user"},
+        {PersistenceUnitProperties.JDBC_DRIVER ,"eclipselink.jdbc.driver"},
+        {PersistenceUnitProperties.JDBC_URL , "eclipselink.jdbc.url"},
+        {PersistenceUnitProperties.JDBC_PASSWORD , "eclipselink.jdbc.password"}
     };
 
     /**
