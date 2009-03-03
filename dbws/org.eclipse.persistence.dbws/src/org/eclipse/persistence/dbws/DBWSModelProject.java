@@ -36,9 +36,8 @@ import org.eclipse.persistence.internal.xr.Operation;
 import org.eclipse.persistence.internal.xr.Parameter;
 import org.eclipse.persistence.internal.xr.ProcedureArgument;
 import org.eclipse.persistence.internal.xr.ProcedureOutputArgument;
-import org.eclipse.persistence.internal.xr.QNameFieldTransformer;
-import org.eclipse.persistence.internal.xr.QNameTransformer;
 import org.eclipse.persistence.internal.xr.QueryOperation;
+import org.eclipse.persistence.internal.xr.QNameTransformer;
 import org.eclipse.persistence.internal.xr.Result;
 import org.eclipse.persistence.internal.xr.SQLQueryHandler;
 import org.eclipse.persistence.internal.xr.StoredFunctionQueryHandler;
@@ -198,8 +197,9 @@ public class DBWSModelProject extends Project {
 
         XMLTransformationMapping type = new XMLTransformationMapping();
         type.setAttributeName("type");
-        type.setAttributeTransformer(new QNameTransformer());
-        type.addFieldTransformer("type/text()", new QNameFieldTransformer());
+        QNameTransformer qNameTransformer = new QNameTransformer("type/text()");
+        type.addFieldTransformer("type/text()", qNameTransformer);
+        type.setAttributeTransformer(qNameTransformer);
         descriptor.addMapping(type);
 
         return descriptor;
@@ -230,8 +230,9 @@ public class DBWSModelProject extends Project {
 
         XMLTransformationMapping type = new XMLTransformationMapping();
         type.setAttributeName("type");
-        type.setAttributeTransformer(new QNameTransformer());
-        type.addFieldTransformer("type/text()", new QNameFieldTransformer());
+        QNameTransformer qNameTransformer = new QNameTransformer("type/text()");
+        type.addFieldTransformer("type/text()", qNameTransformer);
+        type.setAttributeTransformer(qNameTransformer);
         descriptor.addMapping(type);
 
         XMLCompositeObjectMapping attachment = new XMLCompositeObjectMapping();
@@ -477,12 +478,13 @@ public class DBWSModelProject extends Project {
         XMLDescriptor descriptor = buildProcedureArgumentDescriptor();
         descriptor.setJavaClass(ProcedureOutputArgument.class);
 
-        XMLTransformationMapping type = new XMLTransformationMapping();
-        type.setAttributeName("resultType");
-        type.setAttributeTransformer(new QNameTransformer());
-        type.addFieldTransformer("type/text()", new QNameFieldTransformer());
-        descriptor.addMapping(type);
-
+        XMLTransformationMapping resultType = new XMLTransformationMapping();
+        resultType.setAttributeName("resultType");
+        QNameTransformer qNameTransformer = new QNameTransformer("type/text()");
+        resultType.addFieldTransformer("type/text()", qNameTransformer);
+        resultType.setAttributeTransformer(qNameTransformer);
+        descriptor.addMapping(resultType);
+        
         return descriptor;
     }
 

@@ -23,6 +23,7 @@ import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLLogin;
 import org.eclipse.persistence.oxm.mappings.XMLFragmentCollectionMapping;
+import org.eclipse.persistence.oxm.platform.DOMPlatform;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.oxm.schema.XMLSchemaURLReference;
 import org.eclipse.persistence.sessions.Project;
@@ -43,6 +44,7 @@ public class SimpleXMLFormatProject extends Project {
 
     public void applyLogin() {
         XMLLogin login = new XMLLogin();
+        login.setPlatform(new DOMPlatform());
         setDatasourceLogin(login);
     }
 
@@ -52,10 +54,10 @@ public class SimpleXMLFormatProject extends Project {
         descriptor.descriptorIsAggregate();
         descriptor.setJavaClass(SimpleXMLFormatModel.class);
         descriptor.setAlias(DEFAULT_SIMPLE_XML_FORMAT_TAG);
-        descriptor.setDefaultRootElement(DEFAULT_SIMPLE_XML_FORMAT_TAG);
         descriptor.setNamespaceResolver(ns);
+        descriptor.setDefaultRootElement(DEFAULT_SIMPLE_XML_FORMAT_TAG);
         XMLSchemaURLReference schemaReference = new XMLSchemaURLReference("");
-        schemaReference.setSchemaContext("/any");
+        schemaReference.setSchemaContext("/" + DEFAULT_SIMPLE_XML_FORMAT_TAG);
         schemaReference.setType(XMLSchemaReference.COMPLEX_TYPE);
         descriptor.setSchemaReference(schemaReference);
 

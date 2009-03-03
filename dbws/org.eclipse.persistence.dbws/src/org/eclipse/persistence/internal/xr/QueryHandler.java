@@ -73,7 +73,7 @@ public abstract class QueryHandler {
                     databaseQueryToInitialize = new DataReadQuery();
                 }
                 else {
-                    if (!xrService.descriptorsByElement.containsKey(type)) {
+                    if (!xrService.descriptorsByQName.containsKey(type)) {
                         // data-read query
                         databaseQueryToInitialize = new DataReadQuery();
                     }
@@ -89,7 +89,7 @@ public abstract class QueryHandler {
                     // data-read query
                     databaseQueryToInitialize = new DataReadQuery();
                 }
-                else if (!xrService.descriptorsByElement.containsKey(type)) {
+                else if (!xrService.descriptorsByQName.containsKey(type)) {
                     // value read query
                     databaseQueryToInitialize = new ValueReadQuery();
                 }

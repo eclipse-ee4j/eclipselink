@@ -34,7 +34,7 @@ import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 // EclipseLink imports
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.internal.descriptors.Namespace;
-import org.eclipse.persistence.internal.oxm.schema.model.Element;
+import org.eclipse.persistence.internal.oxm.schema.model.ComplexType;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.internal.xr.Attachment;
@@ -107,16 +107,16 @@ public class SOAPResponseWriter {
                         prefix = type.getPrefix() + ":";
                     }
                     String localElement = type.getLocalPart();
-                    // look for top-level element name of the same type
-                    Set<Map.Entry> entrySet = dbwsAdapter.getSchema().getTopLevelElements().entrySet();
-                    for (Map.Entry<String, Element> me : entrySet) {
-                        if (me.getValue().getType().equals(type.getLocalPart())) {
+                    // look for top-level complex types
+                    Set<Map.Entry> entrySet = dbwsAdapter.getSchema().getTopLevelComplexTypes().entrySet();
+                    for (Map.Entry<String, ComplexType> me : entrySet) {
+                        if (me.getValue().getName().equals(type.getLocalPart())) {
                             localElement = me.getKey();
                             break;
                         }
                     }
                     XMLDescriptor typeDescriptor =
-                        dbwsAdapter.getDescriptorsByElement().get(type);
+                        dbwsAdapter.getDescriptorsByQName().get(type);
                     if (typeDescriptor != null) {
                         if (queryOperation.isCollection()) {
                             XMLCompositeCollectionMapping mapping =

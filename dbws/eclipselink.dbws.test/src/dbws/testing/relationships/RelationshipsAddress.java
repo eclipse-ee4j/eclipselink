@@ -9,6 +9,9 @@ public class RelationshipsAddress {
     public String country;
     public String postalCode;
 
+    public RelationshipsAddress() {
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

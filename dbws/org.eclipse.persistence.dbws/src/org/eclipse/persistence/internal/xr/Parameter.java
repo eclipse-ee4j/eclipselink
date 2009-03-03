@@ -62,9 +62,8 @@ public class Parameter {
     }
 
     public void validate(XRServiceAdapter xrService, String operationName) {
-
         if (!type.getNamespaceURI().equals(W3C_XML_SCHEMA_NS_URI)) {
-            if (!xrService.descriptorsByElement.containsKey(type)) {
+            if (!xrService.descriptorsByQName.containsKey(type)) {
                 throw DBWSException.parameterHasNoMapping(type.toString(), operationName);
             }
         }

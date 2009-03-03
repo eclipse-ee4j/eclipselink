@@ -13,9 +13,10 @@
 
 package dbws.testing.oracleobjecttype;
 
-// javase imports
+//javase imports
 import java.io.ByteArrayInputStream;
 import java.io.StringReader;
+import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Struct;
@@ -24,21 +25,21 @@ import java.util.Vector;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-// Java extension imports
-import static javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI;
-import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
+//java eXtension imports
 
-// JUnit imports
+//JUnit4 imports
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-// EclipseLink imports
+//EclipseLink imports
 import org.eclipse.persistence.dbws.DBWSModel;
 import org.eclipse.persistence.dbws.DBWSModelProject;
+import org.eclipse.persistence.internal.descriptors.TransformerBasedFieldTransformation;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.factories.ObjectPersistenceWorkbenchXMLProject;
 import org.eclipse.persistence.internal.xr.Invocation;
 import org.eclipse.persistence.internal.xr.Operation;
 import org.eclipse.persistence.internal.xr.XRServiceAdapter;
@@ -46,6 +47,7 @@ import org.eclipse.persistence.internal.xr.XRServiceFactory;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescriptor;
 import org.eclipse.persistence.mappings.structures.StructureMapping;
+import org.eclipse.persistence.mappings.transformers.ConstantTransformer;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
@@ -55,7 +57,11 @@ import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
-import org.eclipse.persistence.platform.database.oracle.Oracle10Platform;
+import org.eclipse.persistence.oxm.mappings.XMLTransformationMapping;
+import org.eclipse.persistence.oxm.platform.DOMPlatform;
+import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
+import org.eclipse.persistence.oxm.schema.XMLSchemaURLReference;
+import org.eclipse.persistence.platform.database.oracle.Oracle11Platform;
 import org.eclipse.persistence.platform.xml.XMLComparer;
 import org.eclipse.persistence.platform.xml.XMLParser;
 import org.eclipse.persistence.platform.xml.XMLPlatform;
@@ -63,12 +69,17 @@ import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.sessions.DatabaseLogin;
+import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.factories.XMLProjectReader;
 import static org.eclipse.persistence.oxm.XMLConstants.INT_QNAME;
 import static org.eclipse.persistence.oxm.XMLConstants.STRING_QNAME;
 
 public class OracleObjecttypeTestSuite {
+
+    static final String CONSTANT_PROJECT_BUILD_VERSION = 
+        "Eclipse Persistence Services - some version (some build date)";
 
     static final String DATABASE_USERNAME_KEY = "db.user";
     static final String DATABASE_PASSWORD_KEY = "db.pwd";
@@ -87,7 +98,6 @@ public class OracleObjecttypeTestSuite {
         "      <xsd:element name=\"province\" type=\"xsd:string\" />\n" +
         "    </xsd:sequence>\n" +
         "  </xsd:complexType>\n" +
-        "  <xsd:element name=\"address\" type=\"addressType\"/>\n" +
         "  <xsd:complexType name=\"employeeType\">\n" +
         "    <xsd:sequence>\n" +
         "      <xsd:element name=\"id\" type=\"xsd:int\" />\n" +
@@ -96,7 +106,6 @@ public class OracleObjecttypeTestSuite {
         "      <xsd:element name=\"address\" type=\"addressType\" />\n" +
         "    </xsd:sequence>\n" +
         "  </xsd:complexType>\n" +
-        "  <xsd:element name=\"employee\" type=\"employeeType\"/>\n" +
         "</xsd:schema>";
     static final String OBJECTTYPE_XRMODEL =
         "<?xml version='1.0' encoding='UTF-8'?>\n" +
@@ -121,6 +130,209 @@ public class OracleObjecttypeTestSuite {
         "    </named-query>\n" +
         "  </query>\n" +
         "</dbws>";
+    static final String OBJECTTYPE_OR_PROJECT = 
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+        "<object-persistence version=\"" + CONSTANT_PROJECT_BUILD_VERSION + "\" xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:eclipselink=\"http://www.eclipse.org/eclipselink/xsds/persistence\">" +
+           "<name>or-oracleobjecttype</name>" +
+           "<class-mapping-descriptors>" +
+              "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
+                 "<class>dbws.testing.oracleobjecttype.Address</class>" +
+                 "<alias>address</alias>" +
+                 "<events xsi:type=\"event-policy\"/>" +
+                 "<querying xsi:type=\"query-policy\"/>" +
+                 "<attribute-mappings>" +
+                    "<attribute-mapping xsi:type=\"direct-mapping\">" +
+                       "<attribute-name>street</attribute-name>" +
+                       "<field name=\"STREET\" xsi:type=\"column\"/>" +
+                    "</attribute-mapping>" +
+                    "<attribute-mapping xsi:type=\"direct-mapping\">" +
+                       "<attribute-name>city</attribute-name>" +
+                       "<field name=\"CITY\" xsi:type=\"column\"/>" +
+                    "</attribute-mapping>" +
+                    "<attribute-mapping xsi:type=\"direct-mapping\">" +
+                       "<attribute-name>province</attribute-name>" +
+                       "<field name=\"PROV\" xsi:type=\"column\"/>" +
+                    "</attribute-mapping>" +
+                 "</attribute-mappings>" +
+                 "<descriptor-type>aggregate</descriptor-type>" +
+                 "<caching>" +
+                    "<cache-size>-1</cache-size>" +
+                 "</caching>" +
+                 "<remote-caching>" +
+                    "<cache-size>-1</cache-size>" +
+                 "</remote-caching>" +
+                 "<instantiation/>" +
+                 "<copying xsi:type=\"instantiation-copy-policy\"/>" +
+                 "<structure>XR_ADDRESS_TYPE</structure>" +
+                 "<field-order>" +
+                    "<field name=\"STREET\" xsi:type=\"column\"/>" +
+                    "<field name=\"CITY\" xsi:type=\"column\"/>" +
+                    "<field name=\"PROV\" xsi:type=\"column\"/>" +
+                 "</field-order>" +
+              "</class-mapping-descriptor>" +
+              "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
+                 "<class>dbws.testing.oracleobjecttype.EmployeeWithAddress</class>" +
+                 "<alias>employee</alias>" +
+                 "<primary-key>" +
+                    "<field table=\"XR_EMP_ADDR\" name=\"EMPNO\" xsi:type=\"column\"/>" +
+                 "</primary-key>" +
+                 "<events xsi:type=\"event-policy\"/>" +
+                 "<querying xsi:type=\"query-policy\">" +
+                    "<queries>" +
+                       "<query name=\"getEmployeesByProv\" xsi:type=\"read-all-query\">" +
+                          "<arguments>" +
+                             "<argument name=\"X\">" +
+                                "<type>java.lang.Object</type>" +
+                             "</argument>" +
+                          "</arguments>" +
+                          "<call xsi:type=\"stored-procedure-call\">" +
+                             "<procedure-name>GET_EMPLOYEES_BY_PROV</procedure-name>" +
+                             "<cursor-output-procedure>true</cursor-output-procedure>" +
+                             "<arguments>" +
+                                "<argument xsi:type=\"procedure-argument\">" +
+                                   "<procedure-argument-name>X</procedure-argument-name>" +
+                                   "<argument-name>X</argument-name>" +
+                                   "<procedure-argument-sqltype>2002</procedure-argument-sqltype>" +
+                                   "<procedure-argument-sqltype-name>XR_ADDRESS_TYPE</procedure-argument-sqltype-name>" +
+                                "</argument>" +
+                                "<argument xsi:type=\"procedure-output-cursor-argument\">" +
+                                   "<procedure-argument-name>Y</procedure-argument-name>" +
+                                   "<argument-name>Y</argument-name>" +
+                                "</argument>" +
+                             "</arguments>" +
+                          "</call>" +
+                          "<reference-class>dbws.testing.oracleobjecttype.EmployeeWithAddress</reference-class>" +
+                          "<container xsi:type=\"list-container-policy\">" +
+                             "<collection-type>java.util.Vector</collection-type>" +
+                          "</container>" +
+                       "</query>" +
+                    "</queries>" +
+                 "</querying>" +
+                 "<attribute-mappings>" +
+                    "<attribute-mapping xsi:type=\"direct-mapping\">" +
+                       "<attribute-name>id</attribute-name>" +
+                       "<field table=\"XR_EMP_ADDR\" name=\"EMPNO\" xsi:type=\"column\"/>" +
+                    "</attribute-mapping>" +
+                    "<attribute-mapping xsi:type=\"direct-mapping\">" +
+                       "<attribute-name>firstName</attribute-name>" +
+                       "<field table=\"XR_EMP_ADDR\" name=\"FNAME\" xsi:type=\"column\"/>" +
+                    "</attribute-mapping>" +
+                    "<attribute-mapping xsi:type=\"direct-mapping\">" +
+                       "<attribute-name>lastName</attribute-name>" +
+                       "<field table=\"XR_EMP_ADDR\" name=\"LNAME\" xsi:type=\"column\"/>" +
+                    "</attribute-mapping>" +
+                    "<attribute-mapping xsi:type=\"structure-mapping\">" +
+                       "<attribute-name>address</attribute-name>" +
+                       "<reference-class>dbws.testing.oracleobjecttype.Address</reference-class>" +
+                       "<field name=\"ADDRESS\" xsi:type=\"object-relational-field\"/>" +
+                    "</attribute-mapping>" +
+                 "</attribute-mappings>" +
+                 "<descriptor-type>independent</descriptor-type>" +
+                 "<caching>" +
+                    "<cache-size>-1</cache-size>" +
+                 "</caching>" +
+                 "<remote-caching>" +
+                    "<cache-size>-1</cache-size>" +
+                 "</remote-caching>" +
+                 "<instantiation/>" +
+                 "<copying xsi:type=\"instantiation-copy-policy\"/>" +
+                 "<tables>" +
+                    "<table name=\"XR_EMP_ADDR\"/>" +
+                 "</tables>" +
+              "</class-mapping-descriptor>" +
+           "</class-mapping-descriptors>" +
+        "</object-persistence>";
+    static final String OBJECTTYPE_OX_PROJECT = 
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+        "<object-persistence version=\"" + CONSTANT_PROJECT_BUILD_VERSION + "\" xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:eclipselink=\"http://www.eclipse.org/eclipselink/xsds/persistence\">" +
+           "<name>ox-oracleobjecttype</name>" +
+           "<class-mapping-descriptors>" +
+              "<class-mapping-descriptor xsi:type=\"xml-class-mapping-descriptor\">" +
+                 "<class>dbws.testing.oracleobjecttype.Address</class>" +
+                 "<alias>address</alias>" +
+                 "<events xsi:type=\"event-policy\"/>" +
+                 "<querying xsi:type=\"query-policy\"/>" +
+                 "<attribute-mappings>" +
+                    "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
+                       "<attribute-name>street</attribute-name>" +
+                       "<field name=\"street/text()\" xsi:type=\"node\">" +
+                          "<schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>" +
+                       "</field>" +
+                    "</attribute-mapping>" +
+                    "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
+                       "<attribute-name>city</attribute-name>" +
+                       "<field name=\"city/text()\" xsi:type=\"node\">" +
+                          "<schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>" +
+                       "</field>" +
+                    "</attribute-mapping>" +
+                    "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
+                       "<attribute-name>province</attribute-name>" +
+                       "<field name=\"province/text()\" xsi:type=\"node\">" +
+                          "<schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>" +
+                       "</field>" +
+                    "</attribute-mapping>" +
+                 "</attribute-mappings>" +
+                 "<descriptor-type>aggregate</descriptor-type>" +
+                 "<instantiation/>" +
+                 "<copying xsi:type=\"instantiation-copy-policy\"/>" +
+                 "<default-root-element>address</default-root-element>" +
+                 "<default-root-element-field name=\"address\" xsi:type=\"node\"/>" +
+                 "<namespace-resolver>" +
+                    "<default-namespace-uri>urn:oracleobjecttype</default-namespace-uri>" +
+                 "</namespace-resolver>" +
+                 "<schema xsi:type=\"schema-url-reference\">" +
+                    "<schema-context>/addressType</schema-context>" +
+                    "<node-type>complex-type</node-type>" +
+                 "</schema>" +
+              "</class-mapping-descriptor>" +
+              "<class-mapping-descriptor xsi:type=\"xml-class-mapping-descriptor\">" +
+                 "<class>dbws.testing.oracleobjecttype.EmployeeWithAddress</class>" +
+                 "<alias>employee</alias>" +
+                 "<events xsi:type=\"event-policy\"/>" +
+                 "<querying xsi:type=\"query-policy\"/>" +
+                 "<attribute-mappings>" +
+                    "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
+                       "<attribute-name>id</attribute-name>" +
+                       "<field name=\"id/text()\" xsi:type=\"node\">" +
+                          "<schema-type>{http://www.w3.org/2001/XMLSchema}int</schema-type>" +
+                       "</field>" +
+                    "</attribute-mapping>" +
+                    "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
+                       "<attribute-name>firstName</attribute-name>" +
+                       "<field name=\"first-name/text()\" xsi:type=\"node\">" +
+                          "<schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>" +
+                       "</field>" +
+                    "</attribute-mapping>" +
+                    "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
+                       "<attribute-name>lastName</attribute-name>" +
+                       "<field name=\"last-name/text()\" xsi:type=\"node\">" +
+                          "<schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>" +
+                       "</field>" +
+                    "</attribute-mapping>" +
+                    "<attribute-mapping xsi:type=\"xml-composite-object-mapping\">" +
+                       "<attribute-name>address</attribute-name>" +
+                       "<reference-class>dbws.testing.oracleobjecttype.Address</reference-class>" +
+                       "<field name=\"address\" xsi:type=\"node\"/>" +
+                    "</attribute-mapping>" +
+                 "</attribute-mappings>" +
+                 "<descriptor-type>aggregate</descriptor-type>" +
+                 "<instantiation/>" +
+                 "<copying xsi:type=\"instantiation-copy-policy\"/>" +
+                 "<default-root-element>employee</default-root-element>" +
+                 "<default-root-element-field name=\"employee\" xsi:type=\"node\"/>" +
+                 "<namespace-resolver>" +
+                    "<default-namespace-uri>urn:oracleobjecttype</default-namespace-uri>" +
+                 "</namespace-resolver>" +
+                 "<schema xsi:type=\"schema-url-reference\">" +
+                    "<schema-context>/employeeType</schema-context>" +
+                    "<node-type>complex-type</node-type>" +
+                 "</schema>" +
+              "</class-mapping-descriptor>" +
+           "</class-mapping-descriptors>" +
+           "<login xsi:type=\"xml-login\">" +
+              "<platform-class>org.eclipse.persistence.oxm.platform.DOMPlatform</platform-class>" +
+           "</login>" +
+        "</object-persistence>";
 
     // test fixtures
     public static XMLComparer comparer = new XMLComparer();
@@ -128,33 +340,26 @@ public class OracleObjecttypeTestSuite {
     public static XMLParser xmlParser = xmlPlatform.newXMLParser();
     public static XRServiceAdapter xrService = null;
     @BeforeClass
-    public static void setUp() {
-        String username = System.getProperty(DATABASE_USERNAME_KEY);
+    public static void setUp() throws SecurityException, NoSuchFieldException,
+        IllegalArgumentException, IllegalAccessException {
+        final String username = System.getProperty(DATABASE_USERNAME_KEY);
         if (username == null) {
             fail("error retrieving database username");
         }
-        String password = System.getProperty(DATABASE_PASSWORD_KEY);
+        final String password = System.getProperty(DATABASE_PASSWORD_KEY);
         if (password == null) {
             fail("error retrieving database password");
         }
-        String url = System.getProperty(DATABASE_URL_KEY);
+        final String url = System.getProperty(DATABASE_URL_KEY);
         if (url == null) {
             fail("error retrieving database url");
         }
-        String driver = System.getProperty(DATABASE_DRIVER_KEY);
+        final String driver = System.getProperty(DATABASE_DRIVER_KEY);
         if (driver == null) {
             fail("error retrieving database driver");
         }
         Project orProject = new Project();
         orProject.setName("or-oracleobjecttype");
-        DatabaseLogin login = new DatabaseLogin();
-        login.setUserName(username);
-        login.setPassword(password);
-        login.setConnectionString(url);
-        login.setDriverClassName(driver);
-        login.setDatasourcePlatform(new Oracle10Platform());
-        login.bindAllParameters();
-        orProject.setDatasourceLogin(login);
 
         ObjectRelationalDataTypeDescriptor addressORDescriptor =
             new ObjectRelationalDataTypeDescriptor();
@@ -212,13 +417,34 @@ public class OracleObjecttypeTestSuite {
         readQuery.setCall(spCall);
         employeeORDescriptor.getQueryManager().addQuery("getEmployeesByProv", readQuery);
 
+        ObjectPersistenceWorkbenchXMLProject runtimeProject = 
+            new ObjectPersistenceWorkbenchXMLProject();
+        XMLTransformationMapping versionMapping = 
+            (XMLTransformationMapping)runtimeProject.getDescriptor(Project.class).
+                getMappings().firstElement();
+        TransformerBasedFieldTransformation  versionTransformer = 
+            (TransformerBasedFieldTransformation)versionMapping.getFieldTransformations().
+                firstElement();
+        Field transformerField =
+            TransformerBasedFieldTransformation.class.getDeclaredField("transformer");
+        transformerField.setAccessible(true);
+        ConstantTransformer constantTransformer = 
+            (ConstantTransformer)transformerField.get(versionTransformer);
+        constantTransformer.setValue(CONSTANT_PROJECT_BUILD_VERSION);
+        XMLContext context = new XMLContext(runtimeProject);
+        XMLMarshaller marshaller = context.createMarshaller();
+        Document orProjectDoc = xmlPlatform.createDocument();
+        marshaller.marshal(orProject, orProjectDoc);
+        Document orProjectXMLDoc = xmlParser.parse(new StringReader(OBJECTTYPE_OR_PROJECT));
+        assertTrue("OracleObjecttype java-built OR project not same as XML-built OR project",
+            comparer.isNodeEqual(orProjectXMLDoc, orProjectDoc));
+
         NamespaceResolver ns = new NamespaceResolver();
-        ns.put("xsi", W3C_XML_SCHEMA_INSTANCE_NS_URI);
-        ns.put("xsd", W3C_XML_SCHEMA_NS_URI);
-        ns.put("ns1", "urn:oracleobjecttype");
+        ns.setDefaultNamespaceURI("urn:oracleobjecttype");
         Project oxProject = new Project();
         oxProject.setName("ox-oracleobjecttype");
         XMLLogin xmlLogin = new XMLLogin();
+        xmlLogin.setPlatform(new DOMPlatform());
         xmlLogin.getProperties().remove("user");
         xmlLogin.getProperties().remove("password");
         oxProject.setLogin(xmlLogin);
@@ -226,26 +452,31 @@ public class OracleObjecttypeTestSuite {
         XMLDescriptor addressOXDescriptor = new XMLDescriptor();
         addressOXDescriptor.setAlias("address");
         addressOXDescriptor.setJavaClass(Address.class);
-        addressOXDescriptor.setDefaultRootElement("ns1:address");
+        addressOXDescriptor.setDefaultRootElement("address");
         addressOXDescriptor.setNamespaceResolver(ns);
+        XMLSchemaURLReference schemaReference = new XMLSchemaURLReference();
+        schemaReference.setSchemaContext("/addressType");
+        schemaReference.setType(XMLSchemaReference.COMPLEX_TYPE);
+        addressOXDescriptor.setSchemaReference(schemaReference);
+        
         XMLDirectMapping streetMapping = new XMLDirectMapping();
         streetMapping.setAttributeName("street");
         XMLField streetField = new XMLField();
-        streetField.setName("ns1:street/text()");
+        streetField.setName("street/text()");
         streetField.setSchemaType(STRING_QNAME);
         streetMapping.setField(streetField);
         addressOXDescriptor.addMapping(streetMapping);
         XMLDirectMapping cityMapping = new XMLDirectMapping();
         cityMapping.setAttributeName("city");
         XMLField cityField = new XMLField();
-        cityField.setName("ns1:city/text()");
+        cityField.setName("city/text()");
         cityField.setSchemaType(STRING_QNAME);
         cityMapping.setField(cityField);
         addressOXDescriptor.addMapping(cityMapping);
         XMLDirectMapping provinceMapping = new XMLDirectMapping();
         provinceMapping.setAttributeName("province");
         XMLField provinceField = new XMLField();
-        provinceField.setName("ns1:province/text()");
+        provinceField.setName("province/text()");
         provinceField.setSchemaType(STRING_QNAME);
         provinceMapping.setField(provinceField);
         addressOXDescriptor.addMapping(provinceMapping);
@@ -254,54 +485,74 @@ public class OracleObjecttypeTestSuite {
         XMLDescriptor employeeOXDescriptor = new XMLDescriptor();
         employeeOXDescriptor.setAlias("employee");
         employeeOXDescriptor.setJavaClass(EmployeeWithAddress.class);
-        employeeOXDescriptor.setDefaultRootElement("ns1:employee");
+        employeeOXDescriptor.setDefaultRootElement("employee");
         employeeOXDescriptor.setNamespaceResolver(ns);
+        schemaReference = new XMLSchemaURLReference();
+        schemaReference.setSchemaContext("/employeeType");
+        schemaReference.setType(XMLSchemaReference.COMPLEX_TYPE);
+        employeeOXDescriptor.setSchemaReference(schemaReference);
         XMLDirectMapping xmlIdMapping = new XMLDirectMapping();
         xmlIdMapping.setAttributeName("id");
         XMLField idField = new XMLField();
-        idField.setName("ns1:id/text()");
+        idField.setName("id/text()");
         idField.setSchemaType(INT_QNAME);
         xmlIdMapping.setField(idField);
         employeeOXDescriptor.addMapping(xmlIdMapping);
         XMLDirectMapping xmlFirstNameMapping = new XMLDirectMapping();
         xmlFirstNameMapping.setAttributeName("firstName");
         XMLField firstNameField = new XMLField();
-        firstNameField.setName("ns1:first-name/text()");
+        firstNameField.setName("first-name/text()");
         firstNameField.setSchemaType(STRING_QNAME);
         xmlFirstNameMapping.setField(firstNameField);
         employeeOXDescriptor.addMapping(xmlFirstNameMapping);
         XMLDirectMapping xmlLastNameMapping = new XMLDirectMapping();
         xmlLastNameMapping.setAttributeName("lastName");
         XMLField lastNameField = new XMLField();
-        lastNameField.setName("ns1:last-name/text()");
+        lastNameField.setName("last-name/text()");
         lastNameField.setSchemaType(STRING_QNAME);
         xmlLastNameMapping.setField(lastNameField);
         employeeOXDescriptor.addMapping(xmlLastNameMapping);
         XMLCompositeObjectMapping xmlAddressMapping = new XMLCompositeObjectMapping();
         xmlAddressMapping.setAttributeName("address");
         xmlAddressMapping.setReferenceClass(Address.class);
-        xmlAddressMapping.setXPath("ns1:address");
+        xmlAddressMapping.setXPath("address");
         employeeOXDescriptor.addMapping(xmlAddressMapping);
         oxProject.addDescriptor(employeeOXDescriptor);
 
+        Document oxProjectDoc = xmlPlatform.createDocument();
+        marshaller.marshal(oxProject, oxProjectDoc);
+        Document oxProjectXMLDoc = xmlParser.parse(new StringReader(OBJECTTYPE_OX_PROJECT));
+        assertTrue("OracleObjecttype java-built OX project not same as XML-built OX project",
+            comparer.isNodeEqual(oxProjectXMLDoc, oxProjectDoc));
+
         XRServiceFactory factory = new XRServiceFactory() {
-            Project orProject;
-            Project oxProject;
-            XRServiceFactory setProject(Project orProject, Project oxProject) {
-                this.orProject = orProject;
-                this.oxProject = oxProject;
+            XRServiceFactory init() {
                 parentClassLoader = ClassLoader.getSystemClassLoader();
                 xrSchemaStream = new ByteArrayInputStream(OBJECTTYPE_SCHEMA.getBytes());
                 return this;
             }
             @Override
             public void buildSessions() {
-                xrService.setORSession(orProject.createDatabaseSession());
+                Project orProject = XMLProjectReader.read(
+                    new StringReader(OBJECTTYPE_OR_PROJECT), parentClassLoader);
+                DatabaseLogin login = new DatabaseLogin();
+                login.setUserName(username);
+                login.setPassword(password);
+                login.setConnectionString(url);
+                login.setDriverClassName(driver);
+                login.setDatasourcePlatform(new Oracle11Platform());
+                login.bindAllParameters();
+                orProject.setDatasourceLogin(login);
+                DatabaseSession ds = orProject.createDatabaseSession();
+                ds.dontLogMessages();
+                xrService.setORSession(ds);
+                Project oxProject = XMLProjectReader.read(
+                    new StringReader(OBJECTTYPE_OX_PROJECT), parentClassLoader);
                 xrService.setXMLContext(new XMLContext(oxProject));
                 xrService.setOXSession(xrService.getXMLContext().getSession(0));
             }
-        }.setProject(orProject, oxProject);
-        XMLContext context = new XMLContext(new DBWSModelProject());
+        }.init();
+        context = new XMLContext(new DBWSModelProject());
         XMLUnmarshaller unmarshaller = context.createUnmarshaller();
         DBWSModel model = (DBWSModel)unmarshaller.unmarshal(new StringReader(OBJECTTYPE_XRMODEL));
         xrService = factory.buildService(model);
@@ -357,25 +608,25 @@ public class OracleObjecttypeTestSuite {
     public static final String EMPLOYEE_COLLECTION_XML =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
         "<employee-collection>" +
-            "<ns1:employee xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:ns1=\"urn:oracleobjecttype\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-               "<ns1:id>1</ns1:id>" +
-               "<ns1:first-name>Mike</ns1:first-name>" +
-               "<ns1:last-name>Norman</ns1:last-name>" +
-               "<ns1:address>" +
-                  "<ns1:street>Pinetrail</ns1:street>" +
-                  "<ns1:city>Nepean</ns1:city>" +
-                  "<ns1:province>Ont</ns1:province>" +
-               "</ns1:address>" +
-            "</ns1:employee>" +
-            "<ns1:employee xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:ns1=\"urn:oracleobjecttype\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-               "<ns1:id>2</ns1:id>" +
-               "<ns1:first-name>Rick</ns1:first-name>" +
-               "<ns1:last-name>Barkhouse</ns1:last-name>" +
-               "<ns1:address>" +
-                  "<ns1:street>Davis Side Rd</ns1:street>" +
-                  "<ns1:city>Carleton Place</ns1:city>" +
-                  "<ns1:province>Ont</ns1:province>" +
-               "</ns1:address>" +
-            "</ns1:employee>" +
+            "<employee xmlns=\"urn:oracleobjecttype\">" +
+               "<id>1</id>" +
+               "<first-name>Mike</first-name>" +
+               "<last-name>Norman</last-name>" +
+               "<address>" +
+                  "<street>Pinetrail</street>" +
+                  "<city>Nepean</city>" +
+                  "<province>Ont</province>" +
+               "</address>" +
+            "</employee>" +
+            "<employee xmlns=\"urn:oracleobjecttype\">" +
+               "<id>2</id>" +
+               "<first-name>Rick</first-name>" +
+               "<last-name>Barkhouse</last-name>" +
+               "<address>" +
+                  "<street>Davis Side Rd</street>" +
+                  "<city>Carleton Place</city>" +
+                  "<province>Ont</province>" +
+               "</address>" +
+            "</employee>" +
          "</employee-collection>";
 }

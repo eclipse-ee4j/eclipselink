@@ -15,6 +15,9 @@ package dbws.testing.oracleobjecttype;
 
 public class Address {
 
+    public Address() {
+    }
+
     public String street;
     public String city;
     public String province;

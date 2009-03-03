@@ -15,6 +15,9 @@ package dbws.testing.oracleobjecttype;
 
 public class EmployeeWithAddress {
 
+    public EmployeeWithAddress() {
+    }
+
     public Integer id;
     public String firstName;
     public String lastName;
