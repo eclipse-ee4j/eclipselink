@@ -730,6 +730,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
                   (!argumentSqlTypeName.equals(""))) {
                   dbfield = new ObjectRelationalDatabaseField(dbfield);
                   ((ObjectRelationalDatabaseField)dbfield).setSqlTypeName(argumentSqlTypeName);
+                  ((ObjectRelationalDatabaseField)dbfield).setSqlType(argumentSQLType);
                   if (nestedType != null) {
                       ((ObjectRelationalDatabaseField)dbfield).setNestedTypeField(
                           nestedType.getDatabaseField());
@@ -748,6 +749,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
                   ObjectRelationalDatabaseField ordField =
                       (ObjectRelationalDatabaseField)dbField;
                   argumentSqlTypeName = ordField.getSqlTypeName();
+                  argumentSQLType = ordField.getSqlType();
                   DatabaseField tempField = ordField.getNestedTypeField();
                   if (tempField != null) {
                       nestedType = new StoredProcedureArgument(tempField);
