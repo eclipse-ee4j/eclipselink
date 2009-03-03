@@ -172,7 +172,7 @@
             <arg value="co"/>
             <arg value="${svn.branch.url}"/>
         </exec>
-        <chmod file="${build.root.dir}/buildsystem/bootstrap.sh" perm="ug+x"/>
+        <chmod file="${build.root.dir}/buildsystem/*.sh" perm="ug+x"/>
         <echo message="**  End of Source Retrieval  **"/>
     </target>
 
