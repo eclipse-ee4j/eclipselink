@@ -30,38 +30,30 @@ echo "    </description>                                                        
 echo "  <section class=\"main\" name=\"Failed Builds\">                            " >> $tmp/index.xml
 echo "    <description>                                                            " >> $tmp/index.xml
 
-    echo "      <p>                                                                    " >> $tmp/index.xml
-    echo "        <table border=\"1\">                                                 " >> $tmp/index.xml
-    echo "          <tr>                                                               " >> $tmp/index.xml
-    echo "            <th colspan=\"1\" align=\"center\"> Failed Build Logs </th>     " >> $tmp/index.xml
-    echo "          </tr>                                                              " >> $tmp/index.xml
+echo "      <p>                                                                    " >> $tmp/index.xml
+echo "        <table border=\"1\">                                                 " >> $tmp/index.xml
+echo "          <tr>                                                               " >> $tmp/index.xml
+echo "            <th colspan=\"1\" align=\"center\"> Failed Build Logs </th>      " >> $tmp/index.xml
+echo "          </tr>                                                              " >> $tmp/index.xml
     
-    echo "          <tr>"  >> $tmp/index.xml
-    echo "            <td align=\"center\">" >> $tmp/index.xml
-
 for file in `ls | grep log | sort -t_ -k3 -r` ; do
+    echo "          <tr>"  >> $tmp/index.xml
 
     # list all files in dir, reverse sort to put newer on top
     # and look for the first matching filename to generate html link
     if [ "${file}" != "" ] ; then
-        echo "              <td align=\"center\"> ${file}  <a href=\"${BaseDownloadURL}/bf/${file}\"> Download </a> <a href=\"${BaseDisplayURL}/bf/${file}\"> View </a> <br/>" >> $tmp/index.xml
+        echo "            <td align=\"center\"> ${file}  <a href=\"${BaseDownloadURL}/bf/${file}\"> Download </a> <a href=\"${BaseDisplayURL}/bf/${file}\"> View </a> <br/>" >> $tmp/index.xml
     else
         echo "              Ant log not available <br/>" >> $tmp/index.xml
     fi
     
     echo "          </tr>" >> $tmp/index.xml
-
 done
 
 echo "        </table>                                                                          " >> $tmp/index.xml
 echo "      </p>                                                                                " >> $tmp/index.xml
 
 # Dump the static footer into place
-echo "      <script src=\"http://www.google-analytics.com/urchin.js\" type=\"text/javascript\"/>" >> $tmp/index.xml
-echo "      <script type=\"text/javascript\">                                                   " >> $tmp/index.xml
-echo "        _uacct = \"UA-1608008-2\";                                                        " >> $tmp/index.xml
-echo "        urchinTracker();                                                                  " >> $tmp/index.xml
-echo "      </script>                                                                           " >> $tmp/index.xml
 echo "    </description>                                                                        " >> $tmp/index.xml
 echo "  </section>                                                                              " >> $tmp/index.xml
 echo "</sections>                                                                               " >> $tmp/index.xml

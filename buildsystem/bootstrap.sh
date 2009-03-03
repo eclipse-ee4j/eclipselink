@@ -111,7 +111,8 @@ LOG_DIR=${HOME_DIR}/logs
 BRANCH_PATH=${HOME_DIR}/${BRANCH}trunk
 BLD_DEPS_DIR=${HOME_DIR}/bld_deps/${BRANCH_NM}
 START_DATE=`date '+%y%m%d-%H%M'`
-DATED_LOG=${LOG_DIR}/bsb-${BRANCH_NM}_${TARG_NM}_${START_DATE}.log
+LOGFILE_NAME=bsb-${BRANCH_NM}_${TARG_NM}_${START_DATE}.log
+DATED_LOG=${LOG_DIR}/${LOGFILE_NAME}
 JDBC_LOGIN_INFO_FILE=${HOME_DIR}/db.dat
 
 #Define build dependency dirs (build needs em, NOT compile dependencies)
@@ -140,6 +141,23 @@ CreatePath() {
                 echo "    Create failed!"
                 exit
             fi
+        fi
+    done
+}
+
+unset getPrevRevision
+getPrevRevision()
+{
+    ## find the revision of the last build
+    ##
+    for prev_log in `ls -1 ${LOG_DIR} | grep bsb-${BRANCH_NM}_${TARG_NM} | sort -t_ -k3 -r | grep -v ${LOGFILE_NAME}`
+    do
+        ## exclude "build unnecessary" cb's without effecting other build types
+        if [ "`tail ${LOG_DIR}/${prev_log} | grep unnece | tr -d '[:punct:]'`" = "" ]
+        then
+            PREV_REV=`head -175 ${LOG_DIR}/${prev_log} | grep revision | grep -m1 svn | cut -d= -f2 | tr -d '\047'`
+            echo "prev_rev='${PREV_REV}'" 
+            break
         fi
     done
 }
@@ -205,6 +223,21 @@ genTestSummary()
         returncode=0
     fi
     return $returncode
+}
+
+unset cleanFailuresDir
+cleanFailuresDir()
+{
+    num_files=10
+    
+    # leave only the last 10 failed build logs on the download server
+    index=0
+    for logs in `ls ${FailedNFSDir} | grep log | sort -t_ -k3 -r` ; do
+        index=`expr $index + 1`
+        if [ $index -gt $num_files ] ; then
+            rm -r $contentdir
+        fi
+    done
 }
 
 #--------- MAIN --------#
@@ -301,8 +334,8 @@ fi
 if [ "${TEST}" = "true" ]
 then
     ANT_BASEARG="${ANT_BASEARG} -D_DoNotUpdate=1"
-else
-    ANT_BASEARG="${ANT_BASEARG} -DMailLogger.properties.file=${BRANCH_PATH}/buildsystem/maillogger.properties -logger org.apache.tools.ant.listener.MailLogger"
+#else
+    #ANT_BASEARG="${ANT_BASEARG} -DMailLogger.properties.file=${BRANCH_PATH}/buildsystem/maillogger.properties -logger org.apache.tools.ant.listener.MailLogger"
 fi
 
 if [ "${UD2M}" = "true" ]
@@ -339,12 +372,16 @@ echo "Build complete."
 ##
 MAIL_EXEC=/bin/mail
 MAILLIST="eric.gwin@oracle.com ejgwin@gmail.com tom.ware@oracle.com"
+SUCC_MAILLIST="eric.gwin@oracle.com ejgwin@gmail.com tom.ware@oracle.com"
+FAIL_MAILLIST="eclipselink-dev@eclipse.org ejgwin@gmail.com"
 PARSE_RESULT_FILE=${tmp}/raw-summary.txt
 SORTED_RESULT_FILE=${tmp}/sorted-summary.txt
 TESTDATA_FILE=${tmp}/testsummary-${BRANCH_NM}_${TARG_NM}.txt
 SVN_LOG_FILE=${tmp}/svnlog-${BRANCH_NM}_${TARG_NM}.txt
 MAILBODY=${tmp}/mailbody-${BRANCH_NM}_${TARG_NM}.txt
 DATA_FILE=${tmp}/data-${BRANCH_NM}_${TARG_NM}.txt
+FailedNFSDir="/home/data/httpd/download.eclipse.org/rt/eclipselink/recent-failure-logs"
+BUILD_FAILED="false"
 
 #set -x
 ## Verify Build Started bothering with setting up for an email or post-processing
@@ -352,23 +389,20 @@ DATA_FILE=${tmp}/data-${BRANCH_NM}_${TARG_NM}.txt
 ##
 if [ "`tail ${DATED_LOG} | grep unnece | tr -d '[:punct:]'`" = "" ]
 then
-    ## Ant log preprocessing to generate build data file
-    ##
-    cat ${DATED_LOG} | grep echo > ${DATA_FILE}
-
     ## find the current version (cannot use $BRANCH, because need current version stored in ANT buildfiles)
     ##
-    VERSION=`cat ${DATA_FILE} | grep -m1 "EL version" | cut -d= -f2 | tr -d '\047'`
+    VERSION=`head -175 ${DATA_FILE} | grep -m1 "EL version" | cut -d= -f2 | tr -d '\047'`
     echo $VERSION
     
     ## find the current revision
     ##
-    CUR_REV=`cat ${DATA_FILE} | grep revision | grep -m1 svn | cut -d= -f2 | tr -d '\047'`
+    CUR_REV=`head -175 ${DATA_FILE} | grep revision | grep -m1 svn | cut -d= -f2 | tr -d '\047'`
     echo CUR_REV=$CUR_REV
     
     ## find the revision of the last build
     ##
-    PREV_REV=`find /home/data/httpd/download.eclipse.org/rt/eclipselink/. -print | grep ${TARG_NM}/${VERSION} | grep core | cut -d- -f2 | cut -dr -f4 | sort -n -r | grep -v -m1 ${CUR_REV}-   | cut -d- -f1`
+    getPrevRevision
+    #PREV_REV=`find /home/data/httpd/download.eclipse.org/rt/eclipselink/. -print | grep ${TARG_NM}/${VERSION} | grep core | cut -d- -f2 | cut -dr -f4 | sort -n -r | grep -v -m1 ${CUR_REV}-   | cut -d- -f1`
     if [ ! "$PREV_REV" = "" ]
     then
         PREV_REV=:${PREV_REV}
@@ -404,12 +438,23 @@ then
         if [ $? -eq 0  ]
         then
             MAIL_SUBJECT="${BRANCH_NM} ${TARG_NM} build complete."
+            MAILLIST=${SUCC_MAILLIST}
         else
             MAIL_SUBJECT="${BRANCH_NM} ${TARG_NM} build has test failures!"
+            BUILD_FAILED="true"
         fi
        
     else
         MAIL_SUBJECT="${BRANCH_NM} ${TARG_NM} build failed!"
+        BUILD_FAILED="true"
+    fi
+    
+    if [ "${BUILD_FAILED}" = "true" ]
+    then
+        cp ${DATED_LOG} ${FailedNFSDir}/${LOGFILE_NAME}
+        cleanFailuresDir
+        .${BRANCH_PATH}/buildsystem/buildFailuresList.sh
+        MAILLIST=${FAIL_MAILLIST}
     fi
     
     ## Build Body text of email
@@ -427,6 +472,8 @@ then
     fi
     echo "Full Build log can be found on the build machine at:" >> ${MAILBODY}
     echo "    ${DATED_LOG}" >> ${MAILBODY}
+    echo "or on the download server at:" >> ${MAILBODY}
+    echo "    http://www.eclipse.org/eclipselink/downloads/build-failures.php" >> ${MAILBODY}
     echo "-----------------------------------" >> ${MAILBODY}
     echo "SVN Changes since Last Build:" >> ${MAILBODY}
     echo "" >> ${MAILBODY}
