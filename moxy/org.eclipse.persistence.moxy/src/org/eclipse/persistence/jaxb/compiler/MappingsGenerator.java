@@ -413,10 +413,10 @@ public class MappingsGenerator {
             mapping.setSetMethodName(property.getSetMethodName());
         }
         mapping.setField(getXPathForField(property, namespaceInfo, true));
-        HashMap<Object, String> enumValuesMap = enumInfo.getObjectValuesToFieldValues();
-        for (Object o : enumValuesMap.keySet()) {
-            String fieldValue = enumValuesMap.get(o);
-            converter.addConversionValue(fieldValue, o);
+        List<Object> objects = enumInfo.getObjectValues();
+        List<String> fieldValues = enumInfo.getFieldValues();
+        for (int i=0; i< objects.size(); i++) {        	
+        	converter.addConversionValue(fieldValues.get(i), objects.get(i));
         }
         descriptor.addMapping(mapping);
     }
@@ -459,10 +459,12 @@ public class MappingsGenerator {
         }
 
         JAXBEnumTypeConverter converter = new JAXBEnumTypeConverter(mapping, info.getClassName(), false);
-        HashMap<Object, String> enumValuesMap = info.getObjectValuesToFieldValues();
-        for (Object o : enumValuesMap.keySet()) {
-            String fieldValue = enumValuesMap.get(o);
-            converter.addConversionValue(fieldValue, o);
+       
+        List<Object> objects = info.getObjectValues();
+        List<String> fieldValues = info.getFieldValues();
+       
+        for (int i=0; i< objects.size(); i++) {        
+        	converter.addConversionValue(fieldValues.get(i), objects.get(i));
         }
 
         mapping.setValueConverter(converter);
@@ -945,11 +947,7 @@ public class MappingsGenerator {
         QName typeQName = new QName(type.namespace(), schemaTypeName);
         this.userDefinedSchemaTypes.put(javaType, typeQName);
     }
-
-    public ArrayList getEnumerationFacetsFor(EnumTypeInfo info) {
-        Collection valuesCollection = info.getObjectValuesToFieldValues().values();
-        return new ArrayList(valuesCollection);
-    }
+   
     public String getSchemaTypeNameForClassName(String className) {
         String typeName = Introspector.decapitalize(className.substring(className.lastIndexOf('.') + 1));
         return typeName;

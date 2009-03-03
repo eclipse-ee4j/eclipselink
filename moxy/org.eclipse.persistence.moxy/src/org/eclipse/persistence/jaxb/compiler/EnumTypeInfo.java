@@ -12,7 +12,9 @@
  ******************************************************************************/  
 package org.eclipse.persistence.jaxb.compiler;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.jaxb.javamodel.Helper;
 
@@ -33,10 +35,13 @@ import org.eclipse.persistence.jaxb.javamodel.Helper;
 public class EnumTypeInfo extends TypeInfo {
     private String m_className;
     private QName m_restrictionBase;
-    private HashMap<Object, String> m_objectValuesToFieldValues;
+    private List<Object> objectValues;
+    private List<String> fieldValues;
     
     public EnumTypeInfo(Helper helper) {
         super(helper);
+        objectValues = new ArrayList<Object>();
+        fieldValues = new ArrayList<String>();
     }
     
     public String getClassName() {
@@ -54,15 +59,22 @@ public class EnumTypeInfo extends TypeInfo {
     public void setRestrictionBase(QName restrictionBase) {
         m_restrictionBase = restrictionBase;
     }
-    
-    public HashMap<Object, String> getObjectValuesToFieldValues() {
-        if(m_objectValuesToFieldValues == null) {
-            m_objectValuesToFieldValues = new HashMap<Object, String>();
-        }
-        return m_objectValuesToFieldValues;
+      
+    public void addObjectToFieldValuePair(Object theObject, String theValue){
+    	objectValues.add(theObject);
+    	fieldValues.add(theValue);
     }
     
     public boolean isEnumerationType() {
         return true;
     }
+
+	public List<String> getFieldValues() {
+		return fieldValues;
+	}
+
+	public List<Object> getObjectValues() {
+		return objectValues;
+	}
+	
 }

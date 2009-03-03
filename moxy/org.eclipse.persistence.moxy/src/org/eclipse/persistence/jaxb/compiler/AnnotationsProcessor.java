@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
@@ -759,18 +760,13 @@ public class AnnotationsProcessor {
                 if (helper.isAnnotationPresent(field, XmlEnumValue.class)) {
                     XmlEnumValue xmlEnumValue = (XmlEnumValue) helper.getAnnotation(field, XmlEnumValue.class);
                     fieldValue = xmlEnumValue.value();
-                }
-                info.getObjectValuesToFieldValues().put(field.getName(), fieldValue);
+                }                
+                info.addObjectToFieldValuePair(field.getName(), fieldValue);
             }
         }
         typeInfoClasses.add(javaClass);
         typeInfo.put(javaClass.getQualifiedName(), info);
-    }
-    
-    public ArrayList getEnumerationFacetsFor(EnumTypeInfo info) {
-        Collection valuesCollection = info.getObjectValuesToFieldValues().values();
-        return new ArrayList(valuesCollection);
-    }
+    }      
     
     public String getSchemaTypeNameForClassName(String className) {
         String typeName = "";

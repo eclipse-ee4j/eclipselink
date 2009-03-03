@@ -178,7 +178,7 @@ public class SchemaGenerator {
             Restriction restriction = new Restriction();
             if (info.isEnumerationType()) {
                 restrictionType = ((EnumTypeInfo)info).getRestrictionBase();
-                restriction.setEnumerationFacets(this.getEnumerationFacetsFor((EnumTypeInfo)info));
+                restriction.setEnumerationFacets(this.getEnumerationFacetsFor((EnumTypeInfo)info));                
                 restriction.setBaseType(XMLConstants.SCHEMA_PREFIX + ":" + restrictionType.getLocalPart());
                 type.setRestriction(restriction);
             } else {
@@ -671,9 +671,8 @@ public class SchemaGenerator {
         return typeName;
     }    
     
-    public ArrayList getEnumerationFacetsFor(EnumTypeInfo info) {
-        Collection valuesCollection = info.getObjectValuesToFieldValues().values();
-        return new ArrayList(valuesCollection);
+    public ArrayList<String> getEnumerationFacetsFor(EnumTypeInfo info) {
+        return (ArrayList<String>)info.getFieldValues();
     }
 
     public Property getXmlValueFieldForSimpleContent(ArrayList<Property> properties) {

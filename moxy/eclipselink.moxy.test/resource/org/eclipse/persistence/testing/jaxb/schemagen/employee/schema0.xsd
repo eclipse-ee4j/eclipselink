@@ -30,9 +30,9 @@
    <xsd:element name="employee-data" type="x:employee-type"/>
    <xsd:simpleType name="department">
       <xsd:restriction base="xsd:int">
-         <xsd:enumeration value="3"/>
-         <xsd:enumeration value="2"/>
          <xsd:enumeration value="1"/>
+         <xsd:enumeration value="2"/>
+         <xsd:enumeration value="3"/>
          <xsd:enumeration value="4"/>
       </xsd:restriction>
    </xsd:simpleType>

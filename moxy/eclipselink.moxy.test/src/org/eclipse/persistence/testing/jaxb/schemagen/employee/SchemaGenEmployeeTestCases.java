@@ -32,6 +32,7 @@ import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.platform.xml.XMLComparer;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.platform.xml.XMLTransformer;
+import org.eclipse.persistence.testing.jaxb.JAXBXMLComparer;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
@@ -67,6 +68,7 @@ public class SchemaGenEmployeeTestCases extends TestCase {
                         
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
         builderFactory.setIgnoringElementContentWhitespace(true);
+        builderFactory.setNamespaceAware(true);
         DocumentBuilder parser = builderFactory.newDocumentBuilder();
             
         InputStream stream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/schemagen/employee/schema0.xsd");
@@ -75,9 +77,9 @@ public class SchemaGenEmployeeTestCases extends TestCase {
         stream = new FileInputStream(new File(tmpdir + "/schema0.xsd"));
         Document test = parser.parse(stream);
             
-        XMLComparer xmlComparer = new XMLComparer();
-
-//        assertTrue("schema0.xsd did not match control document", xmlComparer.isNodeEqual(control, test));
+        JAXBXMLComparer xmlComparer = new JAXBXMLComparer();
+        
+        assertTrue("schema0.xsd did not match control document", xmlComparer.isSchemaEqual(control, test));
         	
         stream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/schemagen/employee/schema1.xsd");
         control = parser.parse(stream);
@@ -85,10 +87,9 @@ public class SchemaGenEmployeeTestCases extends TestCase {
         stream = new FileInputStream(new File(tmpdir + "/schema1.xsd"));
         test = parser.parse(stream);
                         
-//        assertTrue("schema1.xsd did not match control document", xmlComparer.isNodeEqual(control, test));     
+        assertTrue("schema1.xsd did not match control document", xmlComparer.isNodeEqual(control, test));     
         
     }
-    
     
     /**
      * The following test expects a schema validation exception to occur.
