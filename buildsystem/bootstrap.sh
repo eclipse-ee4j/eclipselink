@@ -450,7 +450,8 @@ then
     then
         cp ${DATED_LOG} ${FailedNFSDir}/${LOGFILE_NAME}
         cleanFailuresDir
-        .${BRANCH_PATH}/buildsystem/buildFailuresList.sh
+        chmod 755 ${BRANCH_PATH}/buildsystem/buildFailureList.sh
+        ${BRANCH_PATH}/buildsystem/buildFailureList.sh
         MAILLIST=${FAIL_MAILLIST}
         echo "Build had issues to be resolved."
     fi

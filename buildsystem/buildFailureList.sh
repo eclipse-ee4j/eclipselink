@@ -1,8 +1,8 @@
 # !/bin/sh
 #set -x
 
-BaseDownloadURL="http://www.eclipse.org/downloads/download.php?file=/rt/eclipselink/recent-failure-logs"
-BaseDisplayURL="http://download.eclipse.org/rt/eclipselink/recent-failure-logs"
+FailDownloadURL="http://www.eclipse.org/downloads/download.php?file=/rt/eclipselink/recent-failure-logs"
+FailDisplayURL="http://download.eclipse.org/rt/eclipselink/recent-failure-logs"
 BaseDownloadNFSDir="/home/data/httpd/download.eclipse.org/rt/eclipselink"
 buildir=/shared/rt/eclipselink
 cd ${buildir}
@@ -33,7 +33,7 @@ echo "    <description>                                                         
 echo "      <p>                                                                    " >> $tmp/index.xml
 echo "        <table border=\"1\">                                                 " >> $tmp/index.xml
 echo "          <tr>                                                               " >> $tmp/index.xml
-echo "            <th colspan=\"1\" align=\"center\"> Failed Build Logs </th>      " >> $tmp/index.xml
+echo "            <th colspan=\"3\" align=\"center\"> Failed Build Logs </th>      " >> $tmp/index.xml
 echo "          </tr>                                                              " >> $tmp/index.xml
     
 for file in `ls | grep log | sort -t_ -k3 -r` ; do
@@ -42,9 +42,11 @@ for file in `ls | grep log | sort -t_ -k3 -r` ; do
     # list all files in dir, reverse sort to put newer on top
     # and look for the first matching filename to generate html link
     if [ "${file}" != "" ] ; then
-        echo "            <td align=\"center\"> ${file}  <a href=\"${BaseDownloadURL}/bf/${file}\"> Download </a> <a href=\"${BaseDisplayURL}/bf/${file}\"> View </a> <br/>" >> $tmp/index.xml
+        echo "            <td align=\"center\"> ${file} </td>" >> $tmp/index.xml
+        echo "            <td align=\"center\"> <a href=\"${FailDownloadURL}/${file}\"> Download </a> </td>" >> $tmp/index.xml
+        echo "            <td align=\"center\"> <a href=\"${FailDisplayURL}/${file}\"> View </a> </td>" >> $tmp/index.xml
     else
-        echo "              Ant log not available <br/>" >> $tmp/index.xml
+        echo "            <td colspan=\"3\" align=\"center\"> Ant log not available </td>" >> $tmp/index.xml
     fi
     
     echo "          </tr>" >> $tmp/index.xml
