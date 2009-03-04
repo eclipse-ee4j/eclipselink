@@ -107,22 +107,22 @@ public class JUnitTestCaseHelper {
 
             propertiesMap = new HashMap();
             if (dbDriver != null) {
-                propertiesMap.put(PersistenceUnitProperties.JDBC_DRIVER, dbDriver);
+                propertiesMap.put("eclipselink.jdbc.driver", dbDriver);
             }
             if (dbUrl != null) {
-                propertiesMap.put(PersistenceUnitProperties.JDBC_URL, dbUrl);
+                propertiesMap.put("eclipselink.jdbc.url", dbUrl);
             }
             if (dbUser != null) {
-                propertiesMap.put(PersistenceUnitProperties.JDBC_USER, dbUser);
+                propertiesMap.put("eclipselink.jdbc.user", dbUser);
             }
             if (dbPwd != null) {
-                propertiesMap.put(PersistenceUnitProperties.JDBC_PASSWORD, dbPwd);
+                propertiesMap.put("eclipselink.jdbc.password", dbPwd);
             }
             if (logLevel != null) {
-                propertiesMap.put(PersistenceUnitProperties.LOGGING_LEVEL, logLevel);
+                propertiesMap.put("eclipselink.logging.level", logLevel);
             }
             if (platform != null) {
-                propertiesMap.put(PersistenceUnitProperties.TARGET_DATABASE, platform);
+                propertiesMap.put("eclipselink.target-database", platform);
             }
             propertiesMap.putAll(persistencePropertiesTestMap);
         }
