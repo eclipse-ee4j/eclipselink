@@ -37,14 +37,12 @@ import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 //EclipseLink imports
 import org.eclipse.persistence.internal.oxm.schema.model.Any;
 import org.eclipse.persistence.internal.oxm.schema.model.ComplexType;
-import org.eclipse.persistence.internal.oxm.schema.model.Element;
 import org.eclipse.persistence.internal.oxm.schema.model.Schema;
 import org.eclipse.persistence.internal.oxm.schema.model.Sequence;
 import org.eclipse.persistence.tools.dbws.jdbc.DbStoredArgument;
 import org.eclipse.persistence.tools.dbws.jdbc.DbStoredProcedure;
 import static org.eclipse.persistence.internal.xr.QNameTransformer.SCHEMA_QNAMES;
 import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.DEFAULT_SIMPLE_XML_FORMAT_TAG;
-import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.SIMPLE_XML_FORMAT_TYPE;
 import static org.eclipse.persistence.oxm.XMLConstants.BASE_64_BINARY_QNAME;
 import static org.eclipse.persistence.oxm.XMLConstants.DATE_QNAME;
 import static org.eclipse.persistence.oxm.XMLConstants.DATE_TIME_QNAME;
@@ -99,7 +97,7 @@ public class Util {
     public static final String DBWS_PROVIDER_CLASS_FILE = DBWS_PROVIDER_NAME + ".class";
     public static final String DBWS_PROVIDER_SOURCE_FILE = DBWS_PROVIDER_NAME + ".java";
 
-    public static final QName SXF_QNAME_CURSOR = new QName("", "cursor of " + SIMPLE_XML_FORMAT_TYPE);
+    public static final QName SXF_QNAME_CURSOR = new QName("", "cursor of " + DEFAULT_SIMPLE_XML_FORMAT_TAG);
     // TODO - expand to cover more cases
     public static QName getXMLTypeFromJDBCType(Short jdbcType) {
         return getXMLTypeFromJDBCType(jdbcType.intValue());
@@ -186,27 +184,22 @@ public class Util {
       <xsd:schema
         xmlns:xsd="http://www.w3.org/2001/XMLSchema"
         >
-        <xsd:complexType name="sxfType">
+        <xsd:complexType name="simple-xml-format">
           <xsd:sequence>
             <xsd:any minOccurs="0"/>
           </xsd:sequence>
         </xsd:complexType>
-        <xsd:element name="simple-xml-format" type="sxfType"/>
       </xsd:schema>
     */
     public static void addSimpleXMLFormat(Schema schema) {
         ComplexType anyType = new ComplexType();
-        anyType.setName(SIMPLE_XML_FORMAT_TYPE);
+        anyType.setName(DEFAULT_SIMPLE_XML_FORMAT_TAG);
         Sequence anySequence = new Sequence();
         Any any = new Any();
         any.setMinOccurs("0");
         anySequence.addAny(any);
         anyType.setSequence(anySequence);
         schema.addTopLevelComplexTypes(anyType);
-        Element wrapperElement = new Element();
-        wrapperElement.setName(DEFAULT_SIMPLE_XML_FORMAT_TAG);
-        wrapperElement.setType(SIMPLE_XML_FORMAT_TYPE);
-        schema.addTopLevelElement(wrapperElement);
     }
 
     public static boolean noOutArguments(DbStoredProcedure storedProcedure) {
