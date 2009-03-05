@@ -315,12 +315,9 @@
         <zip destfile="${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}">
             <zipfileset dir="${eclipselink.plugins}">
                 <include name="**.jar"/>
+                <exclude name="osgi.cmpn_4.1.0.jar"/>
                 <exclude name="javax.ejb_3.0.0.jar"/>
                 <exclude name="org.apache.ant_1.7.0.jar"/>
-            </zipfileset>
-            <zipfileset dir="${eclipselink.plugins}">
-                <include name="**.zip"/>
-                <exclude name="osgi.core.zip"/>
             </zipfileset>
             <zipfileset dir=".">
                 <include name="${about-file}"/>
@@ -467,10 +464,10 @@
                 <include name="org/eclipse/persistence/**/*.java"/>
                 <exclude name="org/eclipse/persistence/internal/**/*.java"/>
             </fileset>
-			<fileset dir="${jpa.prototype}/${src.dir}" defaultexcludes="yes">
+            <fileset dir="${jpa.prototype}/${src.dir}" defaultexcludes="yes">
                 <include name="javax/persistence/**/*.java"/>
             </fileset>
-			<fileset dir="${commonj.sdo.plugins}" defaultexcludes="yes">
+            <fileset dir="${commonj.sdo.plugins}" defaultexcludes="yes">
                 <include name="commonj/sdo/**/*.java"/>
             </fileset>
             <fileset dir="${eclipselink.util.rename}/${src.dir}" defaultexcludes="yes">
