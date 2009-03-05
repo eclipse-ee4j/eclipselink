@@ -118,6 +118,9 @@
             <fileset dir="${classes.dir}">
                 <include name="org/eclipse/persistence/**/*.class"/>
             </fileset>
+			<fileset dir="${resource.dir}">
+                <include name="META-INF/services/javax.xml.bind.JAXBContext"/>
+            </fileset>
         </jar>
         <jar jarfile="${moxy.2.common.plugins.dir}/${eclipselink.moxy.bndl.prefix}.source_${version.string}.jar">
              <manifest>
