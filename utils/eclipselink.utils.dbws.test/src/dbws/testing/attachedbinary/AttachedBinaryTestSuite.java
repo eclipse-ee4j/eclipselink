@@ -10,10 +10,9 @@
  * Contributors:
  *     Mike Norman - May 2008, created DBWS test package
  ******************************************************************************/
-
 package dbws.testing.attachedbinary;
 
-// Javase imports
+//javase imports
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringReader;
@@ -21,64 +20,64 @@ import java.util.Vector;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-// Java extension imports
+//java eXtension imports
 import javax.activation.DataHandler;
 import javax.wsdl.WSDLException;
 
-// JUnit imports
+//JUnit4 imports
+import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-// EclipseLink imports
+//EclipseLink imports
 import org.eclipse.persistence.internal.dbws.SOAPAttachmentHandler;
 import org.eclipse.persistence.internal.xr.Invocation;
 import org.eclipse.persistence.internal.xr.Operation;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 
-// domain-specific (testing) imports
+//testing imports
 import dbws.testing.DBWSTestSuite;
 
 public class AttachedBinaryTestSuite extends DBWSTestSuite {
 
-    public static final String DBWS_BUILDER_XML_USERNAME =
-     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-     "<dbws-builder xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
-       "<properties>" +
-           "<property name=\"projectName\">attachedbinary</property>" +
-           "<property name=\"targetNamespacePrefix\">ab</property>" +
-           "<property name=\"logLevel\">off</property>" +
-           "<property name=\"username\">";
-    public static final String DBWS_BUILDER_XML_PASSWORD =
-           "</property><property name=\"password\">";
-    public static final String DBWS_BUILDER_XML_URL =
-           "</property><property name=\"url\">";
-    public static final String DBWS_BUILDER_XML_DRIVER =
-           "</property><property name=\"driver\">";
-    public static final String DBWS_BUILDER_XML_PLATFORM =
-           "</property><property name=\"platformClassname\">";
-    public static final String DBWS_BUILDER_XML_MAIN =
-           "</property>" +
-       "</properties>" +
-       "<table " +
-         "schemaPattern=\"%\" " +
-         "tableNamePattern=\"attachedbinary\" " +
-         ">" +
-	     "<procedure " +
-	       "name=\"getBLOBById\" " +
-	       "isCollection=\"false\" " +
-	       "returnType=\"ab:attachedbinaryType\" " +
-	       "procedurePattern=\"getBLOBById\" " +
-	       "binaryAttachment=\"true\" " +
-	     "/>" +
-       "</table>" +
-     "</dbws-builder>";
-
-    public static void main(String[] args) throws IOException, WSDLException {
-        buildJar(DBWS_BUILDER_XML_USERNAME, DBWS_BUILDER_XML_PASSWORD, DBWS_BUILDER_XML_URL,
-            DBWS_BUILDER_XML_DRIVER, DBWS_BUILDER_XML_PLATFORM, DBWS_BUILDER_XML_MAIN, args[0]);
-	}
+    @BeforeClass
+    public static void setUp() throws WSDLException {
+        DBWS_BUILDER_XML_USERNAME =
+            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+            "<dbws-builder xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
+              "<properties>" +
+                "<property name=\"projectName\">attachedbinary</property>" +
+                "<property name=\"targetNamespacePrefix\">ab</property>" +
+                "<property name=\"logLevel\">off</property>" +
+                "<property name=\"username\">";
+        DBWS_BUILDER_XML_PASSWORD =
+                "</property><property name=\"password\">";
+        DBWS_BUILDER_XML_URL =
+                "</property><property name=\"url\">";
+        DBWS_BUILDER_XML_DRIVER =
+                "</property><property name=\"driver\">";
+        DBWS_BUILDER_XML_PLATFORM =
+                "</property><property name=\"platformClassname\">";
+        DBWS_BUILDER_XML_MAIN =
+                "</property>" +
+              "</properties>" +
+              "<table " +
+                "schemaPattern=\"%\" " +
+                "tableNamePattern=\"attachedbinary\" " +
+                ">" +
+                "<procedure " +
+                  "name=\"getBLOBById\" " +
+                  "isCollection=\"false\" " +
+                  "returnType=\"ab:attachedbinaryType\" " +
+                  "procedurePattern=\"getBLOBById\" " +
+                  "binaryAttachment=\"true\" " +
+                "/>" +
+              "</table>" +
+            "</dbws-builder>";
+        DBWSTestSuite.setUp();
+    }
 
     public static SOAPAttachmentHandler attachmentHandler = new SOAPAttachmentHandler();
 
@@ -104,21 +103,21 @@ public class AttachedBinaryTestSuite extends DBWSTestSuite {
     public static final String ATTACHED_BINARY_COLLECTION_XML =
         "<?xml version = \"1.0\" encoding = \"UTF-8\"?>" +
         "<attachedbinary-collection>" +
-	        "<ns1:attachedbinaryType xmlns:ns1=\"urn:attachedbinary\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-		        "<ns1:id>1</ns1:id>" +
-		        "<ns1:name>one</ns1:name>" +
-		        "<ns1:b>cid:ref1</ns1:b>" +
-	        "</ns1:attachedbinaryType>" +
-	        "<ns1:attachedbinaryType xmlns:ns1=\"urn:attachedbinary\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-		        "<ns1:id>2</ns1:id>" +
-		        "<ns1:name>two</ns1:name>" +
-		        "<ns1:b>cid:ref2</ns1:b>" +
-	        "</ns1:attachedbinaryType>" +
-	        "<ns1:attachedbinaryType xmlns:ns1=\"urn:attachedbinary\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-		        "<ns1:id>3</ns1:id>" +
-		        "<ns1:name>three</ns1:name>" +
-		        "<ns1:b>cid:ref3</ns1:b>" +
-	        "</ns1:attachedbinaryType>" +
+            "<attachedbinaryType xmlns=\"urn:attachedbinary\">" +
+                "<id>1</id>" +
+                "<name>one</name>" +
+                "<b>cid:ref1</b>" +
+            "</attachedbinaryType>" +
+            "<attachedbinaryType xmlns=\"urn:attachedbinary\">" +
+                "<id>2</id>" +
+                "<name>two</name>" +
+                "<b>cid:ref2</b>" +
+            "</attachedbinaryType>" +
+            "<attachedbinaryType xmlns=\"urn:attachedbinary\">" +
+                "<id>3</id>" +
+                "<name>three</name>" +
+                "<b>cid:ref3</b>" +
+            "</attachedbinaryType>" +
         "</attachedbinary-collection>";
 
     @Test

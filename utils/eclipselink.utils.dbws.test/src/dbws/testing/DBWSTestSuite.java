@@ -14,36 +14,48 @@
 package dbws.testing;
 
 //javase imports
-import java.io.File;
-import java.io.IOException;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import org.w3c.dom.Document;
 
-//Java extension imports
+//java eXtension imports
 import javax.wsdl.WSDLException;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-//JUnit imports
-import org.junit.BeforeClass;
+//JUnit4 imports
 
 //EclipseLink imports
+import org.eclipse.persistence.dbws.DBWSModel;
+import org.eclipse.persistence.dbws.DBWSModelProject;
+import org.eclipse.persistence.internal.databaseaccess.Platform;
+import org.eclipse.persistence.internal.dynamicpersist.BaseEntityClassLoader;
+import org.eclipse.persistence.internal.helper.ConversionManager;
+import org.eclipse.persistence.internal.xr.ProjectHelper;
 import org.eclipse.persistence.internal.xr.XRServiceAdapter;
+import org.eclipse.persistence.internal.xr.XRServiceFactory;
+import org.eclipse.persistence.internal.xr.XRServiceModel;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.platform.xml.XMLComparer;
 import org.eclipse.persistence.platform.xml.XMLParser;
 import org.eclipse.persistence.platform.xml.XMLPlatform;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
+import org.eclipse.persistence.sessions.DatabaseLogin;
+import org.eclipse.persistence.sessions.DatasourceLogin;
+import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.sessions.factories.XMLProjectReader;
 import org.eclipse.persistence.tools.dbws.DBWSBuilder;
 import org.eclipse.persistence.tools.dbws.DBWSBuilderModel;
 import org.eclipse.persistence.tools.dbws.DBWSBuilderModelProject;
-import org.eclipse.persistence.tools.dbws.JarArchiver;
 import org.eclipse.persistence.tools.dbws.XRPackager;
-import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.ignore;
+import static org.eclipse.persistence.tools.dbws.DBWSBuilder.NO_SESSIONS_FILENAME;
+import static org.eclipse.persistence.tools.dbws.DBWSBuilder.SESSIONS_FILENAME_KEY;
+import static org.eclipse.persistence.tools.dbws.XRPackager.__nullStream;
 
 // domain-specific (testing) imports
 
@@ -62,53 +74,116 @@ public class DBWSTestSuite {
     public final static String DEFAULT_DATABASE_PLATFORM =
         "org.eclipse.persistence.platform.database.MySQLPlatform";
 
+    // JUnit test fixtures
+
+    public static String DBWS_BUILDER_XML_USERNAME;
+    public static String DBWS_BUILDER_XML_PASSWORD;
+    public static String DBWS_BUILDER_XML_URL;
+    public static String DBWS_BUILDER_XML_DRIVER;
+    public static String DBWS_BUILDER_XML_PLATFORM;
+    public static String DBWS_BUILDER_XML_MAIN;
     public static XMLComparer comparer = new XMLComparer();
     public static XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
     public static XMLParser xmlParser = xmlPlatform.newXMLParser();
-
-    // test fixture(s)
+    public static DBWSBuilder builder = new DBWSBuilder();
     public static XRServiceAdapter xrService = null;
+    public static ByteArrayOutputStream DBWS_SERVICE_STREAM = new ByteArrayOutputStream();
+    public static ByteArrayOutputStream DBWS_SCHEMA_STREAM = new ByteArrayOutputStream();
+    public static ByteArrayOutputStream DBWS_OR_STREAM = new ByteArrayOutputStream();
+    public static ByteArrayOutputStream DBWS_OX_STREAM = new ByteArrayOutputStream();
 
-    public static void buildJar(String builderXMLUserPortion, String builderXMLPasswordPortion,
-        String builderXMLUrlPortion, String builderXMLDriverPortion,
-        String builderXMLPlatformPortion, String builderXMLMainPortion, String jarName)
-        throws IOException, WSDLException {
-
-        String username = System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
-        String password = System.getProperty(DATABASE_PASSWORD_KEY, DEFAULT_DATABASE_PASSWORD);
-        String url = System.getProperty(DATABASE_URL_KEY, DEFAULT_DATABASE_URL);
-        String driver = System.getProperty(DATABASE_DRIVER_KEY, DEFAULT_DATABASE_DRIVER);
-        String platform = System.getProperty(DATABASE_PLATFORM_KEY, DEFAULT_DATABASE_PLATFORM);
-        String builderString = builderXMLUserPortion + username + builderXMLPasswordPortion +
-        password + builderXMLUrlPortion + url + builderXMLDriverPortion + driver +
-        builderXMLPlatformPortion + platform + builderXMLMainPortion;
-        buildJar(builderString, jarName);
-    }
-
-    public static void buildJar(String builderString, String jarName) throws WSDLException {
+    public static void setUp() throws WSDLException {
+        final String username = System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
+        final String password = System.getProperty(DATABASE_PASSWORD_KEY, DEFAULT_DATABASE_PASSWORD);
+        final String url = System.getProperty(DATABASE_URL_KEY, DEFAULT_DATABASE_URL);
+        final String driver = System.getProperty(DATABASE_DRIVER_KEY, DEFAULT_DATABASE_DRIVER);
+        final String platform = System.getProperty(DATABASE_PLATFORM_KEY, DEFAULT_DATABASE_PLATFORM);
+        String builderString = DBWS_BUILDER_XML_USERNAME + username + DBWS_BUILDER_XML_PASSWORD +
+        password + DBWS_BUILDER_XML_URL + url + DBWS_BUILDER_XML_DRIVER + driver +
+        DBWS_BUILDER_XML_PLATFORM + platform + DBWS_BUILDER_XML_MAIN;
         XMLContext context = new XMLContext(new DBWSBuilderModelProject());
         XMLUnmarshaller unmarshaller = context.createUnmarshaller();
         DBWSBuilderModel builderModel =
             (DBWSBuilderModel)unmarshaller.unmarshal(new StringReader(builderString));
-        DBWSBuilder dbwsBuilder = new DBWSBuilder();
-        dbwsBuilder.quiet = true;
-        dbwsBuilder.properties = builderModel.properties;
-        dbwsBuilder.operations = builderModel.operations;
-        XRPackager xrPackager = new XRPackager();
-        xrPackager.setArchiveUse(ignore);
-        xrPackager.setArchiver(new JarArchiver(xrPackager));
-        xrPackager.setArchiveFilename("dbws" + jarName + ".jar");
-        xrPackager.setStageDir(new File("."));
-        xrPackager.setSessionsFileName(dbwsBuilder.getSessionsFileName());
-        xrPackager.setDBWSBuilder(dbwsBuilder);
-        dbwsBuilder.setPackager(xrPackager);
-        dbwsBuilder.start();
-    }
-
-    @BeforeClass
-    public static void setUpDBWSService() {
-        TestDBWSFactory serviceFactory = new TestDBWSFactory();
-        xrService = serviceFactory.buildService();
+        builder.quiet = true;
+        builder.setPlatformClassname(platform);
+        builder.properties = builderModel.properties;
+        builder.getProperties().put(SESSIONS_FILENAME_KEY, NO_SESSIONS_FILENAME);
+        builder.operations = builderModel.operations;
+        XRPackager xrPackager = new XRPackager() {
+            @Override
+            public void start() {// do nothing
+            }
+        };
+        xrPackager.setSessionsFileName(builder.getSessionsFileName());
+        xrPackager.setDBWSBuilder(builder);
+        builder.setPackager(xrPackager);
+        builder.build(DBWS_SCHEMA_STREAM, __nullStream, DBWS_SERVICE_STREAM, DBWS_OR_STREAM,
+            DBWS_OX_STREAM, __nullStream, __nullStream, __nullStream, __nullStream, __nullStream,
+            null);
+        XRServiceFactory factory = new XRServiceFactory() {
+            @Override
+            public XRServiceAdapter buildService(XRServiceModel xrServiceModel) {
+                parentClassLoader = this.getClass().getClassLoader();
+                xrSchemaStream = new ByteArrayInputStream(DBWS_SCHEMA_STREAM.toByteArray());
+                return super.buildService(xrServiceModel);
+            }
+            @Override
+            public void buildSessions() {
+                BaseEntityClassLoader becl = new BaseEntityClassLoader(parentClassLoader);
+                Project orProject = null;
+                if (DBWS_OR_STREAM.size() != 0) {
+                    orProject = XMLProjectReader.read(new StringReader(DBWS_OR_STREAM.toString()),
+                        becl);
+                }
+                else {
+                    orProject = new Project();
+                    orProject.setName(builder.getProjectName() + "-dbws-or"); 
+                }
+                Project oxProject = null;
+                if (DBWS_OX_STREAM.size() != 0) {
+                    oxProject = XMLProjectReader.read(new StringReader(DBWS_OX_STREAM.toString()),
+                        becl);
+                }
+                else {
+                    oxProject = new Project();
+                    oxProject.setName(builder.getProjectName() + "-dbws-ox");
+                }
+                DatasourceLogin login = new DatabaseLogin();
+                login.setUserName(username);
+                login.setPassword(password);
+                ((DatabaseLogin)login).setConnectionString(url);
+                ((DatabaseLogin)login).setDriverClassName(driver);
+                Platform platform = builder.getDatabasePlatform();;
+                ConversionManager conversionManager = platform.getConversionManager();
+                if (conversionManager != null) {
+                    conversionManager.setLoader(becl);
+                }
+                login.setDatasourcePlatform(platform);
+                ((DatabaseLogin)login).bindAllParameters();
+                orProject.setDatasourceLogin(login);
+                login = (DatasourceLogin)oxProject.getDatasourceLogin();
+                if (login != null) {
+                    platform = login.getDatasourcePlatform();
+                    if (platform != null) {
+                        conversionManager = platform.getConversionManager();
+                        if (conversionManager != null) {
+                            conversionManager.setLoader(becl);
+                        }
+                    }
+                }
+                ProjectHelper.fixOROXAccessors(orProject, oxProject);
+                xrService.setORSession(orProject.createDatabaseSession());
+                xrService.getORSession().dontLogMessages();
+                xrService.setXMLContext(new XMLContext(oxProject));
+                xrService.setOXSession(xrService.getXMLContext().getSession(0));
+            }
+        };
+        context = new XMLContext(new DBWSModelProject());
+        unmarshaller = context.createUnmarshaller();
+        DBWSModel model = (DBWSModel)unmarshaller.unmarshal(
+            new StringReader(DBWS_SERVICE_STREAM.toString()));
+        xrService = factory.buildService(model);
     }
 
     public static String documentToString(Document doc) {

@@ -108,7 +108,7 @@ import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
-import org.eclipse.persistence.oxm.platform.SAXPlatform;
+import org.eclipse.persistence.oxm.platform.DOMPlatform;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.oxm.schema.XMLSchemaURLReference;
 import org.eclipse.persistence.platform.database.MySQLPlatform;
@@ -183,6 +183,7 @@ public class DBWSBuilder extends DBWSBuilderModel {
     public static final String CONTEXT_ROOT_KEY = "contextRoot";
     public static final String DATASOURCE_KEY = "dataSource";
     public static final String SESSIONS_FILENAME_KEY = "sessionsFileName";
+    public static final String NO_SESSIONS_FILENAME = "no-sessions-fileName";
     public static final String PLATFORM_CLASSNAME_KEY = "platformClassname";
     public static final String ORSESSION_CUSTOMIZER_KEY = "orSessionCustomizerClassName";
     public static final String OXSESSION_CUSTOMIZER_KEY = "oxSessionCustomizerClassName";
@@ -469,7 +470,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         packager.end();
     }
 
-    protected void buildDbArtifacts() {
+    public void buildDbArtifacts() {
         // do Table operations first
         boolean isOracle = 
             getDatabasePlatform().getClass().getName().contains("Oracle") ? true : false;
@@ -667,11 +668,13 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
             xdesc.setJavaClassName(generatedJavaClassName);
             xdesc.setAlias(tablenameAlias);
             NamespaceResolver nr = new NamespaceResolver();
-            nr.put("xsi", W3C_XML_SCHEMA_INSTANCE_NS_URI);
-            nr.put("xsd", W3C_XML_SCHEMA_NS_URI);
-            nr.put(TARGET_NAMESPACE_PREFIX, getTargetNamespace());
+            nr.setDefaultNamespaceURI(getTargetNamespace());
             xdesc.setNamespaceResolver(nr);
-            xdesc.setDefaultRootElement(TARGET_NAMESPACE_PREFIX + ":" + tablenameAlias);
+            xdesc.setDefaultRootElement(tablenameAlias);
+            XMLSchemaURLReference schemaReference = new XMLSchemaURLReference("");
+            schemaReference.setSchemaContext("/" + tablenameAlias);
+            schemaReference.setType(XMLSchemaReference.COMPLEX_TYPE);
+            xdesc.setSchemaReference(schemaReference);
             for (DbColumn dbColumn : dbTable.getColumns()) {
                 String columnName = dbColumn.getName();
                 int jdbcType = dbColumn.getJDBCType();
@@ -727,11 +730,8 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                 DatabaseField databaseField = new DatabaseField(columnName, tableName);
                 databaseField.setSqlType(jdbcType);
                 dtfm.setField(databaseField);
-                if (dbColumn.isPK()) {
-                    desc.addPrimaryKeyField(databaseField);
-                }
                 xdm.setAttributeName(fieldName);
-                String xPath = TARGET_NAMESPACE_PREFIX + ":";
+                String xPath = "";
                 ElementStyle style = nct.styleForElement(columnName);
                 if (style == NONE) {
                     continue;
@@ -751,8 +751,15 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                 XMLField xmlField = (XMLField)xdm.getField();
                 xmlField.setSchemaType(qName);
                 if (!isSwaRef && qName == BASE_64_BINARY_QNAME) {
+                    // need xsi, xsd namespaces 
+                    nr.put("xsi", W3C_XML_SCHEMA_INSTANCE_NS_URI);
+                    nr.put("xsd", W3C_XML_SCHEMA_NS_URI);
                     xmlField.setIsTypedTextField(true);
                     xmlField.addConversion(BASE_64_BINARY_QNAME, APBYTE);
+                }
+                if (dbColumn.isPK()) {
+                    desc.addPrimaryKeyField(databaseField);
+                    xdesc.addPrimaryKeyField(xmlField);
                 }
           }
           ReadObjectQuery roq = new ReadObjectQuery();
@@ -816,7 +823,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                 xdesc.setDefaultRootElement(SERVICE_NAMESPACE_PREFIX + ":" + alias);
                 NamespaceResolver nr = new NamespaceResolver();
                 nr.put(TARGET_NAMESPACE_PREFIX, getTargetNamespace());
-                nr.put(SERVICE_NAMESPACE_PREFIX, getTargetNamespace() + WSDLGenerator.SERVICE_SUFFIX);
+                //nr.put(SERVICE_NAMESPACE_PREFIX, getTargetNamespace() + WSDLGenerator.SERVICE_SUFFIX);
                 xdesc.setNamespaceResolver(nr);
                 XMLSchemaURLReference schemaRef = new XMLSchemaURLReference();
                 schemaRef.setSchemaContext("/" + TARGET_NAMESPACE_PREFIX + ":" + arrayName);
@@ -874,7 +881,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         databaseLogin.setConnectionString(null);
         orProject.setLogin(databaseLogin);
         XMLLogin xmlLogin = new XMLLogin();
-        xmlLogin.setDatasourcePlatform(new SAXPlatform());
+        xmlLogin.setDatasourcePlatform(new DOMPlatform());
         xmlLogin.getProperties().remove("user");
         xmlLogin.getProperties().remove("password");
         oxProject.setLogin(xmlLogin);
@@ -1398,6 +1405,9 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
 
     public String getSessionsFileName() {
         String sessionsFileName = properties.get(SESSIONS_FILENAME_KEY);
+        if (NO_SESSIONS_FILENAME.equals(sessionsFileName)) {
+            return null;
+        }
         if (sessionsFileName == null || sessionsFileName.length() == 0) {
             sessionsFileName = DBWS_SESSIONS_XML;
             setSessionsFileName(sessionsFileName);

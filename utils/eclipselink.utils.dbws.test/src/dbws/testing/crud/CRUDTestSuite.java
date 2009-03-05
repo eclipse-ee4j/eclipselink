@@ -10,11 +10,9 @@
  * Contributors:
  *     Mike Norman - May 2008, created DBWS test package
  ******************************************************************************/
-
 package dbws.testing.crud;
 
-// Javase imports
-import java.io.IOException;
+//javase imports
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.Vector;
@@ -22,42 +20,45 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 
-// Java extension classes
+//java eXtension imports
 import javax.wsdl.WSDLException;
 
-// JUnit imports
+//JUnit4 imports
+import org.junit.BeforeClass;
 import org.junit.Test;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-// EclipseLink imports
+//EclipseLink imports
 import org.eclipse.persistence.internal.dynamicpersist.BaseEntity;
 import org.eclipse.persistence.internal.xr.Invocation;
 import org.eclipse.persistence.internal.xr.Operation;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 
-// domain imports
+//testing imports
 import dbws.testing.DBWSTestSuite;
 
 public class CRUDTestSuite extends DBWSTestSuite {
 
-    public static final String DBWS_BUILDER_XML_USERNAME =
+    @BeforeClass
+    public static void setUp() throws WSDLException {
+        DBWS_BUILDER_XML_USERNAME =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
         "<dbws-builder xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
           "<properties>" +
               "<property name=\"projectName\">crud</property>" +
               "<property name=\"logLevel\">off</property>" +
               "<property name=\"username\">";
-      public static final String DBWS_BUILDER_XML_PASSWORD =
+      DBWS_BUILDER_XML_PASSWORD =
               "</property><property name=\"password\">";
-      public static final String DBWS_BUILDER_XML_URL =
+      DBWS_BUILDER_XML_URL =
               "</property><property name=\"url\">";
-      public static final String DBWS_BUILDER_XML_DRIVER =
+      DBWS_BUILDER_XML_DRIVER =
               "</property><property name=\"driver\">";
-      public static final String DBWS_BUILDER_XML_PLATFORM =
+      DBWS_BUILDER_XML_PLATFORM =
               "</property><property name=\"platformClassname\">";
-      public static final String DBWS_BUILDER_XML_MAIN =
+      DBWS_BUILDER_XML_MAIN =
               "</property>" +
           "</properties>" +
           "<table " +
@@ -73,10 +74,7 @@ public class CRUDTestSuite extends DBWSTestSuite {
             "</sql>" +
           "</table>" +
         "</dbws-builder>";
-
-    public static void main(String[] args) throws IOException, WSDLException {
-        buildJar(DBWS_BUILDER_XML_USERNAME, DBWS_BUILDER_XML_PASSWORD, DBWS_BUILDER_XML_URL,
-            DBWS_BUILDER_XML_DRIVER, DBWS_BUILDER_XML_PLATFORM, DBWS_BUILDER_XML_MAIN, args[0]);
+      DBWSTestSuite.setUp();
     }
 
     // hokey naming convention for test methods to assure order-of-operations
@@ -98,11 +96,10 @@ public class CRUDTestSuite extends DBWSTestSuite {
     }
     public static final String CRUD1_CONTROL_DOC =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-        "<ns1:crud_tableType xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:ns1=\"urn:crud\"" +
-                                       " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-          "<ns1:id>1</ns1:id>" +
-          "<ns1:name>crud1</ns1:name>" +
-        "</ns1:crud_tableType>";
+        "<crud_tableType xmlns=\"urn:crud\">" +
+          "<id>1</id>" +
+          "<name>crud1</name>" +
+        "</crud_tableType>";
 
     @SuppressWarnings("unchecked")
     @Test
@@ -123,21 +120,21 @@ public class CRUDTestSuite extends DBWSTestSuite {
             comparer.isNodeEqual(controlDoc, doc));
     }
     public static final String FIND_ALL_CONTROL_DOC =
-    	"<?xml version=\"1.0\" encoding=\"UTF-8\"?> " +
-    	"<all>" +
-    	  "<ns1:crud_tableType xmlns:ns1=\"urn:crud\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-    	    "<ns1:id>1</ns1:id>" +
-    	    "<ns1:name>crud1</ns1:name>" +
-    	  "</ns1:crud_tableType>" +
-    	  "<ns1:crud_tableType xmlns:ns1=\"urn:crud\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-    	    "<ns1:id>2</ns1:id>" +
-    	    "<ns1:name>crud2</ns1:name>" +
-    	  "</ns1:crud_tableType>" +
-    	  "<ns1:crud_tableType xmlns:ns1=\"urn:crud\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-    	    "<ns1:id>3</ns1:id>" +
-    	    "<ns1:name>other</ns1:name>" +
-    	  "</ns1:crud_tableType>" +
-    	"</all>";
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?> " +
+        "<all>" +
+          "<crud_tableType xmlns=\"urn:crud\">" +
+            "<id>1</id>" +
+            "<name>crud1</name>" +
+          "</crud_tableType>" +
+          "<crud_tableType xmlns=\"urn:crud\">" +
+            "<id>2</id>" +
+            "<name>crud2</name>" +
+          "</crud_tableType>" +
+          "<crud_tableType xmlns=\"urn:crud\">" +
+            "<id>3</id>" +
+            "<name>other</name>" +
+          "</crud_tableType>" +
+        "</all>";
 
     @SuppressWarnings("unchecked")
     @Test
@@ -158,17 +155,17 @@ public class CRUDTestSuite extends DBWSTestSuite {
             comparer.isNodeEqual(controlDoc, doc));
     }
     public static final String FIND_BY_NAME_CONTROL_DOC =
-    	"<?xml version=\"1.0\" encoding=\"UTF-8\"?> " +
-    	"<some>" +
-    	  "<ns1:crud_tableType xmlns:ns1=\"urn:crud\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-    	    "<ns1:id>1</ns1:id>" +
-    	    "<ns1:name>crud1</ns1:name>" +
-    	  "</ns1:crud_tableType>" +
-    	  "<ns1:crud_tableType xmlns:ns1=\"urn:crud\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-    	    "<ns1:id>2</ns1:id>" +
-    	    "<ns1:name>crud2</ns1:name>" +
-    	  "</ns1:crud_tableType>" +
-    	"</some>";
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?> " +
+        "<some>" +
+          "<crud_tableType xmlns=\"urn:crud\">" +
+            "<id>1</id>" +
+            "<name>crud1</name>" +
+          "</crud_tableType>" +
+          "<crud_tableType xmlns=\"urn:crud\">" +
+            "<id>2</id>" +
+            "<name>crud2</name>" +
+          "</crud_tableType>" +
+        "</some>";
 
     @Test
     public void test4_update() {

@@ -105,12 +105,12 @@ public class DbStoredProcedure {
       }
       sb.append(getStoredType());
       sb.append(' ');
-      if (catalog != null && catalog.length() > 0) {
-          sb.append(catalog);
-          sb.append('.');
-      }
       if (schema != null && schema.length() > 0) {
           sb.append(schema);
+          sb.append('.');
+      }
+      if (catalog != null && catalog.length() > 0) {
+          sb.append(catalog);
           sb.append('.');
       }
       sb.append(name);

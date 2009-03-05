@@ -10,20 +10,19 @@
  * Contributors:
  *     Mike Norman - May 2008, created DBWS test package
  ******************************************************************************/
-
 package dbws.testing.inlinebinary;
 
-//Javase imports
-import java.io.IOException;
+//javase imports
 import java.io.StringReader;
 import java.util.Vector;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-//Java extension imports
+//java eXtension imports
 import javax.wsdl.WSDLException;
 
-//JUnit imports
+//JUnit4 imports
+import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -33,42 +32,41 @@ import org.eclipse.persistence.internal.xr.Invocation;
 import org.eclipse.persistence.internal.xr.Operation;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 
-//domain-specific imports
+//testing imports
 import dbws.testing.DBWSTestSuite;
 
 public class InlineBinaryTestSuite extends DBWSTestSuite {
 
-    public static final String DBWS_BUILDER_XML_USERNAME =
-     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-     "<dbws-builder xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
-       "<properties>" +
-           "<property name=\"projectName\">inlinebinary</property>" +
-           "<property name=\"logLevel\">off</property>" +
-           "<property name=\"username\">";
-    public static final String DBWS_BUILDER_XML_PASSWORD =
-           "</property><property name=\"password\">";
-    public static final String DBWS_BUILDER_XML_URL =
-           "</property><property name=\"url\">";
-    public static final String DBWS_BUILDER_XML_DRIVER =
-           "</property><property name=\"driver\">";
-    public static final String DBWS_BUILDER_XML_PLATFORM =
-           "</property><property name=\"platformClassname\">";
-    public static final String DBWS_BUILDER_XML_MAIN =
-           "</property>" +
-       "</properties>" +
-       "<table " +
-          "schemaPattern=\"%\" " +
-         "tableNamePattern=\"inlinebinary\" " +
-       "/>" +
-     "</dbws-builder>";
-
-    public static void main(String[] args) throws IOException, WSDLException {
-		buildJar(DBWS_BUILDER_XML_USERNAME, DBWS_BUILDER_XML_PASSWORD, DBWS_BUILDER_XML_URL,
-		    DBWS_BUILDER_XML_DRIVER, DBWS_BUILDER_XML_PLATFORM, DBWS_BUILDER_XML_MAIN, args[0]);
-	}
-
+    @BeforeClass
+    public static void setUp() throws WSDLException {
+        DBWS_BUILDER_XML_USERNAME =
+           "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+           "<dbws-builder xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
+             "<properties>" +
+               "<property name=\"projectName\">inlinebinary</property>" +
+               "<property name=\"logLevel\">off</property>" +
+               "<property name=\"username\">";
+        DBWS_BUILDER_XML_PASSWORD =
+               "</property><property name=\"password\">";
+        DBWS_BUILDER_XML_URL =
+               "</property><property name=\"url\">";
+        DBWS_BUILDER_XML_DRIVER =
+               "</property><property name=\"driver\">";
+        DBWS_BUILDER_XML_PLATFORM =
+               "</property><property name=\"platformClassname\">";
+        DBWS_BUILDER_XML_MAIN =
+               "</property>" +
+             "</properties>" +
+             "<table " +
+               "schemaPattern=\"%\" " +
+               "tableNamePattern=\"inlinebinary\" " +
+              "/>" +
+           "</dbws-builder>";
+        DBWSTestSuite.setUp();
+    }
+    
     @SuppressWarnings("unchecked")
-	@Test
+    @Test
     public void findAll() {
         Invocation invocation = new Invocation("findAll_inlinebinaryType");
         Operation op = xrService.getOperation(invocation.getName());
@@ -86,22 +84,22 @@ public class InlineBinaryTestSuite extends DBWSTestSuite {
             comparer.isNodeEqual(controlDoc, doc));
     }
     public static final String INLINEBINARY_COLLECTION_XML =
-    	"<?xml version = '1.0' encoding = 'UTF-8'?>" +
-    	"<inlinebinary-collection>" +
-			"<ns1:inlinebinaryType xmlns:ns1=\"urn:inlinebinary\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-				"<ns1:id>1</ns1:id>" +
-				"<ns1:name>one</ns1:name>" +
-				"<ns1:b xsi:type=\"xsd:base64Binary\">rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAPAQEBAQEBAQEBAQEBAQEB</ns1:b>" +
-			"</ns1:inlinebinaryType>" +
-			"<ns1:inlinebinaryType xmlns:ns1=\"urn:inlinebinary\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-				"<ns1:id>2</ns1:id>" +
-				"<ns1:name>two</ns1:name>" +
-				"<ns1:b xsi:type=\"xsd:base64Binary\">rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAPAgICAgICAgICAgICAgIC</ns1:b>" +
-			"</ns1:inlinebinaryType>" +
-			"<ns1:inlinebinaryType xmlns:ns1=\"urn:inlinebinary\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-				"<ns1:id>3</ns1:id>" +
-				"<ns1:name>three</ns1:name>" +
-				"<ns1:b xsi:type=\"xsd:base64Binary\">rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAPAwMDAwMDAwMDAwMDAwMD</ns1:b>" +
-			"</ns1:inlinebinaryType>" +
-		"</inlinebinary-collection>";
+        "<?xml version = '1.0' encoding = 'UTF-8'?>" +
+        "<inlinebinary-collection>" +
+            "<inlinebinaryType xmlns=\"urn:inlinebinary\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+                "<id>1</id>" +
+                "<name>one</name>" +
+                "<b xsi:type=\"xsd:base64Binary\">rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAPAQEBAQEBAQEBAQEBAQEB</b>" +
+            "</inlinebinaryType>" +
+            "<inlinebinaryType xmlns=\"urn:inlinebinary\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+                "<id>2</id>" +
+                "<name>two</name>" +
+                "<b xsi:type=\"xsd:base64Binary\">rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAPAgICAgICAgICAgICAgIC</b>" +
+            "</inlinebinaryType>" +
+            "<inlinebinaryType xmlns=\"urn:inlinebinary\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+                "<id>3</id>" +
+                "<name>three</name>" +
+                "<b xsi:type=\"xsd:base64Binary\">rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAPAwMDAwMDAwMDAwMDAwMD</b>" +
+            "</inlinebinaryType>" +
+        "</inlinebinary-collection>";
 }
