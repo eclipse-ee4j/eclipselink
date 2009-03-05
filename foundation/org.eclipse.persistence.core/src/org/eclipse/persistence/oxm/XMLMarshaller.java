@@ -23,6 +23,7 @@ import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.stream.StreamResult;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.descriptors.Namespace;
+import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.oxm.FragmentContentHandler;
 import org.eclipse.persistence.internal.oxm.TreeObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
@@ -738,7 +739,8 @@ public class XMLMarshaller {
 
     private boolean isSimpleXMLRoot(XMLRoot xmlRoot) {
         Class xmlRootObjectClass = xmlRoot.getObject().getClass();
-        if (XMLConversionManager.getDefaultJavaTypes().get(xmlRootObjectClass) != null) {
+        
+        if (XMLConversionManager.getDefaultJavaTypes().get(xmlRootObjectClass) != null || ClassConstants.List_Class.isAssignableFrom(xmlRootObjectClass)) {
             return true;
         }
         return false;

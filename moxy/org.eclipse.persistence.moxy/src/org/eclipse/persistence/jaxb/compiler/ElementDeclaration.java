@@ -26,12 +26,14 @@ public class ElementDeclaration {
 	private JavaClass javaType;
 	private List<ElementDeclaration> substitutableElements;
 	private boolean isXmlRootElement = false;
+	private boolean isList = false;
 	
-	public ElementDeclaration(QName name, JavaClass javaType, String javaTypeName) {
+	public ElementDeclaration(QName name, JavaClass javaType, String javaTypeName, boolean isList) {
 		this.elementName = name;
 		this.javaTypeName = javaTypeName;
 		this.javaType = javaType;
 		this.substitutableElements = new ArrayList<ElementDeclaration>();
+		this.isList = isList;
 	}
 	
 	public QName getElementName() {
@@ -72,5 +74,13 @@ public class ElementDeclaration {
 	
 	public void setJavaType(JavaClass type) {
 	    this.javaType = type;
+	}
+
+	public boolean isList() {
+		return isList;
+	}
+
+	public void setList(boolean isList) {
+		this.isList = isList;
 	}
 }

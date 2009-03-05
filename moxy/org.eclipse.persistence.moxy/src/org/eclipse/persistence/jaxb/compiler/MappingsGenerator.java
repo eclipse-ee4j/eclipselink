@@ -48,6 +48,7 @@ import org.eclipse.persistence.sessions.Project;
 
 import org.eclipse.persistence.internal.libraries.asm.*;
 import org.eclipse.persistence.internal.libraries.asm.Type;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 
 /**
  * INTERNAL:
@@ -990,20 +991,36 @@ public class MappingsGenerator {
     			if(namespaceUri == null || namespaceUri.equals("##default")) {
     				namespaceUri = "";
     			}
-    			Class generatedClass = this.generateWrapperClass(WRAPPER_CLASS + wrapperCounter++, nextClassName);
+    			Class generatedClass = this.generateWrapperClass(WRAPPER_CLASS + wrapperCounter++, nextClassName, nextElement.isList());
     			this.generatedClassesToQNames.put(generatedClass, next);
     			
     			XMLDescriptor desc = new XMLDescriptor();
     			desc.setJavaClass(generatedClass);
     			
-    			XMLDirectMapping mapping = new XMLDirectMapping();
-    			mapping.setAttributeName("value");
-    			mapping.setXPath("text()");
-    			if(nextClassName.equals("[B") || nextClassName.equals("[Ljava.lang.Byte;")) {
-    				((XMLField)mapping.getField()).setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
+                if(nextElement.isList()){
+                    XMLCompositeDirectCollectionMapping mapping = new XMLCompositeDirectCollectionMapping();
+                    mapping.setAttributeName("value");
+                    mapping.setXPath("text()");
+                    mapping.setUsesSingleNode(true);
+                    try{
+                        Class fieldElementClass = PrivilegedAccessHelper.getClassForName(nextClassName, false, helper.getClassLoader());	    					    				    					    			
+                        mapping.setFieldElementClass(fieldElementClass);	    				
+                    }catch(ClassNotFoundException e){	    				
+                    }
+	    				    			
+                    if(nextClassName.equals("[B") || nextClassName.equals("[Ljava.lang.Byte;")) {
+                       ((XMLField)mapping.getField()).setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
+                    }
+                    desc.addMapping(mapping);
+    			} else{
+	    			XMLDirectMapping mapping = new XMLDirectMapping();
+	    			mapping.setAttributeName("value");
+	    			mapping.setXPath("text()");
+	    			if(nextClassName.equals("[B") || nextClassName.equals("[Ljava.lang.Byte;")) {
+	    				((XMLField)mapping.getField()).setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
+	    			}
+	    			desc.addMapping(mapping);
     			}
-    			desc.addMapping(mapping);
-
     			NamespaceInfo info = getNamespaceInfoForURI(namespaceUri);
     			
     			if(info != null) {
@@ -1052,7 +1069,7 @@ public class MappingsGenerator {
     	return this.generatedClassesToQNames;
     }
     
-    public Class generateWrapperClass(String className, String attributeType) {
+    public Class generateWrapperClass(String className, String attributeType, boolean isList) {
 		org.eclipse.persistence.internal.libraries.asm.ClassWriter classWriter = new org.eclipse.persistence.internal.libraries.asm.ClassWriter(false);
 		classWriter.visit(Constants.V1_5, Constants.ACC_PUBLIC, className.replace(".", "/"), org.eclipse.persistence.internal.libraries.asm.Type.getType(Object.class).getInternalName(), new String[]{Type.getType(WrappedValue.class).getInternalName()}, null);
 		
@@ -1063,9 +1080,14 @@ public class MappingsGenerator {
         mv.visitInsn(Constants.RETURN);
         mv.visitMaxs(1, 1);
 
-        String fieldType = attributeType.replace(".", "/");
-        if(!(fieldType.startsWith("["))) {
-        	fieldType = "L" + fieldType + ";";
+        String fieldType = null;
+        if(isList){
+        	fieldType ="Ljava/util/List;";
+        }else{
+	        fieldType = attributeType.replace(".", "/");
+	        if(!(fieldType.startsWith("["))) {
+	        	fieldType = "L" + fieldType + ";";
+	        }
         }
        	classWriter.visitField(Constants.ACC_PUBLIC, "value", fieldType, null, null);
 		

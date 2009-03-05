@@ -150,7 +150,7 @@ public class AnnotationsProcessor {
             	rootElemName = new QName(rootNamespace, elementName);
             }
             schemaInfo.getGlobalElementDeclarations().add(rootElemName);
-            ElementDeclaration declaration = new ElementDeclaration(rootElemName, javaClass, javaClass.getRawName());
+            ElementDeclaration declaration = new ElementDeclaration(rootElemName, javaClass, javaClass.getRawName(), false);
             this.globalElements.put(rootElemName, declaration);
         }
         
@@ -988,11 +988,20 @@ public class AnnotationsProcessor {
     					String localName = elementDecl.name();
     					QName qname = new QName(url, localName);
     					
-    					JavaClass type = (JavaClass)next.getReturnType().getActualTypeArguments().toArray()[0];
     					if(this.globalElements == null) {
     						globalElements = new HashMap<QName, ElementDeclaration>();
     					}
-    					ElementDeclaration declaration = new ElementDeclaration(qname, type, type.getQualifiedName());
+
+    					boolean isList = false;
+    					JavaClass type = (JavaClass)next.getReturnType().getActualTypeArguments().toArray()[0];
+    					if("java.util.List".equals(type.getName())){
+    						isList = true;
+    						if(type.hasActualTypeArguments()){
+    							type = (JavaClass)type.getActualTypeArguments().toArray()[0];   							
+    						}
+    					}
+    					
+    					ElementDeclaration declaration = new ElementDeclaration(qname, type, type.getQualifiedName(), isList);
     					if(!elementDecl.substitutionHeadName().equals("")) {
     						String subHeadLocal = elementDecl.substitutionHeadName();
     						String subHeadNamespace = elementDecl.substitutionHeadNamespace();
@@ -1055,7 +1064,7 @@ public class AnnotationsProcessor {
     			} else {
     				rootElemName = new QName(rootNamespace, elementName);
     			}
-    			ElementDeclaration declaration = new ElementDeclaration(rootElemName, javaClass, javaClass.getRawName());
+    			ElementDeclaration declaration = new ElementDeclaration(rootElemName, javaClass, javaClass.getRawName(), false);
     			declaration.setIsXmlRootElement(true);
     			if(this.globalElements == null) {
     				globalElements = new HashMap<QName, ElementDeclaration>();

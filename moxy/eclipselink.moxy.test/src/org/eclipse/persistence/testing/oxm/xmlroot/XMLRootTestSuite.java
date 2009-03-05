@@ -25,6 +25,7 @@ import org.eclipse.persistence.testing.oxm.xmlroot.complex.XMLRootComplexNullUri
 import org.eclipse.persistence.testing.oxm.xmlroot.complex.XMLRootComplexTestCases;
 import org.eclipse.persistence.testing.oxm.xmlroot.complex.XMLRootMultipleMarshalTestCases;
 import org.eclipse.persistence.testing.oxm.xmlroot.complex.XMLRootNullSchemaReferenceTestCases;
+import org.eclipse.persistence.testing.oxm.xmlroot.simple.XMLRootSimpleCollectionTestCases;
 import org.eclipse.persistence.testing.oxm.xmlroot.simple.XMLRootSimpleTestCases;
 import org.eclipse.persistence.testing.oxm.xmlroot.simple.XMLRootNoPrefixTestCases;
 import org.eclipse.persistence.testing.oxm.xmlroot.simple.XMLRootNullUriTestCases;
@@ -58,6 +59,7 @@ public class XMLRootTestSuite extends TestCase {
         suite.addTestSuite(XMLRootNullUriTestCases.class);
         suite.addTestSuite(XMLRootNullSchemaReferenceTestCases.class);
         suite.addTestSuite(XMLRootMultipleMarshalTestCases.class);
+        suite.addTestSuite(XMLRootSimpleCollectionTestCases.class);
         return suite;
     }
 }
