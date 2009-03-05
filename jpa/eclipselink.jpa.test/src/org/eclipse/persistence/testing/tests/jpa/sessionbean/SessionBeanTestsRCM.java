@@ -22,20 +22,11 @@ import javax.rmi.PortableRemoteObject;
 
 import junit.framework.*;
 
-import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
-import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Department;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.sessionbean.EmployeeService;
-
-import org.eclipse.persistence.expressions.Expression;
-import org.eclipse.persistence.expressions.ExpressionBuilder;
-import org.eclipse.persistence.queries.ReadObjectQuery;
-
-import java.util.*;
-import java.io.*;
 
 /**
  * EJB 3 SessionBean tests.

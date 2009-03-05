@@ -15,7 +15,6 @@ package org.eclipse.persistence.testing.models.jpa.xml.advanced.compositepk;
 
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.tools.schemaframework.*;
-import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 
 public class CompositePKTableCreator extends TableCreator {
     public CompositePKTableCreator() {

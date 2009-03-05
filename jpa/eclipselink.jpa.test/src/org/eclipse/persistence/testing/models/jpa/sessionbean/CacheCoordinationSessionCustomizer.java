@@ -14,15 +14,11 @@ package org.eclipse.persistence.testing.models.jpa.sessionbean;
 
 import org.eclipse.persistence.config.SessionCustomizer;
 import org.eclipse.persistence.sessions.Session;
-import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 
 import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
 import org.eclipse.persistence.sessions.coordination.TransportManager;
 import org.eclipse.persistence.sessions.coordination.jms.JMSTopicTransportManager;
-
-import java.io.*;
-import java.util.*;
 
 public class CacheCoordinationSessionCustomizer implements SessionCustomizer {
 

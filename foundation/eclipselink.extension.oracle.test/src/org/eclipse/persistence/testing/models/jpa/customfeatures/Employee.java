@@ -14,7 +14,6 @@ package org.eclipse.persistence.testing.models.jpa.customfeatures;
 
 import java.io.Serializable;
 import javax.persistence.Column;
-import javax.persistence.JoinColumn;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -26,7 +25,6 @@ import javax.persistence.Version;
 
 import org.w3c.dom.*;
 
-import oracle.sql.*;
 import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.NamedStoredProcedureQuery;
 import org.eclipse.persistence.annotations.NamedStoredProcedureQueries;

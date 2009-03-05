@@ -14,7 +14,6 @@ package org.eclipse.persistence.testing.tests.jpa.structconverter;
 
 import javax.persistence.EntityManager;
 
-import junit.extensions.TestSetup;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import oracle.spatial.geometry.JGeometry;
@@ -29,7 +28,6 @@ import org.eclipse.persistence.platform.database.converters.StructConverter;
 
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.structconverter.SimpleSpatial;
-import org.eclipse.persistence.testing.models.jpa.structconverter.SimpleXMLSpatial;
 import org.eclipse.persistence.testing.models.jpa.structconverter.JGeometryTableCreator;
 import org.eclipse.persistence.testing.models.jpa.structconverter.DummyStructConverterType;
 

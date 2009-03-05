@@ -13,17 +13,12 @@
 package org.eclipse.persistence.testing.tests.jpa.customfeatures;
 
 import java.io.*;
-import java.util.Calendar;
-import java.util.TimeZone;
 import java.util.List;
-import java.util.Map;
 
 import org.w3c.dom.*;
 
 import javax.xml.parsers.*;
 import javax.persistence.EntityManager;
-import javax.persistence.OptimisticLockException;
-import javax.persistence.PersistenceException;
 
 import junit.framework.*;
 import org.eclipse.persistence.testing.framework.TestCase;
