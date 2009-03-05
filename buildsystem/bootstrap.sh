@@ -113,7 +113,7 @@ BLD_DEPS_DIR=${HOME_DIR}/bld_deps/${BRANCH_NM}
 START_DATE=`date '+%y%m%d-%H%M'`
 LOGFILE_NAME=bsb-${BRANCH_NM}_${TARG_NM}_${START_DATE}.log
 DATED_LOG=${LOG_DIR}/${LOGFILE_NAME}
-JDBC_LOGIN_INFO_FILE=${HOME_DIR}/db.dat
+JDBC_LOGIN_INFO_FILE=${HOME_DIR}/db-${BRANCH_NM}.dat
 
 #Define build dependency dirs (build needs em, NOT compile dependencies)
 JUNIT_HOME=${BLD_DEPS_DIR}/junit
@@ -368,7 +368,8 @@ echo "Build complete."
 ## Post-build Processing
 ##
 MAIL_EXEC=/bin/mail
-MAILLIST="eric.gwin@oracle.com ejgwin@gmail.com"
+MAILFROM=eric.gwin@oracle.com
+MAILLIST="ejgwin@gmail.com"
 SUCC_MAILLIST="eric.gwin@oracle.com ejgwin@gmail.com"
 FAIL_MAILLIST="eclipselink-dev@eclipse.org ejgwin@gmail.com"
 PARSE_RESULT_FILE=${tmp}/raw-summary.txt
@@ -483,7 +484,7 @@ then
     ## Send result email
     ##
     echo "Sending email..."
-    cat ${MAILBODY} | ${MAIL_EXEC} -s "${MAIL_SUBJECT}" ${MAILLIST}
+    cat ${MAILBODY} | ${MAIL_EXEC} -r ${MAILFROM} -s "BUILD STATUS:: ${MAIL_SUBJECT}" ${MAILLIST}
     if [ $? -eq 0  ]
     then
        echo "     complete."

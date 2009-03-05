@@ -77,15 +77,22 @@
     <dirname  property="trunk.build.location" file="${ant.file.trunk}"/>
     <echo message="trunk.build.location = '${trunk.build.location}'"/>
     <property environment="env"/>
+    <echo message="env.CLASSPATH        = '${env.CLASSPATH}'"/>
+    <echo message="java.class.path      = '${java.class.path}'"/>
     <!-- Allows a user to overide certain user specific properties. -->
+    <echo message="user.home            = '${user.home}'"/>
+    <echo message="Loading user properties from: '${user.home}/build.properties'"/>
     <property file="${user.home}/build.properties"/>
     <!-- Sets default junit.lib and all extensions.depend dir locations to static paths -->
     <!-- temporary until all build files reworked -->
     <property name="oracle.extensions.depend.dir" value="${trunk.build.location}/../extension.oracle.lib.external"/>
+    <echo message="oracle.extensions.depend.dir = '${oracle.extensions.depend.dir}'"/>
     <property name="extensions.depend.dir" value="${trunk.build.location}/../extension.lib.external"/>
+    <echo message="extensions.depend.dir        = '${extensions.depend.dir}'"/>
     <property name="junit.lib" value="${extensions.depend.dir}/junit.jar"/>
-    <echo message="junit.lib='${junit.lib}'"/>
-    <property file="./build.properties"/>
+    <echo message="junit.lib = '${junit.lib}'"/>
+    <echo message="Loading default properties from: '${trunk.build.location}/build.properties'"/>
+    <property file="${trunk.build.location}/build.properties"/>
 
     <!-- Needed because some buildfiles depend upon JDK6 -->
     <condition property="java_is_v5" value="true">
@@ -96,7 +103,7 @@
         <contains string="${java.version}" substring="1.5"/>
     </condition>
     <echo message="${jdk_message}"/>
-    <echo message="jdbc.driver='${jdbc.driver}'"/>
+    <echo message="jdbc.driver.jar='${jdbc.driver.jar}'"/>
 
     <!-- versioning -->
     <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
@@ -256,18 +263,6 @@
                 <include name="${eclipselink.extension.oracle.bndl.prefix}.jar"/>
                 <exclude name="*source*.jar"/>
             </zipgroupfileset>
-            <!-- JPA 1.1/2.0 concurrent dev solution: New classes from javax.persistence 2.0 -->
-            <fileset
-                dir="${eclipselink.jpa.plugins}/javax.persistence/${classes.dir}"
-                includes="
-                    javax/persistence/Access.class,
-                    javax/persistence/AccessType.class,
-                    javax/persistence/Cache.class,
-                    javax/persistence/LockModeType.class,
-                    javax/persistence/LockTimeoutException.class,
-                    javax/persistence/PessimisticLockException.class,
-                    javax/persistence/NamedQuery.class
-            "/>
         </jar>
     </target>
 
