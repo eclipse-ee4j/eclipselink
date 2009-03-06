@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.helper.SDOClassGenerator;
+import org.eclipse.persistence.sdo.helper.SDOClassLoader;
 import org.eclipse.persistence.sdo.helper.SDOXMLHelper;
 import org.eclipse.persistence.testing.sdo.util.CompileUtil;
 
@@ -72,7 +73,7 @@ public abstract class LoadAndSaveTestCases extends LoadAndSaveWithOptionsTestCas
 
         Class urlLoadedClass = myURLLoader.loadClass(className);
 
-        ((SDOXMLHelper)xmlHelper).getLoader().setDelegateLoader(myURLLoader);
+        ((SDOXMLHelper)xmlHelper).setLoader(new SDOClassLoader(myURLLoader, aHelperContext));
         Class loadedClass2 = ((SDOXMLHelper)xmlHelper).getLoader().loadClass(className);
 
         defineTypes();

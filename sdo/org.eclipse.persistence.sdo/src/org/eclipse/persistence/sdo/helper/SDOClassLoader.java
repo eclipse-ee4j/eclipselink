@@ -13,10 +13,6 @@
 package org.eclipse.persistence.sdo.helper;
 
 import commonj.sdo.helper.HelperContext;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.persistence.sdo.SDOType;
@@ -25,15 +21,15 @@ import org.eclipse.persistence.sdo.SDOType;
  * <p><b>Purpose</b>: A custom classloader used to dynamically create classes as needed.
  */
 public class SDOClassLoader extends ClassLoader {
-    private ClassLoader delegateLoader;
+
     private Map generatedClasses;
 
     // hold the context containing all helpers so that we can preserve inter-helper relationships
     private HelperContext aHelperContext;
 
     public SDOClassLoader(ClassLoader delegateLoader, HelperContext aContext) {
+        super(delegateLoader);
         aHelperContext = aContext;
-        this.delegateLoader = delegateLoader;
         generatedClasses = new HashMap();
     }
 
@@ -48,7 +44,7 @@ public class SDOClassLoader extends ClassLoader {
 
         // Not found, so now check classpath
         try {
-            javaClass = delegateLoader.loadClass(className);
+            javaClass = getParent().loadClass(className);
         } catch (ClassNotFoundException e) {
             throw e;
         } catch (NoClassDefFoundError error) {
@@ -67,7 +63,7 @@ public class SDOClassLoader extends ClassLoader {
         }
 
         try {
-            javaClass = delegateLoader.loadClass(className);
+            javaClass = getParent().loadClass(className);
         } catch (ClassNotFoundException e) {
             javaClass = createGeneric(className, type);
             if (javaClass == null) {
@@ -101,23 +97,4 @@ public class SDOClassLoader extends ClassLoader {
         return javaClass;
     }
 
-    public void setDelegateLoader(ClassLoader delegateLoader) {
-        this.delegateLoader = delegateLoader;
-    }
-
-    public ClassLoader getDelegateLoader() {
-        return delegateLoader;
-    }
-
-    public URL getResource(String name) {
-        return delegateLoader.getResource(name);
-    }
-
-    public InputStream getResourceAsStream(String name) {
-        return delegateLoader.getResourceAsStream(name);
-    }
-
-    public Enumeration getResources(String name) throws IOException {
-        return delegateLoader.getResources(name);
-    }
 }
