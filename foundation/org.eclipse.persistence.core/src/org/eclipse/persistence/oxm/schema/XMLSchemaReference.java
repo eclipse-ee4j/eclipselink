@@ -149,11 +149,7 @@ public abstract class XMLSchemaReference implements org.eclipse.persistence.plat
                 String uri = nsResolver.resolveNamespacePrefix(prefix);
                 schemaContextAsQName = new QName(uri, localPart);
             } else {
-                if (nsResolver.getDefaultNamespaceURI() != null) {
-                    schemaContextAsQName = new QName(nsResolver.getDefaultNamespaceURI(), type);
-                } else {
-                    schemaContextAsQName = new QName(type);
-                }
+                schemaContextAsQName = new QName(type);
             }
         }
         return schemaContextAsQName;
