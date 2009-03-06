@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.net.URL;
+
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Source;
@@ -31,6 +32,7 @@ import javax.xml.validation.Schema;
 
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.XMLContext;
@@ -270,7 +272,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             Node domElement = xmlParser.parse(inputSource).getDocumentElement();
             return unmarshal(domElement, clazz);
         }
-        boolean isPrimitiveWrapper = XMLConversionManager.getDefaultJavaTypes().get(clazz) != null;
+        boolean isPrimitiveWrapper = isPrimitiveWrapper(clazz);         	
         UnmarshalRecord unmarshalRecord;
         XMLDescriptor xmlDescriptor = null;
 
@@ -319,7 +321,8 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     }
 
     public Object unmarshal(InputSource inputSource, Class clazz, XMLReader xmlReader) {
-        boolean isPrimitiveWrapper = XMLConversionManager.getDefaultJavaTypes().get(clazz) != null;
+        boolean isPrimitiveWrapper = isPrimitiveWrapper(clazz); 
+        
         UnmarshalRecord unmarshalRecord;
         XMLDescriptor xmlDescriptor = null;
 
@@ -396,7 +399,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     }
 
     public Object unmarshal(DOMReader domReader, Node node, Class clazz) {
-        boolean isPrimitiveWrapper = XMLConversionManager.getDefaultJavaTypes().get(clazz) != null;
+        boolean isPrimitiveWrapper = isPrimitiveWrapper(clazz);
         UnmarshalRecord unmarshalRecord;
         XMLDescriptor xmlDescriptor = null;
 
@@ -575,7 +578,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     }
 
     public Object unmarshal(String systemId, Class clazz) {
-        boolean isPrimitiveWrapper = XMLConversionManager.getDefaultJavaTypes().get(clazz) != null;
+        boolean isPrimitiveWrapper = isPrimitiveWrapper(clazz);
         UnmarshalRecord unmarshalRecord;
         XMLDescriptor xmlDescriptor = null;
 
@@ -639,5 +642,11 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
 
     public void setResultAlwaysXMLRoot(boolean alwaysReturnRoot) {
         this.isResultAlwaysXMLRoot = alwaysReturnRoot;
+    }
+    
+    private boolean isPrimitiveWrapper(Class clazz){
+	    return  XMLConversionManager.getDefaultJavaTypes().get(clazz) != null    
+	    ||ClassConstants.XML_GREGORIAN_CALENDAR.isAssignableFrom(clazz)
+	    ||ClassConstants.DURATION.isAssignableFrom(clazz);
     }
 }

@@ -740,7 +740,7 @@ public class XMLMarshaller {
     private boolean isSimpleXMLRoot(XMLRoot xmlRoot) {
         Class xmlRootObjectClass = xmlRoot.getObject().getClass();
         
-        if (XMLConversionManager.getDefaultJavaTypes().get(xmlRootObjectClass) != null || ClassConstants.List_Class.isAssignableFrom(xmlRootObjectClass)) {
+        if (XMLConversionManager.getDefaultJavaTypes().get(xmlRootObjectClass) != null || ClassConstants.List_Class.isAssignableFrom(xmlRootObjectClass) || ClassConstants.XML_GREGORIAN_CALENDAR.isAssignableFrom(xmlRootObjectClass) || ClassConstants.DURATION.isAssignableFrom(xmlRootObjectClass)) {
             return true;
         }
         return false;
