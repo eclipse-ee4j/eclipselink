@@ -118,16 +118,6 @@ public final class MWRelationalReadAllQuery
 		return READ_ALL_QUERY;
 	}	
 
-	public void initializeFrom(MWReportQuery query) {
-		super.initializeFrom(query);
-		for (Iterator i = query.orderingItems(); i.hasNext();) {
-			MWOrderingItem orderingItem = (MWOrderingItem) i.next();
-			addOrderingItem(orderingItem);
-			orderingItem.setParent(this);
-		}
-		//attribute items can become partial attributes
-	}
-		
 	// ********** orderingItems **********
 
 	public Ordering addOrderingItem(MWQueryable queryable) {
@@ -170,7 +160,7 @@ public final class MWRelationalReadAllQuery
         return getQueryFormat().orderingAttributesAllowed();
     }
     
-	private void addOrderingItem(MWOrderingItem orderingItem) {
+	private void addOrderingItem(Ordering orderingItem) {
 		addOrderingItem(orderingItemsSize(), orderingItem);	
 	}
 	
