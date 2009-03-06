@@ -16,6 +16,7 @@ import java.io.*;
 import java.util.*;
 import javax.persistence.*;
 
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.sessions.server.*;
 
@@ -340,11 +341,11 @@ public class TestExecutor {
     public EntityManagerFactory getEntityManagerFactory() {
         if (entityManagerFactory == null) {
             Map properties = new HashMap();
-            properties.put("eclipselink.jdbc.driver", getSession().getLogin().getDriverClassName());
-            properties.put("eclipselink.jdbc.url", getSession().getLogin().getConnectionString());
-            properties.put("eclipselink.jdbc.user", getSession().getLogin().getUserName());
-            properties.put("eclipselink.jdbc.password", getSession().getLogin().getPassword());
-            properties.put("eclipselink.logging.level", getSession().getSessionLog().getLevelString());
+            properties.put(PersistenceUnitProperties.JDBC_DRIVER, getSession().getLogin().getDriverClassName());
+            properties.put(PersistenceUnitProperties.JDBC_URL, getSession().getLogin().getConnectionString());
+            properties.put(PersistenceUnitProperties.JDBC_USER, getSession().getLogin().getUserName());
+            properties.put(PersistenceUnitProperties.JDBC_PASSWORD, getSession().getLogin().getPassword());
+            properties.put(PersistenceUnitProperties.LOGGING_LEVEL, getSession().getSessionLog().getLevelString());
             entityManagerFactory = Persistence.createEntityManagerFactory("performance", properties);
         }
         return entityManagerFactory;

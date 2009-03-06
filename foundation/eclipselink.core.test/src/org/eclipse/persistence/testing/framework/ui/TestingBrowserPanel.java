@@ -18,6 +18,8 @@ import java.util.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.tree.*;
+
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.testing.framework.*;
@@ -1214,12 +1216,12 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, junit.f
         // Configure the JPA tests login and logging.
         Map properties = org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper.getDatabaseProperties();
         if(getExecutor().getSession().getDatasourceLogin() instanceof DatabaseLogin && getExecutor().getSession().getLogin().getConnector() instanceof DefaultConnector) {
-            properties.put("eclipselink.jdbc.driver", getExecutor().getSession().getLogin().getDriverClassName());
-            properties.put("eclipselink.jdbc.url", getExecutor().getSession().getLogin().getConnectionString());
-            properties.put("eclipselink.target-database", getExecutor().getSession().getDatasourceLogin().getPlatform().getClass().getName());
-            properties.put("eclipselink.jdbc.user", getExecutor().getSession().getDatasourceLogin().getUserName());
-            properties.put("eclipselink.jdbc.password", getExecutor().getSession().getDatasourceLogin().getPassword());
-            properties.put("eclipselink.logging.level", getExecutor().getSession().getSessionLog().getLevelString());
+            properties.put(PersistenceUnitProperties.JDBC_DRIVER, getExecutor().getSession().getLogin().getDriverClassName());
+            properties.put(PersistenceUnitProperties.JDBC_URL, getExecutor().getSession().getLogin().getConnectionString());
+            properties.put(PersistenceUnitProperties.TARGET_DATABASE, getExecutor().getSession().getDatasourceLogin().getPlatform().getClass().getName());
+            properties.put(PersistenceUnitProperties.JDBC_USER, getExecutor().getSession().getDatasourceLogin().getUserName());
+            properties.put(PersistenceUnitProperties.JDBC_PASSWORD, getExecutor().getSession().getDatasourceLogin().getPassword());
+            properties.put(PersistenceUnitProperties.LOGGING_LEVEL, getExecutor().getSession().getSessionLog().getLevelString());
         }
         TestExecutor.setDefaultJUnitTestResult(null);
         TestExecutor.setJUnitTestResults(null);

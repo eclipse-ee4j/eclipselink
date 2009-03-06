@@ -101,28 +101,28 @@ public class JUnitTestCaseHelper {
                     platform = (String) properties.get("db.platform");
                 }
                 if (logLevel == null) {
-                    logLevel = (String) properties.get("eclipselink.logging.level");
+                    logLevel = (String) properties.get(PersistenceUnitProperties.LOGGING_LEVEL);
                 }
             }
 
             propertiesMap = new HashMap();
             if (dbDriver != null) {
-                propertiesMap.put("eclipselink.jdbc.driver", dbDriver);
+                propertiesMap.put(PersistenceUnitProperties.JDBC_DRIVER, dbDriver);
             }
             if (dbUrl != null) {
-                propertiesMap.put("eclipselink.jdbc.url", dbUrl);
+                propertiesMap.put(PersistenceUnitProperties.JDBC_URL, dbUrl);
             }
             if (dbUser != null) {
-                propertiesMap.put("eclipselink.jdbc.user", dbUser);
+                propertiesMap.put(PersistenceUnitProperties.JDBC_USER, dbUser);
             }
             if (dbPwd != null) {
-                propertiesMap.put("eclipselink.jdbc.password", dbPwd);
+                propertiesMap.put(PersistenceUnitProperties.JDBC_PASSWORD, dbPwd);
             }
             if (logLevel != null) {
-                propertiesMap.put("eclipselink.logging.level", logLevel);
+                propertiesMap.put(PersistenceUnitProperties.LOGGING_LEVEL, logLevel);
             }
             if (platform != null) {
-                propertiesMap.put("eclipselink.target-database", platform);
+                propertiesMap.put(PersistenceUnitProperties.TARGET_DATABASE, platform);
             }
             propertiesMap.putAll(persistencePropertiesTestMap);
         }
