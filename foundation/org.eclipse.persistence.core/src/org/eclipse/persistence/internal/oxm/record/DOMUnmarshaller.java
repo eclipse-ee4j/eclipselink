@@ -22,6 +22,7 @@ import javax.xml.transform.Source;
 import javax.xml.validation.Schema;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XMLObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
@@ -330,7 +331,8 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
         // this case, we need to use the conversion manager to convert the 
         // node's value to the primitive wrapper class, then create, 
         // populate and return an XMLRoot
-        if (XMLConversionManager.getDefaultJavaTypes().get(referenceClass) != null) {
+        if (XMLConversionManager.getDefaultJavaTypes().get(referenceClass) != null ||ClassConstants.XML_GREGORIAN_CALENDAR.isAssignableFrom(referenceClass)
+        	    ||ClassConstants.DURATION.isAssignableFrom(referenceClass)){
             // we're assuming that since we're unmarshalling to a primitive
             // wrapper, the root element has a single text node
             Object nodeVal;
