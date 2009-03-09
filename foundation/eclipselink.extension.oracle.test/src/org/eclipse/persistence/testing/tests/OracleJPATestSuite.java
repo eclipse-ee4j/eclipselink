@@ -17,6 +17,7 @@ import junit.framework.TestSuite;
 import junit.framework.Test;
 
 import org.eclipse.persistence.testing.tests.jpa.proxyauthentication.ProxyAuthenticationTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.proxyauthentication.ProxyAuthenticationServerTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.structconverter.StructConverterTestSuite;
 
 public class OracleJPATestSuite extends TestSuite{
@@ -27,7 +28,7 @@ public class OracleJPATestSuite extends TestSuite{
 
         fullSuite.addTest(StructConverterTestSuite.suite());
         fullSuite.addTest(ProxyAuthenticationTestSuite.suite());
-        
+        fullSuite.addTest(ProxyAuthenticationServerTestSuite.suite());
         return fullSuite;
     }
 }

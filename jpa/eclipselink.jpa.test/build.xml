@@ -437,6 +437,7 @@
             <pathelement path="${eclipselink.jpa.test}/${jpa.performance}.jar"/>
             <pathelement path="${eclipselink.extension.oracle.test.dir}/${eclipselink.struct.converter.model}.jar"/>
             <pathelement path="${eclipselink.extension.oracle.test.dir}/${eclipselink.customfeatures.model}.jar"/>
+            <pathelement path="${eclipselink.extension.oracle.test.dir}/${eclipselink.proxyauthentication.model}.jar"/>
             <pathelement path="${eclipselink.extension.oracle.test.dir}/${eclipselink.jpa.oracle}-tests.jar"/>
             <pathelement path="${oracle.extensions.depend.dir}/${oracle.spatial.lib}"/>
         </path>
@@ -1176,6 +1177,7 @@
         <antcall target="server-test-oracle-timestamptz" inheritRefs="true"/>
         <antcall target="server-test-custom-features" inheritRefs="true"/>
         <antcall target="server-test-struct-converter" inheritRefs="true"/>
+        <antcall target="server-test-proxy-authentication" inheritRefs="true"/>
         <antcall target="generate-report" inheritRefs="true"/>
     </target>
 
@@ -1501,6 +1503,18 @@ CREATE OR REPLACE TYPE MY_GEOMETRY AS OBJECT (id NUMBER, geom MDSYS.SDO_GEOMETRY
         </antcall>
     </target>
 
+    <target name="server-test-proxy-authentication" if="is.oracle">
+        <antcall target="server-run-all" inheritRefs="true">
+            <param name="PERSISTENCE_UNIT_NAME" value="proxyauthentication"/>
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/proxyauthentication"/>
+            <param name="MODEL_NAME" value="eclipselink-proxyauthentication-model"/>
+            <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/proxyauthentication"/>
+            <param name="TEST_NAME" value="eclipselink-proxyauthentication-model"/>
+            <param name="EAR_NAME" value="eclipselink-proxyauthentication-model"/>
+            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.proxyauthentication.ProxyAuthenticationServerTestSuite"/>
+            <param name="eclipselink.jpa.test.dir" value="./../../foundation/eclipselink.extension.oracle.test"/>
+        </antcall>
+    </target>
     <!-- *********** CacheCoordination Test Targets -->
     <target name="server-start-cachecoordination" depends="detect-os,config-trunk, config-flat">
       <ant antfile="${eclipselink.jpa.test}/cachecoordination_${server.name}.xml" target="${server.name}-start-cachecoordination" inheritRefs="true"/>
