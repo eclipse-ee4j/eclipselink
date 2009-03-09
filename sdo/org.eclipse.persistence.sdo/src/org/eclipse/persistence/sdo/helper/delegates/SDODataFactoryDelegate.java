@@ -87,23 +87,21 @@ public class SDODataFactoryDelegate implements SDODataFactory {
             type = (SDOType) sth.getWrappersHashMap().get(((SDOType)type).getQName());
         }
 
-        Class typedDataObjectClass = ((SDOType)type).getInstanceClass();
-        if (typedDataObjectClass != null) {
-            try {
-                Class implClass = ((SDOType)type).getImplClass();
-                if (implClass != null) {
-                    // initialization of the properties Map Implementation will be done in the default constructor call below
-                    // testcase is in org.apache.tuscany.sdo.test
-                    SDODataObject theDataObject = (SDODataObject)implClass.newInstance();
-                    theDataObject._setType(type);
-                    theDataObject._setHelperContext(getHelperContext());
-                    return theDataObject;
-                }
-            } catch (InstantiationException e) {
-                throw new IllegalArgumentException(SDOException.errorCreatingDataObjectForClass(e, typedDataObjectClass.getName(), type.getURI(), type.getName()));
-            } catch (IllegalAccessException e) {
-                throw new IllegalArgumentException(SDOException.errorCreatingDataObjectForClass(e, typedDataObjectClass.getName(), type.getURI(), type.getName()));
+        Class implClass;
+        try {
+            implClass = ((SDOType)type).getImplClass();
+            if (implClass != null) {
+                // initialization of the properties Map Implementation will be done in the default constructor call below
+                // testcase is in org.apache.tuscany.sdo.test
+                SDODataObject theDataObject = (SDODataObject)implClass.newInstance();
+                theDataObject._setType(type);
+                theDataObject._setHelperContext(getHelperContext());
+                return theDataObject;
             }
+        } catch (InstantiationException e) {
+            throw new IllegalArgumentException(SDOException.errorCreatingDataObjectForClass(e, ((SDOType) type).getInstanceClassName(), type.getURI(), type.getName()));
+        } catch (IllegalAccessException e) {
+            throw new IllegalArgumentException(SDOException.errorCreatingDataObjectForClass(e, ((SDOType) type).getInstanceClassName(), type.getURI(), type.getName()));
         }
         SDODataObject dataObject = new SDODataObject();
         dataObject._setType(type);

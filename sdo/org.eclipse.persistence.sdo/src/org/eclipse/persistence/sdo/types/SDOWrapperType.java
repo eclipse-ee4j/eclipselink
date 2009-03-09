@@ -71,15 +71,10 @@ public class SDOWrapperType extends SDOType implements Type {
 
         // Remove any special characters from the type name to create the class name:
         String normalizedTypeName = SDOUtil.className(aTypeName, true, true, false);
-        String instanceClassName = "org.eclipse.persistence.sdo." + normalizedTypeName + "Wrapper";
-        setInstanceClassName(instanceClassName);
         String implClassName = "org.eclipse.persistence.sdo." + normalizedTypeName + "WrapperImpl" ;
         setImplClassName(implClassName);
 
-        getInstanceClass();
         getImplClass();
-
-        xmlDescriptor.getInterfacePolicy().addParentInterface(getInstanceClass());
 
         // Add a new map to typehelperdelegate
         // interface --> sdotype
@@ -102,7 +97,6 @@ public class SDOWrapperType extends SDOType implements Type {
                 try {
                     SDOClassLoader loader = ((SDOXMLHelper)aHelperContext.getXMLHelper()).getLoader();
                     d.setJavaClass(loader.loadClass(className + "Impl", this));
-                    d.getInterfacePolicy().addParentInterface(loader.loadClass(className, this));
                 } catch (ClassNotFoundException e) {
                     throw SDOException.classNotFound(e, getURI(), getName());
                 } catch (SecurityException e) {

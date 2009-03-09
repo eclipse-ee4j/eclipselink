@@ -117,27 +117,29 @@ public abstract class SDOXMLHelperDatatypeTestCase extends SDOTestCase {
     // === TEST METHODS =================================
     
     public void testRootObjectInstanceClassForUserDefinedType() throws Exception {
-    	xsdHelper.define(getSchema(getSchemaNameForUserDefinedType()));
-    	
+        xsdHelper.define(getSchema(getSchemaNameForUserDefinedType()));
+
         FileInputStream inputStream = new FileInputStream(getControlFileName());
         XMLDocument document = xmlHelper.load(inputStream, null, null);
-        
-        Class instanceClassFromDocument = document.getRootObject().get("value").getClass();
 
+        assertNull(document.getRootObject().getType().getInstanceClass());
+
+        Class instanceClassFromDocument = document.getRootObject().get("value").getClass();
         assertEquals(getDatatypeJavaClass(), instanceClassFromDocument);
     }
 
     public void testRootObjectInstanceClassForBuiltinType() throws Exception {
-    	xsdHelper.define(getSchema(getSchemaNameForBuiltinType()));
-    	
+        xsdHelper.define(getSchema(getSchemaNameForBuiltinType()));
+
         FileInputStream inputStream = new FileInputStream(getControlFileName());
         XMLDocument document = xmlHelper.load(inputStream, null, null);
-        
-        Class instanceClassFromDocument = document.getRootObject().get("value").getClass();
 
+        assertNull(document.getRootObject().getType().getInstanceClass());
+
+        Class instanceClassFromDocument = document.getRootObject().get("value").getClass();
         assertEquals(getDatatypeJavaClass(), instanceClassFromDocument);
     }
-    
+
     public void testLoadAndSaveForUserDefinedType() throws Exception {
     	xsdHelper.define(getSchema(getSchemaNameForUserDefinedType()));
     	

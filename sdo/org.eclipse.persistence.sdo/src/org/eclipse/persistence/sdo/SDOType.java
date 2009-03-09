@@ -844,6 +844,7 @@ public class SDOType implements Type, Serializable {
             try {
                 SDOClassLoader loader = ((SDOXMLHelper)aHelperContext.getXMLHelper()).getLoader();
                 javaImplClass = loader.loadClass(getImplClassName(), this);
+                xmlDescriptor.setJavaClass(javaImplClass);
             } catch (ClassNotFoundException e) {
                 throw SDOException.classNotFound(e, getURI(), getName());
             } catch (SecurityException e) {

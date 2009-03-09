@@ -359,14 +359,13 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         wrappersHashMap.put(SDOConstants.SDO_LONGOBJECT.getQName(), SDO_LONGOBJECT_WRAPPER);
         wrappersHashMap.put(SDOConstants.SDO_SHORTOBJECT.getQName(), SDO_SHORTOBJECT_WRAPPER);
 
-        // Now add these into the interface-to-type Map
+        // Now add these into the impl-to-type Map
         Iterator wrappers = wrappersHashMap.values().iterator();
         while (wrappers.hasNext()) {
             SDOWrapperType wrapper = (SDOWrapperType) wrappers.next();
             Iterator descriptors = wrapper.getDescriptorsMap().values().iterator();
             while (descriptors.hasNext()) {
                 XMLDescriptor d = (XMLDescriptor) descriptors.next();
-                interfacesToSDOTypeHashMap.put((Class) d.getInterfacePolicy().getParentInterfaces().firstElement(), wrapper);
                 implClassesToSDOType.put(d.getJavaClass(), wrapper);
             }
         }
@@ -795,7 +794,6 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
             // Register WrapperType with maps on TypeHelper
             typeHelper.getWrappersHashMap().put(typeQName, wrapperType);
             typeHelper.getTypesHashMap().put(typeQName, wrapperType);
-            typeHelper.getInterfacesToSDOTypeHashMap().put(wrapperType.getXmlDescriptor().getInterfacePolicy().getParentInterfaces().firstElement(), wrapperType);
             typeHelper.getImplClassesToSDOType().put(wrapperType.getXmlDescriptor().getJavaClass(), wrapperType);
 
             // Add descriptor to XMLHelper
