@@ -75,6 +75,9 @@ public class SDOClassLoader extends ClassLoader {
                 throw error;
             }
         }
+        if(!type.isDataType() && null != aHelperContext && null != aHelperContext.getTypeHelper()) {
+            ((SDOTypeHelper) aHelperContext.getTypeHelper()).getImplClassesToSDOType().put(javaClass, type);
+        }
         return javaClass;
     }
 

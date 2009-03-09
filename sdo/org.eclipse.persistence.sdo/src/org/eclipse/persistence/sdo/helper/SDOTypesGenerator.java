@@ -701,6 +701,7 @@ public class SDOTypesGenerator {
         typeHelper.getWrappersHashMap().put(currentType.getQName(), wrapperType);
         typeHelper.getTypesHashMap().put(wrapperType.getQName(), wrapperType);
         typeHelper.getInterfacesToSDOTypeHashMap().put(wrapperType.getXmlDescriptor().getInterfacePolicy().getParentInterfaces().firstElement(), wrapperType);
+        typeHelper.getImplClassesToSDOType().put(wrapperType.getXmlDescriptor().getJavaClass(), wrapperType);
 
         // Add descriptor to XMLHelper
         ArrayList list = new ArrayList(1);

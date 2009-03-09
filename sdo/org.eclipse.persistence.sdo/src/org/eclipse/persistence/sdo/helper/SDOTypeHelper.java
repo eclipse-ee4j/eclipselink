@@ -41,6 +41,8 @@ public interface SDOTypeHelper extends TypeHelper {
      */
     public Class getJavaWrapperTypeForSDOType(Type sdoType);
 
+    public SDOType getTypeForImplClass(Class implClass);
+
     /**
      * INTERNAL:
      * @param implClass
@@ -148,6 +150,8 @@ public interface SDOTypeHelper extends TypeHelper {
     public void addWrappersToProject(Project toplinkProject);
 
     public Map getInterfacesToSDOTypeHashMap();
+
+    public Map<Class, SDOType> getImplClassesToSDOType();
 
     public List getAnonymousTypes();
 

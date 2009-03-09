@@ -58,6 +58,9 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
     /** Map of interfaces -> SDOType */
     private Map<Class, SDOType> interfacesToSDOTypeHashMap = new HashMap<Class, SDOType>();
 
+    /** Map of impl classes -> SDOType */
+    private Map<Class, SDOType> implClassesToSDOType = new HashMap<Class, SDOType>();
+
     /** Map containing built-in types for primitive and SDO types */
     private final Map commonjHashMap = new HashMap();
 
@@ -364,6 +367,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
             while (descriptors.hasNext()) {
                 XMLDescriptor d = (XMLDescriptor) descriptors.next();
                 interfacesToSDOTypeHashMap.put((Class) d.getInterfacePolicy().getParentInterfaces().firstElement(), wrapper);
+                implClassesToSDOType.put(d.getJavaClass(), wrapper);
             }
         }
     }
@@ -609,6 +613,32 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         return null; 
     }
 
+    public SDOType getTypeForImplClass(Class implClass) {
+        SDOType type = getTypeForSimpleJavaType(implClass);
+        if (type != null) {
+            return type;
+        }
+
+        type = getImplClassesToSDOType().get(implClass);
+        if (type != null) {
+            return type;
+        }
+
+        //Check in the commonjHashMap as well.
+        Iterator iter = this.commonjHashMap.keySet().iterator();
+        while (iter.hasNext()) {
+            Object key = iter.next();
+            SDOType value = (SDOType) commonjHashMap.get(key);
+            if(!value.isDataType()) {
+                if (value.getImplClass() == implClass) {
+                    return value;
+                }
+            }
+        }
+
+        return null;
+    }
+
     /**
      * INTERNAL:
      * Used to determine which SDO Type corresponds the given Java simple type
@@ -766,6 +796,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
             typeHelper.getWrappersHashMap().put(typeQName, wrapperType);
             typeHelper.getTypesHashMap().put(typeQName, wrapperType);
             typeHelper.getInterfacesToSDOTypeHashMap().put(wrapperType.getXmlDescriptor().getInterfacePolicy().getParentInterfaces().firstElement(), wrapperType);
+            typeHelper.getImplClassesToSDOType().put(wrapperType.getXmlDescriptor().getJavaClass(), wrapperType);
 
             // Add descriptor to XMLHelper
             ArrayList list = new ArrayList(1);
@@ -1217,6 +1248,10 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
 
     public Map getInterfacesToSDOTypeHashMap() {
         return interfacesToSDOTypeHashMap;
+    }
+
+    public Map<Class, SDOType> getImplClassesToSDOType() {
+        return implClassesToSDOType;
     }
 
     public List getAnonymousTypes() {

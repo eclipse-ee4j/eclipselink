@@ -16,7 +16,6 @@ import commonj.sdo.Type;
 import commonj.sdo.helper.HelperContext;
 import org.eclipse.persistence.sdo.SDOChangeSummary;
 import org.eclipse.persistence.sdo.SDODataObject;
-import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.oxm.XMLUnmarshalListener;
 
 /**
@@ -40,30 +39,23 @@ public class SDOCSUnmarshalListener implements XMLUnmarshalListener {
     }
 
     public void beforeUnmarshal(Object target, Object parent) {
-        try {
-            if (target instanceof SDODataObject) {
-                String className = target.getClass().getName();
-                String interfaceName = className.substring(0, className.length() - 4);
+        if (target instanceof SDODataObject) {
+            Type type = ((SDOTypeHelper) aHelperContext.getTypeHelper()).getTypeForImplClass(target.getClass());
 
-                Class interfaceClass = target.getClass().getClassLoader().loadClass(interfaceName);
-                Type type = aHelperContext.getTypeHelper().getType(interfaceClass);
-
-                // perform cleanup operations on objects that were instantiated with getInstance()
-                SDODataObject aDataObject = (SDODataObject)target;
-                // reset the HelperContext on target DataObject from default static context
-                // setting the Type requires a helpercontext so following 2 calls must be in this order
-                aDataObject._setHelperContext(aHelperContext);
-                aDataObject._setType(type);
-            } else if (target instanceof SDOChangeSummary) {
-                if (!isCSUnmarshalListener) {                     
-                    ((SDOChangeSummary)target).setHelperContext(aHelperContext);
-                }
+            // perform cleanup operations on objects that were instantiated with getInstance()
+            SDODataObject aDataObject = (SDODataObject)target;
+            // reset the HelperContext on target DataObject from default static context
+            // setting the Type requires a helpercontext so following 2 calls must be in this order
+            aDataObject._setHelperContext(aHelperContext);
+            aDataObject._setType(type);
+        } else if (target instanceof SDOChangeSummary) {
+            if (!isCSUnmarshalListener) {                     
+                ((SDOChangeSummary)target).setHelperContext(aHelperContext);
             }
-        } catch (ClassNotFoundException e) {
-            throw SDOException.classNotFound(e, null, null);
         }
     }
 
     public void afterUnmarshal(Object target, Object parent) {
     }
+
 }

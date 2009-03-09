@@ -64,6 +64,10 @@ public class SDOTypeHelperDelegator extends AbstractHelperDelegator implements S
         return getTypeHelperDelegate().getType(interfaceClass);
     }
 
+    public SDOType getTypeForImplClass(Class implClass) {
+        return getTypeHelperDelegate().getTypeForImplClass(implClass);
+    }
+
     public Type define(DataObject dataObject) {
         return getTypeHelperDelegate().define(dataObject);
     }
@@ -160,6 +164,10 @@ public class SDOTypeHelperDelegator extends AbstractHelperDelegator implements S
 
     public Map getInterfacesToSDOTypeHashMap() {
         return getTypeHelperDelegate().getInterfacesToSDOTypeHashMap();
+    }
+
+    public Map<Class, SDOType> getImplClassesToSDOType() {
+        return getTypeHelperDelegate().getImplClassesToSDOType();
     }
 
     public List getAnonymousTypes() {

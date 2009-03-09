@@ -35,7 +35,6 @@ public class SDOOpenSequencedType extends SDOType implements Type {
         //need to call getInstanceClass to initialize the class in the SDOClassLoader
         getInstanceClass();
         Class implClass = getImplClass();
-        //xmlDescriptor.setJavaClassName("org.eclipse.persistence.sdo.OpenSequencedClassImpl");
         xmlDescriptor.setJavaClass(implClass);
         setMixed(true);
         setSequenced(true);
