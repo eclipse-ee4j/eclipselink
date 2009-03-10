@@ -379,6 +379,7 @@ public class AnnotationsProcessor {
                         ((AnyProperty)property).setDomHandlerClass(anyElement.value());
                     } else if(helper.isAnnotationPresent((JavaHasAnnotations)nextField, XmlElementRef.class) || helper.isAnnotationPresent((JavaHasAnnotations)nextField, XmlElementRefs.class)) { 
                     	property = new ReferenceProperty(helper);
+                    	property.setElement(nextField);
                     	XmlElementRef[] elementRefs;
                     	XmlElementRef ref = (XmlElementRef)helper.getAnnotation((JavaHasAnnotations)nextField, XmlElementRef.class);
                     	if(ref != null) {
@@ -657,8 +658,35 @@ public class AnnotationsProcessor {
     }
     
     public ArrayList getPublicMemberPropertiesForClass(JavaClass cls, TypeInfo info) {
-        ArrayList<Property> publicFieldProperties = getFieldPropertiesForClass(cls, info, true);
-        ArrayList<Property> publicMethodProperties = getPropertyPropertiesForClass(cls, info, true);
+        ArrayList<Property> fieldProperties = getFieldPropertiesForClass(cls, info, false);
+        ArrayList<Property> methodProperties = getPropertyPropertiesForClass(cls, info, false);
+        
+        //filter out non-public properties that aren't annotated
+        ArrayList<Property> publicFieldProperties = new ArrayList<Property>();
+        ArrayList<Property> publicMethodProperties = new ArrayList<Property>();
+        
+        for(Property next:fieldProperties) {
+            if(Modifier.isPublic(((JavaField)next.getElement()).getModifiers())) {
+                publicFieldProperties.add(next);
+            } else {
+                if(hasJAXBAnnotations(next.getElement())) {
+                    publicFieldProperties.add(next);
+                }
+            }
+        }
+        
+        for(Property next:methodProperties) {
+            if(next.getElement() != null) {
+                if(Modifier.isPublic(((JavaMethod)next.getElement()).getModifiers())) {
+                    publicMethodProperties.add(next);
+                } else {
+                    if(hasJAXBAnnotations(next.getElement())) {
+                        publicMethodProperties.add(next);
+                    }
+                }
+            }
+        }
+        
         // Not sure who should win if a property exists for both or the correct order
         if (publicFieldProperties.size() >= 0 && publicMethodProperties.size() == 0) {
             return publicFieldProperties;
@@ -702,24 +730,14 @@ public class AnnotationsProcessor {
         for (int i=0; i<fieldProperties.size(); i++) {
             Property next = (Property) fieldProperties.get(i);
             JavaHasAnnotations elem = next.getElement();
-            if (helper.isAnnotationPresent(elem, XmlElement.class) 
-                    || helper.isAnnotationPresent(elem, XmlAttribute.class)  
-                    || helper.isAnnotationPresent(elem, XmlAnyElement.class) 
-                    || helper.isAnnotationPresent(elem, XmlAnyAttribute.class) 
-                    || helper.isAnnotationPresent(elem, XmlValue.class)
-                    || helper.isAnnotationPresent(elem, XmlElements.class)) {
+            if (hasJAXBAnnotations(elem)) {
                 list.add(next);
             }
         }
         for (int i=0; i<methodProperties.size(); i++) {
             Property next = (Property) methodProperties.get(i);
             JavaHasAnnotations elem = next.getElement();
-            if (helper.isAnnotationPresent(elem, XmlElement.class) 
-                    || helper.isAnnotationPresent(elem, XmlAttribute.class)  
-                    || helper.isAnnotationPresent(elem, XmlAnyElement.class) 
-                    || helper.isAnnotationPresent(elem, XmlAnyAttribute.class) 
-                    || helper.isAnnotationPresent(elem, XmlValue.class)
-                    || helper.isAnnotationPresent(elem, XmlElements.class)) {
+            if (hasJAXBAnnotations(elem)) {
                 list.add(next);
             }
         }
@@ -1096,5 +1114,25 @@ public class AnnotationsProcessor {
     		}
     		
     	}
+    }
+    
+    /**
+     * Returns true if the field or method passed in is annotated with JAXB annotations.
+     */
+    private boolean hasJAXBAnnotations(JavaHasAnnotations elem) {
+        if (helper.isAnnotationPresent(elem, XmlElement.class) 
+                || helper.isAnnotationPresent(elem, XmlAttribute.class)  
+                || helper.isAnnotationPresent(elem, XmlAnyElement.class) 
+                || helper.isAnnotationPresent(elem, XmlAnyAttribute.class) 
+                || helper.isAnnotationPresent(elem, XmlValue.class)
+                || helper.isAnnotationPresent(elem, XmlElements.class)
+                || helper.isAnnotationPresent(elem, XmlElementRef.class)
+                || helper.isAnnotationPresent(elem, XmlElementRefs.class)
+                || helper.isAnnotationPresent(elem, XmlID.class)) {
+           
+                return true;
+        }
+        return false;
+        
     }
 }
