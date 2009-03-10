@@ -52,7 +52,7 @@ public class SchemaGenEmployeeTestCases extends TestCase {
         String tmpdir = System.getenv("T_WORK");
 
         try {
-            Class[] jClasses = new Class[] { Address.class, Employee.class, PhoneNumber.class, Department.class };
+            Class[] jClasses = new Class[] { Address.class, Employee.class, PhoneNumber.class, Department.class, MyTestType.class };
             Generator gen = new Generator(new JavaModelInputImpl(jClasses, new JavaModelImpl(Thread.currentThread().getContextClassLoader())));
             gen.generateSchemaFiles(tmpdir, null);
             SchemaFactory sFact = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);

@@ -26,6 +26,11 @@
       </xsd:sequence>
       <xsd:attribute name="id" type="xsd:int" use="required"/>
    </xsd:complexType>
+   <xsd:complexType name="myTestType">
+      <xsd:sequence>
+         <xsd:element minOccurs="0" name="id" type="xsd:int"/>
+      </xsd:sequence>
+   </xsd:complexType>
    <xsd:element name="peep" type="x:employee-type"/>
    <xsd:element name="employee-data" type="x:employee-type"/>
    <xsd:simpleType name="department">

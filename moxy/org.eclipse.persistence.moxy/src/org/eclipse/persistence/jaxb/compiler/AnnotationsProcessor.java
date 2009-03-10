@@ -310,10 +310,7 @@ public class AnnotationsProcessor {
         if (javaClass == null || javaClass.isPrimitive() || javaClass.isAnnotation() || javaClass.isInterface() || javaClass.isArray()) {
             return false;
         }
-        // don't generate for anything in the java.* packages.
-        if (javaClass.getPackageName().startsWith("java.") || javaClass.getPackageName().startsWith("javax.")) {
-            return false;
-        }
+        
         if (userDefinedSchemaTypes.get(javaClass.getQualifiedName()) != null) {
             return false;
         }
@@ -517,7 +514,6 @@ public class AnnotationsProcessor {
             }
             //make the first Character lowercase
             propertyName = Character.toLowerCase(propertyName.charAt(0)) + propertyName.substring(1);
-
             
             String setMethodName = "set" + Character.toUpperCase(propertyName.charAt(0)) + propertyName.substring(1);
             JavaClass[] paramTypes = { (JavaClass) getMethod.getReturnType() };
@@ -789,9 +785,9 @@ public class AnnotationsProcessor {
     public String getSchemaTypeNameForClassName(String className) {
         String typeName = "";
         if (className.indexOf('$') != -1) {
-            typeName = className.substring(className.lastIndexOf('$') + 1).toLowerCase();
+        	typeName = Introspector.decapitalize(className.substring(className.lastIndexOf('$') + 1));
         } else {
-            typeName = className.substring(className.lastIndexOf('.') + 1).toLowerCase();
+        	typeName = Introspector.decapitalize(className.substring(className.lastIndexOf('.') + 1));
         }
         return typeName;
     }
