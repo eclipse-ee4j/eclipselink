@@ -129,13 +129,6 @@ public class RemoteCommandManagerAdapter extends SCAdapter {
 		return new SunCORBATransportManagerAdapter( this);
 	}
 	/**
-	 * Factory method for building a child default TransportManager.
-	 */
-	private Oc4jJGroupsTransportManagerAdapter buildOc4jJGroupsTransportManager() {
-
-		return new Oc4jJGroupsTransportManagerAdapter( this);
-	}
-	/**
 	 * Initializes this adapter from the config model.
 	 */
 	protected void initializeFromModel( Object scConfig) {
@@ -284,13 +277,5 @@ public class RemoteCommandManagerAdapter extends SCAdapter {
 
 		return ( SunCORBATransportManagerAdapter)this.transportManager;	
 	}
-	/**
-	 * Returns this remoteCommandManager adapter.
-	 */
-	public Oc4jJGroupsTransportManagerAdapter setTransportAsOc4jJGroups() {
-		
-		this.setTransportManager( buildOc4jJGroupsTransportManager());
 
-		return ( Oc4jJGroupsTransportManagerAdapter)this.transportManager;	
-	}
 }

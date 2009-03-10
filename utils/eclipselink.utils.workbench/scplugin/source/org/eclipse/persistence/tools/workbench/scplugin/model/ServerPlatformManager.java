@@ -25,12 +25,6 @@ public class ServerPlatformManager extends SCPlatformManager {
 	private Map configs;
 
 	public static final String NO_SERVER_ID = "NoServerPlatform";
-	public static final String OC4J__ID = "Oc4jPlatform";
-    public static final String OC4J_11_1_1_ID = "Oc4j_11_1_1_Platform";
-    public static final String OC4J_10_1_3_ID = "Oc4j_10_1_3_Platform";
-    public static final String OC4J_10_1_2_ID = "Oc4j_10_1_2_Platform";
-    public static final String OC4J_9_0_4_ID = "Oc4j_9_0_4_Platform";
-    public static final String OC4J_9_0_3_ID = "Oc4j_9_0_3_Platform";
     public static final String WEBLOGIC_10_ID = "WebLogic_10_Platform";
     public static final String WEBLOGIC_9_ID = "WebLogic_9_Platform";
     public static final String WEBLOGIC_8_1_ID = "WebLogic_8_1_Platform";
@@ -75,9 +69,6 @@ public class ServerPlatformManager extends SCPlatformManager {
 	protected void buidPlatforms() {
 	    
 	    this.addPlatform( NO_SERVER_ID, "org.eclipse.persistence.platform.server.NoServerPlatform");
-	    this.addPlatform( OC4J_11_1_1_ID, "org.eclipse.persistence.platform.server.oc4j.Oc4jPlatform");
-	    this.addPlatform( OC4J_10_1_3_ID, "org.eclipse.persistence.platform.server.oc4j.Oc4jPlatform");
-	    this.addPlatform( OC4J__ID, "org.eclipse.persistence.platform.server.oc4j.Oc4jPlatform");
 	    this.addPlatform( WEBLOGIC_9_ID, "org.eclipse.persistence.platform.server.wls.WebLogic_9_Platform");
 	    this.addPlatform( WEBLOGIC_10_ID, "org.eclipse.persistence.platform.server.wls.WebLogic_10_Platform");
 	    this.addPlatform( WEBSPHERE_6_1_ID, "org.eclipse.persistence.platform.server.was.WebSphere_6_1_Platform");
@@ -89,9 +80,6 @@ public class ServerPlatformManager extends SCPlatformManager {
 	protected void buildConfigs() {
 	    
 	    this.addConfig( NO_SERVER_ID, "null");
-	    this.addConfig( OC4J__ID, "org.eclipse.persistence.internal.sessions.factories.model.platform.Oc4jPlatformConfig");
-	    this.addConfig( OC4J_11_1_1_ID, "org.eclipse.persistence.internal.sessions.factories.model.platform.Oc4jPlatformConfig");
-	    this.addConfig( OC4J_10_1_3_ID, "org.eclipse.persistence.internal.sessions.factories.model.platform.Oc4jPlatformConfig");
 	    this.addConfig( WEBLOGIC_9_ID, "org.eclipse.persistence.internal.sessions.factories.model.platform.WebLogic_9_PlatformConfig");
 	    this.addConfig( WEBLOGIC_10_ID, "org.eclipse.persistence.internal.sessions.factories.model.platform.WebLogic_10_PlatformConfig");
 	    this.addConfig( WEBSPHERE_6_1_ID, "org.eclipse.persistence.internal.sessions.factories.model.platform.WebSphere_6_1_PlatformConfig");

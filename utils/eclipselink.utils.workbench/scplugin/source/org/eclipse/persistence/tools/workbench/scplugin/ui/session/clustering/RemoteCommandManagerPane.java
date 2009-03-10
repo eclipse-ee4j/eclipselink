@@ -31,7 +31,6 @@ import javax.swing.text.Document;
 import org.eclipse.persistence.tools.workbench.framework.context.WorkbenchContextHolder;
 import org.eclipse.persistence.tools.workbench.framework.ui.view.AbstractSubjectPanel;
 import org.eclipse.persistence.tools.workbench.scplugin.model.adapter.JMSTopicTransportManagerAdapter;
-import org.eclipse.persistence.tools.workbench.scplugin.model.adapter.Oc4jJGroupsTransportManagerAdapter;
 import org.eclipse.persistence.tools.workbench.scplugin.model.adapter.RMIIIOPTransportManagerAdapter;
 import org.eclipse.persistence.tools.workbench.scplugin.model.adapter.RMITransportManagerAdapter;
 import org.eclipse.persistence.tools.workbench.scplugin.model.adapter.RemoteCommandManagerAdapter;
@@ -107,11 +106,6 @@ final class RemoteCommandManagerPane extends AbstractSubjectPanel
 	 */
 	private RCMSunCORBAPane sunCORBAPane;
 	
-	/**
-	 * The pane containing oc4j jgroups specific information.
-	 */
-	private RCMOc4jJGroupsPane oc4jJgroupsPane;
-
 	/**
 	 * The pane containing User Defined specific information.
 	 */
@@ -261,31 +255,6 @@ final class RemoteCommandManagerPane extends AbstractSubjectPanel
 	 * @return The <code>PropertyValueModel</code> containing the subject holder
 	 * required for this pane
 	 */
-	private PropertyValueModel buildOc4jJGoupsTransportManagerHolder()
-	{
-		return new PropertyAspectAdapter(getSubjectHolder(), RemoteCommandManagerAdapter.TRANSPORT_MANAGER_PROPERTY)
-		{
-			protected Object getValueFromSubject()
-			{
-				RemoteCommandManagerAdapter rcm = (RemoteCommandManagerAdapter) subject;
-				TransportManagerAdapter transportManager = rcm.getTransportManager();
-
-				if (transportManager.getClass().equals(Oc4jJGroupsTransportManagerAdapter.class))
-					return transportManager;
-
-				return null;
-			}
-		};
-	}
-
-
-	/**
-	 * Creates the subject holder where it is two children down from the value
-	 * contained in the given node holder.
-	 *
-	 * @return The <code>PropertyValueModel</code> containing the subject holder
-	 * required for this pane
-	 */
 	private PropertyValueModel buildRMITransportManagerHolder()
 	{
 		return new PropertyAspectAdapter(getSubjectHolder(), RemoteCommandManagerAdapter.TRANSPORT_MANAGER_PROPERTY)
@@ -320,9 +289,6 @@ final class RemoteCommandManagerPane extends AbstractSubjectPanel
 		sunCORBAPane = new RCMSunCORBAPane(buildSunCORBATransportManagerHolder(), getWorkbenchContextHolder());
 		addPaneForAlignment(jmsPane);
 		
-		oc4jJgroupsPane = new RCMOc4jJGroupsPane(buildOc4jJGoupsTransportManagerHolder(), getWorkbenchContextHolder());
-		addPaneForAlignment(oc4jJgroupsPane);
-
 		userDefinedPane = new RCMUserDefinedPane(buildUserDefinedTransportManagerHolder(), getWorkbenchContextHolder());
 		addPaneForAlignment(userDefinedPane);
 	}
@@ -596,7 +562,6 @@ final class RemoteCommandManagerPane extends AbstractSubjectPanel
 			selections.put(JMSTopicTransportManagerAdapter.class,    new JMSChoice());
 			selections.put(RMITransportManagerAdapter.class,         new RMIChoice());
 			selections.put(RMIIIOPTransportManagerAdapter.class,     new RMIIIOPChoice());
-			selections.put(Oc4jJGroupsTransportManagerAdapter.class, new Oc4jJGroupsChoice());
 			selections.put(UserDefinedTransportManagerAdapter.class, new UserDefinedChoice());
 
 			sortChoices();
@@ -702,44 +667,6 @@ final class RemoteCommandManagerPane extends AbstractSubjectPanel
 		public Object transform(Object value)
 		{
 			return jmsPane;
-		}
-	}
-
-	/**
-	 * This is one of the choice for Transport Manager type.
-	 */
-	private class Oc4jJGroupsChoice extends ComboBoxSelection
-									implements Transformer
-	{
-		/**
-		 * Creates a new <code>Oc4jJGroupsChoice</code>.
-		 */
-		private Oc4jJGroupsChoice()
-		{
-			super(resourceRepository().getString("OC4J"));
-		}
-
-		/**
-		 * Updates the Transport Manager in the {@link RemoteCommandManagerAdapter}
-		 * to be {@link org.eclipse.persistence.tools.workbench.scplugin.model.adapter.Oc4jJGroupsTransportManagerAdapter}.
-		 *
-		 * @param subject The <code>RemoteCommandManagerAdapter</code>
-		 */
-		public void setPropertyOn(Object subject)
-		{
-			RemoteCommandManagerAdapter adapter = (RemoteCommandManagerAdapter) subject;
-			adapter.setTransportAsOc4jJGroups();
-		}
-
-		/**
-		 * Based on the given object, requests the associated component.
-		 *
-		 * @param value The value used to retrieve a pane
-		 * @return The pane associated with the given value
-		 */
-		public Object transform(Object value)
-		{
-			return oc4jJgroupsPane;
 		}
 	}
 
