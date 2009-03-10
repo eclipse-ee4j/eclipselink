@@ -48,7 +48,7 @@ public class JavaPackageImpl implements JavaPackage {
     public JavaAnnotation getAnnotation(JavaClass arg0) {
         if (arg0 != null) {
             Class annotationClass = ((JavaClassImpl) arg0).getJavaClass();
-            if (jPkg.isAnnotationPresent(annotationClass)) {
+            if (jPkg != null && jPkg.isAnnotationPresent(annotationClass)) {
                return new JavaAnnotationImpl(jPkg.getAnnotation(annotationClass));
             }
         }
@@ -57,19 +57,29 @@ public class JavaPackageImpl implements JavaPackage {
 
     public Collection getAnnotations() {
         ArrayList<JavaAnnotation> annotationCollection = new ArrayList<JavaAnnotation>();
-        Annotation[] annotations = jPkg.getAnnotations();
-        for (Annotation annotation : annotations) {
-            annotationCollection.add(new JavaAnnotationImpl(annotation));
+        if(jPkg != null){
+	        Annotation[] annotations = jPkg.getAnnotations();
+	        for (Annotation annotation : annotations) {
+	            annotationCollection.add(new JavaAnnotationImpl(annotation));
+	        }
         }
         return annotationCollection;
     }
 
     public String getName() {
-        return jPkg.getName();
+    	if(jPkg != null){
+    		return jPkg.getName();
+    	}else{
+    		return null;
+    	}
     }
 
     public String getQualifiedName() {
-        return jPkg.getName();
+    	if(jPkg != null){
+    		return jPkg.getName();
+    	}else{
+    		return null;
+    	}
     }
 
 //  ---------------- unimplemented methods ----------------//
