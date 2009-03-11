@@ -43,6 +43,7 @@
     <target name="websphere-install">
         <copy file="${junit.lib}" todir="${was.home}/lib/ext"/>
         <copy file="${oracle.extensions.depend.dir}/${oracle.spatial.lib}" todir="${was.home}/lib/ext"/>
+        <copy file="${eclipselink.jar.dir}/eclipselink.jar" todir="${was.home}/lib/ext"/>
     </target>
 
     <!-- Start the server. -->
@@ -84,6 +85,7 @@
         <exec executable="${was.home}/bin/stopServer.${suffix}">
             <arg value="server1"/>
         </exec> 
+        <delete file="${was.home}/lib/ext/eclipselink.jar" failonerror="false"/>
         <echo message="Finish Stopping WebSphere Server."/>
     </target>
 
