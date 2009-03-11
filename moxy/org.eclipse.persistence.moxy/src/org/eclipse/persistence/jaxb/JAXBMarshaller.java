@@ -40,8 +40,10 @@ import org.xml.sax.ContentHandler;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLRoot;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.jaxb.WrappedValue;
 
 import org.eclipse.persistence.jaxb.attachment.*;
 
@@ -67,7 +69,8 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
 	private XMLMarshaller xmlMarshaller;
     public static final String XML_JAVATYPE_ADAPTERS = "xml-javatype-adapters";
     private static String STAX_RESULT_CLASS_NAME = "javax.xml.transform.stax.StAXResult";
-
+    private HashMap<QName, Class> qNameToGeneratedClasses;
+    
 	/**
 	 * This constructor initializes various settings on the XML marshaller, and
 	 * stores the provided JAXBIntrospector instance for usage in marshal()
@@ -106,6 +109,16 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
 			xmlroot.setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
 		} else {
 			xmlroot.setSchemaType((QName)org.eclipse.persistence.internal.oxm.XMLConversionManager.getDefaultJavaTypes().get(elt.getDeclaredType()));
+		}
+		
+		if(qNameToGeneratedClasses != null){		
+			Class theClass = qNameToGeneratedClasses.get(qname);			
+			if(theClass != null && WrappedValue.class.isAssignableFrom(theClass)) {
+				ClassDescriptor desc = xmlMarshaller.getXMLContext().getSession(theClass).getDescriptor(theClass);
+				Object newObject = desc.getInstantiationPolicy().buildNewInstance();
+				((WrappedValue)newObject).setWrappedValue(elt.getValue());
+				xmlroot.setObject(newObject);
+			}   
 		}
 		
 		return xmlroot;
@@ -339,4 +352,9 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
 
 	public void setSchema(Schema schema) {
 	}
+
+	public void setQNameToGeneratedClasses(HashMap<QName, Class> qNameToClass) {
+	    this.qNameToGeneratedClasses = qNameToClass;
+	}
+	
 }

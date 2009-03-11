@@ -25,4 +25,6 @@ package org.eclipse.persistence.internal.jaxb;
 public interface WrappedValue {
 
 	public Object getWrappedValue();
+	
+	public void setWrappedValue(Object value);
 }

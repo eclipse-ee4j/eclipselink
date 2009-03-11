@@ -57,6 +57,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     private XMLContext xmlContext;
     private org.eclipse.persistence.jaxb.compiler.Generator generator;
     private HashMap<Class, QName> generatedClassesToQName;
+    private HashMap<QName, Class> qNameToGeneratedClasses;
     
     public JAXBContext(XMLContext context) {
         super();
@@ -68,6 +69,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         this.xmlContext = context;
         this.generator = generator;
         this.generatedClassesToQName = generator.getMappingsGenerator().getGeneratedClassesToQName();
+        this.qNameToGeneratedClasses = generator.getMappingsGenerator().getQNamesToGeneratedClasses();
     }
     
     public XMLContext getXMLContext() {
@@ -93,6 +95,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             }
             marshaller.setMarshalCallbacks(generator.getMarshalCallbacks());
         }
+        marshaller.setQNameToGeneratedClasses(this.qNameToGeneratedClasses);
         return marshaller;
     }
 
@@ -125,6 +128,10 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     
     public void setGeneratedClassesToQName(HashMap<Class, QName> classesToQName) {
     	this.generatedClassesToQName = classesToQName;
+    }
+    
+    public void setQNameToGeneratedClasses(HashMap<QName, Class> qNameToClass) {
+    	this.qNameToGeneratedClasses = qNameToClass;
     }
     
     /**
