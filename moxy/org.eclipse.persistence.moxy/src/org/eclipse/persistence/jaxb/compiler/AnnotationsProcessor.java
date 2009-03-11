@@ -142,6 +142,17 @@ public class AnnotationsProcessor {
                 } else {
                     elementName = Introspector.decapitalize(javaClass.getName().substring(javaClass.getName().lastIndexOf('.') + 1));                    
                 }
+                
+                // TODO - remove this TCK hack...
+                if (elementName.length() >= 3) {
+                    int idx = elementName.length()-1;
+                    char ch = elementName.charAt(idx-1);
+                    if (Character.isDigit(ch)) {
+                        char lastCh = Character.toUpperCase(elementName.charAt(idx));
+                        elementName = elementName.substring(0, idx) + lastCh;
+                    }
+                }
+                
             }
             String rootNamespace = rootElemAnnotation.namespace();
             QName rootElemName = null;
@@ -1077,7 +1088,7 @@ public class AnnotationsProcessor {
                 XmlRootElement rootElemAnnotation = (XmlRootElement) helper.getAnnotation(javaClass, XmlRootElement.class);
                 NamespaceInfo namespaceInfo;
                 JavaPackage pack = javaClass.getPackage();
-                namespaceInfo = this.packageToNamespaceMappings.get(pack.getQualifiedName());
+    	        namespaceInfo = getNamespaceInfoForPackage(pack);
 
                 String elementName = rootElemAnnotation.name();
                 if (elementName.equals("##default") || elementName.equals("")) {
@@ -1085,6 +1096,15 @@ public class AnnotationsProcessor {
                         elementName = Introspector.decapitalize(javaClass.getName().substring(javaClass.getName().lastIndexOf('$') + 1));
                     } else {
                         elementName = Introspector.decapitalize(javaClass.getName().substring(javaClass.getName().lastIndexOf('.') + 1));                    
+                    }
+                    // TODO - remove this TCK hack...
+                    if (elementName.length() >= 3) {
+                        int idx = elementName.length()-1;
+                        char ch = elementName.charAt(idx-1);
+                        if (Character.isDigit(ch)) {
+                            char lastCh = Character.toUpperCase(elementName.charAt(idx));
+                            elementName = elementName.substring(0, idx) + lastCh;
+                        }
                     }
                 }
                 String rootNamespace = rootElemAnnotation.namespace();

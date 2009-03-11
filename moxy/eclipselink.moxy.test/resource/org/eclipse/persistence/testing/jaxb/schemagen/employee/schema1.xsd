@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns0="examplenamespace">
-   <xsd:import schemaLocation="schema0.xsd" namespace="examplenamespace"/>
-   <xsd:element name="employee-data" type="ns0:employee-type"/>
-</xsd:schema>

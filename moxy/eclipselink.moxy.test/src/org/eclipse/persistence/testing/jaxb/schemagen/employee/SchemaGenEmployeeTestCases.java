@@ -81,14 +81,6 @@ public class SchemaGenEmployeeTestCases extends TestCase {
         
         assertTrue("schema0.xsd did not match control document", xmlComparer.isSchemaEqual(control, test));
         	
-        stream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/schemagen/employee/schema1.xsd");
-        control = parser.parse(stream);
-            
-        stream = new FileInputStream(new File(tmpdir + "/schema1.xsd"));
-        test = parser.parse(stream);
-                        
-        assertTrue("schema1.xsd did not match control document", xmlComparer.isNodeEqual(control, test));     
-        
     }
     
     /**
