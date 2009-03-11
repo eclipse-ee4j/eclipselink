@@ -20,67 +20,93 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class ElementDeclaration {
-	private QName elementName;
-	private QName substitutionHead;
-	private String javaTypeName;
-	private JavaClass javaType;
-	private List<ElementDeclaration> substitutableElements;
-	private boolean isXmlRootElement = false;
-	private boolean isList = false;
-	
-	public ElementDeclaration(QName name, JavaClass javaType, String javaTypeName, boolean isList) {
-		this.elementName = name;
-		this.javaTypeName = javaTypeName;
-		this.javaType = javaType;
-		this.substitutableElements = new ArrayList<ElementDeclaration>();
-		this.isList = isList;
-	}
-	
-	public QName getElementName() {
-		return elementName;
-	}
-	
-	public String getJavaTypeName() {
-		return javaTypeName;
-	}
-	
-	public List<ElementDeclaration> getSubstitutableElements() {
-		return substitutableElements;
-	}
-	
-	public void addSubstitutableElement(ElementDeclaration element) {
-		this.substitutableElements.add(element);
-	}
-	
-	public void setSubstitutionHead(QName rootElement) {
-		this.substitutionHead = rootElement;
-	}
-	
-	public QName getSubstitutionHead() {
-		return substitutionHead;
-	}
-	
-	public boolean isXmlRootElement() {
-		return this.isXmlRootElement;
-	}
-	
-	public void setIsXmlRootElement(boolean isXmlRoot) {
-		this.isXmlRootElement = isXmlRoot;
-	}
-	
-	public JavaClass getJavaType() {
-	    return this.javaType;
-	}
-	
-	public void setJavaType(JavaClass type) {
-	    this.javaType = type;
-	}
+    private QName elementName;
+    private QName substitutionHead;
+    private String javaTypeName;
+    private JavaClass javaType;    
+    private JavaClass adaptedJavaType;
+    private String adaptedJavaTypeName;    
+    private List<ElementDeclaration> substitutableElements;
+    private boolean isXmlRootElement = false;
+    private boolean isList = false;
+    private Class javaTypeAdapterClass;
+    
+    public ElementDeclaration(QName name, JavaClass javaType, String javaTypeName, boolean isList) {
+        this.elementName = name;
+        this.javaTypeName = javaTypeName;
+        this.javaType = javaType;
+        this.substitutableElements = new ArrayList<ElementDeclaration>();
+        this.isList = isList;
+    }
+    
+    public QName getElementName() {
+        return elementName;
+    }
+    
+    public String getJavaTypeName() {
+        return javaTypeName;
+    }
+    
+    public List<ElementDeclaration> getSubstitutableElements() {
+        return substitutableElements;
+    }
+    
+    public void addSubstitutableElement(ElementDeclaration element) {
+        this.substitutableElements.add(element);
+    }
+    
+    public void setSubstitutionHead(QName rootElement) {
+        this.substitutionHead = rootElement;
+    }
+    
+    public QName getSubstitutionHead() {
+        return substitutionHead;
+    }
+    
+    public boolean isXmlRootElement() {
+        return this.isXmlRootElement;
+    }
+    
+    public void setIsXmlRootElement(boolean isXmlRoot) {
+        this.isXmlRootElement = isXmlRoot;
+    }
+    
+    public JavaClass getJavaType() {
+        return this.javaType;
+    }
+    
+    public void setJavaType(JavaClass type) {
+        this.javaType = type;
+        this.javaTypeName = type.getQualifiedName();
+    }
 
-	public boolean isList() {
-		return isList;
-	}
+    public boolean isList() {
+        return isList;
+    }
 
-	public void setList(boolean isList) {
-		this.isList = isList;
-	}
+    public void setList(boolean isList) {
+        this.isList = isList;
+    }
+
+    public Class getJavaTypeAdapterClass() {
+        return javaTypeAdapterClass;
+    }
+
+    public void setJavaTypeAdapterClass(Class javaTypeAdapterClass) {
+        this.javaTypeAdapterClass = javaTypeAdapterClass;
+    }
+
+    public JavaClass getAdaptedJavaType() {
+        return adaptedJavaType;
+    }
+
+    public void setAdaptedJavaType(JavaClass adaptedJavaType) {
+        this.adaptedJavaType = adaptedJavaType;
+        this.adaptedJavaTypeName = adaptedJavaType.getQualifiedName();
+    }
+
+    public String getAdaptedJavaTypeName() {
+        return adaptedJavaTypeName;
+    }
+
 }

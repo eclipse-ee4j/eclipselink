@@ -14,6 +14,7 @@ package org.eclipse.persistence.jaxb.compiler;
 
 import java.awt.Image;
 import java.beans.Introspector;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -84,11 +85,11 @@ public class AnnotationsProcessor {
         ArrayList<JavaClass> classesToProcess = new ArrayList<JavaClass>();
         //check for ObjectFactories and process them
         for(JavaClass javaClass:classes) {
-        	if(helper.isAnnotationPresent(javaClass, XmlRegistry.class)) {
-        		this.processObjectFactory(javaClass, classesToProcess);
-        	} else {
-        		classesToProcess.add(javaClass);
-        	}
+            if(helper.isAnnotationPresent(javaClass, XmlRegistry.class)) {
+                this.processObjectFactory(javaClass, classesToProcess);
+            } else {
+                classesToProcess.add(javaClass);
+            }
         }
         
         updateGlobalElements(classesToProcess);
@@ -145,9 +146,9 @@ public class AnnotationsProcessor {
             String rootNamespace = rootElemAnnotation.namespace();
             QName rootElemName = null;
             if (rootNamespace.equals("##default")) {
-            	rootElemName = new QName(namespaceInfo.getNamespace(), elementName);
+                rootElemName = new QName(namespaceInfo.getNamespace(), elementName);
             } else {
-            	rootElemName = new QName(rootNamespace, elementName);
+                rootElemName = new QName(rootNamespace, elementName);
             }
             schemaInfo.getGlobalElementDeclarations().add(rootElemName);
             ElementDeclaration declaration = new ElementDeclaration(rootElemName, javaClass, javaClass.getRawName(), false);
@@ -341,7 +342,7 @@ public class AnnotationsProcessor {
             if (!helper.isAnnotationPresent(nextField, XmlTransient.class)) {
                 int modifiers = nextField.getModifiers();
                 if (!Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers) && ((Modifier.isPublic(nextField.getModifiers()) && onlyPublic) || !onlyPublic)) {
-                	Property property = null;
+                    Property property = null;
                     if(helper.isAnnotationPresent((JavaHasAnnotations)nextField, XmlElements.class)) {
                         property = new ChoiceProperty(helper);
                         property.setElement((JavaHasAnnotations)nextField);
@@ -375,33 +376,33 @@ public class AnnotationsProcessor {
                         ((AnyProperty)property).setLax(anyElement.lax());
                         ((AnyProperty)property).setDomHandlerClass(anyElement.value());
                     } else if(helper.isAnnotationPresent((JavaHasAnnotations)nextField, XmlElementRef.class) || helper.isAnnotationPresent((JavaHasAnnotations)nextField, XmlElementRefs.class)) { 
-                    	property = new ReferenceProperty(helper);
-                    	property.setElement(nextField);
-                    	XmlElementRef[] elementRefs;
-                    	XmlElementRef ref = (XmlElementRef)helper.getAnnotation((JavaHasAnnotations)nextField, XmlElementRef.class);
-                    	if(ref != null) {
-                    		elementRefs = new XmlElementRef[]{ref};
-                    	} else {
-                    		XmlElementRefs refs = (XmlElementRefs)helper.getAnnotation((JavaHasAnnotations)nextField, XmlElementRefs.class);
-                    		elementRefs = refs.value();
-                    		info.setHasElementRefs(true);
-                    	}
-                    	for(XmlElementRef nextRef:elementRefs) {
-                    		String name = nextRef.name();
-                    		String namespace = nextRef.namespace();
-                    		if(namespace.equals("##default")) {
-                    			namespace = "";
-                    		}
-                    		QName qname = new QName(namespace, name);
-                    		ElementDeclaration referencedElement = this.globalElements.get(qname);
-                    		if(referencedElement != null) {
-                    			addReferencedElement((ReferenceProperty)property, referencedElement);
-                    			//((ReferenceProperty)property).addReferencedElement(referencedElement);
-                    		}
-                    	}
+                        property = new ReferenceProperty(helper);
+                        property.setElement(nextField);
+                        XmlElementRef[] elementRefs;
+                        XmlElementRef ref = (XmlElementRef)helper.getAnnotation((JavaHasAnnotations)nextField, XmlElementRef.class);
+                        if(ref != null) {
+                            elementRefs = new XmlElementRef[]{ref};
+                        } else {
+                            XmlElementRefs refs = (XmlElementRefs)helper.getAnnotation((JavaHasAnnotations)nextField, XmlElementRefs.class);
+                            elementRefs = refs.value();
+                            info.setHasElementRefs(true);
+                        }
+                        for(XmlElementRef nextRef:elementRefs) {
+                            String name = nextRef.name();
+                            String namespace = nextRef.namespace();
+                            if(namespace.equals("##default")) {
+                                namespace = "";
+                            }
+                            QName qname = new QName(namespace, name);
+                            ElementDeclaration referencedElement = this.globalElements.get(qname);
+                            if(referencedElement != null) {
+                                addReferencedElement((ReferenceProperty)property, referencedElement);
+                                //((ReferenceProperty)property).addReferencedElement(referencedElement);
+                            }
+                        }
                     } else {
-                    	property = new Property(helper);
-                    	property.setElement((JavaHasAnnotations)nextField);
+                        property = new Property(helper);
+                        property.setElement((JavaHasAnnotations)nextField);
                     }
                     
                     JavaClass ptype = (JavaClass) nextField.getResolvedType();
@@ -531,13 +532,13 @@ public class AnnotationsProcessor {
             }
             Property property = null;
             if(helper.isAnnotationPresent(propertyMethod, XmlElements.class)) {
-            	property = new ChoiceProperty(helper);
+                property = new ChoiceProperty(helper);
             } else if (helper.isAnnotationPresent(propertyMethod, XmlAnyElement.class)) {
-            	property = new AnyProperty(helper);
+                property = new AnyProperty(helper);
             } else if (helper.isAnnotationPresent(propertyMethod, XmlElementRef.class) || helper.isAnnotationPresent(propertyMethod, XmlElementRefs.class)) {
-            	property = new ReferenceProperty(helper);
+                property = new ReferenceProperty(helper);
             } else {
-            	property = new Property(helper);
+                property = new Property(helper);
             }
             property.setElement(propertyMethod);
             property.setSchemaName(getQNameForProperty(propertyName, propertyMethod));
@@ -614,33 +615,33 @@ public class AnnotationsProcessor {
                 ((ChoiceProperty)property).setChoiceProperties(choiceProperties);
             }
             if(helper.isAnnotationPresent(property.getElement(), XmlAnyElement.class)) {
-            	XmlAnyElement anyElement = (XmlAnyElement)helper.getAnnotation(property.getElement(), XmlAnyElement.class);
-            	((AnyProperty)property).setDomHandlerClass(anyElement.value());
-            	((AnyProperty)property).setLax(anyElement.lax());
-            	
+                XmlAnyElement anyElement = (XmlAnyElement)helper.getAnnotation(property.getElement(), XmlAnyElement.class);
+                ((AnyProperty)property).setDomHandlerClass(anyElement.value());
+                ((AnyProperty)property).setLax(anyElement.lax());
+                
             }
             if(helper.isAnnotationPresent(property.getElement(), XmlElementRef.class) || helper.isAnnotationPresent(property.getElement(), XmlElementRefs.class)) { 
-            	XmlElementRef[] elementRefs;
-            	XmlElementRef ref = (XmlElementRef)helper.getAnnotation(property.getElement(), XmlElementRef.class);
-            	if(ref != null) {
-            		elementRefs = new XmlElementRef[]{ref};
-            	} else {
-            		XmlElementRefs refs = (XmlElementRefs)helper.getAnnotation(property.getElement(), XmlElementRefs.class);
-            		elementRefs = refs.value();
-            		info.setHasElementRefs(true);
-            	}
-            	for(XmlElementRef nextRef:elementRefs) {
-            		String name = nextRef.name();
-            		String namespace = nextRef.namespace();
-            		if(namespace.equals("##default")) {
-            			namespace = "";
-            		}
-            		QName qname = new QName(namespace, name);
-            		ElementDeclaration referencedElement = this.globalElements.get(qname);
-            		if(referencedElement != null) {
-            			((ReferenceProperty)property).addReferencedElement(referencedElement);
-            		}
-            	}
+                XmlElementRef[] elementRefs;
+                XmlElementRef ref = (XmlElementRef)helper.getAnnotation(property.getElement(), XmlElementRef.class);
+                if(ref != null) {
+                    elementRefs = new XmlElementRef[]{ref};
+                } else {
+                    XmlElementRefs refs = (XmlElementRefs)helper.getAnnotation(property.getElement(), XmlElementRefs.class);
+                    elementRefs = refs.value();
+                    info.setHasElementRefs(true);
+                }
+                for(XmlElementRef nextRef:elementRefs) {
+                    String name = nextRef.name();
+                    String namespace = nextRef.namespace();
+                    if(namespace.equals("##default")) {
+                        namespace = "";
+                    }
+                    QName qname = new QName(namespace, name);
+                    ElementDeclaration referencedElement = this.globalElements.get(qname);
+                    if(referencedElement != null) {
+                        ((ReferenceProperty)property).addReferencedElement(referencedElement);
+                    }
+                }
             }
             if (!helper.isAnnotationPresent(property.getElement(), XmlTransient.class)) {
                 properties.add(property);
@@ -785,9 +786,9 @@ public class AnnotationsProcessor {
     public String getSchemaTypeNameForClassName(String className) {
         String typeName = "";
         if (className.indexOf('$') != -1) {
-        	typeName = Introspector.decapitalize(className.substring(className.lastIndexOf('$') + 1));
+            typeName = Introspector.decapitalize(className.substring(className.lastIndexOf('$') + 1));
         } else {
-        	typeName = Introspector.decapitalize(className.substring(className.lastIndexOf('.') + 1));
+            typeName = Introspector.decapitalize(className.substring(className.lastIndexOf('.') + 1));
         }
         return typeName;
     }
@@ -984,132 +985,151 @@ public class AnnotationsProcessor {
     }
     
     public JavaClass[] processObjectFactory(JavaClass objectFactoryClass, ArrayList<JavaClass> classes) {
-    	Collection methods = objectFactoryClass.getMethods();
-    	Iterator methodsIter = methods.iterator();
-    	NamespaceInfo namespaceInfo = getNamespaceInfoForPackage(objectFactoryClass.getPackage());
-    	while(methodsIter.hasNext()) {
-    		JavaMethod next = (JavaMethod)methodsIter.next();
-    		if(next.getName().startsWith("create")) {
-    			if(!(next.getReturnType().getName().equals("javax.xml.bind.JAXBElement")) && !classes.contains(next.getReturnType())) {
-    				classes.add(next.getReturnType());
-    			} else {
-    				if(helper.isAnnotationPresent(next, XmlElementDecl.class)) {
-    					XmlElementDecl elementDecl = (XmlElementDecl)helper.getAnnotation(next, XmlElementDecl.class);
-    					String url = elementDecl.namespace();
-    					if("##default".equals(url)) {
-    						url = namespaceInfo.getNamespace();
-    					}
-    					String localName = elementDecl.name();
-    					QName qname = new QName(url, localName);
-    					
-    					if(this.globalElements == null) {
-    						globalElements = new HashMap<QName, ElementDeclaration>();
-    					}
+        Collection methods = objectFactoryClass.getMethods();
+        Iterator methodsIter = methods.iterator();
+        NamespaceInfo namespaceInfo = getNamespaceInfoForPackage(objectFactoryClass.getPackage());
+        while(methodsIter.hasNext()) {
+            JavaMethod next = (JavaMethod)methodsIter.next();
+            if(next.getName().startsWith("create")) {
+                if(!(next.getReturnType().getName().equals("javax.xml.bind.JAXBElement")) && !classes.contains(next.getReturnType())) {
+                    classes.add(next.getReturnType());
+                } else {
+                    if(helper.isAnnotationPresent(next, XmlElementDecl.class)) {
+                        XmlElementDecl elementDecl = (XmlElementDecl)helper.getAnnotation(next, XmlElementDecl.class);
+                        String url = elementDecl.namespace();
+                        if("##default".equals(url)) {
+                            url = namespaceInfo.getNamespace();
+                        }
+                        String localName = elementDecl.name();
+                        QName qname = new QName(url, localName);
+                        
+                        if(this.globalElements == null) {
+                            globalElements = new HashMap<QName, ElementDeclaration>();
+                        }
 
-    					boolean isList = false;
-    					JavaClass type = (JavaClass)next.getReturnType().getActualTypeArguments().toArray()[0];
-    					if("java.util.List".equals(type.getName())){
-    						isList = true;
-    						if(type.hasActualTypeArguments()){
-    							type = (JavaClass)type.getActualTypeArguments().toArray()[0];   							
-    						}
-    					}
-    					
-    					ElementDeclaration declaration = new ElementDeclaration(qname, type, type.getQualifiedName(), isList);
-    					if(!elementDecl.substitutionHeadName().equals("")) {
-    						String subHeadLocal = elementDecl.substitutionHeadName();
-    						String subHeadNamespace = elementDecl.substitutionHeadNamespace();
-    						if(subHeadNamespace.equals("##default")) {
-    							subHeadNamespace = namespaceInfo.getNamespace();
-    						}
-    						declaration.setSubstitutionHead(new QName(subHeadNamespace, subHeadLocal));
-    					}
-    					
-    					
-    					globalElements.put(qname, declaration);
+                        boolean isList = false;
+                        JavaClass type = (JavaClass)next.getReturnType().getActualTypeArguments().toArray()[0];
+                        if("java.util.List".equals(type.getName())){
+                            isList = true;
+                            if(type.hasActualTypeArguments()){
+                                type = (JavaClass)type.getActualTypeArguments().toArray()[0];                               
+                            }
+                        }
+                        
+                        ElementDeclaration declaration = new ElementDeclaration(qname, type, type.getQualifiedName(), isList);
+                        if(!elementDecl.substitutionHeadName().equals("")) {
+                            String subHeadLocal = elementDecl.substitutionHeadName();
+                            String subHeadNamespace = elementDecl.substitutionHeadNamespace();
+                            if(subHeadNamespace.equals("##default")) {
+                                subHeadNamespace = namespaceInfo.getNamespace();
+                            }
+                            declaration.setSubstitutionHead(new QName(subHeadNamespace, subHeadLocal));
+                        }
+                        
+                        if (helper.isAnnotationPresent(next, XmlJavaTypeAdapter.class)) {
+                            XmlJavaTypeAdapter typeAdapter = (XmlJavaTypeAdapter) helper.getAnnotation(next, XmlJavaTypeAdapter.class);
+                            Class typeAdapterClass = typeAdapter.value();
+                            declaration.setJavaTypeAdapterClass(typeAdapterClass);
+                            
+                            Method[] tacMethods = typeAdapterClass.getMethods();
+                            Class declJavaType = null;
+                            
+                            for (int i = 0; i < tacMethods.length; i++) {
+                                Method method = tacMethods[i];
+                                if (method.getName().equals("marshal")) {
+                                    declJavaType = method.getReturnType();
+                                    break;
+                                }
+                            }                             
+                            
+                            declaration.setJavaType(helper.getJavaClass(declJavaType));
+                            declaration.setAdaptedJavaType(type);
+                        }                        
+                        
+                        globalElements.put(qname, declaration);
 
-    					if(!helper.isBuiltInJavaType(type) && !classes.contains(type)) {
-    						classes.add(type);
-    					}
-    				}
-    			}
-    		}
-    	}
-    	if(classes.size() > 0) {
-    		return classes.toArray(new JavaClass[classes.size()]);
-    	} else {
-    		return new JavaClass[0];
-    	}
+                        if(!helper.isBuiltInJavaType(type) && !classes.contains(type)) {
+                            classes.add(type);
+                        }
+                    }
+                }
+            }
+        }
+        if(classes.size() > 0) {
+            return classes.toArray(new JavaClass[classes.size()]);
+        } else {
+            return new JavaClass[0];
+        }
     }
     
     public HashMap<QName, ElementDeclaration> getGlobalElements() {
-    	return globalElements;
+        return globalElements;
     }
     
     public void updateGlobalElements(ArrayList<JavaClass> classesToProcess) {
-    	//Once all the global element declarations have been created, make sure that any ones that have
-    	//a substitution head set are added to the list of substitutable elements on the declaration for that
-    	//head.
-    	
-    	//Look for XmlRootElement declarations
-    	for(JavaClass javaClass:classesToProcess) {
-    		if (helper.isAnnotationPresent(javaClass, XmlRootElement.class)) {
-    			XmlRootElement rootElemAnnotation = (XmlRootElement) helper.getAnnotation(javaClass, XmlRootElement.class);
-    	        NamespaceInfo namespaceInfo;
-    	        JavaPackage pack = javaClass.getPackage();
-    	        namespaceInfo = this.packageToNamespaceMappings.get(pack.getQualifiedName());
+        //Once all the global element declarations have been created, make sure that any ones that have
+        //a substitution head set are added to the list of substitutable elements on the declaration for that
+        //head.
+        
+        //Look for XmlRootElement declarations
+        for(JavaClass javaClass:classesToProcess) {
+            if (helper.isAnnotationPresent(javaClass, XmlRootElement.class)) {
+                XmlRootElement rootElemAnnotation = (XmlRootElement) helper.getAnnotation(javaClass, XmlRootElement.class);
+                NamespaceInfo namespaceInfo;
+                JavaPackage pack = javaClass.getPackage();
+                namespaceInfo = this.packageToNamespaceMappings.get(pack.getQualifiedName());
 
-    			String elementName = rootElemAnnotation.name();
-    			if (elementName.equals("##default") || elementName.equals("")) {
-    				if (javaClass.getName().indexOf("$") != -1) {
-    					elementName = Introspector.decapitalize(javaClass.getName().substring(javaClass.getName().lastIndexOf('$') + 1));
-    				} else {
-    					elementName = Introspector.decapitalize(javaClass.getName().substring(javaClass.getName().lastIndexOf('.') + 1));                    
-    				}
-    			}
-    			String rootNamespace = rootElemAnnotation.namespace();
-    			QName rootElemName = null;
-    			if (rootNamespace.equals("##default")) {
-    				if(namespaceInfo == null) {
-    					rootElemName = new QName(elementName);
-    				} else {
-    					rootElemName = new QName(namespaceInfo.getNamespace(), elementName);
-    				}
-    			} else {
-    				rootElemName = new QName(rootNamespace, elementName);
-    			}
-    			ElementDeclaration declaration = new ElementDeclaration(rootElemName, javaClass, javaClass.getRawName(), false);
-    			declaration.setIsXmlRootElement(true);
-    			if(this.globalElements == null) {
-    				globalElements = new HashMap<QName, ElementDeclaration>();
-    			}
-    			this.globalElements.put(rootElemName, declaration);
-    		}
+                String elementName = rootElemAnnotation.name();
+                if (elementName.equals("##default") || elementName.equals("")) {
+                    if (javaClass.getName().indexOf("$") != -1) {
+                        elementName = Introspector.decapitalize(javaClass.getName().substring(javaClass.getName().lastIndexOf('$') + 1));
+                    } else {
+                        elementName = Introspector.decapitalize(javaClass.getName().substring(javaClass.getName().lastIndexOf('.') + 1));                    
+                    }
+                }
+                String rootNamespace = rootElemAnnotation.namespace();
+                QName rootElemName = null;
+                if (rootNamespace.equals("##default")) {
+                    if(namespaceInfo == null) {
+                        rootElemName = new QName(elementName);
+                    } else {
+                        rootElemName = new QName(namespaceInfo.getNamespace(), elementName);
+                    }
+                } else {
+                    rootElemName = new QName(rootNamespace, elementName);
+                }
+                ElementDeclaration declaration = new ElementDeclaration(rootElemName, javaClass, javaClass.getRawName(), false);
+                declaration.setIsXmlRootElement(true);
+                if(this.globalElements == null) {
+                    globalElements = new HashMap<QName, ElementDeclaration>();
+                }
+                this.globalElements.put(rootElemName, declaration);
+            }
         }
-    	
-    	if(this.globalElements == null) {
-    		return;
-    	}
-    	
-    	Iterator<QName> elementQnames = this.globalElements.keySet().iterator();
-    	while(elementQnames.hasNext()) {
-    		QName next = elementQnames.next();
-    		ElementDeclaration nextDeclaration = this.globalElements.get(next);
-    		if(nextDeclaration.getSubstitutionHead() != null) {
-    			ElementDeclaration rootDeclaration = this.globalElements.get(nextDeclaration.getSubstitutionHead());
-    			rootDeclaration.addSubstitutableElement(nextDeclaration);
-    		}
-    	}
+        
+        if(this.globalElements == null) {
+            return;
+        }
+        
+        Iterator<QName> elementQnames = this.globalElements.keySet().iterator();
+        while(elementQnames.hasNext()) {
+            QName next = elementQnames.next();
+            ElementDeclaration nextDeclaration = this.globalElements.get(next);
+            if(nextDeclaration.getSubstitutionHead() != null) {
+                ElementDeclaration rootDeclaration = this.globalElements.get(nextDeclaration.getSubstitutionHead());
+                rootDeclaration.addSubstitutableElement(nextDeclaration);
+            }
+        }
     }
     
     private void addReferencedElement(ReferenceProperty property, ElementDeclaration referencedElement) {
-    	property.addReferencedElement(referencedElement);
-    	if(referencedElement.getSubstitutableElements() != null && referencedElement.getSubstitutableElements().size() > 0) {
-    		for(ElementDeclaration substitutable:referencedElement.getSubstitutableElements()) {
-    			addReferencedElement(property, substitutable);
-    		}
-    		
-    	}
+        property.addReferencedElement(referencedElement);
+        if(referencedElement.getSubstitutableElements() != null && referencedElement.getSubstitutableElements().size() > 0) {
+            for(ElementDeclaration substitutable:referencedElement.getSubstitutableElements()) {
+                addReferencedElement(property, substitutable);
+            }
+            
+        }
     }
     
     /**

@@ -195,13 +195,13 @@ public class MappingsGenerator {
                 generateChoiceMapping(property, descriptor, namespaceInfo);
             }
         } else if(property.isAny()) {
-        	generateAnyCollectionMapping(property, descriptor, namespaceInfo);
+            generateAnyCollectionMapping(property, descriptor, namespaceInfo);
         } else if(property.isReference()) {
-        	if(this.isCollectionType(property)) {
-        		generateCollectionMappingForReferenceProperty((ReferenceProperty)property, descriptor, namespaceInfo);
-        	} else {
-        		generateMappingForReferenceProperty((ReferenceProperty)property, descriptor, namespaceInfo);
-        	}
+            if(this.isCollectionType(property)) {
+                generateCollectionMappingForReferenceProperty((ReferenceProperty)property, descriptor, namespaceInfo);
+            } else {
+                generateMappingForReferenceProperty((ReferenceProperty)property, descriptor, namespaceInfo);
+            }
         }else if (isMapType(property) && helper.isAnnotationPresent(property.getElement(), XmlAnyAttribute.class)) {
             generateAnyAttributeMapping(property, descriptor, namespaceInfo);
         } else if (isCollectionType(property)) {
@@ -231,7 +231,7 @@ public class MappingsGenerator {
     
     public XMLChoiceObjectMapping generateChoiceMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespace) {
         ChoiceProperty prop = (ChoiceProperty)property;
-    	XMLChoiceObjectMapping mapping = new XMLChoiceObjectMapping();
+        XMLChoiceObjectMapping mapping = new XMLChoiceObjectMapping();
         mapping.setAttributeName(property.getPropertyName());
         if(property.isMethodProperty()) {
             mapping.setGetMethodName(property.getGetMethodName());
@@ -249,7 +249,7 @@ public class MappingsGenerator {
     }
     public XMLChoiceCollectionMapping generateChoiceCollectionMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespace) {
         ChoiceProperty prop = (ChoiceProperty)property;
-    	XMLChoiceCollectionMapping mapping = new XMLChoiceCollectionMapping();
+        XMLChoiceCollectionMapping mapping = new XMLChoiceCollectionMapping();
         mapping.setAttributeName(property.getPropertyName());
         if(property.isMethodProperty()) {
             mapping.setGetMethodName(property.getGetMethodName());
@@ -275,7 +275,7 @@ public class MappingsGenerator {
     }
     
     public XMLMapping generateMappingForReferenceProperty(ReferenceProperty property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
-    	XMLChoiceObjectMapping mapping = new XMLChoiceObjectMapping();
+        XMLChoiceObjectMapping mapping = new XMLChoiceObjectMapping();
         mapping.setAttributeName(property.getPropertyName());
         if(property.isMethodProperty()) {
             mapping.setGetMethodName(property.getGetMethodName());
@@ -285,26 +285,26 @@ public class MappingsGenerator {
         List<ElementDeclaration> referencedElements = property.getReferencedElements();
         boolean hasJAXBElements = false;
         AttributeAccessor mappingAccessor = mapping.getAttributeAccessor();
-    	for(ElementDeclaration element:referencedElements) {
-    		QName elementName = element.getElementName();
-    		XMLField xmlField = this.getXPathForElement("", elementName, namespaceInfo, !(this.typeInfo.containsKey(element.getJavaTypeName())));
-    		mapping.addChoiceElement(xmlField, element.getJavaTypeName());
+        for(ElementDeclaration element:referencedElements) {
+            QName elementName = element.getElementName();
+            XMLField xmlField = this.getXPathForElement("", elementName, namespaceInfo, !(this.typeInfo.containsKey(element.getJavaTypeName())));
+            mapping.addChoiceElement(xmlField, element.getJavaTypeName());
             if(!element.isXmlRootElement()) {
                 XMLRootConverter converter = new XMLRootConverter(xmlField);
                 mapping.addConverter(xmlField, converter);
             }
-    		hasJAXBElements = hasJAXBElements || !element.isXmlRootElement();
-    		if(hasJAXBElements) {
-    			mapping.setAttributeAccessor(new JAXBElementAttributeAccessor(mappingAccessor));
-    		}
-    	}
-    	descriptor.addMapping(mapping);
-    	return mapping;
+            hasJAXBElements = hasJAXBElements || !element.isXmlRootElement();
+            if(hasJAXBElements) {
+                mapping.setAttributeAccessor(new JAXBElementAttributeAccessor(mappingAccessor));
+            }
+        }
+        descriptor.addMapping(mapping);
+        return mapping;
     }
     
     public XMLMapping generateCollectionMappingForReferenceProperty(ReferenceProperty property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
-    	XMLChoiceCollectionMapping mapping = new XMLChoiceCollectionMapping();
-    	
+        XMLChoiceCollectionMapping mapping = new XMLChoiceCollectionMapping();
+        
         mapping.setAttributeName(property.getPropertyName());
         if(property.isMethodProperty()) {
             mapping.setGetMethodName(property.getGetMethodName());
@@ -314,38 +314,38 @@ public class MappingsGenerator {
         List<ElementDeclaration> referencedElements = property.getReferencedElements();
         boolean hasJAXBElements = false;
         AttributeAccessor mappingAccessor = mapping.getAttributeAccessor();
-    	
+        
         for(ElementDeclaration element:referencedElements) {
-    		QName elementName = element.getElementName();
-    		XMLField xmlField = this.getXPathForElement("", elementName, namespaceInfo, !(this.typeInfo.containsKey(element.getJavaTypeName())));
-    		mapping.addChoiceElement(xmlField, element.getJavaTypeName());
-    		if(!element.isXmlRootElement()) {
-    		    XMLRootConverter converter = new XMLRootConverter(xmlField);
-    		    mapping.addConverter(xmlField, converter);
-    		}
-    		hasJAXBElements = hasJAXBElements || !element.isXmlRootElement();
-    	}
-    	if(hasJAXBElements) {
-    		mapping.setAttributeAccessor(new JAXBElementAttributeAccessor(mappingAccessor, mapping.getContainerPolicy()));
-    	}
-    	descriptor.addMapping(mapping);
-    	return mapping;
+            QName elementName = element.getElementName();
+            XMLField xmlField = this.getXPathForElement("", elementName, namespaceInfo, !(this.typeInfo.containsKey(element.getJavaTypeName())));
+            mapping.addChoiceElement(xmlField, element.getJavaTypeName());
+            if(!element.isXmlRootElement()) {
+                XMLRootConverter converter = new XMLRootConverter(xmlField);
+                mapping.addConverter(xmlField, converter);
+            }
+            hasJAXBElements = hasJAXBElements || !element.isXmlRootElement();
+        }
+        if(hasJAXBElements) {
+            mapping.setAttributeAccessor(new JAXBElementAttributeAccessor(mappingAccessor, mapping.getContainerPolicy()));
+        }
+        descriptor.addMapping(mapping);
+        return mapping;
     }
     public XMLAnyCollectionMapping generateAnyCollectionMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
-    	AnyProperty prop = (AnyProperty)property;
-    	XMLAnyCollectionMapping  mapping = new XMLAnyCollectionMapping();
-    	mapping.setAttributeName(property.getPropertyName());
-    	if(prop.isLax()) {
-    		mapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
-    	} else {
-    		mapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT);
-    	}
-    	if(prop.getDomHandlerClass() != null) {
-    		DomHandlerConverter converter = new DomHandlerConverter(prop.getDomHandlerClass());
-    		mapping.setConverter(converter);
-    	}
-    	descriptor.addMapping(mapping);
-    	return mapping;
+        AnyProperty prop = (AnyProperty)property;
+        XMLAnyCollectionMapping  mapping = new XMLAnyCollectionMapping();
+        mapping.setAttributeName(property.getPropertyName());
+        if(prop.isLax()) {
+            mapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
+        } else {
+            mapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT);
+        }
+        if(prop.getDomHandlerClass() != null) {
+            DomHandlerConverter converter = new DomHandlerConverter(prop.getDomHandlerClass());
+            mapping.setConverter(converter);
+        }
+        descriptor.addMapping(mapping);
+        return mapping;
     }
     public XMLCompositeObjectMapping generateCompositeObjectMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo, JavaClass referenceClass) {
         XMLCompositeObjectMapping mapping = new XMLCompositeObjectMapping();
@@ -357,13 +357,13 @@ public class MappingsGenerator {
         }
         mapping.setXPath(getXPathForField(property, namespaceInfo, false).getXPath());
         if(helper.isAnnotationPresent(property.getElement(), XmlContainerProperty.class)) {
-        	XmlContainerProperty containerProp = (XmlContainerProperty)helper.getAnnotation(property.getElement(), XmlContainerProperty.class);
-        	String name = containerProp.value();
-        	mapping.setContainerAttributeName(name);
-        	if(!containerProp.getMethodName().equals("") && !containerProp.setMethodName().equals("")) {
-        		mapping.setContainerGetMethodName(containerProp.getMethodName());
-        		mapping.setContainerSetMethodName(containerProp.setMethodName());
-        	}
+            XmlContainerProperty containerProp = (XmlContainerProperty)helper.getAnnotation(property.getElement(), XmlContainerProperty.class);
+            String name = containerProp.value();
+            mapping.setContainerAttributeName(name);
+            if(!containerProp.getMethodName().equals("") && !containerProp.setMethodName().equals("")) {
+                mapping.setContainerGetMethodName(containerProp.getMethodName());
+                mapping.setContainerSetMethodName(containerProp.setMethodName());
+            }
         }
 
         descriptor.addMapping(mapping);
@@ -416,8 +416,8 @@ public class MappingsGenerator {
         mapping.setField(getXPathForField(property, namespaceInfo, true));
         List<Object> objects = enumInfo.getObjectValues();
         List<String> fieldValues = enumInfo.getFieldValues();
-        for (int i=0; i< objects.size(); i++) {        	
-        	converter.addConversionValue(fieldValues.get(i), objects.get(i));
+        for (int i=0; i< objects.size(); i++) {         
+            converter.addConversionValue(fieldValues.get(i), objects.get(i));
         }
         descriptor.addMapping(mapping);
     }
@@ -465,7 +465,7 @@ public class MappingsGenerator {
         List<String> fieldValues = info.getFieldValues();
        
         for (int i=0; i< objects.size(); i++) {        
-        	converter.addConversionValue(fieldValues.get(i), objects.get(i));
+            converter.addConversionValue(fieldValues.get(i), objects.get(i));
         }
 
         mapping.setValueConverter(converter);
@@ -521,13 +521,13 @@ public class MappingsGenerator {
         XMLField xmlField = getXPathForField(property, namespaceInfo, false);
         mapping.setXPath(xmlField.getXPath());
         if(helper.isAnnotationPresent(property.getElement(), XmlContainerProperty.class)) {
-        	XmlContainerProperty containerProp = (XmlContainerProperty)helper.getAnnotation(property.getElement(), XmlContainerProperty.class);
-        	String name = containerProp.value();
-        	mapping.setContainerAttributeName(name);
-        	if(!containerProp.getMethodName().equals("") && !containerProp.setMethodName().equals("")) {
-        		mapping.setContainerGetMethodName(containerProp.getMethodName());
-        		mapping.setContainerSetMethodName(containerProp.setMethodName());
-        	}
+            XmlContainerProperty containerProp = (XmlContainerProperty)helper.getAnnotation(property.getElement(), XmlContainerProperty.class);
+            String name = containerProp.value();
+            mapping.setContainerAttributeName(name);
+            if(!containerProp.getMethodName().equals("") && !containerProp.setMethodName().equals("")) {
+                mapping.setContainerGetMethodName(containerProp.getMethodName());
+                mapping.setContainerSetMethodName(containerProp.setMethodName());
+            }
         }
         
         descriptor.addMapping(mapping);
@@ -758,7 +758,7 @@ public class MappingsGenerator {
     }
 
     public XMLField getXPathForElement(String path, QName elementName, NamespaceInfo namespaceInfo, boolean isText) {
-    	String namespace = "";
+        String namespace = "";
         if (namespaceInfo.isElementFormQualified()) {
             namespace = namespaceInfo.getNamespace();
         }
@@ -960,121 +960,130 @@ public class MappingsGenerator {
     }
     
     public void processGlobalElements(Project project) {
-    	//Find any global elements for classes we've generated descriptors for, and add them as possible
-    	//root elements.
-    	if(this.globalElements == null) {
-    		return;
-    	}
-    	Iterator<QName> keys = this.globalElements.keySet().iterator();
-    	while(keys.hasNext()) {
-    		QName next = keys.next();
-    		ElementDeclaration nextElement = this.globalElements.get(next);
-    		String nextClassName = nextElement.getJavaTypeName();
-    		TypeInfo type = this.typeInfo.get(nextClassName);
-    		if(type != null) {
-    			if(next.getNamespaceURI() == null || next.getNamespaceURI().equals("")) {
-    				type.getDescriptor().addRootElement(next.getLocalPart());
-    			} else {
-    				XMLDescriptor descriptor = type.getDescriptor();
-    				String uri = next.getNamespaceURI();
-    				String prefix = descriptor.getNamespaceResolver().resolveNamespaceURI(uri);
-    				if(prefix == null) {
-    					prefix = descriptor.getNamespaceResolver().generatePrefix();
-    					descriptor.getNamespaceResolver().put(prefix, uri);
-    				}
-    				descriptor.addRootElement(prefix + ":" + next.getLocalPart());
-    			}
-    		} else if(helper.isBuiltInJavaType(nextElement.getJavaType())) {
-    			//generate a class/descriptor for this element
-    			
-    			String namespaceUri = next.getNamespaceURI();
-    			if(namespaceUri == null || namespaceUri.equals("##default")) {
-    				namespaceUri = "";
-    			}
-    			Class generatedClass = this.generateWrapperClass(WRAPPER_CLASS + wrapperCounter++, nextClassName, nextElement.isList());
-    			this.generatedClassesToQNames.put(generatedClass, next);
-    			
-    			XMLDescriptor desc = new XMLDescriptor();
-    			desc.setJavaClass(generatedClass);
-    			
+        //Find any global elements for classes we've generated descriptors for, and add them as possible
+        //root elements.
+        if(this.globalElements == null) {
+            return;
+        }
+        Iterator<QName> keys = this.globalElements.keySet().iterator();
+        while(keys.hasNext()) {
+            QName next = keys.next();
+            ElementDeclaration nextElement = this.globalElements.get(next);
+            String nextClassName = nextElement.getJavaTypeName();
+            TypeInfo type = this.typeInfo.get(nextClassName);
+            if(type != null) {
+                if(next.getNamespaceURI() == null || next.getNamespaceURI().equals("")) {
+                    type.getDescriptor().addRootElement(next.getLocalPart());
+                } else {
+                    XMLDescriptor descriptor = type.getDescriptor();
+                    String uri = next.getNamespaceURI();
+                    String prefix = descriptor.getNamespaceResolver().resolveNamespaceURI(uri);
+                    if(prefix == null) {
+                        prefix = descriptor.getNamespaceResolver().generatePrefix();
+                        descriptor.getNamespaceResolver().put(prefix, uri);
+                    }
+                    descriptor.addRootElement(prefix + ":" + next.getLocalPart());
+                }
+            } else if(helper.isBuiltInJavaType(nextElement.getJavaType())) {
+                //generate a class/descriptor for this element
+                
+                String namespaceUri = next.getNamespaceURI();
+                if(namespaceUri == null || namespaceUri.equals("##default")) {
+                    namespaceUri = "";
+                }
+                String attributeTypeName = nextClassName;
+                if (nextElement.getAdaptedJavaTypeName() != null) {
+                    attributeTypeName = nextElement.getAdaptedJavaTypeName(); 
+                }
+                Class generatedClass = this.generateWrapperClass(WRAPPER_CLASS + wrapperCounter++, attributeTypeName, nextElement.isList());
+                this.generatedClassesToQNames.put(generatedClass, next);
+                
+                XMLDescriptor desc = new XMLDescriptor();
+                desc.setJavaClass(generatedClass);
+                
                 if(nextElement.isList()){
                     XMLCompositeDirectCollectionMapping mapping = new XMLCompositeDirectCollectionMapping();
                     mapping.setAttributeName("value");
                     mapping.setXPath("text()");
                     mapping.setUsesSingleNode(true);
                     try{
-                        Class fieldElementClass = PrivilegedAccessHelper.getClassForName(nextClassName, false, helper.getClassLoader());	    					    				    					    			
-                        mapping.setFieldElementClass(fieldElementClass);	    				
-                    }catch(ClassNotFoundException e){	    				
+                        Class fieldElementClass = PrivilegedAccessHelper.getClassForName(nextClassName, false, helper.getClassLoader());                                                                                        
+                        mapping.setFieldElementClass(fieldElementClass);                        
+                    }catch(ClassNotFoundException e){                       
                     }
-	    				    			
+                                        
                     if(nextClassName.equals("[B") || nextClassName.equals("[Ljava.lang.Byte;")) {
                        ((XMLField)mapping.getField()).setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
                     }
                     desc.addMapping(mapping);
-    			} else{
-	    			XMLDirectMapping mapping = new XMLDirectMapping();
-	    			mapping.setAttributeName("value");
-	    			mapping.setXPath("text()");
-	    			if(nextClassName.equals("[B") || nextClassName.equals("[Ljava.lang.Byte;")) {
-	    				((XMLField)mapping.getField()).setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
-	    			}
-	    			desc.addMapping(mapping);
-    			}
-    			NamespaceInfo info = getNamespaceInfoForURI(namespaceUri);
-    			
-    			if(info != null) {
-    				NamespaceResolver resolver = info.getNamespaceResolver();
-    				String prefix = resolver.resolveNamespaceURI(namespaceUri);
-    				desc.setNamespaceResolver(resolver);
-    				desc.setDefaultRootElement(prefix + ":" + next.getLocalPart());
-    			} else {
-    				if(namespaceUri.equals("")) {
-    					desc.setDefaultRootElement(next.getLocalPart());
-    				} else {
-    					NamespaceResolver resolver = new NamespaceResolver();
-    					String prefix = resolver.generatePrefix();
-    					resolver.put(prefix, namespaceUri);
-    					desc.setNamespaceResolver(resolver);
-    					desc.setDefaultRootElement(prefix + ":" + next.getLocalPart());
-    				}
-    			}
-    			project.addDescriptor(desc);
-    		}
-    	}
+                } else{
+                    XMLDirectMapping mapping = new XMLDirectMapping();
+                    mapping.setAttributeName("value");
+                    mapping.setXPath("text()");
+                    if(nextClassName.equals("[B") || nextClassName.equals("[Ljava.lang.Byte;")) {
+                        ((XMLField)mapping.getField()).setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
+                    }
+                    
+                    if (nextElement.getJavaTypeAdapterClass() != null) {
+                        mapping.setConverter(new XMLJavaTypeConverter(nextElement.getJavaTypeAdapterClass()));
+                    }
+                    
+                    desc.addMapping(mapping);
+                }
+                NamespaceInfo info = getNamespaceInfoForURI(namespaceUri);
+                
+                if(info != null) {
+                    NamespaceResolver resolver = info.getNamespaceResolver();
+                    String prefix = resolver.resolveNamespaceURI(namespaceUri);
+                    desc.setNamespaceResolver(resolver);
+                    desc.setDefaultRootElement(prefix + ":" + next.getLocalPart());
+                } else {
+                    if(namespaceUri.equals("")) {
+                        desc.setDefaultRootElement(next.getLocalPart());
+                    } else {
+                        NamespaceResolver resolver = new NamespaceResolver();
+                        String prefix = resolver.generatePrefix();
+                        resolver.put(prefix, namespaceUri);
+                        desc.setNamespaceResolver(resolver);
+                        desc.setDefaultRootElement(prefix + ":" + next.getLocalPart());
+                    }
+                }
+                project.addDescriptor(desc);
+            }
+        }
     }
     
     private NamespaceInfo getNamespaceInfoForURI(String namespaceUri) {
-    	Iterator<NamespaceInfo> namespaces = this.packageToNamespaceMappings.values().iterator();
-    	while(namespaces.hasNext()) {
-    		NamespaceInfo next = namespaces.next();
-    		if(next.getNamespace().equals(namespaceUri)) {
-    			return next;
-    		}
-    	}
-    	return null;
+        Iterator<NamespaceInfo> namespaces = this.packageToNamespaceMappings.values().iterator();
+        while(namespaces.hasNext()) {
+            NamespaceInfo next = namespaces.next();
+            if(next.getNamespace().equals(namespaceUri)) {
+                return next;
+            }
+        }
+        return null;
     }
     
     @SuppressWarnings("unused")
     private String getPackageNameForURI(String namespaceUri) {
-    	for(String next:this.packageToNamespaceMappings.keySet()) {
-    		if(packageToNamespaceMappings.get(next).getNamespace().equals(namespaceUri)) {
-    			return next;
-    		}
-    	}
-    	return null;
+        for(String next:this.packageToNamespaceMappings.keySet()) {
+            if(packageToNamespaceMappings.get(next).getNamespace().equals(namespaceUri)) {
+                return next;
+            }
+        }
+        return null;
     }
     
     public HashMap<Class, QName> getGeneratedClassesToQName() {
-    	return this.generatedClassesToQNames;
+        return this.generatedClassesToQNames;
     }
     
     public Class generateWrapperClass(String className, String attributeType, boolean isList) {
-		org.eclipse.persistence.internal.libraries.asm.ClassWriter classWriter = new org.eclipse.persistence.internal.libraries.asm.ClassWriter(false);
-		classWriter.visit(Constants.V1_5, Constants.ACC_PUBLIC, className.replace(".", "/"), org.eclipse.persistence.internal.libraries.asm.Type.getType(Object.class).getInternalName(), new String[]{Type.getType(WrappedValue.class).getInternalName()}, null);
-		
-		CodeVisitor mv = classWriter.visitMethod(Constants.ACC_PUBLIC, "<init>", Type.getMethodDescriptor(Type.VOID_TYPE, new Type[0]), null, null);
-		
+        org.eclipse.persistence.internal.libraries.asm.ClassWriter classWriter = new org.eclipse.persistence.internal.libraries.asm.ClassWriter(false);
+        classWriter.visit(Constants.V1_5, Constants.ACC_PUBLIC, className.replace(".", "/"), org.eclipse.persistence.internal.libraries.asm.Type.getType(Object.class).getInternalName(), new String[]{Type.getType(WrappedValue.class).getInternalName()}, null);
+        
+        CodeVisitor mv = classWriter.visitMethod(Constants.ACC_PUBLIC, "<init>", Type.getMethodDescriptor(Type.VOID_TYPE, new Type[0]), null, null);
+        
         mv.visitVarInsn(Constants.ALOAD, 0);
         mv.visitMethodInsn(Constants.INVOKESPECIAL, Type.getType(Object.class).getInternalName(), "<init>", Type.getMethodDescriptor(Type.VOID_TYPE, new Type[0]));
         mv.visitInsn(Constants.RETURN);
@@ -1082,27 +1091,27 @@ public class MappingsGenerator {
 
         String fieldType = null;
         if(isList){
-        	fieldType ="Ljava/util/List;";
+            fieldType ="Ljava/util/List;";
         }else{
-	        fieldType = attributeType.replace(".", "/");
-	        if(!(fieldType.startsWith("["))) {
-	        	fieldType = "L" + fieldType + ";";
-	        }
+            fieldType = attributeType.replace(".", "/");
+            if(!(fieldType.startsWith("["))) {
+                fieldType = "L" + fieldType + ";";
+            }
         }
-       	classWriter.visitField(Constants.ACC_PUBLIC, "value", fieldType, null, null);
-		
-		Type objectType = Type.getType(Object.class);
-		mv = classWriter.visitMethod(Constants.ACC_PUBLIC, "getWrappedValue", Type.getMethodDescriptor(Type.getType(Object.class), new Type[]{}), null, null);
-		mv.visitVarInsn(Constants.ALOAD, 0);
-		mv.visitFieldInsn(Constants.GETFIELD, className.replace(".", "/"), "value", fieldType);
-		mv.visitInsn(Type.getType(Object.class).getOpcode(Constants.IRETURN));
-		mv.visitMaxs(1 + objectType.getSize(), 1);    			
-		classWriter.visitEnd();
-		
-		byte[] classBytes = classWriter.toByteArray();
-		
-		JaxbClassLoader loader = (JaxbClassLoader)helper.getClassLoader();
-		Class generatedClass = loader.generateClass(className, classBytes);
-		return generatedClass;
-    }    	
+        classWriter.visitField(Constants.ACC_PUBLIC, "value", fieldType, null, null);
+        
+        Type objectType = Type.getType(Object.class);
+        mv = classWriter.visitMethod(Constants.ACC_PUBLIC, "getWrappedValue", Type.getMethodDescriptor(Type.getType(Object.class), new Type[]{}), null, null);
+        mv.visitVarInsn(Constants.ALOAD, 0);
+        mv.visitFieldInsn(Constants.GETFIELD, className.replace(".", "/"), "value", fieldType);
+        mv.visitInsn(Type.getType(Object.class).getOpcode(Constants.IRETURN));
+        mv.visitMaxs(1 + objectType.getSize(), 1);              
+        classWriter.visitEnd();
+        
+        byte[] classBytes = classWriter.toByteArray();
+        
+        JaxbClassLoader loader = (JaxbClassLoader)helper.getClassLoader();
+        Class generatedClass = loader.generateClass(className, classBytes);
+        return generatedClass;
+    }       
 }
