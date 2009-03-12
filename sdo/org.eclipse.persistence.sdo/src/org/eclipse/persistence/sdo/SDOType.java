@@ -146,17 +146,15 @@ public class SDOType implements Type, Serializable {
         if ((javaClass == null) && (javaClassName != null)) {
             try {
                 SDOClassLoader loader = ((SDOXMLHelper)aHelperContext.getXMLHelper()).getLoader();
-                if (!isDataType() && (javaImplClass == null)) {
-                    //Class interfaceClass = loader.loadClass(getInstanceClassName(), this);
-                    javaImplClass = loader.loadClass(getImplClassName(), this);
-                    getXmlDescriptor().setJavaClass(javaImplClass);
-                }
-                javaClass = loader.loadClass(javaClassName, this);
+                javaClass = loader.getParent().loadClass(javaClassName);
             } catch (ClassNotFoundException e) {
-                throw SDOException.classNotFound(e, getURI(), getName());
+                javaClass = getClass();
             } catch (SecurityException e) {
                 throw SDOException.classNotFound(e, getURI(), getName());
             }
+        }
+        if(javaClass == getClass()) {
+            return null;
         }
         return javaClass;
     }
@@ -417,14 +415,6 @@ public class SDOType implements Type, Serializable {
         javaClass = aClass;
         if (javaClass != null) {
             javaClassName = javaClass.getName();
-
-            /*    if(isDataType()) {
-                 setInstanceProperty(SDOConstants.JAVA_CLASS_PROPERTY, javaClassName);
-                }
-                */
-        }
-        if (getXmlDescriptor() != null) {
-            getXmlDescriptor().setJavaClass(aClass);
         }
     }
 
@@ -768,6 +758,7 @@ public class SDOType implements Type, Serializable {
         getXmlDescriptor().setJavaClassName(getImplClassName());
         // load classes by classloader by getting the current instance class
         getInstanceClass();
+        getImplClass();
 
         // See SDOResolvable enhancement
         String schemaContext = getName();

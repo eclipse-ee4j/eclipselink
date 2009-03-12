@@ -655,17 +655,18 @@ public class SDOClassGenerator {
         return null;
     }
 
-    private String getJavaTypeForProperty(Property property) {
+    private String getJavaTypeForProperty(SDOProperty property) {
         if (property.isMany() || ((SDOType)property.getType()).isXsdList()) {
             return "java.util.List";
         } else {
-            Class instanceClass = property.getType().getInstanceClass();
-            if (instanceClass.equals(ClassConstants.ABYTE)) {
+            SDOType propertyType = property.getType();
+            Class instanceClass = propertyType.getInstanceClass();
+            if (ClassConstants.ABYTE.equals(instanceClass)) {
                 return "Byte[]";
-            } else if (instanceClass.equals(ClassConstants.APBYTE)) {
+            } else if (ClassConstants.APBYTE.equals(instanceClass)) {
                 return "byte[]";
             }
-            return instanceClass.getName();
+            return propertyType.getInstanceClassName();
         }
     }
 

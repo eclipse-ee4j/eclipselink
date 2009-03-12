@@ -34,7 +34,9 @@ public class SDOChangeSummaryType extends SDOType implements Type {
     
     public SDOChangeSummaryType(SDOTypeHelper sdoTypeHelper) {
         super(SDOConstants.SDO_URL, SDOConstants.CHANGESUMMARY, sdoTypeHelper);
-        
+
+        setInstanceClass(ChangeSummary.class);
+
         xmlDescriptor.setJavaClass(SDOChangeSummary.class);
         xmlDescriptor.setSequencedObject(false);
         
@@ -79,10 +81,6 @@ public class SDOChangeSummaryType extends SDOType implements Type {
 
     public List getDeclaredProperties() {
         return EMPTY_LIST;
-    }
-
-    public Class getInstanceClass() {
-        return ChangeSummary.class;
     }
 
     public List getInstanceProperties() {

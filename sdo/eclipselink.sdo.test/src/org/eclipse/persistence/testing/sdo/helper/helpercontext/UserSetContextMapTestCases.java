@@ -71,8 +71,8 @@ public class UserSetContextMapTestCases extends SDOHelperContextTestCases {
     public void testResolveWithHelperContextSetInUserMap() {
     	SDOHelperContext.putHelperContext(Thread.currentThread().getContextClassLoader(), localCtx);
     	serialize(localDObj, FILE_NAME);
-    	DataObject dobj = deserialize(FILE_NAME);
-    	String dobjImplClassName = dobj.getType().getInstanceClass().getName();
+        SDODataObject dobj = (SDODataObject) deserialize(FILE_NAME);
+        String dobjImplClassName = dobj.getType().getInstanceClassName();
     	assertTrue("Expected ["+implClassname+"] but was ["+dobjImplClassName+"]", dobjImplClassName.equals(implClassname));
     	SDOHelperContext.removeHelperContext(Thread.currentThread().getContextClassLoader());
     }
