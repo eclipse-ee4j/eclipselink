@@ -44,6 +44,7 @@ public abstract class ComplexDatabaseType implements DatabaseType, Cloneable, Or
      * Defines the Java class that the complex type maps to.
      */
     protected Class javaType;
+    protected String javaTypeName;
 
     public boolean isRecord() {
         return false;
@@ -91,6 +92,9 @@ public abstract class ComplexDatabaseType implements DatabaseType, Cloneable, Or
      */
     public void setJavaType(Class javaType) {
     	this.javaType = javaType;
+    	if (javaType != null) {
+    	    javaTypeName = javaType.getName();
+    	}
     }
 
     /**
@@ -98,6 +102,17 @@ public abstract class ComplexDatabaseType implements DatabaseType, Cloneable, Or
      */
     public Class getJavaType() {
     	return javaType;
+    }
+
+    public String getJavaTypeName() {
+        if (javaType != null && javaTypeName == null) {
+            javaTypeName = javaType.getName();
+        }
+        return javaTypeName;
+    }
+
+    public void setJavaTypeName(String javaTypeName) {
+        this.javaTypeName = javaTypeName;
     }
 
     @Override
