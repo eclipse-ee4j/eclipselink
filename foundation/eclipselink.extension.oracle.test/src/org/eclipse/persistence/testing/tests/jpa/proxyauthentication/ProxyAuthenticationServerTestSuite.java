@@ -31,40 +31,43 @@ import org.eclipse.persistence.config.ExclusiveConnectionMode;
  * To run this test suite several users should be setup in the Oracle database,
  * to setup Proxy Authentication users in Oracle db, need to execute in sqlPlus or EnterpriseManager
      * (sql in the following example uses default names):
-    1 - Connect as sysdba
-        connect sys/password as sysdba
+    1 - connect sys/password as sysdba
 
     2 - Create connectionUser:
-        create user PA_CONN identified by PA_CONN
-        grant connect to PA_CONN
-        grant resource to PA_CONN
+        create user PA_CONN identified by PA_CONN;
+        grant connect to PA_CONN;
+        grant resource to PA_CONN;
 
     3 - Create proxyUsers:
-        create user PA_PROXY identified by PA_PROXY
-        grant connect to PA_PROXY
-        grant resource to PA_PROXY
+        create user PA_PROXY identified by PA_PROXY;
+        grant connect to PA_PROXY;
+        grant resource to PA_PROXY;
 
     4.- Grant proxyUsers connection through connUser
-        alter user PA_PROXY grant connect through PA_CONN
+        alter user PA_PROXY grant connect through PA_CONN;
+        commit;
 
     5.- Create JPA_PROXY_EMPLOYEE and PROXY_EMPLOYEE_SEQ tables against PA_CONN user
-        DROP TABLE JPA_PROXY_EMPLOYEE
-        CREATE TABLE JPA_PROXY_EMPLOYEE (EMP_ID NUMBER(15) NOT NULL, F_NAME VARCHAR2(40) NULL, L_NAME VARCHAR2(40) NULL, PRIMARY KEY (EMP_ID))
-        DROP TABLE PROXY_EMPLOYEE_SEQ
-        CREATE TABLE PROXY_EMPLOYEE_SEQ (SEQ_NAME VARCHAR2(50) NOT NULL, SEQ_COUNT NUMBER(38) NULL, PRIMARY KEY (SEQ_NAME))
+        CONNECT PA_CONN/PA_CONN;
+        DROP TABLE JPA_PROXY_EMPLOYEE;
+        CREATE TABLE JPA_PROXY_EMPLOYEE (EMP_ID NUMBER(15) NOT NULL, F_NAME VARCHAR2(40) NULL, L_NAME VARCHAR2(40) NULL, PRIMARY KEY (EMP_ID));
+        DROP TABLE PROXY_EMPLOYEE_SEQ;
+        CREATE TABLE PROXY_EMPLOYEE_SEQ (SEQ_NAME VARCHAR2(50) NOT NULL, SEQ_COUNT NUMBER(38) NULL, PRIMARY KEY (SEQ_NAME));
+        INSERT INTO PROXY_EMPLOYEE_SEQ(SEQ_NAME, SEQ_COUNT) values ('PROXY_EMPLOYEE_SEQ', 1);
+        COMMIT;
 
     6.- Create PROXY_PHONENUMBER table against PA_PROXY user (you can also create these tables by login as PA_CONN, and execute new PhoneNumberTableCreator().replaceTables(JUnitTestCase.getServerSession()); in testSetup())
-        ALTER TABLE PROXY_PHONENUMBER DROP CONSTRAINT FK_PROXY_PHONENUMBER_OWNER_ID
-        DROP TABLE PROXY_PHONENUMBER
-        CREATE TABLE PROXY_PHONENUMBER (OWNER_ID NUMBER(15) NOT NULL, TYPE VARCHAR2(15) NOT NULL, AREA_CODE VARCHAR2(3) NULL, NUMB VARCHAR2(8) NULL, PRIMARY KEY (OWNER_ID, TYPE))
-        ALTER TABLE PROXY_PHONENUMBER ADD CONSTRAINT FK_PROXY_PHONENUMBER_OWNER_ID FOREIGN KEY (OWNER_ID) REFERENCES JPA_PROXY_EMPLOYEE (EMP_ID)
+        CONNECT PA_PROXY/PA_PROXY;
+        ALTER TABLE PROXY_PHONENUMBER DROP CONSTRAINT FK_PROXY_PHONENUMBER_OWNER_ID;
+        DROP TABLE PROXY_PHONENUMBER;
+        CREATE TABLE PROXY_PHONENUMBER (OWNER_ID NUMBER(15) NOT NULL, TYPE VARCHAR2(15) NOT NULL, AREA_CODE VARCHAR2(3) NULL, NUMB VARCHAR2(8) NULL, PRIMARY KEY (OWNER_ID, TYPE));
+        COMMIT;
 
     6.- Add object priviledges(ALTER, DELETE, INSERT, REFERENCE, SELECT, UPDATE, INDEX) to JPA_PROXY_EMPLOYEE and PROXY_EMPLOYEE_SEQ for PA_PROXY user
-
+        CONNECT SYS/PASSWORD as SYSDBA;
         GRANT ALTER ON PA_CONN.JPA_PROXY_EMPLOYEE TO PA_PROXY;
         GRANT DELETE ON PA_CONN.JPA_PROXY_EMPLOYEE TO PA_PROXY;
         GRANT INSERT ON PA_CONN.JPA_PROXY_EMPLOYEE TO PA_PROXY;
-        GRANT REFERENCE ON PA_CONN.JPA_PROXY_EMPLOYEE TO PA_PROXY;
         GRANT SELECT ON PA_CONN.JPA_PROXY_EMPLOYEE TO PA_PROXY;
         GRANT UPDATE ON PA_CONN.JPA_PROXY_EMPLOYEE TO PA_PROXY;
         GRANT INDEX ON PA_CONN.JPA_PROXY_EMPLOYEE TO PA_PROXY;
@@ -72,10 +75,10 @@ import org.eclipse.persistence.config.ExclusiveConnectionMode;
         GRANT ALTER ON PA_CONN.PROXY_EMPLOYEE_SEQ TO PA_PROXY;
         GRANT DELETE ON PA_CONN.PROXY_EMPLOYEE_SEQ TO PA_PROXY;
         GRANT INSERT ON PA_CONN.PROXY_EMPLOYEE_SEQ TO PA_PROXY;
-        GRANT REFERENCE ON PA_CONN.PROXY_EMPLOYEE_SEQ TO PA_PROXY;
         GRANT SELECT ON PA_CONN.PROXY_EMPLOYEE_SEQ TO PA_PROXY;
         GRANT UPDATE ON PA_CONN.PROXY_EMPLOYEE_SEQ TO PA_PROXY;
         GRANT INDEX ON PA_CONN.PROXY_EMPLOYEE_SEQ TO PA_PROXY;
+        COMMIT;
  */
 public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
     private static Integer empId = null;
@@ -168,6 +171,7 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
      * Tests Read and Delete with proxy setting
      */
     public void testReadDeleteWithProxy() throws Exception{
+        System.out.println("=======testReadDeleteWithProxy()========");
         EntityManager em = createEntityManager(PROXY_PU);
         Employee readEmp = null;
         PhoneNumber readPhone = null;
@@ -221,6 +225,7 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
      * Tests create with out proxy setting, it should fail
      */
     public void testCreateWithOutProxy() throws Exception{
+        System.out.println("=======testCreateWithOutProxy()========");
         Employee employee  = new Employee();
         EntityManager em = createEntityManager(PROXY_PU);
         try {

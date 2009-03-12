@@ -31,6 +31,7 @@
         - test : runs JPA LRG (FullRegressionTestSuite)
         - test-lrg : runs JPA LRG (FullRegressionTestSuite, if database is Oracle, OracleJPATestSuite as well)
         - test-oracle : runs JPA Oracle-specific tests (OracleJPATestSuite and OracleJPACustomfeaturesTestSuite)
+        - test-oracle-proxy : runs JPA Oracle Proxy Authentication specific tests (ProxyAuthenticationServerTestSuite)
         - test-no-weave : runs JPA LRG using no weaving (no agent)
         - test-static-weave : runs JPA LRG using static weaving
 
@@ -39,6 +40,7 @@
         - server-restart : stops and restarts the JEE server (match the restart command in Eclipse)
         - server-test : runs the JPA LRG tests in the server
         - server-test-lrg : runs the JPA LRG tests in the server
+        - server-test-oracle-proxy : runs the Oracle Proxy Authentication JPA tests in the server
         - server-test-sessionbean : runs the SessionBean tests in the server
         - server-test-fieldaccess-advanced : runs the Fieldaccess tests in the server
         - server-test-datatypes : runs the Datatypes tests in the server
@@ -517,6 +519,19 @@
             <param name="RUN_PATH" value="run.classpath"/>
             <param name="DB_URL" value="${db.oci.url}"/>
         </antcall>
+    </target>
+
+    <!-- Runs JPA Oracle-specific tests. -->
+    <target name="test-oracle-proxy" if="is.oracle" depends="config-trunk, config-flat">
+        <antcall target="run-test" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.proxyauthentication.ProxyAuthenticationServerTestSuite"/>
+            <param name="TEST_AGENT" value="${test.agent}"/>
+            <param name="TEST_WEAVING" value="${test.weaving}"/>
+            <param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
+            <param name="RUN_PATH" value="run.classpath"/>
+            <param name="DB_URL" value="${db.url}"/>
+        </antcall>
+        <antcall target="generate-report" inheritRefs="true"/>
     </target>
 
     <!-- Runs SRG (EntityManagerJUnitTestSuite) with agent. -->
@@ -1183,6 +1198,10 @@
         <antcall target="server-test-oracle-timestamptz" inheritRefs="true"/>
         <antcall target="server-test-custom-features" inheritRefs="true"/>
         <antcall target="server-test-struct-converter" inheritRefs="true"/>
+        <antcall target="generate-report" inheritRefs="true"/>
+    </target>
+
+    <target name="server-test-oracle-proxy" depends="clean-test">
         <antcall target="server-test-proxy-authentication" inheritRefs="true"/>
         <antcall target="generate-report" inheritRefs="true"/>
     </target>
