@@ -83,13 +83,21 @@ public class TestUpdateAggregateEntityMapMapping extends TestCase {
         mapKey.setKey(11);
         holder.getAggregateToEntityMap().remove(mapKey);
         uow.commit();
+        Object holderForComparison = uow.readObject(holder);
+        if (!compareObjects(holder, holderForComparison)){
+            throw new TestErrorException("Objects do not match after write");
+        }
     }
     
     public void verify(){
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
+        Object changedHolder = holder;
         holder = (AggregateEntityMapHolder)getSession().readObject(holder);
         if (holder == null){
             throw new TestErrorException("AggregateKeyMapHolder could not be read.");
+        }
+        if (!compareObjects(holder, changedHolder)){
+            throw new TestErrorException("Objects do not match reinitialize");
         }
         if (holder.getAggregateToEntityMap().size() != 2){
             throw new TestErrorException("Incorrect Number of MapEntityValues was read.");

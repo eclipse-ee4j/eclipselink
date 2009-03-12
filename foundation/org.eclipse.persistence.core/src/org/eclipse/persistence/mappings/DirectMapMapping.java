@@ -13,6 +13,7 @@
 package org.eclipse.persistence.mappings;
 
 import java.util.*;
+
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
 import org.eclipse.persistence.descriptors.changetracking.MapChangeEvent;
@@ -20,6 +21,7 @@ import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.indirection.IndirectCollection;
+import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.descriptors.changetracking.AttributeChangeListener;
 import org.eclipse.persistence.internal.descriptors.changetracking.ObjectChangeListener;
@@ -133,26 +135,11 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
         for (Object keysIterator = containerPolicy.iteratorFor(temporaryCollection);
                  containerPolicy.hasNext(keysIterator);) {
             Map.Entry entry = (Map.Entry)containerPolicy.nextEntry(keysIterator, unitOfWork);
-            Object cloneKey = buildKeyClone(entry.getKey(), unitOfWork, isExisting);
-            Object cloneValue = buildElementClone(entry.getValue(), unitOfWork, isExisting);
+            Object cloneKey = containerPolicy.buildCloneForKey(entry.getKey(), clone, unitOfWork, isExisting);
+            Object cloneValue = buildElementClone(entry.getValue(), clone, unitOfWork, isExisting);
             containerPolicy.addInto(cloneKey, cloneValue, clonedAttributeValue, unitOfWork);
         }
         return clonedAttributeValue;
-    }
-
-    /**
-     * INTERNAL:
-     * Clone the key, if necessary.
-     * DirectCollections hold on to objects that do not have Descriptors
-     * (e.g. int, String). These objects do not need to be cloned, unless they use a converter - they
-     * are immutable.
-     */
-    protected Object buildKeyClone(Object element, UnitOfWorkImpl unitOfWork, boolean isExisting) {
-        Object cloneValue = element;
-        if ((getKeyConverter() != null) && getKeyConverter().isMutable()) {
-            cloneValue = getKeyConverter().convertDataValueToObjectValue(getKeyConverter().convertObjectValueToDataValue(cloneValue, unitOfWork), unitOfWork);
-        }
-        return cloneValue;
     }
     
     /**
@@ -165,6 +152,52 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
         DirectMapChangeRecord collectionRecord = (DirectMapChangeRecord)changeRecord;
         // TODO: Handle events that fired after collection was replaced.
         compareCollectionsForChange(collectionRecord.getOriginalCollection(), collectionRecord.getLatestCollection(), collectionRecord, session);
+    }
+    
+
+    /**
+     * INTERNAL:
+     * Cascade discover and persist new objects during commit.
+     */
+    public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow) {
+        if (containerPolicy.isMappedKeyMapPolicy()){
+            Object values = getAttributeValueFromObject(object);
+            Object iterator = containerPolicy.iteratorFor(values);
+            while (containerPolicy.hasNext(iterator)){
+                Object wrappedObject = containerPolicy.nextEntry(iterator, uow);
+                containerPolicy.cascadeDiscoverAndPersistUnregisteredNewObjects(wrappedObject, isCascadePersist(), newObjects, unregisteredExistingObjects, visitedObjects, uow);
+            }
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Cascade perform delete through mappings that require the cascade
+     */
+    public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
+        if (containerPolicy.isMappedKeyMapPolicy()){
+            Object values = getAttributeValueFromObject(object);
+            Object iterator = containerPolicy.iteratorFor(values);
+            while (containerPolicy.hasNext(iterator)){
+                Object wrappedObject = containerPolicy.nextEntry(iterator, uow);
+                containerPolicy.cascadePerformRemoveIfRequired(wrappedObject, uow, visitedObjects);
+            }
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Cascade registerNew for Create through mappings that require the cascade
+     */
+    public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
+        if (containerPolicy.isMappedKeyMapPolicy()){
+            Object values = getAttributeValueFromObject(object);
+            Object iterator = containerPolicy.iteratorFor(values);
+            while (containerPolicy.hasNext(iterator)){
+                Object wrappedObject = containerPolicy.nextEntry(iterator, uow);
+                containerPolicy.cascadeRegisterNewIfRequired(wrappedObject, uow, visitedObjects);
+            }
+        }
     }
     
     /**
@@ -328,6 +361,37 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
         }
         if (selectionQuery.isDirectReadQuery()){
             ((DirectReadQuery)selectionQuery).setResultType(DataReadQuery.MAP);
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Iterate on the attribute value.
+     * The value holder has already been processed.
+     * PERF: Avoid iteration if not required.
+     */
+    public void iterateOnRealAttributeValue(DescriptorIterator iterator, Object realAttributeValue) {
+        super.iterateOnRealAttributeValue(iterator, realAttributeValue);
+        ContainerPolicy cp = getContainerPolicy();
+        if (realAttributeValue != null && !iterator.shouldIterateOnPrimitives()) {
+            for (Object iter = cp.iteratorFor(realAttributeValue); cp.hasNext(iter);) {
+                Object wrappedObject = cp.nextEntry(iter, iterator.getSession());
+                cp.iterateOnMapKey(iterator, wrappedObject);
+            }
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Iterate on the specified element.
+     */
+    public void iterateOnElement(DescriptorIterator iterator, Object element) {
+        super.iterateOnElement(iterator, element);
+        ContainerPolicy cp = getContainerPolicy();
+        for (Object iter = cp.iteratorFor(element); cp.hasNext(iter);) {
+            Object wrappedObject = cp.nextEntry(iter, iterator.getSession());
+            Object object = cp.unwrapIteratorResult(wrappedObject);
+            cp.iterateOnMapKey(iterator, wrappedObject);
         }
     }
 
@@ -551,6 +615,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
             } else {
                 query.getSession().executeQuery(getInsertQuery(), databaseRow);
             }
+            getContainerPolicy().propogatePostInsert(query, entry);
         }
     }
 
@@ -607,6 +672,23 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
         }
     }
 
+    /**
+     * INTERNAL:
+     * Propagate the preDelete event through the container policy if necessary
+     */
+    public void preDelete(DeleteObjectQuery query) throws DatabaseException {
+        if (getContainerPolicy().propagatesEventsToCollection()){
+            Object queryObject = query.getObject();
+            Object values = getAttributeValueFromObject(queryObject);
+            Object iterator = containerPolicy.iteratorFor(values);
+            while (containerPolicy.hasNext(iterator)){
+                Object wrappedObject = containerPolicy.nextEntry(iterator, query.getSession());
+                containerPolicy.propogatePreDelete(query, wrappedObject);
+            }
+        }
+        super.preDelete(query);
+    }
+    
     /**
      * INTERNAL:
      * Remove a value and its change set from the collection change record.  This is used by

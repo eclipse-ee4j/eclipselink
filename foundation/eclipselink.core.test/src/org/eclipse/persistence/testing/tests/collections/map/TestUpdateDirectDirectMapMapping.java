@@ -18,19 +18,29 @@ import org.eclipse.persistence.testing.models.collections.map.DirectDirectMapHol
 
 public class TestUpdateDirectDirectMapMapping extends TestReadDirectDirectMapMapping {
     
+    protected DirectDirectMapHolder changedHolder = null;
+    
     public void test(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         holders = uow.readAllObjects(DirectDirectMapHolder.class);
-        DirectDirectMapHolder holder = (DirectDirectMapHolder)holders.get(0);
-        holder.removeDirectToDirectMapItem(new Integer(1));
-        holder.addDirectToDirectMapItem(new Integer(3), new Integer(3));
+        changedHolder = (DirectDirectMapHolder)holders.get(0);
+        changedHolder.removeDirectToDirectMapItem(new Integer(1));
+        changedHolder.addDirectToDirectMapItem(new Integer(3), new Integer(3));
         uow.commit();
+        Object holderForComparison = uow.readObject(changedHolder);
+        if (!compareObjects(changedHolder, holderForComparison)){
+            throw new TestErrorException("Objects do not match after write");
+        }
     }
     
     public void verify(){
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
+        Object initialHolder = holders.get(0);
         holders = getSession().readAllObjects(DirectDirectMapHolder.class);
         DirectDirectMapHolder holder = (DirectDirectMapHolder)holders.get(0);
+        if (!compareObjects(holder, changedHolder)){
+            throw new TestErrorException("Objects do not match reinitialize");
+        }
         if (holder.getDirectToDirectMap().containsKey(new Integer(1))){
             throw new TestErrorException("Item that was removed is still present in map.");
         }

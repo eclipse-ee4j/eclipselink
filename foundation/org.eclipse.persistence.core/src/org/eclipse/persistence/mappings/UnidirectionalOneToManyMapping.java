@@ -285,6 +285,15 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
             super.preDelete(query);
         } else {
             updateTargetRowPreDeleteSource(query);
+            if (getContainerPolicy().propagatesEventsToCollection()){
+                Object queryObject = query.getObject();
+                Object values = getAttributeValueFromObject(queryObject);
+                Object iterator = containerPolicy.iteratorFor(values);
+                while (containerPolicy.hasNext(iterator)){
+                    Object wrappedObject = containerPolicy.nextEntry(iterator, query.getSession());
+                    containerPolicy.propogatePreDelete(query, wrappedObject);
+                }
+            }
         }
 
     }

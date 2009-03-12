@@ -28,6 +28,7 @@ public class TestUpdateAggregateEntity1MMapMapping extends TestReadAggregateEnti
     protected OneToManyMapping mapping = null;
     private boolean usePrivateOwned = false;
     private boolean oldPrivateOwnedValue = false;
+    protected AggregateEntity1MMapHolder changedHolder = null;
     
     public TestUpdateAggregateEntity1MMapMapping(){
         super();
@@ -49,24 +50,31 @@ public class TestUpdateAggregateEntity1MMapMapping extends TestReadAggregateEnti
     public void test(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         holders = uow.readAllObjects(AggregateEntity1MMapHolder.class);
-        AggregateEntity1MMapHolder holder = (AggregateEntity1MMapHolder)holders.get(0);
+        changedHolder = (AggregateEntity1MMapHolder)holders.get(0);
         AggregateMapKey key = new AggregateMapKey();
         key.setKey(11);
-        holder.removeAggregateToEntityMapItem(key);
+        changedHolder.removeAggregateToEntityMapItem(key);
         AEOTMMapValue mapValue = new AEOTMMapValue();
         mapValue.setId(3);
         mapValue = (AEOTMMapValue)uow.registerObject(mapValue);
         key = new AggregateMapKey();
         key.setKey(33);
-        mapValue.getHolder().setValue(holder);
-        holder.addAggregateToEntityMapItem(key, mapValue);
+        mapValue.getHolder().setValue(changedHolder);
+        changedHolder.addAggregateToEntityMapItem(key, mapValue);
         uow.commit();
+        Object holderForComparison = uow.readObject(changedHolder);
+        if (!compareObjects(changedHolder, holderForComparison)){
+            throw new TestErrorException("Objects do not match after write");
+        }
     }
     
     public void verify(){
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         holders = getSession().readAllObjects(AggregateEntity1MMapHolder.class);
         AggregateEntity1MMapHolder holder = (AggregateEntity1MMapHolder)holders.get(0);
+        if (!compareObjects(holder, changedHolder)){
+            throw new TestErrorException("Objects do not match reinitialize");
+        }
         AggregateMapKey key = new AggregateMapKey();
         key.setKey(11);
         if (holder.getAggregateToEntityMap().containsKey(key)){

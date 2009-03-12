@@ -628,7 +628,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * INTERNAL:
      * The message is passed to its reference class descriptor.
      */
-    protected void postDeleteAttributeValue(DeleteObjectQuery query, Object attributeValue) throws DatabaseException, OptimisticLockException {
+    public void postDeleteAttributeValue(DeleteObjectQuery query, Object attributeValue) throws DatabaseException, OptimisticLockException {
         if (attributeValue == null) {
             return;
         }
@@ -656,7 +656,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * INTERNAL:
      * The message is passed to its reference class descriptor.
      */
-    protected void postInsertAttributeValue(WriteObjectQuery query, Object attributeValue) throws DatabaseException, OptimisticLockException {
+    public void postInsertAttributeValue(WriteObjectQuery query, Object attributeValue) throws DatabaseException, OptimisticLockException {
         if (attributeValue == null) {
             return;
         }
@@ -686,7 +686,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * INTERNAL:
      * The message is passed to its reference class descriptor.
      */
-    protected void postUpdateAttributeValue(WriteObjectQuery query, Object attributeValue) throws DatabaseException, OptimisticLockException {
+    public void postUpdateAttributeValue(WriteObjectQuery query, Object attributeValue) throws DatabaseException, OptimisticLockException {
         if (attributeValue == null) {
             return;
         }
@@ -724,7 +724,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * INTERNAL:
      * The message is passed to its reference class descriptor.
      */
-    protected void preDeleteAttributeValue(DeleteObjectQuery query, Object attributeValue) throws DatabaseException, OptimisticLockException {
+    public void preDeleteAttributeValue(DeleteObjectQuery query, Object attributeValue) throws DatabaseException, OptimisticLockException {
         if (attributeValue == null) {
             return;
         }
@@ -753,7 +753,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * INTERNAL:
      * The message is passed to its reference class descriptor.
      */
-    protected void preInsertAttributeValue(WriteObjectQuery query, Object attributeValue) throws DatabaseException, OptimisticLockException {
+    public void preInsertAttributeValue(WriteObjectQuery query, Object attributeValue) throws DatabaseException, OptimisticLockException {
         if (attributeValue == null) {
             return;
         }
@@ -792,7 +792,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * INTERNAL:
      * The message is passed to its reference class descriptor.
      */
-    protected void preUpdateAttributeValue(WriteObjectQuery query, Object attributeValue) throws DatabaseException, OptimisticLockException {
+    public void preUpdateAttributeValue(WriteObjectQuery query, Object attributeValue) throws DatabaseException, OptimisticLockException {
         if (attributeValue == null) {
             return;
         }

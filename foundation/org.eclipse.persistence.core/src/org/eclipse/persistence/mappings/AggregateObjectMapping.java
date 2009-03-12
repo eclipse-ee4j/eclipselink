@@ -26,6 +26,7 @@ import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.*;
+import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
@@ -82,27 +83,25 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * Called when the selection query is being initialized to add the fields for the map key to the query
      */
     public void addAdditionalFieldsToQuery(ReadQuery selectionQuery, Expression baseExpression){
-        Iterator i = getReferenceDescriptor().getMappings().iterator();
+        Iterator i = getReferenceDescriptor().getAllFields().iterator();
         while (i.hasNext()){
-            DatabaseMapping mapping = (DatabaseMapping)i.next();
-            Iterator selectFields = mapping.getSelectFields().iterator();
-            while (selectFields.hasNext()){
-                DatabaseField field = (DatabaseField)selectFields.next();
-                if (selectionQuery.isObjectLevelReadQuery()){
-                    if (baseExpression != null){
-                        ((ObjectLevelReadQuery)selectionQuery).addAdditionalField(baseExpression.getField(field));
-                    } else {
-                        ((ObjectLevelReadQuery)selectionQuery).addAdditionalField((DatabaseField)field.clone());
-                    }
-                } else if (selectionQuery.isDataReadQuery()){
-                    if (baseExpression == null){
-                        ((SQLSelectStatement)((DataReadQuery)selectionQuery).getSQLStatement()).addField((DatabaseField)field.clone());
-                        ((SQLSelectStatement)((DataReadQuery)selectionQuery).getSQLStatement()).addTable((DatabaseTable)field.getTable().clone());
-                    } else {
-                        ((SQLSelectStatement)((DataReadQuery)selectionQuery).getSQLStatement()).addField(baseExpression.getTable(field.getTable()).getField(field));
-                    }
-                    
+            DatabaseField field = (DatabaseField)i.next();
+             if (selectionQuery.isObjectLevelReadQuery()){
+                if (baseExpression != null){
+                    ((ObjectLevelReadQuery)selectionQuery).addAdditionalField(baseExpression.getField(field));
+                } else {
+                    ((ObjectLevelReadQuery)selectionQuery).addAdditionalField((DatabaseField)field.clone());
                 }
+            } else if (selectionQuery.isDataReadQuery()){
+                if (baseExpression == null){
+                    ((SQLSelectStatement)((DataReadQuery)selectionQuery).getSQLStatement()).addField((DatabaseField)field.clone());
+                    if (!((SQLSelectStatement)((DataReadQuery)selectionQuery).getSQLStatement()).getTables().contains(field.getTable())){
+                        ((SQLSelectStatement)((DataReadQuery)selectionQuery).getSQLStatement()).addTable((DatabaseTable)field.getTable().clone());
+                    }
+                } else {
+                    ((SQLSelectStatement)((DataReadQuery)selectionQuery).getSQLStatement()).addField(baseExpression.getTable(field.getTable()).getField(field));
+                }
+                
             }
         }
     }
@@ -113,9 +112,9 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * Called when the insert query is being initialized to ensure the fields for the map key are in the insert query
      */
     public void addFieldsForMapKey(AbstractRecord joinRow){
-        Iterator i = getReferenceDescriptor().getMappings().iterator();
+        Iterator i = getReferenceDescriptor().getAllFields().iterator();
         while (i.hasNext()){
-            joinRow.put(((DirectToFieldMapping)i.next()).getField(), null);
+            joinRow.put((DatabaseField)i.next(), null);
         }
     }
     
@@ -442,9 +441,13 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * @param isExisting
      * @return
      */
-    public Object buildElementClone(Object attributeValue, UnitOfWorkImpl unitOfWork, boolean isExisting){
-        // TODO: Aggregate Change listener not currently added should investigate whether that is possible
-        return buildClonePart(attributeValue, unitOfWork, isExisting);
+    public Object buildElementClone(Object attributeValue, Object parent, UnitOfWorkImpl unitOfWork, boolean isExisting){
+        Object aggregateClone = buildClonePart(attributeValue, unitOfWork, isExisting);
+        if (aggregateClone != null) {
+            ClassDescriptor descriptor = getReferenceDescriptor(aggregateClone, unitOfWork);
+            descriptor.getObjectChangePolicy().setAggregateChangeListener(parent, aggregateClone, unitOfWork, descriptor, getAttributeName());
+        }
+        return aggregateClone;
     }
            
     /**
@@ -607,8 +610,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * Called when a DatabaseMapping is used to map the key in a collection.  Returns the key.
      */
     public Object createMapComponentFromRow(AbstractRecord dbRow, ObjectBuildingQuery query, AbstractSession session){
-        Object key = getReferenceDescriptor().getObjectBuilder().buildNewInstance();
-        key = buildAggregateFromRow(dbRow, null, null, query, false, session);
+        Object key = buildAggregateFromRow(dbRow, null, null, query, false, session);
         return key;
     }
     
@@ -657,10 +659,14 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     public Map extractIdentityFieldsForQuery(Object object, AbstractSession session){
         Map keyFields = new HashMap();
         ClassDescriptor descriptor =getReferenceDescriptor();
-        Iterator i = descriptor.getMappings().iterator();
+        Iterator i = null;
+        if (descriptor.getPrimaryKeyFields() != null){
+            i = descriptor.getPrimaryKeyFields().iterator();
+        } else {
+            i = descriptor.getAllFields().iterator();
+        }
         while (i.hasNext()){
-            DatabaseMapping mapping = (DatabaseMapping)i.next();
-            DatabaseField field = mapping.getField();
+            DatabaseField field = (DatabaseField)i.next();
             Object value = descriptor.getObjectBuilder().extractValueFromObjectForField(object, field, session);
             keyFields.put(field, value);
         }
@@ -732,7 +738,12 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * @return
      */
     public List<DatabaseField> getIdentityFieldsForMapKey(){
-        return getAllFieldsForMapKey();
+        ClassDescriptor descriptor =getReferenceDescriptor();
+        if (descriptor.getPrimaryKeyFields() != null){
+            return descriptor.getPrimaryKeyFields();
+        } else {
+            return getAllFieldsForMapKey();
+        }
     }
     
     /**
@@ -806,8 +817,13 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * Used with MapKeyContainerPolicy to abstract getting the target version of a source key
      * @return
      */
-    public Object getTargetVersionOfSourceObject(Object object, MergeManager mergeManager){
-       return object;
+    public Object getTargetVersionOfSourceObject(Object object, Object parent, MergeManager mergeManager){
+        if (mergeManager.getSession().isUnitOfWork()){
+            UnitOfWorkImpl uow = (UnitOfWorkImpl)mergeManager.getSession();
+            Object aggregateObject = buildClonePart(object, uow, uow.isOriginalNewObject(parent));
+            return aggregateObject;
+        }
+        return object;
     }
     
     /**
@@ -926,7 +942,16 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
  
     }
     
-
+    /**
+     * INTERNAL:
+     * Called when iterating through descriptors to handle iteration on this mapping when it is used as a MapKey
+     * @param iterator
+     * @param element
+     */
+    public void iterateOnMapKey(DescriptorIterator iterator, Object element){
+        super.iterateOnAttributeValue(iterator, element);
+    }
+    
     /**
      * INTERNAL:
      * Return whether this mapping should be traversed when we are locking

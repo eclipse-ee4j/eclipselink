@@ -294,7 +294,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * (e.g. int, String). These objects do not need to be cloned, unless they use a converter - they
      * are immutable.
      */
-    public Object buildElementClone(Object element, UnitOfWorkImpl unitOfWork, boolean isExisting) {
+    public Object buildElementClone(Object element, Object parent, UnitOfWorkImpl unitOfWork, boolean isExisting) {
         Object cloneValue = element;
         if ((getValueConverter() != null) && getValueConverter().isMutable()) {
             cloneValue = getValueConverter().convertDataValueToObjectValue(getValueConverter().convertObjectValueToDataValue(cloneValue, unitOfWork), unitOfWork);
@@ -1420,7 +1420,8 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
 
         // Extract target field and its value. Construct insert statement and execute it
         for (Object iter = containerPolicy.iteratorFor(objects); containerPolicy.hasNext(iter);) {
-            Object object = containerPolicy.next(iter, query.getSession());
+            Object wrappedObject = containerPolicy.nextEntry(iter, query.getSession());
+            Object object = containerPolicy.unwrapIteratorResult(wrappedObject);
             if (getValueConverter() != null) {
                 object = getValueConverter().convertObjectValueToDataValue(object, query.getSession());
             }
@@ -1440,6 +1441,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
                     getHistoryPolicy().mappingLogicalInsert(getInsertQuery(), databaseRow, query.getSession());
                 }
             }
+            containerPolicy.propogatePostInsert(query, wrappedObject);
         }
     }
 

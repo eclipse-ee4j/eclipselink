@@ -17,6 +17,7 @@ import java.util.Map;
 
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
@@ -79,7 +80,7 @@ public interface MapKeyMapping extends MapComponentMapping {
      * @param isExisting
      * @return
      */
-    public Object buildElementClone(Object element, UnitOfWorkImpl unitOfWork, boolean isExisting);
+    public Object buildElementClone(Object element, Object parent, UnitOfWorkImpl unitOfWork, boolean isExisting);
 
     /**
      * INTERNAL:
@@ -151,7 +152,15 @@ public interface MapKeyMapping extends MapComponentMapping {
      * If required, get the targetVersion of the source object from the merge manager
      * @return
      */
-    public Object getTargetVersionOfSourceObject(Object object, MergeManager mergeManager);
+    public Object getTargetVersionOfSourceObject(Object object, Object parent, MergeManager mergeManager);
+    
+    /**
+     * INTERNAL:
+     * Called when iterating through descriptors to handle iteration on this mapping when it is used as a MapKey
+     * @param iterator
+     * @param element
+     */
+    public void iterateOnMapKey(DescriptorIterator iterator, Object element);
     
     /**
      * INTERNAL:

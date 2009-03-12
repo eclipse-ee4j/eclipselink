@@ -93,6 +93,9 @@ public class TestReadEntityDirectMapMapping extends TestCase {
         List keys = uow.readAllObjects(EntityMapKey.class);
         uow.deleteAllObjects(keys);
         uow.commit();
+        if (!verifyDelete(holders.get(0))){
+            throw new TestErrorException("Delete was unsuccessful.");
+        }
         mapping.setJoinFetch(oldFetchJoinValue);
     }
 }

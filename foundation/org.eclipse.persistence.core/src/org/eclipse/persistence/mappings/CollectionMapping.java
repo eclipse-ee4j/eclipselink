@@ -177,7 +177,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             temporaryCollection = containerPolicy.cloneFor(attributeValue);
         }
         for (Object valuesIterator = containerPolicy.iteratorFor(temporaryCollection);containerPolicy.hasNext(valuesIterator);){
-            containerPolicy.addNextValueFromIteratorInto(valuesIterator, clonedAttributeValue, this, unitOfWork, isExisting);
+            containerPolicy.addNextValueFromIteratorInto(valuesIterator, clone, clonedAttributeValue, this, unitOfWork, isExisting);
         }
         if ((this.getDescriptor().getObjectChangePolicy().isObjectChangeTrackingPolicy()) && ((clone != null) && (((ChangeTracker)clone)._persistence_getPropertyChangeListener() != null)) && (clonedAttributeValue instanceof CollectionChangeTracker)) {
             ((CollectionChangeTracker)clonedAttributeValue).setTrackedAttributeName(this.getAttributeName());
@@ -216,7 +216,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * INTERNAL:
      * Clone the element, if necessary.
      */
-    public Object buildElementClone(Object element, UnitOfWorkImpl unitOfWork, boolean isExisting) {
+    public Object buildElementClone(Object element, Object parent, UnitOfWorkImpl unitOfWork, boolean isExisting) {
         // optimize registration to knowledge of existence
         if (isExisting) {
             return unitOfWork.registerExistingObject(element);
@@ -269,10 +269,12 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         cloneObjectCollection = getRealCollectionAttributeValueFromObject(object, uow);
         Object cloneIter = cp.iteratorFor(cloneObjectCollection);
         while (cp.hasNext(cloneIter)) {
-            Object nextObject = cp.next(cloneIter, uow);
+            Object wrappedObject = cp.nextEntry(cloneIter, uow);
+            Object nextObject = cp.unwrapIteratorResult(wrappedObject);
             if ((nextObject != null) && (!visitedObjects.containsKey(nextObject))) {
                 visitedObjects.put(nextObject, nextObject);
                 uow.performRemove(nextObject, visitedObjects);
+                cp.cascadePerformRemoveIfRequired(wrappedObject, uow, visitedObjects);
             }
         }
     }
@@ -303,8 +305,10 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         Object iterator = containerPolicy.iteratorFor(cloneObjectCollection);
         boolean cascade = isCascadePersist();
         while (containerPolicy.hasNext(iterator)) {
-            Object nextObject = containerPolicy.next(iterator, uow);
+            Object wrappedObject = containerPolicy.nextEntry(iterator, uow);
+            Object nextObject = containerPolicy.unwrapIteratorResult(wrappedObject);
             uow.discoverAndPersistUnregisteredNewObjects(nextObject, cascade, newObjects, unregisteredExistingObjects, visitedObjects);
+            containerPolicy.cascadeDiscoverAndPersistUnregisteredNewObjects(wrappedObject, cascade, newObjects, unregisteredExistingObjects, visitedObjects, uow);
         }
     }
     
@@ -324,8 +328,10 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         cloneObjectCollection = getRealCollectionAttributeValueFromObject(object, uow);
         Object cloneIter = cp.iteratorFor(cloneObjectCollection);
         while (cp.hasNext(cloneIter)) {
-            Object nextObject = cp.next(cloneIter, uow);
+            Object wrappedObject = cp.nextEntry(cloneIter, uow);
+            Object nextObject = cp.unwrapIteratorResult(wrappedObject);
             uow.registerNewObjectForPersist(nextObject, visitedObjects);
+            cp.cascadeRegisterNewIfRequired(wrappedObject, uow, visitedObjects);
         }
     }
 
@@ -441,11 +447,17 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                 while (removedObjects.hasNext()) {
                     removedChangeSet = (ObjectChangeSet)removedObjects.next();
                     objectRemovedDuringUpdate(query, getContainerPolicy().getCloneDataFromChangeSet(removedChangeSet), null);
+                    if (removedChangeSet.getOldKey() != null){
+                        containerPolicy.propogatePostUpdate(query, removedChangeSet.getOldKey());
+                    }
                 }
                 Iterator addedObjects = record.getAddObjectList().values().iterator();
                 while (addedObjects.hasNext()) {
                     addedChangeSet = (ObjectChangeSet)addedObjects.next();
                     objectAddedDuringUpdate(query, getContainerPolicy().getCloneDataFromChangeSet(addedChangeSet), addedChangeSet, null);
+                    if (addedChangeSet.getNewKey() != null){
+                        containerPolicy.propogatePostUpdate(query, addedChangeSet.getNewKey());
+                    }
                 }
             }
             return;
@@ -490,6 +502,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             // (technically should not happen, but same applies to unique constraints)
             if (!currentObjectsByKey.containsKey(key)) {
                 objectRemovedDuringUpdate(query, wrappedObject, mapKeyFields);
+                cp.propogatePostUpdate(query, wrappedObject);
             }
         }
 
@@ -503,6 +516,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
 
                 if (!(previousObjectsByKey.containsKey(cacheKey))) {
                     objectAddedDuringUpdate(query, currentObject, null, mapKeyFields);
+                    cp.propogatePostUpdate(query, wrappedObject);
                 } else {
                     objectUnchangedDuringUpdate(query, currentObject, previousObjectsByKey, cacheKey);
                 }
@@ -764,7 +778,10 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         }
         ContainerPolicy cp = getContainerPolicy();
         for (Object iter = cp.iteratorFor(realAttributeValue); cp.hasNext(iter);) {
-            iterateOnElement(iterator, cp.next(iter, iterator.getSession()));
+            Object wrappedObject = cp.nextEntry(iter, iterator.getSession());
+            Object object = cp.unwrapIteratorResult(wrappedObject);
+            iterateOnElement(iterator, object);
+            cp.iterateOnMapKey(iterator, wrappedObject);
         }
     }
 
@@ -774,7 +791,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      */
     protected boolean mustDeleteReferenceObjectsOneByOne() {
         ClassDescriptor referenceDescriptor = this.getReferenceDescriptor();
-        return referenceDescriptor.hasDependencyOnParts() || referenceDescriptor.usesOptimisticLocking() || (referenceDescriptor.hasInheritance() && referenceDescriptor.getInheritancePolicy().shouldReadSubclasses()) || referenceDescriptor.hasMultipleTables();
+        return referenceDescriptor.hasDependencyOnParts() || referenceDescriptor.usesOptimisticLocking() || (referenceDescriptor.hasInheritance() && referenceDescriptor.getInheritancePolicy().shouldReadSubclasses()) || referenceDescriptor.hasMultipleTables() || containerPolicy.propagatesEventsToCollection();
     }
 
     /**
@@ -943,7 +960,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                         mergeManager.mergeChanges(mergeManager.getObjectToMerge(object), null);
                     }
                 }
-                wrappedObject = containerPolicy.createWrappedObjectFromExistingWrappedObject(wrappedObject, referenceDescriptor, mergeManager);
+                wrappedObject = containerPolicy.createWrappedObjectFromExistingWrappedObject(wrappedObject, source, referenceDescriptor, mergeManager);
                 synchronized (valueOfTarget) {
                     if (fireChangeEvents) {
                         //Collections may not be indirect list or may have been replaced with user collection.
@@ -1102,6 +1119,77 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         //Do nothing for the generic Collection Mapping
     }
 
+    /**
+     * INTERNAL:
+     * A subclass should implement this method if it wants different behavior.
+     * Recurse thru the parts to delete the reference objects after the actual object is deleted.
+     */
+    public void postDelete(DeleteObjectQuery query) throws DatabaseException {
+        super.postDelete(query);
+        if (getContainerPolicy().propagatesEventsToCollection()){
+            Object queryObject = query.getObject();
+            Object values = getAttributeValueFromObject(queryObject);
+            Object iterator = containerPolicy.iteratorFor(values);
+            while (containerPolicy.hasNext(iterator)){
+                Object wrappedObject = containerPolicy.nextEntry(iterator, query.getSession());
+                containerPolicy.propogatePostDelete(query, wrappedObject);
+            }
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * A subclass should implement this method if it wants different behavior.
+     * Recurse thru the parts to delete the reference objects after the actual object is deleted.
+     */
+    public void postInsert(UpdateObjectQuery query) throws DatabaseException {
+        super.postUpdate(query);
+        if (getContainerPolicy().propagatesEventsToCollection()){
+            Object queryObject = query.getObject();
+            Object values = getAttributeValueFromObject(queryObject);
+            Object iterator = containerPolicy.iteratorFor(values);
+            while (containerPolicy.hasNext(iterator)){
+                Object wrappedObject = containerPolicy.nextEntry(iterator, query.getSession());
+                containerPolicy.propogatePostInsert(query, query.getObject());
+            }
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Propagate preInsert event to container policy if necessary
+     */
+    public void preInsert(WriteObjectQuery query) throws DatabaseException, OptimisticLockException {
+        super.preInsert(query);
+        if (getContainerPolicy().propagatesEventsToCollection()){
+            Object queryObject = query.getObject();
+            Object values = getAttributeValueFromObject(queryObject);
+            Object iterator = containerPolicy.iteratorFor(values);
+            while (containerPolicy.hasNext(iterator)){
+                Object wrappedObject = containerPolicy.nextEntry(iterator, query.getSession());
+                containerPolicy.propogatePreInsert(query, wrappedObject);
+            }
+        }
+    }
+    
+
+    /**
+     * INTERNAL:
+     * Propagate preUpdate event to container policy if necessary
+     */
+    public void preUpdate(WriteObjectQuery query) throws DatabaseException {
+        super.preUpdate(query);
+        if (getContainerPolicy().propagatesEventsToCollection()){
+            Object queryObject = query.getObject();
+            Object values = getAttributeValueFromObject(queryObject);
+            Object iterator = containerPolicy.iteratorFor(values);
+            while (containerPolicy.hasNext(iterator)){
+                Object wrappedObject = containerPolicy.nextEntry(iterator, query.getSession());
+                containerPolicy.propogatePreUpdate(query, wrappedObject);
+            }
+        }
+    }
+    
     /**
      * INTERNAL:
      * An object is still in the collection, update it as it may have changed.

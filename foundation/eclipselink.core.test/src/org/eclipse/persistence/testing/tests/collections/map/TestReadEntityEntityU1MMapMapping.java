@@ -106,6 +106,9 @@ public class TestReadEntityEntityU1MMapMapping extends TestCase {
         List keys = uow.readAllObjects(EntityMapValue.class);
         uow.deleteAllObjects(keys);
         uow.commit();
+        if (!verifyDelete(holders.get(0))){
+            throw new TestErrorException("Delete was unsuccessful.");
+        }
         mapping.setJoinFetch(oldFetchJoinValue);
     }
 

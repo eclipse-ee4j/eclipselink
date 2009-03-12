@@ -36,6 +36,7 @@ public class TestUpdateEntityEntityMapMapping extends TestCase {
     private boolean oldPrivateOwnedValue = false;
     protected ForeignReferenceMapping keyMapping = null;
     private boolean oldKeyPrivateOwnedValue = false;
+    protected EntityEntityMapHolder changedHolder = null;
     
     public TestUpdateEntityEntityMapMapping(){
         super();
@@ -80,18 +81,22 @@ public class TestUpdateEntityEntityMapMapping extends TestCase {
     
     public void test(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
-        holder = (EntityEntityMapHolder)uow.readObject(holder);
+        changedHolder = (EntityEntityMapHolder)uow.readObject(holder);
         EntityMapValue value = new EntityMapValue();
         value.setId(3);
         EntityMapKey mapKey = new EntityMapKey();
         mapKey.setId(33);
-        uow.registerObject(mapKey);
-        holder.addEntityToEntityMapItem(mapKey, value);
+        EntityMapKey clonedKey = (EntityMapKey)uow.registerObject(mapKey);
+        changedHolder.addEntityToEntityMapItem(clonedKey, value);
         
         mapKey = new EntityMapKey();
         mapKey.setId(11);
-        holder.getEntityToEntityMap().remove(mapKey);
+        changedHolder.getEntityToEntityMap().remove(mapKey);
         uow.commit();
+        Object holderForComparison = uow.readObject(holder);
+        if (!compareObjects(changedHolder, holderForComparison)){
+            throw new TestErrorException("Objects do not match after write");
+        }
     }
     
     public void verify(){
@@ -99,6 +104,9 @@ public class TestUpdateEntityEntityMapMapping extends TestCase {
         holder = (EntityEntityMapHolder)getSession().readObject(holder);
         if (holder == null){
             throw new TestErrorException("AggregateKeyMapHolder could not be read.");
+        }
+        if (!compareObjects(holder, changedHolder)){
+            throw new TestErrorException("Objects do not match reinitialize");
         }
         if (holder.getEntityToEntityMap().size() != 2){
             throw new TestErrorException("Incorrect Number of MapEntityValues was read.");

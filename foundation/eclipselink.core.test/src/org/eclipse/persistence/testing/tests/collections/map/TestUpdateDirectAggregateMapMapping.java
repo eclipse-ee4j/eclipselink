@@ -19,21 +19,31 @@ import org.eclipse.persistence.testing.models.collections.map.AggregateMapValue;
 
 public class TestUpdateDirectAggregateMapMapping extends TestReadDirectAggregateMapMapping {
 
+    protected DirectAggregateMapHolder changedHolder = null;
+    
     public void test(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         holders = uow.readAllObjects(DirectAggregateMapHolder.class);
-        DirectAggregateMapHolder holder = (DirectAggregateMapHolder)holders.get(0);
-        holder.removeDirectToAggregateMapItem(new Integer(1));
+        changedHolder = (DirectAggregateMapHolder)holders.get(0);
+        changedHolder.removeDirectToAggregateMapItem(new Integer(1));
         AggregateMapValue mapValue = new AggregateMapValue();
         mapValue.setValue(3);
-        holder.addDirectToAggregateMapItem(new Integer(3), mapValue);
+        changedHolder.addDirectToAggregateMapItem(new Integer(3), mapValue);
         uow.commit();
+        Object holderForComparison = uow.readObject(changedHolder);
+        if (!compareObjects(changedHolder, holderForComparison)){
+            throw new TestErrorException("Objects do not match after write");
+        }
     }
     
     public void verify(){
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
+        Object initialHolder = holders.get(0);
         holders = getSession().readAllObjects(DirectAggregateMapHolder.class);
         DirectAggregateMapHolder holder = (DirectAggregateMapHolder)holders.get(0);
+        if (!compareObjects(holder, changedHolder)){
+            throw new TestErrorException("Objects do not match reinitialize");
+        }
         if (holder.getDirectToAggregateMap().containsKey(new Integer(1))){
             throw new TestErrorException("Item that was removed is still present in map.");
         }

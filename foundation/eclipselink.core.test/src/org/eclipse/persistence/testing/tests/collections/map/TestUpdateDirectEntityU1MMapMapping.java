@@ -26,6 +26,7 @@ public class TestUpdateDirectEntityU1MMapMapping extends TestReadDirectEntityU1M
     protected OneToManyMapping mapping = null;
     private boolean usePrivateOwned = false;
     private boolean oldPrivateOwnedValue = false;
+    protected DirectEntityU1MMapHolder changedHolder = null;
     
     public TestUpdateDirectEntityU1MMapMapping(){
         super();
@@ -47,19 +48,26 @@ public class TestUpdateDirectEntityU1MMapMapping extends TestReadDirectEntityU1M
     public void test(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         holders = uow.readAllObjects(DirectEntityU1MMapHolder.class);
-        DirectEntityU1MMapHolder holder = (DirectEntityU1MMapHolder)holders.get(0);
-        holder.removeDirectToEntityMapItem(new Integer(11));
+        changedHolder = (DirectEntityU1MMapHolder)holders.get(0);
+        changedHolder.removeDirectToEntityMapItem(new Integer(11));
         EntityMapValue mapValue = new EntityMapValue();
         mapValue.setId(3);
         mapValue = (EntityMapValue)uow.registerObject(mapValue);
-        holder.addDirectToEntityMapItem(new Integer(33), mapValue);
+        changedHolder.addDirectToEntityMapItem(new Integer(33), mapValue);
         uow.commit();
+        Object holderForComparison = uow.readObject(changedHolder);
+        if (!compareObjects(changedHolder, holderForComparison)){
+            throw new TestErrorException("Objects do not match after write");
+        }
     }
     
     public void verify(){
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         holders = getSession().readAllObjects(DirectEntityU1MMapHolder.class);
         DirectEntityU1MMapHolder holder = (DirectEntityU1MMapHolder)holders.get(0);
+        if (!compareObjects(holder, changedHolder)){
+            throw new TestErrorException("Objects do not match reinitialize");
+        }
         if (holder.getDirectToEntityMap().containsKey(new Integer(1))){
             throw new TestErrorException("Item that was removed is still present in map.");
         }

@@ -24,6 +24,7 @@ import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -34,6 +35,7 @@ import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.mappings.AggregateObjectMapping;
 import org.eclipse.persistence.mappings.Association;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectMapMapping;
@@ -43,9 +45,11 @@ import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.mappings.foundation.MapKeyMapping;
 import org.eclipse.persistence.mappings.foundation.MapComponentMapping;
 import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.DeleteObjectQuery;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadQuery;
+import org.eclipse.persistence.queries.WriteObjectQuery;
 
 /**
  * A MappedKeyMapContainerPolicy should be used for mappings to implementers of Map.
@@ -186,7 +190,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements D
      * Used for joining.  Add any queries necessary for joining to the join manager
      */
     public void addNestedJoinsQueriesForMapKey(JoinedAttributeManager joinManager, ObjectLevelReadQuery query, AbstractSession session){
-        ObjectLevelReadQuery nestedQuery= keyMapping.getNestedJoinQuery(joinManager, query, session);
+        ObjectLevelReadQuery nestedQuery = keyMapping.getNestedJoinQuery(joinManager, query, session);
         if (nestedQuery != null){
             joinManager.getJoinedMappingQueries_().put((DatabaseMapping)keyMapping, nestedQuery);
         }
@@ -214,8 +218,8 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements D
      * @param isExisting
      * @return
      */
-    protected Object buildCloneForKey(Object key, UnitOfWorkImpl uow, boolean isExisting){
-        return keyMapping.buildElementClone(key, uow, isExisting);
+    public Object buildCloneForKey(Object key, Object parent, UnitOfWorkImpl uow, boolean isExisting){
+        return keyMapping.buildElementClone(key, parent, uow, isExisting);
 
     }
     
@@ -272,61 +276,68 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements D
         public Object buildKeyFromJoinedRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, AbstractSession session){
             return keyMapping.createMapComponentFromJoinedRow(row, joinManager, query, session);
         }
+
+        /**
+         * INTERNAL:
+         * Cascade discover and persist new objects during commit to the map key
+         */
+        public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, boolean cascade, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow) {
+            if (((DatabaseMapping)keyMapping).isOneToOneMapping()){
+                uow.discoverAndPersistUnregisteredNewObjects(((Map.Entry)object).getKey(), cascade, newObjects, unregisteredExistingObjects, visitedObjects);
+            }
+        }
         
         /**
          * INTERNAL:
-         * This method is used to calculate the differences between two collections.
+         * Cascade registerNew to any mappings managed by the container policy. This will cascade the register to the key mapping.
          */
-        public void compareCollectionsForChange(Object oldCollection, Object newCollection, CollectionChangeRecord changeRecord, AbstractSession session, ClassDescriptor referenceDescriptor) {
-            // 2612538 - the default size of Map (32) is appropriate
-            IdentityHashMap originalKeyValues = new IdentityHashMap();
-            IdentityHashMap cloneKeyValues = new IdentityHashMap();
-
-            // Collect the values from the oldCollection.
-            if (oldCollection != null) {
-                Object backUpIter = iteratorFor(oldCollection);
-                
-                while (hasNext(backUpIter)) {
-                    Map.Entry entry = (Map.Entry)nextEntry(backUpIter, session);
-                    // CR2378 null check to prevent a null pointer exception - XC
-                    if (entry != null) {
-                        originalKeyValues.put(entry.getValue(), entry);
-                    }
-                }
+        public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
+            if (((DatabaseMapping)keyMapping).isOneToOneMapping()){
+                uow.performRemove(((Map.Entry)object).getKey(), visitedObjects);
             }
-            
-            if (newCollection != null){
-                // Collect the objects from the new Collection.
-                Object cloneIter = iteratorFor(newCollection);
-                
-                while (hasNext(cloneIter)) {
-                    Map.Entry wrappedFirstObject = (Map.Entry)nextEntry(cloneIter, session);
-                    Object firstObject = wrappedFirstObject.getValue();
-                    // CR2378 null check to prevent a null pointer exception - XC
-                    // If value is null then nothing can be done with it.
-                    if (firstObject != null) {
-                        if (originalKeyValues.containsKey(firstObject)) {
-                            originalKeyValues.remove(firstObject);
-                        } else {
-                            // Place it in the add collection
-                            buildChangeSetForNewObjectInCollection(wrappedFirstObject, referenceDescriptor, (UnitOfWorkChangeSet) changeRecord.getOwner().getUOWChangeSet(), session);
-                            cloneKeyValues.put(firstObject, firstObject);
-                        }
-                    }
-                }
-            }
-            Iterator originalKeyValuesIterator = originalKeyValues.keySet().iterator();
-            while (originalKeyValuesIterator.hasNext()){
-                Object object = originalKeyValuesIterator.next();
-                ObjectChangeSet changeSet = referenceDescriptor.getObjectBuilder().createObjectChangeSet(object, (UnitOfWorkChangeSet) changeRecord.getOwner().getUOWChangeSet(), session);
-                Map.Entry entry = (Map.Entry)originalKeyValues.get(object);
-                changeSet.setOldKey(entry.getKey());
-            }
-            changeRecord.addAdditionChange(cloneKeyValues, (UnitOfWorkChangeSet) changeRecord.getOwner().getUOWChangeSet(), session);
-            changeRecord.addRemoveChange(originalKeyValues, (UnitOfWorkChangeSet) changeRecord.getOwner().getUOWChangeSet(), session);
         }
         
+        /**
+         * INTERNAL:
+         * Cascade registerNew to any mappings managed by the container policy. This will cascade the register to the key mapping.
+         */
+        public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
+            if (((DatabaseMapping)keyMapping).isOneToOneMapping()){
+                uow.registerNewObjectForPersist(((Map.Entry)object).getKey(), visitedObjects);
+            }
+        }
         
+        /**
+         * INTERNAL:
+         * Iterator over the list of new objects and create change sets for them
+         * @param originalKeyValues
+         * @param cloneKeyValues
+         * @param newCollection
+         * @param changeRecord
+         * @param session
+         * @param referenceDescriptor
+         */
+        protected void collectObjectForNewCollection(IdentityHashMap originalKeyValues, IdentityHashMap cloneKeyValues, Object newCollection, CollectionChangeRecord changeRecord, AbstractSession session, ClassDescriptor referenceDescriptor){
+            // Collect the objects from the new Collection.
+            Object cloneIter = iteratorFor(newCollection);
+            
+            while (hasNext(cloneIter)) {
+                Map.Entry wrappedFirstObject = (Map.Entry)nextEntry(cloneIter, session);
+                Object firstObject = wrappedFirstObject.getValue();
+                // CR2378 null check to prevent a null pointer exception - XC
+                // If value is null then nothing can be done with it.
+                if (firstObject != null) {
+                    if (originalKeyValues.containsKey(firstObject)) {
+                        originalKeyValues.remove(firstObject);
+                    } else {
+                        // Place it in the add collection
+                        buildChangeSetForNewObjectInCollection(wrappedFirstObject, referenceDescriptor, (UnitOfWorkChangeSet) changeRecord.getOwner().getUOWChangeSet(), session);
+                        cloneKeyValues.put(firstObject, firstObject);
+                    }
+                }
+            }
+        }
+
         /**
          * INTERNAL:
          * Return true if keys are the same.  False otherwise
@@ -362,6 +373,24 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements D
     
     /**
      * INTERNAL:
+     * Create change sets that contain map keys.
+     * @param originalKeyValues
+     * @param changeRecord
+     * @param session
+     * @param referenceDescriptor
+     */
+    protected void createChangeSetForKeys(IdentityHashMap originalKeyValues, CollectionChangeRecord changeRecord, AbstractSession session, ClassDescriptor referenceDescriptor){
+        Iterator originalKeyValuesIterator = originalKeyValues.keySet().iterator();
+        while (originalKeyValuesIterator.hasNext()){
+            Object object = originalKeyValuesIterator.next();
+            ObjectChangeSet changeSet = referenceDescriptor.getObjectBuilder().createObjectChangeSet(object, (UnitOfWorkChangeSet) changeRecord.getOwner().getUOWChangeSet(), session);
+            Map.Entry entry = (Map.Entry)originalKeyValues.get(object);
+            changeSet.setOldKey(entry.getKey());
+        }
+    }
+    
+    /**
+     * INTERNAL:
      * This method will actually potentially wrap an object in two ways.  It will first wrap the object
      * based on the referenceDescriptor's wrapper policy.  It will also potentially do some wrapping based
      * on what is required by the container policy.
@@ -372,9 +401,9 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements D
      * @param mergeManager
      * @return
      */
-    public Object createWrappedObjectFromExistingWrappedObject(Object wrappedObject, ClassDescriptor referenceDescriptor, MergeManager mergeManager){
+    public Object createWrappedObjectFromExistingWrappedObject(Object wrappedObject, Object parent, ClassDescriptor referenceDescriptor, MergeManager mergeManager){
         Object key = ((Map.Entry)wrappedObject).getKey();
-        key = keyMapping.getTargetVersionOfSourceObject(key, mergeManager);
+        key = keyMapping.getTargetVersionOfSourceObject(key, parent, mergeManager);
         key = keyMapping.wrapKey(key, mergeManager.getSession());
         Object value = referenceDescriptor.getObjectBuilder().wrapObject(mergeManager.getTargetVersionOfSourceObject(unwrapIteratorResult(wrappedObject)), mergeManager.getSession());
         return new Association(key, value);
@@ -525,6 +554,14 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements D
         return true;
     }
     
+    /**
+     * INTERNAL:
+     * Used in Descriptor Iteration to iterate on map keys.
+     */
+    public void iterateOnMapKey(DescriptorIterator iterator, Object element) {
+        Object key = ((Map.Entry)element).getKey();
+        keyMapping.iterateOnMapKey(iterator, key);
+    }
     
     /**
      * INTERNAL:
@@ -548,6 +585,79 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements D
         return super.keyFrom(element, session);
     }
     
+    /**
+     * INTERNAL:
+     * Propagate the postDeleteEvent to any additional objects the query is aware of
+     */
+    public void propogatePostDelete(DeleteObjectQuery query, Object object) {
+        if (propagatesEventsToCollection()){
+            ((AggregateObjectMapping)keyMapping).postDeleteAttributeValue(query, ((Map.Entry)object).getKey());
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Propagate the postDeleteEvent to any additional objects the query is aware of
+     */
+    public void propogatePostInsert(WriteObjectQuery query, Object object) {
+        if (propagatesEventsToCollection()){
+            ((AggregateObjectMapping)keyMapping).postInsertAttributeValue(query, ((Map.Entry)object).getKey());
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Propagate the postDeleteEvent to any additional objects the query is aware of
+     */
+    public void propogatePostUpdate(WriteObjectQuery query, Object object) {
+        if (propagatesEventsToCollection()){
+            Object key = object;
+            if (object instanceof Map.Entry){
+                key = ((Map.Entry)object).getKey();
+            }
+            ((AggregateObjectMapping)keyMapping).postUpdateAttributeValue(query, key);
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Propagate the postDeleteEvent to any additional objects the query is aware of
+     */
+    public void propogatePreDelete(DeleteObjectQuery query, Object object) {
+        if (propagatesEventsToCollection()){
+            ((AggregateObjectMapping)keyMapping).preDeleteAttributeValue(query, ((Map.Entry)object).getKey());
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Propagate the postDeleteEvent to any additional objects the query is aware of
+     */
+    public void propogatePreInsert(WriteObjectQuery query, Object object) {
+        if (propagatesEventsToCollection()){
+            ((AggregateObjectMapping)keyMapping).preInsertAttributeValue(query, ((Map.Entry)object).getKey());
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Propagate the postDeleteEvent to any additional objects the query is aware of
+     */
+    public void propogatePreUpdate(WriteObjectQuery query, Object object) {
+        if (propagatesEventsToCollection()){
+            ((AggregateObjectMapping)keyMapping).preUpdateAttributeValue(query, ((Map.Entry)object).getKey());
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Returns true if the key mapping is an AggregateObjectMapping.
+     * Aggregates need events propagated to them because they are not explicitly
+     * deleted, updated or inserted
+     */
+    public boolean propagatesEventsToCollection(){
+        return ((DatabaseMapping)keyMapping).isAggregateObjectMapping();
+    }
     /**
      * INTERNAL:
      * Set the DatabaseField that will represent the key in a DirectMapMapping
@@ -658,6 +768,16 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements D
      */
     public boolean shouldUpdateForeignKeysPostInsert(){
         return true;
+    }
+
+    /**
+     * INTERNAL:
+     * Update the joined mapping indices
+     * Adds the key mapping and it's index to the list of joined mappings
+     */
+    public int updateJoinedMappingIndexesForMapKey(Map<DatabaseMapping, Object> indexList, int index){
+        indexList.put((DatabaseMapping)keyMapping, index);
+        return getAllFieldsForMapKey().size();
     }
     
     /**

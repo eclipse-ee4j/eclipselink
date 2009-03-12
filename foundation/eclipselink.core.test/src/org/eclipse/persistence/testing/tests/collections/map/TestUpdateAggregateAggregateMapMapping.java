@@ -27,18 +27,26 @@ public class TestUpdateAggregateAggregateMapMapping extends TestReadAggregateAgg
         AggregateMapKey key = new AggregateMapKey();
         key.setKey(11);
         holder.removeAggregateToAggregateMapItem(key);
-        AggregateMapValue mapValue = new AggregateMapValue();
-        mapValue.setValue(3);
+        AggregateMapKey mapValue = new AggregateMapKey();
+        mapValue.setKey(3);
         key = new AggregateMapKey();
         key.setKey(33);
         holder.addAggregateToAggregateMapItem(key, mapValue);
         uow.commit();
+        Object holderForComparison = uow.readObject(holder);
+        if (!compareObjects(holder, holderForComparison)){
+            throw new TestErrorException("Objects do not match after write");
+        }
     }
     
     public void verify(){
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
+        Object initialHolder = holders.get(0);
         holders = getSession().readAllObjects(AggregateAggregateMapHolder.class);
         AggregateAggregateMapHolder holder = (AggregateAggregateMapHolder)holders.get(0);
+        if (!compareObjects(holder, initialHolder)){
+            throw new TestErrorException("Objects do not match reinitialize");
+        }
         AggregateMapKey key = new AggregateMapKey();
         key.setKey(11);
         if (holder.getAggregateToAggregateMap().containsKey(key)){
@@ -46,8 +54,8 @@ public class TestUpdateAggregateAggregateMapMapping extends TestReadAggregateAgg
         }
         key = new AggregateMapKey();
         key.setKey(33);
-        AggregateMapValue value = (AggregateMapValue)holder.getAggregateToAggregateMap().get(key);
-        if (value.getValue() != 3){
+        AggregateMapKey value = (AggregateMapKey)holder.getAggregateToAggregateMap().get(key);
+        if (value.getKey() != 3){
             throw new TestErrorException("Item was not correctly added to map");
         }
     }

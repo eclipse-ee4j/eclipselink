@@ -41,7 +41,7 @@ public class AggregateAggregateMapHolder {
         this.id = id;
     }
     
-    public void addAggregateToAggregateMapItem(AggregateMapKey key, AggregateMapValue value){
+    public void addAggregateToAggregateMapItem(AggregateMapKey key, AggregateMapKey value){
         aggregateToAggregateMap.put(key, value);
     }
     

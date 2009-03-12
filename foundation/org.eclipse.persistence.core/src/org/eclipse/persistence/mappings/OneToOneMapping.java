@@ -26,6 +26,7 @@ import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.internal.descriptors.CascadeLockingPolicy;
+import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.expressions.ObjectExpression;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.mappings.foundation.MapKeyMapping;
@@ -207,7 +208,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * @param isExisting
      * @return
      */
-    public Object buildElementClone(Object attributeValue, UnitOfWorkImpl unitOfWork, boolean isExisting){
+    public Object buildElementClone(Object attributeValue, Object parent, UnitOfWorkImpl unitOfWork, boolean isExisting){
         return buildCloneForPartObject(attributeValue, null, null, unitOfWork, isExisting);
     }
     
@@ -737,10 +738,10 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * INTERNAL:
      * If required, get the targetVersion of the source object from the merge manager
      * 
-     *      * Used with MapKeyContainerPolicy to abstract getting the target version of a source key
+     * Used with MapKeyContainerPolicy to abstract getting the target version of a source key
      * @return
      */
-    public Object getTargetVersionOfSourceObject(Object object, MergeManager mergeManager){
+    public Object getTargetVersionOfSourceObject(Object object, Object parent, MergeManager mergeManager){
        return  mergeManager.getTargetVersionOfSourceObject(object);
     }
     
@@ -1150,6 +1151,16 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      */
     public boolean isJoiningSupported() {
         return true;
+    }
+    
+    /**
+     * INTERNAL:
+     * Called when iterating through descriptors to handle iteration on this mapping when it is used as a MapKey
+     * @param iterator
+     * @param element
+     */
+    public void iterateOnMapKey(DescriptorIterator iterator, Object element){
+        this.getIndirectionPolicy().iterateOnAttributeValue(iterator, element);
     }
 
     /**

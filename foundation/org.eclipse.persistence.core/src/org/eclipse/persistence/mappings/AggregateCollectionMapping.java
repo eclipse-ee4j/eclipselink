@@ -208,8 +208,9 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
             if (unitOfWork.isOriginalNewObject(original)) {
                 unitOfWork.addNewAggregate(originalElement);
             }
-            Object cloneValue = buildElementClone(originalElement, unitOfWork, isExisting);
-            containerPolicy.addInto(containerPolicy.keyFromIterator(valuesIterator), cloneValue, clonedAttributeValue, unitOfWork);
+            Object cloneValue = buildElementClone(originalElement, clone, unitOfWork, isExisting);
+            Object clonedKey = containerPolicy.buildCloneForKey(containerPolicy.keyFromIterator(valuesIterator), clone, unitOfWork, isExisting);
+            containerPolicy.addInto(clonedKey, cloneValue, clonedAttributeValue, unitOfWork);
         }
         return clonedAttributeValue;
     }
@@ -234,7 +235,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * INTERNAL:
      * Clone the aggregate collection, if necessary.
      */
-    public Object buildElementClone(Object element, UnitOfWorkImpl unitOfWork, boolean isExisting) {
+    public Object buildElementClone(Object element, Object parent, UnitOfWorkImpl unitOfWork, boolean isExisting) {
         // Do not clone for read-only.
         if (unitOfWork.isClassReadOnly(element.getClass(), getReferenceDescriptor())) {
             return element;
@@ -269,10 +270,12 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         cloneObjectCollection = getRealCollectionAttributeValueFromObject(object, uow);
         Object cloneIter = cp.iteratorFor(cloneObjectCollection);
         while (cp.hasNext(cloneIter)) {
-            Object nextObject = cp.next(cloneIter, uow);
+            Object wrappedObject = cp.nextEntry(cloneIter, uow);
+            Object nextObject = cp.unwrapIteratorResult(wrappedObject);
             if (nextObject != null) {
                 builder = getReferenceDescriptor(nextObject.getClass(), uow).getObjectBuilder();
                 builder.cascadeDiscoverAndPersistUnregisteredNewObjects(nextObject, newObjects, unregisteredExistingObjects, visitedObjects, uow);
+                cp.cascadeDiscoverAndPersistUnregisteredNewObjects(wrappedObject, isCascadePersist(), newObjects, unregisteredExistingObjects, visitedObjects, uow);
             }
         }
     }
@@ -295,11 +298,13 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         cloneObjectCollection = getRealCollectionAttributeValueFromObject(object, uow);
         Object cloneIter = cp.iteratorFor(cloneObjectCollection);
         while (cp.hasNext(cloneIter)) {
-            Object nextObject = cp.next(cloneIter, uow);
+            Object wrappedObject = cp.nextEntry(cloneIter, uow);
+            Object nextObject = cp.unwrapIteratorResult(wrappedObject);
             if (nextObject != null && (! visitedObjects.containsKey(nextObject))){
                 visitedObjects.put(nextObject, nextObject);
                 builder = getReferenceDescriptor(nextObject.getClass(), uow).getObjectBuilder();
                 builder.cascadeRegisterNewForCreate(nextObject, uow, visitedObjects);
+                cp.cascadeRegisterNewIfRequired(wrappedObject, uow, visitedObjects);
             }
         }
     }
@@ -322,11 +327,13 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         cloneObjectCollection = getRealCollectionAttributeValueFromObject(object, uow);
         Object cloneIter = cp.iteratorFor(cloneObjectCollection);
         while (cp.hasNext(cloneIter)) {
-            Object nextObject = cp.next(cloneIter, uow);
+            Object wrappedObject = cp.nextEntry(cloneIter, uow);
+            Object nextObject = cp.unwrapIteratorResult(wrappedObject);
             if (nextObject != null && ( ! visitedObjects.containsKey(nextObject) ) ){
                 visitedObjects.put(nextObject, nextObject);
                 builder = getReferenceDescriptor(nextObject.getClass(), uow).getObjectBuilder();
                 builder.cascadePerformRemove(nextObject, uow, visitedObjects);
+                cp.cascadePerformRemoveIfRequired(wrappedObject, uow, visitedObjects);
             }
         }
     }
@@ -1375,7 +1382,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         // Delete must not be done for uow or cascaded queries and we must cascade to cascade policy.
         DeleteObjectQuery deleteQuery = new DeleteObjectQuery();
         deleteQuery.setIsExecutionClone(true);
-        prepareModifyQueryForDelete(query, deleteQuery, valueToDelete);
+        prepareModifyQueryForDelete(query, deleteQuery, objectDeleted);
         ContainerPolicy.copyMapDataToRow(extraData, deleteQuery.getTranslationRow());
         query.getSession().executeQuery(deleteQuery, deleteQuery.getTranslationRow());
         
@@ -1431,6 +1438,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
             InsertObjectQuery insertQuery = getAndPrepareModifyQueryForInsert(query, object);
             ContainerPolicy.copyMapDataToRow(cp.getKeyMappingDataForWriteQuery(wrappedObject, query.getSession()), insertQuery.getModifyRow());
             query.getSession().executeQuery(insertQuery, insertQuery.getTranslationRow());
+            cp.propogatePostInsert(query, wrappedObject);
         }
     }
 
@@ -1472,13 +1480,15 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
 
         // if privately owned parts have their privately own parts, delete those one by one
         // else delete everything in one shot.
-        if (mustDeleteReferenceObjectsOneByOne()) {
+        if (containerPolicy.propagatesEventsToCollection() || mustDeleteReferenceObjectsOneByOne()) {
             for (Object iter = containerPolicy.iteratorFor(objects); containerPolicy.hasNext(iter);) {
-                Object object = containerPolicy.next(iter, query.getSession());
+                Object wrappedObject = containerPolicy.nextEntry(iter, query.getSession());
+                Object object = containerPolicy.unwrapIteratorResult(wrappedObject);
                 DeleteObjectQuery deleteQuery = new DeleteObjectQuery();
                 deleteQuery.setIsExecutionClone(true);
-                prepareModifyQueryForDelete(query, deleteQuery, object);
+                prepareModifyQueryForDelete(query, deleteQuery, wrappedObject);
                 query.getSession().executeQuery(deleteQuery, deleteQuery.getTranslationRow());
+                containerPolicy.propogatePreDelete(query, wrappedObject);
             }
             if (!query.getSession().isUnitOfWork()) {
                 // This deletes any objects on the database, as the collection in memory may has been changed.
@@ -1514,6 +1524,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
             executeEvent(DescriptorEventManager.PreWriteEvent, insertQuery);
             executeEvent(DescriptorEventManager.PreInsertEvent, insertQuery);
             getReferenceDescriptor(object.getClass(), query.getSession()).getQueryManager().preInsert(insertQuery);
+            cp.propogatePreInsert(query, wrappedObject);
         }
     }
 
@@ -1580,8 +1591,10 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * INTERNAL:
      * setup the modifyQuery for pre delete
      */
-    public void prepareModifyQueryForDelete(ObjectLevelModifyQuery originalQuery, ObjectLevelModifyQuery modifyQuery, Object object) {
+    public void prepareModifyQueryForDelete(ObjectLevelModifyQuery originalQuery, ObjectLevelModifyQuery modifyQuery, Object wrappedObject) {
+        Object object = getContainerPolicy().unwrapIteratorResult(wrappedObject);
         AbstractRecord aggregateRow = getAggregateRow(originalQuery, object);
+        ContainerPolicy.copyMapDataToRow(containerPolicy.getKeyMappingDataForWriteQuery(wrappedObject, modifyQuery.getSession()), aggregateRow);
         modifyQuery.setObject(object);
         modifyQuery.setDescriptor(getReferenceDescriptor(object.getClass(), originalQuery.getSession()));
         modifyQuery.setPrimaryKey(getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromRow(aggregateRow, originalQuery.getSession()));

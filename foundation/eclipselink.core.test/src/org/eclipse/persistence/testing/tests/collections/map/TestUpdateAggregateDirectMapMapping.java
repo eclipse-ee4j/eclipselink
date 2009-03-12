@@ -30,12 +30,21 @@ public class TestUpdateAggregateDirectMapMapping extends TestReadAggregateDirect
         mapKey.setKey(3);
         holder.addAggregateToDirectMapItem(mapKey, new Integer(3));
         uow.commit();
+        Object holderForComparison = uow.readObject(holder);
+        if (!compareObjects(holder, holderForComparison)){
+            throw new TestErrorException("Objects do not match after write");
+        }
+
     }
     
     public void verify(){
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
+        Object changedHolder = holders.get(0);
         holders = getSession().readAllObjects(AggregateDirectMapHolder.class);
         AggregateDirectMapHolder holder = (AggregateDirectMapHolder)holders.get(0);
+        if (!compareObjects(holder, changedHolder)){
+            throw new TestErrorException("Objects do not match reinitialize");
+        }
         AggregateMapKey mapKey = new AggregateMapKey();
         mapKey.setKey(1);
         if (holder.getAggregateToDirectMap().containsKey(mapKey)){

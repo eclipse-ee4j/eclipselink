@@ -24,6 +24,7 @@ import org.eclipse.persistence.testing.models.collections.map.DEOTMMapValue;
 
 public class TestReadDirectEntity1MMapMapping extends TestCase {
     
+    protected DirectEntity1MMapHolder initialHolder = null;
     protected List holders = null;
     protected int fetchJoinRelationship = 0;
     protected int oldFetchJoinValue = 0;
@@ -46,17 +47,17 @@ public class TestReadDirectEntity1MMapMapping extends TestCase {
         getSession().getProject().getDescriptor(DirectEntity1MMapHolder.class).reInitializeJoinedAttributes();
         
         UnitOfWork uow = getSession().acquireUnitOfWork();
-        DirectEntity1MMapHolder holder = new DirectEntity1MMapHolder();
+        initialHolder = new DirectEntity1MMapHolder();
         DEOTMMapValue value = new DEOTMMapValue();
         value.setId(1);
-        value.getHolder().setValue(holder);
-        holder.addDirectToEntityMapItem(new Integer(11), value);
+        value.getHolder().setValue(initialHolder);
+        initialHolder.addDirectToEntityMapItem(new Integer(11), value);
         
         DEOTMMapValue value2 = new DEOTMMapValue();
         value2.setId(2);
-        value2.getHolder().setValue(holder);
-        holder.addDirectToEntityMapItem(new Integer(22), value2);
-        uow.registerObject(holder);
+        value2.getHolder().setValue(initialHolder);
+        initialHolder.addDirectToEntityMapItem(new Integer(22), value2);
+        uow.registerObject(initialHolder);
         uow.registerObject(value);
         uow.registerObject(value2);
         uow.commit();
@@ -91,6 +92,9 @@ public class TestReadDirectEntity1MMapMapping extends TestCase {
         List keys = uow.readAllObjects(DEOTMMapValue.class);
         uow.deleteAllObjects(keys);
         uow.commit();
+        if (!verifyDelete(holders.get(0))){
+            throw new TestErrorException("Delete was unsuccessful.");
+        }
         mapping.setJoinFetch(oldFetchJoinValue);
     }
 

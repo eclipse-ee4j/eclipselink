@@ -18,6 +18,7 @@ import java.security.PrivilegedActionException;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 
+import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
@@ -42,6 +43,7 @@ import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
 import org.eclipse.persistence.indirection.IndirectCollection;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.mappings.CollectionMapping;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 
 /**
  * <p><b>Purpose</b>:
@@ -215,8 +217,8 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      * @param unitOfWork
      * @param isExisting
      */
-    public void addNextValueFromIteratorInto(Object valuesIterator, Object toCollection, CollectionMapping mapping, UnitOfWorkImpl unitOfWork, boolean isExisting){
-        Object cloneValue = mapping.buildElementClone(next(valuesIterator, unitOfWork), unitOfWork, isExisting);
+    public void addNextValueFromIteratorInto(Object valuesIterator, Object parent, Object toCollection, CollectionMapping mapping, UnitOfWorkImpl unitOfWork, boolean isExisting){
+        Object cloneValue = mapping.buildElementClone(next(valuesIterator, unitOfWork), parent, unitOfWork, isExisting);
         addInto(cloneValue, toCollection, unitOfWork);
     }
     
@@ -231,6 +233,21 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      */
     public void addToDeletedObjectsList(Object object, CommitManager manager){
         manager.addObjectToDelete(object);
+    }
+    
+    
+    /**
+     * Build a clone for the key of a Map represented by this container policy if necessary.
+     * By default, the key is not cloned since in standard EclipseLink Mappings it will not be 
+     * an Entity
+     * @param key
+     * @param uow
+     * @param isExisting
+     * @return
+     */
+    public Object buildCloneForKey(Object key, Object parent, UnitOfWorkImpl uow, boolean isExisting){
+        return key;
+        
     }
     
     /**
@@ -368,6 +385,30 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
         return (object != null) && (getClass().equals(object.getClass()));
     }
     
+    /**
+     * INTERNAL:
+     * Cascade DiscoverAndPersistUnregisteredNewObjects to any mappings managed by the container policy.  Be default, this is a no-op, but
+     * will be overridden by subclasses
+     */
+    public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, boolean cascade, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow) {
+    }
+    
+    /**
+     * INTERNAL:
+     * Cascade performRemove to any mappings managed by the container policy.  Be default, this is a no-op, but
+     * will be overridden by subclasses
+     */
+    public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
+    }
+    
+    /**
+     * INTERNAL:
+     * Cascade registerNew to any mappings managed by the container policy.  Be default, this is a no-op, but
+     * will be overridden by subclasses
+     */
+    public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
+    }
+    
     public Object clone() {
         try {
             return super.clone();
@@ -388,6 +429,73 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
         throw QueryException.cannotCreateClone(this, container);
     }
 
+    
+    /**
+     * INTERNAL:
+     * Create change sets that contain map keys.
+     * This method will be overridden by subclasses that handle map keys
+     * @param originalKeyValues
+     * @param changeRecord
+     * @param session
+     * @param referenceDescriptor
+     */
+    protected void createChangeSetForKeys(IdentityHashMap originalKeyValues, CollectionChangeRecord changeRecord, AbstractSession session, ClassDescriptor referenceDescriptor){
+    }
+
+    /**
+     * INTERNAL:
+     * Iterate over the list of new objects and create change sets for them
+     * This method is overridden by subclasses to handle map keys
+     * @param originalKeyValues
+     * @param cloneKeyValues
+     * @param newCollection
+     * @param changeRecord
+     * @param session
+     * @param referenceDescriptor
+     */
+    protected void collectObjectForNewCollection(IdentityHashMap originalKeyValues, IdentityHashMap cloneKeyValues, Object newCollection, CollectionChangeRecord changeRecord, AbstractSession session, ClassDescriptor referenceDescriptor){
+        Object cloneIter = iteratorFor(newCollection);
+        
+        while (hasNext(cloneIter)) {
+            Object wrappedFirstObject = nextEntry(cloneIter, session);
+            Object firstObject = unwrapIteratorResult(wrappedFirstObject);
+            // CR2378 null check to prevent a null pointer exception - XC
+            // If value is null then nothing can be done with it.
+            if (firstObject != null) {
+                if (originalKeyValues.containsKey(firstObject)) {
+                    // There is an original in the cache
+                    if ((compareKeys(firstObject, session))) {
+                        // The keys have not changed
+                        originalKeyValues.remove(firstObject);
+                    } else {
+                        // The keys have changed, create a changeSet 
+                        // (it will be reused later) and set the old key 
+                        // value to be used to remove.
+                        Object backUpVersion = null;
+
+                        // CR4172 compare the keys from the back up to the 
+                        // clone not from the original to the clone.
+                        if (((UnitOfWorkImpl)session).isClassReadOnly(firstObject.getClass())) {
+                            backUpVersion = firstObject;
+                        } else {
+                            backUpVersion = ((UnitOfWorkImpl)session).getBackupClone(firstObject, referenceDescriptor);
+                        }
+                        
+                        ObjectChangeSet changeSet = referenceDescriptor.getObjectBuilder().createObjectChangeSet(firstObject, (UnitOfWorkChangeSet) changeRecord.getOwner().getUOWChangeSet(), session);
+                        changeSet.setOldKey(keyFrom(backUpVersion, session));
+                        changeSet.setNewKey(keyFrom(firstObject, session));
+                        cloneKeyValues.put(firstObject, firstObject);
+                    }
+                } else {
+                    // Place it in the add collection
+                    buildChangeSetForNewObjectInCollection(wrappedFirstObject, referenceDescriptor, (UnitOfWorkChangeSet) changeRecord.getOwner().getUOWChangeSet(), session);
+                    cloneKeyValues.put(firstObject, firstObject);
+                }
+            }
+        }
+        
+    }
+    
     /**
      * INTERNAL:
      * This method is used to calculate the differences between two collections.
@@ -396,64 +504,24 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
         // 2612538 - the default size of Map (32) is appropriate
         IdentityHashMap originalKeyValues = new IdentityHashMap();
         IdentityHashMap cloneKeyValues = new IdentityHashMap();
-
         // Collect the values from the oldCollection.
         if (oldCollection != null) {
             Object backUpIter = iteratorFor(oldCollection);
             
             while (hasNext(backUpIter)) {
-                Object secondObject = next(backUpIter, session);
+                Object wrappedSecondObject = nextEntry(backUpIter, session);
+                Object secondObject = unwrapIteratorResult(wrappedSecondObject);
     
                 // CR2378 null check to prevent a null pointer exception - XC
                 if (secondObject != null) {
-                    originalKeyValues.put(secondObject, secondObject);
+                    originalKeyValues.put(secondObject, wrappedSecondObject);
                 }
             }
         }
-        
         if (newCollection != null){
-            // Collect the objects from the new Collection.
-            Object cloneIter = iteratorFor(newCollection);
-            
-            while (hasNext(cloneIter)) {
-                Object wrappedFirstObject = nextEntry(cloneIter, session);
-                Object firstObject = unwrapIteratorResult(wrappedFirstObject);
-                // CR2378 null check to prevent a null pointer exception - XC
-                // If value is null then nothing can be done with it.
-                if (firstObject != null) {
-                    if (originalKeyValues.containsKey(firstObject)) {
-                        // There is an original in the cache
-                        if ((compareKeys(firstObject, session))) {
-                            // The keys have not changed
-                            originalKeyValues.remove(firstObject);
-                        } else {
-                            // The keys have changed, create a changeSet 
-                            // (it will be reused later) and set the old key 
-                            // value to be used to remove.
-                            Object backUpVersion = null;
-    
-                            // CR4172 compare the keys from the back up to the 
-                            // clone not from the original to the clone.
-                            if (((UnitOfWorkImpl)session).isClassReadOnly(firstObject.getClass())) {
-                                backUpVersion = firstObject;
-                            } else {
-                                backUpVersion = ((UnitOfWorkImpl)session).getBackupClone(firstObject, referenceDescriptor);
-                            }
-                            
-                            ObjectChangeSet changeSet = referenceDescriptor.getObjectBuilder().createObjectChangeSet(firstObject, (UnitOfWorkChangeSet) changeRecord.getOwner().getUOWChangeSet(), session);
-                            changeSet.setOldKey(keyFrom(backUpVersion, session));
-                            changeSet.setNewKey(keyFrom(firstObject, session));
-                            cloneKeyValues.put(firstObject, firstObject);
-                        }
-                    } else {
-                        // Place it in the add collection
-                        buildChangeSetForNewObjectInCollection(wrappedFirstObject, referenceDescriptor, (UnitOfWorkChangeSet) changeRecord.getOwner().getUOWChangeSet(), session);
-                        cloneKeyValues.put(firstObject, firstObject);
-                    }
-                }
-            }
+            collectObjectForNewCollection(originalKeyValues, cloneKeyValues, newCollection, changeRecord, session, referenceDescriptor);
         }
-
+        createChangeSetForKeys(originalKeyValues, changeRecord, session, referenceDescriptor);
         changeRecord.addAdditionChange(cloneKeyValues, (UnitOfWorkChangeSet) changeRecord.getOwner().getUOWChangeSet(), session);
         changeRecord.addRemoveChange(originalKeyValues, (UnitOfWorkChangeSet) changeRecord.getOwner().getUOWChangeSet(), session);
     }
@@ -596,11 +664,12 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      * 
      * @see MappedKeyMapContainerPolicy
      * @param wrappedObject
+     * @param parent if this is an aggregate, the owner of the aggregate
      * @param referenceDescriptor
      * @param mergeManager
      * @return
      */
-    public Object createWrappedObjectFromExistingWrappedObject(Object wrappedObject, ClassDescriptor referenceDescriptor, MergeManager mergeManager){
+    public Object createWrappedObjectFromExistingWrappedObject(Object wrappedObject, Object parent, ClassDescriptor referenceDescriptor, MergeManager mergeManager){
         return referenceDescriptor.getObjectBuilder().wrapObject(mergeManager.getTargetVersionOfSourceObject(unwrapIteratorResult(wrappedObject)), mergeManager.getSession());
     }
     
@@ -839,6 +908,14 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
+     * Used in Descriptor Iteration to iterate on map keys.
+     * This method is a no-op here, but will be overridden by subclasses
+     */
+    public void iterateOnMapKey(DescriptorIterator iterator, Object element) {
+    }
+    
+    /**
+     * INTERNAL:
      * Return an iterator for the given container.
      * This iterator can then be used as a parameter to #hasNext()
      * and #next().
@@ -1048,6 +1125,63 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
     }
 
     /**
+     * INTERNAL:
+     * Propagate the postDeleteEvent to any additional objects the query is aware of
+     * This method will be overridden by subclasses that deal MapKeys
+     */
+    public void propogatePostDelete(DeleteObjectQuery query, Object object) {
+    }
+
+    /**
+     * INTERNAL:
+     * Propagate the postDeleteEvent to any additional objects the query is aware of
+     * This method will be overridden by subclasses that deal MapKeys
+     */
+    public void propogatePostInsert(WriteObjectQuery query, Object object) {
+    }
+
+    /**
+     * INTERNAL:
+     * Propagate the postDeleteEvent to any additional objects the query is aware of
+     * This method will be overridden by subclasses that deal MapKeys
+     */
+    public void propogatePostUpdate(WriteObjectQuery query, Object object) {
+    }
+
+    /**
+     * INTERNAL:
+     * Propagate the postDeleteEvent to any additional objects the query is aware of
+     * This method will be overridden by subclasses that deal MapKeys
+     */
+    public void propogatePreDelete(DeleteObjectQuery query, Object object) {
+    }
+
+    /**
+     * INTERNAL:
+     * Propagate the postDeleteEvent to any additional objects the query is aware of
+     * This method will be overridden by subclasses that deal MapKeys
+     */
+    public void propogatePreInsert(WriteObjectQuery query, Object object) {
+    }
+
+    /**
+     * INTERNAL:
+     * Propagate the postDeleteEvent to any additional objects the query is aware of
+     * This method will be overridden by subclasses that deal MapKeys
+     */
+    public void propogatePreUpdate(WriteObjectQuery query, Object object) {
+    }
+    
+    /**
+     * INTERNAL:
+     * Returns false.  Most container policies do not need to propagate events within the collections
+     * This will be overridden by subclasses
+     */
+    public boolean propagatesEventsToCollection(){
+        return false;
+    }
+    
+    /**
      * This method is used to bridge the behavior between Attribute Change Tracking and
      * deferred change tracking with respect to adding the same instance multiple times.
      * Each ContainerPolicy type will implement specific behavior for the collection 
@@ -1223,7 +1357,7 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
     public void setKeyName(String instanceVariableName, Class elementClass) {
         throw ValidationException.containerPolicyDoesNotUseKeys(this, instanceVariableName);
     }
-
+    
     /**
      * INTERNAL:
      * Return whether data for a map key must be included on a Delete datamodification event
@@ -1261,6 +1395,15 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
         return "";
     }
 
+    /**
+     * INTERNAL:
+     * Update the joined mapping indices
+     * This method is a no-op, but will be overridden by subclasses
+     */
+    public int updateJoinedMappingIndexesForMapKey(Map<DatabaseMapping, Object> indexList, int index){
+        return 0;
+    }
+    
     /**
      * INTERNAL:
      * Depending on the container, the entries returned of iteration using the ContainerPolicy.iteratorFor() method

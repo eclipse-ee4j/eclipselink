@@ -28,6 +28,7 @@ public class TestUpdateEntityDirectMapMapping extends TestReadEntityDirectMapMap
     private boolean usePrivateOwned = false;
     protected ForeignReferenceMapping keyMapping = null;
     private boolean oldKeyPrivateOwnedValue = false;
+    protected EntityDirectMapHolder changedHolder = null;
     
     public TestUpdateEntityDirectMapMapping(){
         super();
@@ -50,22 +51,29 @@ public class TestUpdateEntityDirectMapMapping extends TestReadEntityDirectMapMap
     public void test(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         holders = uow.readAllObjects(EntityDirectMapHolder.class);
-        EntityDirectMapHolder holder = (EntityDirectMapHolder)holders.get(0);
+        changedHolder = (EntityDirectMapHolder)holders.get(0);
         EntityMapKey mapKey = new EntityMapKey();
         mapKey.setId(1);
-        holder.removeEntityToDirectMapItem(mapKey);
+        changedHolder.removeEntityToDirectMapItem(mapKey);
         mapKey = new EntityMapKey();
         mapKey.setId(3);
         mapKey.setData("testData");
         mapKey = (EntityMapKey)uow.registerObject(mapKey);
-        holder.addEntityDirectMapItem(mapKey, new Integer(3));
+        changedHolder.addEntityDirectMapItem(mapKey, new Integer(3));
         uow.commit();
+        Object holderForComparison = uow.readObject(changedHolder);
+        if (!compareObjects(changedHolder, holderForComparison)){
+            throw new TestErrorException("Objects do not match after write");
+        }
     }
     
     public void verify(){
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         holders = getSession().readAllObjects(EntityDirectMapHolder.class);
         EntityDirectMapHolder holder = (EntityDirectMapHolder)holders.get(0);
+        if (!compareObjects(holder, changedHolder)){
+            throw new TestErrorException("Objects do not match reinitialize");
+        }
         EntityMapKey mapKey = new EntityMapKey();
         mapKey.setId(1);
         if (holder.getEntityToDirectMap().containsKey(mapKey)){

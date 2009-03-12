@@ -31,6 +31,7 @@ public class TestUpdateDirectEntityMapMapping extends TestCase {
     protected ManyToManyMapping mapping = null;
     private boolean usePrivateOwned = false;
     private boolean oldPrivateOwnedValue = false;
+    protected DirectEntityMapHolder changedHolder = null;
     
     public TestUpdateDirectEntityMapMapping(){
         super();
@@ -61,23 +62,34 @@ public class TestUpdateDirectEntityMapMapping extends TestCase {
         uow.registerObject(value);
         uow.registerObject(value2);
         uow.commit();
+        Object holderForComparison = uow.readObject(holder);
+        if (!compareObjects(holder, holderForComparison)){
+            throw new TestErrorException("Objects do not match after write");
+        }
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
     
     public void test(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
-        holder = (DirectEntityMapHolder)uow.readObject(holder);
+        changedHolder = (DirectEntityMapHolder)uow.readObject(holder);
         EntityMapValue value = new EntityMapValue();
         value.setId(3);
-        holder.addDirectToEntityMapItem(new Integer(33), value);
+        changedHolder.addDirectToEntityMapItem(new Integer(33), value);
         
-        holder.getDirectToEntityMap().remove(new Integer(11));
+        changedHolder.getDirectToEntityMap().remove(new Integer(11));
         uow.commit();
+        Object holderForComparison = uow.readObject(holder);
+        if (!compareObjects(changedHolder, holderForComparison)){
+            throw new TestErrorException("Objects do not match after write");
+        }
     }
     
     public void verify(){
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         holder = (DirectEntityMapHolder)getSession().readObject(holder);
+        if (!compareObjects(holder, changedHolder)){
+            throw new TestErrorException("Objects do not match reinitialize");
+        }
         if (holder.getDirectToEntityMap().size() != 2){
             throw new TestErrorException("Incorrect Number of MapEntityValues was read.");
         }

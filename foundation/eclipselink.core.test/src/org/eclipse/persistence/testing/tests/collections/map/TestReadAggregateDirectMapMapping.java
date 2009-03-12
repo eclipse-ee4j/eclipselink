@@ -86,6 +86,9 @@ public class TestReadAggregateDirectMapMapping extends TestCase {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         uow.deleteAllObjects(holders);
         uow.commit();
+        if (!verifyDelete(holders.get(0))){
+            throw new TestErrorException("Delete was unsuccessful.");
+        }
         mapping.setJoinFetch(oldFetchJoinValue);
     }
 }

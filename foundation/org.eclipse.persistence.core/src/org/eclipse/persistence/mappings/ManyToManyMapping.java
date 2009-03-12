@@ -894,7 +894,8 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
 
         // Write each of the target objects
         for (Object objectsIterator = cp.iteratorFor(objects); cp.hasNext(objectsIterator);) {
-            Object object = cp.next(objectsIterator, query.getSession());
+            Object wrappedObject = cp.next(objectsIterator, query.getSession());
+            Object object = cp.unwrapIteratorResult(wrappedObject);
             if (isPrivateOwned()) {
                 // no need to set changeset as insert is a straight copy anyway
                 InsertObjectQuery insertQuery = new InsertObjectQuery();
@@ -916,6 +917,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
                 writeQuery.setCascadePolicy(query.getCascadePolicy());
                 query.getSession().executeQuery(writeQuery);
             }
+            cp.propogatePostInsert(query, wrappedObject);
         }
     }
 
@@ -1098,7 +1100,8 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
 
         Object objects = getRealCollectionAttributeValueFromObject(query.getObject(), query.getSession());
 
-        if (shouldObjectModifyCascadeToParts(query)) {
+        boolean cascade = shouldObjectModifyCascadeToParts(query);
+        if (containerPolicy.propagatesEventsToCollection() || cascade) {
             //this must be done up here because the select must be done before the entry in the relation table is deleted.
             objectsIterator = containerPolicy.iteratorFor(objects);
         }
@@ -1111,15 +1114,20 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
 
         // If privately owned delete the objects, this does not handle removed objects (i.e. verify delete, not req in uow).
         // Does not try to optimize delete all like 1-m, (rarely used and hard to do).
-        if (shouldObjectModifyCascadeToParts(query)) {
+        if (containerPolicy.propagatesEventsToCollection() || cascade) {
             if (objects != null) {
                 //objectsIterator will not be null because cascade check will still return true.
                 while (containerPolicy.hasNext(objectsIterator)) {
-                    DeleteObjectQuery deleteQuery = new DeleteObjectQuery();
-                    deleteQuery.setIsExecutionClone(true);
-                    deleteQuery.setObject(containerPolicy.next(objectsIterator, query.getSession()));
-                    deleteQuery.setCascadePolicy(query.getCascadePolicy());
-                    query.getSession().executeQuery(deleteQuery);
+                    Object wrappedObject = containerPolicy.nextEntry(objectsIterator, query.getSession());
+                    Object object = containerPolicy.unwrapIteratorResult(wrappedObject);
+                    if (cascade){
+                        DeleteObjectQuery deleteQuery = new DeleteObjectQuery();
+                        deleteQuery.setIsExecutionClone(true);
+                        deleteQuery.setObject(object);
+                        deleteQuery.setCascadePolicy(query.getCascadePolicy());
+                        query.getSession().executeQuery(deleteQuery);
+                    }
+                    containerPolicy.propogatePreDelete(query, wrappedObject);
                 }
             }
         }

@@ -160,10 +160,10 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      * into the toCollection.  Since this ContainerPolicy represents a Map, the key and the value are extracted and added
      * 
      */
-    public void addNextValueFromIteratorInto(Object valuesIterator, Object toCollection, CollectionMapping mapping, UnitOfWorkImpl unitOfWork, boolean isExisting){
+    public void addNextValueFromIteratorInto(Object valuesIterator, Object parent, Object toCollection, CollectionMapping mapping, UnitOfWorkImpl unitOfWork, boolean isExisting){
         Map.Entry entry = ((MapContainerPolicyIterator)valuesIterator).next();
-        Object clonedKey = buildCloneForKey(entry.getKey(), unitOfWork, isExisting);
-        Object clonedValue = buildCloneForValue(entry.getValue(), mapping, unitOfWork, isExisting);
+        Object clonedKey = buildCloneForKey(entry.getKey(), parent, unitOfWork, isExisting);
+        Object clonedValue = buildCloneForValue(entry.getValue(), parent, mapping, unitOfWork, isExisting);
         addInto(clonedKey, clonedValue, toCollection, unitOfWork);
     }
 
@@ -187,20 +187,6 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
     }
     
     /**
-     * Build a clone for the key of a Map represented by this container policy if necessary.
-     * By default, the key is not cloned since in standard EclipseLink Map Mappings it will not be 
-     * an Entity
-     * @param key
-     * @param uow
-     * @param isExisting
-     * @return
-     */
-    protected Object buildCloneForKey(Object key, UnitOfWorkImpl uow, boolean isExisting){
-        return key;
-        
-    }
-    
-    /**
      * Build a clone for the value in a mapping.
      * @param value
      * @param mapping
@@ -208,8 +194,8 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      * @param isExisting
      * @return
      */
-    protected Object buildCloneForValue(Object value, CollectionMapping mapping, UnitOfWorkImpl uow, boolean isExisting){
-        return mapping.buildElementClone(value, uow, isExisting);
+    protected Object buildCloneForValue(Object value, Object parent, CollectionMapping mapping, UnitOfWorkImpl uow, boolean isExisting){
+        return mapping.buildElementClone(value, parent, uow, isExisting);
         
     }
     

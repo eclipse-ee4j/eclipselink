@@ -265,7 +265,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * @param isExisting
      * @return
      */
-    public Object buildElementClone(Object attributeValue, UnitOfWorkImpl unitOfWork, boolean isExisting){
+    public Object buildElementClone(Object attributeValue, Object parent, UnitOfWorkImpl unitOfWork, boolean isExisting){
         return buildCloneValue(attributeValue, unitOfWork);
     }
     
@@ -734,7 +734,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * Get all the fields for the map key
      */
     public List<DatabaseField> getAllFieldsForMapKey(){
-        Vector fields = new Vector(1);
+        Vector<DatabaseField> fields = new Vector<DatabaseField>(1);
         fields.add(getField());
         return fields;
     }
@@ -780,7 +780,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * Used with MapKeyContainerPolicy to abstract getting the target version of a source key
      * @return
      */
-    public Object getTargetVersionOfSourceObject(Object object, MergeManager mergeManager){
+    public Object getTargetVersionOfSourceObject(Object object, Object parent, MergeManager mergeManager){
        return object;
     }
     
@@ -894,6 +894,18 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
         }
     }
 
+    /**
+     * INTERNAL:
+     * Called when iterating through descriptors to handle iteration on this mapping when it is used as a MapKey
+     * @param iterator
+     * @param element
+     */
+    public void iterateOnMapKey(DescriptorIterator iterator, Object element){
+        if (iterator.shouldIterateOnPrimitives()) {
+            iterator.iteratePrimitiveForMapping(element, this);
+        }
+    }
+    
     /**
      * INTERNAL:
      * Merge changes from the source to the target object.

@@ -162,9 +162,9 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
         aggregatecollectionmapping.setIndirectionPolicy(new TransparentIndirectionPolicy());
         aggregatecollectionmapping.setGetMethodName("getAggregateToAggregateMap");
         aggregatecollectionmapping.setSetMethodName("setAggregateToAggregateMap");
-        aggregatecollectionmapping.setReferenceClass(AggregateMapValue.class);
+        aggregatecollectionmapping.setReferenceClass(AggregateMapKey.class);
         aggregatecollectionmapping.addTargetForeignKeyFieldName("AGG_AGG_MAP_REL.HOLDER_ID", "AGG_AGG_MAP_HOLDER.ID");
-        aggregatecollectionmapping.addFieldNameTranslation("AGG_AGG_MAP_REL.MAP_VALUE", "value->DIRECT");
+        aggregatecollectionmapping.addFieldNameTranslation("AGG_AGG_MAP_REL.MAP_VALUE", "key->DIRECT");
         
         AggregateObjectMapping keyMapping = new AggregateObjectMapping();
         keyMapping.setReferenceClass(AggregateMapKey.class);

@@ -299,6 +299,10 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
             } else {
                 numberOfFields = descriptor.getFields().size();
             }
+            if (mapping.isCollectionMapping()){
+                // map keys are indexed within the collection's row.  Therefore we use an offset from within the collections row
+                numberOfFields += ((CollectionMapping)mapping).getContainerPolicy().updateJoinedMappingIndexesForMapKey(getJoinedMappingIndexes_(), numberOfFields);
+            }
             currentIndex = currentIndex + numberOfFields;
         }
         return currentIndex;

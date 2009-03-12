@@ -750,6 +750,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
                         query.getSession().executeQuery(writeQuery);
                     }
                 }
+                cp.propogatePostInsert(query, wrappedObject);
             }
         }
         if (requiresDataModificationEvents() || getContainerPolicy().requiresDataModificationEvents()){
@@ -812,11 +813,14 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         // else delete everything in one shot
         if (mustDeleteReferenceObjectsOneByOne()) {
             for (Object iter = cp.iteratorFor(objects); cp.hasNext(iter);) {
+                Object wrappedObject = cp.nextEntry(iter, query.getSession());
+                Object object = cp.unwrapIteratorResult(wrappedObject);
                 DeleteObjectQuery deleteQuery = new DeleteObjectQuery();
                 deleteQuery.setIsExecutionClone(true);
-                deleteQuery.setObject(cp.next(iter, query.getSession()));
+                deleteQuery.setObject(object);
                 deleteQuery.setCascadePolicy(query.getCascadePolicy());
                 query.getSession().executeQuery(deleteQuery);
+                containerPolicy.propogatePreDelete(deleteQuery, wrappedObject);
             }
             if (!query.getSession().isUnitOfWork()) {
                 // This deletes any objects on the database, as the collection in memory may have been changed.

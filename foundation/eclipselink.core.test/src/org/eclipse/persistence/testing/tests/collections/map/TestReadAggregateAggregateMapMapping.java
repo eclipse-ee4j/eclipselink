@@ -48,15 +48,15 @@ public class TestReadAggregateAggregateMapMapping extends TestCase {
         
         UnitOfWork uow = getSession().acquireUnitOfWork();
         AggregateAggregateMapHolder holder = new AggregateAggregateMapHolder();
-        AggregateMapValue value = new AggregateMapValue();
-        value.setValue(1);
+        AggregateMapKey value = new AggregateMapKey();
+        value.setKey(1);
         AggregateMapKey key = new AggregateMapKey();
         key.setKey(11);
         holder.addAggregateToAggregateMapItem(key, value);
 
         
-        AggregateMapValue value2 = new AggregateMapValue();
-        value2.setValue(2);
+        AggregateMapKey value2 = new AggregateMapKey();
+        value2.setKey(2);
         key = new AggregateMapKey();
         key.setKey(22);
         holder.addAggregateToAggregateMapItem(key, value2);
@@ -83,8 +83,8 @@ public class TestReadAggregateAggregateMapMapping extends TestCase {
         }
         AggregateMapKey mapKey = new AggregateMapKey();
         mapKey.setKey(11);
-        AggregateMapValue value = (AggregateMapValue)holder.getAggregateToAggregateMap().get(mapKey);
-        if (value.getValue() != 1){
+        AggregateMapKey value = (AggregateMapKey)holder.getAggregateToAggregateMap().get(mapKey);
+        if (value.getKey() != 1){
             throw new TestErrorException("Incorrect MapEntityValues was read.");
         }
     }
@@ -93,6 +93,9 @@ public class TestReadAggregateAggregateMapMapping extends TestCase {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         uow.deleteAllObjects(holders);
         uow.commit();
+        if (!verifyDelete(holders.get(0))){
+            throw new TestErrorException("Delete was unsuccessful.");
+        }
         mapping.setJoinFetch(oldFetchJoinValue);
     }
 

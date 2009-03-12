@@ -26,6 +26,7 @@ public class TestUpdateDirectEntity1MMapMapping extends TestReadDirectEntity1MMa
     protected OneToManyMapping mapping = null;
     private boolean usePrivateOwned = false;
     private boolean oldPrivateOwnedValue = false;
+    protected DirectEntity1MMapHolder changedHolder = null;
     
     public TestUpdateDirectEntity1MMapMapping(){
         super();
@@ -47,13 +48,13 @@ public class TestUpdateDirectEntity1MMapMapping extends TestReadDirectEntity1MMa
     public void test(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         holders = uow.readAllObjects(DirectEntity1MMapHolder.class);
-        DirectEntity1MMapHolder holder = (DirectEntity1MMapHolder)holders.get(0);
-        holder.removeDirectToEntityMapItem(new Integer(11));
+        changedHolder = (DirectEntity1MMapHolder)holders.get(0);
+        changedHolder.removeDirectToEntityMapItem(new Integer(11));
         DEOTMMapValue mapValue = new DEOTMMapValue();
         mapValue.setId(3);
         mapValue = (DEOTMMapValue)uow.registerObject(mapValue);
-        mapValue.getHolder().setValue(holder);
-        holder.addDirectToEntityMapItem(new Integer(33), mapValue);
+        mapValue.getHolder().setValue(changedHolder);
+        changedHolder.addDirectToEntityMapItem(new Integer(33), mapValue);
         uow.commit();
     }
         
@@ -61,6 +62,9 @@ public class TestUpdateDirectEntity1MMapMapping extends TestReadDirectEntity1MMa
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         holders = getSession().readAllObjects(DirectEntity1MMapHolder.class);
         DirectEntity1MMapHolder holder = (DirectEntity1MMapHolder)holders.get(0);
+        if (!compareObjects(holder, changedHolder)){
+            throw new TestErrorException("Objects do not match reinitialize");
+        }
         if (holder.getDirectToEntityMap().containsKey(new Integer(1))){
             throw new TestErrorException("Item that was removed is still present in map.");
         }

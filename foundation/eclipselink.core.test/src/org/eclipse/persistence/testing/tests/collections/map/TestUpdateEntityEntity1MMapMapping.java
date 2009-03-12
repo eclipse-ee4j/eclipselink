@@ -31,6 +31,7 @@ public class TestUpdateEntityEntity1MMapMapping extends TestReadEntityEntity1MMa
     private boolean oldValuePrivateOwnedValue = false;
     protected ForeignReferenceMapping keyMapping = null;
     private boolean oldKeyPrivateOwnedValue = false;
+    protected EntityEntity1MMapHolder changedHolder = null;
     
     public TestUpdateEntityEntity1MMapMapping(){
         super();
@@ -55,25 +56,32 @@ public class TestUpdateEntityEntity1MMapMapping extends TestReadEntityEntity1MMa
     public void test(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         holders = uow.readAllObjects(EntityEntity1MMapHolder.class);
-        EntityEntity1MMapHolder holder = (EntityEntity1MMapHolder)holders.get(0);
+        changedHolder = (EntityEntity1MMapHolder)holders.get(0);
         EntityMapKey key = new EntityMapKey();
         key.setId(11);
-        holder.removeEntityToEntityMapItem(key);
+        changedHolder.removeEntityToEntityMapItem(key);
         EEOTMMapValue mapValue = new EEOTMMapValue();
         mapValue.setId(3);
         mapValue = (EEOTMMapValue)uow.registerObject(mapValue);
         key = new EntityMapKey();
         key.setId(33);
         key = (EntityMapKey)uow.registerObject(key);
-        mapValue.getHolder().setValue(holder);
-        holder.addEntityToEntityMapItem(key, mapValue);
+        mapValue.getHolder().setValue(changedHolder);
+        changedHolder.addEntityToEntityMapItem(key, mapValue);
         uow.commit();
+        Object holderForComparison = uow.readObject(changedHolder);
+        if (!compareObjects(changedHolder, holderForComparison)){
+            throw new TestErrorException("Objects do not match after write");
+        }
     }
     
     public void verify(){
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         holders = getSession().readAllObjects(EntityEntity1MMapHolder.class);
         EntityEntity1MMapHolder holder = (EntityEntity1MMapHolder)holders.get(0);
+        if (!compareObjects(holder, changedHolder)){
+            throw new TestErrorException("Objects do not match reinitialize");
+        }
         EntityMapKey key = new EntityMapKey();
         key.setId(11);
         if (holder.getEntityToEntityMap().containsKey(key)){
