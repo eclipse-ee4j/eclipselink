@@ -23,7 +23,9 @@ public class JAXBDOMTestSuite extends TestCase {
         String contextPath = "org.eclipse.persistence.testing.oxm.jaxb.dom";
         System.setProperty("jaxb.test.contextpath", contextPath);
 				String platform = System.getProperty("eclipselink.xml.platform");
-        boolean jaxpPlatform = platform.equalsIgnoreCase("org.eclipse.persistence.platform.xml.jaxp.JAXPPlatform");
+        //boolean jaxpPlatform = platform.equalsIgnoreCase("org.eclipse.persistence.platform.xml.jaxp.JAXPPlatform");
+				boolean jaxpPlatform = true;
+				
 				
         suite.addTestSuite(MarshallerTestCases.class);
         suite.addTestSuite(UnmarshallerTestCases.class);

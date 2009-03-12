@@ -20,11 +20,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlType.DEFAULT;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapters;
 import javax.xml.namespace.QName;
@@ -32,6 +32,7 @@ import javax.xml.transform.Source;
 
 import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
+import org.eclipse.persistence.jaxb.javamodel.JavaConstructor;
 import org.eclipse.persistence.jaxb.javamodel.JavaField;
 import org.eclipse.persistence.jaxb.javamodel.JavaHasAnnotations;
 import org.eclipse.persistence.jaxb.javamodel.JavaMethod;
@@ -68,6 +69,7 @@ public class AnnotationsProcessor {
     private HashMap<String, TypeInfo> typeInfo;
     private HashMap<String, UnmarshalCallback> unmarshalCallbacks;
     private HashMap<QName, ElementDeclaration> globalElements;
+    private HashMap<String, JavaMethod> factoryMethods;
     private NamespaceResolver namespaceResolver;
     private Helper helper;
 
@@ -80,16 +82,23 @@ public class AnnotationsProcessor {
         typeInfo = new HashMap<String, TypeInfo>();
         userDefinedSchemaTypes = new HashMap<String, QName>();
         packageToNamespaceMappings = new HashMap<String, NamespaceInfo>(); 
+        this.factoryMethods = new HashMap<String, JavaMethod>();
         this.namespaceResolver = new NamespaceResolver();
         
         ArrayList<JavaClass> classesToProcess = new ArrayList<JavaClass>();
         //check for ObjectFactories and process them
         for(JavaClass javaClass:classes) {
-            if(helper.isAnnotationPresent(javaClass, XmlRegistry.class)) {
-                this.processObjectFactory(javaClass, classesToProcess);
-            } else {
-                classesToProcess.add(javaClass);
-            }
+        	if(helper.isAnnotationPresent(javaClass, XmlRegistry.class)) {
+        		this.processObjectFactory(javaClass, classesToProcess);
+        	} else if(!helper.isAnnotationPresent(javaClass, XmlTransient.class)){
+        		classesToProcess.add(javaClass);
+        		if(helper.isAnnotationPresent(javaClass, XmlSeeAlso.class)) {
+        		    XmlSeeAlso seeAlso = (XmlSeeAlso)helper.getAnnotation(javaClass, XmlSeeAlso.class);
+        		    for(Class next:seeAlso.value()) {
+        		        classesToProcess.add(helper.getJavaClass(next));
+        		    }
+        		}
+        	}
         }
         
         updateGlobalElements(classesToProcess);
@@ -114,7 +123,11 @@ public class AnnotationsProcessor {
     }    
     
     public SchemaTypeInfo addClass(JavaClass javaClass) {
-        if (javaClass == null) { return null; }
+        if (javaClass == null) { 
+            return null;
+        } else if(helper.isAnnotationPresent(javaClass, XmlTransient.class)) {
+            return null;
+        }
         
         if (typeInfo == null) {
             // this is the first class. Initialize all the properties
@@ -183,6 +196,20 @@ public class AnnotationsProcessor {
             info = new TypeInfo(helper);
         }
 
+        JavaMethod factoryMethod = this.factoryMethods.get(javaClass.getRawName()); 
+        if(factoryMethod != null) {
+            //set up factory method info for mappings.
+            info.setFactoryMethodName(factoryMethod.getName());
+            info.setObjectFactoryClassName(factoryMethod.getOwningClass().getRawName());
+            JavaClass[] paramTypes = factoryMethod.getParameterTypes();
+            if(paramTypes != null && paramTypes.length > 0) {
+                String[] paramTypeNames = new String[paramTypes.length];
+                for(int i = 0; i < paramTypes.length; i++) {
+                    paramTypeNames[i] = paramTypes[i].getRawName();
+                }
+                info.setFactoryMethodParamTypes(paramTypeNames);
+            }
+        }
         JavaPackage pack = javaClass.getPackage();
         // handle package level adapters (add them to the type info for this class)
         if (helper.isAnnotationPresent(pack, XmlJavaTypeAdapters.class)) {
@@ -240,6 +267,26 @@ public class AnnotationsProcessor {
                 info.setClassNamespace(typeAnnotation.namespace());
             } else {
                 info.setClassNamespace(packageNamespace.getNamespace());
+            }
+            Class factoryClass = typeAnnotation.factoryClass();
+            if(factoryClass != DEFAULT.class) {
+                String factoryMethodName = typeAnnotation.factoryMethod();
+                if(factoryMethodName == null || factoryMethodName.equals("")) {
+                    throw org.eclipse.persistence.exceptions.JAXBException.factoryClassWithoutFactoryMethod(javaClass.getName());
+                }
+                info.setFactoryMethodName(factoryMethodName);
+                info.setObjectFactoryClassName(factoryClass.getCanonicalName());
+            } else {
+                String factoryMethodName = typeAnnotation.factoryMethod();
+                if(factoryMethodName != null && !factoryMethodName.equals("")) {
+                    //factory method applies to the current class verify method exists
+                    JavaMethod method = javaClass.getDeclaredMethod(factoryMethodName, new JavaClass[]{});
+                    if(method == null) {
+                        throw org.eclipse.persistence.exceptions.JAXBException.factoryMethodNotDeclared(factoryMethodName, javaClass.getName());
+                    }
+                    info.setFactoryMethodName(factoryMethodName);
+                    info.setObjectFactoryClassName(javaClass.getRawName());
+                }
             }
         } else {
             typeName = getSchemaTypeNameForClassName(javaClass.getName());
@@ -315,6 +362,13 @@ public class AnnotationsProcessor {
                 createTypeInfoFor(propertyType);
             }
         }
+        //Make sure this class has a factory method or a zero arg constructor
+        if(info.getFactoryMethodName() == null && info.getObjectFactoryClassName() == null) {
+            JavaConstructor zeroArgConstructor = javaClass.getDeclaredConstructor(new JavaClass[]{});
+            if(zeroArgConstructor == null) {
+                throw org.eclipse.persistence.exceptions.JAXBException.factoryMethodOrConstructorRequired(javaClass.getName());
+            }
+        }
         return info;
     }
 
@@ -348,6 +402,7 @@ public class AnnotationsProcessor {
         ArrayList properties = new ArrayList();
         if (cls == null) { return properties; }
         
+        boolean hasAnyAttribteProperty = false;
         for (Iterator<JavaField> fieldIt = cls.getDeclaredFields().iterator(); fieldIt.hasNext(); ) {
             JavaField nextField = fieldIt.next();
             if (!helper.isAnnotationPresent(nextField, XmlTransient.class)) {
@@ -407,8 +462,7 @@ public class AnnotationsProcessor {
                             QName qname = new QName(namespace, name);
                             ElementDeclaration referencedElement = this.globalElements.get(qname);
                             if(referencedElement != null) {
-                                addReferencedElement((ReferenceProperty)property, referencedElement);
-                                //((ReferenceProperty)property).addReferencedElement(referencedElement);
+                                ((ReferenceProperty)property).addReferencedElement(referencedElement);
                             }
                         }
                     } else {
@@ -455,7 +509,14 @@ public class AnnotationsProcessor {
                     }                    
                     
                     if(helper.isAnnotationPresent(property.getElement(), XmlAnyAttribute.class)) {
+                        if(hasAnyAttribteProperty) {
+                            throw org.eclipse.persistence.exceptions.JAXBException.multipleAnyAttributeMapping(cls.getName());
+                        }
+                        if(!ptype.getName().equals("java.util.Map")) {
+                            throw org.eclipse.persistence.exceptions.JAXBException.anyAttributeOnNonMap(property.getPropertyName());
+                        }
                         property.setIsAttribute(true);
+                        hasAnyAttribteProperty = true;
                     }
 
                     // Check for XmlElement annotation and set required (a.k.a. minOccurs) accordingly
@@ -516,6 +577,7 @@ public class AnnotationsProcessor {
         }
         // Next iterate over the getters and find their setter methods, add whichever one is
         // annotated to the properties list. If neither is, use the getter
+        boolean hasAnyAttribteProperty = false;
         for (int i=0; i<getMethods.size(); i++) {
             JavaMethod getMethod = getMethods.get(i);
             String propertyName = "";
@@ -599,7 +661,14 @@ public class AnnotationsProcessor {
             }
             
             if(helper.isAnnotationPresent(property.getElement(), XmlAnyAttribute.class)) {
+                if(hasAnyAttribteProperty) {
+                    throw org.eclipse.persistence.exceptions.JAXBException.multipleAnyAttributeMapping(cls.getName());
+                }
+                if(!ptype.getName().equals("java.util.Map")) {
+                    throw org.eclipse.persistence.exceptions.JAXBException.anyAttributeOnNonMap(property.getPropertyName());
+                }
                 property.setIsAttribute(true);
+                hasAnyAttribteProperty = true;
             }
             if(helper.isAnnotationPresent(property.getElement(), XmlElements.class)) {
                 XmlElements xmlElements = (XmlElements)helper.getAnnotation(property.getElement(), XmlElements.class);
@@ -1002,67 +1071,67 @@ public class AnnotationsProcessor {
         while(methodsIter.hasNext()) {
             JavaMethod next = (JavaMethod)methodsIter.next();
             if(next.getName().startsWith("create")) {
-                if(!(next.getReturnType().getName().equals("javax.xml.bind.JAXBElement")) && !classes.contains(next.getReturnType())) {
-                    classes.add(next.getReturnType());
+                JavaClass type = next.getReturnType();
+                if(type.getName().equals("javax.xml.bind.JAXBElement")) {
+                    type = (JavaClass)next.getReturnType().getActualTypeArguments().toArray()[0];
                 } else {
-                    if(helper.isAnnotationPresent(next, XmlElementDecl.class)) {
-                        XmlElementDecl elementDecl = (XmlElementDecl)helper.getAnnotation(next, XmlElementDecl.class);
-                        String url = elementDecl.namespace();
-                        if("##default".equals(url)) {
-                            url = namespaceInfo.getNamespace();
-                        }
-                        String localName = elementDecl.name();
-                        QName qname = new QName(url, localName);
-                        
-                        if(this.globalElements == null) {
-                            globalElements = new HashMap<QName, ElementDeclaration>();
-                        }
+                    this.factoryMethods.put(next.getReturnType().getRawName(), next);
+                }
+                if(helper.isAnnotationPresent(next, XmlElementDecl.class)) {
+                    XmlElementDecl elementDecl = (XmlElementDecl)helper.getAnnotation(next, XmlElementDecl.class);
+                    String url = elementDecl.namespace();
+                    if("##default".equals(url)) {
+                        url = namespaceInfo.getNamespace();
+                    }
+                    String localName = elementDecl.name();
+                    QName qname = new QName(url, localName);
+                    
+                    if(this.globalElements == null) {
+                        globalElements = new HashMap<QName, ElementDeclaration>();
+                    }
 
-                        boolean isList = false;
-                        JavaClass type = (JavaClass)next.getReturnType().getActualTypeArguments().toArray()[0];
-                        if("java.util.List".equals(type.getName())){
-                            isList = true;
-                            if(type.hasActualTypeArguments()){
-                                type = (JavaClass)type.getActualTypeArguments().toArray()[0];                               
-                            }
-                        }
-                        
-                        ElementDeclaration declaration = new ElementDeclaration(qname, type, type.getQualifiedName(), isList);
-                        if(!elementDecl.substitutionHeadName().equals("")) {
-                            String subHeadLocal = elementDecl.substitutionHeadName();
-                            String subHeadNamespace = elementDecl.substitutionHeadNamespace();
-                            if(subHeadNamespace.equals("##default")) {
-                                subHeadNamespace = namespaceInfo.getNamespace();
-                            }
-                            declaration.setSubstitutionHead(new QName(subHeadNamespace, subHeadLocal));
-                        }
-                        
-                        if (helper.isAnnotationPresent(next, XmlJavaTypeAdapter.class)) {
-                            XmlJavaTypeAdapter typeAdapter = (XmlJavaTypeAdapter) helper.getAnnotation(next, XmlJavaTypeAdapter.class);
-                            Class typeAdapterClass = typeAdapter.value();
-                            declaration.setJavaTypeAdapterClass(typeAdapterClass);
-                            
-                            Method[] tacMethods = typeAdapterClass.getMethods();
-                            Class declJavaType = null;
-                            
-                            for (int i = 0; i < tacMethods.length; i++) {
-                                Method method = tacMethods[i];
-                                if (method.getName().equals("marshal")) {
-                                    declJavaType = method.getReturnType();
-                                    break;
-                                }
-                            }                             
-                            
-                            declaration.setJavaType(helper.getJavaClass(declJavaType));
-                            declaration.setAdaptedJavaType(type);
-                        }                        
-                        
-                        globalElements.put(qname, declaration);
-
-                        if(!helper.isBuiltInJavaType(type) && !classes.contains(type)) {
-                            classes.add(type);
+                    boolean isList = false;
+                    if("java.util.List".equals(type.getName())){
+                        isList = true;
+                        if(type.hasActualTypeArguments()){
+                            type = (JavaClass)type.getActualTypeArguments().toArray()[0];                               
                         }
                     }
+                        
+                    ElementDeclaration declaration = new ElementDeclaration(qname, type, type.getQualifiedName(), isList);
+                    if(!elementDecl.substitutionHeadName().equals("")) {
+                        String subHeadLocal = elementDecl.substitutionHeadName();
+                        String subHeadNamespace = elementDecl.substitutionHeadNamespace();
+                        if(subHeadNamespace.equals("##default")) {
+                            subHeadNamespace = namespaceInfo.getNamespace();
+                        }
+                        declaration.setSubstitutionHead(new QName(subHeadNamespace, subHeadLocal));
+                    }
+                        
+                    if (helper.isAnnotationPresent(next, XmlJavaTypeAdapter.class)) {
+                        XmlJavaTypeAdapter typeAdapter = (XmlJavaTypeAdapter) helper.getAnnotation(next, XmlJavaTypeAdapter.class);
+                        Class typeAdapterClass = typeAdapter.value();
+                        declaration.setJavaTypeAdapterClass(typeAdapterClass);
+                            
+                        Method[] tacMethods = typeAdapterClass.getMethods();
+                        Class declJavaType = null;
+                            
+                        for (int i = 0; i < tacMethods.length; i++) {
+                            Method method = tacMethods[i];
+                            if (method.getName().equals("marshal")) {
+                                declJavaType = method.getReturnType();
+                                break;
+                            }
+                        }                             
+                            
+                        declaration.setJavaType(helper.getJavaClass(declJavaType));
+                        declaration.setAdaptedJavaType(type);
+                    }                        
+                        
+                    globalElements.put(qname, declaration);
+                }
+                if(!helper.isBuiltInJavaType(type) && !classes.contains(type)) {
+                    classes.add(type);
                 }
             }
         }

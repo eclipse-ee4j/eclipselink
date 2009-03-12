@@ -40,6 +40,10 @@ public interface JavaClass extends JavaHasAnnotations {
     public Collection getDeclaredMethods();
     public JavaMethod getMethod(String arg0, JavaClass[] arg1);
     public Collection getMethods();
+    public JavaConstructor getConstructor(JavaClass[] parameterTypes);
+    public Collection getConstructors();
+    public JavaConstructor getDeclaredConstructor(JavaClass[] parameterTypes);
+    public Collection getDeclaredConstructors();
     public int getModifiers();
     public String getName();
     public JavaPackage getPackage();

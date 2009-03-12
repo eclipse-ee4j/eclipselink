@@ -68,6 +68,9 @@ public class TypeInfo {
     private Property idProperty;  // if there is an XmlID annotation, set the property for mappings gen
     private HashMap<String, JavaClass> adaptersByClass;
     private Helper helper;
+    private String objectFactoryClassName;
+    private String factoryMethodName;
+    private String[] factoryMethodParamTypes;
     
     public TypeInfo(Helper helper) {
         propertyNames = new ArrayList<String>();
@@ -292,5 +295,30 @@ public class TypeInfo {
     public void setHasElementRefs(boolean hasRefs) {
     	this.hasElementRefs = hasRefs;
     }
+    
+    public String getObjectFactoryClassName() {
+        return objectFactoryClassName;
+    }
+    
+    public void setObjectFactoryClassName(String factoryClass) {
+        this.objectFactoryClassName = factoryClass;
+    }
+    
+    public String getFactoryMethodName() {
+        return this.factoryMethodName;
+    }
+    
+    public void setFactoryMethodName(String factoryMethod) {
+        this.factoryMethodName = factoryMethod;
+    }
+    
+    public String[] getFactoryMethodParamTypes() {
+        return this.factoryMethodParamTypes;
+    }
+    
+    public void setFactoryMethodParamTypes(String[] paramTypes) {
+        this.factoryMethodParamTypes = paramTypes;
+    }
+    
 }
         

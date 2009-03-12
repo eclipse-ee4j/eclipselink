@@ -14,11 +14,13 @@ package org.eclipse.persistence.jaxb.javamodel.reflection;
 
 import org.eclipse.persistence.jaxb.javamodel.JavaAnnotation;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
+import org.eclipse.persistence.jaxb.javamodel.JavaConstructor;
 import org.eclipse.persistence.jaxb.javamodel.JavaField;
 import org.eclipse.persistence.jaxb.javamodel.JavaMethod;
 import org.eclipse.persistence.jaxb.javamodel.JavaPackage;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
@@ -160,6 +162,62 @@ public class JavaClassImpl implements JavaClass {
             methodCollection.add(new JavaMethodImpl(method));
         }
         return methodCollection;
+    }
+
+    public JavaConstructor getConstructor(JavaClass[] paramTypes) {
+        if (paramTypes == null) {
+            paramTypes = new JavaClass[0];
+        }
+        Class[] params = new Class[paramTypes.length];
+        for (int i=0; i<paramTypes.length; i++) {
+            JavaClass jType = paramTypes[i];
+            if (jType != null) {
+                params[i] = ((JavaClassImpl) jType).getJavaClass();
+            }
+        }
+        try {
+            return new JavaConstructorImpl(jClass.getConstructor(params));
+        } catch (NoSuchMethodException nsme) {
+            // TODO: should we return an empty method here, throw an exception, or return null?
+            return null;
+        }
+    }
+    
+    public JavaConstructor getDeclaredConstructor(JavaClass[] paramTypes) {
+        if (paramTypes == null) {
+            paramTypes = new JavaClass[0];
+        }
+        Class[] params = new Class[paramTypes.length];
+        for (int i=0; i<paramTypes.length; i++) {
+            JavaClass jType = paramTypes[i];
+            if (jType != null) {
+                params[i] = ((JavaClassImpl) jType).getJavaClass();
+            }
+        }
+        try {
+            return new JavaConstructorImpl(jClass.getDeclaredConstructor(params));
+        } catch (NoSuchMethodException nsme) {
+            // TODO: should we return an empty method here, throw an exception, or return null?
+            return null;
+        }
+    }    
+    
+    public Collection getConstructors() {
+        Constructor[] constructors = this.jClass.getConstructors();
+        ArrayList<JavaConstructor> constructorCollection = new ArrayList(constructors.length);
+        for(Constructor next:constructors) {
+            constructorCollection.add(new JavaConstructorImpl(next));
+        }
+        return constructorCollection;
+    }
+    
+    public Collection getDeclaredConstructors() {
+        Constructor[] constructors = this.jClass.getDeclaredConstructors();
+        ArrayList<JavaConstructor> constructorCollection = new ArrayList(constructors.length);
+        for(Constructor next:constructors) {
+            constructorCollection.add(new JavaConstructorImpl(next));
+        }
+        return constructorCollection;
     }
 
     public JavaField getField(String arg0) {

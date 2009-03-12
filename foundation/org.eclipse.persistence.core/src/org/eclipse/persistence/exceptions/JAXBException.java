@@ -29,6 +29,11 @@ import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
 public class JAXBException extends EclipseLinkException {
 
     public static final int NO_OBJECT_FACTORY_OR_JAXB_INDEX_IN_PATH = 50000;
+    public static final int FACTORY_METHOD_OR_ZERO_ARG_CONST_REQ = 50001;
+    public static final int FACTORY_CLASS_WITHOUT_FACTORY_METHOD = 50002;
+    public static final int FACTORY_METHOD_NOT_DECLARED = 50003;
+    public static final int ANY_ATTRIBUTE_ON_NON_MAP_PROPERTY = 50004;
+    public static final int MULTIPLE_ANY_ATTRIBUTE_MAPPING = 50005;
     
     protected JAXBException(String message) {
         super(message);
@@ -45,4 +50,40 @@ public class JAXBException extends EclipseLinkException {
         exception.setErrorCode(NO_OBJECT_FACTORY_OR_JAXB_INDEX_IN_PATH);
         return exception;
     }
+    
+    public static JAXBException factoryMethodOrConstructorRequired(String className) {
+        Object[] args = { className };
+        JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, FACTORY_METHOD_OR_ZERO_ARG_CONST_REQ, args));
+        exception.setErrorCode(FACTORY_METHOD_OR_ZERO_ARG_CONST_REQ);
+        return exception;
+    }
+    
+    public static JAXBException factoryClassWithoutFactoryMethod(String className) {
+        Object[] args = {className };
+        JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, FACTORY_CLASS_WITHOUT_FACTORY_METHOD, args));
+        exception.setErrorCode(FACTORY_CLASS_WITHOUT_FACTORY_METHOD);
+        return exception;
+    }
+    
+    public static JAXBException factoryMethodNotDeclared(String methodName, String className) {
+        Object[] args = {methodName, className};
+        JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, FACTORY_METHOD_NOT_DECLARED, args));
+        exception.setErrorCode(FACTORY_METHOD_NOT_DECLARED);
+        return exception;
+
+    }
+    
+    public static JAXBException multipleAnyAttributeMapping(String className) {
+        Object[] args = {className};
+        JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, MULTIPLE_ANY_ATTRIBUTE_MAPPING, args));
+        exception.setErrorCode(MULTIPLE_ANY_ATTRIBUTE_MAPPING);
+        return exception;
+    }
+    
+    public static JAXBException anyAttributeOnNonMap(String propertyName) {
+        Object[] args = {propertyName};
+        JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, ANY_ATTRIBUTE_ON_NON_MAP_PROPERTY, args));
+        exception.setErrorCode(ANY_ATTRIBUTE_ON_NON_MAP_PROPERTY);
+        return exception;
+    }    
 }

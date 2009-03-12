@@ -85,6 +85,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         this.classLoader = new JaxbClassLoader(Thread.currentThread().getContextClassLoader());
         generator = new Generator(new JavaModelInputImpl(classes, new JavaModelImpl(this.classLoader)));
         Project proj = generator.generateProject();
+        proj.convertClassNamesToClasses(classLoader);
         // need to make sure that the java class is set properly on each 
         // descriptor when using java classname - req'd for JOT api implementation 
         ConversionManager manager = new ConversionManager();

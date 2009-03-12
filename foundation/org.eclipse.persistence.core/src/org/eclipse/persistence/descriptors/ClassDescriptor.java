@@ -1453,7 +1453,9 @@ public class ClassDescriptor implements Cloneable, Serializable {
         if (hasCMPPolicy()) {
             getCMPPolicy().convertClassNamesToClasses(classLoader);
         }
-        this.queryManager.convertClassNamesToClasses(classLoader);
+        if(this.queryManager != null) {
+            this.queryManager.convertClassNamesToClasses(classLoader);
+        }
     }
 
     /**

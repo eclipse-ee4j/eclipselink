@@ -418,6 +418,9 @@ public class SchemaGenerator {
                     Choice choice = new Choice();
                     ArrayList<Property> choiceProperties = (ArrayList<Property>)((ChoiceProperty)next).getChoiceProperties();
                     addToSchemaType(choiceProperties, choice, parentType, schema);
+                    if(isCollectionType(next)) {
+                        choice.setMaxOccurs("unbounded");
+                    }
                     if(parentCompositor instanceof Sequence) {
                         ((Sequence)parentCompositor).addChoice(choice);
                     } else if(parentCompositor instanceof Choice) {
@@ -768,7 +771,7 @@ public class SchemaGenerator {
         for (QName next : additionalElements.keySet()) {
             String namespaceURI = next.getNamespaceURI();
             Schema targetSchema = getSchemaForNamespace(namespaceURI);
-            //TODO: check for existing element in Target Schema first
+            
             if(targetSchema.getTopLevelElements().get(next.getLocalPart()) == null) {
                 Element element = new Element();
                 element.setName(next.getLocalPart());

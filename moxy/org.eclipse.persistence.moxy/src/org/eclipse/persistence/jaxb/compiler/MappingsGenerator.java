@@ -35,6 +35,7 @@ import org.eclipse.persistence.jaxb.javamodel.JavaMethod;
 import org.eclipse.persistence.jaxb.JAXBEnumTypeConverter;
 import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
 import org.eclipse.persistence.internal.jaxb.DomHandlerConverter;
+import org.eclipse.persistence.internal.jaxb.MultiArgInstantiationPolicy;
 import org.eclipse.persistence.internal.jaxb.WrappedValue;
 import org.eclipse.persistence.internal.jaxb.JAXBElementAttributeAccessor;
 import org.eclipse.persistence.mappings.AttributeAccessor;
@@ -115,12 +116,22 @@ public class MappingsGenerator {
     }
     
     public void generateDescriptor(JavaClass javaClass, Project project) {
+        if(javaClass.isAbstract()) {
+            //don't generate a descriptor for abstract classes
+            return;
+        }
+        
         String jClassName = javaClass.getQualifiedName();
         TypeInfo info = typeInfo.get(jClassName);
         NamespaceInfo namespaceInfo = this.packageToNamespaceMappings.get(javaClass.getPackage().getQualifiedName());
         String packageNamespace = namespaceInfo.getNamespace();
         String elementName;
         String namespace;
+
+        if(javaClass.getSuperclass() != null && javaClass.getSuperclass().getName().equals("javax.xml.bind.JAXBElement")) {
+            generateDescriptorForJAXBElementSubclass(javaClass, project, namespaceInfo.getNamespaceResolver());
+            return;
+        }
         
         XmlRootElement rootElem = (XmlRootElement) helper.getAnnotation(javaClass, XmlRootElement.class);
         if (rootElem == null) {
@@ -135,6 +146,11 @@ public class MappingsGenerator {
         }
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClassName(jClassName);
+
+        if(info.getFactoryMethodName() != null) {
+            descriptor.getInstantiationPolicy().useFactoryInstantiationPolicy(info.getObjectFactoryClassName(), info.getFactoryMethodName());
+        }
+        
         if (namespace.equals("##default")) {
             namespace = namespaceInfo.getNamespace();
         }
@@ -150,6 +166,35 @@ public class MappingsGenerator {
         info.setDescriptor(descriptor);
     }
 
+    public void generateDescriptorForJAXBElementSubclass(JavaClass javaClass, Project project, NamespaceResolver nsr) {
+        String jClassName = javaClass.getQualifiedName();
+        TypeInfo info = typeInfo.get(jClassName);
+
+        XMLDescriptor xmlDescriptor = new XMLDescriptor();
+        xmlDescriptor.setJavaClassName(jClassName);
+        
+        String[] factoryMethodParamTypes = info.getFactoryMethodParamTypes();
+        
+        MultiArgInstantiationPolicy policy = new MultiArgInstantiationPolicy();
+        policy.useFactoryInstantiationPolicy(info.getObjectFactoryClassName(), info.getFactoryMethodName());
+        policy.setParameterTypeNames(factoryMethodParamTypes);
+        policy.setDefaultValues(new String[]{null});
+        
+        xmlDescriptor.setInstantiationPolicy(policy);
+        
+        XMLDirectMapping mapping = new XMLDirectMapping();
+        mapping.setAttributeName("value");
+        mapping.setGetMethodName("getValue");
+        mapping.setSetMethodName("setValue");
+        mapping.setXPath("text()");
+        mapping.setAttributeClassificationName(factoryMethodParamTypes[0]);
+        xmlDescriptor.addMapping(mapping);
+        
+        xmlDescriptor.setNamespaceResolver(nsr);
+        
+        project.addDescriptor(xmlDescriptor);
+        info.setDescriptor(xmlDescriptor);
+    }
     public void generateMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
         if (property.getAdapterClass() != null) {
             // need to check the adapter to determine whether we require a
@@ -597,12 +642,15 @@ public class MappingsGenerator {
                 continue;
             }
             XMLDescriptor descriptor = info.getDescriptor();
-            TypeInfo parentInfo = this.typeInfo.get(javaClass.getSuperclass().getQualifiedName());
-            if (parentInfo != null) {
-                // generate inherited mappings first.
-                generateMappings(parentInfo, descriptor, namespaceInfo);
+            //null descriptor for abstract classes
+            if(descriptor != null) {
+                TypeInfo parentInfo = this.typeInfo.get(javaClass.getSuperclass().getQualifiedName());
+                if (parentInfo != null) {
+                    //  generate inherited mappings first.
+                    generateMappings(parentInfo, descriptor, namespaceInfo);
+                }
+                generateMappings(info, descriptor, namespaceInfo);
             }
-            generateMappings(info, descriptor, namespaceInfo);
         }
     }
 
@@ -800,144 +848,6 @@ public class MappingsGenerator {
             return valueField;
         }
         return null;
-    }
-    
-    public ArrayList<Property> getPropertiesForClass(JavaClass cls, TypeInfo info) {
-        if (info.getAccessType() == XmlAccessType.FIELD) {
-            return getFieldPropertiesForClass(cls, info, false);
-        } else if (info.getAccessType() == XmlAccessType.PROPERTY) {
-            return getPropertyPropertiesForClass(cls, info, false);
-        } else if (info.getAccessType() == XmlAccessType.PUBLIC_MEMBER) {
-            return getPublicMemberPropertiesForClass(cls, info);
-        } else {
-            return getNoAccessTypePropertiesForClass(cls, info);
-        }
-    }
-    
-    public ArrayList<Property> getFieldPropertiesForClass(JavaClass cls, TypeInfo info, boolean onlyPublic) {
-        ArrayList properties = new ArrayList();
-
-        for (JavaField nextField : new ArrayList<JavaField>(cls.getDeclaredFields())) {
-            if (!helper.isAnnotationPresent(nextField, XmlTransient.class)) {
-                if ((Modifier.isPublic(nextField.getModifiers()) && onlyPublic) || !onlyPublic) {
-                    Property property = new Property();
-                    property.setPropertyName(nextField.getName());
-                    property.setElement(nextField);
-                    property.setType(helper.getType(nextField));
-                    property.setGenericType(helper.getGenericType(nextField));
-                    properties.add(property);
-                }
-            }
-        }
-        return properties;
-    }
-    
-    public ArrayList<Property> getPropertyPropertiesForClass(JavaClass cls, TypeInfo info, boolean onlyPublic) {
-        ArrayList properties = new ArrayList();
-        // First collect all the getters
-        ArrayList<JavaMethod> getMethods = new ArrayList<JavaMethod>();
-        for (JavaMethod next : new ArrayList<JavaMethod>(cls.getDeclaredMethods())) {
-            if (next.getName().startsWith("get") || ((areEquals((JavaClass) next.getReturnType(), Boolean.class) || areEquals((JavaClass) next.getReturnType(), boolean.class)) && next.getName().startsWith("is"))) {
-                if ((onlyPublic && Modifier.isPublic(next.getModifiers())) || !onlyPublic) {
-                    getMethods.add(next);
-                }
-            }
-        }
-        // Next iterate over the getters and find their setter methods, add
-        // whichever one is annotated to the properties list. If neither is, 
-        // use the getter
-        for (JavaMethod getMethod : new ArrayList<JavaMethod>(cls.getDeclaredMethods())) {
-            String propertyName = "";
-            if (getMethod.getName().startsWith("get")) {
-                propertyName = getMethod.getName().substring(3);
-            } else if (getMethod.getName().startsWith("is")) {
-                propertyName = getMethod.getName().substring(2);
-            }
-            // make the first Character lowercase
-            propertyName = Character.toLowerCase(propertyName.charAt(0)) + propertyName.substring(1);
-
-            Property property = new Property(helper);
-            property.setPropertyName(propertyName);
-            property.setType((JavaClass) getMethod.getReturnType());
-            property.setGenericType(helper.getGenericReturnType(getMethod));
-            
-            String setMethodName = "set" + Character.toUpperCase(propertyName.charAt(0)) + propertyName.substring(1);
-            
-            JavaClass[] paramTypes = { (JavaClass) getMethod.getReturnType() };
-            JavaMethod setMethod = cls.getMethod(setMethodName, paramTypes);
-            if (setMethod != null && !setMethod.getAnnotations().isEmpty()) {
-                // use the set method if it exists and is annotated
-                property.setElement(setMethod);
-            } else {
-                if (!helper.isAnnotationPresent(getMethod, XmlTransient.class)) {
-                    property.setElement(getMethod);
-                }
-            }
-            if (!helper.isAnnotationPresent(property.getElement(), XmlTransient.class)) {
-                properties.add(property);
-            }
-        }
-        return properties;
-    }
-    
-    public ArrayList getPublicMemberPropertiesForClass(JavaClass cls, TypeInfo info) {
-        ArrayList<Property> publicFieldProperties = getFieldPropertiesForClass(cls, info, true);
-        ArrayList<Property> publicMethodProperties = getPropertyPropertiesForClass(cls, info, true);
-        // Not sure who should win if a property exists for both or the correct
-        // order
-        if (publicFieldProperties.size() >= 0 && publicMethodProperties.size() == 0) {
-            return publicFieldProperties;
-        } else if (publicMethodProperties.size() > 0 && publicFieldProperties.size() == 0) {
-            return publicMethodProperties;
-        } else {
-            // add any non-duplicate method properties to the collection.
-            // In the case of a collision if one is annotated use it, otherwise
-            // use the field.
-            HashMap fieldPropertyMap = getPropertyMapFromArrayList(publicFieldProperties);
-
-            for (int i = 0; i < publicMethodProperties.size(); i++) {
-                Property next = (Property) publicMethodProperties.get(i);
-                if (fieldPropertyMap.get(next.getPropertyName()) == null) {
-                    publicFieldProperties.add(next);
-                }
-            }
-            return publicFieldProperties;
-        }
-    }
-    
-    public HashMap getPropertyMapFromArrayList(ArrayList<Property> props) {
-        HashMap propMap = new HashMap(props.size());
-        Iterator propIter = props.iterator();
-        while (propIter.hasNext()) {
-            Property next = (Property) propIter.next();
-            propMap.put(next.getPropertyName(), next);
-        }
-        return propMap;
-    }
-    
-    public ArrayList getNoAccessTypePropertiesForClass(JavaClass cls, TypeInfo info) {
-        ArrayList list = new ArrayList();
-        ArrayList fieldProperties = getFieldPropertiesForClass(cls, info, false);
-        ArrayList methodProperties = getPropertyPropertiesForClass(cls, info, false);
-
-        // Iterate over the field and method properties. If ANYTHING contains an
-        // annotation and
-        // Doesn't appear in the other list, add it to the final list
-        for (int i = 0; i < fieldProperties.size(); i++) {
-            Property next = (Property) fieldProperties.get(i);
-            JavaHasAnnotations elem = next.getElement();
-            if (helper.isAnnotationPresent(elem, XmlElement.class) || helper.isAnnotationPresent(elem, XmlAttribute.class) || helper.isAnnotationPresent(elem, XmlAnyAttribute.class) || helper.isAnnotationPresent(elem, XmlAnyElement.class) || helper.isAnnotationPresent(elem, XmlValue.class)) {
-                list.add(next);
-            }
-        }
-        for (int i = 0; i < methodProperties.size(); i++) {
-            Property next = (Property) methodProperties.get(i);
-            JavaHasAnnotations elem = next.getElement();
-            if (helper.isAnnotationPresent(elem, XmlElement.class) || helper.isAnnotationPresent(elem, XmlAttribute.class) || helper.isAnnotationPresent(elem, XmlAnyAttribute.class) || helper.isAnnotationPresent(elem, XmlAnyElement.class) || helper.isAnnotationPresent(elem, XmlValue.class)) {
-                list.add(next);
-            }
-        }
-        return list;
     }
     
     public void processSchemaType(XmlSchemaType type) {

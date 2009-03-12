@@ -75,6 +75,7 @@ public class JAXBContextFactory {
             } else {
                 conversionManager = ConversionManager.getDefaultManager();
             }
+            proj.convertClassNamesToClasses(conversionManager.getLoader());
             // need to make sure that the java class is set properly on each 
             // descriptor when using java classname - req'd for JOT api implementation 
             for (Iterator<ClassDescriptor> descriptorIt = proj.getOrderedDescriptors().iterator(); descriptorIt.hasNext();) {

@@ -20,7 +20,12 @@ import java.util.ListResourceBundle;
  */
 public class JAXBExceptionResource extends ListResourceBundle {
     static final Object[][] contents = {
-        {"50000", "The path {0} contains no ObjectFactory or jaxb.index file and no sessions.xml was found"}
+        {"50000", "The path {0} contains no ObjectFactory or jaxb.index file and no sessions.xml was found"},
+        {"50001", "The class {0} requires a zero argument constructor or a specified factory method"},
+        {"50002", "Factory class specified without factory method on class {0}"},
+        {"50003", "The factory method named {0} is not declared on the class {1}"},
+        {"50004", "XmlAnyAttribute is invalid on property {0}. Must be used with a property of type Map"},
+        {"50005", "Only one property with XmlAnyAttribute allowed on class {0}"},
     };
     
     /**
