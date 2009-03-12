@@ -434,7 +434,6 @@
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.advanced.properties}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.pu.with.spaces}.jar"/>
             <!--pathelement path="${eclipselink.jpa.test}/${eclipselink.pu.with.multibyte}.jar"/-->
-            <pathelement path="${eclipselink.jpa.test}/${jpa.performance}.jar"/>
             <pathelement path="${eclipselink.extension.oracle.test.dir}/${eclipselink.struct.converter.model}.jar"/>
             <pathelement path="${eclipselink.extension.oracle.test.dir}/${eclipselink.customfeatures.model}.jar"/>
             <pathelement path="${eclipselink.extension.oracle.test.dir}/${eclipselink.proxyauthentication.model}.jar"/>
@@ -447,6 +446,13 @@
             <pathelement path="${jdbc.driver.jar}"/>
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.tests.jar}"/>
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.xml.extended.model}.jar"/>
+        </path>
+        <path id="run.performance.classpath">
+            <pathelement path="${eclipselink.jpa.test}/${classes.dir}"/>
+            <path refid="compile.path"/>
+            <pathelement path="${jdbc.driver.jar}"/>
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.tests.jar}"/>
+            <pathelement path="${eclipselink.jpa.test}/${jpa.performance}.jar"/>
         </path>
     </target>
 
@@ -597,7 +603,7 @@
     <target name="test-performance" depends="clean-test,config-trunk, config-flat">
         <antcall target="run-test-prompt" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.performance.JPAPerformanceRegressionModel"/>
-            <param name="RUN_PATH" value="run.classpath"/>
+            <param name="RUN_PATH" value="run.performance.classpath"/>
             <param name="TEST_AGENT" value="${test.agent}"/>
             <param name="TEST_WEAVING" value="${test.weaving}"/>
         </antcall>
@@ -607,7 +613,7 @@
     <target name="test-performance-nocache" depends="clean-test,config-trunk, config-flat">
         <antcall target="run-test-prompt" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.performance.JPAIsolatedPerformanceRegressionModel"/>
-            <param name="RUN_PATH" value="run.classpath"/>
+            <param name="RUN_PATH" value="run.performance.classpath"/>
             <param name="TEST_AGENT" value="${test.agent}"/>
             <param name="TEST_WEAVING" value="${test.weaving}"/>
         </antcall>
@@ -617,7 +623,7 @@
     <target name="test-performance-toplink" depends="clean-test,config-trunk, config-flat">
         <path id="run.classpath.toplink">
             <pathelement path="${toplink.jar}"/>
-            <path refid="run.classpath"/>
+            <path refid="run.performance.classpath"/>
         </path>
         <antcall target="run-test-prompt" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.performance.TopLinkJPAPerformanceRegressionModel"/>
@@ -631,7 +637,7 @@
     <target name="test-performance-essentials" depends="clean-test,config-trunk, config-flat">
         <path id="run.classpath.essentials">
             <pathelement path="${toplink-essentials.jar}"/>
-            <path refid="run.classpath"/>
+            <path refid="run.performance.classpath"/>
         </path>
         <antcall target="run-test-prompt" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.performance.EssentialsJPAPerformanceRegressionModel"/>
@@ -647,7 +653,7 @@
             <fileset dir="${hibernate.dir}">
                 <include name="*.jar"/>
             </fileset>
-            <path refid="run.classpath"/>
+            <path refid="run.performance.classpath"/>
         </path>
         <antcall target="run-test-prompt" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.performance.HibernateJPAPerformanceRegressionModel"/>
@@ -663,7 +669,7 @@
             <fileset dir="${openjpa.dir}">
                 <include name="*.jar"/>
             </fileset>
-            <path refid="run.classpath"/>
+            <path refid="run.performance.classpath"/>
         </path>
         <antcall target="run-test-prompt" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.performance.OpenJPAPerformanceRegressionModel"/>
