@@ -244,4 +244,29 @@ public class ObjectPersistenceWorkbenchXMLProject extends EclipseLinkObjectPersi
         
         return descriptor;
     }
+
+    @Override
+    protected ClassDescriptor buildPLSQLCollectionDescriptor() {
+        
+        ClassDescriptor descriptor = super.buildPLSQLCollectionDescriptor();
+        XMLDirectMapping javaTypeMapping = 
+            (XMLDirectMapping)descriptor.getMappingForAttributeName("javaType");
+        javaTypeMapping.setGetMethodName("getJavaTypeName");
+        javaTypeMapping.setSetMethodName("setJavaTypeName");
+        
+        return descriptor;
+    }
+
+    @Override
+    protected ClassDescriptor buildPLSQLrecordDescriptor() {
+        
+        ClassDescriptor descriptor = super.buildPLSQLrecordDescriptor();
+        XMLDirectMapping javaTypeMapping = 
+            (XMLDirectMapping)descriptor.getMappingForAttributeName("javaType");
+        javaTypeMapping.setGetMethodName("getJavaTypeName");
+        javaTypeMapping.setSetMethodName("setJavaTypeName");
+        
+        return descriptor;
+    }
+    
 }
