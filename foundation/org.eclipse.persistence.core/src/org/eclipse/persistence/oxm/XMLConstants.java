@@ -112,4 +112,7 @@ public class XMLConstants {
     
     public static final char[] EMPTY_CHAR_ARRAY = new char[0];
     
+    // Schema Special values for Double and Float
+    public static final String POSITIVE_INFINITY = "INF";
+    public static final String NEGATIVE_INFINITY = "-INF";
 }

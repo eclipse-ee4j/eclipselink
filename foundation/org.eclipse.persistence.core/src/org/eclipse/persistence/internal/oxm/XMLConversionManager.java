@@ -397,13 +397,34 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         if (sourceObject instanceof Duration) {
             return stringFromDuration((Duration) sourceObject);
         }
-
+        if(sourceObject instanceof Double){
+        	if(Double.POSITIVE_INFINITY == ((Double)sourceObject)){
+        		return XMLConstants.POSITIVE_INFINITY;
+        	}
+        	if(Double.NEGATIVE_INFINITY == ((Double)sourceObject)){
+        		return XMLConstants.NEGATIVE_INFINITY;
+        	}
+        	return ((Double)sourceObject).toString();
+        }
+        if(sourceObject instanceof Float){
+        	if(Float.POSITIVE_INFINITY == ((Float)sourceObject)){
+        		return XMLConstants.POSITIVE_INFINITY;
+        	}
+        	if(Float.NEGATIVE_INFINITY == ((Float)sourceObject)){
+        		return XMLConstants.NEGATIVE_INFINITY;
+        	}
+        	return ((Float)sourceObject).toString();
+        }
+        
         return super.convertObjectToString(sourceObject);
     }
 
     protected String convertObjectToString(Object sourceObject, QName schemaTypeQName) throws ConversionException {
         if (sourceObject instanceof Calendar) {
             return stringFromCalendar((Calendar) sourceObject, schemaTypeQName);
+        }
+        if (sourceObject instanceof Character && sourceObject.equals((char) 0)) {
+            return "";
         }
         if (sourceObject instanceof QName) {
             return stringFromQName((QName) sourceObject);
@@ -426,6 +447,24 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         if (sourceObject instanceof Duration) {
             return stringFromDuration((Duration) sourceObject);
         }
+        if(sourceObject instanceof Double){
+        	if(Double.POSITIVE_INFINITY == ((Double)sourceObject)){
+        		return XMLConstants.POSITIVE_INFINITY;
+        	}
+        	if(Double.NEGATIVE_INFINITY == ((Double)sourceObject)){
+        		return XMLConstants.NEGATIVE_INFINITY;
+        	}
+        	return ((Double)sourceObject).toString();
+        }
+        if(sourceObject instanceof Float){
+        	if(Float.POSITIVE_INFINITY == ((Float)sourceObject)){
+        		return XMLConstants.POSITIVE_INFINITY;
+        	}
+        	if(Float.NEGATIVE_INFINITY == ((Float)sourceObject)){
+        		return XMLConstants.NEGATIVE_INFINITY;
+        	}
+        	return ((Float)sourceObject).toString();
+        }
 
         return super.convertObjectToString(sourceObject);
 
@@ -438,6 +477,59 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         return super.convertObjectToCalendar(sourceObject);
     }
 
+    
+    /**
+     * Convert the object to an instance of Double.
+     * @param                    sourceObject Object of type String or Number.
+     * @caught exception    The Double(String) constructor throws a
+     *         NumberFormatException if the String does not contain a
+     *        parsable double.
+     */
+   protected Double convertObjectToDouble(Object sourceObject) throws ConversionException {
+       try {
+           if (sourceObject instanceof String) {
+        	   if(XMLConstants.POSITIVE_INFINITY.equals(sourceObject)){
+        		   return new Double(Double.POSITIVE_INFINITY);
+        	   }else if(XMLConstants.NEGATIVE_INFINITY.equals(sourceObject)){
+        		   return new Double(Double.NEGATIVE_INFINITY);
+        	   }
+               return new Double((String)sourceObject);
+           }
+           if (sourceObject instanceof Number) {
+               return new Double(((Number)sourceObject).doubleValue());
+           }
+       } catch (NumberFormatException exception) {
+           throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.DOUBLE, exception);
+       }
+       throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.DOUBLE);
+   }
+    
+   /**
+    * Build a valid Float instance from a String or another Number instance.
+    * @caught exception    The Float(String) constructor throws a
+    *         NumberFormatException if the String does not contain a
+    *        parsable Float.
+    */
+   protected Float convertObjectToFloat(Object sourceObject) throws ConversionException {
+       try {
+           if (sourceObject instanceof String) {
+        	   if(XMLConstants.POSITIVE_INFINITY.equals(sourceObject)){
+        		   return new Float(Float.POSITIVE_INFINITY);
+        	   }else if(XMLConstants.NEGATIVE_INFINITY.equals(sourceObject)){
+        		   return new Float(Float.NEGATIVE_INFINITY);
+        	   }               
+               return new Float((String)sourceObject);
+           }
+           if (sourceObject instanceof Number) {
+               return new Float(((Number)sourceObject).floatValue());
+           }
+       } catch (NumberFormatException exception) {
+           throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.FLOAT, exception);
+       }
+
+       throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.FLOAT);
+   }
+   
     public XMLGregorianCalendar convertStringToXMLGregorianCalendar(String sourceString, QName schemaTypeQName) {
         XMLGregorianCalendar xmlGregorianCalender = null; 
         try {

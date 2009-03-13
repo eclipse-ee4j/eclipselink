@@ -20,7 +20,13 @@ import org.eclipse.persistence.testing.oxm.OXTestCase;
 import org.eclipse.persistence.testing.oxm.OXTestCase.Platform;
 import org.eclipse.persistence.testing.oxm.mappings.directtofield.cdata.DirectToFieldCDATATestCases;
 import org.eclipse.persistence.testing.oxm.mappings.directtofield.defaultnullvalue.DefaultNullValueTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.directtofield.doubletest.DirectToFieldDoubleNanTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.directtofield.doubletest.DirectToFieldDoubleNegativeInfinityTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.directtofield.doubletest.DirectToFieldDoublePositiveInfinityTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.directtofield.errortests.DirectToFieldErrorTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.directtofield.floattest.DirectToFieldFloatNanTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.directtofield.floattest.DirectToFieldFloatNegativeInfinityTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.directtofield.floattest.DirectToFieldFloatPositiveInfinityTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.directtofield.identifiedbyname.IdentifiedByNameTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.directtofield.identifiedbynamespace.IdentifiedByNamespaceTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.directtofield.identifiedbyposition.IdentifiedByPositionTestCases;
@@ -149,7 +155,14 @@ public class DirectToFieldMappingTestSuite extends OXTestCase {
 		//suite.addTestSuite(DirectIsSetNullPolicyAttributeAbsentIsSetAbsentTrueTestCases.class);  // TODO: UC 5-9 Is not valid
 
 		suite.addTestSuite(DirectWithLeafElementTestCases.class);
+		
+		suite.addTestSuite(DirectToFieldDoubleNanTestCases.class);
+		suite.addTestSuite(DirectToFieldDoubleNegativeInfinityTestCases.class);
+		suite.addTestSuite(DirectToFieldDoublePositiveInfinityTestCases.class);
 
+		suite.addTestSuite(DirectToFieldFloatNanTestCases.class);
+		suite.addTestSuite(DirectToFieldFloatNegativeInfinityTestCases.class);
+		suite.addTestSuite(DirectToFieldFloatPositiveInfinityTestCases.class);
 		return suite;
     }
 
