@@ -799,7 +799,7 @@ public class SessionsFactory {
 
         // Profiler - XML Schema default is null
         if (sessionConfig.getProfiler() != null) {
-            if (sessionConfig.getProfiler().equals("toplink")) {
+            if (sessionConfig.getProfiler().equals("eclipselink")) {
                 session.setProfiler(new PerformanceProfiler());
             }
         }
