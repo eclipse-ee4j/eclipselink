@@ -160,10 +160,20 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      * into the toCollection.  Since this ContainerPolicy represents a Map, the key and the value are extracted and added
      * 
      */
-    public void addNextValueFromIteratorInto(Object valuesIterator, Object parent, Object toCollection, CollectionMapping mapping, UnitOfWorkImpl unitOfWork, boolean isExisting){
+    public void addNextValueFromIteratorInto(Object valuesIterator, Object parent, Object toCollection, CollectionMapping mapping, UnitOfWorkImpl unitOfWork, boolean isExisting) {
         Map.Entry entry = ((MapContainerPolicyIterator)valuesIterator).next();
         Object clonedKey = buildCloneForKey(entry.getKey(), parent, unitOfWork, isExisting);
         Object clonedValue = buildCloneForValue(entry.getValue(), parent, mapping, unitOfWork, isExisting);
+        // add the object to the uow list of private owned objects if it is a candidate and the
+        // uow should discover new objects
+        if (mapping.isCandidateForPrivateOwnedRemoval() && unitOfWork.shouldDiscoverNewObjects()) {
+            if (clonedValue != null && unitOfWork.isObjectNew(clonedValue)) { 
+                unitOfWork.addPrivateOwnedObject(mapping, clonedValue);
+            }
+            if (clonedKey != null && unitOfWork.isObjectNew(clonedKey)) {
+                unitOfWork.addPrivateOwnedObject(mapping, clonedKey);
+            }
+        }
         addInto(clonedKey, clonedValue, toCollection, unitOfWork);
     }
 

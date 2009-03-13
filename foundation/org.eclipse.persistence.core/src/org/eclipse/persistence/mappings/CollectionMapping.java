@@ -281,6 +281,27 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     
     /**
      * INTERNAL:
+     * Cascade perform removal of orphaned private owned objects from the UnitOfWorkChangeSet
+     */
+    public void cascadePerformRemovePrivateOwnedObjectFromChangeSetIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
+        // if the object is not instantiated, do not instantiate or cascade
+        Object attributeValue = getAttributeValueFromObject(object);
+        if (attributeValue != null && getIndirectionPolicy().objectIsInstantiated(attributeValue)) {
+            Object realObjectCollection = getRealCollectionAttributeValueFromObject(object, uow);
+            ContainerPolicy cp = getContainerPolicy();
+            for (Object cloneIter = cp.iteratorFor(realObjectCollection); cp.hasNext(cloneIter);) {
+                Object nextObject = cp.next(cloneIter, uow);
+                if (nextObject != null && !visitedObjects.containsKey(nextObject)) {
+                    visitedObjects.put(nextObject, nextObject);
+                    // remove the object from the UnitOfWork ChangeSet
+                    uow.performRemovePrivateOwnedObjectFromChangeSet(nextObject, visitedObjects);
+                }
+            }
+        }
+    }
+    
+    /**
+     * INTERNAL:
      * Cascade discover and persist new objects during commit.
      */
     public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow) {
@@ -293,8 +314,12 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                     boolean cascade = isCascadePersist();
                     while (iterator.hasNext()) {
                         Object nextObject = iterator.next();
+                        // remove private owned object from uow list if uow has private owned objects
+                        if (uow.hasPrivateOwnedObjects()){
+                            uow.removePrivateOwnedObject(this, nextObject);
+                        }
                         uow.discoverAndPersistUnregisteredNewObjects(nextObject, cascade, newObjects, unregisteredExistingObjects, visitedObjects);
-                    }                    
+                    }
                 }
             }
             return;
@@ -307,6 +332,10 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         while (containerPolicy.hasNext(iterator)) {
             Object wrappedObject = containerPolicy.nextEntry(iterator, uow);
             Object nextObject = containerPolicy.unwrapIteratorResult(wrappedObject);
+            // remove private owned object from uow list if uow has private owned objects
+            if (uow.hasPrivateOwnedObjects()) {
+                uow.removePrivateOwnedObject(this, nextObject);
+            }
             uow.discoverAndPersistUnregisteredNewObjects(nextObject, cascade, newObjects, unregisteredExistingObjects, visitedObjects);
             containerPolicy.cascadeDiscoverAndPersistUnregisteredNewObjects(wrappedObject, cascade, newObjects, unregisteredExistingObjects, visitedObjects, uow);
         }
@@ -330,6 +359,10 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         while (cp.hasNext(cloneIter)) {
             Object wrappedObject = cp.nextEntry(cloneIter, uow);
             Object nextObject = cp.unwrapIteratorResult(wrappedObject);
+            // add private owned object to uow list if mapping is a candidate and uow should discover new objects
+            if (isCandidateForPrivateOwnedRemoval() && uow.shouldDiscoverNewObjects()) {
+                uow.addPrivateOwnedObject(this, nextObject);
+            }
             uow.registerNewObjectForPersist(nextObject, visitedObjects);
             cp.cascadeRegisterNewIfRequired(wrappedObject, uow, visitedObjects);
         }

@@ -283,7 +283,12 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements D
          */
         public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, boolean cascade, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow) {
             if (((DatabaseMapping)keyMapping).isOneToOneMapping()){
-                uow.discoverAndPersistUnregisteredNewObjects(((Map.Entry)object).getKey(), cascade, newObjects, unregisteredExistingObjects, visitedObjects);
+                Object key = ((Map.Entry)object).getKey();
+                // remove private owned object from uow list if uow has private owned objects
+                if (uow.hasPrivateOwnedObjects()){
+                    uow.removePrivateOwnedObject(((DatabaseMapping)keyMapping), key);
+                }
+                uow.discoverAndPersistUnregisteredNewObjects(key, cascade, newObjects, unregisteredExistingObjects, visitedObjects);
             }
         }
         
@@ -302,8 +307,14 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements D
          * Cascade registerNew to any mappings managed by the container policy. This will cascade the register to the key mapping.
          */
         public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
-            if (((DatabaseMapping)keyMapping).isOneToOneMapping()){
-                uow.registerNewObjectForPersist(((Map.Entry)object).getKey(), visitedObjects);
+            DatabaseMapping mapping = (DatabaseMapping)keyMapping;
+            if (mapping.isOneToOneMapping()){
+                Object key = ((Map.Entry)object).getKey();
+                // add private owned object to uow list if mapping is a candidate and uow should discover new objects
+                if (mapping.isCandidateForPrivateOwnedRemoval() && uow.shouldDiscoverNewObjects()) {
+                    uow.addPrivateOwnedObject(mapping, key);
+                }
+                uow.registerNewObjectForPersist(key, visitedObjects);
             }
         }
         

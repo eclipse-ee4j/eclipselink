@@ -565,6 +565,24 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
 
     /**
      * INTERNAL:
+     * Cascade perform removal of orphaned private owned objects from the UnitOfWorkChangeSet
+     */
+    public void cascadePerformRemovePrivateOwnedObjectFromChangeSetIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
+        Object attributeValue = getAttributeValueFromObject(object);
+        if (attributeValue == null) {
+            return;
+        }
+        
+        if (!visitedObjects.containsKey(attributeValue)) {
+            visitedObjects.put(attributeValue, attributeValue);
+            ObjectBuilder builder = getReferenceDescriptor(attributeValue, uow).getObjectBuilder();
+            // cascade perform remove any related objects via ObjectBuilder for an aggregate object
+            builder.cascadePerformRemovePrivateOwnedObjectFromChangeSet(attributeValue, uow, visitedObjects);
+        }
+    }
+    
+    /**
+     * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade
      */
     public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {

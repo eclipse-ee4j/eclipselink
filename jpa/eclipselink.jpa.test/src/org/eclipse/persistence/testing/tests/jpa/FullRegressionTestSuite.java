@@ -185,6 +185,9 @@ public class FullRegressionTestSuite extends TestSuite{
 
         // Lob model
         fullSuite.addTest(org.eclipse.persistence.testing.tests.jpa.lob.LobJUnitTestCase.suite());
+        
+        // Private owned model
+        fullSuite.addTest(org.eclipse.persistence.testing.tests.jpa.privateowned.PrivateOwnedJUnitTestCase.suite());
 
         return fullSuite;
     }

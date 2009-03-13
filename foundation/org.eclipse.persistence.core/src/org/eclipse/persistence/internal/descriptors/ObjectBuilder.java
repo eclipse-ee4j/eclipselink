@@ -1466,6 +1466,24 @@ public class ObjectBuilder implements Cloneable, Serializable {
             }
         }
     }
+    
+    /**
+     * INTERNAL:
+     * This method is used to iterate over the specified object's mappings and cascade
+     * remove orphaned private owned objects from the UnitOfWorkChangeSet and IdentityMap.
+     */
+    public void cascadePerformRemovePrivateOwnedObjectFromChangeSet(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
+        ObjectBuilder builder = this.descriptor.getObjectBuilder();
+        if (object != null && !builder.isSimple()) {
+            for (Iterator<DatabaseMapping> mappings = builder.getRelationshipMappings().iterator(); mappings.hasNext();) {
+                DatabaseMapping mapping = mappings.next();
+                // only cascade into private owned mappings
+                if (mapping.isPrivateOwned()) {
+                    mapping.cascadePerformRemovePrivateOwnedObjectFromChangeSetIfRequired(object, uow, visitedObjects);
+                }
+            }
+        }
+    }
 
     /**
      * INTERNAL:
@@ -1720,7 +1738,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
 
         setPrimaryKeyExpression(expression);
     }
-
+    
     /**
      * Return the row with primary keys and their values from the given expression.
      */

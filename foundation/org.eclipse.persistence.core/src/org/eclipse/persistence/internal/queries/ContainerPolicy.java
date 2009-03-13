@@ -219,6 +219,11 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      */
     public void addNextValueFromIteratorInto(Object valuesIterator, Object parent, Object toCollection, CollectionMapping mapping, UnitOfWorkImpl unitOfWork, boolean isExisting){
         Object cloneValue = mapping.buildElementClone(next(valuesIterator, unitOfWork), parent, unitOfWork, isExisting);
+        // add the object to the uow list of private owned objects if it is a candidate and the
+        // uow should discover new objects
+        if (!isExisting && mapping.isCandidateForPrivateOwnedRemoval() && unitOfWork.shouldDiscoverNewObjects() && cloneValue != null && unitOfWork.isObjectNew(cloneValue)) {
+            unitOfWork.addPrivateOwnedObject(mapping, cloneValue);
+        }
         addInto(cloneValue, toCollection, unitOfWork);
     }
     

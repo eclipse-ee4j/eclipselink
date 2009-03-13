@@ -217,6 +217,14 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
+     * Cascade removal of orphaned private owned objects from the UnitOfWorkChangeSet
+     */
+    public void cascadePerformRemovePrivateOwnedObjectFromChangeSetIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
+        // no-op by default
+    }
+    
+    /**
+     * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade
      */
     abstract public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects);
@@ -546,7 +554,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
 
         return getProperties().get(property);
     }
-
+    
     /**
      * INTERNAL:
      * Return the value of an attribute unwrapping value holders if required.
@@ -921,6 +929,15 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
     
     /**
      * INTERNAL:
+     * Returns true if the mapping should be added to the UnitOfWork's list of private owned
+     * objects for private owned orphan removal.
+     */
+    public boolean isCandidateForPrivateOwnedRemoval() {
+        return isPrivateOwned();
+    }
+    
+    /**
+     * INTERNAL:
      * Used when determining if a mapping supports cascaded version optimistic
      * locking.
      */
@@ -935,6 +952,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
     public boolean isChangeTrackingSupported(Project project) {
         return false;
     }
+    
     /**
      * INTERNAL:
      * Return if the mapping has ownership over its target object(s).

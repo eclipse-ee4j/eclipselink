@@ -100,6 +100,9 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     // They will not be treated as new in the nested unit of work, so we must
     //store them somewhere specifically to lookup later.
     protected Map newObjectsInParentOriginalToClone;
+    
+    /** Cache references of private owned objects for the removal of private owned orphans */
+    protected Map privateOwnedObjects;
 
     /** used to store a list of the new objects in the parent */
 
@@ -576,8 +579,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                     changedObjects.put(object, object);
                     if (changes.hasChanges() && !changes.hasForcedChangesFromCascadeLocking()) {
                         if (descriptor.hasCascadeLockingPolicies()) {
-                            for (Enumeration policies = descriptor.getCascadeLockingPolicies().elements();
-                                     policies.hasMoreElements();) {
+                            for (Enumeration policies = descriptor.getCascadeLockingPolicies().elements(); policies.hasMoreElements();) {
                                 ((CascadeLockingPolicy)policies.nextElement()).lockNotifyParent(object, changeSet, this);
                             }
                         } else if (descriptor.usesOptimisticLocking() && descriptor.getOptimisticLockingPolicy().isCascaded()) {
@@ -594,7 +596,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             }
         }
         
-        if(this.project.hasMappingsPostCalculateChangesOnDeleted()) {
+        if (this.project.hasMappingsPostCalculateChangesOnDeleted()) {
             if (hasDeletedObjects()) {
                 for (Iterator deletedObjects = getDeletedObjects().keySet().iterator(); deletedObjects.hasNext();) {
                     Object deletedObject = deletedObjects.next();
@@ -629,6 +631,17 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 ObjectChangeSet changes = descriptor.getObjectChangePolicy().calculateChangesForNewObject(object, changeSet, this, descriptor, true);
                 // Since it is new, it will always have a change set.
                 changeSet.addObjectChangeSet(changes, this, true);
+            }
+        }
+        
+        // Remove any orphaned privately owned objects from the UnitOfWork and ChangeSets,
+        // these are the objects remaining in the UnitOfWork privateOwnedObjects map
+        if (this.hasPrivateOwnedObjects()) {
+            Map visitedObjects = new IdentityHashMap();
+            for (Set privateOwnedObjects : getPrivateOwnedObjects().values()) {
+                for (Object objectToRemove : privateOwnedObjects) {
+                    performRemovePrivateOwnedObjectFromChangeSet(objectToRemove, visitedObjects);
+                }
             }
         }
         
@@ -1603,6 +1616,13 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                     knownNewObjects.put(object, object);
                 }
             }
+            
+            public void iterateReferenceObjectForMapping(Object referenceObject, DatabaseMapping mapping) {
+                super.iterateReferenceObjectForMapping(referenceObject, mapping);
+                if (hasPrivateOwnedObjects()) {
+                    removePrivateOwnedObject(mapping, referenceObject);
+                }
+            }
         };
 
         // Set the collection in the UnitofWork to be this list.
@@ -1634,7 +1654,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     public void dontPerformValidation() {
         setValidationLevel(None);
     }
-
+    
     /**
      * INTERNAL:
      * Override From session.  Get the accessor based on the query, and execute call,
@@ -2111,6 +2131,25 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
     protected boolean hasNewObjectsInParentOriginalToClone() {
         return ((newObjectsInParentOriginalToClone != null) && !newObjectsInParentOriginalToClone.isEmpty());
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the privateOwnedRelationships attribute.
+     */
+    private Map<DatabaseMapping, Set> getPrivateOwnedObjects() {
+        if (privateOwnedObjects == null) {
+            privateOwnedObjects = new IdentityHashMap<DatabaseMapping, Set>();
+        }
+        return privateOwnedObjects;
+    }
+
+    /**
+     * INTERNAL:
+     * Return true if privateOwnedObjects is not null and not empty, false otherwise.
+     */
+    public boolean hasPrivateOwnedObjects() {
+        return privateOwnedObjects != null && !privateOwnedObjects.isEmpty();
     }
     
     /**
@@ -3413,6 +3452,35 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     }
 
     /**
+     * INTERNAL:
+     * Cascade remove the private owned object from the owned UnitOfWorkChangeSet
+     */
+    public void performRemovePrivateOwnedObjectFromChangeSet(Object toBeRemoved, Map visitedObjects) {
+        if (toBeRemoved == null) {
+            return;
+        }
+        visitedObjects.put(toBeRemoved, toBeRemoved);
+        ClassDescriptor descriptor = getDescriptor(toBeRemoved);
+
+        // remove object from ChangeSet 
+        UnitOfWorkChangeSet uowChanges = (UnitOfWorkChangeSet)getUnitOfWorkChangeSet();
+
+        if (uowChanges != null) {
+            ObjectChangeSet ocs = (ObjectChangeSet)uowChanges.getObjectChangeSetForClone(toBeRemoved);
+            if (ocs != null) {
+                // remove object change set and object change set from new list
+                uowChanges.removeObjectChangeSet(ocs);
+                uowChanges.removeObjectChangeSetFromNewList(ocs, this);
+            }
+        }
+        
+        // unregister object and cascade the removal
+        unregisterObject(toBeRemoved, DescriptorIterator.NoCascading);
+
+        descriptor.getObjectBuilder().cascadePerformRemovePrivateOwnedObjectFromChangeSet(toBeRemoved, this, visitedObjects);
+    }
+
+    /**
      * ADVANCED:
      * The unit of work performs validations such as,
      * ensuring multiple copies of the same object don't exist in the same unit of work,
@@ -4239,6 +4307,26 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      */
     public void removeForceUpdateToVersionField(Object lockObject) {
         getOptimisticReadLockObjects().remove(lockObject);
+    }
+    
+    /**
+     * INTERNAL:
+     * Remove a privately owned object from the privateOwnedObjects Map.
+     * The UnitOfWork needs to keep track of privately owned objects in order to
+     * detect and remove private owned objects which are de-referenced.
+     * When an object (which is referenced) is removed from the privateOwnedObjects Map, 
+     * it is no longer considered for removal from ChangeSets and the UnitOfWork identitymap.
+     */
+    public void removePrivateOwnedObject(DatabaseMapping mapping, Object privateOwnedObject) {
+        if (privateOwnedObject != null) {
+            Set privateOwnedObjects = getPrivateOwnedObjects().get(mapping);
+            if (privateOwnedObjects != null){
+                privateOwnedObjects.remove(privateOwnedObject);
+                if (privateOwnedObjects.isEmpty()) {
+                    privateOwnedObjects.remove(mapping);
+                }
+            }
+        }
     }
 
     /**
@@ -5260,6 +5348,25 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
     /**
      * INTERNAL:
+     * Add a privately owned object to the privateOwnedObjectsMap.
+     * The UnitOfWork needs to keep track of privately owned objects in order to
+     * detect and remove private owned objects which are de-referenced.
+     */
+    public void addPrivateOwnedObject(DatabaseMapping mapping, Object privateOwnedObject) {
+        // only allow mapped, non-null objects to be added
+        if (privateOwnedObject != null && getDescriptor(privateOwnedObject) != null) {
+            Map<DatabaseMapping, Set> privateOwnedObjects = getPrivateOwnedObjects();
+            Set objectsForMapping = privateOwnedObjects.get(mapping);
+            if (objectsForMapping == null) {
+                objectsForMapping = new IdentityHashSet();
+                privateOwnedObjects.put(mapping, objectsForMapping);
+            }
+            objectsForMapping.add(privateOwnedObject);
+        }
+    }
+
+    /**
+     * INTERNAL:
      * Return if the clone has been pessimistic locked in this unit of work.
      */
     public boolean isPessimisticLocked(Object clone) {
@@ -5324,6 +5431,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         this.pessimisticLockedObjects = null;
         this.optimisticReadLockObjects = null;
         this.batchReadObjects = null;
+        this.privateOwnedObjects = null;
         if(shouldClearCache) {
             clearIdentityMapCache();
         }
