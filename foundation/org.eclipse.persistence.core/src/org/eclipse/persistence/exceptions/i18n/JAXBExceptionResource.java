@@ -26,6 +26,7 @@ public class JAXBExceptionResource extends ListResourceBundle {
         {"50003", "The factory method named {0} is not declared on the class {1}"},
         {"50004", "XmlAnyAttribute is invalid on property {0}. Must be used with a property of type Map"},
         {"50005", "Only one property with XmlAnyAttribute allowed on class {0}"},
+        {"50006", "Invalid XmlElementRef on property {0} on class {1}. Referenced Element not declared"},
     };
     
     /**

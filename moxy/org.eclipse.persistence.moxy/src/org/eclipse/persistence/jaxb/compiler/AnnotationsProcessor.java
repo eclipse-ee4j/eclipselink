@@ -30,6 +30,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapters;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaConstructor;
@@ -69,6 +70,7 @@ public class AnnotationsProcessor {
     private HashMap<String, TypeInfo> typeInfo;
     private HashMap<String, UnmarshalCallback> unmarshalCallbacks;
     private HashMap<QName, ElementDeclaration> globalElements;
+    private HashMap<String, ElementDeclaration> xmlRootElements;
     private HashMap<String, JavaMethod> factoryMethods;
     private NamespaceResolver namespaceResolver;
     private Helper helper;
@@ -84,6 +86,7 @@ public class AnnotationsProcessor {
         packageToNamespaceMappings = new HashMap<String, NamespaceInfo>(); 
         this.factoryMethods = new HashMap<String, JavaMethod>();
         this.namespaceResolver = new NamespaceResolver();
+        this.xmlRootElements = new HashMap<String, ElementDeclaration>();
         
         ArrayList<JavaClass> classesToProcess = new ArrayList<JavaClass>();
         //check for ObjectFactories and process them
@@ -92,13 +95,39 @@ public class AnnotationsProcessor {
         		this.processObjectFactory(javaClass, classesToProcess);
         	} else if(!helper.isAnnotationPresent(javaClass, XmlTransient.class)){
         		classesToProcess.add(javaClass);
-        		if(helper.isAnnotationPresent(javaClass, XmlSeeAlso.class)) {
-        		    XmlSeeAlso seeAlso = (XmlSeeAlso)helper.getAnnotation(javaClass, XmlSeeAlso.class);
-        		    for(Class next:seeAlso.value()) {
+        		//reflectively load XmlSeeAlso class to avoid dependency
+        		Class xmlSeeAlsoClass = null;
+        		Method valueMethod = null;
+        		try {
+        		    xmlSeeAlsoClass = PrivilegedAccessHelper.getClassForName("javax.xml.bind.annotation.XmlSeeAlso");
+        		    valueMethod = PrivilegedAccessHelper.getDeclaredMethod(xmlSeeAlsoClass, "value", new Class[]{});
+        		} catch(ClassNotFoundException ex) {
+        		    //Ignore this exception. If SeeAlso isn't available, don't try to process
+        		} catch(NoSuchMethodException ex) {
+        		    
+        		}
+        		if(xmlSeeAlsoClass != null && helper.isAnnotationPresent(javaClass, xmlSeeAlsoClass)) {
+        		    Object seeAlso = (XmlSeeAlso)helper.getAnnotation(javaClass, xmlSeeAlsoClass);
+        		    Class[] values = null;
+        		    try {
+        		        values = (Class[])PrivilegedAccessHelper.invokeMethod(valueMethod, seeAlso, new Object[]{});
+        		    } catch(Exception ex) {}
+        		    for(Class next:values) {
         		        classesToProcess.add(helper.getJavaClass(next));
         		    }
         		}
+        		//handle inner classes
+                for (Iterator<JavaClass> jClassIt = javaClass.getDeclaredClasses().iterator(); jClassIt.hasNext(); ) {
+                    JavaClass innerClass = jClassIt.next();
+                    if (shouldGenerateTypeInfo(innerClass)) {
+                        if(!(helper.isAnnotationPresent(innerClass, XmlTransient.class))) {
+                            classesToProcess.add(innerClass);
+                        }
+                    }
+                }
+        		
         	}
+        	
         }
         
         updateGlobalElements(classesToProcess);
@@ -107,13 +136,7 @@ public class AnnotationsProcessor {
             if (javaClass == null) { continue; }
 
             createTypeInfoFor(javaClass);
-            // handle inner classes
-            for (Iterator<JavaClass> jClassIt = javaClass.getDeclaredClasses().iterator(); jClassIt.hasNext(); ) {
-                JavaClass innerClass = jClassIt.next();
-                if (shouldGenerateTypeInfo(innerClass)) {
-                    createTypeInfoFor(innerClass);
-                }
-            }
+
             JavaClass superClass = (JavaClass) javaClass.getSuperclass();
             if (shouldGenerateTypeInfo(superClass)) {
                 createTypeInfoFor(superClass);
@@ -454,15 +477,34 @@ public class AnnotationsProcessor {
                             info.setHasElementRefs(true);
                         }
                         for(XmlElementRef nextRef:elementRefs) {
-                            String name = nextRef.name();
-                            String namespace = nextRef.namespace();
-                            if(namespace.equals("##default")) {
-                                namespace = "";
+                            JavaClass type = nextField.getResolvedType();
+                            String typeName = type.getQualifiedName();
+                            property.setType(type);
+                            if(isCollectionType(property)) {
+                                if(type.hasActualTypeArguments()) {
+                                    type = (JavaClass)type.getActualTypeArguments().toArray()[0];
+                                    typeName = type.getQualifiedName();
+                                }
                             }
-                            QName qname = new QName(namespace, name);
-                            ElementDeclaration referencedElement = this.globalElements.get(qname);
+                            if(nextRef.type() != XmlElementRef.DEFAULT.class) {
+                                typeName = helper.getJavaClass(nextRef.type()).getQualifiedName();
+                            }
+                            ElementDeclaration referencedElement = this.xmlRootElements.get(typeName);
                             if(referencedElement != null) {
-                                ((ReferenceProperty)property).addReferencedElement(referencedElement);
+                                addReferencedElement((ReferenceProperty)property, referencedElement);
+                            } else {
+                                String name = nextRef.name();
+                                String namespace = nextRef.namespace();
+                                if(namespace.equals("##default")) {
+                                    namespace = "";
+                                }
+                                QName qname = new QName(namespace, name);
+                                referencedElement = this.globalElements.get(qname);
+                                if(referencedElement != null) {
+                                    addReferencedElement((ReferenceProperty)property, referencedElement);
+                                } else {
+                                    throw org.eclipse.persistence.exceptions.JAXBException.invalidElementRef(property.getPropertyName(), cls.getName());
+                                }
                             }
                         }
                     } else {
@@ -711,15 +753,34 @@ public class AnnotationsProcessor {
                     info.setHasElementRefs(true);
                 }
                 for(XmlElementRef nextRef:elementRefs) {
-                    String name = nextRef.name();
-                    String namespace = nextRef.namespace();
-                    if(namespace.equals("##default")) {
-                        namespace = "";
+                    JavaClass type = ptype;
+                    String typeName = type.getQualifiedName();
+                    property.setType(type);
+                    if(isCollectionType(property)) {
+                        if(type.hasActualTypeArguments()) {
+                            type = (JavaClass)type.getActualTypeArguments().toArray()[0];
+                            typeName = type.getQualifiedName();
+                        }
                     }
-                    QName qname = new QName(namespace, name);
-                    ElementDeclaration referencedElement = this.globalElements.get(qname);
+                    if(nextRef.type() != XmlElementRef.DEFAULT.class) {
+                        typeName = helper.getJavaClass(nextRef.type()).getQualifiedName();
+                    }
+                    ElementDeclaration referencedElement = this.xmlRootElements.get(typeName);
                     if(referencedElement != null) {
-                        ((ReferenceProperty)property).addReferencedElement(referencedElement);
+                        addReferencedElement((ReferenceProperty)property, referencedElement);
+                    } else {
+                        String name = nextRef.name();
+                        String namespace = nextRef.namespace();
+                        if(namespace.equals("##default")) {
+                            namespace = "";
+                        }
+                        QName qname = new QName(namespace, name);
+                        referencedElement = this.globalElements.get(qname);
+                        if(referencedElement != null) {
+                            addReferencedElement((ReferenceProperty)property, referencedElement);
+                        } else {
+                            throw org.eclipse.persistence.exceptions.JAXBException.invalidElementRef(property.getPropertyName(), cls.getName());
+                        }
                     }
                 }
             }
@@ -1187,12 +1248,13 @@ public class AnnotationsProcessor {
                 } else {
                     rootElemName = new QName(rootNamespace, elementName);
                 }
-                ElementDeclaration declaration = new ElementDeclaration(rootElemName, javaClass, javaClass.getRawName(), false);
+                ElementDeclaration declaration = new ElementDeclaration(rootElemName, javaClass, javaClass.getQualifiedName(), false);
                 declaration.setIsXmlRootElement(true);
                 if(this.globalElements == null) {
                     globalElements = new HashMap<QName, ElementDeclaration>();
                 }
                 this.globalElements.put(rootElemName, declaration);
+                this.xmlRootElements.put(javaClass.getQualifiedName(), declaration);
             }
         }
         

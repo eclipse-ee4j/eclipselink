@@ -324,7 +324,13 @@ public class MappingsGenerator {
     }
     
     public XMLMapping generateMappingForReferenceProperty(ReferenceProperty property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
-        XMLChoiceObjectMapping mapping = new XMLChoiceObjectMapping();
+        DatabaseMapping mapping;
+        boolean isCollection = isCollectionType(property);
+        if(isCollection) {
+            mapping = new XMLChoiceCollectionMapping();
+        } else {
+            mapping = new XMLChoiceObjectMapping();
+        }
         mapping.setAttributeName(property.getPropertyName());
         if(property.isMethodProperty()) {
             mapping.setGetMethodName(property.getGetMethodName());
@@ -337,10 +343,18 @@ public class MappingsGenerator {
         for(ElementDeclaration element:referencedElements) {
             QName elementName = element.getElementName();
             XMLField xmlField = this.getXPathForElement("", elementName, namespaceInfo, !(this.typeInfo.containsKey(element.getJavaTypeName())));
-            mapping.addChoiceElement(xmlField, element.getJavaTypeName());
+            if(isCollection) {
+                ((XMLChoiceCollectionMapping)mapping).addChoiceElement(xmlField, element.getJavaTypeName());
+            } else {
+                ((XMLChoiceObjectMapping)mapping).addChoiceElement(xmlField, element.getJavaTypeName());
+            }
             if(!element.isXmlRootElement()) {
                 XMLRootConverter converter = new XMLRootConverter(xmlField);
-                mapping.addConverter(xmlField, converter);
+                if(isCollection) {
+                    ((XMLChoiceCollectionMapping)mapping).addConverter(xmlField, converter);
+                } else {
+                    ((XMLChoiceObjectMapping)mapping).addConverter(xmlField, converter);
+                }
             }
             hasJAXBElements = hasJAXBElements || !element.isXmlRootElement();
             if(hasJAXBElements) {
@@ -348,7 +362,7 @@ public class MappingsGenerator {
             }
         }
         descriptor.addMapping(mapping);
-        return mapping;
+        return (XMLMapping)mapping;
     }
     
     public XMLMapping generateCollectionMappingForReferenceProperty(ReferenceProperty property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {

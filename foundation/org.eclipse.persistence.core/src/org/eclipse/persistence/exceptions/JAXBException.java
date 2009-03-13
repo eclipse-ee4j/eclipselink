@@ -34,6 +34,7 @@ public class JAXBException extends EclipseLinkException {
     public static final int FACTORY_METHOD_NOT_DECLARED = 50003;
     public static final int ANY_ATTRIBUTE_ON_NON_MAP_PROPERTY = 50004;
     public static final int MULTIPLE_ANY_ATTRIBUTE_MAPPING = 50005;
+    public static final int INVALID_XML_ELEMENT_REF = 50006;
     
     protected JAXBException(String message) {
         super(message);
@@ -85,5 +86,13 @@ public class JAXBException extends EclipseLinkException {
         JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, ANY_ATTRIBUTE_ON_NON_MAP_PROPERTY, args));
         exception.setErrorCode(ANY_ATTRIBUTE_ON_NON_MAP_PROPERTY);
         return exception;
+    }
+    
+    public static JAXBException invalidElementRef(String propertyName, String className) {
+        Object[] args = {propertyName, className};
+        JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, INVALID_XML_ELEMENT_REF, args));
+        exception.setErrorCode(INVALID_XML_ELEMENT_REF);
+        return exception;
     }    
+    
 }
