@@ -14,9 +14,12 @@ package org.eclipse.persistence.internal.jaxb;
 
 import org.eclipse.persistence.mappings.AttributeAccessor;
 import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.oxm.XMLRoot;
 import javax.xml.bind.JAXBElement;
+import javax.xml.datatype.Duration;
+import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
 
 public class JAXBElementAttributeAccessor extends AttributeAccessor {
@@ -75,14 +78,8 @@ public class JAXBElementAttributeAccessor extends AttributeAccessor {
 			Object iterator = containerPolicy.iteratorFor(attributeValue);
 			while(containerPolicy.hasNext(iterator)) {
 				Object next = containerPolicy.next(iterator, null);
-				if(next instanceof XMLRoot) {
-					XMLRoot root = (XMLRoot)next;
-					QName name = new QName(root.getNamespaceURI(), root.getLocalName());
-					JAXBElement element = new JAXBElement(name, root.getObject().getClass(), root.getObject());
-					containerPolicy.addInto(element, results, null);
-				} else {
-					containerPolicy.addInto(next, results, null);
-				}
+				Object objectToAdd = unwrapObject(next);
+				containerPolicy.addInto(objectToAdd, results, null);
 			}
 			attributeValue = results;
 		} else {
@@ -99,5 +96,34 @@ public class JAXBElementAttributeAccessor extends AttributeAccessor {
     public void initializeAttributes(Class theJavaClass) throws DescriptorException {
     	nestedAccessor.initializeAttributes(theJavaClass);
     }
-	
+    
+    private Object unwrapObject(Object originalObject){
+    	if(originalObject instanceof XMLRoot) {
+			XMLRoot root = (XMLRoot)originalObject;			
+			QName name = new QName(root.getNamespaceURI(), root.getLocalName());
+			Object value = root.getObject();
+			if(value == null){
+				return createJAXBElement(name, Object.class, root.getObject());
+			}else{
+				return createJAXBElement(name, root.getObject().getClass(), root.getObject());
+			}			
+		} else if(originalObject instanceof WrappedValue){
+			Object unwrappedValue = ((WrappedValue)originalObject).getWrappedValue();					
+			Class theClass = ((WrappedValue)originalObject).getWrappedValueClass();
+			return createJAXBElement(((WrappedValue)originalObject).getQName(), theClass, unwrappedValue);			
+		} else {			
+			return originalObject;		
+		}
+    }	    
+    
+    private JAXBElement createJAXBElement(QName qname, Class theClass, Object value){
+    	   
+    	if(ClassConstants.XML_GREGORIAN_CALENDAR.isAssignableFrom(theClass)){
+    		theClass = ClassConstants.XML_GREGORIAN_CALENDAR;
+    	}else if(ClassConstants.DURATION.isAssignableFrom(theClass)){
+    		theClass = ClassConstants.DURATION;
+    	}
+    	
+    	return new JAXBElement(qname, theClass, value);
+    }  
 }

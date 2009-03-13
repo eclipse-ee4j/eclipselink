@@ -30,8 +30,6 @@ import javax.xml.bind.ValidationEventHandler;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.attachment.AttachmentUnmarshaller;
 import javax.xml.bind.helpers.DefaultValidationEventHandler;
-import javax.xml.datatype.Duration;
-import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamReader;
@@ -72,8 +70,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
     private XMLUnmarshaller xmlUnmarshaller;
     public static final String XML_JAVATYPE_ADAPTERS = "xml-javatype-adapters";
     public static final String STAX_SOURCE_CLASS_NAME = "javax.xml.transform.stax.StAXSource";
-    private HashMap<Class, QName> generatedClassesToQName;
-
+    
     public JAXBUnmarshaller(XMLUnmarshaller newXMLUnmarshaller) {
         super();
         validationEventHandler = new DefaultValidationEventHandler();
@@ -176,6 +173,10 @@ public class JAXBUnmarshaller implements Unmarshaller {
     		return createJAXBElementFromXMLRoot(((XMLRoot)obj));    		
     	}
     	
+    	if(obj instanceof WrappedValue) {
+    		return createJAXBElementFromWrappedValue(((WrappedValue)obj));
+        }            		        	    	    	
+    	
     	// at this point, the default root element of the object being marshalled 
     	// to == the root element - here we need to create a JAXBElement 
     	// instance using information from the returned object
@@ -189,7 +190,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
     	String rootName = desc.getDefaultRootElement();
     	if (rootName == null) {
     		// TODO:  we should probably throw an exception at this point            
-    		return createJAXBElement(new QName(""), obj);
+    		return createJAXBElement(new QName(""), obj.getClass(), obj);    		
     	}
         String rootNamespaceUri = null;
         int idx = rootName.indexOf(":");
@@ -204,7 +205,8 @@ public class JAXBUnmarshaller implements Unmarshaller {
         } else {
         	qname = new QName(rootNamespaceUri, rootName);
         }        
-        return createJAXBElement(qname, obj);    		
+        Object jaxbElement = createJAXBElementIfRequired(obj);
+        return createJAXBElement(qname, obj.getClass(), obj);                    		
     }
 
     public JAXBElement unmarshal(Node node, Class javaClass) throws JAXBException {
@@ -366,45 +368,43 @@ public class JAXBUnmarshaller implements Unmarshaller {
     
     public void setUnmarshalCallbacks(java.util.HashMap callbacks) {
         ((JAXBUnmarshalListener)xmlUnmarshaller.getUnmarshalListener()).setClassBasedUnmarshalEvents(callbacks);
-    }
-    
-    public void setGeneratedClassesToQName(HashMap<Class, QName> classesToQName) {
-    	this.generatedClassesToQName = classesToQName;
-    }
-    
+    }        
+        
     private Object createJAXBElementIfRequired(Object value){
-    	if(this.generatedClassesToQName != null) {
-        	QName qname = this.generatedClassesToQName.get(value.getClass());
-        	if(qname != null) {
-        		Object unwrappedValue = null;
-        		if(value instanceof WrappedValue) {
-        			unwrappedValue = ((WrappedValue)value).getWrappedValue();        			
-        		}            		
-        		return createJAXBElement(qname, unwrappedValue);
-        	}
-    	}
+    	if(value instanceof WrappedValue) {
+    		return createJAXBElementFromWrappedValue(((WrappedValue)value));
+        }            		        	
     	if(value instanceof XMLRoot){
     		return createJAXBElementFromXMLRoot((XMLRoot)value);
     	}
     	return value;
     }
     
+    private JAXBElement createJAXBElementFromWrappedValue(WrappedValue wrappedValue){
+    	Object unwrappedValue = wrappedValue.getWrappedValue();
+    	return createJAXBElement(wrappedValue.getQName(), wrappedValue.getWrappedValueClass(), unwrappedValue);
+    }
+        
+    
     private JAXBElement createJAXBElementFromXMLRoot(XMLRoot xmlRoot){    	    	    		
     	Object value = xmlRoot.getObject();
     	QName qname = new QName(xmlRoot.getNamespaceURI(), xmlRoot.getLocalName());
-    	return createJAXBElement(qname,  value);    	
+    	if(value == null){    		    		
+    		return createJAXBElement(qname, Object.class, value);
+    	}else{
+    		return createJAXBElement(qname, value.getClass(), value);    		
+    	}
     }
     
-    private JAXBElement createJAXBElement(QName qname, Object value){
-    	Class theClass  = value.getClass();
-    	if(value instanceof XMLGregorianCalendar){
+    private JAXBElement createJAXBElement(QName qname, Class theClass, Object value){
+   
+    	if(ClassConstants.XML_GREGORIAN_CALENDAR.isAssignableFrom(theClass)){
     		theClass = ClassConstants.XML_GREGORIAN_CALENDAR;
-    	}else if(value instanceof Duration){
+    	}else if(ClassConstants.DURATION.isAssignableFrom(theClass)){
     		theClass = ClassConstants.DURATION;
-    	}        	
-    	return new JAXBElement(qname, theClass, value);
+    	}
     	
-    }
-    
+    	return new JAXBElement(qname, theClass, value);
+    }       
 }
     

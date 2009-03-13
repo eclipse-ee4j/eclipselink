@@ -12,6 +12,8 @@
 ******************************************************************************/
 package org.eclipse.persistence.internal.jaxb;
 
+import javax.xml.namespace.QName;
+
 /**
  * INTERNAL:
  * <p><b>Purpose: </b>Provide an interface for asm generated wrapper classes to implement to enable the
@@ -22,9 +24,13 @@ package org.eclipse.persistence.internal.jaxb;
  * @author mmacivor
  *
  */
-public interface WrappedValue {
-
+public interface WrappedValue {	
+	
 	public Object getWrappedValue();
 	
 	public void setWrappedValue(Object value);
+	
+	public Class getWrappedValueClass();
+	
+	public QName getQName();
 }

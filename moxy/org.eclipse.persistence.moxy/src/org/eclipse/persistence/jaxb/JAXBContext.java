@@ -55,8 +55,7 @@ import org.eclipse.persistence.jaxb.compiler.UnmarshalCallback;
 
 public class JAXBContext extends javax.xml.bind.JAXBContext {
     private XMLContext xmlContext;
-    private org.eclipse.persistence.jaxb.compiler.Generator generator;
-    private HashMap<Class, QName> generatedClassesToQName;
+    private org.eclipse.persistence.jaxb.compiler.Generator generator;    
     private HashMap<QName, Class> qNameToGeneratedClasses;
     
     public JAXBContext(XMLContext context) {
@@ -68,7 +67,6 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         super();
         this.xmlContext = context;
         this.generator = generator;
-        this.generatedClassesToQName = generator.getMappingsGenerator().getGeneratedClassesToQName();
         this.qNameToGeneratedClasses = generator.getMappingsGenerator().getQNamesToGeneratedClasses();
     }
     
@@ -109,8 +107,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                 cb.initialize(generator.getClass().getClassLoader());
             }
             unmarshaller.setUnmarshalCallbacks(generator.getUnmarshalCallbacks());
-        }
-        unmarshaller.setGeneratedClassesToQName(this.generatedClassesToQName);
+        }        
         return unmarshaller;
     }
 
@@ -124,11 +121,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     
     public JAXBIntrospector createJAXBIntrospector() {
         return new JAXBIntrospector(xmlContext);
-    }
-    
-    public void setGeneratedClassesToQName(HashMap<Class, QName> classesToQName) {
-    	this.generatedClassesToQName = classesToQName;
-    }
+    }      
     
     public void setQNameToGeneratedClasses(HashMap<QName, Class> qNameToClass) {
     	this.qNameToGeneratedClasses = qNameToClass;

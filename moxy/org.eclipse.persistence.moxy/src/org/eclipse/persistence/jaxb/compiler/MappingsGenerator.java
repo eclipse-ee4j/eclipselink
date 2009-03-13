@@ -33,6 +33,7 @@ import org.eclipse.persistence.jaxb.javamodel.JavaField;
 import org.eclipse.persistence.jaxb.javamodel.JavaHasAnnotations;
 import org.eclipse.persistence.jaxb.javamodel.JavaMethod;
 import org.eclipse.persistence.jaxb.JAXBEnumTypeConverter;
+import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
 import org.eclipse.persistence.internal.jaxb.DomHandlerConverter;
 import org.eclipse.persistence.internal.jaxb.MultiArgInstantiationPolicy;
@@ -92,8 +93,7 @@ public class MappingsGenerator {
     public MappingsGenerator(Helper helper) {
         this.helper = helper;
         jotArrayList = helper.getJavaClass(ArrayList.class);
-        jotHashSet = helper.getJavaClass(HashSet.class);
-        generatedClassesToQNames = new HashMap<Class, QName>();        
+        jotHashSet = helper.getJavaClass(HashSet.class);               
         qNamesToGeneratedClasses = new HashMap<QName, Class>();
     }
     
@@ -112,6 +112,7 @@ public class MappingsGenerator {
         // now create mappings
         generateMappings();
         processGlobalElements(project);
+        wrapperCounter = 0;
         return project;
     }
     
@@ -383,6 +384,8 @@ public class MappingsGenerator {
         AnyProperty prop = (AnyProperty)property;
         XMLAnyCollectionMapping  mapping = new XMLAnyCollectionMapping();
         mapping.setAttributeName(property.getPropertyName());
+        mapping.setUseXMLRoot(true);
+        mapping.setAttributeAccessor(new JAXBElementAttributeAccessor(mapping.getAttributeAccessor(), mapping.getContainerPolicy()));
         if(prop.isLax()) {
             mapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
         } else {
@@ -896,9 +899,8 @@ public class MappingsGenerator {
                 if (nextElement.getAdaptedJavaTypeName() != null) {
                     attributeTypeName = nextElement.getAdaptedJavaTypeName(); 
                 }
-                Class generatedClass = this.generateWrapperClass(WRAPPER_CLASS + wrapperCounter++, attributeTypeName, nextElement.isList());
-
-    			this.generatedClassesToQNames.put(generatedClass, next);
+                Class generatedClass = this.generateWrapperClass(WRAPPER_CLASS + wrapperCounter++, attributeTypeName, nextElement.isList(), next);
+    			
     			this.qNamesToGeneratedClasses.put(next, generatedClass);
     			
     			XMLDescriptor desc = new XMLDescriptor();
@@ -925,8 +927,8 @@ public class MappingsGenerator {
                        ((XMLField)mapping.getField()).setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
                     }
                     desc.addMapping(mapping);
-    			} else{
-	    			XMLDirectMapping mapping = new XMLDirectMapping();
+    			} else{    				
+    				XMLDirectMapping mapping = new XMLDirectMapping();
 	    			mapping.setAttributeName("value");
 	    			mapping.setXPath("text()");
 	    			
@@ -1000,11 +1002,7 @@ public class MappingsGenerator {
         return null;
     }
     
-    public HashMap<Class, QName> getGeneratedClassesToQName() {
-        return this.generatedClassesToQNames;
-    }
-    
-    public Class generateWrapperClass(String className, String attributeType, boolean isList) {
+    public Class generateWrapperClass(String className, String attributeType, boolean isList, QName theQName) {
         org.eclipse.persistence.internal.libraries.asm.ClassWriter cw = new org.eclipse.persistence.internal.libraries.asm.ClassWriter(false);
 		
         CodeVisitor cv;
@@ -1029,6 +1027,18 @@ public class MappingsGenerator {
 		        
         cw.visitField(Constants.ACC_PUBLIC, "value", fieldType, null, null);
 				
+        cw.visitField(Constants.ACC_PRIVATE + Constants.ACC_STATIC, "wrappedValueQName", "Ljavax/xml/namespace/QName;", null, null);
+        
+        cv = cw.visitMethod(Constants.ACC_STATIC, "<clinit>", "()V", null, null);
+        cv.visitTypeInsn(Constants.NEW, "javax/xml/namespace/QName");
+        cv.visitInsn(Constants.DUP);
+        cv.visitLdcInsn(theQName.getNamespaceURI());
+        cv.visitLdcInsn(theQName.getLocalPart());
+        cv.visitMethodInsn(Constants.INVOKESPECIAL, "javax/xml/namespace/QName", "<init>", "(Ljava/lang/String;Ljava/lang/String;)V");
+        cv.visitFieldInsn(Constants.PUTSTATIC, className.replace(".", "/"), "wrappedValueQName", "Ljavax/xml/namespace/QName;");
+        cv.visitInsn(Constants.RETURN);
+        cv.visitMaxs(4, 0);
+        
         cv = cw.visitMethod(Constants.ACC_PUBLIC, "getWrappedValue", Type.getMethodDescriptor(Type.getType(Object.class), new Type[]{}), null, null);		
         cv.visitVarInsn(Constants.ALOAD, 0);
         cv.visitFieldInsn(Constants.GETFIELD, className.replace(".", "/"), "value", fieldType);        
@@ -1052,6 +1062,16 @@ public class MappingsGenerator {
         cv.visitInsn(Constants.RETURN);
         cv.visitMaxs(2, 2);
 		
+        cv = cw.visitMethod(Constants.ACC_PUBLIC, "getQName", "()Ljavax/xml/namespace/QName;", null, null);
+        cv.visitFieldInsn(Constants.GETSTATIC, className.replace(".", "/"), "wrappedValueQName", "Ljavax/xml/namespace/QName;");
+        cv.visitInsn(Constants.ARETURN);
+        cv.visitMaxs(1, 1);
+        
+        cv = cw.visitMethod(Constants.ACC_PUBLIC, "getWrappedValueClass", "()Ljava/lang/Class;", null, null);
+        cv.visitLdcInsn(Type.getType(fieldType));
+        cv.visitInsn(Constants.ARETURN);
+        cv.visitMaxs(1, 1);
+        
         cw.visitEnd();
 		
         byte[] classBytes = cw.toByteArray();

@@ -291,6 +291,9 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
             xmlRootFragment = new XPathFragment();
             wasXMLRoot = true;
             value = ((XMLRoot) value).getObject();
+            if(null == value){
+            	return;
+            }
         }
         UnmarshalKeepAsElementPolicy keepAsElementPolicy = xmlAnyCollectionMapping.getKeepAsElementPolicy();
         if (value instanceof String) {
@@ -300,7 +303,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
         } else {
             try {
                 childSession = marshaller.getXMLContext().getSession(value);
-            } catch (XMLMarshalException e) {
+            } catch (XMLMarshalException e) {            	
                 marshalSimpleValue(xmlRootFragment, marshalRecord, originalValue, object, value, session, namespaceResolver);
                 return;
             }
