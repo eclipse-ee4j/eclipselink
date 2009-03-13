@@ -19,6 +19,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 import java.util.Iterator;
 
 import javax.swing.BorderFactory;
@@ -311,6 +312,37 @@ public class DatabasePropertiesPage extends TitledPropertiesPage {
 			}
 			if (option == JOptionPane.YES_OPTION) {
 				this.getNode().save(null, this.getWorkbenchContext());
+			}
+		}
+
+		if (this.getDatabase().getDevelopmentLoginSpec() != null) {
+			if (this.getDatabase().isConnected()) {
+				int option = JOptionPane.showConfirmDialog(this.getWorkbenchContext().getCurrentWindow(),
+						this.resourceRepository().getString("CLEAR_LOGIN_AND_LOGOUT.message", StringTools.CR),
+						this.resourceRepository().getString("CLEAR_LOGIN_AND_LOGOUT.title"),
+						JOptionPane.YES_NO_OPTION,
+						JOptionPane.WARNING_MESSAGE);
+						
+				if(option == JOptionPane.YES_OPTION) {
+					if (this.getDatabase().isConnected()) {
+						try {
+							this.getDatabase().logout();
+						} catch (SQLException exception) {
+							throw new RuntimeException(exception);
+						}
+					}
+					this.getDatabase().setDevelopmentLoginSpec(null);
+				}
+			} else {
+				int option = JOptionPane.showConfirmDialog(this.getWorkbenchContext().getCurrentWindow(),
+						this.resourceRepository().getString("CLEAR_LOGIN.message", StringTools.CR),
+						this.resourceRepository().getString("CLEAR_LOGIN.title"),
+						JOptionPane.YES_NO_OPTION,
+						JOptionPane.WARNING_MESSAGE);
+						
+				if(option == JOptionPane.YES_OPTION) {
+					this.getDatabase().setDevelopmentLoginSpec(null);
+				}
 			}
 		}
 
