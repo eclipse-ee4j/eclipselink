@@ -522,7 +522,7 @@
     </target>
 
     <!-- Runs JPA Oracle-specific tests. -->
-    <target name="test-oracle-proxy" if="is.oracle" depends="config-trunk, config-flat">
+    <target name="test-oracle-proxy" if="is.oracle" depends="clean-test, config-trunk, config-flat">
         <antcall target="run-test" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.proxyauthentication.ProxyAuthenticationServerTestSuite"/>
             <param name="TEST_AGENT" value="${test.agent}"/>
