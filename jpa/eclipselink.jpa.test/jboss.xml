@@ -100,12 +100,15 @@
             <sysproperty key="eclipselink.logging.level" value="${logging.level}"/>
             <sysproperty key="java.endorsed.dirs" value="${jboss.home}/lib/endorsed"/>
             <classpath>
-                  <fileset
+                <fileset
                     dir="${jboss.home}/lib"
                     includes="**/*.jar">
                 </fileset>
                 <pathelement location="${jboss.home}/bin/run.jar"/>
                 <pathelement location="${jboss.home}/server/all/lib/jboss-j2ee.jar"/>
+                <pathelement location="${jboss.home}/common/lib/servlet-api.jar"/>
+                <pathelement location="${jboss.home}/client/jboss-javaee.jar"/>
+                <pathelement location="${jboss.home}/common/lib/jboss-bindingservice.jar"/>
                 <pathelement location="${eclipselink.jar.name}"/>
                 <pathelement location="${junit.lib}"/>
                 <pathelement location="${jdbc.driver.jar}"/>
