@@ -27,6 +27,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -68,13 +69,21 @@ public class JavaClassImpl implements JavaClass {
                 if (type instanceof ParameterizedType) {
                     ParameterizedType pt = (ParameterizedType) type;
                     argCollection.add(new JavaClassImpl(pt, (Class) pt.getRawType()));
+                } else if(type instanceof WildcardType){
+                	Type[] upperTypes = ((WildcardType)type).getUpperBounds();
+                	if(upperTypes.length >0){
+	                	Type upperType = upperTypes[0];  
+	                	if(upperType instanceof Class){
+	                		argCollection.add(new JavaClassImpl((Class) upperType));
+	                	}
+                	}
                 } else if (type instanceof Class) {
                     argCollection.add(new JavaClassImpl((Class) type));
                 } else if(type instanceof GenericArrayType) {
                 	Class genericTypeClass = (Class)((GenericArrayType)type).getGenericComponentType();
                 	genericTypeClass = java.lang.reflect.Array.newInstance(genericTypeClass, 0).getClass();
                 	argCollection.add(new JavaClassImpl(genericTypeClass));
-                }
+                } 
             }
         }
         return argCollection;
