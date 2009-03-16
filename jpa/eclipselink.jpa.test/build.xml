@@ -751,6 +751,8 @@
     </target>
 
     <target name="generate-report">
+        <!-- WebLogic and WebSphere servers require specific jaxp.properties for generating report -->
+        <delete file="${env.JAVA_HOME}/jre/lib/jaxp.properties" failonerror="false"/>
         <copy todir="${env.JAVA_HOME}/jre/lib" file="${eclipselink.jpa.test}/resource/${server.name}/jaxp.properties" failonerror="false"/>
         <junitreport todir="${eclipselink.jpa.test}/${report.dir}">
             <fileset dir="${eclipselink.jpa.test}/${report.dir}">
