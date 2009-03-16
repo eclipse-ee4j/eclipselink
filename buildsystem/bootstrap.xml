@@ -274,9 +274,8 @@
     </target>
     
     <target name="publish-maven" depends="properties-init" description="Manually trigger just Maven publish">
-        <echo message="'publish' target: Calling 'build-nightly' target in '${build.root.dir}/${autobld.file}'"/>
-        <ant antfile="autobuild.xml" dir="${build.root.dir}" target="init"/>
-        <ant antfile="uploadToMaven.xml" dir="${build.root.dir}" target="upload-maven-all"/>
+        <echo message="'publish-maven' target: Calling 'publish-maven' target in '${build.root.dir}/${autobld.file}'"/>
+        <ant antfile="autobuild.xml" dir="${build.root.dir}" target="publish-maven"/>
     </target>
 
     <target name="publish-web" depends="properties-init" description="Manually trigger webpublish target">

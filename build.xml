@@ -242,7 +242,7 @@
     <target name="package-eclipselink-jar" description="build EclipseLink jar">
         <delete file="${eclipselink.jar.name}"/>
         <echo message="Implementation-Version: ${version.string}"/>
-        <jar jarfile="${eclipselink.jar.name}">
+        <jar jarfile="${eclipselink.jar.name}" duplicate="preserve">
              <manifest>
                 <attribute name="Specification-Title"    value="${eclipselink.specification.title}"/>
                 <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
