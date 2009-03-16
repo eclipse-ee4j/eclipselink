@@ -554,7 +554,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         // will validate that a valid locking policy is in place if needed. If
         // a true value is returned it indicates that we were unable to set the
         // lock mode, throw an exception.
-        if (query.setLockModeType(lockMode, (AbstractSession) getActiveSession())) {
+        if (lockMode != null && query.setLockModeType(lockMode.name(), (AbstractSession) getActiveSession())) {
             throw new PersistenceException(ExceptionLocalization.buildMessage("ejb30-wrong-lock_called_without_version_locking-index", null));
         }
         

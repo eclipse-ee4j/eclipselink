@@ -15,8 +15,6 @@ package org.eclipse.persistence.queries;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.persistence.LockModeType;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.VersionLockingPolicy;
 import org.eclipse.persistence.exceptions.*;
@@ -2080,12 +2078,12 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * lock mode because of validation. Callers to this method should check the 
      * return value and throw the necessary exception.
      */
-    public boolean setLockModeType(LockModeType lockModeType, AbstractSession session) {
+    public boolean setLockModeType(String lockModeType, AbstractSession session) {
         if (lockModeType != null) {
             OptimisticLockingPolicy lockingPolicy = session.getDescriptor(getReferenceClass()).getOptimisticLockingPolicy();
         
             if (lockingPolicy == null || !(lockingPolicy instanceof VersionLockingPolicy)) {
-                if (! lockModeType.name().equals(PESSIMISTIC) && ! lockModeType.name().equals(NONE)) {
+                if (! lockModeType.equals(PESSIMISTIC) && ! lockModeType.equals(NONE)) {
                     // Any locking mode other than PESSIMISTIC and NONE needs a 
                     // version locking policy to be present, otherwise return a
                     // failure flag of true.
@@ -2093,7 +2091,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
                 }
             }
             
-            this.lockModeType = lockModeType.name();
+            this.lockModeType = lockModeType;
             setIsPrePrepared(false);
             setIsPrepared(false);
             setWasDefaultLockMode(false);

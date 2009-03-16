@@ -180,7 +180,7 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
                 if (databaseQuery.isObjectLevelReadQuery()) {
                     // If setting the lock mode returns true, we were unable to
                     // set the lock mode, throw an exception.
-                    if (((ObjectLevelReadQuery)databaseQuery).setLockModeType((LockModeType)lockMode, (AbstractSession)session)) {
+                    if (((ObjectLevelReadQuery)databaseQuery).setLockModeType(lockMode.name(), (AbstractSession)session)) {
                         throw new PersistenceException(ExceptionLocalization.buildMessage("ejb30-wrong-lock_called_without_version_locking-index", null));
                     }
                 } else {
@@ -364,7 +364,7 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
             // Set the lock mode (the session is passed in to do some validation checks)
             // If the return value from the set returns true, it indicates that
             // we were unable to set the lock mode.
-            if (((ObjectLevelReadQuery) getDatabaseQuery()).setLockModeType(lockMode, (AbstractSession) getActiveSession())) {
+            if (((ObjectLevelReadQuery) getDatabaseQuery()).setLockModeType(lockMode.name(), (AbstractSession) getActiveSession())) {
                 throw new PersistenceException(ExceptionLocalization.buildMessage("ejb30-wrong-lock_called_without_version_locking-index", null));
             }
         }
