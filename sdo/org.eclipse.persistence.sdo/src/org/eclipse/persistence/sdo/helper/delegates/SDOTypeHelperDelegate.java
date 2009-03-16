@@ -185,7 +185,6 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         SDO_BYTES_WRAPPER.addDescriptorToProject(project);
         SDO_CHARACTER_WRAPPER.addDescriptorToProject(project);
         SDO_DATE_WRAPPER.addDescriptorToProject(project);
-        SDO_DATETIME_WRAPPER.addDescriptorToProject(project);
         SDO_DAY_WRAPPER.addDescriptorToProject(project);
         SDO_DECIMAL_WRAPPER.addDescriptorToProject(project);
         SDO_DOUBLE_WRAPPER.addDescriptorToProject(project);
@@ -198,7 +197,6 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         SDO_MONTHDAY_WRAPPER.addDescriptorToProject(project);
         SDO_OBJECT_WRAPPER.addDescriptorToProject(project);
         SDO_SHORT_WRAPPER.addDescriptorToProject(project);
-        SDO_STRING_WRAPPER.addDescriptorToProject(project);
         SDO_STRINGS_WRAPPER.addDescriptorToProject(project);
         SDO_TIME_WRAPPER.addDescriptorToProject(project);
         SDO_URI_WRAPPER.addDescriptorToProject(project);
@@ -206,6 +204,9 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         SDO_YEARMONTH_WRAPPER.addDescriptorToProject(project);
         SDO_YEARMONTHDAY_WRAPPER.addDescriptorToProject(project);
 
+        SDO_STRING_WRAPPER.addDescriptorToProject(project);
+        SDO_DATETIME_WRAPPER.addDescriptorToProject(project);        
+        
         SDO_BOOLEANOBJECT_WRAPPER.addDescriptorToProject(project);
         SDO_BYTEOBJECT_WRAPPER.addDescriptorToProject(project);
         SDO_CHARACTEROBJECT_WRAPPER.addDescriptorToProject(project);
