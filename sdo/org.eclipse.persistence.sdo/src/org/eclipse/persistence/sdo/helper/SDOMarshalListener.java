@@ -254,7 +254,7 @@ public class SDOMarshalListener implements XMLMarshalListener {
         if (prop.isOpenContent()) {
             uri = prop.getUri();
         } else {
-            uri = prop.getContainingType().getURI();
+            uri = ((XMLField)((SDOProperty)prop).getXmlMapping().getField()).getXPathFragment().getNamespaceURI();
         }
 
         if (isDeleted) {
