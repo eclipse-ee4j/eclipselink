@@ -72,6 +72,7 @@
                destdir="${classes.dir}"
                includes="**"
                debug="${javac.debug}"
+               debuglevel="${javac.debuglevel}"
                optimize="${javac.optimize}"
                source="${javac.version}"
                target="${javac.version}"
@@ -111,7 +112,7 @@
             <manifest>
                 <attribute name="Bundle-ManifestVersion" value="2"/>
                 <attribute name="Bundle-Name"            value="EclipseLink's javax.persistence 1.99 Library Source"/>
-                <attribute name="Bundle-SymbolicName"    value="${ant.project.name}"/>
+                <attribute name="Bundle-SymbolicName"    value="${ant.project.name}.source"/>
                 <attribute name="Bundle-Version"         value="${jpaproto.version}"/>
                 <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${jpaproto.version}&quot;"/>
             </manifest>

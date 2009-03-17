@@ -61,6 +61,7 @@
                destdir="${classes.dir}"
                includes="**/*.java"
                debug="${javac.debug}"
+               debuglevel="${javac.debuglevel}"
                optimize="${javac.optimize}"
                source="${javac.version}"
                target="${javac.version}"

@@ -69,6 +69,7 @@
                destdir="${eclipselink.core.test}/${classes.dir}"
                includes="org/eclipse/persistence/**, deprecated/**, java/sql/**"
                debug="${javac.debug}"
+               debuglevel="${javac.debuglevel}"
                optimize="${javac.optimize}"
                source="${javac.version}"
                target="${javac.version}"

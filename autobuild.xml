@@ -332,6 +332,10 @@
         <ant antfile="uploadToMaven.xml" dir="${build.root.dir}" target="upload-maven-all"/>
     </target>
 
+    <target name="publish-maven" depends="init">
+        <ant antfile="uploadToMaven.xml" dir="${build.root.dir}" target="upload-maven-all"/>
+    </target>
+
     <target name="fix-permission">
         <chmod file="${build.root.dir}/buildsystem/cleanNightly.sh" perm="ug+x"/>
         <chmod file="${build.root.dir}/buildsystem/buildNightlyList.sh" perm="ug+x"/>

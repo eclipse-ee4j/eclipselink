@@ -84,6 +84,7 @@
                destdir="${classes.dir}"
                includes="**/*.java"
                debug="${javac.debug}"
+               debuglevel="${javac.debuglevel}"
                optimize="${javac.optimize}"
                source="${javac.version}"
                target="${javac.version}"
@@ -112,7 +113,7 @@
              <manifest>
                 <attribute name="Bundle-ManifestVersion" value="2"/>
                 <attribute name="Bundle-Name"            value="EclipseLink SDO Source"/>
-                <attribute name="Bundle-SymbolicName"    value="${ant.project.name}"/>
+                <attribute name="Bundle-SymbolicName"    value="${ant.project.name}.source"/>
                 <attribute name="Bundle-Version"         value="${release.version}"/>
                 <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${release.version}&quot;"/>
             </manifest>
@@ -128,15 +129,15 @@
         </jar>
     </target>
 
-    <target name="generate-manifest" description="Generate the OSGi bundle manifest before jarring">                                                                                                               
-        <delete file="META-INF/MANIFEST.MF" quiet="true"/>                                                                                                                                                         
-        <echo message="Manifest-Version: 1.0${line.separator}"                                                      file="META-INF/MANIFEST.MF" append="false"/>                                                   
-        <echo message="Bundle-ManifestVersion: 2${line.separator}"                                                  file="META-INF/MANIFEST.MF" append="true"/>                                                    
-        <echo message="Bundle-Name: EclipseLink SDO${line.separator}"                                               file="META-INF/MANIFEST.MF" append="true"/>                                                   
-        <echo message="Bundle-SymbolicName: ${ant.project.name}${line.separator}"                                   file="META-INF/MANIFEST.MF" append="true"/>                                                    
-        <echo message="Bundle-Version: ${release.version}${line.separator}"                                         file="META-INF/MANIFEST.MF" append="true"/>                                                    
-        <echo message="Require-Bundle: org.eclipse.persistence.core;bundle-version=&quot;${release.version}&quot;;visibility:=reexport,${line.separator}" file="META-INF/MANIFEST.MF" append="true"/>              
-        <echo message=" org.eclipse.persistence.asm;bundle-version=&quot;${release.version}&quot;,${line.separator}"                                      file="META-INF/MANIFEST.MF" append="true"/>              
+    <target name="generate-manifest" description="Generate the OSGi bundle manifest before jarring">
+        <delete file="META-INF/MANIFEST.MF" quiet="true"/>
+        <echo message="Manifest-Version: 1.0${line.separator}"                                                      file="META-INF/MANIFEST.MF" append="false"/>
+        <echo message="Bundle-ManifestVersion: 2${line.separator}"                                                  file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-Name: EclipseLink SDO${line.separator}"                                               file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-SymbolicName: ${ant.project.name}${line.separator}"                                   file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-Version: ${release.version}${line.separator}"                                         file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message="Require-Bundle: org.eclipse.persistence.core;bundle-version=&quot;${release.version}&quot;;visibility:=reexport,${line.separator}" file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.asm;bundle-version=&quot;${release.version}&quot;,${line.separator}"                                      file="META-INF/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.moxy;bundle-version=&quot;${release.version}&quot;;resolution:=optional${line.separator}"                 file="META-INF/MANIFEST.MF" append="true"/>
         <echo message="Export-Package: org.eclipse.persistence.sdo;version=&quot;${release.version}&quot;,${line.separator}"                              file="META-INF/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.sdo.helper;version=&quot;${release.version}&quot;,${line.separator}"                                      file="META-INF/MANIFEST.MF" append="true"/>
@@ -150,7 +151,7 @@
         <echo message="HK2-Bundle-Name: org.eclipse.persistence:${ant.project.name}${line.separator}"                                                     file="META-INF/MANIFEST.MF" append="true"/>
     </target>
 
-	<target name="build_sdo_lib_jar" depends="compile-sdo-lib, package-sdo-lib-jar" description="Build SDO API lib"/>
+    <target name="build_sdo_lib_jar" depends="compile-sdo-lib, package-sdo-lib-jar" description="Build SDO API lib"/>
 
     <!-- compile -->
     <target name="compile-sdo-lib" description="Compile SDO API lib">
@@ -159,6 +160,7 @@
                destdir="../plugins/${commonj.sdo.dir}/${classes.dir}"
                includes="**/*.java"
                debug="${javac.debug}"
+               debuglevel="${javac.debuglevel}"
                optimize="${javac.optimize}"
                source="${javac.version}"
                target="${javac.version}"
@@ -169,7 +171,7 @@
         />
     </target>
 
-	<!-- Packages the SDO API jar-->
+    <!-- Packages the SDO API jar-->
     <target name="package-sdo-lib-jar" description="Package SDO API lib jar">
         <delete file="../plugins/${commonj.sdo.jar}"/>
         <echo message="Implementation-Version: ${version.string}"/>
@@ -180,20 +182,20 @@
                 <attribute name="Bundle-Name"  value="SDO"/>
                 <attribute name="Bundle-SymbolicName"   value="commonj.sdo"/>
                 <attribute name="Bundle-Version"  value="2.1.1"/>
-				<attribute name="Export-Package" value="${osgi.export.package}"/>
+                <attribute name="Export-Package" value="${osgi.export.package}"/>
             </manifest>
-			<fileset
+            <fileset
                 dir="../plugins/${commonj.sdo.dir}/${classes.dir}"
                 includes="**/*.class"
-			/>
+            />
             <fileset
                 dir="../plugins/${commonj.sdo.dir}"
                 includes="xsd/*.xsd"
-			/>
+            />
             <fileset
                 dir="../plugins/${commonj.sdo.dir}"
                 includes="license.txt"
-			/>
-		</jar>
+            />
+        </jar>
     </target>
 </project>

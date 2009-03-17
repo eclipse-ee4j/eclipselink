@@ -99,6 +99,7 @@
                destdir="${classes.dir}"
                includes="org/eclipse/persistence/Version.java"
                debug="${javac.debug}"
+               debuglevel="${javac.debuglevel}"
                optimize="${javac.optimize}"
                source="${javac.version}"
                target="${javac.version}"
@@ -114,6 +115,7 @@
                includes="org/eclipse/persistence/**, deprecated/**"
                excludes="org/eclipse/persistence/Version.java"
                debug="${javac.debug}"
+               debuglevel="${javac.debuglevel}"
                optimize="${javac.optimize}"
                source="${javac.version}"
                target="${javac.version}"
@@ -145,7 +147,7 @@
              <manifest>
                 <attribute name="Bundle-ManifestVersion" value="2"/>
                 <attribute name="Bundle-Name"            value="EclipseLink Core Source"/>
-                <attribute name="Bundle-SymbolicName"    value="${ant.project.name}"/>
+                <attribute name="Bundle-SymbolicName"    value="${ant.project.name}.source"/>
                 <attribute name="Bundle-Version"         value="${release.version}"/>
                 <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${release.version}&quot;"/>
             </manifest>
@@ -161,7 +163,6 @@
                 <include name="xsd/*.xsd"/>
                 <include name="org/eclipse/persistence/internal/helper/VendorNameToPlatformMapping.properties"/>
             </fileset>
-
         </jar>
     </target>
 

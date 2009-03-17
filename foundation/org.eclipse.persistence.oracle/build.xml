@@ -42,7 +42,7 @@
     </condition>
     <property name="oracle.2.common.plugins.dir" value="${oracle.2.base.dir}/plugins"/>
     <property name="oracle.plugins.dir" value="../plugins"/>
-    
+
     <property file="${user.home}/build.properties"/>
     <!-- Sets default junit.lib and all extensions.depend dir locations to defaults based upon discovered dir heirarchy -->
     <!-- Must be defined after ${user.home}/build.properties is included to allow redefinition -->
@@ -98,6 +98,7 @@
                destdir="${classes.dir}"
                includes="org/eclipse/persistence/**/*.java"
                debug="${javac.debug}"
+               debuglevel="${javac.debuglevel}"
                optimize="${javac.optimize}"
                source="${javac.version}"
                target="${javac.version}"
