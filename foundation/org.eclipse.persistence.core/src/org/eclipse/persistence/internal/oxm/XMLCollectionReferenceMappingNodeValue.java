@@ -80,7 +80,7 @@ public class XMLCollectionReferenceMappingNodeValue extends XMLSimpleMappingNode
      */
     public void attribute(UnmarshalRecord unmarshalRecord, String namespaceURI, String localName, String value) {
         if (value != null) {
-            Object realValue = xmlField.convertValueBasedOnSchemaType(value, (XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager());
+            Object realValue = xmlField.convertValueBasedOnSchemaType(value, (XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager(),unmarshalRecord);
             // build a reference which will be resolved after unmarshalling is complete
             xmlCollectionReferenceMapping.buildReference(unmarshalRecord, xmlField, realValue, unmarshalRecord.getSession());
         }
@@ -110,7 +110,7 @@ public class XMLCollectionReferenceMappingNodeValue extends XMLSimpleMappingNode
             Class typeClass = xmlField.getJavaClass(unmarshalRecord.getTypeQName());
             value = xmlConversionManager.convertObject(value, typeClass, unmarshalRecord.getTypeQName());
         } else {
-            value = xmlField.convertValueBasedOnSchemaType(value, xmlConversionManager);
+            value = xmlField.convertValueBasedOnSchemaType(value, xmlConversionManager, unmarshalRecord);
         }
 
         // build a reference which will be resolved after unmarshalling is complete
@@ -178,7 +178,7 @@ public class XMLCollectionReferenceMappingNodeValue extends XMLSimpleMappingNode
                     return false;
                 }
                 schemaType = getSchemaType(xmlField, fieldValue, session);
-                newValue = getValueToWrite(schemaType, fieldValue, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager());
+                newValue = getValueToWrite(schemaType, fieldValue, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager(), namespaceResolver);
                 if (newValue != null) {
                     stringValue += newValue;
                     if (cp.hasNext(iterator)) {
@@ -236,7 +236,7 @@ public class XMLCollectionReferenceMappingNodeValue extends XMLSimpleMappingNode
                 return;
             }
             schemaType = getSchemaType(xmlField, fieldValue, session);
-            String stringValue = getValueToWrite(schemaType, fieldValue, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager());
+            String stringValue = getValueToWrite(schemaType, fieldValue, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager(), namespaceResolver);
             if (stringValue != null) {
                 marshalRecord.openStartElement(xPathFragment, namespaceResolver);
                 XPathFragment nextFragment = xPathFragment.getNextFragment();

@@ -21,6 +21,7 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XMLConversionPair;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
+import org.eclipse.persistence.oxm.record.XMLRecord;
 
 /**
  * TopLink XML mappings make use of XMLFields based on XPath statements to find the relevant
@@ -644,17 +645,38 @@ public class XMLField extends DatabaseField {
     /**
     * INTERNAL:
     */
-    public Object convertValueBasedOnSchemaType(Object value, XMLConversionManager xmlConversionManager) {
-        if (getSchemaType() != null) {
-            Class fieldType = getType();
-            if (fieldType == null) {
-                fieldType = getJavaClass(getSchemaType());
-            }
-            return xmlConversionManager.convertObject(value, fieldType, getSchemaType());
+    public Object convertValueBasedOnSchemaType(Object value, XMLConversionManager xmlConversionManager, XMLRecord record) {
+        if (getSchemaType() != null) { 
+        	if(XMLConstants.QNAME_QNAME.equals(getSchemaType())){
+        		return buildQNameFromString((String)value, record);        		
+        	}else{
+	            Class fieldType = getType();
+	            if (fieldType == null) {
+	                fieldType = getJavaClass(getSchemaType());
+	            }            
+	            return xmlConversionManager.convertObject(value, fieldType, getSchemaType());
+        	}
         }
         return value;
     }
 
+    protected QName buildQNameFromString(String stringValue, XMLRecord record){	    
+		int index = stringValue.lastIndexOf(":");
+		if(index > -1) {
+			String prefix =  stringValue.substring(0, index);
+			String localName = stringValue.substring(index + 1);
+			
+			String namespaceURI = record.resolveNamespacePrefix(prefix);			
+			return new QName(namespaceURI, localName, prefix);
+		} else {
+			String namespaceURI = record.resolveNamespacePrefix("");
+			if(namespaceURI == null){
+				namespaceURI = record.resolveNamespacePrefix(null);
+			}
+			return new QName(namespaceURI, stringValue);
+		}
+    }
+    
     /**
     * Add an XML to Java Conversion pair entry
     * @param qname The qualified name of the XML schema type

@@ -245,13 +245,21 @@ public class XPathEngine {
                     if (nextItem instanceof Node) {
                         items.add(nextItem);
                     } else {
-                        String nextConvertedItem = (String) ((XMLConversionManager)session.getDatasourcePlatform().getConversionManager()).convertObject(nextItem, ClassConstants.STRING, schemaType);
-                        items.add(nextConvertedItem);
+                    	if(schemaType != null && schemaType.equals(XMLConstants.QNAME_QNAME)){
+                    		String nextConvertedItem = getStringForQName((QName)nextItem, xmlField.getNamespaceResolver());
+                    		items.add(nextConvertedItem);
+                    	}else{
+                    		String nextConvertedItem = (String) ((XMLConversionManager)session.getDatasourcePlatform().getConversionManager()).convertObject(nextItem, ClassConstants.STRING, schemaType);
+                            items.add(nextConvertedItem);
+                    	}
                     }
                 }
                 return items;
             }
-        } else {
+        } else {        	
+        	if(schemaType != null && schemaType.equals(XMLConstants.QNAME_QNAME)){
+        		return getStringForQName((QName)value, xmlField.getNamespaceResolver());
+        	}
             return ((XMLConversionManager)session.getDatasourcePlatform().getConversionManager()).convertObject(value, ClassConstants.STRING, schemaType);
         }
     }
@@ -913,5 +921,26 @@ public class XPathEngine {
             element.appendChild(text);
             return text;
         }
+    }
+    private String getStringForQName(QName qName, NamespaceResolver namespaceResolver){
+    	if(null == qName) {
+			return null;
+		}
+		    
+		if(null == qName.getNamespaceURI()) {
+			return qName.getLocalPart();
+		} else {		
+			String namespaceURI = qName.getNamespaceURI();
+			if(namespaceResolver == null){
+				throw XMLMarshalException.namespaceResolverNotSpecified(namespaceURI);
+			}
+			String prefix = namespaceResolver.resolveNamespaceURI(namespaceURI);
+			if(null == prefix) {
+				return qName.getLocalPart();
+			} else {
+				return prefix + ":" + qName.getLocalPart();
+			}
+		}
+
     }
 }

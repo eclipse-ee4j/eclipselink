@@ -61,7 +61,7 @@ public class XMLDirectMappingNodeValue extends XMLSimpleMappingNodeValue impleme
             return xmlDirectMapping.getNullPolicy().directMarshal(xPathFragment, marshalRecord, object, session, namespaceResolver);
         } else {
             QName schemaType = getSchemaType((XMLField) xmlDirectMapping.getField(), fieldValue, session);
-            String stringValue = getValueToWrite(schemaType, fieldValue, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager());
+            String stringValue = getValueToWrite(schemaType, fieldValue, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager(), namespaceResolver);
             XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
             if (xPathFragment.isAttribute()) {
                 marshalRecord.attribute(xPathFragment, namespaceResolver, stringValue);
@@ -81,7 +81,7 @@ public class XMLDirectMappingNodeValue extends XMLSimpleMappingNodeValue impleme
     public void attribute(UnmarshalRecord unmarshalRecord, String namespaceURI, String localName, String value) {
         unmarshalRecord.removeNullCapableValue(this);
         XMLField xmlField = (XMLField) xmlDirectMapping.getField();
-        Object realValue = xmlField.convertValueBasedOnSchemaType(value, (XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager());
+        Object realValue = xmlField.convertValueBasedOnSchemaType(value, (XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager(), unmarshalRecord);
         // Perform operations on the object based on the null policy
         Object convertedValue = xmlDirectMapping.getAttributeValue(realValue, unmarshalRecord.getSession(), unmarshalRecord);
         xmlDirectMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), convertedValue);
@@ -104,7 +104,7 @@ public class XMLDirectMappingNodeValue extends XMLSimpleMappingNodeValue impleme
             Class typeClass = xmlField.getJavaClass(unmarshalRecord.getTypeQName());
             value = xmlConversionManager.convertObject(value, typeClass, unmarshalRecord.getTypeQName());
         } else {
-            value = xmlField.convertValueBasedOnSchemaType(value, xmlConversionManager);
+            value = xmlField.convertValueBasedOnSchemaType(value, xmlConversionManager,unmarshalRecord);
         }
 
         Object convertedValue = xmlDirectMapping.getAttributeValue(value, unmarshalRecord.getSession(), unmarshalRecord);

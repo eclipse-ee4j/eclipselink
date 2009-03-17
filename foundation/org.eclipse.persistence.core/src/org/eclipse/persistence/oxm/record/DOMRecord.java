@@ -414,7 +414,7 @@ public class DOMRecord extends XMLRecord {
     }
 
     private Object getValueFromAttribute(Attr node, XMLField key) {
-        return key.convertValueBasedOnSchemaType(node.getNodeValue(), (XMLConversionManager) session.getDatasourcePlatform().getConversionManager());
+        return key.convertValueBasedOnSchemaType(node.getNodeValue(), (XMLConversionManager) session.getDatasourcePlatform().getConversionManager(), this);
     }
 
     private Object getValueFromElement(Element node, Node textChild, XMLField key) {
@@ -444,7 +444,7 @@ public class DOMRecord extends XMLRecord {
                 }
             }
         }
-        return key.convertValueBasedOnSchemaType(value, xmlCnvMgr);
+        return key.convertValueBasedOnSchemaType(value, xmlCnvMgr, this);
     }
 
     /**

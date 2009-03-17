@@ -23,7 +23,7 @@ public class SchemaTypeTestCases extends TestCase {
     TestSuite suite = new TestSuite("SchemaType Test Cases");
     suite.addTestSuite(SchemaTypeHexTestCases.class);
     suite.addTestSuite(SchemaTypeBase64TestCases.class);
-		
+    suite.addTestSuite(SchemaTypeQNameTestCases.class);	
     return suite;
   }
 

@@ -19,18 +19,18 @@ import org.eclipse.persistence.sessions.Project;
 public class SchemaTypeProject extends Project {
 
   public SchemaTypeProject() {
-    addDescriptor(getEmployeeDescriptor());
+    addDescriptor(getByteHolderDescriptor());
   }
 
-  private XMLDescriptor getEmployeeDescriptor() {
+  private XMLDescriptor getByteHolderDescriptor() {
     XMLDescriptor descriptor = new XMLDescriptor();
     descriptor.setJavaClass(ByteHolder.class);
     descriptor.setDefaultRootElement("byteholder");
            
-    XMLDirectMapping firstNameMapping = new XMLDirectMapping();
-    firstNameMapping.setAttributeName("bytes");
-    firstNameMapping.setXPath("bytes/text()");
-    descriptor.addMapping(firstNameMapping);     
+    XMLDirectMapping bytesMapping = new XMLDirectMapping();
+    bytesMapping.setAttributeName("bytes");
+    bytesMapping.setXPath("bytes/text()");
+    descriptor.addMapping(bytesMapping);     
 
     return descriptor;
   }

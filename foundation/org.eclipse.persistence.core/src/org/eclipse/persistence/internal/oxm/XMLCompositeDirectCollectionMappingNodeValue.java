@@ -87,7 +87,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends XMLSimpleMappi
                     }
                 }
                 schemaType = getSchemaType((XMLField) xmlCompositeDirectCollectionMapping.getField(), objectValue, session);
-                newValue = getValueToWrite(schemaType, objectValue, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager());
+                newValue = getValueToWrite(schemaType, objectValue, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager(), namespaceResolver);
                 if (null != newValue) {
                     stringValue += newValue;
                     if (cp.hasNext(iterator)) {
@@ -196,7 +196,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends XMLSimpleMappi
             Class typeClass = xmlField.getJavaClass(unmarshalRecord.getTypeQName());
             value = xmlConversionManager.convertObject(value, typeClass, unmarshalRecord.getTypeQName());
         } else {
-            value = xmlField.convertValueBasedOnSchemaType(value, xmlConversionManager);
+            value = xmlField.convertValueBasedOnSchemaType(value, xmlConversionManager, unmarshalRecord);
         }
 
         if (xmlCompositeDirectCollectionMapping.hasValueConverter()) {
@@ -235,7 +235,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends XMLSimpleMappi
         }
         XMLField xmlField = (XMLField) xmlCompositeDirectCollectionMapping.getField();
         QName schemaType = getSchemaType(xmlField, value, session);
-        String stringValue = getValueToWrite(schemaType, value, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager());
+        String stringValue = getValueToWrite(schemaType, value, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager(), namespaceResolver);
         if (null != stringValue) {
             marshalRecord.openStartElement(xPathFragment, namespaceResolver);
             XPathFragment nextFragment = xPathFragment.getNextFragment();

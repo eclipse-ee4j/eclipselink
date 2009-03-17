@@ -86,7 +86,7 @@ public class XMLObjectReferenceMappingNodeValue extends XMLSimpleMappingNodeValu
      */
     public void attribute(UnmarshalRecord unmarshalRecord, String namespaceURI, String localName, String value) {
         if (value != null) {
-            Object realValue = xmlField.convertValueBasedOnSchemaType(value, (XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager());
+            Object realValue = xmlField.convertValueBasedOnSchemaType(value, (XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager(),unmarshalRecord);
             // build a reference which will be resolved after unmarshalling is complete
             xmlObjectReferenceMapping.buildReference(unmarshalRecord, xmlField, realValue, unmarshalRecord.getSession());
         }
@@ -114,7 +114,7 @@ public class XMLObjectReferenceMappingNodeValue extends XMLSimpleMappingNodeValu
             Class typeClass = xmlField.getJavaClass(unmarshalRecord.getTypeQName());
             value = xmlConversionManager.convertObject(value, typeClass, unmarshalRecord.getTypeQName());
         } else {
-            value = xmlField.convertValueBasedOnSchemaType(value, xmlConversionManager);
+            value = xmlField.convertValueBasedOnSchemaType(value, xmlConversionManager, unmarshalRecord);
         }
 
         // build a reference which will be resolved after unmarshalling is complete
@@ -155,7 +155,7 @@ public class XMLObjectReferenceMappingNodeValue extends XMLSimpleMappingNodeValu
         }
 
         QName schemaType = getSchemaType(xmlField, fieldValue, session);
-        String stringValue = getValueToWrite(schemaType, fieldValue, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager());
+        String stringValue = getValueToWrite(schemaType, fieldValue, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager(),namespaceResolver);
         XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
 
         if (xPathFragment.isAttribute()) {

@@ -443,6 +443,9 @@ public class MappingsGenerator {
             mapping.setSetMethodName(property.getSetMethodName());
         }
         mapping.setField(getXPathForField(property, namespaceInfo, true));
+        if(XMLConstants.QNAME_QNAME.equals(property.getSchemaType())){
+		    ((XMLField) mapping.getField()).setSchemaType(XMLConstants.QNAME_QNAME);
+        }        
         descriptor.addMapping(mapping);
         return mapping;
     }
@@ -616,6 +619,9 @@ public class MappingsGenerator {
         mapping.useCollectionClassName(collectionType.getRawName());
         XMLField xmlField = getXPathForField(property, namespaceInfo, true);
         mapping.setField(xmlField);
+        if(XMLConstants.QNAME_QNAME.equals(property.getSchemaType())){
+        	((XMLField) mapping.getField()).setSchemaType(XMLConstants.QNAME_QNAME);
+    	}    
         if (helper.isAnnotationPresent(property.getElement(), XmlList.class)) {
             mapping.setUsesSingleNode(true);
         }
@@ -940,6 +946,9 @@ public class MappingsGenerator {
                     if(nextClassName.equals("[B") || nextClassName.equals("[Ljava.lang.Byte;")) {
                        ((XMLField)mapping.getField()).setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
                     }
+                    else if(nextClassName.equals("javax.xml.namespace.QName")){
+                        ((XMLField)mapping.getField()).setSchemaType(XMLConstants.QNAME_QNAME);
+                    }
                     desc.addMapping(mapping);
     			} else{    				
     				XMLDirectMapping mapping = new XMLDirectMapping();
@@ -952,6 +961,9 @@ public class MappingsGenerator {
 	    			if(nextClassName.equals("[B") || nextClassName.equals("[Ljava.lang.Byte;")) {
 	    				((XMLField)mapping.getField()).setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
 	    			}
+                    else if(nextClassName.equals("javax.xml.namespace.QName")){
+                        ((XMLField)mapping.getField()).setSchemaType(XMLConstants.QNAME_QNAME);
+                    }
 					                    
                     if (nextElement.getJavaTypeAdapterClass() != null) {
                         mapping.setConverter(new XMLJavaTypeConverter(nextElement.getJavaTypeAdapterClass()));

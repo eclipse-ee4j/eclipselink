@@ -17,6 +17,7 @@ import java.util.Iterator;
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
+import org.eclipse.persistence.oxm.record.XMLRecord;
 
 /**
  * <p>Subclass of XMLField for fields that are mapped to unions.
@@ -150,16 +151,22 @@ public class XMLUnionField extends XMLField {
     /**
     * INTERNAL:
     */
-    public Object convertValueBasedOnSchemaType(Object value, XMLConversionManager xmlConversionManager) {
+    public Object convertValueBasedOnSchemaType(Object value, XMLConversionManager xmlConversionManager, XMLRecord record) {
         Object convertedValue = value;
         for (int i = 0; i < schemaTypes.size(); i++) {
             QName nextQName = (QName) schemaTypes.get(i);
             try {
                 if (nextQName != null) {
-                    Class javaClass = getType();
-                    javaClass = getJavaClass(nextQName);
-                    convertedValue = xmlConversionManager.convertObject(value, javaClass, nextQName);
-                    break;
+                	
+                	if(XMLConstants.QNAME_QNAME.equals(nextQName)){
+                		buildQNameFromString((String)value, record);        		                		
+                		break;
+                	}else{
+                		Class javaClass = getType();
+                        javaClass = getJavaClass(nextQName);
+                        convertedValue = xmlConversionManager.convertObject(value, javaClass, nextQName);
+                        break;
+                	}                	                                        
                 }
             } catch (ConversionException ce) {
                 if (i == (schemaTypes.size() - 1)) {

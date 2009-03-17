@@ -15,13 +15,19 @@ package org.eclipse.persistence.internal.oxm;
 import java.util.ArrayList;
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.exceptions.ConversionException;
+import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLUnionField;
 
 public abstract class XMLSimpleMappingNodeValue extends MappingNodeValue {
-    protected String getValueToWrite(QName schemaType, Object value, XMLConversionManager xmlConversionManager) {
+    protected String getValueToWrite(QName schemaType, Object value, XMLConversionManager xmlConversionManager, NamespaceResolver namespaceResolver) {
+    	if(schemaType != null && XMLConstants.QNAME_QNAME.equals(schemaType)){
+    		return getStringForQName((QName)value, namespaceResolver);
+    	}
         return (String) xmlConversionManager.convertObject(value, ClassConstants.STRING, schemaType);
     }
 
@@ -58,5 +64,26 @@ public abstract class XMLSimpleMappingNodeValue extends MappingNodeValue {
             }
         }
         return schemaType;
+    }
+    protected String getStringForQName(QName qName, NamespaceResolver namespaceResolver){
+    	if(null == qName) {
+			return null;
+		}
+		    
+		if(null == qName.getNamespaceURI()) {
+			return qName.getLocalPart();
+		} else {		
+			String namespaceURI = qName.getNamespaceURI();
+			if(namespaceResolver == null){
+				throw XMLMarshalException.namespaceResolverNotSpecified(namespaceURI);
+			}
+			String prefix = namespaceResolver.resolveNamespaceURI(namespaceURI);
+			if(null == prefix) {
+				return qName.getLocalPart();
+			} else {
+				return prefix + COLON + qName.getLocalPart();
+			}
+		}
+
     }
 }
