@@ -106,7 +106,7 @@ public class DataSource {
 	    
 	    this.platformId = EIS_PLATFORM_ID;
 	    this.platformName = shortClassName;
-        this.platformClassName = EisPlatformManager.instance().getRuntimePlatformClassNameForClass( shortClassName);	        
+        this.platformClassName = EisPlatformManager.instance().getRuntimePlatformClassNameFor(shortClassName);	        
 	}
 	
 	private void initializeXmlDs() {

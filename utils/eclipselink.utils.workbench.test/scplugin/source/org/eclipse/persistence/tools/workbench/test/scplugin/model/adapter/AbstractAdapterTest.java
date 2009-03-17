@@ -54,7 +54,7 @@ public abstract class AbstractAdapterTest extends TestCase
 
 	protected final DataSource buildAQDataSource()
 	{
-		return buildEisDataSource( "AQPlatform");
+		return buildEisDataSource( "Oracle AQ");
 	}
 
 	protected final DataSource buildDataSource( String platformName)
