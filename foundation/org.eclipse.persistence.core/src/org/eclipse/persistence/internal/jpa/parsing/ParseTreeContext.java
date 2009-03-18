@@ -135,7 +135,7 @@ public class ParseTreeContext {
     public Class classForSchemaName(String schemaName, GenerationContext context) {
         ClassDescriptor descriptor = context.getSession().getDescriptorForAlias(schemaName);
         if (descriptor == null) {
-            throw JPQLException.unknownAbstractSchemaType(getQueryInfo(), schemaName);
+            throw JPQLException.entityTypeNotFound(getQueryInfo(), schemaName);
         }
         Class theClass = descriptor.getJavaClass();
         if (theClass == null) {

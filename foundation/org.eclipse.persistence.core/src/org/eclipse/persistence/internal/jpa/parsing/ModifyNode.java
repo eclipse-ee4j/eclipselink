@@ -100,7 +100,7 @@ public abstract class ModifyNode extends QueryNode {
         String alias = abstractSchemaName;
         ClassDescriptor descriptor = context.getSession().getDescriptorForAlias(alias);
         if (descriptor == null) {
-            throw JPQLException.unknownAbstractSchemaType2(
+            throw JPQLException.entityTypeNotFound2(
                 context.getParseTreeContext().getQueryInfo(), 
                 getLine(), getColumn(), alias);
         }
