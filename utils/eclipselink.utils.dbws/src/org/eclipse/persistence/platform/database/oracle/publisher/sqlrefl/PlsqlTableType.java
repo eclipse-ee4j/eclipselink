@@ -15,13 +15,13 @@ package org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.Vector;
-
 import org.eclipse.persistence.platform.database.oracle.publisher.PublisherException;
 import org.eclipse.persistence.platform.database.oracle.publisher.Util;
 import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.ElemInfo;
 import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.PlsqlElemHelper;
 import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.PlsqlElemInfo;
 import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.ViewCache;
+import org.eclipse.persistence.platform.database.oracle.publisher.visit.PublisherVisitor;
 import static org.eclipse.persistence.platform.database.oracle.publisher.Util.ALL_ARGUMENTS;
 
 /**
@@ -225,5 +225,8 @@ public class PlsqlTableType extends SqlCollectionType {
     }
 
     private ElemInfo m_elemInfo;
-   
+    
+    public void accept(PublisherVisitor v) {
+        v.visit(this);
+    }
 }

@@ -14,6 +14,7 @@
 package org.eclipse.persistence.tools.dbws;
 
 //javase imports
+import java.util.regex.Pattern;
 import static java.sql.Types.BIGINT;
 import static java.sql.Types.CHAR;
 import static java.sql.Types.DATE;
@@ -29,6 +30,8 @@ import static java.sql.Types.TIME;
 import static java.sql.Types.TIMESTAMP;
 import static java.sql.Types.TINYINT;
 import static java.sql.Types.VARCHAR;
+
+//java eXtension imports
 import javax.xml.namespace.QName;
 import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
 import static javax.xml.XMLConstants.NULL_NS_URI;
@@ -217,9 +220,8 @@ public class Util {
         return noOutArguments;
     }
 
-    public static String trimPunctuation(String originalName, boolean isOracle) {
-        if (originalName == null ||
-            originalName.length() == 0) {
+    public static String escapePunctuation(String originalName, boolean isOracle) {
+        if (originalName == null || originalName.length() == 0) {
             if (isOracle) {
                 return null;
             }
@@ -227,23 +229,20 @@ public class Util {
                 return originalName;
             }
         }
-        String nameWithNoPunctuation = null;
-        // paranoid much? - trim leading/trailing spaces
-        String tmpname1 = originalName.trim();
-        // strip out all punctuation except period (catalog/schema/package separator characater),
-        // underscore and percent (allowed in table names)
-        String tmpname2 = tmpname1.replaceAll("[\\p{Punct}&&[^\\._%]]", " ");
-        // now trim spaces and see if still same size as before
-        String tmpname3 = tmpname2.trim();
-        if (tmpname3.length() != tmpname1.length()) {
-            throw new IllegalArgumentException(originalName + " contains illegal characters");
-        }
-        if (isOracle) {
-            nameWithNoPunctuation = tmpname3.toUpperCase();
+        // escape all punctuation except SQL 'LIKE' meta-characters:
+        // '_' (underscore) - matches any one character) and
+        // '%' (percent ) - matches a string of zero or more characters
+        return originalName.trim().replaceAll("[\\p{Punct}&&[^_%]]", "\\\\$0");
+    }
+
+    public static boolean sqlMatch(String pattern, String input) {
+        if (pattern != null && pattern.length() > 0) {
+            String tmp = pattern.replace('_', '.').replace("%", ".*");
+            Pattern p = Pattern.compile(tmp, Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+            return p.matcher(input).matches();
         }
         else {
-            nameWithNoPunctuation = tmpname3;
+            return false;
         }
-        return nameWithNoPunctuation;
     }
 }

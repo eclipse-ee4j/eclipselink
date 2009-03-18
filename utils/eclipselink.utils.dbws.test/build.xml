@@ -202,42 +202,6 @@
         includes="dbws/testing/@{package-name}/@{testsuite-name}TestSuite.java"
         classpathref="dbws_util_test.run.path"
       />
-      <DeleteFileQuietly file="dbws@{package-name}.jar"/>
-      <java
-        classname="dbws.testing.@{package-name}.@{testsuite-name}TestSuite"
-        fork="true"
-        >
-        <classpath>
-          <path refid="dbws_util_test.run.path"/>
-          <pathelement path="./${classes.dir}"/>
-          <pathelement path="./${eclipselink.utils.dbws.common.jar.name}"/>
-        </classpath>
-        <sysproperty
-          key="eclipselink.logging.level"
-          value="${logging.level}"
-        />
-        <sysproperty
-          key="db.driver"
-          value="${db.driver}"
-        />
-        <sysproperty
-          key="db.url"
-          value="${db.url}"
-        />
-        <sysproperty
-          key="db.user"
-          value="${db.user}"
-        />
-        <sysproperty
-          key="db.pwd"
-          value="${db.pwd}"
-        />
-        <sysproperty
-          key="db.platform"
-          value="${db.platform}"
-        />
-        <arg line="@{package-name}"/>
-      </java>
     </sequential>
   </macrodef>
   <macrodef

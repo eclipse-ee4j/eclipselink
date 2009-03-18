@@ -15,10 +15,11 @@ package org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl;
 import java.sql.SQLException;
 import java.util.Hashtable;
 import java.util.Vector;
-
 import org.eclipse.persistence.platform.database.oracle.publisher.PublisherException;
 import org.eclipse.persistence.platform.database.oracle.publisher.Util;
 import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.ViewCache;
+import org.eclipse.persistence.platform.database.oracle.publisher.visit.PublisherVisitor;
+import org.eclipse.persistence.platform.database.oracle.publisher.visit.PublisherWalker;
 import static org.eclipse.persistence.platform.database.oracle.publisher.Util.SCHEMA_IF_NEEDED;
 import static org.eclipse.persistence.platform.database.oracle.publisher.Util.printTypeWithLength;
 
@@ -539,4 +540,7 @@ public class SqlType extends TypeClass {
     protected SqlType m_parentType;
     protected boolean m_isReused;
 
+    public void accept(PublisherVisitor v) {
+        ((PublisherWalker)v).visit(this);
+    }
 }

@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl;
 
+import org.eclipse.persistence.platform.database.oracle.publisher.visit.PublisherVisitor;
+
 /**
  * A Method provides information about a single method of a type.
  */
@@ -174,4 +176,7 @@ public class ProcedureMethod implements Sortable {
     protected boolean m_keepMethodName = false;
     protected String m_overloadNumber;
 
+    public void accept(PublisherVisitor v) {
+        v.visit(this);
+    }
 }

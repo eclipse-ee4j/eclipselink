@@ -15,7 +15,6 @@ package org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
-
 import org.eclipse.persistence.platform.database.oracle.publisher.PublisherException;
 import org.eclipse.persistence.platform.database.oracle.publisher.Util;
 import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.FieldInfo;
@@ -23,6 +22,7 @@ import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.Plsq
 import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.RowtypeInfo;
 import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.UserArguments;
 import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.ViewCache;
+import org.eclipse.persistence.platform.database.oracle.publisher.visit.PublisherVisitor;
 
 @SuppressWarnings("unchecked")
 public class PlsqlRecordType extends SqlTypeWithFields {
@@ -120,6 +120,10 @@ public class PlsqlRecordType extends SqlTypeWithFields {
             }
         }
         return FieldInfo.getFieldInfo(viewRows);
+    }
+
+    public void accept(PublisherVisitor v) {
+        v.visit(this);
     }
     
     RowtypeInfo[] getRowtypeInfo() {

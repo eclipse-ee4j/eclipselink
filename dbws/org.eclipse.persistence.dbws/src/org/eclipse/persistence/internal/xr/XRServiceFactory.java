@@ -35,6 +35,7 @@ import org.eclipse.persistence.internal.oxm.schema.model.Schema;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.XMLLogin;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.sessions.DatabaseSession;
@@ -241,6 +242,7 @@ public class XRServiceFactory  {
         else {
             throw DBWSException.couldNotLocateOXSessionForService(xrService.name);
         }
+        ((XMLLogin)xrService.oxSession.getDatasourceLogin()).setEqualNamespaceResolvers(false);
         ProjectHelper.fixOROXAccessors(xrService.orSession.getProject(),
             xrService.oxSession.getProject());
         xrService.xmlContext = new XMLContext(xrService.oxSession.getProject());

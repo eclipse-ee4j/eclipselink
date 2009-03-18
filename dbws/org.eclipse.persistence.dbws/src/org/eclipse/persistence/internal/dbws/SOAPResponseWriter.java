@@ -14,11 +14,10 @@
 package org.eclipse.persistence.internal.dbws;
 
 // Javase imports
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 
 // Java extension imports
 import javax.activation.DataHandler;
@@ -33,7 +32,6 @@ import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 
 // EclipseLink imports
 import org.eclipse.persistence.exceptions.EclipseLinkException;
-import org.eclipse.persistence.internal.descriptors.Namespace;
 import org.eclipse.persistence.internal.oxm.schema.model.ComplexType;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
@@ -49,7 +47,7 @@ import org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
-import static org.eclipse.persistence.internal.dbws.ProviderHelper.SERVICE_NS_PREFIX;
+import static org.eclipse.persistence.internal.xr.Util.SERVICE_NAMESPACE_PREFIX;
 import static org.eclipse.persistence.oxm.XMLConstants.BASE_64_BINARY;
 
 public class SOAPResponseWriter {
@@ -71,22 +69,22 @@ public class SOAPResponseWriter {
     public void initialize() {
         SOAPResponseClassLoader loader =
             new SOAPResponseClassLoader(Thread.currentThread().getContextClassLoader());
-        NamespaceResolver ns = new NamespaceResolver();
-        ns.put(SERVICE_NS_PREFIX, dbwsAdapter.getExtendedSchema().getTargetNamespace());
+        NamespaceResolver nr = new NamespaceResolver();
+        nr.put(SERVICE_NAMESPACE_PREFIX, dbwsAdapter.getExtendedSchema().getTargetNamespace());
         for (Operation op : dbwsAdapter.getOperationsList()) {
             String className = op.getName() + "_Response";
             Class<?> opClass = loader.buildClass(className);
             XMLDescriptor descriptor = new XMLDescriptor();
-            descriptor.setNamespaceResolver(ns);
+            descriptor.setDefaultRootElement(SERVICE_NAMESPACE_PREFIX + ":" + op.getName() + "Response");
+            descriptor.setNamespaceResolver(nr);
             descriptor.setJavaClass(opClass);
-            descriptor.setDefaultRootElement(SERVICE_NS_PREFIX + ":" + op.getName() + "Response");
             if (op instanceof QueryOperation) {
                 QueryOperation queryOperation = (QueryOperation)op;
                 if (queryOperation.isSimpleXMLFormat()) {
                     XMLAnyObjectMapping mapping = new XMLAnyObjectMapping();
                     mapping.setUseXMLRoot(true);
                     mapping.setAttributeName("result");
-                    mapping.setXPath(SERVICE_NS_PREFIX + ":" + "result");
+                    mapping.setXPath(SERVICE_NAMESPACE_PREFIX + ":" + "result");
                     descriptor.addMapping(mapping);
                     mapping.initialize((AbstractSession)dbwsAdapter.getOXSession());
                 }
@@ -94,7 +92,7 @@ public class SOAPResponseWriter {
                     Attachment attachment = queryOperation.getResult().getAttachment();
                     XMLBinaryDataMapping mapping = new XMLBinaryDataMapping();
                     mapping.setAttributeName("result");
-                    mapping.setXPath(SERVICE_NS_PREFIX + ":" + "result");
+                    mapping.setXPath(SERVICE_NAMESPACE_PREFIX + ":" + "result");
                     mapping.setSwaRef(true);
                     mapping.setShouldInlineBinaryData(false);
                     mapping.setMimeType(attachment.getMimeType());
@@ -102,10 +100,6 @@ public class SOAPResponseWriter {
                 }
                 else {
                     QName type = queryOperation.getResult().getType();
-                    String prefix = null;
-                    if (type.getPrefix() != null && type.getPrefix().length() > 0 ) {
-                        prefix = type.getPrefix() + ":";
-                    }
                     String localElement = type.getLocalPart();
                     // look for top-level complex types
                     Set<Map.Entry> entrySet = dbwsAdapter.getSchema().getTopLevelComplexTypes().entrySet();
@@ -123,9 +117,10 @@ public class SOAPResponseWriter {
                                 new XMLCompositeCollectionMapping();
                             mapping.setAttributeName("result");
                             mapping.setReferenceClass(typeDescriptor.getJavaClass());
-                            mapping.useCollectionClass(Vector.class);
-                            mapping.setXPath(SERVICE_NS_PREFIX + ":" + "result/" +
-                                (prefix == null ? localElement : prefix + localElement));
+                            mapping.useCollectionClass(ArrayList.class);
+                            mapping.setXPath(SERVICE_NAMESPACE_PREFIX + ":" + "result/" + localElement);
+                            descriptor.getNamespaceResolver().setDefaultNamespaceURI(
+                                typeDescriptor.getNamespaceResolver().getDefaultNamespaceURI());
                             descriptor.addMapping(mapping);
                             mapping.initialize((AbstractSession)dbwsAdapter.getOXSession());
                         }
@@ -133,37 +128,34 @@ public class SOAPResponseWriter {
                             XMLCompositeObjectMapping mapping = new XMLCompositeObjectMapping();
                             mapping.setAttributeName("result");
                             mapping.setReferenceClass(typeDescriptor.getJavaClass());
-                            mapping.setXPath(SERVICE_NS_PREFIX + ":" + "result/" +
-                                (prefix == null ? localElement : prefix + localElement));
+                            mapping.setXPath(SERVICE_NAMESPACE_PREFIX + ":" + "result/" + localElement);
+                            descriptor.getNamespaceResolver().setDefaultNamespaceURI(
+                                typeDescriptor.getNamespaceResolver().getDefaultNamespaceURI());
                             descriptor.addMapping(mapping);
                             mapping.initialize((AbstractSession)dbwsAdapter.getOXSession());
                         }
-                        List<Namespace> namespaces =
-                            typeDescriptor.getNamespaceResolver().getNamespaces();
-                        for (Namespace n : namespaces) {
-                            descriptor.getNamespaceResolver().put(n.getPrefix(),
-                                n.getNamespaceURI());
-                        }
-                    }
-                    else if (type.equals(new QName(W3C_XML_SCHEMA_NS_URI, "any"))) {
-                        XMLAnyObjectMapping mapping = new XMLAnyObjectMapping();
-                        mapping.setAttributeName("result");
-                        mapping.setXPath(SERVICE_NS_PREFIX + ":" + "result");
-                        descriptor.addMapping(mapping);
-                    }
-                    else if (type.equals(new QName(W3C_XML_SCHEMA_NS_URI, BASE_64_BINARY))) {
-                        XMLBinaryDataMapping mapping = new XMLBinaryDataMapping();
-                        mapping.setAttributeName("result");
-                        mapping.setXPath(SERVICE_NS_PREFIX + ":" + "result");
-                        mapping.setShouldInlineBinaryData(true);
-                        ((XMLField)mapping.getField()).setSchemaType(type);
-                        descriptor.addMapping(mapping);
                     }
                     else {
-                        XMLDirectMapping mapping = new XMLDirectMapping();
-                        mapping.setAttributeName("result");
-                        mapping.setXPath(SERVICE_NS_PREFIX + ":" + "result/text()");
-                        descriptor.addMapping(mapping);
+                        if (type.equals(new QName(W3C_XML_SCHEMA_NS_URI, "any"))) {
+                            XMLAnyObjectMapping mapping = new XMLAnyObjectMapping();
+                            mapping.setAttributeName("result");
+                            mapping.setXPath(SERVICE_NAMESPACE_PREFIX + ":" + "result");
+                            descriptor.addMapping(mapping);
+                        }
+                        else if (type.equals(new QName(W3C_XML_SCHEMA_NS_URI, BASE_64_BINARY))) {
+                            XMLBinaryDataMapping mapping = new XMLBinaryDataMapping();
+                            mapping.setAttributeName("result");
+                            mapping.setXPath(SERVICE_NAMESPACE_PREFIX + ":" + "result");
+                            mapping.setShouldInlineBinaryData(true);
+                            ((XMLField)mapping.getField()).setSchemaType(type);
+                            descriptor.addMapping(mapping);
+                        }
+                        else {
+                            XMLDirectMapping mapping = new XMLDirectMapping();
+                            mapping.setAttributeName("result");
+                            mapping.setXPath(SERVICE_NAMESPACE_PREFIX + ":" + "result/text()");
+                            descriptor.addMapping(mapping);
+                        }
                     }
                 }
             }

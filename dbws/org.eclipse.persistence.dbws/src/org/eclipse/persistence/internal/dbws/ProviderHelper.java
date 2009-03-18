@@ -74,7 +74,7 @@ import static org.eclipse.persistence.internal.xr.Util.DBWS_SERVICE_XML;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_WSDL;
 import static org.eclipse.persistence.internal.xr.Util.META_INF_PATHS;
 import static org.eclipse.persistence.internal.xr.Util.SCHEMA_2_CLASS;
-import static org.eclipse.persistence.internal.xr.Util.TARGET_NAMESPACE_PREFIX;
+import static org.eclipse.persistence.internal.xr.Util.SERVICE_NAMESPACE_PREFIX;
 import static org.eclipse.persistence.internal.xr.Util.WEB_INF_DIR;
 import static org.eclipse.persistence.internal.xr.Util.WSDL_DIR;
 import static org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT;
@@ -117,7 +117,6 @@ import static org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy.
  */
 public class ProviderHelper extends XRServiceFactory {
 
-    public static final String SERVICE_NS_PREFIX = "srvc";
     protected static final String XSL_PREAMBLE =
       "<?xml version=\"1.0\"?> " +
       "<xsl:stylesheet " +
@@ -238,8 +237,7 @@ public class ProviderHelper extends XRServiceFactory {
         invocationDescriptor.setJavaClass(Invocation.class);
         NamespaceResolver nr = new NamespaceResolver();
         invocationDescriptor.setNamespaceResolver(nr);
-        nr.put(TARGET_NAMESPACE_PREFIX, dbwsAdapter.getSchemaNamespace());
-        nr.put(SERVICE_NS_PREFIX, tns);
+        nr.put(SERVICE_NAMESPACE_PREFIX, tns);
         nr.setDefaultNamespaceURI(tns);
         XMLAnyCollectionMapping parametersMapping = new XMLAnyCollectionMapping();
         parametersMapping.setAttributeName("parameters");

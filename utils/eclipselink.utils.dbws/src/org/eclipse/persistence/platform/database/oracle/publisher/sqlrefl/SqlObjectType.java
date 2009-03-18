@@ -14,7 +14,6 @@ package org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl;
 
 import java.sql.SQLException;
 import java.util.Iterator;
-
 import org.eclipse.persistence.platform.database.oracle.publisher.PublisherException;
 import org.eclipse.persistence.platform.database.oracle.publisher.Util;
 import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.AllTypes;
@@ -22,6 +21,7 @@ import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.Fiel
 import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.MethodInfo;
 import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.ParamInfo;
 import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.ResultInfo;
+import org.eclipse.persistence.platform.database.oracle.publisher.visit.PublisherVisitor;
 
 @SuppressWarnings("unchecked")
 public class SqlObjectType extends SqlTypeWithMethods {
@@ -193,6 +193,10 @@ public class SqlObjectType extends SqlTypeWithMethods {
             "OWNER", "TYPE_NAME", "METHOD_NO"}, new Object[]{schema, name, methodNo},
             new String[]{"PARAM_NO"});
         return ParamInfo.getParamInfo(iter);
+    }
+
+    public void accept(PublisherVisitor v) {
+        v.visit(this);
     }
     
     SqlType m_supertype = null;

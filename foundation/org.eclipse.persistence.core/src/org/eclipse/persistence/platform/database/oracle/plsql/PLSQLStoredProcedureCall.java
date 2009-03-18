@@ -91,6 +91,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
 
     public PLSQLStoredProcedureCall() {
         super();
+        setIsCallableStatementRequired(true);
     }
 
     /**
@@ -1025,8 +1026,12 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
     @Override
     public AbstractRecord buildOutputRow(CallableStatement statement) throws SQLException {
 
-        // re-order elements in outputRow to conform to original indices
         AbstractRecord outputRow = super.buildOutputRow(statement);
+        if (!shouldBuildOutputRow) {
+            outputRow.put("", 1); // fake-out Oracle executeUpdate rowCount, always 1
+            return outputRow;
+        }
+        // re-order elements in outputRow to conform to original indices
         Vector outputRowFields = outputRow.getFields();
         Vector outputRowValues = outputRow.getValues();
         DatabaseRecord newOutputRow = new DatabaseRecord();

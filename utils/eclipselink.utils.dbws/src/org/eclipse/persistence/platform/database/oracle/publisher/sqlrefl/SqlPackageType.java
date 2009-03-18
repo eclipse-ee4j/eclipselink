@@ -16,7 +16,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
-
 import org.eclipse.persistence.platform.database.oracle.publisher.MethodFilter;
 import org.eclipse.persistence.platform.database.oracle.publisher.Util;
 import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.AllSynonyms;
@@ -27,6 +26,7 @@ import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.Resu
 import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.SingleColumnViewRow;
 import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.UserArguments;
 import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.ViewCache;
+import org.eclipse.persistence.platform.database.oracle.publisher.visit.PublisherVisitor;
 
 @SuppressWarnings("unchecked")
 public class SqlPackageType extends SqlTypeWithMethods {
@@ -270,4 +270,7 @@ public class SqlPackageType extends SqlTypeWithMethods {
         protected Hashtable m_ht;
     }
 
+    public void accept(PublisherVisitor v) {
+        v.visit(this);
+    }
 }
