@@ -23,6 +23,7 @@ public class RootElementIdentifiedByNameTestCases extends OXTestCase {
     private final static String XML_RESOURCE_EMAIL = "org/eclipse/persistence/testing/oxm/descriptor/rootelement/identifiedbyname/EmailAddress.xml";
     private final static String XML_RESOURCE_MAILING = "org/eclipse/persistence/testing/oxm/descriptor/rootelement/identifiedbyname/MailingAddress.xml";
     private final static String XML_RESOURCE_BILLING = "org/eclipse/persistence/testing/oxm/descriptor/rootelement/identifiedbyname/BillingAddress.xml";
+    private final static String XML_RESOURCE_XSITYPE= "org/eclipse/persistence/testing/oxm/descriptor/rootelement/identifiedbyname/XSITypeAddress.xml";
     private XMLContext xmlContext;
     private XMLUnmarshaller xmlUnmarshaller;
 
@@ -59,4 +60,16 @@ public class RootElementIdentifiedByNameTestCases extends OXTestCase {
             // PASS - an XMLMarshalException should be caught
         }
     }
+    
+    public void testReadBasedOnXSIType() {
+        try {
+            InputStream inputStream = ClassLoader.getSystemResourceAsStream(XML_RESOURCE_XSITYPE);
+            Object testObject = xmlUnmarshaller.unmarshal(inputStream);
+            assertTrue(testObject instanceof XMLRoot);
+            assertTrue(((XMLRoot)testObject).getObject().getClass().equals(EmailAddress.class));
+        } catch (XMLMarshalException e) {
+        	fail();
+        }
+    }
+        
 }

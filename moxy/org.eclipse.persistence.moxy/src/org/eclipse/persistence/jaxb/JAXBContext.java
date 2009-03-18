@@ -57,6 +57,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     private XMLContext xmlContext;
     private org.eclipse.persistence.jaxb.compiler.Generator generator;    
     private HashMap<QName, Class> qNameToGeneratedClasses;
+    private HashMap<QName, Class> qNamesToDeclaredClasses;
     
     public JAXBContext(XMLContext context) {
         super();
@@ -68,6 +69,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         this.xmlContext = context;
         this.generator = generator;
         this.qNameToGeneratedClasses = generator.getMappingsGenerator().getQNamesToGeneratedClasses();
+        this.qNamesToDeclaredClasses = generator.getMappingsGenerator().getQNamesToDeclaredClasses();
     }
     
     public XMLContext getXMLContext() {
@@ -108,6 +110,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             }
             unmarshaller.setUnmarshalCallbacks(generator.getUnmarshalCallbacks());
         }        
+        unmarshaller.setQNamesToDeclaredClasses(this.qNamesToDeclaredClasses);
         return unmarshaller;
     }
 
@@ -134,5 +137,14 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      public void applyORMMetadata(AbstractSession ormSession) {
     	 this.xmlContext.applyORMMetadata(ormSession);
      }
+
+	public HashMap<QName, Class> getQNamesToDeclaredClasses() {
+		return qNamesToDeclaredClasses;
+	}
+
+	public void setQNamesToDeclaredClasses(
+			HashMap<QName, Class> nameToDeclaredClasses) {
+		qNamesToDeclaredClasses = nameToDeclaredClasses;
+	}
     
 }

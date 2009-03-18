@@ -160,11 +160,7 @@ public class SAXUnmarshallerHandler implements ContentHandler {
                 rootQName = new QName(namespaceURI, name);
             }
 
-            XMLDescriptor xmlDescriptor = xmlContext.getDescriptor(rootQName);
-            // if there is no descriptor for the root element, we may be able to
-            // locate one if an xsi:type attribute is set:
-            if (null == xmlDescriptor) {
-                // Try to find a descriptor based on the schema type
+            XMLDescriptor xmlDescriptor = null;
                 String type = atts.getValue(XMLConstants.SCHEMA_INSTANCE_URL, "type");
                 if (null != type) {
                     XPathFragment typeFragment = new XPathFragment(type);
@@ -184,6 +180,9 @@ public class SAXUnmarshallerHandler implements ContentHandler {
                     }
                     xmlDescriptor = xmlContext.getDescriptorByGlobalType(typeFragment);
                 }
+            if(xmlDescriptor == null){
+            	xmlDescriptor = xmlContext.getDescriptor(rootQName);
+            	
                 if (null == xmlDescriptor) {
                     //check for a cached object and look for descriptor by class
                     Object obj = this.xmlReader.getCurrentObject(session, null);

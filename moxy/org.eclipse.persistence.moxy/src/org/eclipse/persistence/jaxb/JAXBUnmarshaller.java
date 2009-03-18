@@ -70,6 +70,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
     private XMLUnmarshaller xmlUnmarshaller;
     public static final String XML_JAVATYPE_ADAPTERS = "xml-javatype-adapters";
     public static final String STAX_SOURCE_CLASS_NAME = "javax.xml.transform.stax.StAXSource";
+    private HashMap<QName, Class> qNamesToDeclaredClasses;
     
     public JAXBUnmarshaller(XMLUnmarshaller newXMLUnmarshaller) {
         super();
@@ -391,20 +392,35 @@ public class JAXBUnmarshaller implements Unmarshaller {
     	QName qname = new QName(xmlRoot.getNamespaceURI(), xmlRoot.getLocalName());
     	if(value == null){    		    		
     		return createJAXBElement(qname, Object.class, value);
-    	}else{
-    		return createJAXBElement(qname, value.getClass(), value);    		
     	}
+    	if(qNamesToDeclaredClasses != null){
+    		Class declaredClass = qNamesToDeclaredClasses.get(qname);
+    		if(declaredClass != null){
+    			return createJAXBElement(qname, declaredClass, value);
+    		}
+    	}
+    	    	
+    	return createJAXBElement(qname, value.getClass(), value);    		
+    	
     }
     
     private JAXBElement createJAXBElement(QName qname, Class theClass, Object value){
    
-    	if(ClassConstants.XML_GREGORIAN_CALENDAR.isAssignableFrom(theClass)){
-    		theClass = ClassConstants.XML_GREGORIAN_CALENDAR;
-    	}else if(ClassConstants.DURATION.isAssignableFrom(theClass)){
-    		theClass = ClassConstants.DURATION;
+    	if(theClass == null){
+    		return new JAXBElement(qname, Object.class, value);
     	}
+	    if(ClassConstants.XML_GREGORIAN_CALENDAR.isAssignableFrom(theClass)){
+	    	theClass = ClassConstants.XML_GREGORIAN_CALENDAR;
+	    }else if(ClassConstants.DURATION.isAssignableFrom(theClass)){
+	    	theClass = ClassConstants.DURATION;
+	    }
     	
     	return new JAXBElement(qname, theClass, value);
-    }       
+    }
+
+
+	public void setQNamesToDeclaredClasses(HashMap<QName, Class> qNamesToDeclaredClassesMap) {
+		qNamesToDeclaredClasses = qNamesToDeclaredClassesMap;
+	}       
 }
     

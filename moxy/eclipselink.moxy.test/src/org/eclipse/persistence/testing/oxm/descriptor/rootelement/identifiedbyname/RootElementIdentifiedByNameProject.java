@@ -12,7 +12,9 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.oxm.descriptor.rootelement.identifiedbyname;
 
+import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.schema.XMLSchemaClassPathReference;
 import org.eclipse.persistence.sessions.Project;
 
 import org.eclipse.persistence.testing.oxm.descriptor.rootelement.EmailAddress;
@@ -30,6 +32,11 @@ public class RootElementIdentifiedByNameProject extends Project {
     XMLDescriptor descriptor = new XMLDescriptor();
     descriptor.setJavaClass(EmailAddress.class);
     descriptor.setDefaultRootElement("email-address");
+    
+    XMLSchemaClassPathReference schemaReference = new XMLSchemaClassPathReference();
+    schemaReference.setSchemaContext("/emailType");
+    descriptor.setSchemaReference(schemaReference);   
+   
     return descriptor;
   }
 
@@ -37,6 +44,10 @@ public class RootElementIdentifiedByNameProject extends Project {
     XMLDescriptor descriptor = new XMLDescriptor();
     descriptor.setJavaClass(MailingAddress.class);
     descriptor.setDefaultRootElement("mailing-address");
+    
+    XMLSchemaClassPathReference schemaReference = new XMLSchemaClassPathReference();
+    schemaReference.setSchemaContext("/mailingType");
+    descriptor.setSchemaReference(schemaReference);   
     return descriptor;
   }
 

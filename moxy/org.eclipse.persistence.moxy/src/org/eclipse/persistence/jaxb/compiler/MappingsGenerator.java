@@ -13,7 +13,6 @@
 package org.eclipse.persistence.jaxb.compiler;
 
 import java.beans.Introspector;
-import java.lang.reflect.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -86,8 +85,8 @@ public class MappingsGenerator {
     private JavaClass jotHashSet;
     private HashMap<String, NamespaceInfo> packageToNamespaceMappings;
     private HashMap<String, TypeInfo> typeInfo;
-    private HashMap<Class, QName> generatedClassesToQNames;
     private HashMap<QName, Class> qNamesToGeneratedClasses;
+    private HashMap<QName, Class> qNamesToDeclaredClasses;
     private HashMap<QName, ElementDeclaration> globalElements;
     
     public MappingsGenerator(Helper helper) {
@@ -95,6 +94,7 @@ public class MappingsGenerator {
         jotArrayList = helper.getJavaClass(ArrayList.class);
         jotHashSet = helper.getJavaClass(HashSet.class);               
         qNamesToGeneratedClasses = new HashMap<QName, Class>();
+        qNamesToDeclaredClasses = new HashMap<QName, Class>();
     }
     
     public Project generateProject(ArrayList<JavaClass> typeInfoClasses, HashMap<String, TypeInfo> typeInfo, HashMap userDefinedSchemaTypes, HashMap<String, NamespaceInfo> packageToNamespaceMappings, HashMap<QName, ElementDeclaration> globalElements) throws Exception {
@@ -922,6 +922,12 @@ public class MappingsGenerator {
                 Class generatedClass = this.generateWrapperClass(WRAPPER_CLASS + wrapperCounter++, attributeTypeName, nextElement.isList(), next);
     			
     			this.qNamesToGeneratedClasses.put(next, generatedClass);
+    			try{
+    				Class declaredClass = PrivilegedAccessHelper.getClassForName(nextClassName, false, helper.getClassLoader());
+    				this.qNamesToDeclaredClasses.put(next, declaredClass);
+    			}catch(Exception e){
+    				
+    			}
     			
     			XMLDescriptor desc = new XMLDescriptor();
     			desc.setJavaClass(generatedClass);
@@ -1110,4 +1116,7 @@ public class MappingsGenerator {
 	public HashMap<QName, Class> getQNamesToGeneratedClasses() {
 		return qNamesToGeneratedClasses;
 	}    	
+	public HashMap<QName, Class> getQNamesToDeclaredClasses() {
+		return qNamesToDeclaredClasses;
+	}  
 }

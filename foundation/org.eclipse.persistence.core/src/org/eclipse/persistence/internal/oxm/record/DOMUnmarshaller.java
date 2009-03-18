@@ -273,22 +273,26 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
      * INTERNAL: Return the descriptor for the document.
      */
     protected XMLDescriptor getDescriptor(DOMRecord xmlRecord) throws XMLMarshalException {
-        XMLContext xmlContext = xmlUnmarshaller.getXMLContext();
-        QName rootQName = new QName(xmlRecord.getNamespaceURI(), xmlRecord.getLocalName());
-        XMLDescriptor xmlDescriptor = xmlContext.getDescriptor(rootQName);
+    	XMLDescriptor xmlDescriptor = null;
+    	
+    	XMLContext xmlContext = xmlUnmarshaller.getXMLContext();        
+        // Try to find a descriptor based on the schema type
+        String type = ((Element) xmlRecord.getDOM()).getAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, "type");
+        if (null != type) {
+            XPathFragment typeFragment = new XPathFragment(type);
+            String namespaceURI = xmlRecord.resolveNamespacePrefix(typeFragment.getPrefix());
+            typeFragment.setNamespaceURI(namespaceURI);
+            xmlDescriptor = xmlContext.getDescriptorByGlobalType(typeFragment);
+        }
+                    
         if (null == xmlDescriptor) {
-            // Try to find a descriptor based on the schema type
-            String type = ((Element) xmlRecord.getDOM()).getAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, "type");
-            if (null != type) {
-                XPathFragment typeFragment = new XPathFragment(type);
-                String namespaceURI = xmlRecord.resolveNamespacePrefix(typeFragment.getPrefix());
-                typeFragment.setNamespaceURI(namespaceURI);
-                xmlDescriptor = xmlContext.getDescriptorByGlobalType(typeFragment);
-            }
-            if (null == xmlDescriptor) {
+        	QName rootQName = new QName(xmlRecord.getNamespaceURI(), xmlRecord.getLocalName());
+        	xmlDescriptor = xmlContext.getDescriptor(rootQName);
+        	if (null == xmlDescriptor) {
                 throw XMLMarshalException.noDescriptorWithMatchingRootElement(rootQName.toString());
             }
         }
+        
         return xmlDescriptor;
     }
 
