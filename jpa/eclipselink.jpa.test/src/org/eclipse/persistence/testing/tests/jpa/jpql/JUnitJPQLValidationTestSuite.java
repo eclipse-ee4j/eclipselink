@@ -557,8 +557,8 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         {
             JPQLException ejbqlEx = (JPQLException)ex.getCause();
             Assert.assertEquals("Caught JPQLException with unexpected error code " + 
-                                "(expected unknownAbstractSchemaType)", 
-                                JPQLException.unknownAbstractSchemaType, ejbqlEx.getErrorCode());
+                                "(expected entityTypeNotFound)", 
+                                JPQLException.entityTypeNotFound, ejbqlEx.getErrorCode());
         }   
     }
 
