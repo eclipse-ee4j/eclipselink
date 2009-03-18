@@ -52,10 +52,13 @@ public class JPQLException extends EclipseLinkException {
     public static final int unsupportJoinArgument = 8031;
     public static final int invalidSetClauseTarget = 8032;
     public static final int invalidSetClauseNavigation = 8033;
-    public static final int unknownAbstractSchemaType = 8034;
+    /**
+     * @see JPQLException#entityTypeNotFound(String, String)
+     */
+    public static final int entityTypeNotFound = 8034;
     public static final int invalidEnumEqualExpression = 8035;
     public static final int invalidCollectionNavigation = 8036;
-    public static final int unknownAbstractSchemaType2 = 8037;
+    public static final int entityTypeNotFound2 = 8037;
     public static final int resolutionClassNotFoundException2 = 8038;
     public Collection internalExceptions = null;
 
@@ -462,23 +465,29 @@ public class JPQLException extends EclipseLinkException {
         return exception;
     }
 
-    public static JPQLException unknownAbstractSchemaType(String query, String type) {
+    /**
+     * <b>JPQLException[<a name="8034">8034</a>] Entity Type Not Found</b>
+     * <p>
+     * Indicates that a type specified in a JPQL query string cannot be found in
+     * the current persistence unit. Ensure that the entity name is properly
+     * spelled and matches the name of an entity in the persistence unit being
+     * used.
+     */
+    public static JPQLException entityTypeNotFound(String query, String type) {
         Object[] args = { query, type };
-
-        String message = ExceptionMessageGenerator.buildMessage(
-            JPQLException.class, unknownAbstractSchemaType, args);
+        String message = ExceptionMessageGenerator.buildMessage(JPQLException.class, entityTypeNotFound, args);
         JPQLException exception = new JPQLException(message);
-        exception.setErrorCode(unknownAbstractSchemaType);
+        exception.setErrorCode(entityTypeNotFound);
         return exception;
     }
 
-    public static JPQLException unknownAbstractSchemaType2(String query, int line, int column, String type) {
+    public static JPQLException entityTypeNotFound2(String query, int line, int column, String type) {
         Object[] args = { query, line, column, type };
 
         String message = ExceptionMessageGenerator.buildMessage(
-            JPQLException.class, unknownAbstractSchemaType2, args);
+            JPQLException.class, entityTypeNotFound2, args);
         JPQLException exception = new JPQLException(message);
-        exception.setErrorCode(unknownAbstractSchemaType2);
+        exception.setErrorCode(entityTypeNotFound2);
         return exception;
     }
 

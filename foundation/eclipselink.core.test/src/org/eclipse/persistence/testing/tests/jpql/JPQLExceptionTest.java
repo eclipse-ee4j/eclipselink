@@ -120,7 +120,7 @@ public class JPQLExceptionTest extends JPQLTestCase {
 
     public static JPQLExceptionTest missingDescriptorExceptionTest() {
         JPQLExceptionTest theTest = new JPQLExceptionTest();
-        theTest.expectedException = JPQLException.unknownAbstractSchemaType2(null, 0, 0, null);
+        theTest.expectedException = JPQLException.entityTypeNotFound2(null, 0, 0, null);
         theTest.setName("Missing Descriptor Exception test");
         theTest.setEjbqlString("SELECT OBJECT(i) FROM Integer i WHERE i.city = \"Ottawa\"");
 

@@ -69,7 +69,7 @@ public class RangeDeclNode extends IdentificationVariableDeclNode {
         TypeHelper typeHelper = context.getTypeHelper();
         Object type = typeHelper.resolveSchema(abstractSchemaName);
         if (type == null) {
-            throw JPQLException.unknownAbstractSchemaType2(
+            throw JPQLException.entityTypeNotFound2(
                 context.getQueryInfo(), getLine(), getColumn(), abstractSchemaName);
         }
         setType(type);

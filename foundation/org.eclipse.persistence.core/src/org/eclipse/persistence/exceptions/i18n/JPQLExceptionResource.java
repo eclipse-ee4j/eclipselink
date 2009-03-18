@@ -54,10 +54,10 @@ public class JPQLExceptionResource extends ListResourceBundle {
                                            { "8031", "Error compiling the query [{0}], line {1}, column {2}: {3} of embedded entity {4} is not supported." },
                                            { "8032", "Error compiling the query [{0}], line {1}, column {2}: invalid access of attribute [{3}] in SET clause target [{4}], only state fields and single valued association fields may be updated in a SET clause." },
                                            { "8033", "Error compiling the query [{0}], line {1}, column {2}: invalid navigation expression [{3}], cannot navigate association field [{4}] in the SET clause target." },
-                                           { "8034", "Error compiling the query [{0}]. Unknown abstract schema type [{1}]." },
+                                           { "8034", "Error compiling the query [{0}]. Unknown entity type [{1}]." },
                                            { "8035", "Error compiling the query [{0}], line {1}, column {2}: invalid enum equal expression, cannot compare enum value of type [{3}} with a non enum value of type [{4}]." },
                                            { "8036", "Error compiling the query [{0}], line {1}, column {2}: invalid navigation expression [{3}], cannot navigate collection valued association field [{4}]." },
-                                           { "8037", "Error compiling the query [{0}], line {1}, column {2}: unknown abstract schema type [{3}]." },
+                                           { "8037", "Error compiling the query [{0}], line {1}, column {2}:  Unknown entity type [{3}]." },
                                            { "8038", "Error compiling the query [{0}], line {1}, column {2}: a problem was encountered resolving the class name - The class [{3}] was not found." },
     };
 
