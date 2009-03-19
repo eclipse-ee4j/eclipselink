@@ -21,6 +21,7 @@ public class XMLChoiceCollectionMappingTestSuite extends TestCase {
         TestSuite suite = new TestSuite("XMLChoiceCollectionMapping Test Suite");
         suite.addTestSuite(XMLChoiceCollectionMappingEmptyTestCases.class);
         suite.addTestSuite(XMLChoiceCollectionMappingMixedTestCases.class);
+        suite.addTestSuite(XMLChoiceCollectionWithGroupingElementTestCases.class);
         return suite;
     }
 

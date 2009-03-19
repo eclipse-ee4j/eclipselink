@@ -64,6 +64,13 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
         }
         ContainerPolicy cp = getContainerPolicy();
         Object iterator = cp.iteratorFor(value);
+        if (cp.hasNext(iterator)) {
+            XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
+            marshalRecord.closeStartGroupingElements(groupingFragment);
+        } else {
+            return false;
+        }
+        
         while(cp.hasNext(iterator)) {
             Object nextValue = cp.next(iterator, session);
             marshalSingleValue(xPathFragment, marshalRecord, object, nextValue, session, namespaceResolver, ObjectMarshalContext.getInstance());
