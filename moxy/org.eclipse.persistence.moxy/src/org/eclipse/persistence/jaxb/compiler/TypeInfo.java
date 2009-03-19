@@ -100,9 +100,15 @@ public class TypeInfo {
         // TODO: do we need to relocate this code? 
         XMLSchemaClassPathReference schemaRef = new XMLSchemaClassPathReference();
        
-        if(classNamespace == null || classNamespace ==""){
+        if(classNamespace == null || classNamespace.equals("")){
         	schemaRef.setSchemaContext("/" + schemaTypeName);
         }else{      
+        	String prefix = desc.getNonNullNamespaceResolver().resolveNamespaceURI(classNamespace);
+        	if(prefix != null && !prefix.equals("")){        		
+        		schemaRef.setSchemaContext("/" + prefix + ":" + schemaTypeName);
+        	}else{
+        		schemaRef.setSchemaContext("/" + schemaTypeName);
+        	}
         	schemaRef.setSchemaContextAsQName(new QName(classNamespace, schemaTypeName));
         }
         // the default type is complex;  need to check for simple type case
