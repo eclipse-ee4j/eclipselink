@@ -12,7 +12,12 @@
 ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.schemamodelgenerator;
 
+import java.util.Collection;
+import java.util.Map;
+
 public class PhoneNumber {
-    public String number;
+    public String number;         // XMLDirectMapping
+    public Map thing;             // XMLAnyAttributeMapping
+    public PhoneNumberType type;  // XMLDirectMapping
     public PhoneNumber() {}
 }

@@ -16,13 +16,21 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
+import org.eclipse.persistence.mappings.converters.EnumTypeConverter;
 import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.mappings.XMLAnyAttributeMapping;
+import org.eclipse.persistence.oxm.mappings.XMLAnyCollectionMapping;
+import org.eclipse.persistence.oxm.mappings.XMLAnyObjectMapping;
+import org.eclipse.persistence.oxm.mappings.XMLChoiceCollectionMapping;
+import org.eclipse.persistence.oxm.mappings.XMLChoiceObjectMapping;
+import org.eclipse.persistence.oxm.mappings.XMLCollectionReferenceMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
+import org.eclipse.persistence.oxm.mappings.XMLObjectReferenceMapping;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.oxm.schema.XMLSchemaURLReference;
 import org.eclipse.persistence.sessions.Project;
@@ -64,6 +72,7 @@ public class TestProject extends Project {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(Employee.class);
         descriptor.setAlias("Employee");
+        descriptor.addPrimaryKeyFieldName("name/text()");
         descriptor.setNamespaceResolver(nsr);
         if (setSchemaContext) {
             XMLSchemaReference sRef = new XMLSchemaURLReference();
@@ -85,14 +94,14 @@ public class TestProject extends Project {
         addressMapping.setXPath("address");
         addressMapping.setReferenceClass(Address.class);
         descriptor.addMapping(addressMapping);
-        // create phone numbers mapping
+        // create phoneNumbers mapping
         XMLCompositeCollectionMapping phonesMapping = new XMLCompositeCollectionMapping();
         phonesMapping.setAttributeName("phoneNumbers");
         phonesMapping.useCollectionClass(ArrayList.class);
         phonesMapping.setXPath("phone-numbers");
         phonesMapping.setReferenceClass(PhoneNumber.class);
         descriptor.addMapping(phonesMapping);
-        // create project ids mapping
+        // create projectIDs mapping
         XMLCompositeDirectCollectionMapping projectIdsMapping = new XMLCompositeDirectCollectionMapping();
         projectIdsMapping.setAttributeName("projectIDs");
         projectIdsMapping.useCollectionClass(ArrayList.class);
@@ -101,12 +110,39 @@ public class TestProject extends Project {
         tcc.setObjectClass(BigDecimal.class);
         projectIdsMapping.setValueConverter(tcc);
         descriptor.addMapping(projectIdsMapping);
+        // create stuff mapping
+        XMLAnyCollectionMapping acMapping = new XMLAnyCollectionMapping();
+        acMapping.setAttributeName("stuff");
+        descriptor.addMapping(acMapping);
+        // create choice mapping - choice
+        XMLChoiceObjectMapping choiceMapping = new XMLChoiceObjectMapping();
+        choiceMapping.setAttributeName("choice");
+        choiceMapping.addChoiceElement("nickname/text()", String.class);
+        choiceMapping.addChoiceElement("secondAddress", Address.class);
+        choiceMapping.addChoiceElement("age/text()", Integer.class);
+        descriptor.addMapping(choiceMapping);
+        // create choices mapping
+        XMLChoiceCollectionMapping choiceCMapping = new XMLChoiceCollectionMapping();
+        choiceCMapping.setAttributeName("choices");
+        choiceCMapping.addChoiceElement("badgeId/text()", Integer.class);
+        choiceCMapping.addChoiceElement("alternateAddress", Address.class);
+        choiceCMapping.addChoiceElement("codename/text()", String.class);
+        descriptor.addMapping(choiceCMapping);
+        // create billingAddress mapping
+        XMLObjectReferenceMapping orMapping = new XMLObjectReferenceMapping();
+        orMapping.setAttributeName("billingAddress");
+        orMapping.setReferenceClass(Address.class);
+        orMapping.addSourceToTargetKeyFieldAssociation("@bill-address-id", "@aid");
+        orMapping.addSourceToTargetKeyFieldAssociation("bill-address-city/text()", "city/text()");
+        descriptor.addMapping(orMapping);
         return descriptor;
     }
 
     private XMLDescriptor getAddressDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(Address.class);
+        descriptor.addPrimaryKeyFieldName("@aid");
+        descriptor.addPrimaryKeyFieldName("city/text()");
         descriptor.setAlias("Address");
         descriptor.setNamespaceResolver(nsr);
         if (setSchemaContext) {
@@ -118,6 +154,12 @@ public class TestProject extends Project {
         if (setDefaultRootElement) {
             descriptor.setDefaultRootElement("address");
         }
+        // create id mapping
+        XMLDirectMapping idMapping = new XMLDirectMapping();
+        idMapping.setAttributeName("id");
+        idMapping.setXPath("@aid");
+        idMapping.setAttributeClassification(Integer.class);
+        descriptor.addMapping(idMapping);
         // create street mapping
         XMLDirectMapping streetMapping = new XMLDirectMapping();
         streetMapping.setAttributeName("street");
@@ -133,11 +175,22 @@ public class TestProject extends Project {
         countryMapping.setAttributeName("country");
         countryMapping.setXPath("country/text()");
         descriptor.addMapping(countryMapping);
-        // create postal code mapping
+        // create postalCode mapping
         XMLDirectMapping postalMapping = new XMLDirectMapping();
         postalMapping.setAttributeName("postalCode");
         postalMapping.setXPath("@postal-code");
         descriptor.addMapping(postalMapping);
+        // create thingy mapping
+        XMLAnyObjectMapping anyMapping = new XMLAnyObjectMapping();
+        anyMapping.setAttributeName("thingy");
+        descriptor.addMapping(anyMapping);
+        // create occupants mapping
+        XMLCollectionReferenceMapping occupantsMapping = new XMLCollectionReferenceMapping();
+        occupantsMapping.useCollectionClass(ArrayList.class);
+        occupantsMapping.setAttributeName("occupants");
+        occupantsMapping.setReferenceClass(Employee.class);
+        occupantsMapping.addSourceToTargetKeyFieldAssociation("occupant/text()", "name/text()");
+        descriptor.addMapping(occupantsMapping);
         return descriptor;
     }
 
@@ -160,6 +213,20 @@ public class TestProject extends Project {
         numberMapping.setAttributeName("number");
         numberMapping.setXPath("number/text()");
         descriptor.addMapping(numberMapping);
+        // create thing mapping
+        XMLAnyAttributeMapping anyMapping = new XMLAnyAttributeMapping();
+        anyMapping.setAttributeName("thing");
+        descriptor.addMapping(anyMapping);
+        // Uncomment the following when enumeration support is added
+        /*
+        // create type mapping
+        XMLDirectMapping typeMapping = new XMLDirectMapping();
+        typeMapping.setAttributeName("type");
+        typeMapping.setXPath("@type");
+        EnumTypeConverter converter = new EnumTypeConverter(typeMapping, PhoneNumberType.class, false);
+        typeMapping.setConverter(converter);
+        descriptor.addMapping(typeMapping);
+        */
         return descriptor;
     }
 }

@@ -12,11 +12,17 @@
 ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.schemamodelgenerator;
 
+import java.util.Collection;
+
 public class Employee {
-    public String name;
-    public Address address;
-    public java.util.Collection<PhoneNumber> phoneNumbers;
-    public java.util.Collection<Number> projectIDs;
+    public String name;                             // XMLDirectMapping - PK
+    public Address address;                         // XMLCompositeObjectMapping
+    public Address billingAddress;                  // XMLObjectReferenceMapping
+    public Collection<PhoneNumber> phoneNumbers;    // XMLCompositeCollectionMapping
+    public Collection<Number> projectIDs;           // XMLDirectCollectionMapping
+    public Collection<Object> stuff;                // XMLAnyCollectionMapping
+    public Object choice;                           // XMLChoiceObjectMapping
+    public Collection<Object> choices;              // XMLChoiceCollectionMapping
 
     public Employee() {}
 }
