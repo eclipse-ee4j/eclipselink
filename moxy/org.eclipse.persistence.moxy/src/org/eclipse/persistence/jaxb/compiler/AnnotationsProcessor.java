@@ -107,7 +107,7 @@ public class AnnotationsProcessor {
         		    
         		}
         		if(xmlSeeAlsoClass != null && helper.isAnnotationPresent(javaClass, xmlSeeAlsoClass)) {
-        		    Object seeAlso = (XmlSeeAlso)helper.getAnnotation(javaClass, xmlSeeAlsoClass);
+        		    Object seeAlso = helper.getAnnotation(javaClass, xmlSeeAlsoClass);
         		    Class[] values = null;
         		    try {
         		        values = (Class[])PrivilegedAccessHelper.invokeMethod(valueMethod, seeAlso, new Object[]{});
