@@ -447,8 +447,14 @@ public class AnnotationsProcessor {
                             if (!namespace.equals("##default")) {
                                 qName = new QName(namespace, name);
                             } else {
-                                qName = new QName(name);
-                            }
+                            	NamespaceInfo namespaceInfo = getNamespaceInfoForPackage(cls.getPackage());
+                            	if (namespaceInfo.isElementFormQualified()) {                
+                                    qName = new QName(namespaceInfo.getNamespace(), name);
+                                }else{
+                                	qName = new QName(name);
+                                }
+                            }                           
+                            
                             choiceProp.setPropertyName(property.getPropertyName());
                             choiceProp.setType(helper.getJavaClass(next.type()));
                             choiceProp.setSchemaName(qName);
@@ -567,7 +573,7 @@ public class AnnotationsProcessor {
                     }                    
                     
                     // Figure out schema name and namesapce
-                    property.setSchemaName(getQNameForProperty(Introspector.decapitalize(nextField.getName()), nextField));
+                    property.setSchemaName(getQNameForProperty(Introspector.decapitalize(nextField.getName()), nextField, getNamespaceInfoForPackage(cls.getPackage())));
                     properties.add(property);
                 }
             }
@@ -656,7 +662,7 @@ public class AnnotationsProcessor {
                 property = new Property(helper);
             }
             property.setElement(propertyMethod);
-            property.setSchemaName(getQNameForProperty(propertyName, propertyMethod));
+            property.setSchemaName(getQNameForProperty(propertyName, propertyMethod, getNamespaceInfoForPackage(cls.getPackage())));
             property.setPropertyName(propertyName);
             property.setType((JavaClass) getMethod.getReturnType());
             property.setGenericType(helper.getGenericReturnType(getMethod));
@@ -1013,27 +1019,51 @@ public class AnnotationsProcessor {
         return typeName;
     }
     
-    public QName getQNameForProperty(String defaultName, JavaHasAnnotations element) {
+    public QName getQNameForProperty(String defaultName, JavaHasAnnotations element, NamespaceInfo namespaceInfo) {
         String name = "##default";
         String namespace = "##default";
+        QName qName = null;
         if (helper.isAnnotationPresent(element, XmlAttribute.class)) {
             XmlAttribute xmlAttribute = (XmlAttribute) helper.getAnnotation(element, XmlAttribute.class);
             name = xmlAttribute.name();
             namespace = xmlAttribute.namespace();
-        } else if (helper.isAnnotationPresent(element, XmlElement.class)) {
-            XmlElement xmlElement = (XmlElement) helper.getAnnotation(element, XmlElement.class);
-            name = xmlElement.name();
-            namespace = xmlElement.namespace();
+            
+            if(name.equals("##default")) {
+                name = defaultName;
+            }           
+            
+            if (!namespace.equals("##default")) {
+                qName = new QName(namespace, name);
+            } else {        	
+            	if (namespaceInfo.isAttributeFormQualified()) {                
+                    qName = new QName(namespaceInfo.getNamespace(), name);
+                }else{
+                	qName = new QName(name);
+                }
+            }
+        }else{
+        	if (helper.isAnnotationPresent(element, XmlElement.class)){
+        		XmlElement xmlElement = (XmlElement) helper.getAnnotation(element, XmlElement.class);
+                name = xmlElement.name();
+                namespace = xmlElement.namespace();	
+        	}                    
+       
+            if(name.equals("##default")) {
+                name = defaultName;
+            }
+            
+            if (!namespace.equals("##default")) {
+                qName = new QName(namespace, name);
+            } else {        	
+            	if (namespaceInfo.isElementFormQualified()) {                
+                    qName = new QName(namespaceInfo.getNamespace(), name);
+                }else{
+                	qName = new QName(name);
+                }
+            }
         }
-        if(name.equals("##default")) {
-            name = defaultName;
-        }
-        QName qName = null;
-        if (!namespace.equals("##default")) {
-            qName = new QName(namespace, name);
-        } else {
-            qName = new QName(name);
-        }
+       
+      
         return qName;
         
     }
