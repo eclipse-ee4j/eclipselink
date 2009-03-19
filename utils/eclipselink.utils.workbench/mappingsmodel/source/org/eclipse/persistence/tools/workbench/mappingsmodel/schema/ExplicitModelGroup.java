@@ -300,35 +300,53 @@ public final class ExplicitModelGroup
 	}
 	
 	private void reloadParticles(XSModelGroup xsGroup) {
+		List newParticles = new Vector();
 		ListIterator oldParticles = this.particles();
-		ListIterator particleNodes = XercesTools.listIteratorFromXSObjectList(xsGroup.getParticles());
-		
-		while (oldParticles.hasNext() && particleNodes.hasNext()) {
-			MWParticle oldParticle = (MWParticle) oldParticles.next();
-			XSParticleDecl particleNode = (XSParticleDecl) particleNodes.next();
-			
-			if (oldParticle.isEquivalentTo((XSParticleDecl) particleNode)) {
-				oldParticle.reload(particleNode);
-			}
-			else {
+
+		while (oldParticles.hasNext()) {
+			MWParticle oldParticle =(MWParticle)oldParticles.next();
+			if (!containsEquivalentNode(oldParticle, XercesTools.listIteratorFromXSObjectList(xsGroup.getParticles()))) {
 				oldParticles.remove();
 				this.getProject().nodeRemoved(oldParticle);
-				MWParticle newParticle = MWParticle.ParticleFactory.newParticle(this, particleNode);
-				oldParticles.add(newParticle);
 			}
 		}
 		
-		while (oldParticles.hasNext()) {
-			MWParticle next = (MWParticle) oldParticles.next();
-			oldParticles.remove();
-			this.getProject().nodeRemoved(next);
-		}
+		ListIterator particleNodes = XercesTools.listIteratorFromXSObjectList(xsGroup.getParticles());
 		
 		while (particleNodes.hasNext()) {
-			XSParticleDecl particleNode = (XSParticleDecl) particleNodes.next();
-			MWParticle newParticle = MWParticle.ParticleFactory.newParticle(this, particleNode);
-			oldParticles.add(newParticle);
-		}	
+			XSParticleDecl particleNode = (XSParticleDecl)particleNodes.next();
+			MWParticle oldParticle = containsEquivalentParticle(particleNode, this.particles());
+			if (oldParticle != null) {
+				oldParticle.reload(particleNode);
+				newParticles.add(oldParticle);
+			} else {
+				MWParticle newParticle = MWParticle.ParticleFactory.newParticle(this, particleNode);
+				newParticles.add(newParticle);
+			}
+		}
+		
+		this.particles = newParticles;
+
+	}
+	
+	private MWParticle containsEquivalentParticle(XSParticleDecl particleNode, ListIterator particles) {
+		while (particles.hasNext()) {
+			MWParticle particle = (MWParticle)particles.next();
+			if (particle.isEquivalentTo((XSParticleDecl)particleNode)) {
+				return particle;
+			}
+		}
+		return null;
+	}
+	
+	private boolean containsEquivalentNode(MWParticle particle, Iterator particleNodes) {
+		while (particleNodes.hasNext()) {
+			XSParticleDecl particleNode = (XSParticleDecl)particleNodes.next();
+			if (particle.isEquivalentTo(particleNode)) {
+				return true;
+ 			}
+		}
+		return false;
 	}
 	
 	public void resolveReferences() {
