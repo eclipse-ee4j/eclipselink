@@ -616,7 +616,7 @@ public class AnnotationsProcessor {
         // First collect all the getters
         ArrayList<JavaMethod> getMethods = new ArrayList<JavaMethod>();
         for (JavaMethod next : new ArrayList<JavaMethod>(cls.getDeclaredMethods())) {
-            if ((next.getName().startsWith("get") && next.getName().length() > 3) || ((areEquals((JavaClass) next.getReturnType(), Boolean.class) || areEquals((JavaClass) next.getReturnType(), boolean.class)) && (next.getName().startsWith("is") && next.getName().length() > 2))) {
+            if ((next.getName().startsWith("get") && next.getName().length() > 3) || (next.getName().startsWith("is") && next.getName().length() > 2)) {
                 int modifiers = next.getModifiers();
                 if (!Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers) && ((onlyPublic && Modifier.isPublic(next.getModifiers())) || !onlyPublic)) {
                     getMethods.add(next);                    
@@ -635,9 +635,10 @@ public class AnnotationsProcessor {
                 propertyName = getMethod.getName().substring(2);
             }
             //make the first Character lowercase
+            String setMethodName = "set" + propertyName;
+
             propertyName = Character.toLowerCase(propertyName.charAt(0)) + propertyName.substring(1);
             
-            String setMethodName = "set" + Character.toUpperCase(propertyName.charAt(0)) + propertyName.substring(1);
             JavaClass[] paramTypes = { (JavaClass) getMethod.getReturnType() };
             JavaMethod setMethod = cls.getMethod(setMethodName, paramTypes);
             JavaMethod propertyMethod = null;
@@ -937,7 +938,25 @@ public class AnnotationsProcessor {
         } else {
             typeName = Introspector.decapitalize(className.substring(className.lastIndexOf('.') + 1));
         }
-        return typeName;
+        //now capitalize any characters that occur after a "break"
+        boolean inBreak = false;
+        StringBuffer toReturn = new StringBuffer(typeName.length());
+        for(int i = 0; i < typeName.length(); i++) {
+            char next = typeName.charAt(i);
+            if(Character.isDigit(next)) {
+                if(!inBreak) {
+                    inBreak = true;
+                }
+                toReturn.append(next);
+            } else {
+                if(inBreak) {
+                    toReturn.append(Character.toUpperCase(next));
+                } else {
+                    toReturn.append(next);
+                }
+            }
+        }
+        return toReturn.toString();
     }
     
     public QName getSchemaTypeFor(JavaClass javaClass) {

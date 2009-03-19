@@ -184,17 +184,29 @@ public class SchemaGenerator {
             } else {
                 valueField = info.getProperties().get(propertyNames.get(0));
                 QName baseType = getSchemaTypeFor(valueField.getType());
+                String prefix = null;
+                if(baseType.getNamespaceURI() != null && !baseType.getNamespaceURI().equals("")) {
+                    if(baseType.getNamespaceURI().equals(XMLConstants.SCHEMA_URL)) {
+                        prefix = XMLConstants.SCHEMA_PREFIX;
+                    } else {
+                        prefix = getPrefixForNamespace(baseType.getNamespaceURI(), schema.getNamespaceResolver());
+                    }
+                }
+                String baseTypeName = baseType.getLocalPart();
+                if(prefix != null) {
+                    baseTypeName = prefix + ":" + baseTypeName;
+                }
                 if (helper.isAnnotationPresent(valueField.getElement(), XmlList.class)) {
                     //generate a list instead of a restriction
                     List list = new List();
-                    list.setItemType(XMLConstants.SCHEMA_PREFIX + ":" + baseType.getLocalPart());
+                    list.setItemType(baseTypeName);
                     type.setList(list);
                 } else {
                     if (helper.isAnnotationPresent(valueField.getElement(), XmlSchemaType.class)) {
                         XmlSchemaType schemaType = (XmlSchemaType) helper.getAnnotation(valueField.getElement(), XmlSchemaType.class);
                         baseType = new QName(schemaType.namespace(), schemaType.name());
                     }
-                    restriction.setBaseType(XMLConstants.SCHEMA_PREFIX + ":" + baseType.getLocalPart());
+                    restriction.setBaseType(baseTypeName);
                     type.setRestriction(restriction);
                 }
             }
@@ -219,8 +231,20 @@ public class SchemaGenerator {
                 XmlSchemaType schemaType = (XmlSchemaType) helper.getAnnotation(valueField.getElement(), XmlSchemaType.class);
                 extensionType = new QName(schemaType.namespace(), schemaType.name());
             }
+            String prefix = null;
+            if(extensionType.getNamespaceURI() != null && !extensionType.getNamespaceURI().equals("")) {
+                if(extensionType.getNamespaceURI().equals(XMLConstants.SCHEMA_URL)) {
+                    prefix = XMLConstants.SCHEMA_PREFIX;
+                } else {
+                    prefix = getPrefixForNamespace(extensionType.getNamespaceURI(), schema.getNamespaceResolver());
+                }
+            }
+            String extensionTypeName = extensionType.getLocalPart();
+            if(prefix != null) {
+                extensionTypeName = prefix + ":" + extensionTypeName;
+            }
             Extension extension = new Extension();
-            extension.setBaseType(XMLConstants.SCHEMA_PREFIX + ":" + extensionType.getLocalPart());
+            extension.setBaseType(extensionTypeName);
             content.setExtension(extension);
             type.setSimpleContent(content);
             info.setComplexType(type);
@@ -644,6 +668,12 @@ public class SchemaGenerator {
         QName schemaType = (QName) userDefinedSchemaTypes.get(javaClass.getQualifiedName());
         if (schemaType == null) {
             schemaType = (QName) helper.getXMLToJavaTypeMap().get(javaClass.getRawName());
+        }
+        if(schemaType == null) {
+            TypeInfo targetInfo = this.typeInfo.get(javaClass.getQualifiedName());
+            if(targetInfo != null) {
+                schemaType = new QName(targetInfo.getClassNamespace(), targetInfo.getSchemaTypeName());
+            }
         }
         if (schemaType == null) {
             return XMLConstants.ANY_SIMPLE_TYPE_QNAME;
