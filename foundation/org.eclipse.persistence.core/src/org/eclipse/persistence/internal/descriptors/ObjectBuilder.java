@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -1463,6 +1463,24 @@ public class ObjectBuilder implements Cloneable, Serializable {
             for (int index = 0; index < mappings.size(); index++) {
                 DatabaseMapping mapping = mappings.get(index);
                 mapping.cascadePerformRemoveIfRequired(object, uow, visitedObjects);
+            }
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * This method is used to iterate over the specified object's mappings and cascade
+     * remove orphaned private owned objects from the UnitOfWorkChangeSet and IdentityMap.
+     */
+    public void cascadePerformRemovePrivateOwnedObjectFromChangeSet(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
+        ObjectBuilder builder = this.descriptor.getObjectBuilder();
+        if (object != null && !builder.isSimple()) {
+            for (Iterator<DatabaseMapping> mappings = builder.getRelationshipMappings().iterator(); mappings.hasNext();) {
+                DatabaseMapping mapping = mappings.next();
+                // only cascade into private owned mappings
+                if (mapping.isPrivateOwned()) {
+                    mapping.cascadePerformRemovePrivateOwnedObjectFromChangeSetIfRequired(object, uow, visitedObjects);
+                }
             }
         }
     }

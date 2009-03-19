@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -23,11 +23,9 @@ import org.eclipse.persistence.internal.descriptors.*;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.indirection.*;
-import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.remote.*;
-import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.ObjectCopyingPolicy;
 import org.eclipse.persistence.sessions.Project;
 
@@ -61,13 +59,22 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * Ignore the objects, use the attribute value.
      */
     public Object buildCloneForPartObject(Object attributeValue, Object original, Object clone, UnitOfWorkImpl unitOfWork, boolean isExisting) {
+        if (attributeValue == null) {
+            return null;
+        }
         // Optimize registration to knowledge of existence.
+        Object registeredObject = null;
         if (isExisting) {
-            return unitOfWork.registerExistingObject(attributeValue);
+            registeredObject = unitOfWork.registerExistingObject(attributeValue);
         } else {
             // Not known whether existing or not.
-            return unitOfWork.registerObject(attributeValue);
+            registeredObject = unitOfWork.registerObject(attributeValue);
+            // if the mapping is privately owned, keep track of the privately owned reference in the UnitOfWork
+            if (isCandidateForPrivateOwnedRemoval() && unitOfWork.shouldDiscoverNewObjects() && registeredObject != null && unitOfWork.isObjectNew(registeredObject)) {
+                unitOfWork.addPrivateOwnedObject(this, registeredObject);
+            }
         }
+        return registeredObject;
     }
 
     /**
@@ -706,12 +713,33 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
     
     /**
      * INTERNAL:
+     * Cascade removal of orphaned private owned objects from the UnitOfWorkChangeSet
+     */
+    public void cascadePerformRemovePrivateOwnedObjectFromChangeSetIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
+        // if the object is not instantiated, do not instantiate or cascade
+        Object attributeValue = getAttributeValueFromObject(object);
+        if (attributeValue != null && getIndirectionPolicy().objectIsInstantiated(attributeValue)) {
+            Object realValue = getRealAttributeValueFromObject(object, uow);
+            if (!visitedObjects.containsKey(realValue)){
+                visitedObjects.put(realValue, realValue);
+                // remove private owned object from UnitOfWork ChangeSet
+                uow.performRemovePrivateOwnedObjectFromChangeSet(realValue, visitedObjects);
+            }
+        }
+    }
+    
+    /**
+     * INTERNAL:
      * Cascade discover and persist new objects during commit.
      */
     public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow) {
         Object attributeValue = getAttributeValueFromObject(object);
         if (attributeValue != null && getIndirectionPolicy().objectIsInstantiated(attributeValue)) {
             Object reference = getIndirectionPolicy().getRealAttributeValueFromObject(object, attributeValue);
+            // remove private owned object from uow list if uow has private owned objects
+            if (uow.hasPrivateOwnedObjects()) {
+                uow.removePrivateOwnedObject(this, reference);
+            }
             uow.discoverAndPersistUnregisteredNewObjects(reference, isCascadePersist(), newObjects, unregisteredExistingObjects, visitedObjects);
         }
     }
@@ -725,6 +753,10 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
         if (attributeValue != null && this.isCascadePersist() && getIndirectionPolicy().objectIsInstantiated(attributeValue)){
             Object reference = getIndirectionPolicy().getRealAttributeValueFromObject(object, attributeValue);
             uow.registerNewObjectForPersist(reference, visitedObjects);
+            // add private owned object to uow list if mapping is a candidate and uow should discover new objects
+            if (isCandidateForPrivateOwnedRemoval() && uow.shouldDiscoverNewObjects()) {
+                uow.addPrivateOwnedObject(this, reference);
+            }
         }
     }
 

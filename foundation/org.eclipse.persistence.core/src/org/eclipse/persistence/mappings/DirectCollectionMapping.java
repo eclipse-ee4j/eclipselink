@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -306,6 +306,14 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      */
     public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
         //as this mapping type references primitive objects this method does not apply
+    }
+    
+    /**
+     * INTERNAL:
+     * Cascade perform removal of orphaned private owned objects from the UnitOfWorkChangeSet
+     */
+    public void cascadePerformRemovePrivateOwnedObjectFromChangeSetIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
+        // as this mapping type references primitive objects this method does not apply
     }
 
     /**
@@ -2019,6 +2027,15 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         simpleAddToCollectionChangeRecord(newKey, newValue, objectChangeSet, uow);
     }
 
+    /**
+     * INTERNAL:
+     * DirectCollectionMapping contents should not be considered for addition to the UnitOfWork
+     * private owned objects list for removal.
+     */
+    public boolean isCandidateForPrivateOwnedRemoval() {
+        return false;
+    }
+    
     /**
      * INTERNAL
      * Return true if this mapping supports cascaded version optimistic locking.

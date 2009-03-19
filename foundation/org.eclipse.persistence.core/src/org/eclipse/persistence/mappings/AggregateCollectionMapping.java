@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -324,6 +324,27 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
                 visitedObjects.put(nextObject, nextObject);
                 builder = getReferenceDescriptor(nextObject.getClass(), uow).getObjectBuilder();
                 builder.cascadePerformRemove(nextObject, uow, visitedObjects);
+            }
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Cascade perform removal of orphaned private owned objects from the UnitOfWorkChangeSet
+     */
+    public void cascadePerformRemovePrivateOwnedObjectFromChangeSetIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
+        // if the object is not instantiated, do not instantiate or cascade
+        Object attributeValue = getAttributeValueFromObject(object);
+        if (attributeValue != null && getIndirectionPolicy().objectIsInstantiated(attributeValue)) {
+            Object cloneObjectCollection = getRealCollectionAttributeValueFromObject(object, uow);
+            ContainerPolicy cp = getContainerPolicy();
+            for (Object cloneIter = cp.iteratorFor(cloneObjectCollection); cp.hasNext(cloneIter);) {
+                Object referencedObject = cp.next(cloneIter, uow);
+                if (referencedObject != null && !visitedObjects.containsKey(referencedObject)) {
+                    visitedObjects.put(referencedObject, referencedObject);
+                    ObjectBuilder builder = getReferenceDescriptor(referencedObject.getClass(), uow).getObjectBuilder();
+                    builder.cascadePerformRemovePrivateOwnedObjectFromChangeSet(referencedObject, uow, visitedObjects);
+                }
             }
         }
     }
@@ -1772,6 +1793,15 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      */
     public void addToCollectionChangeRecord(Object newKey, Object newValue, ObjectChangeSet objectChangeSet, UnitOfWorkImpl uow) throws DescriptorException {
         throw DescriptorException.invalidMappingOperation(this, "addToCollectionChangeRecord");
+    }
+
+    /**
+     * INTERNAL:
+     * AggregateCollection contents should not be considered for addition to the UnitOfWork
+     * private owned objects list for removal.
+     */
+    public boolean isCandidateForPrivateOwnedRemoval() {
+        return false;
     }
     
     /**

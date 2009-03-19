@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -209,6 +209,14 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      */
     abstract public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects);
 
+    /**
+     * INTERNAL:
+     * Cascade removal of orphaned private owned objects from the UnitOfWorkChangeSet
+     */
+    public void cascadePerformRemovePrivateOwnedObjectFromChangeSetIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
+        // no-op by default
+    }
+    
     /**
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade
@@ -895,6 +903,16 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
     public boolean isPrimaryKeyMapping() {
         return this.isPrimaryKeyMapping;
     }
+    
+    /**
+     * INTERNAL:
+     * Returns true if the mapping should be added to the UnitOfWork's list of private owned
+     * objects for private owned orphan removal.
+     */
+    public boolean isCandidateForPrivateOwnedRemoval() {
+        return isPrivateOwned();
+    }
+    
     /**
      * INTERNAL:
      * Used when determining if a mapping supports cascaded version optimistic

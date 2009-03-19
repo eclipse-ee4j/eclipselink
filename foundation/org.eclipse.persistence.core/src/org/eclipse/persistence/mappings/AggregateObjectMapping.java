@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -458,6 +458,24 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         }
     }
 
+    /**
+     * INTERNAL:
+     * Cascade perform removal of orphaned private owned objects from the UnitOfWorkChangeSet
+     */
+    public void cascadePerformRemovePrivateOwnedObjectFromChangeSetIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
+        Object attributeValue = getAttributeValueFromObject(object);
+        if (attributeValue == null) {
+            return;
+        }
+        
+        if (!visitedObjects.containsKey(attributeValue)) {
+            visitedObjects.put(attributeValue, attributeValue);
+            ObjectBuilder builder = getReferenceDescriptor(attributeValue, uow).getObjectBuilder();
+            // cascade perform remove any related objects via ObjectBuilder for an aggregate object
+            builder.cascadePerformRemovePrivateOwnedObjectFromChangeSet(attributeValue, uow, visitedObjects);
+        }
+    }
+    
     /**
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade
