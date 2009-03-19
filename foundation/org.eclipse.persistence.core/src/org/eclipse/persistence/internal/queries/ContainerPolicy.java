@@ -1108,6 +1108,13 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
     public boolean overridesRead() {
         return false;
     }
+    
+    /**
+     * INTERNAL:
+     * Some subclasses need to post initialize mappings associated with them
+     */
+    public void postInitialize(AbstractSession session) {
+    }
 
     /**
      * Prepare and validate.

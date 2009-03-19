@@ -1172,6 +1172,14 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     
     /**
      * INTERNAL:
+     * Ensure the container policy is post initialized
+     */
+    public void postInitialize(AbstractSession session) {
+        getContainerPolicy().postInitialize(session);
+    }
+    
+    /**
+     * INTERNAL:
      * A subclass should implement this method if it wants different behavior.
      * Recurse thru the parts to delete the reference objects after the actual object is deleted.
      */

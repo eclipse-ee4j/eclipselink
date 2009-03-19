@@ -594,8 +594,16 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements D
             return null;
         }
         return super.keyFrom(element, session);
-    }
+    }   
     
+    /**
+     * INTERNAL:
+     * Some subclasses need to post initialize mappings associated with them
+     */
+    public void postInitialize(AbstractSession session) {
+        ((DatabaseMapping)keyMapping).postInitialize(session);
+    }
+
     /**
      * INTERNAL:
      * Propagate the postDeleteEvent to any additional objects the query is aware of
