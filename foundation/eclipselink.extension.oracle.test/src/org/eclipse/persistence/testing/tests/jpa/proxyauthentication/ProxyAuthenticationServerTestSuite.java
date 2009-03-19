@@ -27,28 +27,30 @@ import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.ExclusiveConnectionMode;
 /**
- * TestSuite to verifying that connectionUser(PA_CONN) and proxyUser(PA_PROXY) are used as expected.
+ * TestSuite to verifying that connectionUser(PAS_CONN) and proxyUser(PAS_PROXY) are used as expected.
  * To run this test suite several users should be setup in the Oracle database,
  * to setup Proxy Authentication users in Oracle db, need to execute in sqlPlus or EnterpriseManager
      * (sql in the following example uses default names):
     1 - connect sys/password as sysdba
+        drop user PAS_CONN cascade;
+        drop user PAS_PROXY cascade;
 
     2 - Create connectionUser:
-        create user PA_CONN identified by PA_CONN;
-        grant connect to PA_CONN;
-        grant resource to PA_CONN;
+        create user PAS_CONN identified by pas_conn;
+        grant connect to PAS_CONN;
+        grant resource to PAS_CONN;
 
     3 - Create proxyUsers:
-        create user PA_PROXY identified by PA_PROXY;
-        grant connect to PA_PROXY;
-        grant resource to PA_PROXY;
+        create user PAS_PROXY identified by pas_proxy;
+        grant connect to PAS_PROXY;
+        grant resource to PAS_PROXY;
 
     4.- Grant proxyUsers connection through connUser
-        alter user PA_PROXY grant connect through PA_CONN;
+        alter user PAS_PROXY grant connect through PAS_CONN;
         commit;
 
-    5.- Create JPA_PROXY_EMPLOYEE and PROXY_EMPLOYEE_SEQ tables against PA_CONN user
-        CONNECT PA_CONN/PA_CONN;
+    5.- Create JPA_PROXY_EMPLOYEE and PROXY_EMPLOYEE_SEQ tables against PAS_CONN user
+        CONNECT PAS_CONN/pas_conn;
         DROP TABLE JPA_PROXY_EMPLOYEE;
         CREATE TABLE JPA_PROXY_EMPLOYEE (EMP_ID NUMBER(15) NOT NULL, F_NAME VARCHAR2(40) NULL, L_NAME VARCHAR2(40) NULL, PRIMARY KEY (EMP_ID));
         DROP TABLE PROXY_EMPLOYEE_SEQ;
@@ -56,28 +58,28 @@ import org.eclipse.persistence.config.ExclusiveConnectionMode;
         INSERT INTO PROXY_EMPLOYEE_SEQ(SEQ_NAME, SEQ_COUNT) values ('PROXY_EMPLOYEE_SEQ', 1);
         COMMIT;
 
-    6.- Create PROXY_PHONENUMBER table against PA_PROXY user (you can also create these tables by login as PA_CONN, and execute new PhoneNumberTableCreator().replaceTables(JUnitTestCase.getServerSession()); in testSetup())
-        CONNECT PA_PROXY/PA_PROXY;
+    6.- Create PROXY_PHONENUMBER table against PAS_PROXY user (you can also create these tables by login as PAS_CONN, and execute new PhoneNumberTableCreator().replaceTables(JUnitTestCase.getServerSession()); in testSetup())
+        CONNECT PAS_PROXY/pas_proxy;
         ALTER TABLE PROXY_PHONENUMBER DROP CONSTRAINT FK_PROXY_PHONENUMBER_OWNER_ID;
         DROP TABLE PROXY_PHONENUMBER;
         CREATE TABLE PROXY_PHONENUMBER (OWNER_ID NUMBER(15) NOT NULL, TYPE VARCHAR2(15) NOT NULL, AREA_CODE VARCHAR2(3) NULL, NUMB VARCHAR2(8) NULL, PRIMARY KEY (OWNER_ID, TYPE));
         COMMIT;
 
-    6.- Add object priviledges(ALTER, DELETE, INSERT, REFERENCE, SELECT, UPDATE, INDEX) to JPA_PROXY_EMPLOYEE and PROXY_EMPLOYEE_SEQ for PA_PROXY user
+    6.- Add object priviledges(ALTER, DELETE, INSERT, REFERENCE, SELECT, UPDATE, INDEX) to JPA_PROXY_EMPLOYEE and PROXY_EMPLOYEE_SEQ for PAS_PROXY user
         CONNECT SYS/PASSWORD as SYSDBA;
-        GRANT ALTER ON PA_CONN.JPA_PROXY_EMPLOYEE TO PA_PROXY;
-        GRANT DELETE ON PA_CONN.JPA_PROXY_EMPLOYEE TO PA_PROXY;
-        GRANT INSERT ON PA_CONN.JPA_PROXY_EMPLOYEE TO PA_PROXY;
-        GRANT SELECT ON PA_CONN.JPA_PROXY_EMPLOYEE TO PA_PROXY;
-        GRANT UPDATE ON PA_CONN.JPA_PROXY_EMPLOYEE TO PA_PROXY;
-        GRANT INDEX ON PA_CONN.JPA_PROXY_EMPLOYEE TO PA_PROXY;
+        GRANT ALTER ON PAS_CONN.JPA_PROXY_EMPLOYEE TO PAS_PROXY;
+        GRANT DELETE ON PAS_CONN.JPA_PROXY_EMPLOYEE TO PAS_PROXY;
+        GRANT INSERT ON PAS_CONN.JPA_PROXY_EMPLOYEE TO PAS_PROXY;
+        GRANT SELECT ON PAS_CONN.JPA_PROXY_EMPLOYEE TO PAS_PROXY;
+        GRANT UPDATE ON PAS_CONN.JPA_PROXY_EMPLOYEE TO PAS_PROXY;
+        GRANT INDEX ON PAS_CONN.JPA_PROXY_EMPLOYEE TO PAS_PROXY;
 
-        GRANT ALTER ON PA_CONN.PROXY_EMPLOYEE_SEQ TO PA_PROXY;
-        GRANT DELETE ON PA_CONN.PROXY_EMPLOYEE_SEQ TO PA_PROXY;
-        GRANT INSERT ON PA_CONN.PROXY_EMPLOYEE_SEQ TO PA_PROXY;
-        GRANT SELECT ON PA_CONN.PROXY_EMPLOYEE_SEQ TO PA_PROXY;
-        GRANT UPDATE ON PA_CONN.PROXY_EMPLOYEE_SEQ TO PA_PROXY;
-        GRANT INDEX ON PA_CONN.PROXY_EMPLOYEE_SEQ TO PA_PROXY;
+        GRANT ALTER ON PAS_CONN.PROXY_EMPLOYEE_SEQ TO PAS_PROXY;
+        GRANT DELETE ON PAS_CONN.PROXY_EMPLOYEE_SEQ TO PAS_PROXY;
+        GRANT INSERT ON PAS_CONN.PROXY_EMPLOYEE_SEQ TO PAS_PROXY;
+        GRANT SELECT ON PAS_CONN.PROXY_EMPLOYEE_SEQ TO PAS_PROXY;
+        GRANT UPDATE ON PAS_CONN.PROXY_EMPLOYEE_SEQ TO PAS_PROXY;
+        GRANT INDEX ON PAS_CONN.PROXY_EMPLOYEE_SEQ TO PAS_PROXY;
         COMMIT;
  */
 public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
@@ -201,9 +203,9 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
      */
     public void testUpdateWithProxy() throws Exception{
         EntityManager em = createEntityManager(PROXY_PU);
-        Query query = em.createQuery("SELECT e FROM PhoneNumber e");
         try {
             startTransaction(em);
+            Query query = em.createQuery("SELECT e FROM PhoneNumber e");
             List<PhoneNumber> phoneNumbers = query.getResultList();
             for (PhoneNumber phoneNumber : phoneNumbers) {
                 phoneNumber.setAreaCode("613");
@@ -263,7 +265,7 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
         EntityManagerImpl empl = (EntityManagerImpl)em.getDelegate();
         Map newProps = new HashMap(3);
         newProps.put(PersistenceUnitProperties.ORACLE_PROXY_TYPE, OracleConnection.PROXYTYPE_USER_NAME);
-        newProps.put(OracleConnection.PROXY_USER_NAME, "PA_PROXY");
+        newProps.put(OracleConnection.PROXY_USER_NAME, "PAS_PROXY");
         newProps.put(PersistenceUnitProperties.EXCLUSIVE_CONNECTION_MODE, ExclusiveConnectionMode.Always);
         empl.setProperties(newProps);
     }

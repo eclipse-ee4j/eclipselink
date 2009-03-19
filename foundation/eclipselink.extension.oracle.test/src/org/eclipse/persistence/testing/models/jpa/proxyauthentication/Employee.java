@@ -24,7 +24,7 @@ import org.eclipse.persistence.annotations.PrivateOwned;
 import org.eclipse.persistence.annotations.Property;
 
 @Entity
-@Table(name="PA_CONN.JPA_PROXY_EMPLOYEE")
+@Table(name="PAS_CONN.JPA_PROXY_EMPLOYEE")
 
 public class Employee implements Serializable {
     
@@ -46,7 +46,7 @@ public class Employee implements Serializable {
     @GeneratedValue(strategy=TABLE, generator="JPA_PROXY_EMPLOYEE_TABLE_GENERATOR")
     @TableGenerator(
         name="JPA_PROXY_EMPLOYEE_TABLE_GENERATOR", 
-        table="PA_CONN.PROXY_EMPLOYEE_SEQ", 
+        table="PAS_CONN.PROXY_EMPLOYEE_SEQ", 
         pkColumnName="SEQ_NAME", 
         valueColumnName="SEQ_COUNT",
         pkColumnValue="PROXY_EMPLOYEE_SEQ",

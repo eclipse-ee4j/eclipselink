@@ -25,7 +25,7 @@ import org.eclipse.persistence.annotations.Cache;
 
 @IdClass(org.eclipse.persistence.testing.models.jpa.proxyauthentication.PhoneNumberPK.class)
 @Entity
-@Table(name="PA_PROXY.PROXY_PHONENUMBER")
+@Table(name="PAS_PROXY.PROXY_PHONENUMBER")
 @Cache(shared=false)
 public class PhoneNumber implements Serializable {
     private String number;
