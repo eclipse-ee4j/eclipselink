@@ -832,9 +832,14 @@ public class MappingsGenerator {
 
     public XMLField getXPathForElement(String path, QName elementName, NamespaceInfo namespaceInfo, boolean isText) {
         String namespace = "";
-        if (!elementName.getNamespaceURI().equals("")) {
+        if (namespaceInfo.isElementFormQualified()) {
+            namespace = namespaceInfo.getNamespace();
+        }
+		
+		if (!elementName.getNamespaceURI().equals("")) {
             namespace = elementName.getNamespaceURI();
         }
+
         if (namespace.equals("")) {
             path += elementName.getLocalPart();
             if (isText) {
