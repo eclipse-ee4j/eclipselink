@@ -1547,11 +1547,11 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
      * Converts a String which is in Base64 format to a Byte[]
      */
     public byte[] convertSchemaBase64ToByteArray(Object sourceObject) throws ConversionException {
-        if (!(sourceObject instanceof String)) {
-            throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.APBYTE);
+        if (sourceObject instanceof String) {
+            byte[] bytes = Base64.base64Decode(((String) sourceObject).getBytes());
+            return bytes;
         }
-        byte[] bytes = Base64.base64Decode(((String) sourceObject).getBytes());
-        return bytes;
+        return convertObjectToByteArray(sourceObject);
     }
 
     protected Byte[] convertSchemaBase64ToByteObjectArray(Object sourceObject) throws ConversionException {

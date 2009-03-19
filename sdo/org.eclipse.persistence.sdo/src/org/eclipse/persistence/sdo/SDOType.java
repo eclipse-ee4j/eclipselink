@@ -758,7 +758,6 @@ public class SDOType implements Type, Serializable {
         getXmlDescriptor().setJavaClassName(getImplClassName());
         // load classes by classloader by getting the current instance class
         getInstanceClass();
-        getImplClass();
 
         // See SDOResolvable enhancement
         String schemaContext = getName();
@@ -806,6 +805,9 @@ public class SDOType implements Type, Serializable {
             xmlField.getLastXPathFragment().setNamespaceURI(SDOConstants.SDO_URL);
             sdoRefMapping.setField(xmlField);
             xmlDescriptor.addMapping(sdoRefMapping);
+        }
+        if(!isDataType()) {
+            getImplClass();
         }
     }
 

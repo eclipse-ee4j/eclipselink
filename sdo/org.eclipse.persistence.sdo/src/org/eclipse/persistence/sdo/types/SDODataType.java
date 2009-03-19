@@ -23,12 +23,12 @@ public class SDODataType extends SDOType implements Type {
 
     public SDODataType(String aUri, String aName, SDOTypeHelper sdoTypeHelper) {
         super(aUri, aName, sdoTypeHelper);
+        isDataType = true;
     }
 
     public SDODataType(String aUri, String aName, Class aClass, SDOTypeHelper sdoTypeHelper) {
         this(aUri, aName, sdoTypeHelper);
         setInstanceClass(aClass);
-        isDataType = true;
         xmlDescriptor = null;
     }
 

@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 import org.eclipse.persistence.sdo.SDOConstants;
+import org.eclipse.persistence.sdo.SDOProperty;
+import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 
@@ -467,19 +469,6 @@ public class SDOUtil {
 
     /**
      * INTERNAL:
-     * Return a valid Java get method name for a given string
-     * @param s
-     * @return
-     */
-    public static String getMethodName(String s) {
-        StringBuffer stringbuffer = new StringBuffer();
-        // only log the setMethodName call so we do not get double logs
-        stringbuffer.append(GET).append(className(s, true, false, false));
-        return stringbuffer.toString();
-    }
-
-    /**
-     * INTERNAL:
      * Return a valid Java get method name for a given string. This method will check
      * the returnType to see if it is a boolean/Boolean:  if so, 'is' will be used in
      * the method name instead of 'get'.
@@ -489,13 +478,14 @@ public class SDOUtil {
      * @return
      */
     public static String getMethodName(String s, String returnType) {
+        StringBuffer stringBuffer = new StringBuffer();
         if (returnType.equals(ClassConstants.PBOOLEAN.getName()) || returnType.equals(ClassConstants.BOOLEAN.getName())) {
-            StringBuffer stringbuffer = new StringBuffer();
-            // only log the setMethodName call so we do not get double logs
-            stringbuffer.append(IS).append(SDOUtil.className(s, true, false, false));
-            return stringbuffer.toString();
+            stringBuffer.append(IS);
+        } else {
+            stringBuffer.append(GET);
         }
-        return getMethodName(s);
+        stringBuffer.append(SDOUtil.className(s, true, false, false));
+        return stringBuffer.toString();
     }
 
     /**
@@ -651,5 +641,54 @@ public class SDOUtil {
 
         stringbuffer.replace(j, 6, s);
         return stringbuffer.toString();
-    }    
+    }
+
+    public static String getJavaTypeForProperty(SDOProperty property) {
+        if (property.isMany() || ((SDOType)property.getType()).isXsdList()) {
+            return "java.util.List";
+        } else {
+            SDOType propertyType = property.getType();
+            Class instanceClass = propertyType.getInstanceClass();
+            if (ClassConstants.ABYTE.equals(instanceClass)) {
+                return "Byte[]";
+            } else if (ClassConstants.APBYTE.equals(instanceClass)) {
+                return "byte[]";
+            }
+            return propertyType.getInstanceClassName();
+        }
+    }
+
+    public static String getBuiltInType(String typeName) {
+        if ((typeName.equals(ClassConstants.PBOOLEAN.getName())) || (typeName.equals(ClassConstants.BOOLEAN.getName()))) {
+            return "Boolean";
+        } else if ((typeName.equals(ClassConstants.PBYTE.getName())) || (typeName.equals(ClassConstants.BYTE.getName()))) {
+            return "Byte";
+        } else if (typeName.equals("byte[]") || typeName.equals("Byte[]") ||  (typeName.equals(ClassConstants.APBYTE.getName())) || (typeName.equals(ClassConstants.ABYTE.getName()))) {
+            return "Bytes";
+        } else if ((typeName.equals(ClassConstants.PCHAR.getName())) || (typeName.equals(ClassConstants.CHAR.getName()))) {
+            return "Char";
+        } else if ((typeName.equals(ClassConstants.PDOUBLE.getName())) || (typeName.equals(ClassConstants.DOUBLE.getName()))) {
+            return "Double";
+        } else if ((typeName.equals(ClassConstants.PFLOAT.getName())) || (typeName.equals(ClassConstants.FLOAT.getName()))) {
+            return "Float";
+        } else if ((typeName.equals(ClassConstants.PLONG.getName())) || (typeName.equals(ClassConstants.LONG.getName()))) {
+            return "Long";
+        } else if ((typeName.equals(ClassConstants.PSHORT.getName())) || (typeName.equals(ClassConstants.SHORT.getName()))) {
+            return "Short";
+        } else if ((typeName.equals(ClassConstants.PINT.getName())) || (typeName.equals(ClassConstants.INTEGER.getName()))) {
+            return "Int";
+        } else if (typeName.equals(ClassConstants.STRING.getName())) {
+            return "String";
+        } else if (typeName.equals(ClassConstants.BIGINTEGER.getName())) {
+            return "BigInteger";
+        } else if (typeName.equals(ClassConstants.BIGDECIMAL.getName())) {
+            return "BigDecimal";
+        } else if (typeName.equals(ClassConstants.UTILDATE.getName())) {
+            return "Date";
+        } else if (typeName.equals("java.util.List")) {
+            return "List";
+        }
+        return null;
+    }
+
 }

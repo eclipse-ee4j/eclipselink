@@ -67,7 +67,7 @@ public class MyTestTypeImpl extends SDODataObject implements MyTestType {
    }
 
    public byte[] getMyBase64BinaryTest() {
-      return (byte[])get(START_PROPERTY_INDEX + 7);
+      return getBytes(START_PROPERTY_INDEX + 7);
    }
 
    public void setMyBase64BinaryTest(byte[] value) {
@@ -195,7 +195,7 @@ public class MyTestTypeImpl extends SDODataObject implements MyTestType {
    }
 
    public byte[] getMyHexBinaryTest() {
-      return (byte[])get(START_PROPERTY_INDEX + 23);
+      return getBytes(START_PROPERTY_INDEX + 23);
    }
 
    public void setMyHexBinaryTest(byte[] value) {

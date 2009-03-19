@@ -43,14 +43,6 @@ public class SDODataFactoryCreateSimpleTestCases extends SDOXMLHelperTestCases {
         assertEquals(simpleType, dataObject.getType());
     }
 
-    public void testCreateByImplClass() {
-        Class oldClass = simpleType.getInstanceClass();
-        simpleType.setInstanceClass(USAddressImpl.class);
-        DataObject dataObject = dataFactory.create(simpleType);
-        assertEquals(simpleType, dataObject.getType());
-        simpleType.setInstanceClass(oldClass);
-    }
-
     public void testCreateByInvalidClass() {
         Class oldClass = simpleType.getInstanceClass();
         simpleType.setInstanceClass(String.class);

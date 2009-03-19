@@ -2432,6 +2432,7 @@ public class SDOTypesGenerator {
             if(sdoType == null) {
                 sdoType = new SDOType(typeURI, typeName, sdoTypeHelper);
                 sdoType.setXsdLocalName(complexType.getName());
+                sdoType.preInitialize(packageName, namespaceResolvers);
             }
             sdoType.setXsd(true);
             if(!sdoType.getQName().equals(sdoType.getXsdType())) {

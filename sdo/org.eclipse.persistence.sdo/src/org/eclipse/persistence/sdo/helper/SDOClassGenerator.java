@@ -12,9 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.sdo.helper;
 
-import commonj.sdo.Property;
 import commonj.sdo.helper.HelperContext;
-
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -46,7 +44,8 @@ public class SDOClassGenerator {
     private static final String lsep2 = lsep + lsep;
     private static final String START_PROPERTY_INDEX = "START_PROPERTY_INDEX";
     private Map generatedBuffers;
-    private boolean generateInterfaces = true;
+    private boolean interfaceGenerator = true;
+    private boolean implGenerator = true;
     private CodeWriter codeWriter;
     private SDOClassGeneratorListener sdoClassGeneratorListener;
 
@@ -60,6 +59,14 @@ public class SDOClassGenerator {
     public SDOClassGenerator(HelperContext aContext) {
         aHelperContext = aContext;
         generatedBuffers = new HashMap();
+    }
+
+    public void setInterfaceGenerator(boolean genIterfaces) {
+        interfaceGenerator = genIterfaces;
+    }
+
+    public void setImplGenerator(boolean genImpls) {
+        implGenerator = genImpls;
     }
 
     public static void main(String[] args) {
@@ -76,27 +83,29 @@ public class SDOClassGenerator {
             if (args[i].equals("-help")) {
                 generator.printUsage(null);
                 System.exit(0);
-            }
-            if (args[i].equals("-sourceFile")) {
+            } else if (args[i].equals("-sourceFile")) {
                 if (i == (argsLength - 1)) {
                     generator.printUsage("sdo_classgenerator_usage_missing_sourcefile_value");
                     System.exit(0);
                 }
                 sourceFile = args[++i];
-            }
-            if (args[i].equals("-targetDirectory")) {
+            } else if (args[i].equals("-targetDirectory")) {
                 if (i == (argsLength - 1)) {
                     generator.printUsage("sdo_classgenerator_usage_missing_targetdir");
                     System.exit(0);
                 }
                 sourceDir = args[++i];
-            }
-
-            // log level is optional and will default to INFO
-            if (args[i].equals("-logLevel")) {
+            } else if (args[i].equals("-logLevel")) {
+                // log level is optional and will default to INFO
                 if (i != (argsLength - 1)) {
                     AbstractSessionLog.getLog().setLevel(Integer.parseInt(args[++i]));
                 }
+            } else if (args[i].equals("-noInterfaces")) {
+                // This option introduced in EclipseLink 2.0
+                generator.setInterfaceGenerator(false);
+            } else if (args[i].equals("-noImpls")) {
+                // This option introduced in EclipseLink 2.0
+                generator.setImplGenerator(false);
             }
         }
         if (null == sourceFile) {
@@ -130,19 +139,23 @@ public class SDOClassGenerator {
         
         // Because we can no longer use Helper.cr() inside of message bundles, we must break
         // up the message into separate lines and use Helper.cr() here instead. (bug6470503)
-        String messageString = ToStringLocalization.buildMessage("sdo_classgenerator_usage_help_1of6", new Object[] { Helper.getShortClassName(getClass()) });
-		messageString += Helper.cr() + Helper.cr();
-		messageString += ToStringLocalization.buildMessage("sdo_classgenerator_usage_help_2of6");
-		messageString += Helper.cr();
-		messageString += ToStringLocalization.buildMessage("sdo_classgenerator_usage_help_3of6");
-		messageString += Helper.cr();
-		messageString += ToStringLocalization.buildMessage("sdo_classgenerator_usage_help_4of6");
-		messageString += Helper.cr();
-		messageString += ToStringLocalization.buildMessage("sdo_classgenerator_usage_help_5of6");
-		messageString += Helper.cr();
-		messageString += ToStringLocalization.buildMessage("sdo_classgenerator_usage_help_6of6");
-		messageString += Helper.cr();
-		
+        String messageString = ToStringLocalization.buildMessage("sdo_classgenerator_usage_help_1of8", new Object[] { Helper.getShortClassName(getClass()) });
+        messageString += Helper.cr() + Helper.cr();
+        messageString += ToStringLocalization.buildMessage("sdo_classgenerator_usage_help_2of8");
+        messageString += Helper.cr();
+        messageString += ToStringLocalization.buildMessage("sdo_classgenerator_usage_help_3of8");
+        messageString += Helper.cr();
+        messageString += ToStringLocalization.buildMessage("sdo_classgenerator_usage_help_4of8");
+        messageString += Helper.cr();
+        messageString += ToStringLocalization.buildMessage("sdo_classgenerator_usage_help_5of8");
+        messageString += Helper.cr();
+        messageString += ToStringLocalization.buildMessage("sdo_classgenerator_usage_help_6of8");
+        messageString += Helper.cr();
+        messageString += ToStringLocalization.buildMessage("sdo_classgenerator_usage_help_7of8");
+        messageString += Helper.cr();
+        messageString += ToStringLocalization.buildMessage("sdo_classgenerator_usage_help_8of8");
+        messageString += Helper.cr();
+
         System.out.println(messageString);
     }
 
@@ -212,7 +225,6 @@ public class SDOClassGenerator {
 
     public Map generate(CodeWriter aCodeWriter, java.util.List types) {
         generatedBuffers = new HashMap();
-        generateInterfaces = true;
         codeWriter = aCodeWriter;
 
         for (int i = 0; i < types.size(); i++) {
@@ -224,8 +236,12 @@ public class SDOClassGenerator {
                 String packageDir = nextBuffer.getPackageName();
                 packageDir = packageDir.replace('.', '/');
 
-                getCodeWriter().writeInterface(packageDir, nextBuffer.getInterfaceName() + ".java", nextBuffer.getInterfaceBuffer());
-                getCodeWriter().writeImpl(packageDir, nextBuffer.getClassName() + ".java", nextBuffer.getClassBuffer());
+                if(interfaceGenerator) {
+                    getCodeWriter().writeInterface(packageDir, nextBuffer.getInterfaceName() + ".java", nextBuffer.getInterfaceBuffer());
+                }
+                if(implGenerator) {
+                    getCodeWriter().writeImpl(packageDir, nextBuffer.getClassName() + ".java", nextBuffer.getClassBuffer());
+                }
             }
         }
         return generatedBuffers;
@@ -235,7 +251,7 @@ public class SDOClassGenerator {
     private ClassBuffer buildClassForType(SDOType sdoType) {
         ClassBuffer classBuffer = new ClassBuffer(sdoClassGeneratorListener);
         classBuffer.setSdoType(sdoType);
-        classBuffer.setGenerateInterface(generateInterfaces);
+        classBuffer.setGenerateInterface(interfaceGenerator);
         classBuffer.setSdoTypeName(sdoType.getName());
         StringBuffer currentClassBuffer = new StringBuffer();
         if (sdoClassGeneratorListener != null) {
@@ -299,7 +315,7 @@ public class SDOClassGenerator {
         }
 
         currentClassBuffer.append("extends ").append(implExtends);
-        if (generateInterfaces) {
+        if (interfaceGenerator) {
             currentClassBuffer.append(" implements ")//
             .append(interfaceName);
         }
@@ -308,7 +324,7 @@ public class SDOClassGenerator {
         classBuffer.getMethodBuffer().append(buildNoArgCtor(fullClassName));
         currentClassBuffer.append(indent).append(" {").append(lsep2);
 
-        if (generateInterfaces) {
+        if (interfaceGenerator) {
             StringBuffer currentInterfaceBuffer = new StringBuffer();
             if (sdoClassGeneratorListener != null) {
                 sdoClassGeneratorListener.preInterfacePackage(currentInterfaceBuffer);
@@ -468,7 +484,7 @@ public class SDOClassGenerator {
      * @param className
      */
     private void buildGetMethodBuffer(ClassBuffer classBuffer, SDOProperty property, java.util.List documentation) {
-        String returnType = getJavaTypeForProperty(property);
+        String returnType = SDOUtil.getJavaTypeForProperty(property);
         String methodName = SDOUtil.getMethodName(property.getName(), returnType);
 
         if (!(property.getType().isChangeSummaryType() && methodName.equals("getChangeSummary"))) {
@@ -484,7 +500,7 @@ public class SDOClassGenerator {
             pushIndent();
             classBuffer.getMethodBuffer().append(indent).append("return ");
             //cast return value        
-            String builtIn = getBuiltInType(returnType);
+            String builtIn = SDOUtil.getBuiltInType(returnType);
 
             if (builtIn != null) {
                 String wrapperCall = getWrapperCall(returnType);
@@ -513,7 +529,7 @@ public class SDOClassGenerator {
             popIndent();
             classBuffer.getMethodBuffer().append(indent).append("}").append(lsep2);
         }
-        if (generateInterfaces) {
+        if (interfaceGenerator) {
             classBuffer.getInterfaceBuffer().append(indent);
             classBuffer.getInterfaceBuffer().append("public ");
             classBuffer.getInterfaceBuffer().append(returnType).append(" ");
@@ -546,7 +562,7 @@ public class SDOClassGenerator {
         classBuffer.getMethodBuffer().append(methodName);
         classBuffer.getMethodBuffer().append("(");
 
-        String paramType = getJavaTypeForProperty(property);
+        String paramType = SDOUtil.getJavaTypeForProperty(property);
 
         classBuffer.getMethodBuffer().append(paramType).append(" value");
 
@@ -563,7 +579,7 @@ public class SDOClassGenerator {
         classBuffer.getMethodBuffer().append(indent).append("}");
         classBuffer.getMethodBuffer().append(lsep2);
 
-        if (generateInterfaces) {
+        if (interfaceGenerator) {
             classBuffer.getInterfaceBuffer().append(indent);
             classBuffer.getInterfaceBuffer().append("public void ");
             classBuffer.getInterfaceBuffer().append(methodName);
@@ -590,46 +606,6 @@ public class SDOClassGenerator {
         indent = buf.toString();
     }
 
-    /**
-     * INTERNAL:
-     * @param qualifiedName
-     * @param targetNamespace
-     * @return
-     */
-    private String getBuiltInType(String typeName) {
-        if ((typeName.equals(ClassConstants.PBOOLEAN.getName())) || (typeName.equals(ClassConstants.BOOLEAN.getName()))) {
-            return "Boolean";
-        } else if ((typeName.equals(ClassConstants.PBYTE.getName())) || (typeName.equals(ClassConstants.BYTE.getName()))) {
-            return "Byte";
-        } else if ((typeName.equals(ClassConstants.APBYTE.getName())) || (typeName.equals(ClassConstants.ABYTE.getName()))) {
-            return "Bytes";
-        } else if ((typeName.equals(ClassConstants.PCHAR.getName())) || (typeName.equals(ClassConstants.CHAR.getName()))) {
-            return "Char";
-        } else if ((typeName.equals(ClassConstants.PDOUBLE.getName())) || (typeName.equals(ClassConstants.DOUBLE.getName()))) {
-            return "Double";
-        } else if ((typeName.equals(ClassConstants.PFLOAT.getName())) || (typeName.equals(ClassConstants.FLOAT.getName()))) {
-            return "Float";
-        } else if ((typeName.equals(ClassConstants.PLONG.getName())) || (typeName.equals(ClassConstants.LONG.getName()))) {
-            return "Long";
-        } else if ((typeName.equals(ClassConstants.PSHORT.getName())) || (typeName.equals(ClassConstants.SHORT.getName()))) {
-            return "Short";
-        } else if ((typeName.equals(ClassConstants.PINT.getName())) || (typeName.equals(ClassConstants.INTEGER.getName()))) {
-            return "Int";
-        } else if (typeName.equals(ClassConstants.STRING.getName())) {
-            return "String";
-        } else if (typeName.equals(ClassConstants.BIGINTEGER.getName())) {
-            return "BigInteger";
-        } else if (typeName.equals(ClassConstants.BIGDECIMAL.getName())) {
-            return "BigDecimal";
-        } else if (typeName.equals(ClassConstants.UTILDATE.getName())) {
-            return "Date";
-        } else if (typeName.equals("java.util.List")) {
-            return "List";
-        }
-
-        return null;
-    }
-
     public void setGeneratedBuffers(Map generatedBuffersMap) {
         generatedBuffers = generatedBuffersMap;
     }
@@ -653,21 +629,6 @@ public class SDOClassGenerator {
             return "new Byte(";
         }
         return null;
-    }
-
-    private String getJavaTypeForProperty(SDOProperty property) {
-        if (property.isMany() || ((SDOType)property.getType()).isXsdList()) {
-            return "java.util.List";
-        } else {
-            SDOType propertyType = property.getType();
-            Class instanceClass = propertyType.getInstanceClass();
-            if (ClassConstants.ABYTE.equals(instanceClass)) {
-                return "Byte[]";
-            } else if (ClassConstants.APBYTE.equals(instanceClass)) {
-                return "byte[]";
-            }
-            return propertyType.getInstanceClassName();
-        }
     }
 
     public void setCodeWriter(CodeWriter theCodeWriter) {
