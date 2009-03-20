@@ -3,7 +3,7 @@ package org.eclipse.persistence.testing.oxm.mappings.anyobject.withoutgroupingel
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 
-import com.sun.org.apache.xerces.internal.dom.ElementNSImpl;
+import org.w3c.dom.Element;
 
 public class RootKeepAsElement {
 
@@ -26,13 +26,13 @@ public class RootKeepAsElement {
             } else {
                 Object value1 = t1;
                 Object value2 = ((RootKeepAsElement) object).getT1();
-                if ((value1 instanceof ElementNSImpl) && (value2 instanceof ElementNSImpl)) {
-                    ElementNSImpl elem1 = (ElementNSImpl) value1;
-                    ElementNSImpl elem2 = (ElementNSImpl) value2;
+                if ((value1 instanceof Element) && (value2 instanceof Element)) {
+                    Element elem1 = (Element )value1;
+                    Element elem2 = (Element) value2;
                     
-                    XMLMappingTestCases.assertEquals(elem1.getLocalName(), elem2.getLocalName());
-                    XMLMappingTestCases.assertEquals(elem1.getNamespaceURI(), elem2.getNamespaceURI());
-                    XMLMappingTestCases.assertEquals(elem1.getUserData(), elem2.getUserData());
+                    if(!(elem1.getLocalName().equals(elem2.getLocalName()))) {
+                        return false;
+                    }
                     
                     return true;
                 } else {
