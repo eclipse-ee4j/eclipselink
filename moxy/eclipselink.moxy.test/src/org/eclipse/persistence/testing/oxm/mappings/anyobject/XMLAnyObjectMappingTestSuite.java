@@ -37,6 +37,7 @@ public class XMLAnyObjectMappingTestSuite extends TestCase {
         suite.addTestSuite(org.eclipse.persistence.testing.oxm.mappings.anyobject.withoutgroupingelement.AnyObjectTextChildTestCases.class);        
         suite.addTestSuite(org.eclipse.persistence.testing.oxm.mappings.anyobject.withoutgroupingelement.AnyObjectNoDefaultRootComplexChildrenTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.oxm.mappings.anyobject.withoutgroupingelement.AnyObjectWithoutGroupingWithXMLRootTestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.oxm.mappings.anyobject.withoutgroupingelement.AnyObjectKeepUnknownAsElementTestCases.class);        
         suite.addTestSuite(AnyObjectWithoutGroupingWithXMLRootSimpleTestCases.class);
         suite.addTestSuite(AnyObjectXMLRootSimpleNonStringTestCases.class);
 

@@ -3569,6 +3569,7 @@
         <xsd:sequence>
           <xsd:element minOccurs="0" name="field" type="field" />
           <xsd:element minOccurs="0" default="false" name="use-xml-root" type="xsd:boolean" />
+          <xsd:element minOccurs="0" name="keep-as-element-policy" type="xsd:string" />
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>

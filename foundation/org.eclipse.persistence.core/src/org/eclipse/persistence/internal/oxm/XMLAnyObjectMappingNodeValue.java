@@ -30,6 +30,7 @@ import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLRoot;
+import org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy;
 import org.eclipse.persistence.oxm.mappings.XMLAnyObjectMapping;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
@@ -187,7 +188,27 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
                 xmlDescriptor = xmlContext.getDescriptor(qname);
             }
             workingDescriptor = xmlDescriptor;
+            UnmarshalKeepAsElementPolicy policy = xmlAnyObjectMapping.getKeepAsElementPolicy();
+            if (((xmlDescriptor == null) && (policy == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT)) || (policy == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)) {
+                //setup handler stuff
+                SAXFragmentBuilder builder = unmarshalRecord.getFragmentBuilder();
+                builder.setOwningRecord(unmarshalRecord);
+                try {
+                    String namespaceURI = "";
+                    if (xPathFragment.getNamespaceURI() != null) {
+                        namespaceURI = xPathFragment.getNamespaceURI();
+                    }
+                    String qName = xPathFragment.getLocalName();
+                    if (xPathFragment.getPrefix() != null) {
+                        qName = xPathFragment.getPrefix() + ":" + qName;
+                    }
 
+                    builder.startElement(namespaceURI, xPathFragment.getLocalName(), qName, atts);
+                    unmarshalRecord.getXMLReader().setContentHandler(builder);
+                } catch (SAXException ex) {
+                }
+            }            
+            
             if (null == xmlDescriptor) {
                 //need to give to special handler, let it find out what to do depending on if this is simple or complex content
                 AnyMappingContentHandler handler = new AnyMappingContentHandler(unmarshalRecord, xmlAnyObjectMapping.usesXMLRoot());
@@ -230,8 +251,20 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
                 }
             }
         } else {
-            // TEXT VALUE             
-            endElementProcessText(unmarshalRecord, xPathFragment);
+            SAXFragmentBuilder builder = unmarshalRecord.getFragmentBuilder();
+
+            UnmarshalKeepAsElementPolicy keepAsElementPolicy = xmlAnyObjectMapping.getKeepAsElementPolicy();
+
+            if ((((keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) || (keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT))) && (builder.getNodes().size() != 0)) {
+                Object node = builder.getNodes().pop();
+                if(xmlAnyObjectMapping.getConverter() != null) {
+                    node = xmlAnyObjectMapping.getConverter().convertDataValueToObjectValue(node, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller());
+                }
+                unmarshalRecord.setAttributeValue(node, xmlAnyObjectMapping);
+            } else {
+                // TEXT VALUE             
+                endElementProcessText(unmarshalRecord, xPathFragment);
+            }
         }
     }
 
@@ -296,7 +329,6 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
             if (generatedNamespace != null) {
                 marshalRecord.attribute(XMLConstants.XMLNS_URL, XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + generatedNamespace.getPrefix(), generatedNamespace.getNamespaceURI());
             }
-
             if (qname != null) {
                 String prefix = marshalRecord.getNamespaceResolver().resolveNamespaceURI(qname.getNamespaceURI());
                 if ((prefix == null) || prefix.equals("")) {
@@ -309,7 +341,11 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
             }
         }
 
-        marshalRecord.characters((String) value);
+        if (value instanceof String) {
+            marshalRecord.characters((String) value);
+        } else {
+            marshalRecord.node((org.w3c.dom.Node) value, marshalRecord.getNamespaceResolver());
+        }
 
         if (xmlRootFragment != null) {
             marshalRecord.endElement(xmlRootFragment, namespaceResolver);
@@ -319,5 +355,5 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
     public XMLAnyObjectMapping getMapping() {
         return xmlAnyObjectMapping;
     }
-
+    
 }

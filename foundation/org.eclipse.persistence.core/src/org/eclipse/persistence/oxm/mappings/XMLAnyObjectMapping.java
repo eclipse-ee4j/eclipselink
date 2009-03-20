@@ -160,6 +160,7 @@ public class XMLAnyObjectMapping extends DatabaseMapping implements XMLMapping {
     private boolean useXMLRoot;
     private boolean areOtherMappingInThisContext = true;
     private XMLConverter converter;
+    private UnmarshalKeepAsElementPolicy keepAsElementPolicy;
 
     public XMLAnyObjectMapping() {
         useXMLRoot = false;
@@ -301,10 +302,11 @@ public class XMLAnyObjectMapping extends DatabaseMapping implements XMLMapping {
         int i = 0;
         int length = unmappedChildren.size();
         while (iter.hasNext()) {
+            Object objectValue = null;
             org.w3c.dom.Node next = (Node) iter.next();
             if (next.getNodeType() == Node.TEXT_NODE) {
                 if ((i == (length - 1)) || (next.getNodeValue().trim().length() > 0)) {
-                	Object objectValue = next.getNodeValue();
+                	objectValue = next.getNodeValue();
                 	if(getConverter() != null) {
                 		objectValue = getConverter().convertDataValueToObjectValue(objectValue, session, record.getUnmarshaller());
                 	}
@@ -320,13 +322,22 @@ public class XMLAnyObjectMapping extends DatabaseMapping implements XMLMapping {
                 if (!useXMLRoot) {
                     referenceDescriptor = getDescriptor(nestedRecord, session, null);
 
-                    if (referenceDescriptor != null) {
+                    if (referenceDescriptor != null && keepAsElementPolicy != UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT) {
                         ObjectBuilder builder = referenceDescriptor.getObjectBuilder();
-                        Object objectValue = builder.buildObject(query, nestedRecord, joinManager);
+                        objectValue = builder.buildObject(query, nestedRecord, joinManager);
                     	if(getConverter() != null) {
                     		objectValue = getConverter().convertDataValueToObjectValue(objectValue, session, record.getUnmarshaller());
                     	}
                         return objectValue;
+                    } else {
+                        if ((keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) || (keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)) {
+                            XMLPlatformFactory.getInstance().getXMLPlatform().namespaceQualifyFragment((Element) next);
+                            objectValue = next;
+                            if(getConverter() != null) {
+                                objectValue = getConverter().convertDataValueToObjectValue(objectValue, session, record.getUnmarshaller());
+                            }
+                            return objectValue;
+                        }
                     }
                 } else {
                     String schemaType = ((Element) next).getAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
@@ -355,11 +366,20 @@ public class XMLAnyObjectMapping extends DatabaseMapping implements XMLMapping {
                     }
                     if (referenceDescriptor != null) {
                         ObjectBuilder builder = referenceDescriptor.getObjectBuilder();
-                        Object objectValue = builder.buildObject(query, nestedRecord, joinManager);
+                        objectValue = builder.buildObject(query, nestedRecord, joinManager);
                         Object updated = ((XMLDescriptor) referenceDescriptor).wrapObjectInXMLRoot(objectValue, next.getNamespaceURI(), next.getLocalName(), next.getPrefix(), false);
                     	if(getConverter() != null) {
                     		updated = getConverter().convertDataValueToObjectValue(objectValue, session, record.getUnmarshaller());
                     	}
+                        return updated;
+                    } else if ((referenceDescriptor != null) && (getKeepAsElementPolicy() != UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)) {
+                        ObjectBuilder builder = referenceDescriptor.getObjectBuilder();
+                        objectValue = builder.buildObject(query, nestedRecord, joinManager);
+                        Object updated = ((XMLDescriptor) referenceDescriptor).wrapObjectInXMLRoot(objectValue, next.getNamespaceURI(), next.getLocalName(), next.getPrefix(), false);
+
+                        if(getConverter() != null) {
+                            updated = getConverter().convertDataValueToObjectValue(updated, session, record.getUnmarshaller());
+                        }                       
                         return updated;
                     } else {
                         Object value = null;
@@ -400,7 +420,9 @@ public class XMLAnyObjectMapping extends DatabaseMapping implements XMLMapping {
         XMLContext xmlContext = xmlRecord.getUnmarshaller().getXMLContext();
         XMLDescriptor xmlDescriptor = xmlContext.getDescriptor(rootQName);
         if (null == xmlDescriptor) {
-            throw XMLMarshalException.noDescriptorWithMatchingRootElement(xmlRecord.getLocalName());
+            if (!((keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) || (keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT))) {
+                throw XMLMarshalException.noDescriptorWithMatchingRootElement(xmlRecord.getLocalName());
+            }
         }
         return xmlDescriptor;
     }
@@ -449,6 +471,9 @@ public class XMLAnyObjectMapping extends DatabaseMapping implements XMLMapping {
         }
         if (objectValue instanceof String) {
             writeSimpleValue(xmlRootField, record, session, originalObject, objectValue, root, toReplace, wasXMLRoot);
+        } else if (objectValue instanceof org.w3c.dom.Node) {
+            Node importedCopy = doc.importNode((Node) objectValue, true);
+            root.appendChild(importedCopy);
         } else {
             XMLDescriptor referenceDescriptor = (XMLDescriptor) session.getDescriptor(objectValue.getClass());
             if (referenceDescriptor == null) {
@@ -690,5 +715,13 @@ public class XMLAnyObjectMapping extends DatabaseMapping implements XMLMapping {
     
     public void setConverter(XMLConverter converter) {
     	this.converter = converter;
+    }
+
+    public UnmarshalKeepAsElementPolicy getKeepAsElementPolicy() {
+        return keepAsElementPolicy;
+    }
+
+    public void setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy keepAsElementPolicy) {
+        this.keepAsElementPolicy = keepAsElementPolicy;
     }
 }

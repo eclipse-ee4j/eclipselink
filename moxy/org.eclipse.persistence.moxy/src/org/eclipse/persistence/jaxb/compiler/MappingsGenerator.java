@@ -28,11 +28,8 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.oxm.annotations.*;
 import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
-import org.eclipse.persistence.jaxb.javamodel.JavaField;
-import org.eclipse.persistence.jaxb.javamodel.JavaHasAnnotations;
 import org.eclipse.persistence.jaxb.javamodel.JavaMethod;
 import org.eclipse.persistence.jaxb.JAXBEnumTypeConverter;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
 import org.eclipse.persistence.internal.jaxb.DomHandlerConverter;
 import org.eclipse.persistence.internal.jaxb.MultiArgInstantiationPolicy;
@@ -40,7 +37,6 @@ import org.eclipse.persistence.internal.jaxb.WrappedValue;
 import org.eclipse.persistence.internal.jaxb.JAXBElementAttributeAccessor;
 import org.eclipse.persistence.mappings.AttributeAccessor;
 import org.eclipse.persistence.mappings.DatabaseMapping;
-
 
 import org.eclipse.persistence.oxm.*;
 import org.eclipse.persistence.oxm.mappings.*;
@@ -272,7 +268,11 @@ public class MappingsGenerator {
                 if (property.isSwaAttachmentRef() || property.isMtomAttachment()) {
                     generateBinaryMapping(property, descriptor, namespaceInfo);
                 } else {
-                    generateDirectMapping(property, descriptor, namespaceInfo);
+                    if (referenceClass.getQualifiedName().equals("java.lang.Object")) {
+                        generateAnyObjectMapping(property, descriptor, namespaceInfo);
+                    } else {
+                        generateDirectMapping(property, descriptor, namespaceInfo);
+                    }
                 }
             }
         }
@@ -558,6 +558,19 @@ public class MappingsGenerator {
             mapping.setGetMethodName(property.getGetMethodName());
             mapping.setSetMethodName(property.getSetMethodName());
         }
+        descriptor.addMapping(mapping);
+    }
+    
+    public void generateAnyObjectMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
+        XMLAnyObjectMapping mapping = new XMLAnyObjectMapping();
+        mapping.setAttributeName(property.getPropertyName());
+        if (property.isMethodProperty()) {
+            mapping.setGetMethodName(property.getGetMethodName());
+            mapping.setSetMethodName(property.getSetMethodName());
+        }
+        
+        mapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
+        
         descriptor.addMapping(mapping);
     }
     
