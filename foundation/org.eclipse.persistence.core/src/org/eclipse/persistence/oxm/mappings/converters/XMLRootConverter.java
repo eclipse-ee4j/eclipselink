@@ -17,12 +17,15 @@ import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
+import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.sessions.Session;
 
 public class XMLRootConverter implements XMLConverter {
 	private XPathFragment rootFragment;
 	private XMLField associatedField;
+	private DatabaseMapping mapping;
 	
 	public XMLRootConverter(XMLField associatedField) {
 		this.associatedField = associatedField;
@@ -43,6 +46,17 @@ public class XMLRootConverter implements XMLConverter {
 		XMLRoot root = new XMLRoot();
 		root.setLocalName(this.rootFragment.getLocalName());
 		root.setNamespaceURI(this.rootFragment.getNamespaceURI());
+		
+		if(mapping.isAbstractDirectMapping()){
+			if ((dataValue == null) || (dataValue.getClass() != mapping.getAttributeClassification())) {
+				try {
+					dataValue = session.getDatasourcePlatform().convertObject(dataValue, mapping.getAttributeClassification());
+				} catch (ConversionException e) {
+					throw ConversionException.couldNotBeConverted(this, mapping.getDescriptor(), e);
+				}
+			}
+		}
+		
 		root.setObject(dataValue);
 		
 		return root;
@@ -63,6 +77,7 @@ public class XMLRootConverter implements XMLConverter {
 			fragment = fragment.getNextFragment();
 		}
 		this.rootFragment = fragment;
+		this.mapping = mapping;
 	}
 
 	public boolean isMutable() {

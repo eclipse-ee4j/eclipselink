@@ -83,12 +83,8 @@ public class JAXBElementAttributeAccessor extends AttributeAccessor {
 			}
 			attributeValue = results;
 		} else {
-			if(attributeValue instanceof XMLRoot) {
-				XMLRoot root = (XMLRoot)attributeValue;
-				QName name = new QName(root.getNamespaceURI(), root.getLocalName());
-				JAXBElement element = new JAXBElement(name, root.getObject().getClass(), root.getObject());
-				attributeValue = element;
-			}			
+			attributeValue = unwrapObject(attributeValue);
+
 		}
 		nestedAccessor.setAttributeValueInObject(object, attributeValue);
 	}
