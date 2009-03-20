@@ -50,7 +50,7 @@
             depends="clean, build, test-lrg, test-for-errors, create-tag, publish-build, publish-results"
     />
     <target name="build-continuous" description="Trigger an automated build and run the tests if source changes exist"
-            depends="clean, build-no-javadoc, test-srg"
+            depends="clean, build-no-javadoc, build-utils, test-srg"
     />
     <target name="publish-all"      description="Trigger just the publish targets"
             depends="init, publish-build, publish-results"
@@ -268,6 +268,10 @@
         <ant antfile="build.xml" dir="${build.root.dir}" target="build"/>
     </target>
 
+    <target name="build-utils" depends="get-dependencies">
+        <ant antfile="build.xml" dir="${build.root.dir}" target="build-util"/>
+    </target>
+
     <target name="build-test" depends="get-dependencies">
         <!-- Builds all tests including MW tests (needed for nightly compile verification even if they aren't run) -->
         <ant antfile="build.xml" dir="${build.root.dir}" target="build-test"/>
@@ -307,6 +311,14 @@
             <property name="eclipselink.logging.level" value="${test.logging.level}"/>
         </ant>
         <!-- delete file="${coretest.prop.file}"/ -->
+    </target>
+
+    <target name="test-browser" depends="init">
+        <echo message="db.platform=${db.platform}${line.separator}"         file="${coretest.prop.file}" append="true"/>
+
+        <ant antfile="build.xml" dir="${build.root.dir}" target="test-browser">
+            <property name="eclipselink.logging.level" value="${test.logging.level}"/>
+        </ant>
     </target>
 
     <target name="publish-build">
