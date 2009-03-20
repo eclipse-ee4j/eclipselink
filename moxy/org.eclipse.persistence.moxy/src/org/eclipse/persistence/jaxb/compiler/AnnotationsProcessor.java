@@ -333,8 +333,16 @@ public class AnnotationsProcessor {
         }
         
         info.setProperties(getPropertiesForClass(javaClass, info));
+        XmlAccessorOrder order = null;
+        if(helper.isAnnotationPresent(pack, XmlAccessorOrder.class)) {
+            order = (XmlAccessorOrder) helper.getAnnotation(pack, XmlAccessorOrder.class);
+        }
+        
         if (helper.isAnnotationPresent(javaClass, XmlAccessorOrder.class)) {
-            XmlAccessorOrder order = (XmlAccessorOrder) helper.getAnnotation(javaClass, XmlAccessorOrder.class);
+            order = (XmlAccessorOrder) helper.getAnnotation(javaClass, XmlAccessorOrder.class);
+        }
+        
+        if(order != null) {
             info.orderProperties(order.value());
         }
         
