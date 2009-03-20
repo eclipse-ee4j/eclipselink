@@ -22,7 +22,7 @@ import org.eclipse.persistence.sdo.SDOType;
  */
 public class SDOClassLoader extends ClassLoader {
 
-    private Map generatedClasses;
+    private Map<String, Class> generatedClasses;
 
     // hold the context containing all helpers so that we can preserve inter-helper relationships
     private HelperContext aHelperContext;
@@ -34,30 +34,16 @@ public class SDOClassLoader extends ClassLoader {
     }
 
     public Class loadClass(String className) throws ClassNotFoundException {
-        Class javaClass = null;
-
-        // To maximize performance, check the generated classes first
-        javaClass = (Class) generatedClasses.get(className);
+        Class javaClass = generatedClasses.get(className);
         if (javaClass != null) {
             return javaClass;
         }
-
-        // Not found, so now check classpath
-        try {
-            javaClass = getParent().loadClass(className);
-        } catch (ClassNotFoundException e) {
-            throw e;
-        } catch (NoClassDefFoundError error) {
-            throw error;
-        }
-        return javaClass;
+        return getParent().loadClass(className);
     }
-    
-    public Class loadClass(String className, SDOType type) throws ClassNotFoundException {
-        Class javaClass = null;
 
+    public Class loadClass(String className, SDOType type) throws ClassNotFoundException {
         // To maximize performance, check the generated classes first
-        javaClass = (Class) generatedClasses.get(className);
+        Class javaClass = generatedClasses.get(className);
         if (javaClass != null) {
             return javaClass;
         }
