@@ -50,7 +50,7 @@
             depends="clean, build, test-lrg, test-for-errors, create-tag, publish-build, publish-results"
     />
     <target name="build-continuous" description="Trigger an automated build and run the tests if source changes exist"
-            depends="clean, build-no-javadoc, test-srg"
+            depends="clean, build-no-javadoc, build-utils, test-srg"
     />
     <target name="publish-all"      description="Trigger just the publish targets"
             depends="init, publish-build, publish-results"
@@ -266,6 +266,10 @@
 
     <target name="build-no-javadoc" depends="get-dependencies">
         <ant antfile="build.xml" dir="${build.root.dir}" target="build"/>
+    </target>
+
+    <target name="build-utils" depends="get-dependencies">
+        <ant antfile="build.xml" dir="${build.root.dir}" target="build-util"/>
     </target>
 
     <target name="build-test" depends="get-dependencies">
