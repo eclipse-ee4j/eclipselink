@@ -12,7 +12,7 @@
 ******************************************************************************/
 package org.eclipse.persistence.sdo.types;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import commonj.sdo.Type;
 import org.eclipse.persistence.sdo.SDOConstants;
@@ -22,8 +22,6 @@ import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
 
 public class SDOXMLHelperLoadOptionsType extends SDOType implements Type {
 
-    private static final List EMPTY_LIST = new ArrayList(0);
-
     public SDOXMLHelperLoadOptionsType(SDOTypeHelper sdoTypeHelper, SDOType typeType) {
         super(SDOConstants.ORACLE_SDO_URL, SDOConstants.XMLHELPER_LOAD_OPTIONS, sdoTypeHelper);
 
@@ -31,15 +29,15 @@ public class SDOXMLHelperLoadOptionsType extends SDOType implements Type {
         typeOptionProperty.setName(SDOConstants.TYPE_LOAD_OPTION);
         typeOptionProperty.setMany(false);
         typeOptionProperty.setType(typeType);
-        addDeclaredProperty(typeOptionProperty);        
+        addDeclaredProperty(typeOptionProperty);
     }
 
     public List getAliasNames() {
-        return EMPTY_LIST;
+        return Collections.EMPTY_LIST;
     }
 
     public List getBaseTypes() {
-        return EMPTY_LIST;
+        return Collections.EMPTY_LIST;
     }
 
     public String getName() {

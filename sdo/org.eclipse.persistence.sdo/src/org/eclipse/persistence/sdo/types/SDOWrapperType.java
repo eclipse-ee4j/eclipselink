@@ -15,7 +15,7 @@
 
 package org.eclipse.persistence.sdo.types;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -45,8 +45,6 @@ import commonj.sdo.Type;
  * @author rbarkhou
  */
 public class SDOWrapperType extends SDOType implements Type {
-
-    private static final List EMPTY_LIST = new ArrayList(0);
 
     private String typeName;
     private Map<QName, XMLDescriptor> descriptorsMap;
@@ -126,7 +124,7 @@ public class SDOWrapperType extends SDOType implements Type {
         urlRef.setSchemaContextAsQName(schemaType);
         desc.setSchemaReference(urlRef);
     }
-    
+
     private void initializeDescriptor(XMLDescriptor aDescriptor, QName aQName, Type aPropertyType, SDOProperty aValueProperty) {
         aDescriptor.setNamespaceResolver(null);
 
@@ -170,11 +168,11 @@ public class SDOWrapperType extends SDOType implements Type {
     }
 
     public List getAliasNames() {
-        return EMPTY_LIST;
+        return Collections.EMPTY_LIST;
     }
 
     public List getBaseTypes() {
-        return EMPTY_LIST;
+        return Collections.EMPTY_LIST;
     }
 
     public String getName() {

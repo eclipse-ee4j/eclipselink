@@ -12,7 +12,7 @@
 ******************************************************************************/
 package org.eclipse.persistence.sdo.types;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import commonj.sdo.Type;
@@ -26,14 +26,14 @@ import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
 
 public class SDOTypeType extends SDOType implements Type {
 
-    private static final List EMPTY_LIST = new ArrayList(0);
+    private static final String SDO_DO_URL = "org.eclipse.persistence.sdo.dataobjects";
+
     private boolean initialized = false;
-    
+
     public SDOTypeType(SDOTypeHelper sdoTypeHelper) {
         super(SDOConstants.SDO_URL, SDOConstants.TYPE, sdoTypeHelper);
 
-        setInstanceClassName(SDOConstants.ORACLE_SDO_URL + ".TypeClass");
-        getInstanceClass();
+        setImplClassName(SDO_DO_URL + ".TypeImpl");
         Class implClass = getImplClass();
 
         xmlDescriptor.setJavaClass(implClass);
@@ -45,9 +45,9 @@ public class SDOTypeType extends SDOType implements Type {
         namespaceResolver.put(SDOConstants.SDO_PREFIX, SDOConstants.SDO_URL);
         SDOType propertyType = new SDOPropertyType(sdoTypeHelper, this);
         sdoTypeHelper.addType(propertyType);
-        
+
         // these properties are ordered as listed page 74 sect. 8.3 of the spec in "SDO Model for Types and Properties"
-        
+
         SDOProperty baseTypeProperty = new SDOProperty(aHelperContext);
         baseTypeProperty.setName("baseType");
         baseTypeProperty.setMany(true);
@@ -99,16 +99,16 @@ public class SDOTypeType extends SDOType implements Type {
         addDeclaredProperty(abstractProperty);
         
         // set the XMLAnyCollectionMapping on the descriptor on SDO_TYPE
-        setOpen(true);        
+        setOpen(true);
         setFinalized(true);
     }
-    
+
     public List getAliasNames() {
-        return EMPTY_LIST;
+        return Collections.EMPTY_LIST;
     }
 
     public List getBaseTypes() {
-        return EMPTY_LIST;
+        return Collections.EMPTY_LIST;
     }
 
     public String getName() {
@@ -134,11 +134,11 @@ public class SDOTypeType extends SDOType implements Type {
     public boolean isSequenced() {
         return false;
     }
-    
+
     public boolean isTypeType() {
         return true;
     }
-    
+
     public void initializeMappings() {
         Iterator propIterator = this.getDeclaredProperties().iterator();
         while(propIterator.hasNext()) {
@@ -147,7 +147,7 @@ public class SDOTypeType extends SDOType implements Type {
         }
         initialized = true;
     }
-    
+
     public boolean isInitialized() {
         return this.initialized;
     }

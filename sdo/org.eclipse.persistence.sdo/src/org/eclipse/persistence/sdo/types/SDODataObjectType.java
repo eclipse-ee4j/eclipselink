@@ -12,7 +12,7 @@
 ******************************************************************************/
 package org.eclipse.persistence.sdo.types;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import commonj.sdo.DataObject;
 import commonj.sdo.Type;
@@ -22,20 +22,18 @@ import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
 
 public class SDODataObjectType extends SDOType implements Type {
 
-    private static final List EMPTY_LIST = new ArrayList(0);
-    
     public SDODataObjectType(SDOTypeHelper sdoTypeHelper) {
         super(SDOConstants.SDO_URL, SDOConstants.DATAOBJECT, sdoTypeHelper);
         setInstanceClass(DataObject.class);
         setAbstract(true);
     }
-    
+
     public List getAliasNames() {
-        return EMPTY_LIST;
+        return Collections.EMPTY_LIST;
     }
 
     public List getBaseTypes() {
-        return EMPTY_LIST;
+        return Collections.EMPTY_LIST;
     }
 
     public String getName() {
@@ -61,7 +59,7 @@ public class SDODataObjectType extends SDOType implements Type {
     public boolean isSequenced() {
         return false;
     }
-    
+
     public boolean isDataObjectType() {
         return true;
     }

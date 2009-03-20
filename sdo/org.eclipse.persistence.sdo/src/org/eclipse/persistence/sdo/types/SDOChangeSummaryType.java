@@ -16,6 +16,7 @@ import commonj.sdo.ChangeSummary;
 import commonj.sdo.Property;
 import commonj.sdo.Type;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy;
@@ -30,8 +31,6 @@ import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
 
 public class SDOChangeSummaryType extends SDOType implements Type {
 
-    private static final List EMPTY_LIST = new ArrayList(0);
-    
     public SDOChangeSummaryType(SDOTypeHelper sdoTypeHelper) {
         super(SDOConstants.SDO_URL, SDOConstants.CHANGESUMMARY, sdoTypeHelper);
 
@@ -66,25 +65,25 @@ public class SDOChangeSummaryType extends SDOType implements Type {
         aChangeMapping.useCollectionClass(ArrayList.class);
         xmlDescriptor.addMapping(aChangeMapping);
     }
-    
+
     public Object get(Property property) {
         return null;
     }
 
     public List getAliasNames() {
-        return EMPTY_LIST;
+        return Collections.EMPTY_LIST;
     }
 
     public List getBaseTypes() {
-        return EMPTY_LIST;
+        return Collections.EMPTY_LIST;
     }
 
     public List getDeclaredProperties() {
-        return EMPTY_LIST;
+        return Collections.EMPTY_LIST;
     }
 
     public List getInstanceProperties() {
-        return EMPTY_LIST;
+        return Collections.EMPTY_LIST;
     }
 
     public String getName() {
@@ -92,7 +91,7 @@ public class SDOChangeSummaryType extends SDOType implements Type {
     }
 
     public List getProperties() {
-        return EMPTY_LIST;
+        return Collections.EMPTY_LIST;
     }
 
     public SDOProperty getProperty(String propertyName) {
@@ -122,7 +121,7 @@ public class SDOChangeSummaryType extends SDOType implements Type {
     public boolean isSequenced() {
         return false;
     }
-    
+
     public boolean isChangeSummaryType() {
         return true;
     }

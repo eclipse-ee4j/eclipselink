@@ -12,43 +12,42 @@
 ******************************************************************************/
 package org.eclipse.persistence.sdo.types;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import commonj.sdo.Type;
 
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOType;
+import org.eclipse.persistence.sdo.dataobjects.OpenSequencedType;
 import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
 
 public class SDOOpenSequencedType extends SDOType implements Type {
 
-    private static final List EMPTY_LIST = new ArrayList(0);
-    
     private static final String ORACLE_SDO_DO_URL = "org.eclipse.persistence.sdo.dataobjects";
-    
+
     public SDOOpenSequencedType(SDOTypeHelper sdoTypeHelper) {
         super(SDOConstants.ORACLE_SDO_URL, "OpenSequencedType", sdoTypeHelper);
         this.xmlDescriptor.setNamespaceResolver(new NamespaceResolver());
-        setInstanceClassName(ORACLE_SDO_DO_URL + ".OpenSequencedType");
+
+        setInstanceClass(OpenSequencedType.class);
         setImplClassName(ORACLE_SDO_DO_URL + ".OpenSequencedTypeImpl");
-        //need to call getInstanceClass to initialize the class in the SDOClassLoader
-        getInstanceClass();
         Class implClass = getImplClass();
         xmlDescriptor.setJavaClass(implClass);
+
         setMixed(true);
         setSequenced(true);
-        setOpen(true);               
-        
+        setOpen(true);
+
         setFinalized(true);
     }
-    
+
     public List getAliasNames() {
-        return EMPTY_LIST;
+        return Collections.EMPTY_LIST;
     }
 
     public List getBaseTypes() {
-        return EMPTY_LIST;
+        return Collections.EMPTY_LIST;
     }
 
     public String getName() {

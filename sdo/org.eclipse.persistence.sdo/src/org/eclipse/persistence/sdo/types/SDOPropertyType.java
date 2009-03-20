@@ -12,7 +12,7 @@
 ******************************************************************************/
 package org.eclipse.persistence.sdo.types;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import commonj.sdo.Type;
@@ -28,10 +28,9 @@ import org.eclipse.persistence.sdo.helper.metadata.TypeStringConverter;
 
 public class SDOPropertyType extends SDOType implements Type {
 
-    private static final List EMPTY_LIST = new ArrayList(0);
     private boolean initialized = false;
     private SDOTypeHelper typeHelper;
-    
+
     public SDOPropertyType(SDOTypeHelper sdoTypeHelper, SDOType typeType) {
         super(SDOConstants.SDO_URL, SDOConstants.PROPERTY, sdoTypeHelper);
         this.typeHelper = sdoTypeHelper;
@@ -40,7 +39,7 @@ public class SDOPropertyType extends SDOType implements Type {
         Class implClass = getImplClass();
 
         xmlDescriptor.setJavaClass(implClass);
-        
+
         XMLSchemaReference schemaReference = new XMLSchemaClassPathReference();
         schemaReference.setSchemaContext("/sdo:Property");
         xmlDescriptor.setSchemaReference(schemaReference);
@@ -92,16 +91,16 @@ public class SDOPropertyType extends SDOType implements Type {
         nullableProperty.setType(SDOConstants.SDO_BOOLEAN);
         addDeclaredProperty(nullableProperty);
 
-        setOpen(true);        
+        setOpen(true);
         setFinalized(true);
     }
-    
+
     public List getAliasNames() {
-        return EMPTY_LIST;
+        return Collections.EMPTY_LIST;
     }
 
     public List getBaseTypes() {
-        return EMPTY_LIST;
+        return Collections.EMPTY_LIST;
     }
 
     public String getName() {
@@ -127,7 +126,7 @@ public class SDOPropertyType extends SDOType implements Type {
     public boolean isSequenced() {
         return false;
     }
-    
+
     public void initializeMappings() {
         Iterator propIterator = this.getDeclaredProperties().iterator();
         while(propIterator.hasNext()) {
@@ -151,7 +150,7 @@ public class SDOPropertyType extends SDOType implements Type {
         }
         initialized = true;
     }
-    
+
     public boolean isInitialized() {
         return this.initialized;
     }
