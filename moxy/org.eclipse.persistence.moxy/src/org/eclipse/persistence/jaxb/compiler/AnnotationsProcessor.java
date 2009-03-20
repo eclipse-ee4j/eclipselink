@@ -1216,7 +1216,7 @@ public class AnnotationsProcessor {
                         }
                     }
                         
-                    ElementDeclaration declaration = new ElementDeclaration(qname, type, type.getQualifiedName(), isList);
+                    ElementDeclaration declaration = new ElementDeclaration(qname, type, type.getQualifiedName(), isList, elementDecl.scope());
                     if(!elementDecl.substitutionHeadName().equals("")) {
                         String subHeadLocal = elementDecl.substitutionHeadName();
                         String subHeadNamespace = elementDecl.substitutionHeadNamespace();

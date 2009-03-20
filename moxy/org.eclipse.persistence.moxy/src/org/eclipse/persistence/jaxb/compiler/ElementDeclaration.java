@@ -30,6 +30,7 @@ public class ElementDeclaration {
     private boolean isXmlRootElement = false;
     private boolean isList = false;
     private Class javaTypeAdapterClass;
+    private Class scopeClass;
     
     public ElementDeclaration(QName name, JavaClass javaType, String javaTypeName, boolean isList) {
         this.elementName = name;
@@ -37,6 +38,11 @@ public class ElementDeclaration {
         this.javaType = javaType;
         this.substitutableElements = new ArrayList<ElementDeclaration>();
         this.isList = isList;
+    }
+    
+    public ElementDeclaration(QName name, JavaClass javaType, String javaTypeName, boolean isList, Class scopeClass) {
+    	this(name, javaType, javaTypeName, isList);
+    	this.scopeClass = scopeClass;        
     }
     
     public QName getElementName() {
@@ -107,6 +113,14 @@ public class ElementDeclaration {
 
     public String getAdaptedJavaTypeName() {
         return adaptedJavaTypeName;
+    }
+
+    public Class getScopeClass() {
+        return scopeClass;
+    }
+    
+    public void setScopeClass(Class scopeClass) {
+        this.scopeClass = scopeClass;
     }
 
 }

@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.xml.bind.annotation.*;
@@ -340,6 +341,7 @@ public class MappingsGenerator {
         List<ElementDeclaration> referencedElements = property.getReferencedElements();
         boolean hasJAXBElements = false;
         AttributeAccessor mappingAccessor = mapping.getAttributeAccessor();
+        Map<QName, Class> qNamesToScopeClass = new HashMap<QName, Class>();
         for(ElementDeclaration element:referencedElements) {
             QName elementName = element.getElementName();
             XMLField xmlField = this.getXPathForElement("", elementName, namespaceInfo, !(this.typeInfo.containsKey(element.getJavaTypeName())));
@@ -355,11 +357,14 @@ public class MappingsGenerator {
                 } else {
                     ((XMLChoiceObjectMapping)mapping).addConverter(xmlField, converter);
                 }
+                qNamesToScopeClass.put(elementName, element.getScopeClass());
             }
-            hasJAXBElements = hasJAXBElements || !element.isXmlRootElement();
-            if(hasJAXBElements) {
-                mapping.setAttributeAccessor(new JAXBElementAttributeAccessor(mappingAccessor));
-            }
+            hasJAXBElements = hasJAXBElements || !element.isXmlRootElement();           
+        }
+        if(hasJAXBElements) {
+        	JAXBElementAttributeAccessor accessor = new JAXBElementAttributeAccessor(mappingAccessor);
+        	accessor.setQNamesToScopes(qNamesToScopeClass);
+            mapping.setAttributeAccessor(accessor);
         }
         descriptor.addMapping(mapping);
         return (XMLMapping)mapping;
@@ -378,6 +383,7 @@ public class MappingsGenerator {
         boolean hasJAXBElements = false;
         AttributeAccessor mappingAccessor = mapping.getAttributeAccessor();
         
+        Map<QName, Class> qNamesToScopeClass = new HashMap<QName, Class>();
         for(ElementDeclaration element:referencedElements) {
             QName elementName = element.getElementName();
             XMLField xmlField = this.getXPathForElement("", elementName, namespaceInfo, !(this.typeInfo.containsKey(element.getJavaTypeName())));
@@ -385,11 +391,14 @@ public class MappingsGenerator {
             if(!element.isXmlRootElement()) {
                 XMLRootConverter converter = new XMLRootConverter(xmlField);
                 mapping.addConverter(xmlField, converter);
+                qNamesToScopeClass.put(elementName, element.getScopeClass());
             }
             hasJAXBElements = hasJAXBElements || !element.isXmlRootElement();
         }
-        if(hasJAXBElements) {
-            mapping.setAttributeAccessor(new JAXBElementAttributeAccessor(mappingAccessor, mapping.getContainerPolicy()));
+        if(hasJAXBElements) {            
+        	JAXBElementAttributeAccessor accessor = new JAXBElementAttributeAccessor(mappingAccessor, mapping.getContainerPolicy());
+        	accessor.setQNamesToScopes(qNamesToScopeClass);
+            mapping.setAttributeAccessor(accessor);
         }
         descriptor.addMapping(mapping);
         return mapping;

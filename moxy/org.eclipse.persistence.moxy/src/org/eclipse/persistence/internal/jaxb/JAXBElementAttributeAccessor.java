@@ -12,6 +12,9 @@
 ******************************************************************************/
 package org.eclipse.persistence.internal.jaxb;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.persistence.mappings.AttributeAccessor;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -26,15 +29,18 @@ public class JAXBElementAttributeAccessor extends AttributeAccessor {
 	private AttributeAccessor nestedAccessor;
 	private ContainerPolicy containerPolicy;
 	private boolean isContainer;
+	private Map<QName, Class> qNamesToScopes;
 	
 	public JAXBElementAttributeAccessor(AttributeAccessor nestedAccessor) {
 		this.nestedAccessor = nestedAccessor;
 		this.isContainer = false;
+		qNamesToScopes = new HashMap<QName, Class>();
 	}
 	public JAXBElementAttributeAccessor(AttributeAccessor nestedAccessor, ContainerPolicy containerPolicy) {
 		this.nestedAccessor = nestedAccessor;
 		this.containerPolicy = containerPolicy;
 		this.isContainer = true;
+		qNamesToScopes = new HashMap<QName, Class>();
 	}
 	
 	public Object getAttributeValueFromObject(Object object) {
@@ -82,7 +88,7 @@ public class JAXBElementAttributeAccessor extends AttributeAccessor {
 				containerPolicy.addInto(objectToAdd, results, null);
 			}
 			attributeValue = results;
-		} else {
+		} else {		
 			attributeValue = unwrapObject(attributeValue);
 
 		}
@@ -113,13 +119,19 @@ public class JAXBElementAttributeAccessor extends AttributeAccessor {
     }	    
     
     private JAXBElement createJAXBElement(QName qname, Class theClass, Object value){
-    	   
     	if(ClassConstants.XML_GREGORIAN_CALENDAR.isAssignableFrom(theClass)){
     		theClass = ClassConstants.XML_GREGORIAN_CALENDAR;
     	}else if(ClassConstants.DURATION.isAssignableFrom(theClass)){
     		theClass = ClassConstants.DURATION;
     	}
-    	
-    	return new JAXBElement(qname, theClass, value);
-    }  
+    	Class scopeClass = qNamesToScopes.get(qname);
+    	return new JAXBElement(qname, theClass, scopeClass, value);
+    }
+	
+	public Map<QName, Class> getQNamesToScopes() {
+		return qNamesToScopes;
+	}
+	public void setQNamesToScopes(Map<QName, Class> namesToScopes) {
+		qNamesToScopes = namesToScopes;
+	}  
 }
