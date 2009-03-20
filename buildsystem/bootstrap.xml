@@ -121,9 +121,8 @@
         <property name="svn.base.url"        value="${svn.rw.protocol}${svn.base.urlpath}"/>
         <property name="svn.branch.url"      value="${svn.base.url}/${branch.dir}"/>
         <property name="svn.build.url"       value="${svn.branch.url}/buildsystem"/>
-        <property name="current.svnrev.file" value="${log.dir}/.current_svn_rev_${branch.name}"/>
-        <property name="latest.svnrev.file"  value="${log.dir}/.latest_svn_rev_${branch.name}"/>
-        <!-- available file="${latest.svnrev.file}" property="latest.svnrev.file.present"/ -->
+        <property name="current.svnrev.file" value="${log.dir}/.current_svn_rev_${env.BRANCH_NM}"/>
+        <property name="latest.svnrev.file"  value="${log.dir}/.latest_svn_rev_${env.BRANCH_NM}"/>
         <echo message="env.HOME_DIR    = '${env.HOME_DIR}'"/>
         <echo message="env.JAVA_HOME   = '${env.JAVA_HOME}'"/>
         <echo message="env.JUNIT_HOME  = '${env.JUNIT_HOME}'"/>
