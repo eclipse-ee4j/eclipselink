@@ -370,7 +370,7 @@ echo "Build complete."
 MAIL_EXEC=/bin/mail
 MAILFROM=eric.gwin@oracle.com
 MAILLIST="ejgwin@gmail.com"
-SUCC_MAILLIST="eric.gwin@oracle.com ejgwin@gmail.com"
+SUCC_MAILLIST="eric.gwin@oracle.com"
 FAIL_MAILLIST="eclipselink-dev@eclipse.org ejgwin@gmail.com"
 PARSE_RESULT_FILE=${tmp}/raw-summary.txt
 SORTED_RESULT_FILE=${tmp}/sorted-summary.txt
