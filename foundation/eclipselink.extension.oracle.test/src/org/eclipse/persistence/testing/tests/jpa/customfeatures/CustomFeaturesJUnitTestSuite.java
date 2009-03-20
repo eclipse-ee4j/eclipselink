@@ -148,10 +148,10 @@ public class CustomFeaturesJUnitTestSuite extends JUnitTestCase {
                 fail("OptimisticLockingException is not thrown!");
         }  catch (Exception exception ) {
                 if (exception.getMessage().indexOf("org.eclipse.persistence.exceptions.OptimisticLockException") == -1){
-                    closeEntityManager(em);
                     fail("it's not the right exception");
                 }
-                closeEntityManager(em);
+        }  finally{
+            closeEntityManager(em);
         }
     }
 
@@ -177,10 +177,10 @@ public class CustomFeaturesJUnitTestSuite extends JUnitTestCase {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            closeEntityManager(em);
             throw e;
+        } finally{
+            closeEntityManager(em);
         }
-        closeEntityManager(em);
     }
 
     /**
@@ -208,10 +208,10 @@ public class CustomFeaturesJUnitTestSuite extends JUnitTestCase {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            closeEntityManager(em);
             throw e;
+        } finally{
+            closeEntityManager(em);
         }
-        closeEntityManager(em);
     }
 
     public static String resume0() {

@@ -99,11 +99,14 @@
         <contains string="${server.name}" substring="weblogic"/>
     </condition>
 
-    <!-- This checks if the Apllication Server is WebLogic and running against oracle db-->
-    <condition property="is.weblogic.and.oracle">
+    <!-- This checks if the Apllication Server is applicable to run oracle jpa/customfeatures model on oracle db-->
+    <condition property="run.jpa.customfeatures.model">
         <and>
-            <contains string="${server.name}" substring="weblogic"/>
             <contains string="${db.driver}" substring="oracle"/>
+            <or>
+                <contains string="${server.name}" substring="weblogic"/>
+                <contains string="${server.name}" substring="jboss"/>
+            </or>
         </and>
     </condition>
 
@@ -121,6 +124,15 @@
             <contains string="${server.name}" substring="jboss"/>
         </condition>
         <condition property="DS_NAME" value="jdbc/EclipseLinkDS">
+            <not>
+                <isset property="is.jboss"/>
+            </not>
+        </condition>
+
+        <condition property="OCI_DS_NAME" value="java:/EclipseLinkDS_OCI">
+            <contains string="${server.name}" substring="jboss"/>
+        </condition>
+        <condition property="OCI_DS_NAME" value="jdbc/EclipseLinkDS_OCI">
             <not>
                 <isset property="is.jboss"/>
             </not>
@@ -1105,6 +1117,9 @@
         <replace dir="${eclipselink.jpa.test}/stage/META-INF" token='%%data-source-name%%' value="${DS_NAME}">
             <include name="*.xml"/>
         </replace>
+        <replace dir="${eclipselink.jpa.test}/stage/META-INF" token='%%oci-data-source-name%%' value="${OCI_DS_NAME}">
+            <include name="*.xml"/>
+        </replace>
 
         <!-- Create ejb jar. -->
         <jar destfile="${eclipselink.jpa.test}/${build.dir}/${MODEL_NAME}_ejb.jar" basedir="stage"/>
@@ -1492,7 +1507,7 @@
         </antcall>
     </target>
 
-    <target name="server-test-custom-features" if="is.weblogic.and.oracle">
+    <target name="server-test-custom-features" if="run.jpa.customfeatures.model">
         <antcall target="server-run-all" inheritRefs="true">
             <param name="PERSISTENCE_UNIT_NAME" value="customfeatures"/>
             <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/customfeatures"/>
