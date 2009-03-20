@@ -447,7 +447,12 @@ public class AnnotationsProcessor {
                             if (!namespace.equals("##default")) {
                                 qName = new QName(namespace, name);
                             } else {
-                                qName = new QName(name);                                
+                            	NamespaceInfo namespaceInfo = getNamespaceInfoForPackage(cls.getPackage());
+                            	if (namespaceInfo.isElementFormQualified()) {                
+                                    qName = new QName(namespaceInfo.getNamespace(), name);
+                                }else{
+                                	qName = new QName(name);
+                                }
                             }                           
                             
                             choiceProp.setPropertyName(property.getPropertyName());
@@ -1036,24 +1041,48 @@ public class AnnotationsProcessor {
     public QName getQNameForProperty(String defaultName, JavaHasAnnotations element, NamespaceInfo namespaceInfo) {
         String name = "##default";
         String namespace = "##default";
+        QName qName = null;
         if (helper.isAnnotationPresent(element, XmlAttribute.class)) {
             XmlAttribute xmlAttribute = (XmlAttribute) helper.getAnnotation(element, XmlAttribute.class);
             name = xmlAttribute.name();
             namespace = xmlAttribute.namespace();
-        } else if (helper.isAnnotationPresent(element, XmlElement.class)) {
-            XmlElement xmlElement = (XmlElement) helper.getAnnotation(element, XmlElement.class);
-            name = xmlElement.name();
-            namespace = xmlElement.namespace();
+            
+            if(name.equals("##default")) {
+                name = defaultName;
+            }           
+            
+            if (!namespace.equals("##default")) {
+                qName = new QName(namespace, name);
+            } else {        	
+            	if (namespaceInfo.isAttributeFormQualified()) {                
+                    qName = new QName(namespaceInfo.getNamespace(), name);
+                }else{
+                	qName = new QName(name);
+                }
+            }
+        }else{
+        	if (helper.isAnnotationPresent(element, XmlElement.class)){
+        		XmlElement xmlElement = (XmlElement) helper.getAnnotation(element, XmlElement.class);
+                name = xmlElement.name();
+                namespace = xmlElement.namespace();	
+        	}                    
+       
+            if(name.equals("##default")) {
+                name = defaultName;
+            }
+            
+            if (!namespace.equals("##default")) {
+                qName = new QName(namespace, name);
+            } else {        	
+            	if (namespaceInfo.isElementFormQualified()) {                
+                    qName = new QName(namespaceInfo.getNamespace(), name);
+                }else{
+                	qName = new QName(name);
+                }
+            }
         }
-        if(name.equals("##default")) {
-            name = defaultName;
-        }
-        QName qName = null;
-        if (!namespace.equals("##default")) {
-            qName = new QName(namespace, name);
-        } else {
-            qName = new QName(name);
-        }
+       
+      
         return qName;
         
     }

@@ -256,7 +256,7 @@ public class SchemaGenerator {
             if (parentTypeInfo != null) {
                 extension = new Extension();
                 // may need to qualify the type
-                String parentPrefix = getPrefixForNamespace(parentTypeInfo.getClassNamespace(), namespaceInfo.getNamespaceResolver()); 
+                String parentPrefix = getPrefixForNamespace(parentTypeInfo.getClassNamespace(), schema.getNamespaceResolver()); 
                 if (parentPrefix != null) {
                     extension.setBaseType(parentPrefix + ":" + parentTypeInfo.getSchemaTypeName());
                 } else {
@@ -394,22 +394,28 @@ public class SchemaGenerator {
                         }
                         attribute.setType(typeName);
                     }
-
-                    if (!attributeName.getNamespaceURI().equals("")) {     
+                    String lookupNamespace = schema.getTargetNamespace();
+                    if(lookupNamespace == null){
+                    	lookupNamespace ="";
+                    }
+                    NamespaceInfo namespaceInfo = getNamespaceInfoForNamespace(lookupNamespace);                     
+                    if((namespaceInfo.isAttributeFormQualified() && !attributeName.getNamespaceURI().equals(lookupNamespace))
+                    		|| (!namespaceInfo.isAttributeFormQualified() && !attributeName.getNamespaceURI().equals(""))){
+                    
                         Schema attributeSchema = this.getSchemaForNamespace(attributeName.getNamespaceURI());
                         if(attributeSchema.getTopLevelAttributes().get(attribute.getName()) == null) {
                             //don't overwrite existing global elements and attributes.
                             attributeSchema.getTopLevelAttributes().put(attribute.getName(), attribute);
                         }
-                    
-                        if(!importExists(schema, attributeSchema.getName())){                        
-                            Import schemaImport = new Import();
-                            schemaImport.setNamespace(attributeSchema.getTargetNamespace());
-                            schemaImport.setSchemaLocation(attributeSchema.getName());                            
-                            schema.getImports().add(schemaImport);
-                            schema.getNamespaceResolver().put(schema.getNamespaceResolver().generatePrefix(), attributeSchema.getTargetNamespace());
-                        }
-                    	
+                    	if(attributeSchema != schema) {
+	                        if(!importExists(schema, attributeSchema.getName())){                        
+	                            Import schemaImport = new Import();
+	                            schemaImport.setNamespace(attributeSchema.getTargetNamespace());
+	                            schemaImport.setSchemaLocation(attributeSchema.getName());                            
+	                            schema.getImports().add(schemaImport);
+	                            schema.getNamespaceResolver().put(schema.getNamespaceResolver().generatePrefix(), attributeSchema.getTargetNamespace());
+	                        }
+                    	}
                         Attribute reference = new Attribute();
                         //add an import here
                         String prefix = getPrefixForNamespace(attributeSchema.getTargetNamespace(), schema.getNamespaceResolver());
@@ -629,8 +635,15 @@ public class SchemaGenerator {
                     } else {
                         element.setType(typeName);
                     }
-
-                    if (!elementName.getNamespaceURI().equals("")) {
+                    
+                    String lookupNamespace = schema.getTargetNamespace();
+                    if(lookupNamespace == null){
+                    	lookupNamespace ="";
+                    }
+                    NamespaceInfo namespaceInfo = getNamespaceInfoForNamespace(lookupNamespace);     
+                    
+                    if((namespaceInfo.isElementFormQualified() && !elementName.getNamespaceURI().equals(lookupNamespace))
+                    		|| (!namespaceInfo.isElementFormQualified() && !elementName.getNamespaceURI().equals(""))){
                         Element reference = new Element();
                         reference.setMinOccurs(element.getMinOccurs());
                         reference.setMaxOccurs(element.getMaxOccurs());
