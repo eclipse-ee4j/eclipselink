@@ -105,6 +105,7 @@
             <contains string="${db.driver}" substring="oracle"/>
             <or>
                 <contains string="${server.name}" substring="weblogic"/>
+                <contains string="${server.name}" substring="websphere"/>
                 <contains string="${server.name}" substring="jboss"/>
             </or>
         </and>
