@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -145,7 +145,7 @@ public class SQLDeleteAllStatement extends SQLDeleteStatement {
             } else if (inheritanceExpression != null) {
                 writer.write(" WHERE ");
                 // Example: (PROJ_TYPE = 'L')
-                ExpressionSQLPrinter printer = new ExpressionSQLPrinter(session, getTranslationRow(), call, false);
+                ExpressionSQLPrinter printer = new ExpressionSQLPrinter(session, getTranslationRow(), call, false, getBuilder());
                 printer.setWriter(writer);
                 printer.printExpression(inheritanceExpression);
                 // The result is:

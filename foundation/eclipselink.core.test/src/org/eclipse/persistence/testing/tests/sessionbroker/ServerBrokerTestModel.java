@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -51,9 +51,7 @@ public class ServerBrokerTestModel extends TestModel {
     /**
      * Add a named query to a session Broker
      */
-    public
-
-    void addQuery1(SessionBroker broker) {
+    public void addQuery1(SessionBroker broker) {
         // Add a predefined query with argument for employee with first name Bob.
         ExpressionBuilder builder = new ExpressionBuilder();
         ReadAllQuery query = new ReadAllQuery(Employee.class, builder);
@@ -68,9 +66,7 @@ public class ServerBrokerTestModel extends TestModel {
     /**
      * Add a named query to a session Broker
      */
-    public
-
-    void addQuery2(SessionBroker broker) {
+    public void addQuery2(SessionBroker broker) {
         // Add a predefined query without argument for retrieving numbers with 613 area code.
         ExpressionBuilder builder = new ExpressionBuilder();
         ReadAllQuery query = new ReadAllQuery(PhoneNumber.class, builder);
@@ -87,6 +83,10 @@ public class ServerBrokerTestModel extends TestModel {
         addTest(new SessionBrokerPlatformTest());
         addTest(new ReadOnlyClassesInSessionBrokerTest());       
         addTest(new VerifyClientBrokerCreationTest());
+        
+        addTest(new SessionBrokerCustomFunctionTest(SessionBrokerCustomFunctionTest.READALLQUERY_TEST));
+        addTest(new SessionBrokerCustomFunctionTest(SessionBrokerCustomFunctionTest.UPDATEALLQUERY_TEST));
+        addTest(new SessionBrokerCustomFunctionTest(SessionBrokerCustomFunctionTest.DELETEALLQUERY_TEST));
     }
 
     /**
@@ -128,9 +128,7 @@ public class ServerBrokerTestModel extends TestModel {
     /**
      * Create the tables on both databases.
      */
-    public
-
-    void createTables() {
+    public void createTables() {
         SessionBroker broker = new SessionBroker();
 
         DatabaseSession session1 = new DatabaseSessionImpl(getLogin1());
@@ -238,9 +236,7 @@ public class ServerBrokerTestModel extends TestModel {
     /**
      * Replace the executor with the old session.
      */
-    public
-
-    void reset() {
+    public void reset() {
         try {
             if (getExecutor().getSession() instanceof SessionBroker) {
                 ((DatabaseSession)((ClientSession)((SessionBroker)getExecutor().getSession()).getSessionForName("broker1")).getParent()).logout();
@@ -254,9 +250,7 @@ public class ServerBrokerTestModel extends TestModel {
     /**
      * Replace the executor with the broker session.
      */
-    public
-
-    void setup() {
+    public void setup() {
         oldSession = getSession();
         getExecutor().setSession(buildBroker());
     }

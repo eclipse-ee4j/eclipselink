@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -40,7 +40,12 @@ public class ExpressionSQLPrinter {
      * is used to print all the primitive types.
      */
     protected AbstractSession session;
-
+    
+    /**
+     * Stores the current platform to access platform specific functions.
+     */
+    protected DatabasePlatform platform;
+    
     /**
      * Stores the call being created.
      */
@@ -66,11 +71,17 @@ public class ExpressionSQLPrinter {
     // Used in figuring out when to print a comma in the select line
     protected boolean isFirstElementPrinted;
 
-    public ExpressionSQLPrinter(AbstractSession session, AbstractRecord translationRow, SQLCall call, boolean printQualifiedNames) {
+    public ExpressionSQLPrinter(AbstractSession session, AbstractRecord translationRow, SQLCall call, boolean printQualifiedNames, ExpressionBuilder builder) {
         this.session = session;
         this.translationRow = translationRow;
         this.call = call;
         this.shouldPrintQualifiedNames = printQualifiedNames;
+        // reference session's platform directly if builder or builder's descriptor is null
+        if (builder == null || builder.getDescriptor() == null) {
+            this.platform = (DatabasePlatform) getSession().getPlatform();
+        } else {
+            this.platform = (DatabasePlatform) getSession().getPlatform(builder.getDescriptor().getJavaClass());
+        }
         this.requiresDistinct = false;
         isFirstElementPrinted = false;
     }
@@ -87,7 +98,7 @@ public class ExpressionSQLPrinter {
      * Return the database platform specific information.
      */
     public DatabasePlatform getPlatform() {
-        return session.getPlatform();
+        return this.platform;
     }
 
     protected AbstractSession getSession() {
