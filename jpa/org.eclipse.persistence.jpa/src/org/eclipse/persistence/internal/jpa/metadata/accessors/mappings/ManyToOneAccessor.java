@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -13,6 +13,8 @@
  *       - 218084: Implement metadata merging functionality between mapping files
  *     02/06/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 2)
+ *     03/27/2009-2.0 Guy Pelletier 
+ *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -84,11 +86,9 @@ public class ManyToOneAccessor extends ObjectAccessor {
     public void process() {
         // Initialize our mapping now with what we found.
         OneToOneMapping mapping = initOneToOneMapping();
-
+        setMapping(mapping);
+        
         // Now process the JoinColumns (if there are any) for this mapping.
         processOwningMappingKeys(mapping);
-        
-        // Add the mapping to the descriptor.
-        addMapping(mapping);
     }
 }

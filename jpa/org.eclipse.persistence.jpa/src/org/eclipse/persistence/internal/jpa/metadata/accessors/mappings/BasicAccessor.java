@@ -21,6 +21,8 @@
  *       - 248293: JPA 2.0 Element Collections (part 1)
  *     02/06/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 2)
+ *     03/27/2009-2.0 Guy Pelletier 
+ *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -47,13 +49,14 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.converters.EnumeratedMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.converters.LobMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.GeneratedValueMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.SequenceGeneratorMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.TableGeneratorMetadata;
 
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
-import org.eclipse.persistence.mappings.converters.Converter;
 
 /**
  * INTERNAL:
@@ -103,9 +106,8 @@ public class BasicAccessor extends DirectAccessor {
         m_column = new ColumnMetadata(getAnnotation(Column.class), accessibleObject, getAttributeName());
         
         // Set the mutable value if one is present.
-        Annotation mutable = getAnnotation(Mutable.class);
-        if (mutable != null) {
-            m_mutable = (Boolean) MetadataHelper.invokeMethod("value", mutable);
+        if (isAnnotationPresent(Mutable.class)) {
+            m_mutable = (Boolean) MetadataHelper.invokeMethod("value", getAnnotation(Mutable.class));
         }
         
         // Set the generated value if one is present.
@@ -138,11 +140,7 @@ public class BasicAccessor extends DirectAccessor {
      * annotation.
      */
     protected ColumnMetadata getColumn(String loggingCtx) {
-        if (m_column == null) {
-            return new ColumnMetadata(getAccessibleObject(), getAttributeName());
-        } else {
-            return m_column;
-        }
+        return m_column == null ? super.getColumn(loggingCtx) : m_column;
     }
 
     /**
@@ -254,6 +252,7 @@ public class BasicAccessor extends DirectAccessor {
         // be used in conjunction with a Lob, Temporal, Enumerated
         // or inferred to be used with a serialized mapping.
         DirectToFieldMapping mapping = new DirectToFieldMapping();
+        setMapping(mapping);
         
         // Process the @Column or column element if there is one.
         // A number of methods depend on this field so it must be
@@ -273,7 +272,7 @@ public class BasicAccessor extends DirectAccessor {
         mapping.setIsOptional(isOptional());
         mapping.setIsLazy(usesIndirection());
         
-        //Derived ID: set if this mapping has been marked as an ID 
+        // Derived ID: set if this mapping has been marked as an ID 
         mapping.setIsIDMapping(isId());
 
         // Will check for PROPERTY access.
@@ -283,7 +282,7 @@ public class BasicAccessor extends DirectAccessor {
         // value first. If none is found then we'll look for a JPA converter, 
         // that is, Enumerated, Lob and Temporal. With everything falling into 
         // a serialized mapping if no converter whatsoever is found.
-        processMappingConverter(mapping, getConvert());
+        processMappingValueConverter(mapping, getConvert(), getReferenceClass());
 
         // Process a mutable setting.
         if (m_mutable != null) {
@@ -306,9 +305,6 @@ public class BasicAccessor extends DirectAccessor {
         if (m_sequenceGenerator != null) {
             getProject().addSequenceGenerator(m_sequenceGenerator);
         }
-        
-        // Add the mapping to the descriptor.
-        addMapping(mapping);
     }
 
     /**
@@ -318,15 +314,15 @@ public class BasicAccessor extends DirectAccessor {
      * class is a valid enumerated type.
      */
     @Override
-    protected void processEnumerated(DatabaseMapping mapping) {
+    protected void processEnumerated(EnumeratedMetadata enumerated, DatabaseMapping mapping, Class referenceClass, boolean isForMapKey) {
         // If the raw class is a collection or map (with generics or not), we 
         // don't want to put a TypeConversionConverter on the mapping. Instead, 
         // we will want a serialized converter. For example, we could have 
         // an EnumSet<Enum> relation type.
-        if (isCollectionClass(getReferenceClass()) || isMapClass(getReferenceClass())) {
-            processSerialized(mapping);
+        if (isCollectionClass(referenceClass) || isMapClass(referenceClass)) {
+            processSerialized(mapping, referenceClass, isForMapKey);
         } else {
-            super.processEnumerated(mapping);
+            super.processEnumerated(enumerated, mapping, referenceClass, isForMapKey);
         }
     }
 
@@ -354,15 +350,14 @@ public class BasicAccessor extends DirectAccessor {
      * create a lob type mapping.
      */
     @Override
-    protected void processLob(DatabaseMapping mapping) {
+    protected void processLob(LobMetadata lob, DatabaseMapping mapping, Class referenceClass, boolean isForMapKey) {
         // If the raw class is a collection or map (with generics or not), we 
         // don't want to put a TypeConversionConverter on the mapping. Instead, 
         // we will want a serialized converter.
-        if (isCollectionClass(getReferenceClass()) || isMapClass(getReferenceClass())) {
-            setFieldClassification(mapping, java.sql.Blob.class);
-            processSerialized(mapping);
+        if (isCollectionClass(referenceClass) || isMapClass(referenceClass)) {
+            processSerialized(mapping, referenceClass, java.sql.Blob.class, isForMapKey);
         } else {
-            super.processLob(mapping);
+            super.processLob(lob, mapping, referenceClass, isForMapKey);
         }
     }
     
@@ -406,27 +401,6 @@ public class BasicAccessor extends DirectAccessor {
      */
     public void setColumn(ColumnMetadata column) {
         m_column = column;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public void setConverter(DatabaseMapping mapping, Converter converter) {
-        ((DirectToFieldMapping)mapping).setConverter(converter);
-    }
-
-    /**
-     * INTERNAL:
-     */
-    public void setConverterClassName(DatabaseMapping mapping, String converterClassName) {
-        ((DirectToFieldMapping)mapping).setConverterClassName(converterClassName);
-    }
-
-    /**
-     * INTERNAL:
-     */
-    public void setFieldClassification(DatabaseMapping mapping, Class classification) {
-        ((DirectToFieldMapping)mapping).setFieldClassification(classification);
     }
     
     /**

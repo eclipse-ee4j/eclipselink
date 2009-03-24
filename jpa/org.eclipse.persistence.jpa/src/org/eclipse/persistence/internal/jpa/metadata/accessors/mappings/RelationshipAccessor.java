@@ -15,6 +15,8 @@
  *       - 248293: JPA 2.0 Element Collections (part 1)
  *     02/06/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 2)
+ *     03/27/2009-2.0 Guy Pelletier 
+ *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -55,6 +57,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public abstract class RelationshipAccessor extends MappingAccessor {
+    private Boolean m_orphanRemoval; // TODO: Mapped but not processed. Supported on 1-1, 1-M and V1-1. Those accessors are responsible for processing the metadata from their annotations.
     private boolean m_privateOwned;
     private CascadeTypes m_cascadeTypes;
     protected Class m_referenceClass;
@@ -215,6 +218,14 @@ public abstract class RelationshipAccessor extends MappingAccessor {
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
+     */
+    public Boolean getOrphanRemoval() {
+        return m_orphanRemoval;
+    }
+    
+    /**
+     * INTERNAL:
      * Method to return an owner mapping. It will tell the owner class to
      * process itself if it hasn't already done so. Assumes that a mapped by
      * value has been specified and that a check against mappedByValue has been
@@ -308,6 +319,7 @@ public abstract class RelationshipAccessor extends MappingAccessor {
         if (fetchType == null) {
             fetchType = getDefaultFetchType();
         }
+        
         return fetchType.name().equals(FetchType.LAZY.name());
     }
     
@@ -337,14 +349,6 @@ public abstract class RelationshipAccessor extends MappingAccessor {
     
     /**
      * INTERNAL:
-     * Process the join column metadata. Will look for association overrides.
-     */    
-    protected List<JoinColumnMetadata> processJoinColumns() {
-        return super.processJoinColumns(m_joinColumns);
-    }
-    
-    /**
-     * INTERNAL:
      * Process a MetadataJoinTable.
      */
     protected void processJoinTable(ManyToManyMapping mapping) {
@@ -370,11 +374,11 @@ public abstract class RelationshipAccessor extends MappingAccessor {
         } else {
             defaultSourceFieldName = getDescriptor().getAlias();
         }
-        addManyToManyRelationKeyFields(processJoinColumns(m_joinTable.getJoinColumns(), getOwningDescriptor()), mapping, defaultSourceFieldName, getOwningDescriptor(), true);
+        addManyToManyRelationKeyFields(getJoinColumns(m_joinTable.getJoinColumns(), getOwningDescriptor()), mapping, defaultSourceFieldName, getOwningDescriptor(), true);
         
         // Add all the inverseJoinColumns (target foreign keys) to the mapping.
         String defaultTargetFieldName = getAttributeName();
-        addManyToManyRelationKeyFields(processJoinColumns(m_joinTable.getInverseJoinColumns(), getReferenceDescriptor()), mapping, defaultTargetFieldName, getReferenceDescriptor(), false);
+        addManyToManyRelationKeyFields(getJoinColumns(m_joinTable.getInverseJoinColumns(), getReferenceDescriptor()), mapping, defaultTargetFieldName, getReferenceDescriptor(), false);
     }
     
     /**
@@ -392,10 +396,10 @@ public abstract class RelationshipAccessor extends MappingAccessor {
             }
                 
             // If a Convert annotation is specified then throw an exception.
-            if (hasConvert()) {
+            if (hasConvert(false)) {
                 throw ValidationException.invalidMappingForConverter(getJavaClass(), getAttributeName());
             }
-                
+                        
             // Process the relationship accessor only if the target entity
             // is not a ValueHolderInterface.
             if (getTargetEntity() == ValueHolderInterface.class || (getTargetEntity() == void.class && getReferenceClass().getName().equalsIgnoreCase(ValueHolderInterface.class.getName()))) {
@@ -486,6 +490,14 @@ public abstract class RelationshipAccessor extends MappingAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public void setOrphanRemoval(Boolean orphanRemoval) {
+        m_orphanRemoval = orphanRemoval;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setPrivateOwned(String ignore) {
         m_privateOwned = true;
     }
@@ -508,7 +520,8 @@ public abstract class RelationshipAccessor extends MappingAccessor {
     /**
      * INTERNAL:
      */
-    public boolean usesIndirection() {
+    @Override
+    protected boolean usesIndirection() {
         // If eager weaving is enabled, indirection is always used.
         if (getProject().weaveEager()) {
             return true;

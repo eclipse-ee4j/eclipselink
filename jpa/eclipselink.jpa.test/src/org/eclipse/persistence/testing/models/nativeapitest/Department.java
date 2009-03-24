@@ -15,8 +15,6 @@ package org.eclipse.persistence.testing.models.nativeapitest;
 import java.io.Serializable;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Vector;
 
 /**

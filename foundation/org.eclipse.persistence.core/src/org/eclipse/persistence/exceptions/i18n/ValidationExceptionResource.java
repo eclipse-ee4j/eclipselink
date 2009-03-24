@@ -238,7 +238,7 @@ public class ValidationExceptionResource extends ListResourceBundle {
                                            { "7252", "There are multiple mapping files called [{1}] in classpath for persistence unit named [ {0} ]."},
                                            { "7253", "There is no mapping file called [{1}] in classpath for persistence unit named [{0}]."},
                                            { "7254", "The converter with name [{1}] in the class [{0}] has mapped the data value [{2}] to multiple object values. A conversion value must map each data value only once."},
-                                           { "7255", "The class [{0}] specifies a @Convert on [{1}]. This is invalid. A @Convert is only supported with a @Basic, @BasicCollection and @BasicMap."},
+                                           { "7255", "The class [{0}] specifies a @Convert on [{1}]. This is invalid. A @Convert is only supported with a @Basic, @BasicCollection, @BasicMap and @ElementCollection. For to-many mappings that use a map, you may use a @MapKeyConvert only."},
                                            { "7256", "The converter with name [{1}] used with the element [{2}] in the class [{0}] was not found within the persistence unit. Please ensure you have provided the correct converter name."},
                                            { "7257", "Unable to instantiate data value with type [{2}] and value [{1}] from the object type converter named [{0}]"},
                                            { "7258", "Unable to instantiate object value with type [{2}] and value [{1}] from the object type converter named [{0}]"},

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -13,11 +13,14 @@
  *       - 230213: ValidationException when mapping to attribute in MappedSuperClass
  *     06/20/2008-1.0 Guy Pelletier 
  *       - 232975: Failure when attribute type is generic
+ *     03/27/2009-2.0 Guy Pelletier 
+ *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
 import java.beans.PropertyChangeListener;
 import java.math.BigInteger;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
@@ -25,19 +28,49 @@ import java.util.Hashtable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Enumeration;
-import javax.persistence.*;
+
+import javax.persistence.AttributeOverride;
+import javax.persistence.Basic;
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.JoinColumn;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.MapKey;
+import javax.persistence.MapKeyClass;
+import javax.persistence.MapKeyColumn;
+import javax.persistence.MapKeyJoinColumn;
+import javax.persistence.MapKeyTemporal;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
+import javax.persistence.PostLoad;
+import javax.persistence.PostPersist;
+import javax.persistence.PostRemove;
+import javax.persistence.PostUpdate;
+import javax.persistence.PrePersist;
+import javax.persistence.PreRemove;
+import javax.persistence.PreUpdate;
+import javax.persistence.Table;
+import javax.persistence.TableGenerator;
+import javax.persistence.Version;
 
 import static javax.persistence.FetchType.*;
 import static javax.persistence.CascadeType.*;
 import static javax.persistence.GenerationType.*;
 import static javax.persistence.InheritanceType.*;
+import static javax.persistence.TemporalType.DATE;
+
 import org.eclipse.persistence.descriptors.changetracking.*;
 
 @Entity
 @Table(name="CMP3_CONSUMER")
 @Inheritance(strategy=JOINED)
 @DiscriminatorValue(value="BC")
-public class BeerConsumer implements ChangeTracker, Cloneable{
+public class BeerConsumer<T> implements ChangeTracker, Cloneable{
     public int post_load_count = 0;
     public int post_persist_count = 0;
     public int post_remove_count = 0;
@@ -53,8 +86,12 @@ public class BeerConsumer implements ChangeTracker, Cloneable{
     private List<Alpine> alpineBeersToConsume;
     private Collection<BlueLight> blueLightBeersToConsume;
     
+    private Map becksBeersToConsume;
     private Map<BigInteger, Blue> blueBeersToConsume;
     private Map<Integer, Canadian> canadianBeersToConsume;
+    private Map<CoronaTag, Corona> coronaBeersToConsume;
+    private Map<Date, Heineken> heinekenBeersToConsume;
+    private Map<T, RedStripe> redStripeBeersToConsume;
     private Map<Integer, Certification> certifications;
     private Map<TelephoneNumberPK, TelephoneNumber> telephoneNumbers;
     
@@ -73,9 +110,12 @@ public class BeerConsumer implements ChangeTracker, Cloneable{
         super();
         alpineBeersToConsume = new Vector<Alpine>();
         blueLightBeersToConsume = new Vector<BlueLight>();
-        
+        becksBeersToConsume = new Hashtable<BecksTag, Becks>();
         blueBeersToConsume = new Hashtable<BigInteger, Blue>();
         canadianBeersToConsume = new Hashtable<Integer, Canadian>();
+        coronaBeersToConsume = new Hashtable<CoronaTag, Corona>();
+        heinekenBeersToConsume = new Hashtable<Date, Heineken>();
+        redStripeBeersToConsume = new Hashtable<T, RedStripe>();
         certifications = new Hashtable<Integer, Certification>();
         telephoneNumbers = new Hashtable<TelephoneNumberPK, TelephoneNumber>();
     }
@@ -89,6 +129,11 @@ public class BeerConsumer implements ChangeTracker, Cloneable{
         alpine.setBeerConsumer(this);
         ((Vector) alpineBeersToConsume).insertElementAt(alpine, index);
     }
+        
+    public void addBecksBeerToConsume(Becks becks, BecksTag becksTag) {
+        becks.setBeerConsumer(this);
+        becksBeersToConsume.put(becksTag, becks);
+    }
     
     public void addBlueBeerToConsume(Blue blue) {
         blue.setBeerConsumer(this);
@@ -98,6 +143,20 @@ public class BeerConsumer implements ChangeTracker, Cloneable{
     public void addBlueLightBeerToConsume(BlueLight blueLight) {
         blueLight.setBeerConsumer(this);
         ((Vector) blueLightBeersToConsume).add(blueLight);
+    }
+    
+    public void addCoronaBeerToConsume(Corona corona, CoronaTag coronaTag) {
+        corona.setBeerConsumer(this);
+        coronaBeersToConsume.put(coronaTag, corona);
+    }
+    
+    public void addHeinekenBeerToConsume(Heineken heineken, Date date) {
+        heineken.setBeerConsumer(this);
+        heinekenBeersToConsume.put(date, heineken);
+    }
+    
+    public void addRedStripeBeersToConsume(RedStripe redStripe, T t) {
+        redStripeBeersToConsume.put(t, redStripe);
     }
     
     public Object clone() throws CloneNotSupportedException {
@@ -139,6 +198,13 @@ public class BeerConsumer implements ChangeTracker, Cloneable{
         return (Alpine) ((Vector) alpineBeersToConsume).elementAt(index);
     }
     
+    @OneToMany(targetEntity=Becks.class, mappedBy="beerConsumer", cascade=ALL)
+    @MapKeyClass(BecksTag.class)
+    @MapKeyJoinColumn(name="TAG_ID", referencedColumnName="ID")
+    public Map getBecksBeersToConsume() {
+        return becksBeersToConsume;
+    }
+    
     @OneToMany(mappedBy="beerConsumer", cascade=ALL)
     @MapKey(name="uniqueKey")
     public Map<BigInteger, Blue> getBlueBeersToConsume() {
@@ -161,6 +227,20 @@ public class BeerConsumer implements ChangeTracker, Cloneable{
     public Map<Integer, Certification> getCertifications() {
         return certifications;
     }
+    
+    @OneToMany(mappedBy="beerConsumer", cascade=ALL)
+    // MapKeyClass to be picked up
+    @AttributeOverride(name="number", column=@Column(name="TAG_NUMBER"))
+    public Map<CoronaTag, Corona> getCoronaBeersToConsume() {
+        return coronaBeersToConsume;
+    }
+    
+    @OneToMany(mappedBy="beerConsumer", cascade=ALL, fetch=EAGER)
+    @MapKeyColumn(name="BOTTLED_DATE")
+    @MapKeyTemporal(DATE)
+    public Map<Date, Heineken> getHeinekenBeersToConsume() {
+        return heinekenBeersToConsume;
+    }
    
     @Id
     @GeneratedValue(strategy=TABLE, generator="BEER_CONSUMER_TABLE_GENERATOR")
@@ -177,6 +257,17 @@ public class BeerConsumer implements ChangeTracker, Cloneable{
     @Basic
     public String getName() {
         return name;
+    }
+    
+    @ElementCollection
+    // Map key class will get figured out through generic types.
+    @MapKeyColumn(name="RS_KEY")
+    @CollectionTable(name="CONSUMER_REDSTRIPES", joinColumns=@JoinColumn(name="C_ID", referencedColumnName="ID"))
+    // They better pass in the same type in this case ...
+    // ExpertBeerConsumer -> String
+    // NoviceBeerConsumer -> Integer
+    public Map<T, RedStripe> getRedStripes() {
+        return redStripeBeersToConsume;
     }
     
     @OneToMany(mappedBy="beerConsumer", cascade=ALL, fetch=EAGER)
@@ -271,6 +362,10 @@ public class BeerConsumer implements ChangeTracker, Cloneable{
         this.alpineBeersToConsume = alpineBeersToConsume;
     }
     
+    public void setBecksBeersToConsume(Map becksBeersToConsume) {
+        this.becksBeersToConsume = becksBeersToConsume;
+    }
+    
     public void setBlueBeersToConsume(Map<BigInteger, Blue> blueBeersToConsume) {
         this.blueBeersToConsume = blueBeersToConsume;
     }
@@ -287,12 +382,24 @@ public class BeerConsumer implements ChangeTracker, Cloneable{
         this.certifications = certifications;
     }
     
+    public void setCoronaBeersToConsume(Map<CoronaTag, Corona> coronaBeersToConsume) {
+        this.coronaBeersToConsume = coronaBeersToConsume;
+    }
+    
+    public void setHeinekenBeersToConsume(Map<Date, Heineken> heinekenBeersToConsume) {
+        this.heinekenBeersToConsume = heinekenBeersToConsume;
+    }
+    
     public void setId(Integer id) {
         this.id = id;
     }
     
     public void setName(String name) {
         this.name = name;
+    }
+    
+    public void setRedStripes(Map<T, RedStripe> redStripeBeersToConsume) {
+        this.redStripeBeersToConsume = redStripeBeersToConsume;
     }
     
     public void setTelephoneNumbers(Map<TelephoneNumberPK, TelephoneNumber> telephoneNumbers) {

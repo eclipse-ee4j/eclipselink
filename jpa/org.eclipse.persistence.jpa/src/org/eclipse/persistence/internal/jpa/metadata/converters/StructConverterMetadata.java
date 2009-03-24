@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -10,7 +10,9 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
- *       - 218084: Implement metadata merging functionality between mapping files 
+ *       - 218084: Implement metadata merging functionality between mapping files
+ *     03/27/2009-2.0 Guy Pelletier 
+ *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes 
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
@@ -20,7 +22,7 @@ import java.sql.Types;
 import org.eclipse.persistence.config.StructConverterType;
 import org.eclipse.persistence.exceptions.ValidationException;
 
-import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.DirectAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 
 
@@ -102,8 +104,8 @@ public class StructConverterMetadata extends AbstractConverterMetadata {
     /**
      * INTERNAL: 
      */
-    public void process(DatabaseMapping mapping, DirectAccessor accessor) {
-        if (mapping.isAbstractDirectMapping()){
+    public void process(DatabaseMapping mapping, MappingAccessor accessor, Class referenceClass, boolean isForMapKey) {
+        if (mapping.isAbstractDirectMapping()) {
             AbstractDirectMapping directMapping = ((AbstractDirectMapping)mapping); 
             directMapping.setFieldType(Types.STRUCT);
             directMapping.setConverter(null);

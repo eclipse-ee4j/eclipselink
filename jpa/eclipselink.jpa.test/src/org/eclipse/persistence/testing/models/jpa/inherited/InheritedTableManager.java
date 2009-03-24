@@ -19,6 +19,8 @@
  *       - 248293: JPA 2.0 Element Collections (part 1)   
  *     02/06/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 2)
+ *     03/27/2009-2.0 Guy Pelletier 
+ *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
@@ -34,7 +36,8 @@ public class InheritedTableManager extends TableCreator {
     public InheritedTableManager() {
         setName("EJB3BeerProject");
 
-        addTableDefinition(build_BEER_CONSUMER_Table());
+        addTableDefinition(build_BEER_CONSUMER_Table());        
+        addTableDefinition(build_BEER_CONSUMER_REDSTRIPES_Table());
         
         addTableDefinition(build_EXPERT_BEER_CONSUMER_Table());
         addTableDefinition(build_EXPERT_BEER_CONSUMER_AWARDS_Table());
@@ -51,8 +54,12 @@ public class InheritedTableManager extends TableCreator {
         addTableDefinition(build_NOVICE_BEER_CONSUMER_RECORDS_Table());
         
         addTableDefinition(build_ALPINE_Table());
+        addTableDefinition(build_BECKS_Table());
+        addTableDefinition(build_BECKS_TAG_Table());
         addTableDefinition(build_BLUE_Table());
         addTableDefinition(build_CANADIAN_Table());
+        addTableDefinition(build_CORONA_Table());
+        addTableDefinition(build_HEINEKEN_Table());
         
         addTableDefinition(build_CERTIFICATION_Table());
         addTableDefinition(build_SERIALNUMBER_Table());
@@ -96,15 +103,15 @@ public class InheritedTableManager extends TableCreator {
         BEST_BEFORE_DATE_field.setShouldAllowNull(true);
         table.addField(BEST_BEFORE_DATE_field);
         
-        FieldDefinition FLAVOR_field = new FieldDefinition();
-        FLAVOR_field.setName("CLASSIFICATION");
-        FLAVOR_field.setTypeName("NUMERIC");
-        FLAVOR_field.setSize(15);
-        FLAVOR_field.setIsPrimaryKey(false);
-        FLAVOR_field.setUnique(false);
-        FLAVOR_field.setIsIdentity(false);
-        FLAVOR_field.setShouldAllowNull(true);
-        table.addField(FLAVOR_field);
+        FieldDefinition CLASSIFICATION_field = new FieldDefinition();
+        CLASSIFICATION_field.setName("CLASSIFICATION");
+        CLASSIFICATION_field.setTypeName("NUMERIC");
+        CLASSIFICATION_field.setSize(15);
+        CLASSIFICATION_field.setIsPrimaryKey(false);
+        CLASSIFICATION_field.setUnique(false);
+        CLASSIFICATION_field.setIsIdentity(false);
+        CLASSIFICATION_field.setShouldAllowNull(true);
+        table.addField(CLASSIFICATION_field);
         
         FieldDefinition BEER_CONSUMER_ID_field = new FieldDefinition();
         BEER_CONSUMER_ID_field.setName("C_ID");
@@ -138,6 +145,92 @@ public class InheritedTableManager extends TableCreator {
         fieldINSPECTIONDATES.setShouldAllowNull(true);
         table.addField(fieldINSPECTIONDATES);
 
+        return table;
+    }
+    
+    public static TableDefinition build_BECKS_Table() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_BECKS");
+    
+        FieldDefinition ID_field = new FieldDefinition();
+        ID_field.setName("ID");
+        ID_field.setTypeName("NUMERIC");
+        ID_field.setSize(15);
+        ID_field.setIsPrimaryKey(true);
+        ID_field.setUnique(false);
+        ID_field.setIsIdentity(false);
+        ID_field.setShouldAllowNull(false); 
+        table.addField(ID_field);
+    
+        FieldDefinition ALCOHOL_CONTENT_field = new FieldDefinition();
+        ALCOHOL_CONTENT_field.setName("ALCOHOL_CONTENT");
+        ALCOHOL_CONTENT_field.setTypeName("DOUBLE PRECIS");
+        ALCOHOL_CONTENT_field.setSize(15);
+        ALCOHOL_CONTENT_field.setIsPrimaryKey(false);
+        ALCOHOL_CONTENT_field.setUnique(false);
+        ALCOHOL_CONTENT_field.setIsIdentity(false);
+        ALCOHOL_CONTENT_field.setShouldAllowNull(true);
+        table.addField(ALCOHOL_CONTENT_field);
+
+        FieldDefinition BECKS_TAG_field = new FieldDefinition();
+        BECKS_TAG_field.setName("TAG_ID");
+        BECKS_TAG_field.setTypeName("NUMERIC");
+        BECKS_TAG_field.setSize(15);
+        BECKS_TAG_field.setIsPrimaryKey(false);
+        BECKS_TAG_field.setUnique(false);
+        BECKS_TAG_field.setIsIdentity(false);
+        BECKS_TAG_field.setShouldAllowNull(true);
+        BECKS_TAG_field.setForeignKeyFieldName("CMP3_BECKS_TAG.ID");
+        table.addField(BECKS_TAG_field);
+        
+        FieldDefinition BEER_CONSUMER_ID_field = new FieldDefinition();
+        BEER_CONSUMER_ID_field.setName("C_ID");
+        BEER_CONSUMER_ID_field.setTypeName("NUMERIC");
+        BEER_CONSUMER_ID_field.setSize(15);
+        BEER_CONSUMER_ID_field.setIsPrimaryKey(false);
+        BEER_CONSUMER_ID_field.setUnique(false);
+        BEER_CONSUMER_ID_field.setIsIdentity(false);
+        BEER_CONSUMER_ID_field.setShouldAllowNull(true);
+        BEER_CONSUMER_ID_field.setForeignKeyFieldName("CMP3_CONSUMER.ID");
+        table.addField(BEER_CONSUMER_ID_field);
+        
+        FieldDefinition VERSION_field = new FieldDefinition();
+        VERSION_field.setName("VERSION");
+        VERSION_field.setTypeName("DATETIME");
+        VERSION_field.setSize(23);
+        VERSION_field.setIsPrimaryKey(false);
+        VERSION_field.setUnique(false);
+        VERSION_field.setIsIdentity(false);
+        VERSION_field.setShouldAllowNull(true);
+        table.addField(VERSION_field);
+
+        return table;
+    }
+    
+    public static TableDefinition build_BECKS_TAG_Table() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_BECKS_TAG");
+    
+        FieldDefinition ID_field = new FieldDefinition();
+        ID_field.setName("ID");
+        ID_field.setTypeName("NUMERIC");
+        ID_field.setSize(15);
+        ID_field.setIsPrimaryKey(true);
+        ID_field.setUnique(false);
+        ID_field.setIsIdentity(false);
+        ID_field.setShouldAllowNull(false); 
+        table.addField(ID_field);
+
+        FieldDefinition CALL_NUMBER_field = new FieldDefinition();
+        CALL_NUMBER_field.setName("CALL_NUMBER");
+        CALL_NUMBER_field.setTypeName("VARCHAR");
+        CALL_NUMBER_field.setSize(40);
+        CALL_NUMBER_field.setShouldAllowNull(true);
+        CALL_NUMBER_field.setIsPrimaryKey(false);
+        CALL_NUMBER_field.setUnique(false);
+        CALL_NUMBER_field.setIsIdentity(false);
+        table.addField(CALL_NUMBER_field);
+        
         return table;
     }
     
@@ -185,6 +278,44 @@ public class InheritedTableManager extends TableCreator {
         DTYPE_field.setUnique(false);
         DTYPE_field.setShouldAllowNull(true);
         table.addField(DTYPE_field);
+
+        return table;
+    }
+    
+    public static TableDefinition build_BEER_CONSUMER_REDSTRIPES_Table() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CONSUMER_REDSTRIPES");
+    
+        FieldDefinition ALCOHOL_CONTENT_field = new FieldDefinition();
+        ALCOHOL_CONTENT_field.setName("ALCOHOLCONTENT");
+        ALCOHOL_CONTENT_field.setTypeName("DOUBLE PRECIS");
+        ALCOHOL_CONTENT_field.setSize(15);
+        ALCOHOL_CONTENT_field.setIsPrimaryKey(false);
+        ALCOHOL_CONTENT_field.setUnique(false);
+        ALCOHOL_CONTENT_field.setIsIdentity(false);
+        ALCOHOL_CONTENT_field.setShouldAllowNull(true);
+        table.addField(ALCOHOL_CONTENT_field);
+        
+        FieldDefinition RS_KEY_field = new FieldDefinition();
+        RS_KEY_field.setName("RS_KEY");
+        RS_KEY_field.setTypeName("VARCHAR");
+        RS_KEY_field.setSize(10);
+        RS_KEY_field.setShouldAllowNull(true);
+        RS_KEY_field.setIsPrimaryKey(false);
+        RS_KEY_field.setUnique(true);
+        RS_KEY_field.setIsIdentity(false);
+        table.addField(RS_KEY_field);
+        
+        FieldDefinition BEER_CONSUMER_ID_field = new FieldDefinition();
+        BEER_CONSUMER_ID_field.setName("C_ID");
+        BEER_CONSUMER_ID_field.setTypeName("NUMERIC");
+        BEER_CONSUMER_ID_field.setSize(15);
+        BEER_CONSUMER_ID_field.setIsPrimaryKey(false);
+        BEER_CONSUMER_ID_field.setUnique(false);
+        BEER_CONSUMER_ID_field.setIsIdentity(false);
+        BEER_CONSUMER_ID_field.setShouldAllowNull(true);
+        BEER_CONSUMER_ID_field.setForeignKeyFieldName("CMP3_CONSUMER.ID");
+        table.addField(BEER_CONSUMER_ID_field);
 
         return table;
     }
@@ -337,6 +468,74 @@ public class InheritedTableManager extends TableCreator {
         return table;
     }
     
+    public static TableDefinition build_CORONA_Table() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_CORONA");
+    
+        FieldDefinition ID_field = new FieldDefinition();
+        ID_field.setName("ID");
+        ID_field.setTypeName("NUMERIC");
+        ID_field.setSize(15);
+        ID_field.setIsPrimaryKey(true);
+        ID_field.setUnique(false);
+        ID_field.setIsIdentity(false);
+        ID_field.setShouldAllowNull(false); 
+        table.addField(ID_field);
+    
+        FieldDefinition ALCOHOL_CONTENT_field = new FieldDefinition();
+        ALCOHOL_CONTENT_field.setName("ALCOHOL_CONTENT");
+        ALCOHOL_CONTENT_field.setTypeName("DOUBLE PRECIS");
+        ALCOHOL_CONTENT_field.setSize(15);
+        ALCOHOL_CONTENT_field.setIsPrimaryKey(false);
+        ALCOHOL_CONTENT_field.setUnique(false);
+        ALCOHOL_CONTENT_field.setIsIdentity(false);
+        ALCOHOL_CONTENT_field.setShouldAllowNull(true);
+        table.addField(ALCOHOL_CONTENT_field);
+        
+        FieldDefinition TAG_NUMBER_field = new FieldDefinition();
+        TAG_NUMBER_field.setName("TAG_NUMBER");
+        TAG_NUMBER_field.setTypeName("NUMERIC");
+        TAG_NUMBER_field.setSize(15);
+        TAG_NUMBER_field.setIsPrimaryKey(false);
+        TAG_NUMBER_field.setUnique(false);
+        TAG_NUMBER_field.setIsIdentity(false);
+        TAG_NUMBER_field.setShouldAllowNull(true); 
+        table.addField(TAG_NUMBER_field);
+
+        FieldDefinition TAG_CODE_field = new FieldDefinition();
+        TAG_CODE_field.setName("TAG_CODE");
+        TAG_CODE_field.setTypeName("VARCHAR");
+        TAG_CODE_field.setSize(10);
+        TAG_CODE_field.setShouldAllowNull(true);
+        TAG_CODE_field.setIsPrimaryKey(false);
+        TAG_CODE_field.setUnique(false);
+        TAG_CODE_field.setIsIdentity(false);
+        table.addField(TAG_CODE_field);
+        
+        FieldDefinition BEER_CONSUMER_ID_field = new FieldDefinition();
+        BEER_CONSUMER_ID_field.setName("C_ID");
+        BEER_CONSUMER_ID_field.setTypeName("NUMERIC");
+        BEER_CONSUMER_ID_field.setSize(15);
+        BEER_CONSUMER_ID_field.setIsPrimaryKey(false);
+        BEER_CONSUMER_ID_field.setUnique(false);
+        BEER_CONSUMER_ID_field.setIsIdentity(false);
+        BEER_CONSUMER_ID_field.setShouldAllowNull(true);
+        BEER_CONSUMER_ID_field.setForeignKeyFieldName("CMP3_CONSUMER.ID");
+        table.addField(BEER_CONSUMER_ID_field);
+        
+        FieldDefinition VERSION_field = new FieldDefinition();
+        VERSION_field.setName("VERSION");
+        VERSION_field.setTypeName("DATETIME");
+        VERSION_field.setSize(23);
+        VERSION_field.setIsPrimaryKey(false);
+        VERSION_field.setUnique(false);
+        VERSION_field.setIsIdentity(false);
+        VERSION_field.setShouldAllowNull(true);
+        table.addField(VERSION_field);
+
+        return table;
+    }
+    
     public static TableDefinition build_CERTIFICATION_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_CERTIFICATION");
@@ -400,6 +599,64 @@ public class InheritedTableManager extends TableCreator {
         IQ_field.setIsIdentity(false);
         table.addField(IQ_field);
         
+        return table;
+    }
+    
+    public static TableDefinition build_HEINEKEN_Table() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_HEINEKEN");
+    
+        FieldDefinition ID_field = new FieldDefinition();
+        ID_field.setName("ID");
+        ID_field.setTypeName("NUMERIC");
+        ID_field.setSize(15);
+        ID_field.setIsPrimaryKey(true);
+        ID_field.setUnique(false);
+        ID_field.setIsIdentity(false);
+        ID_field.setShouldAllowNull(false); 
+        table.addField(ID_field);
+    
+        FieldDefinition ALCOHOL_CONTENT_field = new FieldDefinition();
+        ALCOHOL_CONTENT_field.setName("ALCOHOL_CONTENT");
+        ALCOHOL_CONTENT_field.setTypeName("DOUBLE PRECIS");
+        ALCOHOL_CONTENT_field.setSize(15);
+        ALCOHOL_CONTENT_field.setIsPrimaryKey(false);
+        ALCOHOL_CONTENT_field.setUnique(false);
+        ALCOHOL_CONTENT_field.setIsIdentity(false);
+        ALCOHOL_CONTENT_field.setShouldAllowNull(true);
+        table.addField(ALCOHOL_CONTENT_field);
+        
+        FieldDefinition BOTTLED_DATE_field = new FieldDefinition();
+        BOTTLED_DATE_field.setName("BOTTLED_DATE");
+        BOTTLED_DATE_field.setTypeName("DATETIME");
+        BOTTLED_DATE_field.setSize(23);
+        BOTTLED_DATE_field.setIsPrimaryKey(false);
+        BOTTLED_DATE_field.setUnique(false);
+        BOTTLED_DATE_field.setIsIdentity(false);
+        BOTTLED_DATE_field.setShouldAllowNull(true);
+        table.addField(BOTTLED_DATE_field);
+        
+        FieldDefinition BEER_CONSUMER_ID_field = new FieldDefinition();
+        BEER_CONSUMER_ID_field.setName("C_ID");
+        BEER_CONSUMER_ID_field.setTypeName("NUMERIC");
+        BEER_CONSUMER_ID_field.setSize(15);
+        BEER_CONSUMER_ID_field.setIsPrimaryKey(false);
+        BEER_CONSUMER_ID_field.setUnique(false);
+        BEER_CONSUMER_ID_field.setIsIdentity(false);
+        BEER_CONSUMER_ID_field.setShouldAllowNull(true);
+        BEER_CONSUMER_ID_field.setForeignKeyFieldName("CMP3_CONSUMER.ID");
+        table.addField(BEER_CONSUMER_ID_field);
+        
+        FieldDefinition VERSION_field = new FieldDefinition();
+        VERSION_field.setName("VERSION");
+        VERSION_field.setTypeName("DATETIME");
+        VERSION_field.setSize(23);
+        VERSION_field.setIsPrimaryKey(false);
+        VERSION_field.setUnique(false);
+        VERSION_field.setIsIdentity(false);
+        VERSION_field.setShouldAllowNull(true);
+        table.addField(VERSION_field);
+
         return table;
     }
     

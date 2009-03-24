@@ -11,11 +11,14 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     01/28/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 1)
+ *     03/27/2009-2.0 Guy Pelletier 
+ *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.xml.inherited;
 
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 
@@ -27,8 +30,15 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.server.ServerSession;
+
+import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.xml.inherited.Alpine;
+import org.eclipse.persistence.testing.models.jpa.xml.inherited.Becks;
+import org.eclipse.persistence.testing.models.jpa.xml.inherited.BecksTag;
 import org.eclipse.persistence.testing.models.jpa.xml.inherited.BeerConsumer;
+import org.eclipse.persistence.testing.models.jpa.xml.inherited.Corona;
+import org.eclipse.persistence.testing.models.jpa.xml.inherited.CoronaTag;
+import org.eclipse.persistence.testing.models.jpa.xml.inherited.Heineken;
 import org.eclipse.persistence.testing.models.jpa.xml.inherited.Location;
 import org.eclipse.persistence.testing.models.jpa.xml.inherited.NoviceBeerConsumer;
 import org.eclipse.persistence.testing.models.jpa.xml.inherited.ExpertBeerConsumer;
@@ -36,7 +46,6 @@ import org.eclipse.persistence.testing.models.jpa.xml.inherited.Record;
 import org.eclipse.persistence.testing.models.jpa.xml.inherited.Canadian;
 import org.eclipse.persistence.testing.models.jpa.xml.inherited.Certification;
 import org.eclipse.persistence.testing.models.jpa.xml.inherited.InheritedTableManager;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.xml.inherited.TelephoneNumber;
  
 /**
@@ -75,6 +84,12 @@ public class EntityMappingsInheritedJUnitTestCase extends JUnitTestCase {
         suite.addTest(new EntityMappingsInheritedJUnitTestCase("testNamedNativeQueryCertifications"));
         suite.addTest(new EntityMappingsInheritedJUnitTestCase("testUpdateBeerConsumer"));
         suite.addTest(new EntityMappingsInheritedJUnitTestCase("testDeleteBeerConsumer"));
+        // 1-M map using direct key
+        suite.addTest(new EntityMappingsInheritedJUnitTestCase("testHeinekenBeerConsumer"));
+        // 1-M map using entity key
+        suite.addTest(new EntityMappingsInheritedJUnitTestCase("testBecksBeerConsumer"));
+        // 1-M map using embeddable key
+        suite.addTest(new EntityMappingsInheritedJUnitTestCase("testCoronaBeerConsumer"));
         
         return suite;
     }
@@ -86,6 +101,111 @@ public class EntityMappingsInheritedJUnitTestCase extends JUnitTestCase {
         DatabaseSession session = JUnitTestCase.getServerSession();
         new InheritedTableManager().replaceTables(session);
         clearCache();
+    }
+    
+    public void testBecksBeerConsumer() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        BeerConsumer initialBC = new BeerConsumer();
+        int beerConsumerId = 0;
+        
+        try {
+            Becks becks1  = new Becks();
+            becks1.setAlcoholContent(5.1);
+            BecksTag becksTag1 = new BecksTag();
+            becksTag1.setCallNumber("0A.789");
+            em.persist(becksTag1);
+            
+            Becks becks2  = new Becks();
+            becks2.setAlcoholContent(5.1);
+            BecksTag becksTag2 = new BecksTag();
+            becksTag2.setCallNumber("BX.521");
+            em.persist(becksTag2);
+            
+            Becks becks3  = new Becks();
+            becks3.setAlcoholContent(5.1);
+            BecksTag becksTag3 = new BecksTag();
+            becksTag3.setCallNumber("UY.429");
+            em.persist(becksTag3);
+            
+            initialBC.setName("Becks Consumer");
+            initialBC.addBecksBeerToConsume(becks1, becksTag1);
+            initialBC.addBecksBeerToConsume(becks2, becksTag2);
+            initialBC.addBecksBeerToConsume(becks3, becksTag3);
+            
+            em.persist(initialBC);
+            beerConsumerId = initialBC.getId();
+            
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            closeEntityManager(em);
+            fail("An exception was caught during create operation: [" + e.getMessage() + "]");
+        }
+        
+        closeEntityManager(em);
+        
+        clearCache();
+        em = createEntityManager();
+        BeerConsumer refreshedBC = em.find(BeerConsumer.class, beerConsumerId);       
+        assertTrue("The beer consumer read back did not match the original", getServerSession().compareObjects(initialBC, refreshedBC));
+    }
+    
+    public void testCoronaBeerConsumer() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        BeerConsumer initialBC = new BeerConsumer();
+        int beerConsumerId = 0;
+        
+        try {
+            Corona corona1  = new Corona();
+            corona1.setAlcoholContent(5.3);
+            CoronaTag coronaTag1 = new CoronaTag();
+            coronaTag1.setCode("0A");
+            coronaTag1.setNumber(789);
+            
+            Corona corona2  = new Corona();
+            corona2.setAlcoholContent(5.3);
+            CoronaTag coronaTag2 = new CoronaTag();
+            coronaTag2.setCode("BX");
+            coronaTag2.setNumber(521);
+            
+            Corona corona3  = new Corona();
+            corona3.setAlcoholContent(5.3);
+            CoronaTag coronaTag3 = new CoronaTag();
+            coronaTag3.setCode("UY");
+            coronaTag3.setNumber(429);
+            
+            initialBC.setName("Corona Consumer");
+            initialBC.addCoronaBeerToConsume(corona1, coronaTag1);
+            initialBC.addCoronaBeerToConsume(corona2, coronaTag2);
+            initialBC.addCoronaBeerToConsume(corona3, coronaTag3);
+            
+            em.persist(initialBC);
+            beerConsumerId = initialBC.getId();
+            
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            closeEntityManager(em);
+            fail("An exception was caught during create operation: [" + e.getMessage() + "]");
+        }
+        
+        closeEntityManager(em);
+        
+        clearCache();
+        em = createEntityManager();
+        BeerConsumer refreshedBC = em.find(BeerConsumer.class, beerConsumerId);
+        System.out.println(refreshedBC.getCoronaBeersToConsume().size());
+        assertTrue("The beer consumer read back did not match the original", getServerSession().compareObjects(initialBC, refreshedBC));
     }
     
     public void testCreateBeerConsumer() {
@@ -328,6 +448,57 @@ public class EntityMappingsInheritedJUnitTestCase extends JUnitTestCase {
         
         assertTrue("Incorrect number of records returned.", consumer.getRecords().size() == 2);
         // don't individually check them ... assume they are correct.
+    }
+    
+    public void testHeinekenBeerConsumer() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        BeerConsumer initialBC = new BeerConsumer();
+        int beerConsumerId = 0;
+        
+        try {
+            Heineken heineken1  = new Heineken();
+            heineken1.setAlcoholContent(5.0);
+            
+            Heineken heineken2  = new Heineken();
+            heineken2.setAlcoholContent(5.0);
+            
+            Heineken heineken3  = new Heineken();
+            heineken3.setAlcoholContent(5.0);
+            
+            initialBC.setName("Heineken Consumer");
+            Calendar cal = Calendar.getInstance();
+            cal.set(2008, 12, 12);
+            initialBC.addHeinekenBeerToConsume(heineken1, cal.getTime());
+            cal.set(2009, 1, 1);
+            initialBC.addHeinekenBeerToConsume(heineken2, cal.getTime());
+            cal.set(2009, 2, 2);
+            initialBC.addHeinekenBeerToConsume(heineken3, cal.getTime());
+            
+            em.persist(initialBC);
+            beerConsumerId = initialBC.getId();
+            
+            this.getServerSession().setLogLevel(0);
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            closeEntityManager(em);
+            fail("An exception was caught during create operation: [" + e.getMessage() + "]");
+        }
+        
+        closeEntityManager(em);
+        
+        clearCache();
+        em = createEntityManager();
+        BeerConsumer refreshedBC = em.find(BeerConsumer.class, beerConsumerId);
+        System.out.println(refreshedBC.getHeinekenBeersToConsume().size());
+        System.out.println(initialBC.getHeinekenBeersToConsume().size());
+        assertTrue("The beer consumer read back did not match the original", getServerSession().compareObjects(initialBC, refreshedBC));
+        
     }
     
     public void testNamedNativeQueryBeerConsumers() {

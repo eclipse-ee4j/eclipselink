@@ -25,6 +25,8 @@
  *       - 248293: JPA 2.0 Element Collections (part 2)
  *     02/26/2009-2.0 Guy Pelletier 
  *       - 264001: dot notation for mapped-by and order-by
+ *     03/27/2009-2.0 Guy Pelletier 
+ *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -72,6 +74,23 @@ public class EmbeddableAccessor extends ClassAccessor {
      * Process the items of interest on an embeddable class.
      */
     @Override
+    public void preProcess() {
+        setIsPreProcessed();
+        
+        // Step 1 - process the embeddable specifics, like access type, 
+        // metadata complete etc. which we need before proceeding any further.
+        processEmbeddable();
+
+        // Step 2 - Add the accessors and converters on this embeddable.
+        addAccessors();
+        addConverters();
+    }
+    
+    /**
+     * INTERNAL:
+     * Process the items of interest on an embeddable class.
+     */
+    @Override
     public void process() {
         setIsProcessed();
         
@@ -79,17 +98,9 @@ public class EmbeddableAccessor extends ClassAccessor {
         if (isAnnotationPresent(Cache.class)) {
             throw ValidationException.cacheNotSupportedWithEmbeddable(getJavaClass());
         } 
-        
-        // Process the Embeddable metadata first. Need to ensure we determine 
-        // the access, metadata complete and exclude default mappings before we 
-        // process further.
-        processEmbeddable();
     
         // Process the customizer metadata.
         processCustomizer();
-        
-        // Process the converter metadata.
-        processConverters();   
         
         // Process the copy policy metadata.
         processCopyPolicy();
@@ -132,7 +143,7 @@ public class EmbeddableAccessor extends ClassAccessor {
             // in this case (that is, if they opt to share an embeddable).
             if (! hasAccess()) {
                 // We inherited our access from our owning entity.
-                if (getDescriptor().getDefaultAccess() != owningDescriptor.getDefaultAccess()) {
+                if (! getDescriptor().getDefaultAccess().equals(owningDescriptor.getDefaultAccess())) {
                     throw ValidationException.conflictingAccessTypeForEmbeddable(getJavaClass(), usesPropertyAccess(), owningDescriptor.getJavaClass(), owningDescriptor.getClassAccessor().usesPropertyAccess());
                 }
             }
@@ -151,7 +162,7 @@ public class EmbeddableAccessor extends ClassAccessor {
      * INTERNAL:
      * Process the access type of this embeddable.
      */
-    public void processAccessType() {
+    protected void processAccessType() {
         // Set the default access type on the descriptor and log a message
         // to the user if we are defaulting the access type for this 
         // embeddable to that default.

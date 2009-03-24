@@ -349,19 +349,6 @@ public class EntityListener extends DescriptorEventAdapter {
         
         return m_overriddenEvents.get(eventCode);
     }
-
-    /**
-     * INTERNAL: TODO: What was this written for??
-     */
-    /*
-    protected boolean isSessionPostBuildEvent(DescriptorEvent event) {
-        if (((String) m_eventStrings.get(event.getEventCode())).equals(POST_BUILD)) {
-            return ! event.getSession().isUnitOfWork();
-        }
-        
-        return false;
-    }
-    */
     
     /**
      * INTERNAL:

@@ -22,6 +22,8 @@
  *       - 248293: JPA 2.0 Element Collections (part 2)
  *     02/25/2009-2.0 Guy Pelletier 
  *       - 265359: JPA 2.0 Element Collections - Metadata processing portions
+ *     03/27/2009-2.0 Guy Pelletier 
+ *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -46,25 +48,40 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.indirection.TransparentIndirectionPolicy;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.AccessMethodsMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.PropertyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EmbeddableAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataMethod;
 import org.eclipse.persistence.internal.jpa.metadata.columns.AssociationOverrideMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.AttributeOverrideMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.converters.AbstractConverterMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.converters.ClassInstanceMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.converters.EnumeratedMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.converters.LobMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.converters.SerializedMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.converters.TemporalMetadata;
 import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
+import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
 
+import org.eclipse.persistence.mappings.AggregateObjectMapping;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectMapMapping;
+import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.mappings.EmbeddableMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
+import org.eclipse.persistence.mappings.foundation.MapComponentMapping;
+import org.eclipse.persistence.mappings.foundation.MapKeyMapping;
 
 /**
  * INTERNAL:
@@ -74,11 +91,22 @@ import org.eclipse.persistence.mappings.OneToOneMapping;
  * @since EclipseLink 1.0
  */
 public abstract class MappingAccessor extends MetadataAccessor {
+    // Reserved converter names
+    private static final String CONVERT_NONE = "none";
+    private static final String CONVERT_SERIALIZED = "serialized";
+    private static final String CONVERT_CLASS_INSTANCE = "class-instance";
+
+    // Used for looking up attribute overrides for a map accessor. 
+    private static final String KEY_DOT_NOTATION = "key.";
+    private static final String VALUE_DOT_NOTATION = "value.";
+
+    private final static String DEFAULT_MAP_KEY_COLUMN_SUFFIX = "_KEY";
+
     private AccessMethodsMetadata m_accessMethods;
     private ClassAccessor m_classAccessor;
     private DatabaseMapping m_mapping;
     private Map<String, PropertyMetadata> m_properties = new HashMap<String, PropertyMetadata>();
-    
+
     /**
      * INTERNAL:
      */
@@ -96,30 +124,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
     protected MappingAccessor(String xmlElement) {
         super(xmlElement);
     }
-    
-    /**
-     * INTERNAL:
-     * This will do two things:
-     * 1 - process any common level metadata for all mappings.
-     * 2 - add the mapping to the internal descriptor.
-     * 3 - store the actual database mapping associated with this accessor.
-     * 
-     * Calling this method is necessary since it will help in determining
-     * if the accessor has processed since we keep a reference back to the 
-     * database mapping for this accessor.
-     */
-    protected void addMapping(DatabaseMapping mapping) {
-        // Before adding the mapping to the descriptor, process the properties
-        // for this mapping (if any)
-        processProperties(mapping);
-        
-        // Add the mapping to the class descriptor.
-        getDescriptor().getClassDescriptor().addMapping(mapping);
-        
-        // Keep a reference back to this mapping for quick look up.
-        m_mapping = mapping;
-    }
-    
+
     /**
      * INTERNAL:
      * Process an attribute override for either an embedded object mapping, or
@@ -154,363 +159,10 @@ public abstract class MappingAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
     public AccessMethodsMetadata getAccessMethods(){
         return m_accessMethods;
-    }
-    
-    /**
-     * INTERNAL:
-     * Returns the class accessor on which this mapping was defined.
-     */
-    public ClassAccessor getClassAccessor(){
-        return m_classAccessor;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    protected Enum getDefaultFetchType() {
-        return FetchType.valueOf("EAGER"); 
-    }
-    
-    /**
-     * INTERNAL:
-     * Returns the get method name of a method accessor. Note, this method
-     * should not be called when processing field access.
-     */
-    protected String getGetMethodName() {
-        if (m_accessMethods != null && m_accessMethods.getGetMethodName() != null) {
-            return m_accessMethods.getGetMethodName();
-        }
-        
-        return getAccessibleObjectName();
-    }
-    
-    /**
-     * INTERNAL:
-     * Return the mapping that this accessor is associated to.
-     */
-    public DatabaseMapping getMapping(){
-        return m_mapping;
-    }
-    
-    /**
-     * INTERNAL:
-     * Return the mapping join fetch type.
-     */
-    protected int getMappingJoinFetchType(Enum joinFetchType) {
-        if (joinFetchType == null) {
-            return ForeignReferenceMapping.NONE;
-        } else if (joinFetchType.name().equals(JoinFetchType.INNER.name())) {
-            return ForeignReferenceMapping.INNER_JOIN;
-        }
-
-        return ForeignReferenceMapping.OUTER_JOIN;
-    }
-    
-    /**
-     * INTERNAL:
-     * Return the raw class for this accessor. 
-     * Eg. For an accessor with a type of java.util.Collection<Employee>, this 
-     * method will return java.util.Collection
-     */
-    public Class getRawClass() {
-        return getAccessibleObject().getRawClass(getDescriptor());   
-    }
-    
-    /**
-     * INTERNAL: 
-     * Return the reference class for this accessor. By default the reference
-     * class is the raw class. Some accessors may need to override this
-     * method to drill down further. That is, try to extract a reference class
-     * from generics.
-     */
-    public Class getReferenceClass() {
-        return getAccessibleObject().getRawClass(getDescriptor());
-    }
-    
-    /**
-     * INTERNAL:
-     * Attempts to return a reference class from a generic specification. Note,
-     * this method may return null.
-     */
-    public Class getReferenceClassFromGeneric() {
-        return getAccessibleObject().getReferenceClassFromGeneric(getDescriptor());
-    }
-
-    /**
-     * INTERNAL:
-     * Return the reference class name for this accessor.
-     */
-    public String getReferenceClassName() {
-        return getReferenceClass().getName();
-    }
-    
-    /**
-     * INTERNAL:
-     * Return the reference metadata descriptor for this accessor.
-     */
-    public MetadataDescriptor getReferenceDescriptor() {
-        return getReferenceDescriptor(getReferenceClassName());
-    }
-    
-    /**
-     * INTERNAL:
-     * Return the reference metadata descriptor for this accessor.
-     */
-    public MetadataDescriptor getReferenceDescriptor(String referenceClassName) {
-        ClassAccessor accessor = getProject().getAccessor(referenceClassName);
-        
-        if (accessor == null) {
-            throw ValidationException.classNotListedInPersistenceUnit(referenceClassName);
-        }
-        
-        return accessor.getDescriptor();
-    }
-    
-    /**
-     * INTERNAL:
-     * Returns the set method name of a method accessor. Note, this method
-     * should not be called when processing field access.
-     */
-    protected String getSetMethodName() {
-        if (m_accessMethods != null && m_accessMethods.getSetMethodName() != null) {
-            return m_accessMethods.getSetMethodName();
-        }
-
-        return ((MetadataMethod) getAccessibleObject()).getSetMethodName();
-    }
-    
-    /**
-     * INTERNAL:
-     * Method to check if an annotated element has a Column annotation.
-     */
-    protected boolean hasColumn() {
-        return isAnnotationPresent(Column.class);
-    }
-    
-    /**
-     * INTERNAL:
-     * Method to check if an annotated element has a convert specified.
-     */
-    protected boolean hasConvert() {
-        return isAnnotationPresent(Convert.class);
-    }
-    
-    /**
-     * INTERNAL:
-     * Method to check if this accessor has a ReturnInsert annotation.
-     */
-    protected boolean hasReturnInsert() {
-        return isAnnotationPresent(ReturnInsert.class);
-    }
-    
-    /**
-     * INTERNAL:
-     * Method to check if this accessor has a ReturnUpdate annotation.
-     */
-    protected boolean hasReturnUpdate() {
-        return isAnnotationPresent(ReturnUpdate.class);
-    }
-    
-    /**
-     * INTERNAL: 
-     * Init an xml mapping accessor with its necessary components. 
-     */
-    public void initXMLMappingAccessor(ClassAccessor classAccessor) {
-        m_classAccessor = classAccessor;
-        
-        initXMLAccessor(classAccessor.getDescriptor(), classAccessor.getProject());   
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    @Override
-    public void initXMLObject(MetadataAccessibleObject accessibleObject) {
-        super.initXMLObject(accessibleObject);
-        
-        // Initialize single objects.
-        initXMLObject(m_accessMethods, accessibleObject);
-    }
-    
-    /**
-     * INTERNAL:
-     * Return true if this accessor represents a basic collection mapping.
-     */
-    public boolean isBasicCollection() {
-        return false;
-    }
-    
-    /**
-     * INTERNAL:
-     * Return true is this accessor is a derived id accessor.
-     * @see ObjectAccessor
-     */
-    public boolean isDerivedId() {
-        return false;
-    }
-    
-    /**
-     * INTERNAL:
-     * Return true if this accessor represents a direct collection mapping, 
-     * which include basic collection, basic map and element collection 
-     * accessors.
-     */
-    public boolean isDirectCollection() {
-        return false;
-    }
-    
-    /**
-     * INTERNAL:
-     * Return true if this accessor represents an element collection that
-     * contains embeddable objects.
-     */
-    public boolean isDirectEmbeddableCollection() {
-        return false;
-    }
-    
-    /** 
-     * INTERNAL:
-     * Return true if this accessor represents a collection accessor.
-     */
-    public boolean isCollectionAccessor() {
-        return false;
-    }
-    
-    /**
-     * INTERNAL:
-     * Return true if this accessor represents an aggregate mapping.
-     */
-    public boolean isEmbedded() {
-        return false;
-    }
-    
-    /**
-     * INTERNAL:
-     * Checks if this accessor is part of the Id
-     */
-    public boolean isId(){
-        return false;
-    }
-    
-    /**
-     * INTERNAL:
-     * Return true if this accessor represents an aggregate id mapping.
-     */
-    public boolean isEmbeddedId() {
-        return false;
-    }
-    
-    /**
-     * INTERNAL:
-     * Return true if this accessor represents a m-m relationship.
-     */
-    public boolean isManyToMany() {
-        return false;
-    }
-    
-    /**
-     * INTERNAL:
-     * Return true if this accessor represents a m-1 relationship.
-     */
-    public boolean isManyToOne() {
-        return false;
-    }
-    
-    /**
-     * INTERNAL:
-     * Return true if this accessor represents a 1-m relationship.
-     */
-    public boolean isOneToMany() {
-        return false;
-    }
-    
-    /**
-     * INTERNAL:
-     * Return true if this accessor represents a 1-1 relationship.
-     */
-    public boolean isOneToOne() {
-        return false;
-    }
-    
-    /**
-     * INTERNAL:
-     * Return true if this accessor has been processed. If there is a mapping
-     * set, we have processed this accessor.
-     */
-    @Override
-    public boolean isProcessed() {
-        return m_mapping != null;
-    }
-    
-    /**
-     * INTERNAL:
-     * Return true if this accessor method represents a relationship.
-     */
-    public boolean isRelationship() {
-        return isManyToOne() || isManyToMany() || isOneToMany() || isOneToOne() || isVariableOneToOne();
-    }
-    
-    /**
-     * INTERNAL:
-     * Return true if this accessor represents a transient mapping.
-     */
-    public boolean isTransient() {
-        return false;
-    }
-    
-    /**
-     * INTERNAL:
-     * Return true if this accessor represents a variable one to one mapping.
-     */
-    public boolean isVariableOneToOne() {
-        return false;
-    }
-    
-    /**
-     * INTERNAL:
-     * Process an association override for either an embedded object mapping, 
-     * or an element collection mapping containing embeddable objects.
-     */
-    protected void processAssociationOverride(AssociationOverrideMetadata associationOverride, EmbeddableMapping embeddableMapping, DatabaseMapping mapping, DatabaseTable defaultTable, MetadataDescriptor aggregateDescriptor) {
-        // AssociationOverride.name(), the name of the attribute we want to
-        // override.
-        String attributeName = associationOverride.getName();
-        
-        if (mapping != null && mapping.isOneToOneMapping()) {
-            MappingAccessor accessor = aggregateDescriptor.getAccessorFor(mapping.getAttributeName());
-            MetadataDescriptor referenceDescriptor = accessor.getReferenceDescriptor();
-            
-            if (associationOverride.hasJoinColumns()) {
-                // The process join columns will validate the join column specifics.
-                for (JoinColumnMetadata joinColumn : processJoinColumns(associationOverride.getJoinColumns(), referenceDescriptor)) {
-                    DatabaseField pkField = joinColumn.getPrimaryKeyField();
-                    pkField.setTable(referenceDescriptor.getPrimaryKeyTable());
-                    DatabaseField fkField = ((OneToOneMapping) mapping).getTargetToSourceKeyFields().get(pkField);
-                
-                    if (fkField == null) {
-                        // TODO: invalid pk field specified
-                        // TODO: composite primary key case (and correct table)
-                    } else {
-                        // Make sure we have a table set on the association override 
-                        // field, otherwise use the default table provided.
-                        DatabaseField translationFKField = joinColumn.getForeignKeyField();
-                        if (! translationFKField.hasTableName()) {
-                            translationFKField.setTable(defaultTable);
-                        }
-                    
-                        embeddableMapping.addFieldNameTranslation(translationFKField.getQualifiedName(),fkField.getName());
-                    }
-                }
-            } else {
-                // TODO:
-                throw new RuntimeException("Join table from association override not supported yet");
-            }
-        } else {
-            throw ValidationException.embeddableAssociationOverrideNotFound(getReferenceDescriptor().getJavaClass(), attributeName, getJavaClass(), getAttributeName());
-        }
     }
     
     /**
@@ -519,9 +171,8 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * overriding any association overrides where necessary with descriptor
      * level association overrides.
      * TODO: This code should look for duplicates within the same list.
-     * TODO: Merge this method with processAttributeOverrides into a common method?
      */
-    protected Map<String, AssociationOverrideMetadata> processAssociationOverrides(List<AssociationOverrideMetadata> associationOverrides) {
+    protected Map<String, AssociationOverrideMetadata> getAssociationOverrides(List<AssociationOverrideMetadata> associationOverrides) {
         Map<String, AssociationOverrideMetadata> associationOverridesMap = new HashMap<String, AssociationOverrideMetadata>();
         
         for (AssociationOverrideMetadata associationOverride : associationOverrides) {
@@ -569,13 +220,28 @@ public abstract class MappingAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
+     * Return the attribute override for this accessor.
+     */
+    protected AttributeOverrideMetadata getAttributeOverride(String loggingCtx) {
+        if (loggingCtx.equals(MetadataLogger.MAP_KEY_COLUMN)) {
+            return getDescriptor().getAttributeOverrideFor(KEY_DOT_NOTATION + getAttributeName());
+        } else if (loggingCtx.equals(MetadataLogger.VALUE_COLUMN)) {
+            if (getDescriptor().hasAttributeOverrideFor(VALUE_DOT_NOTATION + getAttributeName())) {
+                return getDescriptor().getAttributeOverrideFor(VALUE_DOT_NOTATION + getAttributeName());
+            }
+        } 
+            
+        return getDescriptor().getAttributeOverrideFor(getAttributeName());
+    }
+    
+    /**
+     * INTERNAL:
      * Process the list of attribute overrides into a map, merging and 
      * overriding any attribute overrides where necessary with descriptor
      * level attribute overrides.
      * TODO: This code should look for duplicates within the same list.
-     * TODO: Merge this method with processAssociationOverrides into a common method?
      */
-    protected Map<String, AttributeOverrideMetadata> processAttributeOverrides(List<AttributeOverrideMetadata> attributeOverrides) {
+    protected Map<String, AttributeOverrideMetadata> getAttributeOverrides(List<AttributeOverrideMetadata> attributeOverrides) {
         HashMap<String, AttributeOverrideMetadata> attributeOverridesMap = new HashMap<String, AttributeOverrideMetadata>();
         
         for (AttributeOverrideMetadata attributeOverride : attributeOverrides) {
@@ -623,24 +289,107 @@ public abstract class MappingAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
-     * Process the join column metadata. Will look for association overrides.
-     */    
-    protected List<JoinColumnMetadata> processJoinColumns(List<JoinColumnMetadata> joinColumns) { 
-        if (getDescriptor().hasAssociationOverrideFor(getAttributeName())) {
-            return processJoinColumns(getDescriptor().getAssociationOverrideFor(getAttributeName()).getJoinColumns(), getReferenceDescriptor());
-        } else {
-            return processJoinColumns(joinColumns, getReferenceDescriptor());
-        }
+     * Returns the class accessor on which this mapping was defined.
+     */
+    public ClassAccessor getClassAccessor(){
+        return m_classAccessor;
     }
     
     /**
      * INTERNAL:
-     * Process the join column metadata. Note: if an accessor requires a check 
-     * for association overrides, it should call processJoinColumns(),
-     * otherwise, calling this method directly assumes your accessor doesn't 
-     * support association overrides.
+     * Subclasses should override this method to return the appropriate
+     * column for their mapping.
+     * @see BasicAccessor
+     * @see BasicCollectionAccessor
+     * @see BasicMapAccessor
+     * @see ElementCollectionAccessor
+     * @see CollectionAccessor
+     */
+    protected ColumnMetadata getColumn(String loggingCtx) {
+        return new ColumnMetadata(getAccessibleObject(), getAttributeName());
+    }
+    
+    /**
+     *  INTERNAL:
+     * Process column metadata details into a database field. This will set 
+     * correct metadata and log defaulting messages to the user. It also looks 
+     * for an attribute override.
+     * 
+     * This method will call getColumn() which assumes the subclasses will
+     * return the appropriate ColumnMetadata to process based on the context
+     * provided.
+     * 
+     * @See BasicCollectionAccessor and BasicMapAccessor.
+     */
+    protected DatabaseField getDatabaseField(DatabaseTable defaultTable, String loggingCtx) {
+        // Check if we have an attribute override first, otherwise process for a column
+        ColumnMetadata column  = hasAttributeOverride(loggingCtx) ? getAttributeOverride(loggingCtx).getColumn() : getColumn(loggingCtx);
+           
+        // Get the actual database field and apply any defaults.
+        DatabaseField field = column.getDatabaseField();
+           
+        // Make sure there is a table name on the field.
+        if (field.getTableName().equals("")) {
+            field.setTable(defaultTable);
+        }
+           
+        // Set the correct field name, defaulting and logging when necessary.
+        String defaultName = column.getUpperCaseAttributeName();
+           
+        // If this is for a map key column, append a suffix.
+        if (loggingCtx.equals(MetadataLogger.MAP_KEY_COLUMN)) {
+            defaultName += DEFAULT_MAP_KEY_COLUMN_SUFFIX;
+        }
+           
+        field.setName(getName(field.getName(), defaultName, loggingCtx));
+                       
+        return field;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected Enum getDefaultFetchType() {
+        return FetchType.valueOf("EAGER"); 
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the enumerated metadata for this accessor.
+     * @see DirectAccessor
+     * @see ElementCollectionAccessor
+     * @see CollectionAccessor
+     */
+    public EnumeratedMetadata getEnumerated(boolean isForMapKey) {
+        return null;
+    }
+    
+    /**
+     * INTERNAL:
+     * Returns the get method name of a method accessor. Note, this method
+     * should not be called when processing field access.
+     */
+    protected String getGetMethodName() {
+        if (m_accessMethods != null && m_accessMethods.getGetMethodName() != null) {
+            return m_accessMethods.getGetMethodName();
+        }
+        
+        return getAccessibleObjectName();
+    }
+    
+    /**
+     * INTERNAL:
+     * Process the join column metadata. This method will look for association
+     * overrides and use those instead if some are available.
      */    
-    protected List<JoinColumnMetadata> processJoinColumns(List<JoinColumnMetadata> joinColumns, MetadataDescriptor descriptor) {
+    protected List<JoinColumnMetadata> getJoinColumns(List<JoinColumnMetadata> potentialJoinColumns, MetadataDescriptor descriptor) {
+        List<JoinColumnMetadata> joinColumns;
+        if (getDescriptor().hasAssociationOverrideFor(getAttributeName())) {
+            joinColumns = getDescriptor().getAssociationOverrideFor(getAttributeName()).getJoinColumns();
+        } else {
+            joinColumns = potentialJoinColumns;
+        }
+        
         if (joinColumns.isEmpty()) {
             if (descriptor.hasCompositePrimaryKey()) {
                 // Add a default one for each part of the composite primary
@@ -690,6 +439,919 @@ public abstract class MappingAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
+     * Return the lob metadata for this accessor.
+     * @see DirectAccessor
+     */
+    public LobMetadata getLob(boolean isForMapKey) {
+        return null;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the mapping that this accessor is associated to.
+     */
+    public DatabaseMapping getMapping(){
+        return m_mapping;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the mapping join fetch type.
+     */
+    protected int getMappingJoinFetchType(Enum joinFetchType) {
+        if (joinFetchType == null) {
+            return ForeignReferenceMapping.NONE;
+        } else if (joinFetchType.name().equals(JoinFetchType.INNER.name())) {
+            return ForeignReferenceMapping.INNER_JOIN;
+        }
+
+        return ForeignReferenceMapping.OUTER_JOIN;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the map key reference class for this accessor if applicable. It 
+     * will try to extract a reference class from a generic specification. If 
+     * no generics are used, then it will return void.class. This avoids NPE's 
+     * when processing JPA converters that can default (Enumerated and Temporal) 
+     * based on the reference class.
+     */
+    public Class getMapKeyReferenceClass() {
+        if (isMapAccessor()) {
+            Class referenceClass = getAccessibleObject().getMapKeyClass(getDescriptor());
+        
+            if (referenceClass == null) {
+                throw ValidationException.unableToDetermineMapKeyClass(getAttributeName(), getJavaClass());
+            }
+        
+            return referenceClass;
+        } else {
+            return void.class;
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the raw class for this accessor. 
+     * Eg. For an accessor with a type of java.util.Collection<Employee>, this 
+     * method will return java.util.Collection
+     */
+    public Class getRawClass() {
+        return getAccessibleObject().getRawClass(getDescriptor());   
+    }
+    
+    /**
+     * INTERNAL: 
+     * Return the reference class for this accessor. By default the reference
+     * class is the raw class. Some accessors may need to override this
+     * method to drill down further. That is, try to extract a reference class
+     * from generics.
+     */
+    public Class getReferenceClass() {
+        return getAccessibleObject().getRawClass(getDescriptor());
+    }
+    
+    /**
+     * INTERNAL:
+     * Attempts to return a reference class from a generic specification. Note,
+     * this method may return null.
+     */
+    public Class getReferenceClassFromGeneric() {
+        return getAccessibleObject().getReferenceClassFromGeneric(getDescriptor());
+    }
+
+    /**
+     * INTERNAL:
+     * Return the reference class name for this accessor.
+     */
+    public String getReferenceClassName() {
+        return getReferenceClass().getName();
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the reference metadata descriptor for this accessor.
+     */
+    public MetadataDescriptor getReferenceDescriptor() {
+        ClassAccessor accessor = getProject().getAccessor(getReferenceClassName());
+        
+        if (accessor == null) {
+            throw ValidationException.classNotListedInPersistenceUnit(getReferenceClassName());
+        }
+        
+        return accessor.getDescriptor();
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the reference descriptors table. By default it is the primary
+     * key table off the reference descriptor. Subclasses that care to return
+     * a different class should override this method.
+     * @see DirectCollectionAccessor
+     * @see ManyToManyAccessor
+     */
+    protected DatabaseTable getReferenceDatabaseTable() {
+        return getReferenceDescriptor().getPrimaryKeyTable();
+    }
+    
+    /**
+     * INTERNAL:
+     * Returns the set method name of a method accessor. Note, this method
+     * should not be called when processing field access.
+     */
+    protected String getSetMethodName() {
+        if (m_accessMethods != null && m_accessMethods.getSetMethodName() != null) {
+            return m_accessMethods.getSetMethodName();
+        }
+
+        return ((MetadataMethod) getAccessibleObject()).getSetMethodName();
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the temporal metadata for this accessor.
+     * @see DirectAccessor
+     * @see CollectionAccessor
+     */
+    public TemporalMetadata getTemporal(boolean isForMapKey) {
+        return null;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if we have an attribute override for this accessor.
+     */
+    protected boolean hasAttributeOverride(String loggingCtx) {
+        if (loggingCtx.equals(MetadataLogger.MAP_KEY_COLUMN)) {
+            return getDescriptor().hasAttributeOverrideFor(KEY_DOT_NOTATION + getAttributeName());
+        } else if (loggingCtx.equals(MetadataLogger.VALUE_COLUMN)) {
+            if (getDescriptor().hasAttributeOverrideFor(VALUE_DOT_NOTATION + getAttributeName())) {
+                return true;
+            }
+        } 
+            
+        return getDescriptor().hasAttributeOverrideFor(getAttributeName());
+    }
+    
+    /**
+     * INTERNAL:
+     * Method to check if an annotated element has a Column annotation.
+     */
+    protected boolean hasColumn() {
+        return isAnnotationPresent(Column.class);
+    }
+    
+    /**
+     * INTERNAL:
+     * Method to check if an annotated element has a convert specified. In XML
+     * we can restrict where converts can be specified.
+     * @see DirectAccessor
+     * @see BasicMapAccessor
+     * @see ElementCollectionAccessor
+     * @see CollectionAccessor
+     */
+    protected boolean hasConvert(boolean isForMapKey) {
+        return isAnnotationPresent(Convert.class);
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor has temporal metadata.
+     * @see DirectAccessor
+     * @see ElementCollectionAccessor
+     * @see CollectionAccessor
+     */
+    protected boolean hasEnumerated(boolean isForMapKey) {
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor has lob metadata.
+     * @see DirectAccessor
+     * @see ElementCollectionAccessor
+     * @see CollectionAccessor
+     */
+    protected boolean hasLob(boolean isForMapKey) {
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
+     * Method to check if this accessor has a ReturnInsert annotation.
+     */
+    protected boolean hasReturnInsert() {
+        return isAnnotationPresent(ReturnInsert.class);
+    }
+    
+    /**
+     * INTERNAL:
+     * Method to check if this accessor has a ReturnUpdate annotation.
+     */
+    protected boolean hasReturnUpdate() {
+        return isAnnotationPresent(ReturnUpdate.class);
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor has temporal metadata.
+     * @see DirectAccessor
+     * @see ElementCollectionAccessor
+     * @see CollectionAccessor
+     */
+    public boolean hasTemporal(boolean isForMapKey) {
+        return false;
+    }
+    
+    /**
+     * INTERNAL: 
+     * Init an xml mapping accessor with its necessary components. 
+     */
+    public void initXMLMappingAccessor(ClassAccessor classAccessor) {
+        m_classAccessor = classAccessor;
+        
+        initXMLAccessor(classAccessor.getDescriptor(), classAccessor.getProject());   
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public void initXMLObject(MetadataAccessibleObject accessibleObject) {
+        super.initXMLObject(accessibleObject);
+        
+        // Initialize single objects.
+        initXMLObject(m_accessMethods, accessibleObject);
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor represents a basic collection mapping.
+     */
+    public boolean isBasicCollection() {
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor represents a basic map mapping.
+     */
+    public boolean isBasicMap() {
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true is this accessor is a derived id accessor.
+     * @see ObjectAccessor
+     */
+    public boolean isDerivedId() {
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor represents a direct collection mapping, 
+     * which include basic collection, basic map and element collection 
+     * accessors.
+     */
+    public boolean isDirectCollection() {
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor represents an element collection that
+     * contains embeddable objects.
+     */
+    public boolean isDirectEmbeddableCollection() {
+        return false;
+    }
+    
+    /** 
+     * INTERNAL:
+     * Return true if this accessor represents a collection accessor.
+     */
+    public boolean isCollectionAccessor() {
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor represents an aggregate mapping.
+     */
+    public boolean isEmbedded() {
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor represents an aggregate id mapping.
+     */
+    public boolean isEmbeddedId() {
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this represents an enum type mapping. Will return true
+     * if the accessor's reference class is an enum or if enumerated metadata
+     * exists.
+     */
+    protected boolean isEnumerated(Class referenceClass, boolean isForMapKey) {
+        if (hasConvert(isForMapKey)) {
+            // If we have an @Enumerated with a @Convert, the @Convert takes
+            // precedence and we will ignore the @Enumerated and log a message.
+            if (hasEnumerated(isForMapKey)) {
+                getLogger().logWarningMessage(MetadataLogger.IGNORE_ENUMERATED, getJavaClass(), getAnnotatedElement());
+            }
+            
+            return false;
+        } else {
+            return hasEnumerated(isForMapKey) || EnumeratedMetadata.isValidEnumeratedType(referenceClass);
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor is part of the id.
+     */
+    public boolean isId(){
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor represents a BLOB/CLOB mapping.
+     */
+    protected boolean isLob(Class referenceClass, boolean isForMapKey) {
+        if (hasConvert(isForMapKey)) {
+            // If we have a Lob specified with a Convert, the Convert takes 
+            // precedence and we will ignore the Lob and log a message.
+            if (hasLob(isForMapKey)) {
+                getLogger().logWarningMessage(MetadataLogger.IGNORE_LOB, getJavaClass(), getAnnotatedElement());
+            }
+            
+            return false;
+        } else {
+            return hasLob(isForMapKey);
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor represents a m-m relationship.
+     */
+    public boolean isManyToMany() {
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor represents a m-1 relationship.
+     */
+    public boolean isManyToOne() {
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor uses a Map.
+     */
+    public boolean isMapAccessor() {
+        return getAccessibleObject().isSupportedMapClass(getDescriptor());
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor is a mapped key map accessor.
+     */
+    public boolean isMappedKeyMapAccessor() {
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor represents a 1-m relationship.
+     */
+    public boolean isOneToMany() {
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor represents a 1-1 relationship.
+     */
+    public boolean isOneToOne() {
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
+     * Returns true is the given class is primitive wrapper type.
+     */
+    protected boolean isPrimitiveWrapperClass(Class cls) {
+        return Long.class.isAssignableFrom(cls) ||
+               Short.class.isAssignableFrom(cls) ||
+               Float.class.isAssignableFrom(cls) ||
+               Byte.class.isAssignableFrom(cls) ||
+               Double.class.isAssignableFrom(cls) ||
+               Number.class.isAssignableFrom(cls) ||
+               Boolean.class.isAssignableFrom(cls) ||
+               Integer.class.isAssignableFrom(cls) ||
+               Character.class.isAssignableFrom(cls) ||
+               String.class.isAssignableFrom(cls) ||
+               java.math.BigInteger.class.isAssignableFrom(cls) ||
+               java.math.BigDecimal.class.isAssignableFrom(cls) ||
+               java.util.Date.class.isAssignableFrom(cls) ||
+               java.util.Calendar.class.isAssignableFrom(cls);
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor has been processed. If there is a mapping
+     * set, we have processed this accessor.
+     */
+    @Override
+    public boolean isProcessed() {
+        return m_mapping != null;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor method represents a relationship.
+     */
+    public boolean isRelationship() {
+        return isManyToOne() || isManyToMany() || isOneToMany() || isOneToOne() || isVariableOneToOne();
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor represents a serialized mapping.
+     */
+    public boolean isSerialized(Class referenceClass, boolean isForMapKey) {
+        if (hasConvert(isForMapKey)) {
+            getLogger().logWarningMessage(MetadataLogger.IGNORE_SERIALIZED, getJavaClass(), getAnnotatedElement());
+            return false;
+        } else {
+            return isValidSerializedType(referenceClass);
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this represents a temporal type mapping.
+     */
+    protected boolean isTemporal(Class referenceClass, boolean isForMapKey) {
+        if (hasConvert(isForMapKey)) {
+            // If we have a Temporal specification with a Convert specification, 
+            // the Convert takes precedence and we will ignore the Temporal and 
+            // log a message.
+            if (hasTemporal(isForMapKey)) {
+                getLogger().logWarningMessage(MetadataLogger.IGNORE_TEMPORAL, getJavaClass(), getAnnotatedElement());
+            }
+            
+            return false;
+        } else {
+            return hasTemporal(isForMapKey) || TemporalMetadata.isValidTemporalType(referenceClass);
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor represents a transient mapping.
+     */
+    public boolean isTransient() {
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
+     * Returns true if the given class is valid for SerializedObjectMapping.
+     */
+    protected boolean isValidSerializedType(Class cls) {
+        if (cls.isPrimitive()) {
+            return false;
+        }
+        
+        if (isPrimitiveWrapperClass(cls)) {    
+            return false;
+        }   
+        
+        if (LobMetadata.isValidLobType(cls)) {
+            return false;
+        }
+        
+        if (TemporalMetadata.isValidTemporalType(cls)) {
+            return false;
+        }
+     
+        return true;   
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor represents a variable one to one mapping.
+     */
+    public boolean isVariableOneToOne() {
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
+     * Process an association override for either an embedded object mapping, 
+     * or a map mapping (element-collection, 1-M and M-M) containing an
+     * embeddable object as the value or key. 
+     */
+    protected void processAssociationOverride(AssociationOverrideMetadata associationOverride, EmbeddableMapping embeddableMapping, DatabaseMapping mapping, DatabaseTable defaultTable, MetadataDescriptor aggregateDescriptor) {
+        // AssociationOverride.name(), the name of the attribute we want to
+        // override.
+        String attributeName = associationOverride.getName();
+        
+        if (mapping != null && mapping.isOneToOneMapping()) {
+            MappingAccessor accessor = aggregateDescriptor.getAccessorFor(mapping.getAttributeName());
+            MetadataDescriptor referenceDescriptor = accessor.getReferenceDescriptor();
+            
+            if (associationOverride.hasJoinColumns()) {
+                // The process join columns will validate the join column specifics.
+                for (JoinColumnMetadata joinColumn : getJoinColumns(associationOverride.getJoinColumns(), referenceDescriptor)) {
+                    DatabaseField pkField = joinColumn.getPrimaryKeyField();
+                    pkField.setTable(referenceDescriptor.getPrimaryKeyTable());
+                    DatabaseField fkField = ((OneToOneMapping) mapping).getTargetToSourceKeyFields().get(pkField);
+                
+                    if (fkField == null) {
+                        // TODO: invalid pk field specified
+                        // TODO: composite primary key case (and correct table)
+                    } else {
+                        // Make sure we have a table set on the association override 
+                        // field, otherwise use the default table provided.
+                        DatabaseField translationFKField = joinColumn.getForeignKeyField();
+                        if (! translationFKField.hasTableName()) {
+                            translationFKField.setTable(defaultTable);
+                        }
+                    
+                        embeddableMapping.addFieldNameTranslation(translationFKField.getQualifiedName(),fkField.getName());
+                    }
+                }
+            } else {
+                // TODO: Join table from association override not supported yet ... silently ignored ...
+            }
+        } else {
+            throw ValidationException.embeddableAssociationOverrideNotFound(getReferenceDescriptor().getJavaClass(), attributeName, getJavaClass(), getAttributeName());
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Process the association overrides for the given embeddable mapping which
+     * is either an embedded or element collection mapping. Association 
+     * overrides are used to apply the correct field name translations of 
+     * foreign key fields.
+     */
+    protected void processAssociationOverrides(List<AssociationOverrideMetadata> associationOverrides, EmbeddableMapping mapping, MetadataDescriptor aggregateDescriptor) {
+        for (AssociationOverrideMetadata associationOverride : getAssociationOverrides(associationOverrides).values()) {
+            processAssociationOverride(associationOverride, mapping, aggregateDescriptor.getMappingForAttributeName(associationOverride.getName()), getOwningDescriptor().getPrimaryTable(), aggregateDescriptor);
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Process the attribute overrides for the given embedded mapping. Attribute 
+     * overrides are used to apply the correct field name translations of direct 
+     * fields. Note an embedded object mapping may be supported as the map key
+     * to an element-collection, 1-M and M-M mapping.
+     */
+    protected void processAttributeOverrides(List<AttributeOverrideMetadata> attributeOverrides, AggregateObjectMapping aggregateObjectMapping, MetadataDescriptor aggregateDescriptor) {
+        // Process the list of attribute overrides for this mapping. This
+        // includes the immediate specifications (the ones defined on the 
+        // mapping accessor) and those descriptor level ones that were defined
+        // for this accessor.
+        for (AttributeOverrideMetadata attributeOverride : getAttributeOverrides(attributeOverrides).values()) {
+            // The getMappingForAttributeName will take care of any dot 
+            // notation attribute names when looking for the mapping. It will
+            // traverse the embeddable chain. 
+            String attributeName = attributeOverride.getName();
+            DatabaseMapping mapping = aggregateDescriptor.getMappingForAttributeName(attributeName);
+                
+            if (mapping == null) {
+                throw ValidationException.embeddableAttributeOverrideNotFound(aggregateDescriptor.getJavaClass(), attributeName, getJavaClass(), getAttributeName());
+            } else if (! mapping.isDirectToFieldMapping()) {
+                throw ValidationException.invalidEmbeddableAttributeForAttributeOverride(aggregateDescriptor.getJavaClass(), attributeName, getJavaClass(), getAttributeName());
+            } else {
+                addFieldNameTranslation(aggregateObjectMapping, attributeName, attributeOverride.getColumn().getDatabaseField(), mapping);
+            }
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Process the map metadata if this is a valid map accessor. Will return 
+     * the map key method name that should be use, null otherwise.
+     * @see CollectionAccessor
+     * @see ElementCollectionAccessor
+     */
+    protected void processContainerPolicyAndIndirection(CollectionMapping mapping) {
+        String mapKey = null;
+        
+        if (isMappedKeyMapAccessor()) {
+            MappedKeyMapAccessor mapKeyMapAccessor = (MappedKeyMapAccessor) this;
+            Class mapKeyClass = mapKeyMapAccessor.getMapKeyClass();
+            
+            if (mapKeyClass != null && (getProject().hasEntity(mapKeyClass) || getProject().hasEmbeddable(mapKeyClass) || mapKeyMapAccessor.getMapKeyColumn() != null)) {
+                // TODO: if map key is specified we should throw an exception.
+                processMapKeyClass(mapKeyClass, mapping, mapKeyMapAccessor);
+            } else {
+                // Set the indirection policy on the mapping.
+                setIndirectionPolicy(mapping, processMapKey(mapKey, mapping), usesIndirection());
+            }
+        } else if (isMapAccessor()) {
+            // Set the indirection policy on the mapping.
+            setIndirectionPolicy(mapping, processMapKey(mapKey, mapping), usesIndirection());
+        } else {
+            // Set the indirection policy on the mapping.
+            setIndirectionPolicy(mapping, null, usesIndirection());
+        }
+    } 
+    
+    /**
+     * INTERNAL:
+     * Process a Convert annotation or convert element to apply to specified 
+     * EclipseLink converter (Converter, TypeConverter, ObjectTypeConverter) 
+     * to the given mapping.
+     */
+    protected void processConvert(DatabaseMapping mapping, String converterName, Class referenceClass, boolean isForMapKey) {
+        // There is no work to do if the converter's name is "none".
+        if (! converterName.equals(CONVERT_NONE)) {
+            if (converterName.equals(CONVERT_SERIALIZED)) {
+                processSerialized(mapping, referenceClass, isForMapKey);
+            } else if (converterName.equals(CONVERT_CLASS_INSTANCE)){
+                new ClassInstanceMetadata().process(mapping, this, referenceClass, isForMapKey);
+            } else {
+                AbstractConverterMetadata converter = getProject().getConverter(converterName);
+                
+                if (converter == null) {
+                    throw ValidationException.converterNotFound(getJavaClass(), converterName, getAnnotatedElement());
+                } else {
+                    // Process the converter for this mapping.
+                    converter.process(mapping, this, referenceClass, isForMapKey);
+                }
+            }
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected DirectToFieldMapping processDirectMapKeyClass(Class mapKeyClass, MappedKeyMapAccessor mappedKeyMapAccessor) {
+        DirectToFieldMapping keyMapping = new DirectToFieldMapping();
+
+        // Get the map key field, defaulting and looking for attribute 
+        // overrides. Set the field before applying a converter.
+        DatabaseField mapKeyField = getDatabaseField(getReferenceDatabaseTable(), MetadataLogger.MAP_KEY_COLUMN);
+        keyMapping.setField(mapKeyField);
+        
+        // Process a convert key or jpa converter for the map key if specified.
+        processMappingKeyConverter(keyMapping, mappedKeyMapAccessor.getMapKeyConvert(), mappedKeyMapAccessor.getMapKeyClass());
+        
+        keyMapping.setAttributeClassification(getMapKeyReferenceClass());
+        keyMapping.setDescriptor(getDescriptor().getClassDescriptor());
+        
+        return keyMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected AggregateObjectMapping processEmbeddableMapKeyClass(Class mapKeyClass, MappedKeyMapAccessor mappedKeyMapAccessor) {
+        AggregateObjectMapping keyMapping = new AggregateObjectMapping();
+        keyMapping.setReferenceClass(mapKeyClass);
+        
+        // Tell the embeddable accessor to process itself it is hasn't already.
+        EmbeddableAccessor mapKeyAccessor = getProject().getEmbeddableAccessor(mapKeyClass);
+        if (! mapKeyAccessor.isProcessed()) {
+            mapKeyAccessor.process(getReferenceDescriptor());
+        }
+        
+        // Process the attribute overrides for this may key embeddable.
+        processAttributeOverrides(mappedKeyMapAccessor.getAttributeOverrides(), keyMapping, mapKeyAccessor.getDescriptor());
+        
+        // Process the association overrides for this may key embeddable.
+        processAssociationOverrides(mappedKeyMapAccessor.getAssociationOverrides(), keyMapping, mapKeyAccessor.getDescriptor());
+        
+        keyMapping.setDescriptor(getDescriptor().getClassDescriptor());
+        
+        return keyMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     * Process the map key to be an entity class.
+     */
+    protected OneToOneMapping processEntityMapKeyClass(Class mapKeyClass, MappedKeyMapAccessor mappedKeyMapAccessor) {
+        // Create the one to one map key mapping.
+        OneToOneMapping keyMapping = new OneToOneMapping();
+        keyMapping.setReferenceClass(mapKeyClass);
+        keyMapping.dontUseIndirection();
+        keyMapping.setDescriptor(getDescriptor().getClassDescriptor());
+        
+        // Process the map key join columns.
+        EntityAccessor mapKeyAccessor = getProject().getEntityAccessor(mapKeyClass.getName());
+        MetadataDescriptor mapKeyClassDescriptor = mapKeyAccessor.getDescriptor();
+        
+        // If the pk field (referencedColumnName) is not specified, it 
+        // defaults to the primary key of the referenced table.
+        String defaultPKFieldName = mapKeyClassDescriptor.getPrimaryKeyFieldName();
+        
+        // If the fk field (name) is not specified, it defaults to the 
+        // concatenation of the following: the name of the referencing 
+        // relationship property or field of the referencing entity or 
+        // embeddable; "_"; "KEY"
+        String defaultFKFieldName = getAttributeName() + DEFAULT_MAP_KEY_COLUMN_SUFFIX;
+        
+        processOneToOneForeignKeyRelationship(keyMapping, getJoinColumns(mappedKeyMapAccessor.getMapKeyJoinColumns(), mapKeyClassDescriptor), defaultPKFieldName, mapKeyClassDescriptor.getPrimaryTable(), defaultFKFieldName, getReferenceDescriptor().getPrimaryTable());
+
+        return keyMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     * Process an Enumerated setting. The method may still be called if no 
+     * Enumerated metadata has been specified but the accessor's reference 
+     * class is a valid enumerated type.
+     */
+    protected void processEnumerated(EnumeratedMetadata enumerated, DatabaseMapping mapping, Class referenceClass, boolean isForMapKey) {
+        if (enumerated == null) {
+            // TODO: Log a defaulting message
+            enumerated = new EnumeratedMetadata();
+        }
+        
+        enumerated.process(mapping, this, referenceClass, isForMapKey);
+    }
+    
+    /**
+     * INTERNAL:
+     * Process an Enumerated, Lob, Temporal, MapKeyEnumerated, MapKeyTempora 
+     * specification. Will default a serialized converter if necessary. JPA 
+     * converters can be applied to basics and to map keys/values of a map 
+     * accessor.
+     */
+    protected void processJPAConverters(DatabaseMapping mapping, Class referenceClass, boolean isForMapKey) {
+        // Check for an enum first since it will fall into a serializable 
+        // mapping otherwise (Enums are serialized)
+        if (isEnumerated(referenceClass, isForMapKey)) {
+            processEnumerated(getEnumerated(isForMapKey), mapping, referenceClass, isForMapKey);
+        } else if (isLob(referenceClass, isForMapKey)) {
+            processLob(getLob(isForMapKey), mapping, referenceClass, isForMapKey);
+        } else if (isTemporal(referenceClass, isForMapKey)) {
+            processTemporal(getTemporal(isForMapKey), mapping, referenceClass, isForMapKey);
+        } else if (isSerialized(referenceClass, isForMapKey)) {
+            processSerialized(mapping, referenceClass, isForMapKey);
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Process a lob specification. The lob must be specified to process and 
+     * create a lob type mapping.
+     */
+    protected void processLob(LobMetadata lob, DatabaseMapping mapping, Class referenceClass, boolean isForMapKey) {
+        lob.process(mapping, this, referenceClass, isForMapKey);
+    }
+    
+    /**
+     * INTERNAL:
+     * Process a map key for a 1-M or M-M mapping. Will return the map key
+     * method name that should be use, null otherwise.
+     */
+    protected String processMapKey(String mapKey, CollectionMapping mapping) {
+        MetadataDescriptor referenceDescriptor = getReferenceDescriptor();
+            
+        if ((mapKey == null || mapKey.equals("")) && referenceDescriptor.hasCompositePrimaryKey()) {
+            // No persistent property or field name has been provided, and the 
+            // reference class has a composite primary key class.  Return null,
+            // internally, EclipseLink will use an instance of the composite 
+            // primary key class as the map key.
+            return null;
+        } else {
+            // A persistent property or field name may have have been provided. 
+            // If one has not we will default to the primary key of the reference 
+            // class. The primary key cannot be composite at this point.
+            String fieldOrPropertyName = getName(mapKey, referenceDescriptor.getIdAttributeName(), getLogger().MAP_KEY_ATTRIBUTE_NAME);
+    
+            // Look up the referenceAccessor
+            MetadataAccessor referenceAccessor = referenceDescriptor.getAccessorFor(fieldOrPropertyName);
+            if (referenceAccessor == null) {
+                throw ValidationException.couldNotFindMapKey(fieldOrPropertyName, referenceDescriptor.getJavaClass(), mapping);
+            }
+        
+            return referenceAccessor.getAccessibleObjectName();
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Process a map key class for the given map accessor.
+     */
+    protected void processMapKeyClass(Class mapKeyClass, CollectionMapping mapping, MappedKeyMapAccessor mapAccessor) {
+        MapKeyMapping keyMapping;
+            
+        if (getProject().hasEntity(mapKeyClass)) {
+            keyMapping = processEntityMapKeyClass(mapKeyClass, mapAccessor);
+        } else if (getProject().hasEmbeddable(mapKeyClass)) {
+            keyMapping = processEmbeddableMapKeyClass(mapKeyClass, mapAccessor);
+        } else {
+            keyMapping = processDirectMapKeyClass(mapKeyClass, mapAccessor);
+        }
+          
+        Class containerClass;
+        if (usesIndirection()) {
+            containerClass = ClassConstants.IndirectMap_Class;
+            mapping.setIndirectionPolicy(new TransparentIndirectionPolicy());
+        } else {
+            containerClass = java.util.Hashtable.class;
+            mapping.dontUseIndirection();
+        }
+
+        MappedKeyMapContainerPolicy policy = new MappedKeyMapContainerPolicy(containerClass);
+        policy.setKeyMapping(keyMapping);
+        policy.setValueMapping((MapComponentMapping) mapping);
+        mapping.setContainerPolicy(policy);
+    }
+    
+    /**
+     * INTERNAL:
+     * Process a convert value which specifies the name of an EclipseLink
+     * converter to process with this accessor's mapping.     
+     */
+    protected void processMappingConverter(DatabaseMapping mapping, String convertValue, Class referenceClass, boolean isForMapKey) {
+        if (convertValue != null && ! convertValue.equals(CONVERT_NONE)) {
+            processConvert(mapping, convertValue, referenceClass, isForMapKey);
+        } 
+
+        // Regardless if we found a convert or not, look for JPA converters. 
+        // This ensures two things; 
+        // 1 - if no Convert is specified, then any JPA converter that is 
+        // specified will be applied (see BasicMapAccessor's override of the
+        // method hasConvert()). 
+        // 2 - if a convert and a JPA converter are specified, then a log 
+        // warning will be issued stating that we are ignoring the JPA 
+        // converter.
+        processJPAConverters(mapping, referenceClass, isForMapKey);
+    }
+    
+    /**
+     * INTERNAL:
+     * Process a convert value which specifies the name of an EclipseLink
+     * converter to process with this accessor's mapping key.
+     */
+    protected void processMappingKeyConverter(DatabaseMapping mapping, String convertValue, Class referenceClass) {
+        processMappingConverter(mapping, convertValue, referenceClass, true); 
+    }
+    
+    /**
+     * INTERNAL:
+     * Process a convert value which specifies the name of an EclipseLink
+     * converter to process with this accessor's mapping.
+     */
+    protected void processMappingValueConverter(DatabaseMapping mapping, String convertValue, Class referenceClass) {
+        processMappingConverter(mapping, convertValue, referenceClass, false); 
+    }
+    
+    /**
+     * INTERNAL:
+     * Process the join columns for the owning side of a one to one mapping.
+     * The default pk and fk field names are used only with single primary key 
+     * entities. The processor should never get as far as to use them with 
+     * entities that have a composite primary key (validation exception will be 
+     * thrown).
+     */
+    protected void processOneToOneForeignKeyRelationship(OneToOneMapping mapping, List<JoinColumnMetadata> joinColumns, String defaultPKFieldName, DatabaseTable defaultPKTable, String defaultFKFieldName, DatabaseTable defaultFKTable) {         
+        // Add the source foreign key fields to the mapping.
+        for (JoinColumnMetadata joinColumn : joinColumns) {
+            DatabaseField pkField = joinColumn.getPrimaryKeyField();
+            pkField.setName(getName(pkField, defaultPKFieldName, MetadataLogger.PK_COLUMN));
+            pkField.setTable(defaultPKTable);
+            
+            DatabaseField fkField = joinColumn.getForeignKeyField();
+            fkField.setName(getName(fkField, defaultFKFieldName, MetadataLogger.FK_COLUMN));
+            // Set the table name if one is not already set.
+            if (fkField.getTableName().equals("")) {
+                fkField.setTable(defaultFKTable);
+            }
+            
+            // Add a source foreign key to the mapping.
+            mapping.addForeignKeyField(fkField, pkField);
+            
+            // If any of the join columns is marked read-only then set the 
+            // mapping to be read only.
+            if (fkField.isReadOnly()) {
+                mapping.setIsReadOnly(true);
+            }
+        }
+    }
+    
+    /**
+     * INTERNAL:
      * Adds properties to the mapping.
      */
     protected void processProperties(DatabaseMapping mapping) {
@@ -731,6 +1393,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * INTERNAL:
      * Subclasses should call this method if they want the warning message or
      * override the method if they want/support different behavior.
+     * @see BasicAccessor
      */
     protected void processReturnInsert() {
         if (hasReturnInsert()) {
@@ -751,11 +1414,47 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * INTERNAL:
      * Subclasses should call this method if they want the warning message or
      * override the method if they want/support different behavior.
+     * @see BasicAccessor
      */
     protected void processReturnUpdate() {
         if (hasReturnUpdate()) {
             getLogger().logWarningMessage(MetadataLogger.IGNORE_RETURN_UPDATE_ANNOTATION, getAnnotatedElement());
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * Process a potential serializable attribute. If the class implements 
+     * the Serializable interface then set a SerializedObjectConverter on 
+     * the mapping.
+     */
+    protected void processSerialized(DatabaseMapping mapping, Class referenceClass, boolean isForMapKey) {
+        new SerializedMetadata().process(mapping, this, referenceClass, isForMapKey);
+    }
+    
+    /**
+     * INTERNAL:
+     * Process a potential serializable attribute. If the class implements 
+     * the Serializable interface then set a SerializedObjectConverter on 
+     * the mapping.
+     */
+    protected void processSerialized(DatabaseMapping mapping, Class referenceClass, Class classification, boolean isForMapKey) {
+        new SerializedMetadata().process(mapping, this, referenceClass, classification, isForMapKey);
+    }
+    
+    /**
+     * INTERNAL:
+     * Process a temporal type accessor.
+     */
+    protected void processTemporal(TemporalMetadata temporal, DatabaseMapping mapping, Class referenceClass, boolean isForMapKey) {
+        if (temporal == null) {
+            // We have a temporal type on either a basic mapping or the key to
+            // a collection mapping. Since the temporal type was not specified, 
+            // per the JPA spec we must throw an exception.
+            throw ValidationException.noTemporalTypeSpecified(getAttributeName(), getJavaClass());
+        }
+        
+        temporal.process(mapping, this, referenceClass, isForMapKey);
     }
     
     /**
@@ -790,7 +1489,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * assume that the reference class has been set on the mapping before
      * calling this method.
      */
-    public void setIndirectionPolicy(CollectionMapping mapping, String mapKey, boolean usesIndirection) {
+    protected void setIndirectionPolicy(CollectionMapping mapping, String mapKey, boolean usesIndirection) {
         Class rawClass = getRawClass();
         
         if (usesIndirection) {            
@@ -821,16 +1520,18 @@ public abstract class MappingAccessor extends MetadataAccessor {
                     mapping.useMapClass(java.util.Hashtable.class, mapKey);
                 }
             } else if (rawClass == Set.class) {
-                //this will cause it to use a CollectionContainerPolicy type
+                // This will cause it to use a CollectionContainerPolicy type
                 mapping.useCollectionClass(java.util.HashSet.class);
             } else if (rawClass == List.class) {
-                //this will cause a ListContainerPolicy type to be used or OrderedListContainerPolicy if ordering is specified
+                // This will cause a ListContainerPolicy type to be used or 
+                // OrderedListContainerPolicy if ordering is specified.
                 mapping.useCollectionClass(java.util.Vector.class);
             } else if (rawClass == Collection.class) {
-                //bug236275 : Force CollectionContainerPolicy type to be used with a collection implementation
+                // Force CollectionContainerPolicy type to be used with a 
+                // collection implementation.
                 mapping.setContainerPolicy(new CollectionContainerPolicy(java.util.Vector.class));
             } else {
-                //bug221577: use the supplied collection class type if its not an interface
+                // Use the supplied collection class type if its not an interface
                 if (mapKey == null || mapKey.equals("")){
                     mapping.useCollectionClass(rawClass);
                 } else {
@@ -838,6 +1539,40 @@ public abstract class MappingAccessor extends MetadataAccessor {
                 }
             }
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * This will do two things:
+     * 1 - process any common level metadata for all mappings.
+     * 2 - add the mapping to the internal descriptor.
+     * 3 - store the actual database mapping associated with this accessor.
+     * 
+     * Calling this method is a must for all mapping accessors since it will 
+     * help to:
+     * 1 - determine if the accessor has been processed, and
+     * 2 - sub processing will may need access to the mapping to set its 
+     *     metadata.
+     */
+    protected void setMapping(DatabaseMapping mapping) {
+        // Before adding the mapping to the descriptor, process the properties
+        // for this mapping (if any)
+        processProperties(mapping);
+        
+        // Add the mapping to the class descriptor.
+        getDescriptor().getClassDescriptor().addMapping(mapping);
+        
+        // Keep a reference back to this mapping for quick look up.
+        m_mapping = mapping;
+    }
+    
+    /**
+     * INTERNAL:
+     * @see RelationshipAccessor
+     * @see DirectAccessor
+     */
+    protected boolean usesIndirection() {
+        return false;
     }
     
     /**

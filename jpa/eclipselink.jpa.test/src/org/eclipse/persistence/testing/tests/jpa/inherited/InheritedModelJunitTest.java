@@ -17,12 +17,15 @@
  *       - 248293: JPA 2.0 Element Collections (part 1)
  *     02/06/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 2)
+ *     03/27/2009-2.0 Guy Pelletier 
+ *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.inherited;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Timestamp;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 
@@ -34,15 +37,21 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.models.jpa.inherited.Becks;
+import org.eclipse.persistence.testing.models.jpa.inherited.BecksTag;
 import org.eclipse.persistence.testing.models.jpa.inherited.BeerConsumer;
 import org.eclipse.persistence.testing.models.jpa.inherited.Blue;
 import org.eclipse.persistence.testing.models.jpa.inherited.Alpine;
 import org.eclipse.persistence.testing.models.jpa.inherited.BlueLight;
+import org.eclipse.persistence.testing.models.jpa.inherited.Corona;
+import org.eclipse.persistence.testing.models.jpa.inherited.CoronaTag;
 import org.eclipse.persistence.testing.models.jpa.inherited.ExpertBeerConsumer;
+import org.eclipse.persistence.testing.models.jpa.inherited.Heineken;
 import org.eclipse.persistence.testing.models.jpa.inherited.InheritedTableManager;
 import org.eclipse.persistence.testing.models.jpa.inherited.Location;
 import org.eclipse.persistence.testing.models.jpa.inherited.NoviceBeerConsumer;
 import org.eclipse.persistence.testing.models.jpa.inherited.Record;
+import org.eclipse.persistence.testing.models.jpa.inherited.RedStripe;
 import org.eclipse.persistence.testing.models.jpa.inherited.SerialNumber;
 import org.eclipse.persistence.testing.models.jpa.inherited.Venue;
  
@@ -85,6 +94,16 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         suite.addTest(new InheritedModelJunitTest("testUpdateBeerConsumer"));
         suite.addTest(new InheritedModelJunitTest("testInheritedClone"));
         suite.addTest(new InheritedModelJunitTest("testCascadeRemove"));
+        // 1-M map using direct key
+        suite.addTest(new InheritedModelJunitTest("testHeinekenBeerConsumer"));
+        // 1-M map using entity key
+        suite.addTest(new InheritedModelJunitTest("testBecksBeerConsumer"));
+        // 1-M map using embeddable key
+        suite.addTest(new InheritedModelJunitTest("testCoronaBeerConsumer"));
+        // Element collection with generic map key type, with embeddable values.
+        suite.addTest(new InheritedModelJunitTest("testRedStripeExpertConsumer"));
+        // Element collection with generic map key type, with embeddable values.
+        suite.addTest(new InheritedModelJunitTest("testRedStripeNoviceConsumer"));
         
         return suite;
     }
@@ -95,6 +114,112 @@ public class InheritedModelJunitTest extends JUnitTestCase {
     public void testSetup() {
         new InheritedTableManager().replaceTables(JUnitTestCase.getServerSession());
         clearCache();
+    }
+    
+    public void testBecksBeerConsumer() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        BeerConsumer initialBC = new BeerConsumer();
+        int beerConsumerId = 0;
+        
+        try {
+            Becks becks1  = new Becks();
+            becks1.setAlcoholContent(5.1);
+            BecksTag becksTag1 = new BecksTag();
+            becksTag1.setCallNumber("0A.789");
+            em.persist(becksTag1);
+            
+            Becks becks2  = new Becks();
+            becks2.setAlcoholContent(5.1);
+            BecksTag becksTag2 = new BecksTag();
+            becksTag2.setCallNumber("BX.521");
+            em.persist(becksTag2);
+            
+            Becks becks3  = new Becks();
+            becks3.setAlcoholContent(5.1);
+            BecksTag becksTag3 = new BecksTag();
+            becksTag3.setCallNumber("UY.429");
+            em.persist(becksTag3);
+            
+            initialBC.setName("Becks Consumer");
+            initialBC.addBecksBeerToConsume(becks1, becksTag1);
+            initialBC.addBecksBeerToConsume(becks2, becksTag2);
+            initialBC.addBecksBeerToConsume(becks3, becksTag3);
+            
+            em.persist(initialBC);
+            beerConsumerId = initialBC.getId();
+            
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            closeEntityManager(em);
+            fail("An exception was caught during create operation: [" + e.getMessage() + "]");
+        }
+        
+        closeEntityManager(em);
+        
+        clearCache();
+        em = createEntityManager();
+        BeerConsumer refreshedBC = em.find(BeerConsumer.class, beerConsumerId);       
+        assertTrue("The beer consumer read back did not match the original", getServerSession().compareObjects(initialBC, refreshedBC));
+    }
+    
+    public void testCoronaBeerConsumer() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        BeerConsumer initialBC = new BeerConsumer();
+        int beerConsumerId = 0;
+        
+        try {
+            Corona corona1  = new Corona();
+            corona1.setAlcoholContent(5.3);
+            CoronaTag coronaTag1 = new CoronaTag();
+            coronaTag1.setCode("0A");
+            coronaTag1.setNumber(789);
+            
+            Corona corona2  = new Corona();
+            corona2.setAlcoholContent(5.3);
+            CoronaTag coronaTag2 = new CoronaTag();
+            coronaTag2.setCode("BX");
+            coronaTag2.setNumber(521);
+            
+            Corona corona3  = new Corona();
+            corona3.setAlcoholContent(5.3);
+            CoronaTag coronaTag3 = new CoronaTag();
+            coronaTag3.setCode("UY");
+            coronaTag3.setNumber(429);
+            
+            initialBC.setName("Corona Consumer");
+            initialBC.addCoronaBeerToConsume(corona1, coronaTag1);
+            initialBC.addCoronaBeerToConsume(corona2, coronaTag2);
+            initialBC.addCoronaBeerToConsume(corona3, coronaTag3);
+            
+            em.persist(initialBC);
+            beerConsumerId = initialBC.getId();
+            
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            closeEntityManager(em);
+            fail("An exception was caught during create operation: [" + e.getMessage() + "]");
+        }
+        
+        closeEntityManager(em);
+        
+        clearCache();
+        em = createEntityManager();
+        BeerConsumer refreshedBC = em.find(BeerConsumer.class, beerConsumerId);       
+        assertTrue("The beer consumer read back did not match the original", getServerSession().compareObjects(initialBC, refreshedBC));
     }
     
     public void testCreateBlue() {
@@ -122,7 +247,6 @@ public class InheritedModelJunitTest extends JUnitTestCase {
     
     public void testReadBlue() {
         Blue blue = createEntityManager().find(Blue.class, m_blueId);
-        
         assertTrue("Error on reading back a Blue beer", blue != null);
     }
     
@@ -260,6 +384,53 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         closeEntityManager(em);
     }
     
+    public void testHeinekenBeerConsumer() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        BeerConsumer initialBC = new BeerConsumer();
+        int beerConsumerId = 0;
+        
+        try {
+            Heineken heineken1  = new Heineken();
+            heineken1.setAlcoholContent(5.0);
+            
+            Heineken heineken2  = new Heineken();
+            heineken2.setAlcoholContent(5.0);
+            
+            Heineken heineken3  = new Heineken();
+            heineken3.setAlcoholContent(5.0);
+            
+            initialBC.setName("Heineken Consumer");
+            Calendar cal = Calendar.getInstance();
+            cal.set(2008, 12, 12);
+            initialBC.addHeinekenBeerToConsume(heineken1, cal.getTime());
+            cal.set(2009, 1, 1);
+            initialBC.addHeinekenBeerToConsume(heineken2, cal.getTime());
+            cal.set(2009, 2, 2);
+            initialBC.addHeinekenBeerToConsume(heineken3, cal.getTime());
+            
+            em.persist(initialBC);
+            beerConsumerId = initialBC.getId();
+            
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            closeEntityManager(em);
+            fail("An exception was caught during create operation: [" + e.getMessage() + "]");
+        }
+        
+        closeEntityManager(em);
+        
+        clearCache();
+        em = createEntityManager();
+        BeerConsumer refreshedBC = em.find(BeerConsumer.class, beerConsumerId);       
+        assertTrue("The beer consumer read back did not match the original", getServerSession().compareObjects(initialBC, refreshedBC));
+    }
+    
     public void testReadNoviceBeerConsumer() {
         NoviceBeerConsumer consumer = createEntityManager().find(NoviceBeerConsumer.class, m_noviceBeerConsumerId);
         
@@ -335,6 +506,87 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         
         assertTrue("Incorrect number of records returned.", consumer.getRecords().size() == 2);
         // don't individually check them ... assume they are correct.
+    }
+    
+    public void testRedStripeExpertConsumer() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        ExpertBeerConsumer initialEBC = new ExpertBeerConsumer();
+        int beerConsumerId = 0;
+        
+        try {
+            RedStripe redStripe1 = new RedStripe();
+            redStripe1.setAlcoholContent(5.0);
+            initialEBC.addRedStripeBeersToConsume(redStripe1, "1");
+
+            RedStripe redStripe2 = new RedStripe();
+            redStripe2.setAlcoholContent(5.0);
+            initialEBC.addRedStripeBeersToConsume(redStripe2, "2");
+            
+            initialEBC.setName("Expert Red Stripe Consumer");
+            em.persist(initialEBC);
+            beerConsumerId = initialEBC.getId();
+            
+            this.getServerSession().setLogLevel(0);
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            closeEntityManager(em);
+            fail("An exception was caught during create operation: [" + e.getMessage() + "]");
+        }
+        
+        closeEntityManager(em);
+        
+        clearCache();
+        em = createEntityManager();
+        ExpertBeerConsumer refreshedEBC = em.find(ExpertBeerConsumer.class, beerConsumerId);       
+        assertTrue("The expert beer consumer read back did not match the original", getServerSession().compareObjects(initialEBC, refreshedEBC));
+    }
+    
+    public void testRedStripeNoviceConsumer() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        NoviceBeerConsumer initialNBC = new NoviceBeerConsumer();
+        int beerConsumerId = 0;
+        
+        try {
+            RedStripe redStripe1 = new RedStripe();
+            redStripe1.setAlcoholContent(5.0);
+            initialNBC.addRedStripeBeersToConsume(redStripe1, "3");
+
+            RedStripe redStripe2 = new RedStripe();
+            redStripe2.setAlcoholContent(5.0);
+            initialNBC.addRedStripeBeersToConsume(redStripe2, "4");
+            
+            initialNBC.setName("Novice Red Stripe Consumer");
+            em.persist(initialNBC);
+            beerConsumerId = initialNBC.getId();
+            
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            closeEntityManager(em);
+            fail("An exception was caught during create operation: [" + e.getMessage() + "]");
+        }
+        
+        closeEntityManager(em);
+        
+        clearCache();
+        em = createEntityManager();
+        NoviceBeerConsumer refreshedNBC = em.find(NoviceBeerConsumer.class, beerConsumerId);       
+        assertTrue("The novice beer consumer read back did not match the original", getServerSession().compareObjects(initialNBC, refreshedNBC));
     }
     
     public void testUpdateBeerConsumer() {

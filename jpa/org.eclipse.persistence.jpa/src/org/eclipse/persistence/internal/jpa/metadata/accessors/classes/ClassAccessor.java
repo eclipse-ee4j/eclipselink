@@ -29,6 +29,8 @@
  *       - 248293: JPA 2.0 Element Collections (part 2)
  *     02/26/2009-2.0 Guy Pelletier 
  *       - 264001: dot notation for mapped-by and order-by
+ *     03/27/2009-2.0 Guy Pelletier 
+ *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -113,6 +115,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ObjectAc
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public abstract class ClassAccessor extends MetadataAccessor {
+    private boolean m_isPreProcessed = false;
     private boolean m_isProcessed = false;
     
     private Boolean m_excludeDefaultMappings;
@@ -160,12 +163,20 @@ public abstract class ClassAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
+     * Add the accessor to the descriptor
+     */
+    protected void addAccessor(MappingAccessor mappingAccessor) {
+        getDescriptor().addAccessor(mappingAccessor, getOwningDescriptor());
+    }
+    
+    /**
+     * INTERNAL:
      * Add the accessors from this class accessors java class to the descriptor
      * tied to this class accessor. This method is called for every class
      * accessor and is also called from parent class accessors to each of its
      * subclasses of a TABLE_PER_CLASS inhertiance strategy.
      */
-    public void addAccessors() {        
+    public void addAccessors() {      
         if (m_attributes != null) {
             for (MappingAccessor accessor : m_attributes.getAccessors()) {
                 // Load the accessible object from the class.
@@ -241,7 +252,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
                 accessor.initAccess();
                 
                 // Add the accessor to the descriptor's list
-                getDescriptor().addAccessor(accessor);
+                addAccessor(accessor);
             }
         }
         
@@ -503,6 +514,14 @@ public abstract class ClassAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
+     * Return true if this accessor has been pre-processed.
+     */
+    public boolean isPreProcessed() {
+        return m_isPreProcessed;
+    }
+    
+    /**
+     * INTERNAL:
      * Return true if this accessor has been processed.
      */
     public boolean isProcessed() {
@@ -590,12 +609,19 @@ public abstract class ClassAccessor extends MetadataAccessor {
     }
     
     /**
-     * INTERNAL: Implemented by EntityAccessor, EmbeddableAccessor and 
+     * INTERNAL: 
+     * Implemented by EntityAccessor, EmbeddableAccessor and 
      * MappedSuperclassAccessor. They must call this method to set the
      * isProcessed flag.
      */
     @Override
     public abstract void process();
+    
+    /**
+     * INTERNAL:
+     * 
+     */
+    public abstract void preProcess();
     
     /**
      * INTERNAL:
@@ -621,7 +647,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
                     // as access field. We must therefore overwrite the previous 
                     // accessor with this explicit one.
                     if (! getDescriptor().hasAccessorFor(metadataField.getAttributeName()) || (getDescriptor().hasAccessorFor(metadataField.getAttributeName()) && processingInverse)) {
-                        getDescriptor().addAccessor(buildAccessor(metadataField));
+                        addAccessor(buildAccessor(metadataField));
                     }
                 }
             }
@@ -658,7 +684,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
                     // should use its access methods. We must therefore 
                     // overwrite the previous accessor with this explicit one.
                     if (! getDescriptor().hasAccessorFor(metadataMethod.getAttributeName()) || (getDescriptor().hasAccessorFor(metadataMethod.getAttributeName()) && processingInverse)) {
-                        getDescriptor().addAccessor(buildAccessor(metadataMethod));
+                        addAccessor(buildAccessor(metadataMethod));
                     }
                 }
             }
@@ -675,10 +701,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
      * INTERNAL:
      * Process the accessors for the given class.
      */
-    protected void processAccessors() {
-        // Add all the available accessors to the descriptor.
-        addAccessors();
-        
+    public void processAccessors() {
         // Now tell the descriptor to process its accessors.
         getDescriptor().processAccessors(getOwningDescriptor());
     }
@@ -912,6 +935,13 @@ public abstract class ClassAccessor extends MetadataAccessor {
      */
     public void setInstantiationCopyPolicy(InstantiationCopyPolicyMetadata copyPolicy){
         m_instantiationCopyPolicy = copyPolicy;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected void setIsPreProcessed() {
+        m_isPreProcessed = true;    
     }
     
     /**

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -11,7 +11,9 @@
  *     03/26/2008-1.0M6 Guy Pelletier 
  *       - 211302: Add variable 1-1 mapping support to the EclipseLink-ORM.XML Schema
  *     05/16/2008-1.0M8 Guy Pelletier 
- *       - 218084: Implement metadata merging functionality between mapping files  
+ *       - 218084: Implement metadata merging functionality between mapping files
+ *     03/27/2009-2.0 Guy Pelletier 
+ *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes  
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -81,7 +83,15 @@ public class InterfaceAccessor extends ClassAccessor {
      * INTERNAL:
      */
     @Override
+    public void preProcess() {
+        // Does nothing at this point ... perhaps it will in the future ...
+    }  
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
     public void process() {
-        // TODO: Does nothing at this point ... perhaps it will in the future ...
+        // Does nothing at this point ... perhaps it will in the future ...
     }    
 }

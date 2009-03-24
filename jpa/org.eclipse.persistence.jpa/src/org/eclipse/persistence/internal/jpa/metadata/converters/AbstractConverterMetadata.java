@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -11,15 +11,13 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
+ *     03/27/2009-2.0 Guy Pelletier 
+ *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
 import java.lang.annotation.Annotation;
 
-import org.eclipse.persistence.mappings.DatabaseMapping;
-
-import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.DirectAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 
 /**
@@ -29,7 +27,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
  * @author Guy Pelletier
  * @since TopLink 11g
  */
-public abstract class AbstractConverterMetadata extends ORMetadata {
+public abstract class AbstractConverterMetadata extends MetadataConverter {
     private String m_name;
     
     /**
@@ -70,12 +68,6 @@ public abstract class AbstractConverterMetadata extends ORMetadata {
     public boolean isStructConverter() {
         return false;
     }  
-    
-    /**
-     * INTERNAL:
-     * Every converter needs to be able to process themselves.
-     */
-    public abstract void process(DatabaseMapping mapping, DirectAccessor accessor); 
     
     /**
      * INTERNAL:

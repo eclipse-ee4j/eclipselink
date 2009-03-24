@@ -19,6 +19,8 @@
  *       - 248293: JPA 2.0 Element Collections (part 1)
  *     02/06/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 2)
+ *     03/27/2009-2.0 Guy Pelletier 
+ *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -47,7 +49,6 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAcc
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.InterfaceAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.MappedSuperclassAccessor;
 
-import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.DirectAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.DirectCollectionAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.RelationshipAccessor;
@@ -149,17 +150,12 @@ public class MetadataProject {
     // Default listeners that need to be applied to each entity in the
     // persistence unit (unless they exclude them).
     private HashSet< EntityListenerMetadata> m_defaultListeners;
-
-    // TODO: Talk about these some more ....
     
     // Class accessors that have a customizer.
     private HashSet<ClassAccessor> m_accessorsWithCustomizer;
     
-    // Class accessors that have Ids derived from relationships\
+    // Class accessors that have Ids derived from relationships.
     private HashSet<ClassAccessor> m_accessorsWithDerivedIDs;
-    
-    // Accessors that use an EclipseLink converter.
-    private HashSet<DirectAccessor> m_convertAccessors;
     
     // All direct collection accessors.
     private HashSet<DirectCollectionAccessor> m_directCollectionAccessors;
@@ -208,7 +204,6 @@ public class MetadataProject {
         m_sequenceGenerators = new HashMap<String, SequenceGeneratorMetadata>();
         
         m_converters = new HashMap<String, AbstractConverterMetadata>();
-        m_convertAccessors = new HashSet<DirectAccessor>();
         
         m_accessorsWithDerivedIDs = new HashSet<ClassAccessor>();
     }
@@ -271,13 +266,6 @@ public class MetadataProject {
         } else {
             throw ValidationException.nonUniqueEntityName(existingDescriptor.getJavaClassName(), descriptor.getJavaClassName(), alias);
         }
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public void addConvertAccessor(DirectAccessor accessor) {
-        m_convertAccessors.add(accessor);
     }
     
     /**
@@ -690,72 +678,6 @@ public class MetadataProject {
     
     /**
      * INTERNAL:
-     * Stage 1 processing. Process all the class accessors available to the
-     * project. This includes entities, mapped superclasses and embeddables.
-     * 
-     * Stage one's goal is to process through all the classes accessors, 
-     * processing only class level metadata and direct accessors. At the same
-     * time gather lists of other metadata to process in stage 2.
-     * @see processStage2
-     */
-    public void processStage1() {
-        // Mapped superclasses and embeddables are discovered and processed
-        // through the entity processing.
-        for (EntityAccessor entity : getEntityAccessors()) {
-            // If the accessor hasn't been processed yet, then process it. An
-            // EntityAccessor may get fast tracked if it is an inheritance
-            // parent.
-            if (! entity.isProcessed()) {
-                entity.process();
-            }
-        }
-    }
-    
-    /**
-     * INTERNAL:
-     * Stage 2 processing. That is, it does all the extra processing that 
-     * couldn't be completed in the first stage of processing. The biggest 
-     * thing being that all entities will have processed an id by now and we 
-     * can process those accessors that rely on them now. NOTE: The order of
-     * invocation here is very important here, see the comments.
-     */
-    public void processStage2() {
-        // 1 - Process accessors with IDs derived from relationships. This will 
-        // finish up any stage1 processing that relied on the PK processing 
-        // being complete as well
-        processAccessorsWithDerivedIDs();
-
-        // 2 - Process all the direct collection accessors we found. This list
-        // does not include direct collections to an embeddable class.
-        processDirectCollectionAccessors();
-        
-        // 3 - Process the sequencing metadata now that every entity has a 
-        // validated primary key.
-        processSequencingAccessors();
-        
-        // 4 - Process the relationship accessors now that every entity has a 
-        // validated primary key and we can process join columns.
-        processRelationshipAccessors();
-        
-        // 5 - Process the interface accessors which will iterate through all 
-        // the entities in the PU and check if we should add them to a variable 
-        // one to one mapping that was either defined (incompletely) or 
-        // defaulted.
-        processInterfaceAccessors();
-        
-        // 6 - Process the embeddable mapping accessors. These are the
-        // embedded, embedded id and element collection accessors that map
-        // to an embeddable class. We must hold off on their processing till
-        // now to ensure their relationship accessors have been processed and
-        // we can therefore process any association overrides correctly.
-        processEmbeddableMappingAccessors();
-        
-        // 7 - Finally process all those mappings that make use of a converter.
-        processConvertAccessors();
-    }
-    
-    /**
-     * INTERNAL:
      * Process the embeddable mapping accessors.
      */
     protected void processEmbeddableMappingAccessors() {
@@ -778,18 +700,6 @@ public class MetadataProject {
         
         for (ClassAccessor classAccessor : getAccessorsWithDerivedIDs()) {
             classAccessor.processDerivedIDs(processing, processed);
-        }
-    }
-  
-    /**
-     * INTERNAL:
-     * Process those accessors that have a convert value. A convert value is 
-     * used to process an EclipseLink converter (Converter, TypeConverter and 
-     * ObjectTypeConverter) for an accessor's database mapping.
-     */
-    protected void processConvertAccessors() {
-        for (DirectAccessor accessor : m_convertAccessors) {
-            accessor.processConvert();
         }
     }
     
@@ -1023,6 +933,92 @@ public class MetadataProject {
                 }
             }
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * Stage 1 processing is a pre-processing stage that will perform the 
+     * following tasks:
+     *  - gather a list of mapping accessors for all entities and embeddables.
+     *  - discover all global converter specifications.
+     *  - discover mapped superclasses and inheritance parents.
+     * 
+     * NOTE: This method should only perform any preparatory work like, class
+     * discovery, flag settings etc. Hard processing will begin in stage 2.
+     * 
+     * @see processStage2
+     */
+    public void processStage1() {
+        // Mapped superclasses and embeddables are pre-processed through the 
+        // entity pre-processing.
+        for (EntityAccessor entity : getEntityAccessors()) {
+            if (! entity.isPreProcessed()) {
+                entity.preProcess();
+            }
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Stage 2 processing will perform the following tasks:
+     * - process all direct mapping accessors from entities, embeddables and
+     *   mapped superclasses.
+     * - gather a list of relationship accessors and any other special interest
+     *   accessors to be processed in stage 3.  
+     * 
+     * @see processStage3
+     */
+    public void processStage2() {
+        // Mapped superclasses and embeddables are processed through the entity 
+        // processing.
+        for (EntityAccessor entity : getEntityAccessors()) {
+            // If the accessor hasn't been processed yet, then process it. An
+            // EntityAccessor may get fast tracked if it is an inheritance
+            // parent.
+            if (! entity.isProcessed()) {
+                entity.process();
+            }
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Stage 3 processing does all the extra processing that couldn't be 
+     * completed in the first two stages of processing. The biggest thing 
+     * being that all entities will have processed an id by now and we can 
+     * process those accessors that rely on them. NOTE: The order of invocation 
+     * here is very important here, see the comments.
+     */
+    public void processStage3() {
+        // 1 - Process accessors with IDs derived from relationships. This will 
+        // finish up any stage2 processing that relied on the PK processing 
+        // being complete as well.
+        processAccessorsWithDerivedIDs();
+
+        // 2 - Process all the direct collection accessors we found. This list
+        // does not include direct collections to an embeddable class.
+        processDirectCollectionAccessors();
+        
+        // 3 - Process the sequencing metadata now that every entity has a 
+        // validated primary key.
+        processSequencingAccessors();
+        
+        // 4 - Process the relationship accessors now that every entity has a 
+        // validated primary key and we can process join columns.
+        processRelationshipAccessors();
+        
+        // 5 - Process the interface accessors which will iterate through all 
+        // the entities in the PU and check if we should add them to a variable 
+        // one to one mapping that was either defined (incompletely) or 
+        // defaulted.
+        processInterfaceAccessors();
+        
+        // 6 - Process the embeddable mapping accessors. These are the
+        // embedded, embedded id and element collection accessors that map
+        // to an embeddable class. We must hold off on their processing till
+        // now to ensure their relationship accessors have been processed and
+        // we can therefore process any association overrides correctly.
+        processEmbeddableMappingAccessors();
     }
     
     /**

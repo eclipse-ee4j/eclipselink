@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
+ *     03/27/2009-2.0 Guy Pelletier 
+ *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
@@ -101,6 +103,14 @@ public class NamedNativeQueryMetadata extends NamedQueryMetadata {
     
     /**
      * INTERNAL:
+     * Return true is a result set mapping has been specified.
+     */
+    protected boolean hasResultSetMapping() {
+        return m_resultSetMapping != null && !m_resultSetMapping.equals("");
+    }
+    
+    /**
+     * INTERNAL:
      */
     @Override
     public void initXMLObject(MetadataAccessibleObject accessibleObject) {
@@ -117,11 +127,11 @@ public class NamedNativeQueryMetadata extends NamedQueryMetadata {
         Map<String, Object> hints = processQueryHints(session);
 
         if (m_resultClass == void.class) {
-            if (m_resultSetMapping.equals("")) {
-                // Neither a resultClass or resultSetMapping is specified so place in a temp query on the session
-                session.addQuery(getName(), EJBQueryImpl.buildSQLDatabaseQuery(getQuery(), hints, loader));
-            } else {
+            if (hasResultSetMapping()) {
                 session.addQuery(getName(), EJBQueryImpl.buildSQLDatabaseQuery(m_resultSetMapping, getQuery(), hints, loader));
+            } else {
+                // Neither a resultClass or resultSetMapping is specified so place in a temp query on the session
+                session.addQuery(getName(), EJBQueryImpl.buildSQLDatabaseQuery(getQuery(), hints, loader));  
             }
         } else { 
             session.addQuery(getName(), EJBQueryImpl.buildSQLDatabaseQuery(MetadataHelper.getClassForName(m_resultClass.getName(), loader), getQuery(), hints, loader));

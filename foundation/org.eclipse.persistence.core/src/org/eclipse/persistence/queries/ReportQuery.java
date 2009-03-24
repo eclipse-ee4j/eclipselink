@@ -14,8 +14,6 @@ package org.eclipse.persistence.queries;
 
 import java.util.*;
 
-import javax.persistence.LockModeType;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.VersionLockingPolicy;
 import org.eclipse.persistence.expressions.*;
@@ -956,7 +954,7 @@ public class ReportQuery extends ReadAllQuery {
      * return value and throw the necessary exception.
      */
     @Override
-    public boolean setLockModeType(LockModeType lockModeType, AbstractSession session) {
+    public boolean setLockModeType(String lockModeType, AbstractSession session) {
         if (lockModeType != null) {
             if (super.setLockModeType(lockModeType, session)) {
                 return true;

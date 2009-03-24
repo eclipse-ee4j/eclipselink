@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
+ *     03/27/2009-2.0 Guy Pelletier 
+ *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
@@ -19,7 +21,7 @@ import java.lang.annotation.Annotation;
 import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.DirectAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -94,18 +96,16 @@ public class TypeConverterMetadata extends AbstractConverterMetadata {
     /**
      * INTERNAL:
      */
-    public Class getDataType(DirectAccessor accessor) {
+    public Class getDataType(MappingAccessor accessor, Class referenceClass) {
         if (m_dataType == void.class) {
-            Class dataType = accessor.getReferenceClass();
-            
-            if (dataType == null) {
+            if (referenceClass == null) {
                 throw ValidationException.noConverterDataTypeSpecified(accessor.getJavaClass(), accessor.getAttributeName(), getName());
             } else {
                 // Log the defaulting data type.
-                accessor.getLogger().logConfigMessage(MetadataLogger.CONVERTER_DATA_TYPE, accessor, getName(), dataType);
+                accessor.getLogger().logConfigMessage(MetadataLogger.CONVERTER_DATA_TYPE, accessor, getName(), referenceClass);
             }
             
-            return dataType;
+            return referenceClass;
         } else {
             return m_dataType;
         }
@@ -122,18 +122,16 @@ public class TypeConverterMetadata extends AbstractConverterMetadata {
     /**
      * INTERNAL:
      */
-    public Class getObjectType(DirectAccessor accessor) {
+    public Class getObjectType(MappingAccessor accessor, Class referenceClass) {
         if (m_objectType == void.class) {
-            Class objectType = accessor.getReferenceClass();
-            
-            if (objectType == null) {
+            if (referenceClass == null) {
                 throw ValidationException.noConverterObjectTypeSpecified(accessor.getJavaClass(), accessor.getAttributeName(), getName());
             } else {
                 // Log the defaulting object type name.
-                accessor.getLogger().logConfigMessage(MetadataLogger.CONVERTER_OBJECT_TYPE, accessor, getName(), objectType);
+                accessor.getLogger().logConfigMessage(MetadataLogger.CONVERTER_OBJECT_TYPE, accessor, getName(), referenceClass);
             }
             
-            return objectType;
+            return referenceClass;
         } else {
             return m_objectType;
         }
@@ -168,20 +166,20 @@ public class TypeConverterMetadata extends AbstractConverterMetadata {
     /**
      * INTERNAL:
      */
-    public void process(DatabaseMapping mapping, DirectAccessor accessor) {
+    public void process(DatabaseMapping mapping, MappingAccessor accessor, Class referenceClass, boolean isForMapKey) {
         TypeConversionConverter converter = new TypeConversionConverter(mapping);
         
         // Process the data type and set the data class name.
-        converter.setDataClassName(getDataType(accessor).getName());
+        converter.setDataClassName(getDataType(accessor, referenceClass).getName());
         
         // Process the object type and set the object class name.
-        converter.setObjectClassName(getObjectType(accessor).getName());
+        converter.setObjectClassName(getObjectType(accessor, referenceClass).getName());
         
         // Set the converter on the mapping.
-        accessor.setConverter(mapping, converter);
+        setConverter(mapping, converter, isForMapKey);
         
         // Set the field classification.
-        accessor.setFieldClassification(mapping, m_dataType);
+        setFieldClassification(mapping, m_dataType, isForMapKey);
     }
     
     /**

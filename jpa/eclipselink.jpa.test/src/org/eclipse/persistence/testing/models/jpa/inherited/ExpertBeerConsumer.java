@@ -14,6 +14,8 @@
  *       - 248293: JPA 2.0 Element Collections (part 1)   
  *     02/06/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 2)
+ *     03/27/2009-2.0 Guy Pelletier 
+ *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
@@ -34,6 +36,9 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.MapKeyColumn;
+import javax.persistence.MapKeyTemporal;
+
+import static javax.persistence.TemporalType.DATE;
 
 import org.eclipse.persistence.annotations.BasicCollection;
 
@@ -51,8 +56,8 @@ public class ExpertBeerConsumer extends RatedBeerConsumer<String, String, String
     
     public ExpertBeerConsumer() {
         super();
-        quotes = new HashMap<Date, String>();
         audio = new ArrayList<byte[]>();
+        quotes = new HashMap<Date, String>();
     }   
     
     @BasicCollection
@@ -63,6 +68,7 @@ public class ExpertBeerConsumer extends RatedBeerConsumer<String, String, String
     
     @ElementCollection
     @MapKeyColumn(name="Q_DATE")
+    @MapKeyTemporal(DATE)
     @Column(name="QUOTE")
     @CollectionTable(
             name="EXPERT_QUOTES",
@@ -70,12 +76,12 @@ public class ExpertBeerConsumer extends RatedBeerConsumer<String, String, String
     public Map<Date, String> getQuotes() {
         return quotes;
     }
-    
-    public void setQuotes(Map<Date, String> quotes) {
-        this.quotes = quotes;
-    }
 
     public void setAudio(Collection<byte[]> audio) {
         this.audio = audio;
+    }
+    
+    public void setQuotes(Map<Date, String> quotes) {
+        this.quotes = quotes;
     }
 }

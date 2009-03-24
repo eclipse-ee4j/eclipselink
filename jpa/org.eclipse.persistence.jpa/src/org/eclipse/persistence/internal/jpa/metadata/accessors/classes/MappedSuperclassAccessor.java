@@ -21,6 +21,8 @@
  *       - 248293: JPA 2.0 Element Collections (part 1)
  *     02/06/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 2)
+ *     03/27/2009-2.0 Guy Pelletier 
+ *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -361,15 +363,25 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * Process the items of interest on a mapped superclass.
      */
     @Override
+    public void preProcess() {
+        setIsPreProcessed();
+        
+        // Add the accessors and converters from this mapped superclass.
+        addAccessors();
+        addConverters();
+    }
+    
+    /**
+     * INTERNAL:
+     * Process the items of interest on a mapped superclass.
+     */
+    @Override
     public void process() {
         setIsProcessed();
         
         // Process the common class level attributes that an entity or
         // mapped superclass may define.
         processClassMetadata();
-            
-        // Add the accessors from the mapped superclass to the owning descriptor.
-        addAccessors();
     }
     
     /**
@@ -559,9 +571,6 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         
         // Process the exclude superclass listeners metadata.
         processExcludeSuperclassListeners();
-        
-        // Process the converter metadata.
-        processConverters();
         
         // Process the optimistic locking policy metadata.
         processOptimisticLocking();

@@ -41,7 +41,7 @@ import org.eclipse.persistence.annotations.BasicMap;
 
 @MappedSuperclass
 @Access(FIELD)
-public abstract class RatedBeerConsumer<X, Y, Z> extends BeerConsumer {
+public abstract class RatedBeerConsumer<X, Y, Z> extends BeerConsumer<String> {
     @BasicCollection(valueColumn=@Column(name="ACCLAIM"))
     private Collection<X> acclaims;
     

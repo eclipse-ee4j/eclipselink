@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -15,6 +15,8 @@
  *       - 249860: Implement table per class inheritance support.
  *     02/06/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 2)
+ *     03/27/2009-2.0 Guy Pelletier 
+ *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -55,7 +57,11 @@ public class OneToOneAccessor extends ObjectAccessor {
     public OneToOneAccessor(Annotation oneToOne, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(oneToOne, accessibleObject, classAccessor);
         
-        m_mappedBy = (oneToOne == null) ? "" : (String) MetadataHelper.invokeMethod("mappedBy", oneToOne);
+        // A one to one mapping can default.
+        if (oneToOne != null) {
+            m_mappedBy = (String) MetadataHelper.invokeMethod("mappedBy", oneToOne);
+            setOrphanRemoval((Boolean) MetadataHelper.invokeMethod("orphanRemoval", oneToOne));
+        }
     }
     
     /**
@@ -76,6 +82,14 @@ public class OneToOneAccessor extends ObjectAccessor {
     
     /**
      * INTERNAL:
+     * Return true is the mapped by has been specified.
+     */
+    protected boolean hasMappedBy() {
+        return m_mappedBy != null && ! m_mappedBy.equals("");
+    }
+    
+    /**
+     * INTERNAL:
      */
     @Override
     public boolean isOneToOne() {
@@ -86,14 +100,13 @@ public class OneToOneAccessor extends ObjectAccessor {
      * INTERNAL:
      * Process a one to one setting into an EclipseLink OneToOneMapping.
      */
+    @Override
     public void process() {
         // Initialize our mapping now with what we found.
         OneToOneMapping mapping = initOneToOneMapping();
-
-        if (m_mappedBy == null || m_mappedBy.equals("")) {
-            // Owning side, look for JoinColumns or PrimaryKeyJoinColumns.
-            processOwningMappingKeys(mapping);
-        } else {
+        setMapping(mapping);
+        
+        if (hasMappedBy()) {
             // Non-owning side, process the foreign keys from the owner.
             OneToOneMapping ownerMapping = null;
             if (getOwningMapping(m_mappedBy).isOneToOneMapping()){
@@ -125,11 +138,11 @@ public class OneToOneAccessor extends ObjectAccessor {
             }
             
             mapping.setSourceToTargetKeyFields(targetToSourceKeyFields);
-            mapping.setTargetToSourceKeyFields(sourceToTargetKeyFields);
+            mapping.setTargetToSourceKeyFields(sourceToTargetKeyFields);    
+        } else {
+            // Owning side, look for JoinColumns or PrimaryKeyJoinColumns.
+            processOwningMappingKeys(mapping);
         }
-
-        // Add the mapping to the descriptor.
-        addMapping(mapping);
     }
     
     /**

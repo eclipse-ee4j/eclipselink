@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     02/25/2009-2.0 Guy Pelletier 
  *       - 265359: JPA 2.0 Element Collections - Metadata processing portions
+ *     03/27/2009-2.0 Guy Pelletier 
+ *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.advanced;
 
@@ -25,7 +27,7 @@ import static javax.persistence.FetchType.*;
 import org.eclipse.persistence.annotations.BasicMap;
 import org.eclipse.persistence.annotations.ConversionValue;
 import org.eclipse.persistence.annotations.Convert;
-import org.eclipse.persistence.annotations.ConvertKey;
+import org.eclipse.persistence.annotations.MapKeyConvert;
 import org.eclipse.persistence.annotations.Converter;
 import org.eclipse.persistence.annotations.ObjectTypeConverter;
 import org.eclipse.persistence.annotations.OptimisticLocking;
@@ -171,7 +173,7 @@ public class Buyer implements Serializable {
         joinColumns=@JoinColumn(name="BUYER_ID")
     )
     @Convert("Long2String")
-    @ConvertKey("CreditLine")
+    @MapKeyConvert("CreditLine")
     @ObjectTypeConverter(
        name="CreditLine",
        conversionValues={

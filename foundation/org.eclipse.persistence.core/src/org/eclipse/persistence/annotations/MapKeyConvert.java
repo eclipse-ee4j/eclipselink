@@ -10,6 +10,8 @@
  * Contributors:
  *     01/28/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 1)
+ *     03/27/2009-2.0 Guy Pelletier 
+ *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  ******************************************************************************/  
 package org.eclipse.persistence.annotations;
 
@@ -21,9 +23,9 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /** 
- * The ConvertKey annotation specifies that a named converter should be used 
- * with the corresponding mapped attribute key column. The ConvertKey annotation 
- * has the following reserved names:
+ * The MapKeyConvert annotation specifies that a named converter should be used 
+ * with the corresponding mapped attribute key column. The MapKeyConvert 
+ * annotation has the following reserved names:
  *  - serialized: Will use a SerializedObjectConverter 
  *  on the associated mapping. When using a SerializedObjectConverter the 
  *  database representation is a binary field holding a serialized version of 
@@ -46,11 +48,11 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * @see org.eclipse.persistence.mappings.converters.ClassInstanceConverter
  * 
  * @author Guy Pelletier
- * @since EclipseLink 1.1 
+ * @since EclipseLink 2.0 
  */ 
 @Target({METHOD, FIELD})
 @Retention(RUNTIME)
-public @interface ConvertKey {
+public @interface MapKeyConvert {
     /**
      * (Optional) The name of the converter to be used.
      */

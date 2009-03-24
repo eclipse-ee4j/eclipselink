@@ -19,60 +19,79 @@
  *       - 248293: JPA 2.0 Element Collections (part 2)
  *     02/26/2009-2.0 Guy Pelletier 
  *       - 264001: dot notation for mapped-by and order-by
+ *     03/27/2009-2.0 Guy Pelletier 
+ *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import javax.persistence.AssociationOverride;
+import javax.persistence.AssociationOverrides;
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
 import javax.persistence.FetchType;
 import javax.persistence.MapKey;
 import javax.persistence.MapKeyClass;
 import javax.persistence.MapKeyColumn;
+import javax.persistence.MapKeyEnumerated;
+import javax.persistence.MapKeyJoinColumn;
+import javax.persistence.MapKeyJoinColumns;
+import javax.persistence.MapKeyTemporal;
 import javax.persistence.OrderBy;
 import javax.persistence.OrderColumn;
 
+import org.eclipse.persistence.annotations.MapKeyConvert;
 import org.eclipse.persistence.exceptions.ValidationException;
 
-import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 
+import org.eclipse.persistence.internal.jpa.metadata.columns.AssociationOverrideMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.columns.AttributeOverrideMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.converters.EnumeratedMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.converters.TemporalMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 
 import org.eclipse.persistence.mappings.CollectionMapping;
+import org.eclipse.persistence.mappings.ManyToManyMapping;
 
 /**
  * INTERNAL:
- * An annotation defined relational collections accessor.
+ * A relational collection mapping accessor.
  * 
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
  */
-public abstract class CollectionAccessor extends RelationshipAccessor {
+public abstract class CollectionAccessor extends RelationshipAccessor implements MappedKeyMapAccessor {
     // Order by constants
     private static final String ASCENDING = "ASC";
     private static final String DESCENDING = "DESC";
     
-    // TODO: mapped but not processed.
     private Class m_mapKeyClass;
-    
-    // TODO: mapped but not processed.
     private ColumnMetadata m_mapKeyColumn;
-    // TODO: mapped but not processed.
-    private ColumnMetadata m_orderColumn;
+    private ColumnMetadata m_orderColumn; // TODO: mapped but not processed.
     
-    // TODO: mapped but not processed.
+    private EnumeratedMetadata m_mapKeyEnumerated;
+    
+    private List<AssociationOverrideMetadata> m_associationOverrides;
+    private List<AttributeOverrideMetadata> m_attributeOverrides;
     private List<JoinColumnMetadata> m_mapKeyJoinColumns;
     
     private String m_mapKey;
+    private String m_mapKeyConvert;
+    private String m_mapKeyClassName;
     private String m_mappedBy;
     private String m_orderBy;
-    private String m_mapKeyClassName;
+    
+    private TemporalMetadata m_mapKeyTemporal;
     
     /**
      * INTERNAL:
@@ -100,20 +119,102 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
             m_mapKey = (String) MetadataHelper.invokeMethod("name", getAnnotation(MapKey.class));
         }
         
+        // Set the map key class if one is defined.
+        if (isAnnotationPresent(MapKeyClass.class)) {
+            m_mapKeyClass = (Class) MetadataHelper.invokeMethod("value", getAnnotation(MapKeyClass.class));
+        }
+        
         // Set the map key column if one is defined.
         if (isAnnotationPresent(MapKeyColumn.class)) {
             m_mapKeyColumn = new ColumnMetadata(getAnnotation(MapKeyColumn.class), accessibleObject, getAttributeName());
         }
         
-        // Set the map key class if one is defined.
-        if (isAnnotationPresent(MapKeyClass.class)) {
-            m_mapKeyClass = (Class) MetadataHelper.invokeMethod("value", getAnnotation(MapKeyClass.class));
+        // Set the map key join columns if some are present.
+        m_mapKeyJoinColumns = new ArrayList<JoinColumnMetadata>();
+        // Process all the map key join columns first.
+        if (isAnnotationPresent(MapKeyJoinColumns.class)) {
+            for (Annotation jColumn : (Annotation[]) MetadataHelper.invokeMethod("value", getAnnotation(MapKeyJoinColumns.class))) {
+                m_mapKeyJoinColumns.add(new JoinColumnMetadata(jColumn, accessibleObject));
+            }
+        }
+        
+        // Process the single map key key join column second.
+        if (isAnnotationPresent(MapKeyJoinColumn.class)) {
+            m_mapKeyJoinColumns.add(new JoinColumnMetadata(getAnnotation(MapKeyJoinColumn.class), accessibleObject));
+        }
+        
+        // Set the attribute overrides if some are present.
+        m_attributeOverrides = new ArrayList<AttributeOverrideMetadata>();
+        // Process the attribute overrides first.
+        if (isAnnotationPresent(AttributeOverrides.class)) {
+            for (Annotation attributeOverride : (Annotation[]) MetadataHelper.invokeMethod("value", getAnnotation(AttributeOverrides.class))) {
+                m_attributeOverrides.add(new AttributeOverrideMetadata(attributeOverride, accessibleObject));
+            }
+        }
+        
+        // Process the single attribute override second.  
+        if (isAnnotationPresent(AttributeOverride.class)) {
+            m_attributeOverrides.add(new AttributeOverrideMetadata(getAnnotation(AttributeOverride.class), accessibleObject));
+        }
+        
+        // Set the association overrides if some are present.
+        m_associationOverrides = new ArrayList<AssociationOverrideMetadata>();
+        // Process the attribute overrides first.
+        if (isAnnotationPresent(AssociationOverrides.class)) {
+            for (Annotation associationOverride : (Annotation[]) MetadataHelper.invokeMethod("value", getAnnotation(AssociationOverrides.class))) {
+                m_associationOverrides.add(new AssociationOverrideMetadata(associationOverride, accessibleObject));
+            }
+        }
+        
+        // Process the single attribute override second.  
+        if (isAnnotationPresent(AssociationOverride.class)) {
+            m_associationOverrides.add(new AssociationOverrideMetadata(getAnnotation(AssociationOverride.class), accessibleObject));
         }
         
         // Set the order column if one is defined.
         if (isAnnotationPresent(OrderColumn.class)) {
             m_orderColumn = new ColumnMetadata(getAnnotation(OrderColumn.class), accessibleObject, getAttributeName());
         }
+        
+        // Set the map key enumerated if one is defined.
+        if (isAnnotationPresent(MapKeyEnumerated.class)) {
+            m_mapKeyEnumerated = new EnumeratedMetadata(getAnnotation(MapKeyEnumerated.class), accessibleObject);
+        }
+        
+        // Set the map key temporal if one is defined.
+        if (isAnnotationPresent(MapKeyTemporal.class)) {
+            m_mapKeyTemporal = new TemporalMetadata(getAnnotation(MapKeyTemporal.class), accessibleObject);
+        }
+        
+        // Set the convert key if one is defined.
+        if (isAnnotationPresent(MapKeyConvert.class)) {
+            m_mapKeyConvert = (String) MetadataHelper.invokeMethod("value", getAnnotation(MapKeyConvert.class));
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<AssociationOverrideMetadata> getAssociationOverrides() {
+        return m_associationOverrides;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<AttributeOverrideMetadata> getAttributeOverrides() {
+        return m_attributeOverrides;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the map key column for this accessor. Default one if necessary.
+     */
+    @Override
+    protected ColumnMetadata getColumn(String loggingCtx) {
+        return m_mapKeyColumn == null ? super.getColumn(loggingCtx) : m_mapKeyColumn;
     }
     
     /**
@@ -126,6 +227,15 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
     
     /**
      * INTERNAL:
+     * Return the enumerated metadata for this accessor.
+     */
+    @Override
+    public EnumeratedMetadata getEnumerated(boolean isForMapKey) {
+        return getMapKeyEnumerated();
+    }
+    
+    /**
+     * INTERNAL:
      * Used for OX mapping.
      */
     public String getMapKey() {
@@ -134,7 +244,6 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
     
     /**
      * INTERNAL: 
-     * TODO: Do we need this method?
      */
     public Class getMapKeyClass() {
         return m_mapKeyClass;
@@ -157,11 +266,35 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
     } 
     
     /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getMapKeyConvert() {
+        return m_mapKeyConvert;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping. 
+     */
+    public EnumeratedMetadata getMapKeyEnumerated() {
+        return m_mapKeyEnumerated;
+    }
+    
+    /**
      * INTERNAL: 
      * Used for OX mapping.
      */
     public List<JoinColumnMetadata> getMapKeyJoinColumns() {
         return m_mapKeyJoinColumns;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping. 
+     */
+    public TemporalMetadata getMapKeyTemporal() {
+        return m_mapKeyTemporal;
     }
     
     /**
@@ -217,20 +350,73 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
         return m_referenceClass;
     }
     
+    /**
+     * INTERNAL:
+     * Return the reference table for this accessor. If it is a many to many
+     * mapping, return the join table otherwise return the reference descriptors
+     * primary key table.
+     */
+    @Override
+    protected DatabaseTable getReferenceDatabaseTable() {
+        if (getMapping().isManyToManyMapping()) {
+            return ((ManyToManyMapping) getMapping()).getRelationTable();
+        } else {
+            return super.getReferenceDatabaseTable();
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the temporal metadata for this accessor.
+     */
+    @Override
+    public TemporalMetadata getTemporal(boolean isForMapKey) {
+        return getMapKeyTemporal();
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor has map key convert metadata.
+     */
+    @Override
+    protected boolean hasConvert(boolean isForMapKey) {
+        return (isForMapKey) ? m_mapKeyConvert != null : super.hasConvert(isForMapKey); 
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor has enumerated metadata.
+     */
+    @Override
+    public boolean hasEnumerated(boolean isForMapKey) {
+        return (isForMapKey) ? m_mapKeyEnumerated != null : super.hasEnumerated(isForMapKey); 
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor has temporal metadata.
+     */
+    @Override
+    public boolean hasTemporal(boolean isForMapKey) {
+        return (isForMapKey) ? m_mapKeyTemporal != null : super.hasTemporal(isForMapKey);  
+    }
+    
     /** 
      * INTERNAL:
      * Return true if this accessor represents a collection accessor.
      */
+    @Override
     public boolean isCollectionAccessor() {
         return true;
     }
     
     /**
      * INTERNAL:
-     * Return true if this accessor uses a Map.
+     * Return true if this accessor is a mapped key map accessor.
      */
-    public boolean isMapCollectionAccessor() {
-        return getAccessibleObject().isSupportedDirectMapClass(getDescriptor());
+    @Override
+    public boolean isMappedKeyMapAccessor() {
+        return true && isMapAccessor();
     }
     
     /**
@@ -239,6 +425,11 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
     @Override
     public void initXMLObject(MetadataAccessibleObject accessibleObject) {
         super.initXMLObject(accessibleObject);
+        
+        // Init the list of ORMetadata objects.
+        initXMLObjects(m_mapKeyJoinColumns, accessibleObject);
+        initXMLObjects(m_associationOverrides, accessibleObject);
+        initXMLObjects(m_attributeOverrides, accessibleObject);
         
         // Initialize single ORMetadata objects.
         initXMLObject(m_mapKeyColumn, accessibleObject);
@@ -253,9 +444,10 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
      * This process should do any common validation processing of collection 
      * accessors.
      */
+    @Override
     public void process() {
         // Validate the collection type.
-        if (! getAccessibleObject().isSupportedCollectionClass(getDescriptor())) {
+        if (! getAccessibleObject().isSupportedToManyCollectionClass(getDescriptor())) {
             throw ValidationException.invalidCollectionTypeForRelationship(getJavaClass(), getRawClass(), getAttributeName());
         }
     }
@@ -264,6 +456,9 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
      * INTERNAL:
      */
     protected void process(CollectionMapping mapping) {
+        // Set the mapping, this must be done first.
+        setMapping(mapping);
+        
         mapping.setIsReadOnly(false);
         mapping.setIsLazy(isLazy());
         mapping.setIsPrivateOwned(isPrivateOwned());
@@ -280,58 +475,15 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
         // Process an OrderBy if there is one.
         processOrderBy(mapping);
         
-        // Process a MapKey if there is one.
-        String mapKey = processMapKey(mapping);
-        
-        // Set the correct indirection on the collection mapping.
+        // Set the correct indirection on the collection mapping. Process the 
+        // map metadata for a map key value to set on the indirection policy.
         // ** Note the reference class or reference class name needs to be set 
         // on the mapping before setting the indirection policy.
-        setIndirectionPolicy(mapping, mapKey, usesIndirection());
+        processContainerPolicyAndIndirection(mapping);
         
         // Process a @ReturnInsert and @ReturnUpdate (to log a warning message)
         processReturnInsertAndUpdate();
-        
-        // Add the mapping to the descriptor.
-        addMapping(mapping);
-    }
-    
-    /**
-     * INTERNAL:
-     * Process a MapKey for a 1-M or M-M mapping. Will return the map key
-     * method name that should be use, null otherwise.
-     */
-    protected String processMapKey(CollectionMapping mapping) {
-        String mapKeyMethod = null;
-        
-        if (isMapCollectionAccessor()) {
-            MetadataDescriptor referenceDescriptor = getReferenceDescriptor();
-            
-            if ((m_mapKey == null || m_mapKey.equals("")) && referenceDescriptor.hasCompositePrimaryKey()) {
-                // No persistent property or field name has been provided, and
-                // the reference class has a composite primary key class. Let
-                // it fall through to return null for the map key. Internally,
-                // EclipseLink will use an instance of the composite primary 
-                // key class as the map key.
-            } else {
-                // A persistent property or field name may have have been 
-                // provided. If one has not we will default to the primary
-                // key of the reference class. The primary key cannot be 
-                // composite at this point.
-                String fieldOrPropertyName = getName(m_mapKey, referenceDescriptor.getIdAttributeName(), getLogger().MAP_KEY_ATTRIBUTE_NAME);
-    
-                // Look up the referenceAccessor
-                MetadataAccessor referenceAccessor = referenceDescriptor.getAccessorFor(fieldOrPropertyName);
-        
-                if (referenceAccessor == null) {
-                    throw ValidationException.couldNotFindMapKey(fieldOrPropertyName, referenceDescriptor.getJavaClass(), mapping);
-                }
-        
-                mapKeyMethod = referenceAccessor.getAccessibleObjectName();
-            }
-        }
-        
-        return mapKeyMethod;
-    }
+    }  
     
     /**
      * INTERNAL:
@@ -414,8 +566,31 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public void setAssociationOverrides(List<AssociationOverrideMetadata> associationOverrides) {
+        m_associationOverrides = associationOverrides;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setAttributeOverrides(List<AttributeOverrideMetadata> attributeOverrides) {
+        m_attributeOverrides = attributeOverrides;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setMapKey(String mapKey) {
         m_mapKey = mapKey;
+    }
+    
+    /**
+     * INTERNAL: 
+     */
+    public void setMapKeyClass(Class mapKeyClass) {
+        m_mapKeyClass = mapKeyClass;
     }
     
     /**
@@ -435,11 +610,35 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
     } 
     
     /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setMapKeyConvert(String mapKeyConvert) {
+        m_mapKeyConvert = mapKeyConvert;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping. 
+     */
+    public void setMapKeyEnumerated(EnumeratedMetadata mapKeyEnumerated) {
+        m_mapKeyEnumerated = mapKeyEnumerated;
+    }
+    
+    /**
      * INTERNAL: 
      * Used for OX mapping.
      */
     public void setMapKeyJoinColumns(List<JoinColumnMetadata> mapKeyJoinColumns) {
         m_mapKeyJoinColumns = mapKeyJoinColumns;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping. 
+     */
+    public void setMapKeyTemporal(TemporalMetadata mapKeyTemporal) {
+        m_mapKeyTemporal = mapKeyTemporal;
     }
     
     /**

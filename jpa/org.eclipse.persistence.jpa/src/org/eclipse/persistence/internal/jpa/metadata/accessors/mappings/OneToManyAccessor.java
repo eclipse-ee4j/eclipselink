@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -17,6 +17,8 @@
  *       - 249860: Implement table per class inheritance support.
  *     02/06/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 2)
+ *     03/27/2009-2.0 Guy Pelletier 
+ *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -60,6 +62,11 @@ public class OneToManyAccessor extends CollectionAccessor {
      */
     public OneToManyAccessor(Annotation oneToMany, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(oneToMany, accessibleObject, classAccessor);
+        
+        // A one to many mapping can default.
+        if (oneToMany != null) {
+            setOrphanRemoval((Boolean) MetadataHelper.invokeMethod("orphanRemoval", oneToMany));
+        }
     }
     
     /**
@@ -153,7 +160,7 @@ public class OneToManyAccessor extends CollectionAccessor {
            }
             
            mapping.addTargetForeignKeyField(fkField, pkField);
-       }   
+       }
     }
     
     /**
@@ -173,11 +180,11 @@ public class OneToManyAccessor extends CollectionAccessor {
     
     /**
      * INTERNAL:
-     * Process the @JoinColumn(s) for the owning side of a unidirectional one to many mapping.
-     * The default pk used only with single primary key 
-     * entities. The processor should never get as far as to use them with 
-     * entities that have a composite primary key (validation exception will be 
-     * thrown).
+     * Process the join column(s) metadata for the owning side of a 
+     * unidirectional one to many mapping. The default pk used only with single 
+     * primary key  entities. The processor should never get as far as to use 
+     * them with entities that have a composite primary key (validation 
+     * exception will be thrown).
      */
     protected void processUnidirectionalOneToManyTargetForeignKeyRelationship(UnidirectionalOneToManyMapping mapping) {         
         // If the pk field (name) is not specified, it 
@@ -192,7 +199,7 @@ public class OneToManyAccessor extends CollectionAccessor {
             
         // Join columns will come from a @JoinColumn(s).
         // Add the source foreign key fields to the mapping.
-        for (JoinColumnMetadata joinColumn : processJoinColumns()) {
+        for (JoinColumnMetadata joinColumn : getJoinColumns(getJoinColumns(), getReferenceDescriptor())) {
             DatabaseField pkField = joinColumn.getPrimaryKeyField();
             pkField.setName(getName(pkField, defaultPKFieldName, MetadataLogger.PK_COLUMN));
             pkField.setTable(getDescriptor().getPrimaryKeyTable());

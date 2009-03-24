@@ -678,7 +678,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         Map keyFields = new HashMap();
         ClassDescriptor descriptor =getReferenceDescriptor();
         Iterator i = null;
-        if (descriptor.getPrimaryKeyFields() != null){
+        if (descriptor.getPrimaryKeyFields() != null && ! descriptor.getPrimaryKeyFields().isEmpty()){
             i = descriptor.getPrimaryKeyFields().iterator();
         } else {
             i = descriptor.getAllFields().iterator();

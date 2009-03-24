@@ -20,6 +20,8 @@
  *       - 249329: To remain JPA 1.0 compliant, any new JPA 2.0 annotations should be referenced by name
  *     02/06/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 2)
+ *     03/27/2009-2.0 Guy Pelletier 
+ *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
@@ -176,7 +178,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     /**
      * INTERNAL:
      * This should only be called for accessor's of type Map. It will return
-     * the Map key type if generics are used, null otherwise.
+     * the map key type if generics are used, null otherwise.
      */
     public Class getMapKeyClass(MetadataDescriptor descriptor) {
         if (isGenericCollectionType()) {
@@ -452,7 +454,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      */
     public boolean isOneToMany(MetadataDescriptor descriptor) {
         if (isAnnotationNotPresent(OneToMany.class) && ! descriptor.ignoreDefaultMappings()) {
-            if (isGenericCollectionType() && isSupportedCollectionClass(descriptor) && descriptor.getProject().hasEntity(getReferenceClassFromGeneric(descriptor))) {
+            if (isGenericCollectionType() && isSupportedToManyCollectionClass(descriptor) && descriptor.getProject().hasEntity(getReferenceClassFromGeneric(descriptor))) {
                 getLogger().logConfigMessage(MetadataLogger.ONE_TO_MANY_MAPPING, m_annotatedElement);
                 return true;
             }
@@ -483,23 +485,14 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
             return isAnnotationPresent(OneToOne.class, descriptor);
         }
     }
-
-    /**
-     * INTERNAL:
-     * Method to return whether a class is a supported Collection. EJB 3.0 spec 
-     * currently only supports Collection, Set, List and Map.  Changed in 221577
-     * to allow types assignable to Collection, Set, List and Map rather than 
-     * strict equality.
-     */
-    public boolean isSupportedCollectionClass(MetadataDescriptor descriptor) {
-        return isSupportedDirectCollectionClass(descriptor) || isSupportedDirectMapClass(descriptor);
-    }
     
     /**
      * INTERNAL:
      * Method to return whether a class is a supported direct collection class.
+     * Changed in 221577 to allow types assignable to Collection, Set, List and 
+     * Map rather than strict equality.
      */
-    public boolean isSupportedDirectCollectionClass(MetadataDescriptor descriptor) {
+    public boolean isSupportedCollectionClass(MetadataDescriptor descriptor) {
         Class rawClass = getRawClass(descriptor);
         
         return Collection.class.isAssignableFrom(rawClass) || 
@@ -510,12 +503,20 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     /**
      * INTERNAL:
      * Method to return whether a class is a supported direct map collection
-     * class.
+     * class. Changed in 221577 to allow types assignable to Collection, Set, 
+     * List and Map rather than strict equality.
      */
-    public boolean isSupportedDirectMapClass(MetadataDescriptor descriptor) {
-        Class rawClass = getRawClass(descriptor);
-        
-        return Map.class.isAssignableFrom(rawClass); 
+    public boolean isSupportedMapClass(MetadataDescriptor descriptor) {
+        return Map.class.isAssignableFrom(getRawClass(descriptor)); 
+    }
+    
+    /**
+     * INTERNAL:
+     * Method to return whether a class is a supported one to many collection
+     * class.  
+     */
+    public boolean isSupportedToManyCollectionClass(MetadataDescriptor descriptor) {
+        return isSupportedCollectionClass(descriptor) || isSupportedMapClass(descriptor);
     }
 
     /**

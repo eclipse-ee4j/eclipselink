@@ -82,8 +82,8 @@
             </many-to-many>
             <!-- This mapping is overridden in the eclipselink-orm.xml file -->
             <element-collection name="creditLines" fetch="EAGER">
-                <column name="ACCOUNT_INVALID"/>
                 <map-key-column name="BANK_INVALID"/>
+                <column name="ACCOUNT_INVALID"/>
                 <collection-table name="EMP_CREDITLINES_INVALID">
                     <join-column name="EMP_ID_INVALID"/>
                 </collection-table>

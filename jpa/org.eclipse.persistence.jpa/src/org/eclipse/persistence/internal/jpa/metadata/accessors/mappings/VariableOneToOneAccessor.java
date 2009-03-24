@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -13,7 +13,9 @@
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files  
  *     02/06/2009-2.0 Guy Pelletier 
- *       - 248293: JPA 2.0 Element Collections (part 2)   
+ *       - 248293: JPA 2.0 Element Collections (part 2)
+ *     03/27/2009-2.0 Guy Pelletier 
+ *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes   
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -49,7 +51,7 @@ public class VariableOneToOneAccessor extends ObjectAccessor {
     
     private Integer m_lastDiscriminatorIndex;
     private DiscriminatorColumnMetadata m_discriminatorColumn;
-    private List<DiscriminatorClassMetadata> m_discriminatorClasses = new ArrayList<DiscriminatorClassMetadata>();
+    private List<DiscriminatorClassMetadata> m_discriminatorClasses;
     
     /**
      * INTERNAL:
@@ -65,14 +67,19 @@ public class VariableOneToOneAccessor extends ObjectAccessor {
     public VariableOneToOneAccessor(Annotation variableOneToOne, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(variableOneToOne, accessibleObject, classAccessor);
         
+        // Initialiaze the discriminator classes list.
+        m_discriminatorClasses = new ArrayList<DiscriminatorClassMetadata>();
+        
         // We must check because VariableOneToOne's can default.
         if (variableOneToOne != null) {
             // Parent class looks for 'targetEntity' and not 'targetInterface'
             // Need to set it correctly.
             setTargetEntity((Class) MetadataHelper.invokeMethod("targetInterface", variableOneToOne));
+            setOrphanRemoval((Boolean) MetadataHelper.invokeMethod("orphanRemoval", variableOneToOne));
             
             m_discriminatorColumn = new DiscriminatorColumnMetadata((Annotation) MetadataHelper.invokeMethod("discriminatorColumn", variableOneToOne), accessibleObject);
             
+            // Set the discriminator classes if specified.
             for (Annotation discriminatorClass : (Annotation[]) MetadataHelper.invokeMethod("discriminatorClasses", variableOneToOne)) {
                 m_discriminatorClasses.add(new DiscriminatorClassMetadata(discriminatorClass, accessibleObject));
             }
@@ -200,6 +207,8 @@ public class VariableOneToOneAccessor extends ObjectAccessor {
         
         // Now process our variable one to one mapping.
         VariableOneToOneMapping mapping = new VariableOneToOneMapping();
+        setMapping(mapping);
+        
         mapping.setIsReadOnly(false);
         mapping.setIsPrivateOwned(isPrivateOwned());
         mapping.setIsOptional(isOptional());
@@ -232,9 +241,6 @@ public class VariableOneToOneAccessor extends ObjectAccessor {
         
         // Process the foreign query keys from the join columns.
         processForeignQueryKeyNames(mapping);
-        
-        // Add the mapping to the descriptor.
-        addMapping(mapping);
     }
     
     /**
@@ -242,7 +248,7 @@ public class VariableOneToOneAccessor extends ObjectAccessor {
      */
     protected void processForeignQueryKeyNames(VariableOneToOneMapping mapping) {
         // Add the source foreign key fields to the mapping.
-        for (JoinColumnMetadata joinColumn : processJoinColumns()) {
+        for (JoinColumnMetadata joinColumn : getJoinColumns(getJoinColumns(), getReferenceDescriptor())) {
             // The query key name will be extracted from the referenced column
             // name. It defaults to ID otherwise.
             String queryKeyName = getName(joinColumn.getReferencedColumnName(), DEFAULT_QUERY_KEY, MetadataLogger.QK_COLUMN);

@@ -15,6 +15,8 @@
  *       - 232975: Failure when attribute type is generic
  *     01/28/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 1)
+ *     03/27/2009-2.0 Guy Pelletier 
+ *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -48,7 +50,6 @@ import org.eclipse.persistence.mappings.DirectCollectionMapping;
  */
 public class BasicCollectionAccessor extends DirectCollectionAccessor {
     private ColumnMetadata m_valueColumn;
-    private CollectionTableMetadata m_collectionTable;
     
     /**
      * INTERNAL:
@@ -78,16 +79,8 @@ public class BasicCollectionAccessor extends DirectCollectionAccessor {
         
         // Set the collection table if one is present.
         if (isAnnotationPresent(CollectionTable.class)) {
-            m_collectionTable = new CollectionTableMetadata(getAnnotation(CollectionTable.class), accessibleObject, false);
+            setCollectionTable(new CollectionTableMetadata(getAnnotation(CollectionTable.class), accessibleObject, false));
         }
-    }
-    
-    /**
-     * INTERNAL: 
-     * Used for OX mapping.
-     */
-    protected CollectionTableMetadata getCollectionTable() {
-        return m_collectionTable;
     }
     
     /**
@@ -98,7 +91,11 @@ public class BasicCollectionAccessor extends DirectCollectionAccessor {
      */
     @Override
     protected ColumnMetadata getColumn(String loggingCtx) {
-        return (m_valueColumn == null) ? new ColumnMetadata(getAccessibleObject(), getAttributeName()) : m_valueColumn;  
+        if (loggingCtx.equals(MetadataLogger.VALUE_COLUMN)) {
+            return m_valueColumn == null ? super.getColumn(loggingCtx) : m_valueColumn;
+        } else {
+            return super.getColumn(loggingCtx);
+        }
     }
     
     /**
@@ -112,7 +109,11 @@ public class BasicCollectionAccessor extends DirectCollectionAccessor {
         // To correctly resolve the generics at runtime, we need to set the 
         // field type.
         if (getAccessibleObject().isGenericCollectionType()) {
-            field.setType(getReferenceClass());
+            if (loggingCtx.equals(MetadataLogger.MAP_KEY_COLUMN)) {
+                field.setType(getMapKeyReferenceClass());
+            } else {
+                field.setType(getReferenceClass());
+            }
         }
                     
         return field;
@@ -157,9 +158,6 @@ public class BasicCollectionAccessor extends DirectCollectionAccessor {
     
         // Initialize single ORMetadata objects.
         initXMLObject(m_valueColumn, accessibleObject);
-        
-        // Initialize lists of ORMetadata objects.
-        initXMLObject(m_collectionTable, accessibleObject);
     }
     
     /**
@@ -188,22 +186,12 @@ public class BasicCollectionAccessor extends DirectCollectionAccessor {
      */
     @Override
     protected void processCollectionTable(CollectionMapping mapping) {
-        // Check that we loaded a collection table otherwise default one.        
-        if (m_collectionTable == null) {
-            // TODO: Log a defaulting message.
-            m_collectionTable = new CollectionTableMetadata(getAccessibleObject());
-        }
-        
-        // Process any table defaults and log warning messages.
-        processTable(m_collectionTable, getDefaultCollectionTableName());
-        
-        // Set the reference table on the mapping.
-        ((DirectCollectionMapping) mapping).setReferenceTable(m_collectionTable.getDatabaseTable());
+        super.processCollectionTable(mapping);
         
         // Add all the primaryKeyJoinColumns (reference key fields) to the 
         // mapping. Primary key join column validation is performed in the
         // processPrimaryKeyJoinColumns call.
-        for (PrimaryKeyJoinColumnMetadata primaryKeyJoinColumn : processPrimaryKeyJoinColumns(new PrimaryKeyJoinColumnsMetadata(m_collectionTable.getPrimaryKeyJoinColumns()))) {
+        for (PrimaryKeyJoinColumnMetadata primaryKeyJoinColumn : processPrimaryKeyJoinColumns(new PrimaryKeyJoinColumnsMetadata(getCollectionTable().getPrimaryKeyJoinColumns()))) {
             // The default name is the primary key of the owning entity.
             DatabaseField pkField = primaryKeyJoinColumn.getPrimaryKeyField();
             pkField.setName(getName(pkField, getOwningDescriptor().getPrimaryKeyFieldName(), MetadataLogger.PK_COLUMN));
@@ -212,19 +200,11 @@ public class BasicCollectionAccessor extends DirectCollectionAccessor {
             // The default name is the primary key of the owning entity.
             DatabaseField fkField = primaryKeyJoinColumn.getForeignKeyField();
             fkField.setName(getName(fkField, getOwningDescriptor().getPrimaryKeyFieldName(), MetadataLogger.FK_COLUMN));
-            fkField.setTable(m_collectionTable.getDatabaseTable());
+            fkField.setTable(getReferenceDatabaseTable());
             
             // Add the reference key field for the direct collection mapping.
             ((DirectCollectionMapping) mapping).addReferenceKeyField(fkField, pkField);
         }
-    }
-    
-    /**
-     * INTERNAL: 
-     * Used for OX mapping.
-     */
-    protected void setCollectionTable(CollectionTableMetadata collectionTable) {
-        m_collectionTable = collectionTable;
     }
     
     /**

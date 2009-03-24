@@ -14,7 +14,6 @@ package org.eclipse.persistence.testing.models.nativeapitest;
 
 import java.util.*;
 import java.io.Serializable;
-import javax.persistence.*;
 
 public class Employee implements Serializable, Cloneable {
 

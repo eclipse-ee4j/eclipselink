@@ -1851,7 +1851,7 @@ public class ValidationException extends EclipseLinkException {
         return validationException;
     }
 
-    public static ValidationException unableToDetermineMayKeyClass(String attributeName, Class cls) {
+    public static ValidationException unableToDetermineMapKeyClass(String attributeName, Class cls) {
         Object[] args = { attributeName, cls };
 
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, UNABLE_TO_DETERMINE_MAP_KEY_CLASS, args));

@@ -82,7 +82,7 @@ public @interface AssociationOverride {
      * attribute. The mapping type will remain the same as is defined
      * in the mapped superclass.
      */
-    JoinColumn[] joinColumns();
+    JoinColumn[] joinColumns() default {};
     /**
      * The joinTable element is used to override the 
      * mapping of the join table and/or its join columns.

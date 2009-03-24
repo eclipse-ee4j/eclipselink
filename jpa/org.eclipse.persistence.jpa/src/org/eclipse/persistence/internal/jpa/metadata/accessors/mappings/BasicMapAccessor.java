@@ -17,6 +17,8 @@
  *       - 241651: JPA 2.0 Access Type support
  *     01/28/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 1)
+ *     03/27/2009-2.0 Guy Pelletier 
+ *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -75,7 +77,7 @@ public class BasicMapAccessor extends BasicCollectionAccessor {
         if (loggingCtx.equals(MetadataLogger.VALUE_COLUMN)) {
             return super.getColumn(loggingCtx);
         } else {
-            return (m_keyColumn == null) ? new ColumnMetadata(getAccessibleObject(), getAttributeName()) : m_keyColumn; 
+            return m_keyColumn == null ? super.getColumn(loggingCtx) : m_keyColumn; 
         }
     }
     
@@ -114,11 +116,7 @@ public class BasicMapAccessor extends BasicCollectionAccessor {
      */
     @Override
     public Class getReferenceClass() {
-        if (isKeyContextProcessing()) {
-            return getAccessibleObject().getMapKeyClass(getDescriptor());            
-        } else {
-            return getReferenceClassFromGeneric();
-        }
+        return getReferenceClassFromGeneric();
     }
     
     /**
@@ -137,7 +135,7 @@ public class BasicMapAccessor extends BasicCollectionAccessor {
      * ignoring JPA converters for lob, temporal, enumerated and serialized.
      */
     @Override
-    protected boolean hasConvert() {
+    protected boolean hasConvert(boolean isForMapKey) {
         return true;
     }
     
@@ -150,6 +148,16 @@ public class BasicMapAccessor extends BasicCollectionAccessor {
         
         // Initialize single ORMetadata objects.
         initXMLObject(m_keyColumn, accessibleObject);
+    }
+    
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor represents a basic map mapping.
+     */
+    @Override
+    public boolean isBasicMap() {
+        return true;
     }
     
     /**

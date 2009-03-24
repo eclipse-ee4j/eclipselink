@@ -32,7 +32,6 @@ import org.eclipse.persistence.testing.models.nativeapitest.EmployeeService;
 
 import org.eclipse.persistence.sessions.server.*;
 import org.eclipse.persistence.sessions.factories.SessionManager;
-import org.eclipse.persistence.sessions.*;
 
 /**
  * EJB 3 NativeAPITests tests.

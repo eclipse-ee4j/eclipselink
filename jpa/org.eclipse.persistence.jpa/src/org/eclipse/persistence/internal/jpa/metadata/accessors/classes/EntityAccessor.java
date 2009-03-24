@@ -27,8 +27,10 @@
  *       - 249860: Implement table per class inheritance support.
  *     01/28/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 1)
-  *     02/06/2009-2.0 Guy Pelletier 
+ *     02/06/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 2)
+ *     03/27/2009-2.0 Guy Pelletier 
+ *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -109,7 +111,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     private List<SecondaryTableMetadata> m_secondaryTables = new ArrayList<SecondaryTableMetadata>();
     private List<PrimaryKeyJoinColumnMetadata> m_primaryKeyJoinColumns = new ArrayList<PrimaryKeyJoinColumnMetadata>();
     
-    private ArrayList<MappedSuperclassAccessor> m_mappedSuperclasses;
+    private ArrayList<MappedSuperclassAccessor> m_mappedSuperclasses = new ArrayList<MappedSuperclassAccessor>();
     
     private SequenceGeneratorMetadata m_sequenceGenerator;
  
@@ -163,6 +165,40 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     
     /**
      * INTERNAL:
+     */
+    protected void addPotentialMappedSuperclass(Class cls) {
+        MappedSuperclassAccessor accessor = getProject().getMappedSuperclass(cls);
+
+        // If the mapped superclass was not defined in XML then check 
+        // for a MappedSuperclass annotation.
+        if (accessor == null) {
+            MetadataClass metadataClass = new MetadataClass(cls);
+            if (metadataClass.isAnnotationPresent(MappedSuperclass.class)) {
+                m_mappedSuperclasses.add(new MappedSuperclassAccessor(metadataClass.getAnnotation(MappedSuperclass.class), cls, getDescriptor()));
+            }
+        } else {
+            m_mappedSuperclasses.add(reloadMappedSuperclass(accessor, getDescriptor()));
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected void clearMappedSuperclassesAndInheritanceParents() {
+        // Re-initialize the mapped superclass list if it's not empty.
+        if (! m_mappedSuperclasses.isEmpty()) {
+            m_mappedSuperclasses.clear();
+        }
+        
+        // Null out the inheritance parent and root descriptor before we start
+        // since they will be recalculated and used to determine when to stop
+        // looking for mapped superclasses.
+        getDescriptor().setInheritanceParentDescriptor(null);
+        getDescriptor().setInheritanceRootDescriptor(null);
+    }
+    
+    /**
+     * INTERNAL:
      * Build a list of classes that are decorated with a MappedSuperclass
      * annotation or that are tagged as a mapped-superclass in an XML document.
      * 
@@ -178,84 +214,78 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * dependencies change.
      */
     protected void discoverMappedSuperclassesAndInheritanceParents() {
-        Class parent = getJavaClass().getSuperclass();
-        ClassAccessor lastParent = null;
-        Type genericParent = getJavaClass().getGenericSuperclass();
-     
-        // Re-initialize the mapped superclass list.
-        m_mappedSuperclasses = new ArrayList<MappedSuperclassAccessor>();
+        // Clear out any previous mapped superclasses and inheritance parents
+        // that were discovered.
+        clearMappedSuperclassesAndInheritanceParents();
         
-        // Null out the inheritance parent and root descriptor before we start
-        // since they will be recalculated and used to determine when to stop
-        // looking for mapped superclasses.
-        getDescriptor().setInheritanceParentDescriptor(null);
-        getDescriptor().setInheritanceRootDescriptor(null);
+        EntityAccessor lastAccessor = this;
+        EntityAccessor currentAccessor = this;
+        Class parent = getJavaClass().getSuperclass();
+        Type genericParent = getJavaClass().getGenericSuperclass();
+        List<EntityAccessor> subclassAccessors = new ArrayList<EntityAccessor>();
+        subclassAccessors.add(currentAccessor);
         
         while (parent != Object.class) {
             EntityAccessor parentAccessor = getProject().getEntityAccessor(parent.getName());
             
             // We found a parent entity.
             if (parentAccessor != null) {
-                if (lastParent == null) {
-                    // Set the immediate parent's descriptor and class on this
-                    // entity's descriptor.
-                    getDescriptor().setInheritanceParentDescriptor(parentAccessor.getDescriptor());
-                }
+                // Set the immediate parent's descriptor the current descriptor.
+                currentAccessor.getDescriptor().setInheritanceParentDescriptor(parentAccessor.getDescriptor());
                 
-                lastParent = parentAccessor;
+                // Remember the last accessor first ...
+                lastAccessor = currentAccessor;
+                // ... now, update the current accessor.
+                currentAccessor = parentAccessor;
                 
-                if (parentAccessor.hasInheritance()) {
-                    break; // stop traversing the inheritance hierarchy.
-                }
-            }
-            
-            // In an inheritance case we don't want to look at mapped 
-            // superclasses if they are not directly above us before the next 
-            // entity in the hierarchy.
-            if (! getDescriptor().isInheritanceSubclass()) {
-                // If we have a generic parent we need to grab our generic types
-                // that may be used (and therefore need to be resolved) to map
-                // accessors correctly.
-                if (genericParent instanceof ParameterizedType) {
-                    Type[] actualTypeArguments = ((ParameterizedType) genericParent).getActualTypeArguments();
-                    TypeVariable[] typeVariables = ((Class) ((ParameterizedType) genericParent).getRawType()).getTypeParameters();
+                // Clear out any previous mapped superclasses and inheritance 
+                // parents that were discovered. We're going to re-discover
+                // them now.
+                currentAccessor.clearMappedSuperclassesAndInheritanceParents();
+                
+                // If we found an entity with inheritance metadata, set the 
+                // root descriptor on its subclasses.
+                if (currentAccessor.hasInheritance()) {
+                    for (EntityAccessor subclassAccessor : subclassAccessors) {
+                        subclassAccessor.getDescriptor().setInheritanceRootDescriptor(currentAccessor.getDescriptor());
+                    }
                     
-                    for (int i = 0; i < actualTypeArguments.length; i++) {
-                        Type actualTypeArgument = actualTypeArguments[i];
-                        TypeVariable variable = typeVariables[i];
-                        
-                        // We are building bottom up and need to link up
-                        // any TypeVariables with the actual class from the
-                        // originating entity.
-                        if (actualTypeArgument instanceof TypeVariable) {
-                            getDescriptor().addGenericType(variable.getName(), getDescriptor().getGenericType(((TypeVariable) actualTypeArgument).getName())); 
-                        } else {
-                            getDescriptor().addGenericType(variable.getName(), actualTypeArgument);
-                        }
-                    }
+                    // Clear the subclass list, we'll keep looking but the 
+                    // inheritance strategy may have changed so we need to 
+                    // build a new list of subclasses.
+                    subclassAccessors.clear();
                 }
                 
-                MappedSuperclassAccessor accessor = getProject().getMappedSuperclass(parent);
-
-                // If the mapped superclass was not defined in XML then check 
-                // for a MappedSuperclass annotation.
-                if (accessor == null) {
-                    MetadataClass metadataClass = new MetadataClass(parent);
-                    if (metadataClass.isAnnotationPresent(MappedSuperclass.class)) {
-                        m_mappedSuperclasses.add(new MappedSuperclassAccessor(metadataClass.getAnnotation(MappedSuperclass.class), parent, getDescriptor()));
-                    }
-                } else {
-                    m_mappedSuperclasses.add(reloadMappedSuperclass(accessor, getDescriptor()));
-                }
+                // Add the descriptor to the subclass list
+                subclassAccessors.add(currentAccessor);
+                
+                // Resolve any generic types from the generic parent onto the
+                // current descriptor.
+                currentAccessor.resolveGenericTypes(genericParent, lastAccessor.getDescriptor());
+            } else {
+                // Might be a mapped superclass, check and add as needed.
+                currentAccessor.addPotentialMappedSuperclass(parent);
+                
+                // Resolve any generic types from the generic parent onto the
+                // current descriptor.
+                currentAccessor.resolveGenericTypes(genericParent, currentAccessor.getDescriptor());
             }
             
+            // Get the next parent and keep processing ...
             genericParent = parent.getGenericSuperclass();
             parent = parent.getSuperclass();
         }
-
-        // Set our root descriptor of the inheritance hierarchy.
-        if (lastParent != null) {
-            getDescriptor().setInheritanceRootDescriptor(lastParent.getDescriptor()); 
+        
+        // Set our root descriptor of the inheritance hierarchy on all the 
+        // subclass descriptors. The root may not have explicit inheritance 
+        // metadata therefore, make the current descriptor of the entity 
+        // hierarchy the root.
+        if (! subclassAccessors.isEmpty()) {
+            for (EntityAccessor subclassAccessor : subclassAccessors) {
+                if (subclassAccessor != currentAccessor) {
+                    subclassAccessor.getDescriptor().setInheritanceRootDescriptor(currentAccessor.getDescriptor());
+                }
+            } 
         }
     }
     
@@ -497,16 +527,21 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     
     /**
      * INTERNAL:
-     * Process the items of interest on an entity class. The order of processing 
-     * is important, care must be taken if changes must be made.
+     * Pre-process the items of interest on an entity class. The order of 
+     * processing is important, care must be taken if changes must be made.
      */
     @Override
-    public void process() {
-        setIsProcessed();
+    public void preProcess() {
+        setIsPreProcessed();
         
-        // Discover our mapped superclasses and inheritance parents before
-        // doing any processing.
-        discoverMappedSuperclassesAndInheritanceParents();
+        // If we are not already an inheritance subclass (meaning we were not
+        // discovered through a subclass entity discovery) then perform
+        // the discovery process before processing any further. We traverse
+        // the chain upwards and we can not guarantee which entity will be
+        // processed first in an inheritance hierarchy.
+        if (! getDescriptor().isInheritanceSubclass()) {
+            discoverMappedSuperclassesAndInheritanceParents();
+        }
         
         // If we are an inheritance subclass process out root first.
         if (getDescriptor().isInheritanceSubclass()) {
@@ -518,26 +553,59 @@ public class EntityAccessor extends MappedSuperclassAccessor {
             // does not specify an explicit type will be used to determine
             // the default access type.
             ClassAccessor parentAccessor = getDescriptor().getInheritanceParentDescriptor().getClassAccessor();
+            if (! parentAccessor.isPreProcessed()) {
+                parentAccessor.preProcess();
+            }
+        }
+        
+        // Process the entity specifics now, like access, metadata complete etc. 
+        // which we need before proceeding any further.
+        processEntity();
+        
+        // Pre-process our mapped superclass accessors, this will add their
+        // accessors and converters.
+        for (MappedSuperclassAccessor mappedSuperclass : m_mappedSuperclasses) {
+            mappedSuperclass.preProcess();
+        }
+        
+        // Finally, add our immediate accessors and converters.
+        addAccessors();
+        addConverters();
+    }
+    
+    /**
+     * INTERNAL:
+     * Process the items of interest on an entity class. The order of processing 
+     * is important, care must be taken if changes must be made.
+     */
+    @Override
+    public void process() {
+        setIsProcessed();
+        
+        // If we are an inheritance subclass process out root first.
+        if (getDescriptor().isInheritanceSubclass()) {
+            ClassAccessor parentAccessor = getDescriptor().getInheritanceParentDescriptor().getClassAccessor();
             if (! parentAccessor.isProcessed()) {
                 parentAccessor.process();
             }
         }
-        
-        // Process the Entity metadata first. Need to ensure we determine the 
-        // access, metadata complete and exclude default mappings before we 
-        // process further.
-        processEntity();
             
         // Process the Table and Inheritance metadata.
         processTableAndInheritance();
         
         // Process the common class level attributes that an entity or mapped 
-        // superclass may define. This should be done before processing the
-        // mapped superclasses call (within processAccessors) since it will 
-        // call this method also. We want to be able to grab the metadata off 
+        // superclass may define. This needs to be done before processing
+        // the mapped superclasses. We want to be able to grab the metadata off 
         // the actual entity class first because it needs to override any 
         // settings from the mapped superclass and may need to log a warning.
         processClassMetadata();
+        
+        // Process the MappedSuperclass(es) metadata now. There may be
+        // several MappedSuperclasses for any given Entity.
+        for (MappedSuperclassAccessor mappedSuperclass : m_mappedSuperclasses) {
+            // All this is going to do is call processClassMetadata.
+            mappedSuperclass.process();
+        }
         
         // Finally, process the accessors on this entity (and all those from
         // super classes that apply to us).
@@ -624,19 +692,10 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * @see InheritanceMetadata process()
      */
     @Override
-    protected void processAccessors() {
-        // Process the MappedSuperclass(es) metadata now. There may be
-        // several MappedSuperclasses for any given Entity.
-        for (MappedSuperclassAccessor mappedSuperclass : m_mappedSuperclasses) {
-            mappedSuperclass.process();
-        }
-        
-        // This will add our immediate accessors and then process them into
-        // EclipseLink mappings.
+    public void processAccessors() {
+        // Process our accessors, and then perform the necessary validation
+        // checks for this entity.
         super.processAccessors();
-        
-        // After processing the accessors for this entity we need to run 
-        // some validation checks.
 
         // Validate the optimistic locking setting.
         validateOptimisticLocking();
@@ -1102,6 +1161,35 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         // Process the annotation defined table generator second.
         super.processTableGenerator();
     } 
+    
+    /**
+     * INTERNAL:
+     */
+    protected void resolveGenericTypes(Type genericParent, MetadataDescriptor subDescriptor) {
+        // If we have a generic parent we need to grab our generic types
+        // that may be used (and therefore need to be resolved) to map
+        // accessors correctly.
+        if (genericParent instanceof ParameterizedType) {
+            Type[] actualTypeArguments = ((ParameterizedType) genericParent).getActualTypeArguments();
+            TypeVariable[] typeVariables = ((Class) ((ParameterizedType) genericParent).getRawType()).getTypeParameters();
+            
+            for (int i = 0; i < actualTypeArguments.length; i++) {
+                Type actualTypeArgument = actualTypeArguments[i];
+                TypeVariable variable = typeVariables[i];
+                
+                // We are building bottom up and need to link up any 
+                // TypeVariables with the actual class from the originating 
+                // entity. The subDescriptor will point to a sub-entities 
+                // descriptor if applicable, otherwise it will be this entities
+                // descriptor.
+                if (actualTypeArgument instanceof TypeVariable) {
+                    getDescriptor().addGenericType(variable.getName(), subDescriptor.getGenericType(((TypeVariable) actualTypeArgument).getName())); 
+                } else {
+                    getDescriptor().addGenericType(variable.getName(), actualTypeArgument);
+                }
+            }
+        }   
+    }
     
     /**
      * INTERNAL:

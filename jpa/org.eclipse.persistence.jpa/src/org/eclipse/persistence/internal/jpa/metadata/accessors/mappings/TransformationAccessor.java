@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -13,7 +13,9 @@
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files 
  *     02/06/2009-2.0 Guy Pelletier 
- *       - 248293: JPA 2.0 Element Collections (part 2)    
+ *       - 248293: JPA 2.0 Element Collections (part 2)
+ *     03/27/2009-2.0 Guy Pelletier 
+ *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes    
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -64,26 +66,23 @@ public class TransformationAccessor extends BasicAccessor {
             setOptional((Boolean) MetadataHelper.invokeMethod("optional", transformation));
         }
         
-        Annotation readTransformer = getAnnotation(ReadTransformer.class);
-        if (readTransformer != null) {
-            m_readTransformer = new ReadTransformerMetadata(readTransformer, accessibleObject);
+        // Set the read transformer if specified.
+        if (isAnnotationPresent(ReadTransformer.class)) {
+            m_readTransformer = new ReadTransformerMetadata(getAnnotation(ReadTransformer.class), accessibleObject);
         }
         
-        // Set the write transformers if some are present.
+        // Set the write transformers if specified.
         m_writeTransformers = new ArrayList<WriteTransformerMetadata>();
-        
         // Process all the write transformers first.
-        Annotation writeTransformers = getAnnotation(WriteTransformers.class);
-        if (writeTransformers != null) {
-            for (Annotation transformer : (Annotation[]) MetadataHelper.invokeMethod("value", writeTransformers)) {
+        if (isAnnotationPresent(WriteTransformers.class)) {
+            for (Annotation transformer : (Annotation[]) MetadataHelper.invokeMethod("value", getAnnotation(WriteTransformers.class))) {
                 m_writeTransformers.add(new WriteTransformerMetadata(transformer, accessibleObject));
             }
         }
         
         // Process the single write transformer second.
-        Annotation writeTransformer = getAnnotation(WriteTransformer.class);
-        if (writeTransformer != null) {
-            m_writeTransformers.add(new WriteTransformerMetadata(writeTransformer, accessibleObject));
+        if (isAnnotationPresent(WriteTransformer.class)) {
+            m_writeTransformers.add(new WriteTransformerMetadata(getAnnotation(WriteTransformer.class), accessibleObject));
         }
         
         //TODO: ReturningPolicy
@@ -127,6 +126,8 @@ public class TransformationAccessor extends BasicAccessor {
     @Override
     public void process() {
         TransformationMapping mapping = new TransformationMapping();
+        setMapping(mapping);
+        
         mapping.setAttributeName(getAttributeName());
         mapping.setIsOptional(isOptional());
         mapping.setIsLazy(usesIndirection());
@@ -159,9 +160,6 @@ public class TransformationAccessor extends BasicAccessor {
         }
 
         // TODO: ReturningPolicy
-        
-        // Add the mapping to the descriptor.
-        addMapping(mapping);
     }
     
     /**

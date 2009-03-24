@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -35,10 +35,16 @@ public class PrimaryKeyMetadata extends ORMetadata {
     private Enum m_validation;
     private List<ColumnMetadata> m_columns = new ArrayList<ColumnMetadata>();
 
+    /**
+     * INTERNAL:
+     */
     public PrimaryKeyMetadata() {
         super("<primary-key>");
     }
 
+    /**
+     * INTERNAL:
+     */
     public PrimaryKeyMetadata(Annotation primaryKey, MetadataAccessibleObject accessibleObject) {
         super(primaryKey, accessibleObject);
         
@@ -49,17 +55,23 @@ public class PrimaryKeyMetadata extends ORMetadata {
         }
     }
 
+    /**
+     * INTERNAL:
+     */
     public boolean hasColumns() {
         return ! m_columns.isEmpty();
     }
 
     /**
+     * INTERNAL:
      * Process the meta-data, configure primary key and idValidation in descriptor.
      */
     public void process(MetadataDescriptor descriptor) {
         descriptor.getClassDescriptor().setIdValidation(IdValidation.valueOf(m_validation.name()));
+        
         if (hasColumns()) {
         	List fields = new ArrayList(m_columns.size());
+        	
             for (ColumnMetadata column : m_columns) {
                 if (column.getName().equals("")) {  
                     throw ValidationException.optimisticLockingSelectedColumnNamesNotSpecified(descriptor.getJavaClass());
@@ -67,6 +79,7 @@ public class PrimaryKeyMetadata extends ORMetadata {
                 	fields.add(column.getDatabaseField());
                 }
             }
+            
             descriptor.getClassDescriptor().setPrimaryKeyFields(fields);
         }
     }

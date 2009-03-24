@@ -14,6 +14,8 @@
  *       - 248293: JPA 2.0 Element Collections (part 2)
  *     02/25/2009-2.0 Guy Pelletier 
  *       - 265359: JPA 2.0 Element Collections - Metadata processing portions
+ *     03/27/2009-2.0 Guy Pelletier 
+ *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  ******************************************************************************/ 
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -22,17 +24,18 @@ import java.lang.annotation.Annotation;
 import javax.persistence.FetchType;
 
 import org.eclipse.persistence.annotations.JoinFetch;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.tables.CollectionTableMetadata;
 import org.eclipse.persistence.mappings.CollectionMapping;
-import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectCollectionMapping;
 import org.eclipse.persistence.mappings.DirectMapMapping;
-import org.eclipse.persistence.mappings.converters.Converter;
 
 /**
- * An absrtact direct collection accessor.
+ * An abstract direct collection accessor.
  * 
  * Used to support DirectCollection, DirectMap, AggregateCollection through 
  * the ElementCollection, BasicCollection and BasicMap metadata.
@@ -42,7 +45,7 @@ import org.eclipse.persistence.mappings.converters.Converter;
  */
 public abstract class DirectCollectionAccessor extends DirectAccessor {
     private Enum m_joinFetch;
-    private boolean m_keyContextProcessing;
+    private CollectionTableMetadata m_collectionTable;
    
     /**
      * INTERNAL:
@@ -63,11 +66,22 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
             setFetch((Enum) MetadataHelper.invokeMethod("fetch", annotation));
         }
         
-        // Set the join fetch if one is present.
-        Annotation joinFetch = getAnnotation(JoinFetch.class);            
-        if (joinFetch != null) {
-            m_joinFetch = (Enum) MetadataHelper.invokeMethod("value", joinFetch);
+        // Set the join fetch if one is present.            
+        if (isAnnotationPresent(JoinFetch.class)) {
+            m_joinFetch = (Enum) MetadataHelper.invokeMethod("value", getAnnotation(JoinFetch.class));
         }
+        
+        // Since BasicCollection and ElementCollection look for different
+        // collection tables, we will not initialize/look for one here. Those
+        // accessors will be responsible for loading their collection table.
+    }
+    
+    /**
+     * INTERNAL: 
+     * Used for OX mapping.
+     */
+    public CollectionTableMetadata getCollectionTable() {
+        return m_collectionTable;
     }
     
     /**
@@ -117,6 +131,25 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
     
     /**
      * INTERNAL:
+     * The reference table in a direct collection case is the collection table.
+     */
+    @Override
+    protected DatabaseTable getReferenceDatabaseTable() {
+        return m_collectionTable.getDatabaseTable();
+    }
+    
+    /**
+     * INTERNAL:
+     * In a direct collection case, there is no notion of a reference 
+     * descriptor, therefore we return this accessors descriptor.
+     */
+    @Override
+    public MetadataDescriptor getReferenceDescriptor() {
+        return getDescriptor();
+    }
+    
+    /**
+     * INTERNAL:
      * Return the converter name for a map key.
      */
     protected abstract String getKeyConverter();
@@ -136,6 +169,26 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
     
     /**
      * INTERNAL:
+     * Return true if this accessor has a map key class specified.
+     * @see ElementCollectionAccessor
+     */
+    protected boolean hasMapKeyClass() {
+        return false; 
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public void initXMLObject(MetadataAccessibleObject accessibleObject) {
+        super.initXMLObject(accessibleObject);
+        
+        // Initialize single objects.
+        initXMLObject(m_collectionTable, accessibleObject);
+    }
+    
+    /**
+     * INTERNAL:
      * Return true if this accessor represents a direct collection mapping, 
      * which include basic collection, basic map and element collection 
      * accessors.
@@ -147,22 +200,10 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
     
     /**
      * INTERNAL:
-     * Returns true if we are processing metadata for the key context. Only 
-     * applies in a direct map case. The default is false indicating a value
-     * column. Those accessors that process key metadata, 
-     * ElementCollectionAccessor and BasicMapAccessor are responsible for 
-     * setting the context when processing converters.
-     */ 
-    protected boolean isKeyContextProcessing() {
-        return m_keyContextProcessing;
-    }
-    
-    /**
-     * INTERNAL:
      * Returns true if the given class is a valid basic collection type.
      */ 
     protected boolean isValidDirectCollectionType() {
-        return getAccessibleObject().isSupportedDirectCollectionClass(getDescriptor());
+        return getAccessibleObject().isSupportedCollectionClass(getDescriptor());
     }
     
     /**
@@ -170,13 +211,16 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
      * Returns true if the given class is a valid basic map type.
      */ 
     protected boolean isValidDirectMapType() {
-        return getAccessibleObject().isSupportedDirectMapClass(getDescriptor());
+        return getAccessibleObject().isSupportedMapClass(getDescriptor());
     }
     
     /**
      * INTERNAL:
      */
     protected void process(CollectionMapping mapping) {
+        // Add the mapping to the descriptor.
+        setMapping(mapping);
+        
         // Set the attribute name.
         mapping.setAttributeName(getAttributeName());
         
@@ -191,36 +235,29 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
         
         // Process a @ReturnInsert and @ReturnUpdate (to log a warning message)
         processReturnInsertAndUpdate();
-        
-        // Add the mapping to the descriptor.
-        addMapping(mapping);
     }
     
     /**
      * INTERNAL:
-     * Process a MetadataCollectionTable.
+     * Process a MetadataCollectionTable. Sub classes should call this to
+     * ensure a table is defaulted.
      */
-    protected abstract void processCollectionTable(CollectionMapping mapping);
-    
-    /**
-     * INTERNAL:
-     * Process a convert value to apply a specified EclipseLink converter 
-     * (Converter, TypeConverter, ObjectTypeConverter) to the given mapping.
-     * 
-     * This method is called in second stage processing and should only be
-     * called on accessors that have a convert value specified.
-     */
-    @Override
-    public void processConvert() {
-        DatabaseMapping mapping = getMapping();
-        
-        if (mapping.isDirectMapMapping()) {
-            m_keyContextProcessing = true;
-            processConvert(mapping, getKeyConverter());
+    protected void processCollectionTable(CollectionMapping mapping) {
+        // Check that we loaded a collection table otherwise default one.        
+        if (m_collectionTable == null) {
+            // TODO: Log a defaulting message.
+            m_collectionTable = new CollectionTableMetadata(getAccessibleObject());
         }
         
-        m_keyContextProcessing = false;
-        processConvert(mapping, getValueConverter());
+        // Process any table defaults and log warning messages.
+        processTable(m_collectionTable, getDefaultCollectionTableName());
+        
+        // Set the reference table on the mapping (only in a direct collection
+        // case). For an embeddable collection, the table will be set on the
+        // fields.
+        if (! isDirectEmbeddableCollection()) {
+            ((DirectCollectionMapping) mapping).setReferenceTable(m_collectionTable.getDatabaseTable());
+        }
     }
     
     /**
@@ -235,91 +272,59 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
         // the collection table be processed before hand.
         process(mapping);
         
-        // Process the fetch type and set the correct indirection on the 
-        // mapping.
-        setIndirectionPolicy(mapping, null, usesIndirection());
+        // Process the container and indirection policies.
+        processContainerPolicyAndIndirection(mapping);
         
         // Process the value column (we must process this field before the 
         // call to processConverter, since it may set a field classification)
-        mapping.setDirectField(getDatabaseField(mapping.getReferenceTable(), MetadataLogger.VALUE_COLUMN));
+        mapping.setDirectField(getDatabaseField(getReferenceDatabaseTable(), MetadataLogger.VALUE_COLUMN));
         
         // Process a converter for this mapping. We will look for a convert
         // value. If none is found then we'll look for a JPA converter, that 
         // is, Enumerated, Lob and Temporal. With everything falling into 
         // a serialized mapping if no converter whatsoever is found.
-        processMappingConverter(mapping, getValueConverter());
+        processMappingValueConverter(mapping, getValueConverter(), getReferenceClass());
     }
     
     /**
      * INTERNAL:
      */
     protected void processDirectMapMapping() {
-        // Initialize our mapping.
+        // Initialize and process common direct collection metadata. This must 
+        // be done before any field processing since field processing requires 
+        // that the collection table be processed before hand.
         DirectMapMapping mapping = new DirectMapMapping();
-        
-        // Process common direct collection metadata. This must be done 
-        // before any field processing since field processing requires that 
-        // the collection table be processed before hand.
         process(mapping);
         
-        // Process the fetch type
-        setIndirectionPolicy(mapping, null, usesIndirection());
+        // Process the container and indirection policies.
+        processContainerPolicyAndIndirection(mapping);
         
-        // Process the key column (we must process this field before the call
-        // to processConverter, since it may set a field classification)
-        mapping.setDirectKeyField(getDatabaseField(mapping.getReferenceTable(), MetadataLogger.MAP_KEY_COLUMN));
+        // Process the key column (we must process this field before the 
+        // call to processConverter, since it may set a field classification)
+        mapping.setDirectKeyField(getDatabaseField(getReferenceDatabaseTable(), MetadataLogger.MAP_KEY_COLUMN));
         
-        // Process a converter for the key column of this mapping.
-        processMappingConverter(mapping, getKeyConverter());
+        // Only process the key converter is this is a basic map accessor. The
+        // key converter for an element collection case will be taken care of
+        // in the processContainerPolicyAndIndirection call above.
+        if (isBasicMap()) {
+            // Process a converter for the key column of this mapping.
+            processMappingKeyConverter(mapping, getKeyConverter(), getMapKeyReferenceClass());
+        }
         
         // Process the value column (we must process this field before the call
         // to processConverter, since it may set a field classification)
-        mapping.setDirectField(getDatabaseField(mapping.getReferenceTable(), MetadataLogger.VALUE_COLUMN));
+        mapping.setDirectField(getDatabaseField(getReferenceDatabaseTable(), MetadataLogger.VALUE_COLUMN));
         
         // Process a converter for value column of this mapping.
-        processMappingConverter(mapping, getValueConverter());    
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    @Override
-    public void setConverter(DatabaseMapping mapping, Converter converter) {
-        if (mapping.isDirectMapMapping() && isKeyContextProcessing()) {
-            ((DirectMapMapping) mapping).setKeyConverter(converter);
-        } else {
-            ((DirectCollectionMapping) mapping).setValueConverter(converter);
-        }
-        
-        // TODO: AggregateCollections should only be able to get in here for a key converter
-    }
-
-    /**
-     * INTERNAL:
-     */
-    @Override
-    public void setConverterClassName(DatabaseMapping mapping, String converterClassName) {
-        if (mapping.isDirectMapMapping() && isKeyContextProcessing()) {
-            ((DirectMapMapping) mapping).setKeyConverterClassName(converterClassName);
-        } else {
-            ((DirectCollectionMapping) mapping).setValueConverterClassName(converterClassName);
-        }
-        
-        // TODO: AggregateCollections should only be able to get in here for a key converter
+        processMappingValueConverter(mapping, getValueConverter(), getReferenceClass());    
     }
     
     /**
      * INTERNAL: 
+     * Used for OX mapping.
      */
-    @Override
-    public void setFieldClassification(DatabaseMapping mapping, Class classification) {
-        if (mapping.isDirectMapMapping() && isKeyContextProcessing()) {
-            ((DirectMapMapping) mapping).setDirectKeyFieldClassification(classification);
-        } else {
-            ((DirectCollectionMapping) mapping).setDirectFieldClassification(classification);
-        }
-        
-        // TODO: AggregateCollections going to get in here??
+    public void setCollectionTable(CollectionTableMetadata collectionTable) {
+        m_collectionTable = collectionTable;
     }
     
     /**

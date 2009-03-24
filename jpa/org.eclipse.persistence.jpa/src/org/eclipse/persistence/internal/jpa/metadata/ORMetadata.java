@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -11,7 +11,9 @@
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
  *     12/12/2008-1.1 Guy Pelletier 
- *       - 249860: Implement table per class inheritance support.  
+ *       - 249860: Implement table per class inheritance support.
+ *     03/27/2009-2.0 Guy Pelletier 
+ *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes  
  ******************************************************************************/ 
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -59,6 +61,12 @@ public abstract class ORMetadata {
     // The tag name of the XML element. Used in logging messages and validation
     // exceptions.
     private String m_xmlElement;
+    
+    /**
+     * INTERNAL:
+     * Used for defaulting case.
+     */
+    protected ORMetadata() {}
     
     /**
      * INTERNAL:
@@ -349,7 +357,7 @@ public abstract class ORMetadata {
     protected MappedSuperclassAccessor reloadMappedSuperclass(MappedSuperclassAccessor mappedSuperclass, MetadataDescriptor descriptor) {
         if (m_accessibleObject.getEntityMappings() == null) {
             // TODO: Just changing the descriptor on the mapped superclass should
-            // work .. in theory .. since we are just going to go through it's
+            // work .. in theory .. since we are just going to go through its
             // accessor list.
             MappedSuperclassAccessor mappedSuperclassAccessor = new MappedSuperclassAccessor(mappedSuperclass.getAnnotation(), mappedSuperclass.getJavaClass(), descriptor);
             return mappedSuperclassAccessor;

@@ -31,6 +31,8 @@
  *       - 248293: JPA 2.0 Element Collections (part 2)
  *     02/25/2009-2.0 Guy Pelletier 
  *       - 265359: JPA 2.0 Element Collections - Metadata processing portions
+ *     03/27/2009-2.0 Guy Pelletier 
+ *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -59,6 +61,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.Embeddabl
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.CollectionAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ManyToManyAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappedKeyMapAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ObjectAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.OneToOneAccessor;
@@ -195,9 +198,46 @@ public class MetadataDescriptor {
      * We must check for null since buildAccessor from ClassAccessor may return
      * a null if ignore default mappings is set to true.
      */
-    public void addAccessor(MappingAccessor accessor) {
+    public void addAccessor(MappingAccessor accessor, MetadataDescriptor owningDescriptor) {
         if (accessor != null) {
             m_accessors.put(accessor.getAttributeName(), accessor);
+            
+            // The actual owning descriptor for this class accessor. In most
+            // cases this is the same as our descriptor. However in an
+            // embeddable class accessor, it will be the owning entities
+            // descriptor. This was introduced to support nesting 
+            // embeddables to the nth level.
+            accessor.setOwningDescriptor(owningDescriptor);
+            
+            // Add any converters on this mapping accessor.
+            accessor.addConverters();
+
+            // Tell an embeddable accessor to pre-process if it hasn't already.
+            preProcessEmbeddableAccessor(accessor.getReferenceClass(), owningDescriptor);
+            
+            // Tell an embeddable accessor that is a map key to a collection
+            // to pre-process itself.
+            if (accessor.isMappedKeyMapAccessor()) {
+                MappedKeyMapAccessor mapAccessor = (MappedKeyMapAccessor) accessor;
+                Class mapKeyClass = mapAccessor.getMapKeyClass();
+                
+                // If the map key class is not specified, we need to look it 
+                // up from the accessor type.
+                if (mapKeyClass == null || mapKeyClass.equals(void.class)) {
+                    mapKeyClass = accessor.getAccessibleObject().getMapKeyClass(this);
+                    
+                    if (mapKeyClass == null && mapAccessor.getMapKey() == null) {
+                        // We don't have a map key class or map key, throw an exception.
+                        throw ValidationException.unableToDetermineMapKeyClass(accessor.getAttributeName(), accessor.getJavaClass());
+                    } else {
+                        // Set the map key class (note, may still be null)
+                        mapAccessor.setMapKeyClass(mapKeyClass);
+                    }
+                }
+                
+                // Now pre-process our map key class if it is an embeddable.
+                preProcessEmbeddableAccessor(mapKeyClass, owningDescriptor);
+            }
         }
     }
     
@@ -1079,6 +1119,21 @@ public class MetadataDescriptor {
     }
     
     /**
+     * INTERNAL
+     * Pre-process the potential embeddable class if it is indeed an embeddable.
+     */
+    protected void preProcessEmbeddableAccessor(Class potentialEmbeddableClass, MetadataDescriptor owningDescriptor) {
+        if (potentialEmbeddableClass != null) {
+            EmbeddableAccessor embeddableAccessor = getProject().getEmbeddableAccessor(potentialEmbeddableClass);
+        
+            if (embeddableAccessor != null && ! embeddableAccessor.isPreProcessed()) {
+                embeddableAccessor.setOwningDescriptor(owningDescriptor);
+                embeddableAccessor.preProcess();
+            }
+        }
+    }
+    
+    /**
      * INTERNAL:
      * Process this descriptors accessors. Some accessors will not be processed
      * right away, instead stored on the project for processing in a later 
@@ -1087,22 +1142,10 @@ public class MetadataDescriptor {
     public void processAccessors(MetadataDescriptor owningDescriptor) {
         for (MappingAccessor accessor : m_accessors.values()) {
             if (! accessor.isProcessed()) {
-                // The actual owning descriptor for this class accessor. In most
-                // cases this is the same as our descriptor. However in an
-                // embeddable class accessor, it will be the owning entities
-                // descriptor. This was introduced to support nesting 
-                // embeddables to the nth level.
-                accessor.setOwningDescriptor(owningDescriptor);
-        
-                // Process any converters on this accessor.
-                accessor.processConverters();
-                
                 if (accessor.isDerivedId()){
                     m_derivedIDAccessors.add((ObjectAccessor) accessor);
                     getProject().addAccessorWithDerivedIDs(m_classAccessor);
                 }
-                
-                //TODO: add mappedbyid handling
                 
                 // We need to defer the processing of some mappings to stage
                 // 2 processing. Accessors are added to different lists since
@@ -1379,15 +1422,9 @@ public class MetadataDescriptor {
      */
     public void setPKClass(Class pkClass) {
         m_pkClass = pkClass;
-        setPKClass(pkClass.getName());
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    private void setPKClass(String pkClassName) {
+        
         CMP3Policy policy = new CMP3Policy();
-        policy.setPrimaryKeyClassName(pkClassName);
+        policy.setPrimaryKeyClassName(pkClass.getName());
         m_descriptor.setCMPPolicy(policy);
     }
     

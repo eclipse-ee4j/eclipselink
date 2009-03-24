@@ -17,6 +17,8 @@
  *       - 248293: JPA 2.0 Element Collections (part 1)
  *     02/06/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 2)
+ *     03/27/2009-2.0 Guy Pelletier 
+ *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -29,7 +31,6 @@ import javax.persistence.AssociationOverrides;
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 
-import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 
@@ -37,8 +38,6 @@ import org.eclipse.persistence.internal.jpa.metadata.columns.AssociationOverride
 import org.eclipse.persistence.internal.jpa.metadata.columns.AttributeOverrideMetadata;
 
 import org.eclipse.persistence.mappings.AggregateObjectMapping;
-import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.mappings.EmbeddableMapping;
 
 /**
  * An embedded relationship accessor. It may define all the same attributes
@@ -76,36 +75,30 @@ public class EmbeddedAccessor extends MappingAccessor {
         
         // Set the attribute overrides if some are present.
         m_attributeOverrides = new ArrayList<AttributeOverrideMetadata>();
-        
         // Process the attribute overrides first.
-        Annotation attributeOverrides = getAnnotation(AttributeOverrides.class);
-        if (attributeOverrides != null) {
-            for (Annotation attributeOverride : (Annotation[]) MetadataHelper.invokeMethod("value", attributeOverrides)) {
+        if (isAnnotationPresent(AttributeOverrides.class)) {
+            for (Annotation attributeOverride : (Annotation[]) MetadataHelper.invokeMethod("value", getAnnotation(AttributeOverrides.class))) {
                 m_attributeOverrides.add(new AttributeOverrideMetadata(attributeOverride, accessibleObject));
             }
         }
         
-        // Process the single attribute override second.
-        Annotation attributeOverride = getAnnotation(AttributeOverride.class);  
-        if (attributeOverride != null) {
-            m_attributeOverrides.add(new AttributeOverrideMetadata(attributeOverride, accessibleObject));
+        // Process the single attribute override second.  
+        if (isAnnotationPresent(AttributeOverride.class)) {
+            m_attributeOverrides.add(new AttributeOverrideMetadata(getAnnotation(AttributeOverride.class), accessibleObject));
         }
         
         // Set the association overrides if some are present.
         m_associationOverrides = new ArrayList<AssociationOverrideMetadata>();
-        
         // Process the attribute overrides first.
-        Annotation associationOverrides = getAnnotation(AssociationOverrides.class);
-        if (associationOverrides != null) {
-            for (Annotation associationOverride : (Annotation[]) MetadataHelper.invokeMethod("value", associationOverrides)) {
+        if (isAnnotationPresent(AssociationOverrides.class)) {
+            for (Annotation associationOverride : (Annotation[]) MetadataHelper.invokeMethod("value", getAnnotation(AssociationOverrides.class))) {
                 m_associationOverrides.add(new AssociationOverrideMetadata(associationOverride, accessibleObject));
             }
         }
         
-        // Process the single attribute override second.
-        Annotation associationOverride = getAnnotation(AssociationOverride.class);  
-        if (associationOverride != null) {
-            m_associationOverrides.add(new AssociationOverrideMetadata(associationOverride, accessibleObject));
+        // Process the single attribute override second.  
+        if (isAnnotationPresent(AssociationOverride.class)) {
+            m_associationOverrides.add(new AssociationOverrideMetadata(getAnnotation(AssociationOverride.class), accessibleObject));
         }
     }
     
@@ -152,6 +145,8 @@ public class EmbeddedAccessor extends MappingAccessor {
     public void process() {
         // Build and aggregate object mapping and add it to the descriptor.
         AggregateObjectMapping mapping = new AggregateObjectMapping();
+        setMapping(mapping);
+        
         mapping.setIsReadOnly(false);
         mapping.setIsNullAllowed(true);
         mapping.setReferenceClassName(getReferenceClassName());
@@ -161,58 +156,13 @@ public class EmbeddedAccessor extends MappingAccessor {
         setAccessorMethods(mapping);
         
         // Process attribute overrides.
-        processAttributeOverrides(mapping);
+        processAttributeOverrides(m_attributeOverrides, mapping, getReferenceDescriptor());
        
-        // Process association overrides (this is an annotation only thing).
-        processAssociationOverrides(mapping);
+        // Process association overrides.
+        processAssociationOverrides(m_associationOverrides, mapping, getReferenceDescriptor());
         
         // Process a @ReturnInsert and @ReturnUpdate (to log a warning message)
         processReturnInsertAndUpdate();
-        
-        // Add the mapping to the descriptor and we are done.
-        addMapping(mapping);
-    }
-
-    /**
-     * INTERNAL:
-     * Process the association overrides for the given embeddable mapping which
-     * is either an embedded or element collection mapping. Association 
-     * overrides are used to apply the correct field name translations of 
-     * foreign key fields.
-     */
-    protected void processAssociationOverrides(EmbeddableMapping mapping) {
-        // Process the list of association overrides for this mapping.
-        for (AssociationOverrideMetadata associationOverride : processAssociationOverrides(m_associationOverrides).values()) {
-            processAssociationOverride(associationOverride, mapping, getReferenceDescriptor().getMappingForAttributeName(associationOverride.getName()), getOwningDescriptor().getPrimaryTable(), getReferenceDescriptor());
-        }
-    }
-    
-    /**
-     * INTERNAL:
-     * Process the attribute overrides for the given embedded mapping. Attribute 
-     * overrides are used to apply the correct field name translations of direct 
-     * fields.
-     */
-    protected void processAttributeOverrides(AggregateObjectMapping aggregateObjectMapping) {
-        // Process the list of attribute overrides for this mapping. This
-        // includes the immediate specifications (the ones defined on the 
-        // mapping accessor) and those descriptor level ones that were defined
-        // for this accessor.
-        for (AttributeOverrideMetadata attributeOverride : processAttributeOverrides(m_attributeOverrides).values()) {
-            // The getMappingForAttributeName will take care of any dot 
-            // notation attribute names when looking for the mapping. It will
-            // traverse the embeddable chain. 
-            String attributeName = attributeOverride.getName();
-            DatabaseMapping mapping = getReferenceDescriptor().getMappingForAttributeName(attributeName);
-                
-            if (mapping == null) {
-                throw ValidationException.embeddableAttributeOverrideNotFound(getReferenceDescriptor().getJavaClass(), attributeName, getJavaClass(), getAttributeName());
-            } else if (! mapping.isDirectToFieldMapping()) {
-                throw ValidationException.invalidEmbeddableAttributeForAttributeOverride(getReferenceDescriptor().getJavaClass(), attributeName, getJavaClass(), getAttributeName());
-            } else {
-                addFieldNameTranslation(aggregateObjectMapping, attributeName, attributeOverride.getColumn().getDatabaseField(), mapping);
-            }
-        }
     }
     
     /**

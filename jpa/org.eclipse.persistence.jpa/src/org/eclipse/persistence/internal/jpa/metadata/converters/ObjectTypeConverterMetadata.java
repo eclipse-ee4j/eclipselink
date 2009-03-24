@@ -13,6 +13,8 @@
  *       - 218084: Implement metadata merging functionality between mapping files
  *     02/25/2009-2.0 Guy Pelletier 
  *       - 265359: JPA 2.0 Element Collections - Metadata processing portions
+ *     03/27/2009-2.0 Guy Pelletier 
+ *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
@@ -28,7 +30,7 @@ import java.util.HashMap;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 
-import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.DirectAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -126,7 +128,7 @@ public class ObjectTypeConverterMetadata extends TypeConverterMetadata {
     /**
      * INTERNAL:
      */    
-    private Object initObject(Class type, String value, DirectAccessor accessor, boolean isData) {
+    private Object initObject(Class type, String value, boolean isData) {
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
             try {
                 Constructor constructor = (Constructor) AccessController.doPrivileged(new PrivilegedGetConstructorFor(type, new Class[] {String.class}, false));
@@ -150,10 +152,10 @@ public class ObjectTypeConverterMetadata extends TypeConverterMetadata {
      * INTERNAL:
      */
     @Override
-    public void process(DatabaseMapping mapping, DirectAccessor accessor) {
+    public void process(DatabaseMapping mapping, MappingAccessor accessor, Class referenceClass, boolean isForMapKey) {
         org.eclipse.persistence.mappings.converters.ObjectTypeConverter converter;
-        Class dataType = getDataType(accessor);
-        Class objectType = getObjectType(accessor);
+        Class dataType = getDataType(accessor, referenceClass);
+        Class objectType = getObjectType(accessor, referenceClass);
         
         if (objectType.isEnum()) {
             // Create an EnumTypeConverter. 
@@ -199,8 +201,8 @@ public class ObjectTypeConverterMetadata extends TypeConverterMetadata {
         for (String dataValue : dataToObjectValues.keySet()) {
             String objectValue = dataToObjectValues.get(dataValue);
             
-            Object data = initObject(dataType, dataValue, accessor, true);
-            Object object = initObject(objectType, objectValue, accessor, false);
+            Object data = initObject(dataType, dataValue, true);
+            Object object = initObject(objectType, objectValue, false);
             
             if (objectToDataValues.containsKey(objectValue)) {
                 // It's a two-way mapping ...
@@ -213,11 +215,11 @@ public class ObjectTypeConverterMetadata extends TypeConverterMetadata {
         
         // Process the defaultObjectValue if one is specified.
         if (m_defaultObjectValue != null && ! m_defaultObjectValue.equals("")) {
-            converter.setDefaultAttributeValue(initObject(objectType, m_defaultObjectValue, accessor, false));
+            converter.setDefaultAttributeValue(initObject(objectType, m_defaultObjectValue, false));
         }
         
         // Set the converter on the mapping.
-        accessor.setConverter(mapping, converter);
+        setConverter(mapping, converter, isForMapKey);
     }
 
     /**

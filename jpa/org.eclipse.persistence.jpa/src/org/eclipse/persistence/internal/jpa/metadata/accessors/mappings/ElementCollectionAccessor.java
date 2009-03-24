@@ -14,6 +14,8 @@
  *       - 248293: JPA 2.0 Element Collections (part 2)
  *     02/25/2009-2.0 Guy Pelletier 
  *       - 265359: JPA 2.0 Element Collections - Metadata processing portions
+ *     03/27/2009-2.0 Guy Pelletier 
+ *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  ******************************************************************************/ 
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -31,10 +33,12 @@ import javax.persistence.Column;
 import javax.persistence.MapKey;
 import javax.persistence.MapKeyClass;
 import javax.persistence.MapKeyColumn;
+import javax.persistence.MapKeyEnumerated;
+import javax.persistence.MapKeyTemporal;
 import javax.persistence.OrderBy;
 import javax.persistence.OrderColumn;
 
-import org.eclipse.persistence.annotations.ConvertKey;
+import org.eclipse.persistence.annotations.MapKeyConvert;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
@@ -46,6 +50,8 @@ import org.eclipse.persistence.internal.jpa.metadata.columns.AssociationOverride
 import org.eclipse.persistence.internal.jpa.metadata.columns.AttributeOverrideMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.converters.EnumeratedMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.converters.TemporalMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.tables.CollectionTableMetadata;
 import org.eclipse.persistence.mappings.AggregateCollectionMapping;
 import org.eclipse.persistence.mappings.AggregateObjectMapping;
@@ -64,25 +70,28 @@ import org.eclipse.persistence.mappings.OneToOneMapping;
  * @author Guy Pelletier
  * @since EclipseLink 2.0
  */
-public class ElementCollectionAccessor extends DirectCollectionAccessor {
+public class ElementCollectionAccessor extends DirectCollectionAccessor implements MappedKeyMapAccessor {
     private Class m_targetClass;
-    private Class m_mapKeyClass; // TODO: mapped but not processed.
+    private Class m_mapKeyClass;
     private Class m_referenceClass;
     
     private ColumnMetadata m_column;
     private ColumnMetadata m_mapKeyColumn;
     private ColumnMetadata m_orderColumn; // TODO: mapped but not processed.
-    private CollectionTableMetadata m_collectionTable;
+    
+    private EnumeratedMetadata m_mapKeyEnumerated;
     
     private List<AssociationOverrideMetadata> m_associationOverrides;
     private List<AttributeOverrideMetadata> m_attributeOverrides;
-    private List<JoinColumnMetadata> m_mapKeyJoinColumns; // TODO: mapped but not processed. 
+    private List<JoinColumnMetadata> m_mapKeyJoinColumns; 
     
-    private String m_convertKey;
-    private String m_mapKey; // TODO: mapped but not processed.
-    private String m_mapKeyClassName; // TODO: mapped but not processed. (See CollectionAccessor)
-    private String m_orderBy;
+    private String m_mapKey;
+    private String m_mapKeyConvert;
+    private String m_mapKeyClassName;
     private String m_targetClassName;
+    private String m_orderBy;
+    
+    private TemporalMetadata m_mapKeyTemporal;
     
     /**
      * INTERNAL:
@@ -136,7 +145,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor {
         
         // Set the collection table if one is defined.
         if (isAnnotationPresent(CollectionTable.class)) {
-            m_collectionTable = new CollectionTableMetadata(getAnnotation(CollectionTable.class), accessibleObject, true);
+            setCollectionTable(new CollectionTableMetadata(getAnnotation(CollectionTable.class), accessibleObject, true));
         }
         
         // Set the order if one is present.
@@ -154,14 +163,24 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor {
             m_mapKeyClass = (Class) MetadataHelper.invokeMethod("value", getAnnotation(MapKeyClass.class));
         }
         
+        // Set the map key enumerated if one is defined.
+        if (isAnnotationPresent(MapKeyEnumerated.class)) {
+            m_mapKeyEnumerated = new EnumeratedMetadata(getAnnotation(MapKeyEnumerated.class), accessibleObject);
+        }
+        
+        // Set the map key temporal if one is defined.
+        if (isAnnotationPresent(MapKeyTemporal.class)) {
+            m_mapKeyTemporal = new TemporalMetadata(getAnnotation(MapKeyTemporal.class), accessibleObject);
+        }
+        
         // Set the map key column if one is defined.
         if (isAnnotationPresent(MapKeyColumn.class)) {
             m_mapKeyColumn = new ColumnMetadata(getAnnotation(MapKeyColumn.class), accessibleObject, getAttributeName());
         }
         
         // Set the convert key if one is defined.
-        if (isAnnotationPresent(ConvertKey.class)) {
-            m_convertKey = (String) MetadataHelper.invokeMethod("value", getAnnotation(ConvertKey.class));
+        if (isAnnotationPresent(MapKeyConvert.class)) {
+            m_mapKeyConvert = (String) MetadataHelper.invokeMethod("value", getAnnotation(MapKeyConvert.class));
         }
         
         // Set the order column if one is defined.
@@ -190,14 +209,6 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor {
      * INTERNAL: 
      * Used for OX mapping.
      */
-    public CollectionTableMetadata getCollectionTable() {
-        return m_collectionTable;
-    }
-    
-    /**
-     * INTERNAL: 
-     * Used for OX mapping.
-     */
     public ColumnMetadata getColumn() {
         return m_column;
     }
@@ -208,28 +219,10 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor {
     @Override
     protected ColumnMetadata getColumn(String loggingCtx) {
         if (loggingCtx.equals(MetadataLogger.VALUE_COLUMN)) {
-            if (m_column == null) {
-                // TODO: Log defaulting message.
-                m_column = new ColumnMetadata(getAccessibleObject(), getAttributeName());  
-            }
-            
-            return m_column;
+            return m_column == null ? super.getColumn(loggingCtx) : m_column;
         } else {
-            // TODO: This is where we need to look at the map key column, map 
-            // key class and map key. Map key I guess would have to look up a 
-            // mapping by attribute name. Map key class would have to set 
-            // different API likely.
-            // For now ...
-            return m_mapKeyColumn;
+            return m_mapKeyColumn == null ? super.getColumn(loggingCtx) : m_mapKeyColumn;
         }
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public String getConvertKey() {
-        return m_convertKey;
     }
 
     /**
@@ -241,10 +234,23 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor {
     
     /**
      * INTERNAL:
+     * Return the enumerated metadata for this accessor.
+     */
+    @Override
+    public EnumeratedMetadata getEnumerated(boolean isForMapKey) {
+        if (isForMapKey) {
+            return getMapKeyEnumerated();
+        } else {
+            return super.getEnumerated(isForMapKey);
+        }
+    }
+    
+    /**
+     * INTERNAL:
      */
     @Override
     protected String getKeyConverter() {
-        return m_convertKey;
+        return m_mapKeyConvert;
     }
     
     /**
@@ -257,7 +263,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor {
     
     /**
      * INTERNAL: 
-     * TODO: Do we need this method?
+     * Return the map key class on this element collection accessor.
      */
     public Class getMapKeyClass() {
         return m_mapKeyClass;
@@ -280,11 +286,35 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor {
     } 
     
     /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getMapKeyConvert() {
+        return m_mapKeyConvert;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping. 
+     */
+    public EnumeratedMetadata getMapKeyEnumerated() {
+        return m_mapKeyEnumerated;
+    }
+    
+    /**
      * INTERNAL: 
      * Used for OX mapping.
      */
     public List<JoinColumnMetadata> getMapKeyJoinColumns() {
         return m_mapKeyJoinColumns;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping. 
+     */
+    public TemporalMetadata getMapKeyTemporal() {
+        return m_mapKeyTemporal;
     }
     
     /**
@@ -310,50 +340,40 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor {
      */
     @Override
     public Class getReferenceClass() {
-        if (isKeyContextProcessing()) {
-            Class referenceClass = getAccessibleObject().getMapKeyClass(getDescriptor());
-            
-            if (referenceClass == null) {
-                throw ValidationException.unableToDetermineMayKeyClass(getAttributeName(), getJavaClass());
-            }
-            
-            return referenceClass;
-        } else {
-            if (m_referenceClass == null) {
-                m_referenceClass = getTargetClass();
+        if (m_referenceClass == null) {
+            m_referenceClass = getTargetClass();
         
-                if (m_referenceClass == void.class) {
-                    // This call will attempt to extract the reference class from generics.
-                    m_referenceClass = getReferenceClassFromGeneric();
+            if (m_referenceClass == void.class) {
+                // This call will attempt to extract the reference class from generics.
+                m_referenceClass = getReferenceClassFromGeneric();
         
-                    if (m_referenceClass == null) {
-                        // Throw an exception. An element collection accessor must 
-                        // have a reference class either through generics or a 
-                        // specified target class on the mapping metadata.
-                        throw ValidationException.unableToDetermineTargetClass(getAttributeName(), getJavaClass());
-                    } else {
-                        // Log the defaulting contextual reference class.
-                        getLogger().logConfigMessage(getLogger().ELEMENT_COLLECTION_MAPPING_REFERENCE_CLASS, getAnnotatedElement(), m_referenceClass);
-                    }
+                if (m_referenceClass == null) {
+                    // Throw an exception. An element collection accessor must 
+                    // have a reference class either through generics or a 
+                    // specified target class on the mapping metadata.
+                    throw ValidationException.unableToDetermineTargetClass(getAttributeName(), getJavaClass());
+                } else {
+                    // Log the defaulting contextual reference class.
+                    getLogger().logConfigMessage(getLogger().ELEMENT_COLLECTION_MAPPING_REFERENCE_CLASS, getAnnotatedElement(), m_referenceClass);
                 }
             }
-            
-            return m_referenceClass;
         }
+            
+        return m_referenceClass;
     }
     
     /**
      * INTERNAL:
      * In an element collection case, when the collection is not an embeddable
-     * collection, there is no knowledge of a reference descriptor and the join 
-     * columns should be defaulted based on the owner of the element collection.
+     * collection, there is no notion of a reference descriptor, therefore we
+     * return this accessors descriptor
      */
     @Override
     public MetadataDescriptor getReferenceDescriptor() {
         if (isDirectEmbeddableCollection()) {
             return getEmbeddableAccessor().getDescriptor();
         } else {
-            return getDescriptor();
+            return super.getReferenceDescriptor();
         }
     }
     
@@ -372,6 +392,81 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor {
     protected String getTargetClassName() {
         return m_targetClassName;
     }
+
+    /**
+     * INTERNAL:
+     * Return the temporal metadata for this accessor.
+     * @see DirectAccessor
+     * @see CollectionAccessor
+     */
+    @Override
+    public TemporalMetadata getTemporal(boolean isForMapKey) {
+        if (isForMapKey) {
+            return getMapKeyTemporal();
+        } else {
+            return super.getTemporal(isForMapKey);
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    protected boolean hasConvert(boolean isForMapKey) {
+        if (isForMapKey) {
+            return m_mapKeyConvert != null;
+        } else {
+            return super.hasConvert(isForMapKey);
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor has enumerated metadata.
+     */
+    @Override
+    public boolean hasEnumerated(boolean isForMapKey) {
+        if (isForMapKey) {
+            return m_mapKeyEnumerated != null;
+        } else {
+            return super.hasEnumerated(isForMapKey);
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor has lob metadata.
+     */
+    @Override
+    public boolean hasLob(boolean isForMapKey) {
+        if (isForMapKey) {
+            return false;
+        } else {
+            return super.hasLob(isForMapKey);
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor has a map key class specified.
+     */
+    @Override
+    protected boolean hasMapKeyClass() {
+        return m_mapKeyClass != null && ! m_mapKeyClass.equals(void.class);
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor has temporal metadata.
+     */
+    @Override
+    public boolean hasTemporal(boolean isForMapKey) {
+        if (isForMapKey) {
+            return this.m_mapKeyTemporal != null;
+        } else {
+            return super.hasTemporal(isForMapKey);
+        }
+    }
     
     /**
      * INTERNAL:
@@ -388,7 +483,6 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor {
         initXMLObject(m_column, accessibleObject);
         initXMLObject(m_mapKeyColumn, accessibleObject);
         initXMLObject(m_orderColumn, accessibleObject);
-        initXMLObject(m_collectionTable, accessibleObject);
         
         // Initialize the any class names we read from XML.
         m_targetClass = initXMLClassName(m_targetClassName);
@@ -405,7 +499,17 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor {
     }
     
     /**
+     * INTERNAL:
+     * Return true if this accessor is a mapped key map accessor.
+     */
+    @Override
+    public boolean isMappedKeyMapAccessor() {
+        return true && isMapAccessor();
+    }
+    
+    /**
      * INTERNAL: 
+     * Process the element collection metadata.
      */
     @Override
     public void process() {
@@ -426,25 +530,11 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor {
      */
     @Override
     protected void processCollectionTable(CollectionMapping mapping) {
-        // Check that we loaded a collection table otherwise default one.        
-        if (m_collectionTable == null) {
-            // TODO: Log a defaulting message.
-            m_collectionTable = new CollectionTableMetadata(getAccessibleObject());
-        }
-        
-        // Process any table defaults and log warning messages.
-        processTable(m_collectionTable, getDefaultCollectionTableName());
-        
-        // Set the reference table on the mapping (only in a direct collection
-        // case). For an embeddable collection, the table will be set on the
-        // fields.
-        if (! isDirectEmbeddableCollection()) {
-            ((DirectCollectionMapping) mapping).setReferenceTable(m_collectionTable.getDatabaseTable());
-        }
+        super.processCollectionTable(mapping);
         
         // Add all the joinColumns (reference key fields) to the mapping. Join 
         // column validation is performed in the processJoinColumns call.
-        for (JoinColumnMetadata joinColumn : processJoinColumns(m_collectionTable.getJoinColumns())) {
+        for (JoinColumnMetadata joinColumn : getJoinColumns(getCollectionTable().getJoinColumns(), getReferenceDescriptor())) {
             // The default name is the primary key of the owning entity.
             DatabaseField pkField = joinColumn.getPrimaryKeyField();
             pkField.setName(getName(pkField, getDescriptor().getPrimaryKeyFieldName(), MetadataLogger.PK_COLUMN));
@@ -453,7 +543,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor {
             // The default name is the primary key of the owning entity.
             DatabaseField fkField = joinColumn.getForeignKeyField();
             fkField.setName(getName(fkField, getDescriptor().getAlias() + "_" + getDescriptor().getPrimaryKeyFieldName(), MetadataLogger.FK_COLUMN));
-            fkField.setTable(m_collectionTable.getDatabaseTable());
+            fkField.setTable(getReferenceDatabaseTable());
                 
             if (mapping.isDirectCollectionMapping()) {
                 // Add the reference key field for the direct collection mapping.
@@ -480,7 +570,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor {
         mapping.setReferenceClassName(getReferenceClassName());
         
         // Process the fetch type and set the correct indirection on the mapping.
-        setIndirectionPolicy(mapping, null, usesIndirection());
+        processContainerPolicyAndIndirection(mapping);
         
         // Make sure to mark the descriptor as an embeddable collection descriptor.
         referenceDescriptor.setIsEmbeddableCollection();
@@ -489,13 +579,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor {
         // translations. Before we do that lets process the attribute and
         // association overrides that are available to us and that may be used
         // to override any field name translations.
-        processMappingsFromEmbeddable(referenceDescriptor, null, mapping, processAttributeOverrides(m_attributeOverrides), processAssociationOverrides(m_associationOverrides), "");
-        
-        // TODO: Need to implement support this functionality.
-        if (isValidDirectMapType()) {
-            // TODO: Need the notion of a direct key field
-            // TODO: Need to process the ConvertKey annotation.
-        }
+        processMappingsFromEmbeddable(referenceDescriptor, null, mapping, getAttributeOverrides(m_attributeOverrides), getAssociationOverrides(m_associationOverrides), "");
     }
     
     /**
@@ -543,7 +627,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor {
                 // Add the aggregate collection table field if one hasn't 
                 // already been set.
                 if (! overrideField.hasTableName()) {
-                    overrideField.setTable(m_collectionTable.getDatabaseTable());
+                    overrideField.setTable(getReferenceDatabaseTable());
                 }
                 
                 addFieldNameTranslation(embeddableMapping, overrideName, overrideField, mapping);
@@ -556,11 +640,11 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor {
                     if (associationOverride == null) {
                         for (DatabaseField fkField : oneToOneMapping.getForeignKeyFields()) {
                             DatabaseField collectionTableField = (DatabaseField) fkField.clone();
-                            collectionTableField.setTable(m_collectionTable.getDatabaseTable());
+                            collectionTableField.setTable(getReferenceDatabaseTable());
                             embeddableMapping.addFieldNameTranslation(collectionTableField.getQualifiedName(), fkField.getName());
                         }
                     } else {
-                        processAssociationOverride(associationOverride, embeddableMapping, mapping, m_collectionTable.getDatabaseTable(), embeddableDescriptor);
+                        processAssociationOverride(associationOverride, embeddableMapping, mapping, getReferenceDatabaseTable(), embeddableDescriptor);
                     }
                 } else {
                     // Section 2.6 of the spec states: "An embeddable class (including an embeddable class within 
@@ -601,24 +685,8 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor {
      * INTERNAL: 
      * Used for OX mapping.
      */
-    public void setCollectionTable(CollectionTableMetadata collectionTable) {
-        m_collectionTable = collectionTable;
-    }
-    
-    /**
-     * INTERNAL: 
-     * Used for OX mapping.
-     */
     public void setColumn(ColumnMetadata column) {
         m_column = column;
-    }
-
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public void setConvertKey(String convertKey) {
-        m_convertKey = convertKey;
     }
     
     /**
@@ -627,6 +695,13 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor {
      */
     public String setMapKey(String mapKey) {
         return m_mapKey;
+    }
+    
+    /**
+     * INTERNAL: 
+     */
+    public void setMapKeyClass(Class mapKeyClass) {
+        m_mapKeyClass = mapKeyClass;
     }
     
     /**
@@ -646,6 +721,22 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor {
     } 
     
     /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setMapKeyConvert(String mapKeyConvert) {
+        m_mapKeyConvert = mapKeyConvert;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping. 
+     */
+    public void setMapKeyEnumerated(EnumeratedMetadata mapKeyEnumerated) {
+        m_mapKeyEnumerated = mapKeyEnumerated;
+    }
+    
+    /**
      * INTERNAL: 
      * Used for OX mapping.
      */
@@ -653,6 +744,14 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor {
         m_mapKeyJoinColumns = mapKeyJoinColumns;
     }
 
+    /**
+     * INTERNAL:
+     * Used for OX mapping. 
+     */
+    public void setMapKeyTemporal(TemporalMetadata mapKeyTemporal) {
+        m_mapKeyTemporal = mapKeyTemporal;
+    }
+    
     /**
      * INTERNAL:
      * Used for OX mapping.

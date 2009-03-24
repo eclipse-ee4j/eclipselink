@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -15,7 +15,8 @@
  *       - 241651: JPA 2.0 Access Type support
  *     12/10/2008-1.1 Michael O'Brien 
  *       - 257606: Add orm.xml schema validation true/(false) flag support in persistence.xml
- *       
+ *     03/27/2009-2.0 Guy Pelletier 
+ *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
@@ -54,8 +55,6 @@ public class XMLEntityMappingsReader {
     public static final String ECLIPSELINK_ORM_XSD = "xsd/eclipselink_orm_1_1.xsd";
     public static final String ECLIPSELINK_ORM_NAMESPACE = "http://www.eclipse.org/eclipselink/xsds/persistence/orm";
     
-    //private static XMLContext m_xmlContext;
-    // TODO: Should we retain the 1.0 orm project? Or, just validate against the latest?
     private static XMLContext m_orm1_0Project;
     private static XMLContext m_orm2_0Project;
     private static XMLContext m_eclipseLinkOrmProject;
@@ -63,12 +62,10 @@ public class XMLEntityMappingsReader {
     /**
      * INTERNAL:
      */
-    protected static XMLEntityMappings read(URL mappingFileUrl, Reader reader1, Reader reader2, Reader reader3, 
-            ClassLoader classLoader, Properties properties) {
+    protected static XMLEntityMappings read(URL mappingFileUrl, Reader reader1, Reader reader2, Reader reader3, ClassLoader classLoader, Properties properties) {
         // Get the schema validation flag if present in the persistence unit properties
         boolean validateORMSchema = isORMSchemaValidationPerformed(properties);
         
-        // -------------- Until bug 218047 is fixed. -----------------
         if (m_orm1_0Project == null) {
             m_orm1_0Project = new XMLContext(new XMLEntityMappingsMappingProject(ORM_1_0_NAMESPACE, ORM_1_0_XSD));
             m_orm2_0Project = new XMLContext(new XMLEntityMappingsMappingProject(ORM_2_0_NAMESPACE, ORM_2_0_XSD));
@@ -102,29 +99,6 @@ public class XMLEntityMappingsReader {
         }
         
         return xmlEntityMappings;
-
-        // ---------- When bug 218047 is fixed. -----------------
-        
-/*                
-        if (m_xmlContext == null) {
-            List<Project> projects = new ArrayList<Project>();
-            projects.add(new XMLEntityMappingsMappingProject(ORM_1_0_NAMESPACE, ORM_1_0_XSD));
-            projects.add(new XMLEntityMappingsMappingProject(ORM_2_0_NAMESPACE, ORM_2_0_XSD));            
-            projects.add(new XMLEntityMappingsMappingProject(ECLIPSELINK_ORM_NAMESPACE, ECLIPSELINK_ORM_XSD));
-            
-            m_xmlContext = new XMLContext(projects);
-        }
-        
-        // Unmarshall JPA format.
-        XMLUnmarshaller unmarshaller = m_xmlContext.createUnmarshaller();
-        // We will default schema validation to false unless the user has turned it on in the eclipselink.orm.validate.schema property
-        if(validateORMSchema) {
-            unmarshaller.setValidationMode(XMLUnmarshaller.SCHEMA_VALIDATION);
-        } else {
-            unmarshaller.setValidationMode(XMLUnmarshaller.NONVALIDATING);
-        }
-        return (XMLEntityMappings) unmarshaller.unmarshal(reader);
-        */
     }
    
     /**

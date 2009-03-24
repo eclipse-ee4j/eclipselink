@@ -17,6 +17,8 @@
  *       - 257606: Add orm.xml schema validation true/(false) flag support in persistence.xml
  *     01/28/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 1)
+ *     03/27/2009-2.0 Guy Pelletier 
+ *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -440,6 +442,7 @@ public class MetadataProcessor {
     public void processORMMetadata() {
         m_project.processStage1();
         m_project.processStage2();
+        m_project.processStage3();
     }
 
     /**
