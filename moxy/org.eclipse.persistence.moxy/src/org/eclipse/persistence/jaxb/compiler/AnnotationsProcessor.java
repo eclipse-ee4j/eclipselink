@@ -527,7 +527,22 @@ public class AnnotationsProcessor {
                     }
                     
                     JavaClass ptype = (JavaClass) nextField.getResolvedType();
-                    property.setType(ptype);
+                    if (!helper.isAnnotationPresent(ptype, XmlTransient.class)) {
+                        property.setType(ptype);
+                    } else {
+                        JavaClass parent = ptype.getSuperclass();
+                        while (parent != null) {
+                            if (parent.getClass().getName().equals("java.lang.Object")) {
+                                property.setType(parent);
+                                break;
+                            }
+                            if (!helper.isAnnotationPresent(parent, XmlTransient.class)) {
+                                property.setType(parent);
+                                break;
+                            }
+                            parent = parent.getSuperclass();
+                        }
+                    }
                     
                     if (helper.isAnnotationPresent(property.getElement(), XmlJavaTypeAdapter.class)) {
                         XmlJavaTypeAdapter adapter = (XmlJavaTypeAdapter) helper.getAnnotation(property.getElement(), XmlJavaTypeAdapter.class);
@@ -673,7 +688,24 @@ public class AnnotationsProcessor {
             property.setElement(propertyMethod);
             property.setSchemaName(getQNameForProperty(propertyName, propertyMethod, getNamespaceInfoForPackage(cls.getPackage())));
             property.setPropertyName(propertyName);
-            property.setType((JavaClass) getMethod.getReturnType());
+            
+            JavaClass returnClass = (JavaClass) getMethod.getReturnType();
+            if (!helper.isAnnotationPresent(returnClass, XmlTransient.class)) {
+                property.setType(returnClass);
+            } else {
+                JavaClass parent = returnClass.getSuperclass();
+                while (parent != null) {
+                    if (parent.getClass().getName().equals("java.lang.Object")) {
+                        property.setType(parent);
+                        break;
+                    }
+                    if (!helper.isAnnotationPresent(parent, XmlTransient.class)) {
+                        property.setType(parent);
+                        break;
+                    }
+                    parent = parent.getSuperclass();
+                }
+            }
             property.setGenericType(helper.getGenericReturnType(getMethod));
             property.setGetMethodName(getMethod.getName());
             property.setSetMethodName(setMethodName);
