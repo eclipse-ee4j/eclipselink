@@ -464,7 +464,21 @@ public class AnnotationsProcessor {
                             }                           
                             
                             choiceProp.setPropertyName(property.getPropertyName());
-                            choiceProp.setType(helper.getJavaClass(next.type()));
+                            Class typeClass = next.type();
+                            
+                            if(typeClass.equals(XmlElement.DEFAULT.class)){                            
+                            	JavaClass type = nextField.getResolvedType();                                   
+                                if(isCollectionType(type)){
+                                	if(type.hasActualTypeArguments()) {
+                                		JavaClass itemType = (JavaClass)type.getActualTypeArguments().toArray()[0];
+                                        choiceProp.setType(itemType);
+                                    }
+                                 }else{
+                                   	choiceProp.setType(type);	
+                                 }                                
+                            }else{
+                                choiceProp.setType(helper.getJavaClass(next.type()));
+                            }
                             choiceProp.setSchemaName(qName);
                             choiceProp.setSchemaType(getSchemaTypeFor(helper.getJavaClass(next.type())));
                             choiceProp.setElement(property.getElement());
@@ -1014,7 +1028,11 @@ public class AnnotationsProcessor {
     }    
 
     public boolean isCollectionType(Property field) {
-        JavaClass type = field.getType();
+    	return isCollectionType(field.getType());
+    }
+    
+    public boolean isCollectionType(JavaClass type) {
+        
         if (helper.getJavaClass(java.util.Collection.class).isAssignableFrom(type) 
                 || helper.getJavaClass(java.util.List.class).isAssignableFrom(type) 
                 || helper.getJavaClass(java.util.Set.class).isAssignableFrom(type)) {

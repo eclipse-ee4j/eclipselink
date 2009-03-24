@@ -209,8 +209,9 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
                 }
             }            
             
-            if (null == xmlDescriptor) {
-                //need to give to special handler, let it find out what to do depending on if this is simple or complex content
+            else if (xmlDescriptor != null) {            	
+                   processChild(xPathFragment, unmarshalRecord, atts, xmlDescriptor);                
+            }else{
                 AnyMappingContentHandler handler = new AnyMappingContentHandler(unmarshalRecord, xmlAnyObjectMapping.usesXMLRoot());
                 String qnameString = xPathFragment.getLocalName();
                 if (xPathFragment.getPrefix() != null) {
@@ -221,7 +222,6 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
                 return true;
             }
 
-            processChild(xPathFragment, unmarshalRecord, atts, xmlDescriptor);
         } catch (SAXException e) {
             throw XMLMarshalException.unmarshalException(e);
         }

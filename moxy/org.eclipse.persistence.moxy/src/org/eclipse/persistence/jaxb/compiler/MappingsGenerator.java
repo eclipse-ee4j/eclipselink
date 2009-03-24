@@ -46,7 +46,6 @@ import org.eclipse.persistence.internal.jaxb.XMLJavaTypeConverter;
 import org.eclipse.persistence.sessions.Project;
 
 import org.eclipse.persistence.internal.libraries.asm.*;
-import org.eclipse.persistence.internal.libraries.asm.Type;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 
 /**
@@ -241,7 +240,12 @@ public class MappingsGenerator {
                 generateChoiceMapping(property, descriptor, namespaceInfo);
             }
         } else if(property.isAny()) {
-            generateAnyCollectionMapping(property, descriptor, namespaceInfo);
+        	if(isCollectionType(property)){
+        		generateAnyCollectionMapping(property, descriptor, namespaceInfo);
+        	}else{
+        		generateAnyObjectMapping(property, descriptor, namespaceInfo);
+        	}
+        	
         } else if(property.isReference()) {
             if(this.isCollectionType(property)) {
                 generateCollectionMappingForReferenceProperty((ReferenceProperty)property, descriptor, namespaceInfo);
@@ -577,8 +581,11 @@ public class MappingsGenerator {
             mapping.setGetMethodName(property.getGetMethodName());
             mapping.setSetMethodName(property.getSetMethodName());
         }
-        
-        mapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
+        if(property.getType().getQualifiedName().equals("org.w3c.dom.Element")){
+            mapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT);        	
+        }else{
+            mapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);	
+        }
         
         descriptor.addMapping(mapping);
     }
