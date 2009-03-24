@@ -114,20 +114,25 @@ public class TestProject extends Project {
         XMLAnyCollectionMapping acMapping = new XMLAnyCollectionMapping();
         acMapping.setAttributeName("stuff");
         descriptor.addMapping(acMapping);
+        
+        // Enable Choice testing when Bug 269880 has been fixed
         // create choice mapping - choice
         XMLChoiceObjectMapping choiceMapping = new XMLChoiceObjectMapping();
         choiceMapping.setAttributeName("choice");
         choiceMapping.addChoiceElement("nickname/text()", String.class);
         choiceMapping.addChoiceElement("secondAddress", Address.class);
         choiceMapping.addChoiceElement("age/text()", Integer.class);
-        descriptor.addMapping(choiceMapping);
+        //descriptor.addMapping(choiceMapping);
+        
+        // Enable ChoiceCollection testing when Bug 269880 has been fixed
         // create choices mapping
         XMLChoiceCollectionMapping choiceCMapping = new XMLChoiceCollectionMapping();
         choiceCMapping.setAttributeName("choices");
         choiceCMapping.addChoiceElement("badgeId/text()", Integer.class);
         choiceCMapping.addChoiceElement("alternateAddress", Address.class);
         choiceCMapping.addChoiceElement("codename/text()", String.class);
-        descriptor.addMapping(choiceCMapping);
+        //descriptor.addMapping(choiceCMapping);
+        
         // create billingAddress mapping
         XMLObjectReferenceMapping orMapping = new XMLObjectReferenceMapping();
         orMapping.setAttributeName("billingAddress");

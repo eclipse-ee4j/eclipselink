@@ -24,22 +24,10 @@
          <xsd:element ref="phone-numbers" minOccurs="0" maxOccurs="unbounded"/>
          <xsd:element name="project-id" type="xsd:decimal" minOccurs="0" maxOccurs="unbounded"/>
          <xsd:any processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
-         <xsd:choice>
-            <xsd:element name="age" type="xsd:int" minOccurs="0"/>
-            <xsd:element ref="secondAddress" minOccurs="0"/>
-            <xsd:element name="nickname" type="xsd:string" minOccurs="0"/>
-         </xsd:choice>
-         <xsd:choice maxOccurs="unbounded">
-            <xsd:element ref="alternateAddress" minOccurs="0"/>
-            <xsd:element name="badgeId" type="xsd:int" minOccurs="0"/>
-            <xsd:element name="codename" type="xsd:string" minOccurs="0"/>
-         </xsd:choice>
          <xsd:element name="bill-address-city" type="xsd:string" minOccurs="0"/>
       </xsd:sequence>
       <xsd:attribute name="bill-address-id" type="xsd:int"/>
    </xsd:complexType>
-   <xsd:element name="alternateAddress" type="address-type"/>
    <xsd:element name="phone-numbers" type="phone-number-type"/>
    <xsd:element name="address" type="address-type"/>
-   <xsd:element name="secondAddress" type="address-type"/>
 </xsd:schema>
