@@ -63,7 +63,6 @@
         <copy file="${junit.lib}" todir="${jboss.server}/lib"/>
         <copy file="${eclipselink.jar.name}" todir="${jboss.server}/lib"/>
         <copy file="${jdbc.driver.jar}" todir="${jboss.server}/lib"/>
-        <copy file="${oracle.extensions.depend.dir}/${oracle.spatial.lib}" todir="${jboss.server}/lib"/>
     </target>
 
     <!-- This target is to create datasource required for running JPA tests on the JBoss server. -->
@@ -116,6 +115,7 @@
                 <pathelement location="${persistence.jar}"/>
                 <pathelement location="${oracle.extensions.depend.dir}/${oracle.xdb.lib}"/>
                 <pathelement location="${oracle.extensions.depend.dir}/${oracle.xmlparserv2.lib}"/>
+                <pathelement location="${oracle.extensions.depend.dir}/${oracle.spatial.lib}"/>
             </classpath>           
         </java>
     </target>
