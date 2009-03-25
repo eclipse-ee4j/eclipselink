@@ -479,6 +479,8 @@
             <zipfileset dir="./${eclipselink.core.xsds}" includes="*.xsd" prefix="eclipselink/xsds"/>
             <!-- jpa XSD files -->
             <zipfileset dir="./${eclipselink.jpa.xsds}" includes="*.xsd" prefix="eclipselink/xsds"/>
+            <!-- dbws XSD files -->
+            <zipfileset dir="./${eclipselink.dbws.xsds}" includes="*.xsd" prefix="eclipselink/xsds"/>
             <!-- core jar's and zips -->
             <zipfileset dir="." prefix="eclipselink/jlib">
                 <include name="${eclipselink.jar.name}"/>
