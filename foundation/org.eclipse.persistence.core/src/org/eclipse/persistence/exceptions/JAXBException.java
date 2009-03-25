@@ -36,6 +36,7 @@ public class JAXBException extends EclipseLinkException {
     public static final int MULTIPLE_ANY_ATTRIBUTE_MAPPING = 50005;
     public static final int INVALID_XML_ELEMENT_REF = 50006;
     public static final int NAME_COLLISION = 50007;
+    public static final int UNSUPPORTED_NODE_CLASS = 50008;
     
     protected JAXBException(String message) {
         super(message);
@@ -103,4 +104,10 @@ public class JAXBException extends EclipseLinkException {
         return exception;
     }    
     
+    public static JAXBException unsupportedNodeClass(String className) {
+        Object[] args = {className};
+        JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, UNSUPPORTED_NODE_CLASS, args));
+        exception.setErrorCode(UNSUPPORTED_NODE_CLASS);
+        return exception;
+    }   
 }

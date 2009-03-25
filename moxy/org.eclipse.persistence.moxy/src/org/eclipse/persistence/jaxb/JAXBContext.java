@@ -23,6 +23,7 @@ import javax.xml.namespace.QName;
 import java.util.HashMap;
 
 import org.eclipse.persistence.oxm.XMLContext;
+import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jaxb.compiler.Generator;
 import org.eclipse.persistence.jaxb.compiler.MarshalCallback;
@@ -120,6 +121,14 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     
     public Binder createBinder() {
         return new JAXBBinder(this.xmlContext);
+    }
+    
+    public Binder createBinder(Class nodeClass) {
+    	if(nodeClass.getName().equals("org.w3c.dom.Node")){
+    		return new JAXBBinder(this.xmlContext);
+    	}else{
+    		throw new UnsupportedOperationException(JAXBException.unsupportedNodeClass(nodeClass.getName()));
+    	}
     }
     
     public JAXBIntrospector createJAXBIntrospector() {

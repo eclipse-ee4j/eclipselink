@@ -28,6 +28,7 @@ public class JAXBExceptionResource extends ListResourceBundle {
         {"50005", "Only one property with XmlAnyAttribute allowed on class {0}"},
         {"50006", "Invalid XmlElementRef on property {0} on class {1}. Referenced Element not declared"},
         {"50007", "Name collision.  Two class have the XML type with uri {0} and name {1}"},
+        {"50008", "Unsupported Node class {0}.  The createBinder(Class) method only supports the class org.w3c.dom.Node"},
     };
     
     /**
