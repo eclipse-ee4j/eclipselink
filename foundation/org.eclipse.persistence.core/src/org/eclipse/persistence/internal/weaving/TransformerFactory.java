@@ -416,9 +416,9 @@ public class TransformerFactory {
      */
     protected List storeAttributeMappings(Class clz, ClassDetails classDetails, List mappings, boolean weaveValueHolders) {      
         List unMappedAttributes = new ArrayList();
-        Map attributesMap = new HashMap();
-        Map settersMap = new HashMap();
-        Map gettersMap = new HashMap();
+        Map<String, AttributeDetails> attributesMap = new HashMap<String, AttributeDetails>();
+        Map<String, AttributeDetails> settersMap = new HashMap<String, AttributeDetails>();
+        Map<String, AttributeDetails> gettersMap = new HashMap<String, AttributeDetails>();
         List lazyMappings = new ArrayList();
 
         for (Iterator iterator = mappings.iterator(); iterator.hasNext();) {

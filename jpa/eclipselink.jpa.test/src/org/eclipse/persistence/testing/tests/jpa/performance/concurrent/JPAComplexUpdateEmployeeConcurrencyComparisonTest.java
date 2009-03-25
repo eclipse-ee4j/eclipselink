@@ -27,6 +27,7 @@ public class JPAComplexUpdateEmployeeConcurrencyComparisonTest extends Concurren
     protected List<Employee> employees;
     protected int index;
     protected long count;
+    protected int errors;
 
     public JPAComplexUpdateEmployeeConcurrencyComparisonTest() {
         setDescription("This test compares the concurrency of complex update Employee.");
@@ -90,7 +91,8 @@ public class JPAComplexUpdateEmployeeConcurrencyComparisonTest extends Concurren
         try {
             manager.getTransaction().commit();
         } catch (Exception exception) {
-            System.out.println(exception);
+            this.errors++;
+            System.out.println("" + this.errors + ":" + exception);
         }
         manager.close();
     }

@@ -49,7 +49,7 @@ public class HibernateJPAConcurrencyComparisonModel extends JPAConcurrencyCompar
         properties.put("hibernate.connection.url", getSession().getLogin().getConnectionString());
         properties.put("hibernate.connection.username", getSession().getLogin().getUserName());
         properties.put("hibernate.connection.password", getSession().getLogin().getPassword());
-        properties.put("hibernate.connection.pool_size", "10");
+        properties.put("hibernate.connection.pool_size", "32");
         
         /*/ For emulated connection testing.
         try {
@@ -59,7 +59,7 @@ public class HibernateJPAConcurrencyComparisonModel extends JPAConcurrencyCompar
         properties.put("hibernate.connection.url", "emulate:" + getSession().getLogin().getConnectionString());
         properties.put("hibernate.connection.username", getSession().getLogin().getUserName());
         properties.put("hibernate.connection.password", getSession().getLogin().getPassword()); 
-        properties.put("hibernate.connection.pool_size", "10");*/
+        properties.put("hibernate.connection.pool_size", "32");*/
         
         properties.put("hibernate.jdbc.batch_size", "100");
         properties.put("hibernate.dialect", "org.hibernate.dialect.Oracle9Dialect");

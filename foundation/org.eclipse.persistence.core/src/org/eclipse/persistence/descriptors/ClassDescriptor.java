@@ -3208,24 +3208,33 @@ public class ClassDescriptor implements Cloneable, Serializable {
                 setFetchGroupManager(new FetchGroupManager());
             }
         }
-        // If weaved configure the copy policy.
-        if (PersistenceObject.class.isAssignableFrom(getJavaClass())) {
-            if (this.copyPolicy == null) {
-                // Cloning is only auto set for field access, as method access
-                // may not have simple fields.
-                boolean isMethodAccess = false;
-                for (Iterator iterator = getMappings().iterator(); iterator.hasNext(); ) {
-                    DatabaseMapping mapping = (DatabaseMapping)iterator.next();
-                    if (mapping.isUsingMethodAccess()) {
-                        // Ok for lazy 1-1s
-                        if (!mapping.isOneToOneMapping() || !((ForeignReferenceMapping)mapping).usesIndirection()) {
-                            isMethodAccess = true;
-                        }
-                        break;
+        // PERF: Check if the class "itself" was weaved.
+        // If weaved avoid reflection, use clone copy and empty new.
+        if (Arrays.asList(getJavaClass().getInterfaces()).contains(PersistenceObject.class)) {
+            // Cloning is only auto set for field access, as method access
+            // may not have simple fields, same with empty new and reflection get/set.
+            boolean isMethodAccess = false;
+            for (Iterator iterator = getMappings().iterator(); iterator.hasNext(); ) {
+                DatabaseMapping mapping = (DatabaseMapping)iterator.next();
+                if (mapping.isUsingMethodAccess()) {
+                    // Ok for lazy 1-1s
+                    if (!mapping.isOneToOneMapping() || !((ForeignReferenceMapping)mapping).usesIndirection()) {
+                        isMethodAccess = true;
                     }
+                    break;
+                } else {
+                    // Avoid reflection.
+                    mapping.setAttributeAccessor(new PersistenceObjectAttributeAccessor(mapping.getAttributeName()));
                 }
-                if (!isMethodAccess) {
+            }
+            if (!isMethodAccess) {
+                if (this.copyPolicy == null) {
                     setCopyPolicy(new PersistenceEntityCopyPolicy());
+                }
+                if (!isAbstract()) {
+                    try {
+                        setInstantiationPolicy(new PersistenceObjectInstantiationPolicy((PersistenceObject)getJavaClass().newInstance()));
+                    } catch (Exception ignore) { }
                 }
             }
         }

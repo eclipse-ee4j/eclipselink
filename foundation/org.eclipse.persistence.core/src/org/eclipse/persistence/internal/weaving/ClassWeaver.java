@@ -51,6 +51,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
     // PersistenceEntity
     public static final String PERSISTENCE_ENTITY_SHORT_SIGNATURE = "org/eclipse/persistence/internal/descriptors/PersistenceEntity";
     public static final String PERSISTENCE_OBJECT_SHORT_SIGNATURE = "org/eclipse/persistence/internal/descriptors/PersistenceObject";
+    public static final String PERSISTENCE_OBJECT_SIGNATURE = "L" + PERSISTENCE_OBJECT_SHORT_SIGNATURE + ";";
     public static final String VECTOR_SIGNATURE = "Ljava/util/Vector;";
     public static final String CACHEKEY_SIGNATURE = "Lorg/eclipse/persistence/internal/identitymaps/CacheKey;";
     
@@ -105,6 +106,39 @@ public class ClassWeaver extends ClassAdapter implements Constants {
                 return "java/lang/Double";
         }
         return null;
+    }
+    
+    /**
+     * Used for primitive conversion.  Returns the name conversion method for the given type.
+     */
+    public static void unwrapPrimitive(AttributeDetails attribute, CodeVisitor visitor) {
+        String wrapper = wrapperFor(attribute.getReferenceClassType().getSort());
+        switch (attribute.getReferenceClassType().getSort()) {
+            case Type.BOOLEAN:
+                visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "booleanValue", "()Z");
+                return;
+            case Type.BYTE:
+                visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "byteValue", "()B");
+                return;
+            case Type.CHAR:
+                visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "charValue", "()C");
+                return;
+            case Type.SHORT:
+                visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "shortValue", "()S");
+                return;
+            case Type.INT:
+                visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "intValue", "()I");
+                return;
+            case Type.FLOAT:
+                visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "floatValue", "()F");
+                return;
+            case Type.LONG:
+                visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "longValue", "()J");
+                return;
+            case Type.DOUBLE:
+                visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "doubleValue", "()D");
+                return;
+        }
     }
 
     /**
@@ -663,20 +697,175 @@ public class ClassWeaver extends ClassAdapter implements Constants {
      * Add an internal shallow clone method.
      * This can be used to optimize uow cloning.
      * 
-     * public void _persistence_shallow_clone() {
-     *     return Object.clone();
+     * public Object _persistence_shallow_clone() {
+     *     return super.clone();
      * }
      */
     public void addShallowClone(ClassDetails classDetails) {
-        // create the clone() method
+        // create the _persistence_shallow_clone() method
         CodeVisitor cv_clone = cv.visitMethod(ACC_PUBLIC, "_persistence_shallow_clone", "()Ljava/lang/Object;", null, null);
 
-        // ClassType clone = (ClassType)super.clone();
+        // return super.clone();
         cv_clone.visitVarInsn(ALOAD, 0);
         cv_clone.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "clone", "()Ljava/lang/Object;");
         
         cv_clone.visitInsn(ARETURN);
         cv_clone.visitMaxs(0, 0);
+    }
+    
+    /**
+     * Add an internal empty constructor, and new method.
+     * This is used to avoid unnecessary initialization and avoid reflection.
+     * 
+     * public void _persistence_new(PersistenceObject factory) {
+     *   return new ClassType(factory);
+     * }
+     * 
+     * public ClassType(PersistenceObject factory) {
+     *   super();
+     * }
+     */
+    public void addPersistenceNew(ClassDetails classDetails) {
+        // create the _persistence_new() method
+        CodeVisitor cv_new = cv.visitMethod(ACC_PUBLIC, "_persistence_new", "(" + PERSISTENCE_OBJECT_SIGNATURE + ")Ljava/lang/Object;", null, null);
+        
+        // return new ClassType(factory);
+        cv_new.visitTypeInsn(NEW, classDetails.getClassName());
+        cv_new.visitInsn(DUP);
+        cv_new.visitVarInsn(ALOAD, 1);
+        cv_new.visitMethodInsn(INVOKESPECIAL, classDetails.getClassName(), "<init>", "(" + PERSISTENCE_OBJECT_SIGNATURE + ")V");
+        
+        cv_new.visitInsn(ARETURN);
+        cv_new.visitMaxs(0, 0);
+        
+        // create the ClassType() method
+        CodeVisitor cv_constructor = cv.visitMethod(ACC_PUBLIC, "<init>", "(" + PERSISTENCE_OBJECT_SIGNATURE + ")V", null, null);
+
+        cv_constructor.visitVarInsn(ALOAD, 0);
+        if (classDetails.getSuperClassDetails() == null) {
+            // super();
+            cv_constructor.visitMethodInsn(INVOKESPECIAL, classDetails.getSuperClassName(), "<init>", "()V");
+        } else {
+            // super(factory);
+            cv_constructor.visitVarInsn(ALOAD, 1);
+            cv_constructor.visitMethodInsn(INVOKESPECIAL, classDetails.getSuperClassName(), "<init>", "(" + PERSISTENCE_OBJECT_SIGNATURE + ")V");          
+        }
+        cv_constructor.visitInsn(RETURN);
+        cv_constructor.visitMaxs(0, 0);
+    }
+    
+    /**
+     * Add an internal generic get and set method.
+     * This is used to avoid reflection.
+     * 
+     * public Object _persistence_get(String attribute) {
+     *   if (attribute == "address") {
+     *     return this.address;
+     *   }
+     *   if (attribute == "city") {
+     *     return this.city;
+     *   }
+     *   return null;
+     * }
+     * 
+     * public void _persistence_set(int index, Object value) {
+     *   if (attribute == "address") {
+     *     this.address = (String)value;
+     *   } else if (attribute == "city") {
+     *     this.city = (String)city;
+     *   }
+     * }
+     */
+    public void addPersistenceGetSet(ClassDetails classDetails) {
+        // create the _persistence_get() method
+        CodeVisitor cv_get = cv.visitMethod(ACC_PUBLIC, "_persistence_get", "(Ljava/lang/String;)Ljava/lang/Object;", null, null);
+
+        Label label = null;
+        for (AttributeDetails attributeDetails : classDetails.getAttributesMap().values()) {
+            if (!attributeDetails.isAttributeOnSuperClass()) {
+                if (label != null) {
+                    cv_get.visitLabel(label);
+                }
+                // else if (attribute == "address")
+                cv_get.visitVarInsn(ALOAD, 1);
+                cv_get.visitLdcInsn(attributeDetails.getAttributeName().intern());
+                label = new Label();
+                cv_get.visitJumpInsn(IF_ACMPNE, label);
+                // return this.address
+                // if this is a primitive, get the wrapper class
+                String wrapper = ClassWeaver.wrapperFor(attributeDetails.getReferenceClassType().getSort());
+                // first part of code to wrap primitives, for instance: new Integer(this.id)
+                if (wrapper != null){
+                    cv_get.visitTypeInsn(NEW, wrapper);
+                    cv_get.visitInsn(DUP);
+                }
+                cv_get.visitVarInsn(ALOAD, 0);
+                cv_get.visitFieldInsn(GETFIELD, classDetails.getClassName(), attributeDetails.getAttributeName(), attributeDetails.getReferenceClassType().getDescriptor());
+                if (wrapper != null){
+                    cv_get.visitMethodInsn(INVOKESPECIAL, wrapper, "<init>", "(" + attributeDetails.getReferenceClassType().getDescriptor() + ")V");
+                }
+                
+                cv_get.visitInsn(ARETURN);
+            }
+        }
+        if (label != null) {
+            cv_get.visitLabel(label);
+        }
+        // call super, or return null
+        if (classDetails.getSuperClassDetails() == null) {
+            // return null;
+            cv_get.visitInsn(ACONST_NULL);
+        } else {
+            cv_get.visitVarInsn(ALOAD, 0);
+            cv_get.visitVarInsn(ALOAD, 1);
+            cv_get.visitMethodInsn(INVOKESPECIAL, classDetails.getSuperClassName(), "_persistence_get", "(Ljava/lang/String;)Ljava/lang/Object;");
+        }
+        
+        cv_get.visitInsn(ARETURN);
+        cv_get.visitMaxs(0, 0);
+        
+        // create the _persistence_set() method
+        CodeVisitor cv_set = cv.visitMethod(ACC_PUBLIC, "_persistence_set", "(Ljava/lang/String;Ljava/lang/Object;)V", null, null);
+
+        label = null;
+        for (AttributeDetails attribute : classDetails.getAttributesMap().values()) {
+            if (!attribute.isAttributeOnSuperClass()) {
+                if (label != null) {
+                    cv_set.visitLabel(label);
+                }
+                // else if (attribute == "address")
+                cv_set.visitVarInsn(ALOAD, 1);
+                cv_set.visitLdcInsn(attribute.getAttributeName().intern());
+                label = new Label();
+                cv_set.visitJumpInsn(IF_ACMPNE, label);            
+                // this.address = (String)value;
+                cv_set.visitVarInsn(ALOAD, 0);
+                cv_set.visitVarInsn(ALOAD, 2);
+                String wrapper = wrapperFor(attribute.getReferenceClassType().getSort());
+                if (wrapper == null) {
+                    wrapper = attribute.getReferenceClassName().replace('.', '/');
+                }
+                cv_set.visitTypeInsn(CHECKCAST, wrapper);
+                // Unwrap any primitive wrapper to its value.
+                unwrapPrimitive(attribute, cv_set);
+                cv_set.visitFieldInsn(PUTFIELD, classDetails.getClassName(), attribute.getAttributeName(), attribute.getReferenceClassType().getDescriptor());
+                // return;
+                cv_set.visitInsn(RETURN);
+            }
+        }
+        if (label != null) {
+            cv_set.visitLabel(label);
+        }
+        // call super, or return null
+        if (classDetails.getSuperClassDetails() != null) {
+            cv_set.visitVarInsn(ALOAD, 0);
+            cv_set.visitVarInsn(ALOAD, 1);
+            cv_set.visitVarInsn(ALOAD, 2);
+            cv_set.visitMethodInsn(INVOKESPECIAL, classDetails.getSuperClassName(), "_persistence_set", "(Ljava/lang/String;Ljava/lang/Object;)V");
+        }
+        
+        cv_set.visitInsn(RETURN);
+        cv_set.visitMaxs(0, 0);
     }
     
     /**
@@ -913,7 +1102,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
         }
         // PersistenceObject
         int persistenceObjectIndex = 0;
-        boolean persistenceObject = classDetails.shouldWeaveInternal() && (classDetails.getSuperClassDetails() == null);
+        boolean persistenceObject = classDetails.shouldWeaveInternal();
         if (persistenceObject) {
             persistenceObjectIndex = newInterfacesLength;
             newInterfacesLength++;
@@ -1041,9 +1230,12 @@ public class ClassWeaver extends ClassAdapter implements Constants {
                     // Add PersistenceEntity variables and methods.
                     addPersistenceEntityVariables();
                     addPersistenceEntityMethods(this.classDetails);
-                    weavedPersistenceEntity = true;
+                    this.weavedPersistenceEntity = true;
                 }
             }
+            // Add empty new method and generic get/set methods.
+            addPersistenceNew(this.classDetails);
+            addPersistenceGetSet(this.classDetails);
         }
         
         boolean attributeAccess = false;

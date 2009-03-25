@@ -14,6 +14,8 @@ package org.eclipse.persistence.internal.weaving;
 
 import java.util.*;
 
+import org.eclipse.persistence.mappings.DatabaseMapping;
+
 /**
  * Internal helper class that holds details of a persistent class.
  * Used by {@link PersistenceWeaver}
@@ -43,7 +45,7 @@ public class ClassDetails {
     /** Map of this class' persistent set methods where the key is the setMethod name. */    
     protected Map<String, AttributeDetails> setterMethodToAttributeDetails;
     /** Set of mappings using value holder indirection. */
-    protected List lazyMappings;
+    protected List<DatabaseMapping> lazyMappings;
     /** Determine if a JPA "mapped superclass". */
     protected boolean isMappedSuperClass = false;
     /** Determine if a JPA "embedable" (aggregate). */
@@ -120,31 +122,31 @@ public class ClassDetails {
         this.shouldWeaveInternal = shouldWeaveInternal;
     }
     
-    public Map getAttributesMap() {
+    public Map<String, AttributeDetails> getAttributesMap() {
         return attributesMap;
     }
 
-    public Map getGetterMethodToAttributeDetails(){
+    public Map<String, AttributeDetails> getGetterMethodToAttributeDetails(){
         return getterMethodToAttributeDetails;
     }
     
-    public List getLazyMappings(){
+    public List<DatabaseMapping> getLazyMappings(){
         return lazyMappings;
     }
     
-    public Map getSetterMethodToAttributeDetails(){
+    public Map<String, AttributeDetails> getSetterMethodToAttributeDetails(){
         return setterMethodToAttributeDetails;
     }
     
-    public void setAttributesMap(Map attributesMap) {
+    public void setAttributesMap(Map<String, AttributeDetails> attributesMap) {
         this.attributesMap = attributesMap;
     }
     
-    public void setGetterMethodToAttributeDetails(Map map){
+    public void setGetterMethodToAttributeDetails(Map<String, AttributeDetails> map){
         this.getterMethodToAttributeDetails = map;
     }
     
-    public void setLazyMappings(List lazyMappings){
+    public void setLazyMappings(List<DatabaseMapping> lazyMappings){
         this.lazyMappings = lazyMappings;
     }
     

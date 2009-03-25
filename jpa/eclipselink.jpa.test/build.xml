@@ -185,6 +185,10 @@
             <pathelement path="${junit.lib}"/>
             <pathelement path="${eclipselink.plugins}/${antlr}"/>
             <pathelement path="${eclipselink.plugins}/${asm}"/>
+            <!-- Needed for performance tests using hibernate caching.>
+            <fileset dir="${hibernate.dir}">
+                <include name="*.jar"/>
+            </fileset-->
         </path>
         <path id="compile.server.path">
             <path refid="compile.path"/>
@@ -634,6 +638,32 @@
             <param name="RUN_PATH" value="run.performance.classpath"/>
             <param name="TEST_AGENT" value="${test.agent}"/>
             <param name="TEST_WEAVING" value="${test.weaving}"/>
+        </antcall>
+    </target>
+
+    <!-- Runs concurrency tests. -->
+    <target name="test-concurrency" depends="clean-test,config-trunk, config-flat">
+        <antcall target="run-test-prompt" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.performance.JPAConcurrencyComparisonModel"/>
+            <param name="RUN_PATH" value="run.classpath"/>
+            <param name="TEST_AGENT" value="${test.agent}"/>
+            <param name="TEST_WEAVING" value="${test.weaving}"/>
+        </antcall>
+    </target>
+
+    <!-- Runs concurrency tests comparing with Hibernate. -->
+    <target name="test-concurrency-hibernate" depends="clean-test,config-trunk, config-flat">
+        <path id="run.classpath.hibernate">
+            <fileset dir="${hibernate.dir}">
+                <include name="*.jar"/>
+            </fileset>
+            <path refid="run.classpath"/>
+        </path>
+        <antcall target="run-test-prompt" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.performance.HibernateJPAConcurrencyComparisonModel"/>
+            <param name="RUN_PATH" value="run.classpath.hibernate"/>
+            <param name="TEST_AGENT" value="-Dignore"/>
+            <param name="TEST_WEAVING" value="-Dignore"/>
         </antcall>
     </target>
 

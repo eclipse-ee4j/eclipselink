@@ -24,6 +24,7 @@ import org.eclipse.persistence.testing.framework.*;
  */
 public class JPAAddPhoneConcurrencyComparisonTest extends ConcurrentPerformanceComparisonTest {
     protected Employee employee;
+    protected int errors;
 
     public JPAAddPhoneConcurrencyComparisonTest() {
         setDescription("This test compares the concurrency of complex update Employee.");
@@ -69,7 +70,8 @@ public class JPAAddPhoneConcurrencyComparisonTest extends ConcurrentPerformanceC
         try {
             manager.getTransaction().commit();
         } catch (Exception exception) {
-            System.out.println(exception);
+            this.errors++;
+            System.out.println("" + this.errors + ":" + exception);
         }
         manager.close();
     }

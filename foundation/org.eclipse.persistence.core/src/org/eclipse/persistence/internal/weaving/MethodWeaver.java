@@ -218,7 +218,7 @@ public class MethodWeaver extends CodeAdapter implements Constants {
         }
         // Must set immediately, as weaving can trigger this method.
         this.methodStarted = true;
-        AttributeDetails attributeDetails = (AttributeDetails)tcw.classDetails.getGetterMethodToAttributeDetails().get(methodName);
+        AttributeDetails attributeDetails = tcw.classDetails.getGetterMethodToAttributeDetails().get(methodName);
         boolean isGetMethod = (attributeDetails != null) && this.methodDescriptor.startsWith("()");
         if (isGetMethod && !attributeDetails.hasField()) {
             if (tcw.classDetails.shouldWeaveFetchGroups()) {
@@ -268,7 +268,7 @@ public class MethodWeaver extends CodeAdapter implements Constants {
                 cv.visitLabel(l0);
             }        
         } else {
-            attributeDetails = (AttributeDetails)tcw.classDetails.getSetterMethodToAttributeDetails().get(methodName);
+            attributeDetails = tcw.classDetails.getSetterMethodToAttributeDetails().get(methodName);
             boolean isSetMethod = (attributeDetails != null) && this.methodDescriptor.equals(attributeDetails.getSetterMethodSignature());
             if (isSetMethod  && !attributeDetails.hasField() && tcw.classDetails.shouldWeaveChangeTracking()) {
                 /**
@@ -313,14 +313,14 @@ public class MethodWeaver extends CodeAdapter implements Constants {
      *  _persistence_attributeName_vh.setValue(argument);
      *  _persistence_attributeName_vh.setIsCoordinatedWithProperty(true);
      * 
-     * In a setter method for a non-LAZY mapping, the followings lines are added if change trackign is activated:
+     * In a setter method for a non-LAZY mapping, the followings lines are added if change tracking is activated:
      * 
      *  _persistence_propertyChange("attributeName", oldAttribute, argument); 
      *  
      *  Note: This code will wrap primitives by adding a call to the primitive constructor.
      */
     public void weaveEndOfMethodIfRequired() {
-        AttributeDetails attributeDetails = (AttributeDetails)tcw.classDetails.getSetterMethodToAttributeDetails().get(methodName);
+        AttributeDetails attributeDetails = tcw.classDetails.getSetterMethodToAttributeDetails().get(methodName);
         boolean isSetMethod = (attributeDetails != null) && this.methodDescriptor.equals(attributeDetails.getSetterMethodSignature());
         if (isSetMethod  && !attributeDetails.hasField()) {
             if (attributeDetails.weaveValueHolders()) {

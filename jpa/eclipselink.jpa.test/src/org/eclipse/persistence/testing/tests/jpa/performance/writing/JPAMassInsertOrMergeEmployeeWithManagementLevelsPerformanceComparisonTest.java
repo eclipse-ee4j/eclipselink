@@ -78,6 +78,7 @@ public class JPAMassInsertOrMergeEmployeeWithManagementLevelsPerformanceComparis
             id = emp.getId();
             entityManager = createEntityManager();
             entityManager.getTransaction().begin();
+            emp = entityManager.find(Employee.class, emp.getId());
             entityManager.remove(emp);
             entityManager.getTransaction().commit();
             entityManager.close();

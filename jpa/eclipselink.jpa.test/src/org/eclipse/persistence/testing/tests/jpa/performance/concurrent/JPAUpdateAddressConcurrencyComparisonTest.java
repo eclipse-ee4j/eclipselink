@@ -27,6 +27,7 @@ public class JPAUpdateAddressConcurrencyComparisonTest extends ConcurrentPerform
     protected String street;
     protected int index;
     protected long count;
+    protected int errors;
 
     public JPAUpdateAddressConcurrencyComparisonTest() {
         setDescription("This test compares the concurrency of update Address.");
@@ -65,7 +66,8 @@ public class JPAUpdateAddressConcurrencyComparisonTest extends ConcurrentPerform
         try {
             manager.getTransaction().commit();
         } catch (Exception exception) {
-            System.out.println(exception);
+            this.errors++;
+            System.out.println("" + this.errors + ":" + exception);
         }
         manager.close();
     }

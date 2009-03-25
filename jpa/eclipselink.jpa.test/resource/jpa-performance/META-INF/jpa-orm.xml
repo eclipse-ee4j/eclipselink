@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <entity-mappings version="1.0" xmlns="http://java.sun.com/xml/ns/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm orm_1_0.xsd">
     <description>JPA Performance Test ORM</description>
-    <entity name="Employee" class="org.eclipse.persistence.testing.models.jpa.performance.Employee" access="PROPERTY">
+    <entity name="Employee" class="org.eclipse.persistence.testing.models.jpa.performance.Employee" access="FIELD">
         <table name="P_EMPLOYEE"/>
         <sequence-generator name="EMP_SEQ" sequence-name="EMP_SEQ" allocation-size="48"/>
         <attributes>
@@ -58,7 +58,7 @@
             <embedded name="period"/>
         </attributes>
     </entity>
-    <entity name="Address" class="org.eclipse.persistence.testing.models.jpa.performance.Address" access="PROPERTY">
+    <entity name="Address" class="org.eclipse.persistence.testing.models.jpa.performance.Address" access="FIELD">
         <table name="P_ADDRESS"/>
         <sequence-generator name="ADDRESS_SEQ" sequence-name="ADDRESS_SEQ" allocation-size="48"/>
         <named-query name="findAddressByCity">
@@ -89,7 +89,7 @@
             </basic>
         </attributes>
     </entity>
-    <entity name="PhoneNumber" class="org.eclipse.persistence.testing.models.jpa.performance.PhoneNumber" access="PROPERTY">
+    <entity name="PhoneNumber" class="org.eclipse.persistence.testing.models.jpa.performance.PhoneNumber" access="FIELD">
         <table name="P_PHONE"/>
         <sequence-generator name="PHONE_SEQ" sequence-name="PHONE_SEQ" allocation-size="48"/>
         <attributes>
@@ -111,7 +111,7 @@
             </many-to-one>
         </attributes>
     </entity>
-    <entity name="LargeProject" class="org.eclipse.persistence.testing.models.jpa.performance.LargeProject" access="PROPERTY">
+    <entity name="LargeProject" class="org.eclipse.persistence.testing.models.jpa.performance.LargeProject" access="FIELD">
         <table name="P_LPROJECT"/>
         <discriminator-value>L</discriminator-value>
         <attributes>
@@ -123,11 +123,11 @@
             </basic>
         </attributes>
     </entity>
-    <entity name="SmallProject" class="org.eclipse.persistence.testing.models.jpa.performance.SmallProject" access="PROPERTY">
+    <entity name="SmallProject" class="org.eclipse.persistence.testing.models.jpa.performance.SmallProject" access="FIELD">
         <table name="P_SPROJECT"/>
         <discriminator-value>S</discriminator-value>
     </entity>
-    <entity name="Project" class="org.eclipse.persistence.testing.models.jpa.performance.Project" access="PROPERTY">
+    <entity name="Project" class="org.eclipse.persistence.testing.models.jpa.performance.Project" access="FIELD">
         <table name="P_PROJECT"/>
         <inheritance strategy="JOINED"/>
         <discriminator-value>P</discriminator-value>
@@ -152,7 +152,7 @@
             </many-to-one>
         </attributes>
     </entity>
-    <embeddable class="org.eclipse.persistence.testing.models.jpa.performance.EmploymentPeriod" access="PROPERTY">
+    <embeddable class="org.eclipse.persistence.testing.models.jpa.performance.EmploymentPeriod" access="FIELD">
         <attributes>
             <basic name="startDate">
                 <column name="START_DATE"/>

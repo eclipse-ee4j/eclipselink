@@ -27,6 +27,7 @@ public class JPAUpdateEmployeeConcurrencyComparisonTest extends ConcurrentPerfor
     protected String lastName;
     protected int index;
     protected long count;
+    protected int errors;
 
     public JPAUpdateEmployeeConcurrencyComparisonTest() {
         setDescription("This test compares the concurrency of update Employee.");
@@ -65,7 +66,8 @@ public class JPAUpdateEmployeeConcurrencyComparisonTest extends ConcurrentPerfor
         try {
             manager.getTransaction().commit();
         } catch (Exception exception) {
-            System.out.println(exception);
+            this.errors++;
+            System.out.println("" + this.errors + ":" + exception);
         }
         manager.close();
     }

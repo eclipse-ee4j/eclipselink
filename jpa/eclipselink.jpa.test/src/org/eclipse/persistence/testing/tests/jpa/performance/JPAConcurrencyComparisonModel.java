@@ -216,6 +216,11 @@ public class JPAConcurrencyComparisonModel extends TestModel {
         properties.put("eclipselink.jdbc.url", getSession().getLogin().getConnectionString());
         properties.put("eclipselink.jdbc.user", getSession().getLogin().getUserName());
         properties.put("eclipselink.jdbc.password", getSession().getLogin().getPassword());
+        properties.put("eclipselink.jdbc.write-connections.min", "32");
+        properties.put("eclipselink.jdbc.write-connections.max", "32");
+        properties.put("eclipselink.jdbc.read-connections.min", "32");
+        properties.put("eclipselink.jdbc.read-connections.max", "32");
+        //properties.put("eclipselink.cache.shared.default", "false");
         /*
         // For emulated connection testing.
         try {
@@ -224,7 +229,11 @@ public class JPAConcurrencyComparisonModel extends TestModel {
         properties.put("eclipselink.jdbc.driver", "org.eclipse.persistence.testing.tests.performance.emulateddb.EmulatedDriver");
         properties.put("eclipselink.jdbc.url", "emulate:" + getSession().getLogin().getConnectionString());
         properties.put("eclipselink.jdbc.user", getSession().getLogin().getUserName());
-        properties.put("eclipselink.jdbc.password", getSession().getLogin().getPassword());*/
+        properties.put("eclipselink.jdbc.password", getSession().getLogin().getPassword());
+        properties.put("eclipselink.jdbc.write-connections.min", "32");
+        properties.put("eclipselink.jdbc.write-connections.max", "32");
+        properties.put("eclipselink.jdbc.read-connections.min", "32");
+        properties.put("eclipselink.jdbc.read-connections.max", "32");*/
 
         properties.put("eclipselink.jdbc.batch-writing", "JDBC");
         //properties.put("eclipselink.persistence-context.close-on-commit", "true");

@@ -19,6 +19,9 @@ package org.eclipse.persistence.internal.descriptors;
  * @author  James Sutherland
  * @since   EclipseLink 1.1
  */
-public interface PersistenceObject {    
+public interface PersistenceObject {
     Object _persistence_shallow_clone();
+    Object _persistence_new(PersistenceObject object);
+    Object _persistence_get(String attribute);
+    void _persistence_set(String attribute, Object value);
 }
