@@ -279,6 +279,8 @@
                     javax/persistence/MapKey.class,
                     javax/persistence/MapKeyClass.class,
                     javax/persistence/MapKeyColumn.class,
+					javax/persistence/MapKeyEnumerated.class,
+					javax/persistence/MapKeyTemporal.class,
                     javax/persistence/OrderColumn.class,
                     javax/persistence/CaseExpression.class,
                     javax/persistence/Aggregate.class,
