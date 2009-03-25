@@ -203,6 +203,37 @@ public class ExpressionOuterJoinTestSuite extends TestSuite {
         addTest(test);
     }
 
+    private void addOuterJoinIsNullTest() {
+        ExpressionBuilder emp = new ExpressionBuilder();
+        Expression expression = 
+        emp.get("firstName").equal("Bob").or(emp.getAllowingNull("address").isNull()).or
+        	(emp.getAllowingNull("address").get("city").equal("Ottawa"));
+ 
+        ReadAllExpressionTest test = new ReadAllOuterJoinExpressionTest(Employee.class, 2);
+        test.setName("OuterJoinIsNullTest");
+        test.setDescription("Test using isNull with outer joins");
+        test.setExpression(expression);
+
+        addTest(test);
+		
+	}
+
+	private void addOuterJoinParallelExpressionTest() {
+        ExpressionBuilder emp = new ExpressionBuilder(Employee.class);
+        ExpressionBuilder addr = new ExpressionBuilder(Address.class);
+        Expression expression = 
+        emp.get("firstName").equal("Bob").or(emp.getAllowingNull("address").get("city").equal("Ottawa")).or
+    	(emp.getAllowingNull("address").equal(addr).and(addr.get("city").equal("Ottawa")));
+
+        ReadAllExpressionTest test = new ReadAllOuterJoinExpressionTest(Employee.class, 22);
+        test.setName("OuterJoinParallelExpressionTest");
+        test.setDescription("Test using isNull with outer joins");
+        test.setExpression(expression);
+
+        addTest(test);
+		
+	}
+
     public void addTests() {
         setManager(PopulationManager.getDefaultManager());
 
@@ -221,6 +252,8 @@ public class ExpressionOuterJoinTestSuite extends TestSuite {
         addOuterJoinOrAnyWhereClauseTest();
         addOuterJoinAcrossInheritanceTest();
         addOuterJoinDirectCollectionTest();
+        addOuterJoinParallelExpressionTest();
+        addOuterJoinIsNullTest();
 
     }
 

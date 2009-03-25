@@ -168,11 +168,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
                      sourceFieldsEnum.hasNext();) {
                 DatabaseField field = (DatabaseField)sourceFieldsEnum.next();
                 Expression join = null;
-                if (expression.isObjectExpression() && ((ObjectExpression)expression).shouldUseOuterJoin()){
-                    join = base.getField(field).equalOuterJoin(null);
-                } else {
-                    join = base.getField(field).equal(null);
-                }
+                join = base.getField(field).equal(null);
                 if (foreignKeyJoin == null) {
                     foreignKeyJoin = join;
                 } else {
@@ -193,11 +189,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
                      sourceFieldsEnum.hasNext();) {
                 DatabaseField field = (DatabaseField)sourceFieldsEnum.next();
                 Expression join = null;
-                if (expression.isObjectExpression() && ((ObjectExpression)expression).shouldUseOuterJoin()){
-                    join = base.getField(field).equalOuterJoin(keyEnum.nextElement());
-                } else {
-                    join = base.getField(field).equal(keyEnum.nextElement());
-                }
+                join = base.getField(field).equal(keyEnum.nextElement());
                 if (foreignKeyJoin == null) {
                     foreignKeyJoin = join;
                 } else {
@@ -220,11 +212,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
                      sourceFieldsEnum.hasNext();) {
                 DatabaseField field = (DatabaseField)sourceFieldsEnum.next();
                 Expression join = base.getField(field);
-                if (expression.isObjectExpression() && ((ObjectExpression)expression).shouldUseOuterJoin()){
-                    join = join.equalOuterJoin(join);
-                } else {
-                    join = join.equal(join);
-                }
+                join = join.equal(join);
                 if (foreignKeyJoin == null) {
                     foreignKeyJoin = join;
                 } else {
@@ -238,11 +226,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
                 DatabaseField sourceField = (DatabaseField)sourceFieldsEnum.next();
                 DatabaseField targetField = (DatabaseField)targetFieldsEnum.next();
                 Expression join = null;
-                if (expression.isObjectExpression() && ((ObjectExpression)expression).shouldUseOuterJoin()){
-                    join = base.getField(sourceField).equalOuterJoin(argument.getField(targetField));
-                } else {
-                    join = base.getField(sourceField).equal(argument.getField(targetField));
-                }
+                join = base.getField(sourceField).equal(argument.getField(targetField));
                 if (foreignKeyJoin == null) {
                     foreignKeyJoin = join;
                 } else {
