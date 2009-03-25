@@ -79,7 +79,7 @@ public class StoredProcedureQueryHandler extends QueryHandler {
                     databaseQueryToInitialize = new DataReadQuery();
                 }
                 else {
-                    if (!xrService.descriptorsByElement.containsKey(type)) {
+                    if (!xrService.descriptorsByQName.containsKey(type)) {
                         // data-read query
                         databaseQueryToInitialize = new DataReadQuery();
                     }
@@ -92,7 +92,7 @@ public class StoredProcedureQueryHandler extends QueryHandler {
             else {
                 if (getOutArguments().size() == 0 && getInOutArguments().size() == 0) {
                     if (isStoredFunctionQueryHandler()) {
-                        if (!xrService.descriptorsByElement.containsKey(type)) {
+                        if (!xrService.descriptorsByQName.containsKey(type)) {
                             databaseQueryToInitialize = new ValueReadQuery();
                         }
                         else {
@@ -108,7 +108,7 @@ public class StoredProcedureQueryHandler extends QueryHandler {
                     }
                 }
                 else {
-                    if (!xrService.descriptorsByElement.containsKey(type)) {
+                    if (!xrService.descriptorsByQName.containsKey(type)) {
                     	if (type.equals(SXF_QNAME)) {
                     		databaseQueryToInitialize = new DataReadQuery();
                     	}

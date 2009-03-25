@@ -39,6 +39,10 @@ public class DbStoredArgument {
         this.name = name;
     }
 
+    public boolean isPLSQLArgument() {
+        return false;
+    }
+    
     public int getJdbcType() {
         return jdbcType;
     }

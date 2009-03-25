@@ -21,6 +21,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.sql.Array;
 import java.sql.Connection;
@@ -34,7 +37,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.ServiceLoader;
-import java.util.Set;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -61,17 +63,19 @@ import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
+import org.eclipse.persistence.internal.dynamicpersist.BaseEntity;
+import org.eclipse.persistence.internal.dynamicpersist.BaseEntityAccessor;
 import org.eclipse.persistence.internal.dynamicpersist.BaseEntityClassLoader;
+import org.eclipse.persistence.internal.dynamicpersist.BaseEntityVHAccessor;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseType;
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.indirection.BasicIndirectionPolicy;
+import org.eclipse.persistence.internal.oxm.schema.SchemaModelGenerator;
+import org.eclipse.persistence.internal.oxm.schema.SchemaModelGeneratorProperties;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelProject;
-import org.eclipse.persistence.internal.oxm.schema.model.Attribute;
 import org.eclipse.persistence.internal.oxm.schema.model.ComplexType;
-import org.eclipse.persistence.internal.oxm.schema.model.Element;
 import org.eclipse.persistence.internal.oxm.schema.model.Schema;
-import org.eclipse.persistence.internal.oxm.schema.model.Sequence;
-import org.eclipse.persistence.internal.oxm.schema.model.SimpleComponent;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.sessions.factories.MissingDescriptorListener;
@@ -94,7 +98,9 @@ import org.eclipse.persistence.internal.xr.XRServiceModel;
 import org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormatProject;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
+import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.converters.SerializedObjectConverter;
+import org.eclipse.persistence.mappings.foundation.AbstractCompositeDirectCollectionMapping;
 import org.eclipse.persistence.mappings.structures.ArrayMapping;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescriptor;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
@@ -108,18 +114,21 @@ import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
-import org.eclipse.persistence.oxm.platform.SAXPlatform;
+import org.eclipse.persistence.oxm.platform.DOMPlatform;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.oxm.schema.XMLSchemaURLReference;
 import org.eclipse.persistence.platform.database.MySQLPlatform;
 import org.eclipse.persistence.platform.database.jdbc.JDBCTypes;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLCollection;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredProcedureCall;
+import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.SqlType;
 import org.eclipse.persistence.queries.DataModifyQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.sessions.factories.XMLProjectReader;
+import org.eclipse.persistence.sessions.factories.XMLProjectWriter;
 import org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse;
 import org.eclipse.persistence.tools.dbws.NamingConventionTransformer.ElementStyle;
 import org.eclipse.persistence.tools.dbws.jdbc.DbColumn;
@@ -131,6 +140,9 @@ import org.eclipse.persistence.tools.dbws.oracle.OracleHelper;
 import org.eclipse.persistence.tools.dbws.oracle.PLSQLStoredArgument;
 import static org.eclipse.persistence.internal.helper.ClassConstants.ABYTE;
 import static org.eclipse.persistence.internal.helper.ClassConstants.APBYTE;
+import static org.eclipse.persistence.internal.helper.ClassConstants.OBJECT;
+import static org.eclipse.persistence.internal.oxm.schema.SchemaModelGeneratorProperties.ELEMENT_FORM_QUALIFIED_KEY;
+import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.DEFAULT_SIMPLE_XML_FORMAT_TAG;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_OR_LABEL;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_OR_XML;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_OX_LABEL;
@@ -140,7 +152,7 @@ import static org.eclipse.persistence.internal.xr.Util.DBWS_SERVICE_XML;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_SESSIONS_XML;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_WSDL;
 import static org.eclipse.persistence.internal.xr.Util.DEFAULT_ATTACHMENT_MIMETYPE;
-import static org.eclipse.persistence.internal.xr.Util.SERVICE_NAMESPACE_PREFIX;
+import static org.eclipse.persistence.internal.xr.Util.SCHEMA_2_CLASS;
 import static org.eclipse.persistence.internal.xr.Util.TARGET_NAMESPACE_PREFIX;
 import static org.eclipse.persistence.internal.xr.Util.getClassFromJDBCType;
 import static org.eclipse.persistence.oxm.XMLConstants.BASE_64_BINARY_QNAME;
@@ -168,6 +180,8 @@ import static org.eclipse.persistence.tools.dbws.Util.WSI_SWAREF_URI;
 import static org.eclipse.persistence.tools.dbws.Util.WSI_SWAREF_XSD_FILE;
 import static org.eclipse.persistence.tools.dbws.Util.getXMLTypeFromJDBCType;
 import static org.eclipse.persistence.tools.dbws.Util.InOut.OUT;
+import static org.eclipse.persistence.tools.dbws.Util.escapePunctuation;
+import static org.eclipse.persistence.tools.dbws.Util.sqlMatch;
 import static org.eclipse.persistence.tools.dbws.XRPackager.__nullStream;
 
 public class DBWSBuilder extends DBWSBuilderModel {
@@ -183,6 +197,7 @@ public class DBWSBuilder extends DBWSBuilderModel {
     public static final String CONTEXT_ROOT_KEY = "contextRoot";
     public static final String DATASOURCE_KEY = "dataSource";
     public static final String SESSIONS_FILENAME_KEY = "sessionsFileName";
+    public static final String NO_SESSIONS_FILENAME = "no-sessions-fileName";
     public static final String PLATFORM_CLASSNAME_KEY = "platformClassname";
     public static final String ORSESSION_CUSTOMIZER_KEY = "orSessionCustomizerClassName";
     public static final String OXSESSION_CUSTOMIZER_KEY = "oxSessionCustomizerClassName";
@@ -218,6 +233,9 @@ public class DBWSBuilder extends DBWSBuilderModel {
     protected XRServiceModel xrServiceModel = new DBWSModel();
     protected List<DbTable> dbTables = new ArrayList<DbTable>();
     protected List<DbStoredProcedure> dbStoredProcedures = new ArrayList<DbStoredProcedure>();
+    protected SqlType sqlType;
+    protected Map<DbStoredProcedure, DbStoredProcedureNameAndModel > dbStoredProcedure2QueryName = 
+        new HashMap<DbStoredProcedure, DbStoredProcedureNameAndModel>();
 
     public DBWSBuilder() {
         super();
@@ -469,7 +487,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         packager.end();
     }
 
-    protected void buildDbArtifacts() {
+    public void buildDbArtifacts() {
         // do Table operations first
         boolean isOracle = 
             getDatabasePlatform().getClass().getName().contains("Oracle") ? true : false;
@@ -529,6 +547,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                 }
             }
         }
+        buildDbStoredProcedure2QueryNameMap(dbStoredProcedures, operations, isOracle);
     }
 
     protected List<DbTable> loadTables(String catalogPattern, String schemaPattern,
@@ -543,8 +562,8 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
             boolean unSupportedColumnType = false;
             for (DbColumn dbColumn : dbTable.getColumns()) {
                 switch (dbColumn.getJDBCType()) {
-                    case Types.ARRAY :   // TODO - once JPub stuff is in EclipseLink, take 
-                    case Types.STRUCT :  // ARRAY and STRUCT out of this list
+                    case Types.ARRAY :   // TODO - figure out how to support 
+                    case Types.STRUCT :  // these types via JDBC
                     case Types.OTHER :
                     case Types.DATALINK :
                     case Types.JAVA_OBJECT :
@@ -567,7 +586,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         String procedurePattern, int overload, boolean isOracle) {
         if (isOracle && catalogPattern != null) { // procedure is in a package, use OracleHelper
             return OracleHelper.buildStoredProcedure(getConnection(), getUsername(), databasePlatform,
-                catalogPattern, schemaPattern, procedurePattern);
+                catalogPattern, schemaPattern, procedurePattern, this);
         }
         else {
             // use JDBC helper
@@ -617,8 +636,8 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                         break;
                     }
                 }
-                else if (jdbcType == ARRAY ||     // TODO - once JPub stuff is in EclipseLink, take 
-                         jdbcType == STRUCT ||    // ARRAY and STRUCT out of this list 
+                else if (jdbcType == ARRAY ||     // TODO - figure out how to support  
+                         jdbcType == STRUCT ||    // these types via JDBC
                          jdbcType == DATALINK ||
                          jdbcType == JAVA_OBJECT) {
                         unSupportedArgType = true;
@@ -667,11 +686,13 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
             xdesc.setJavaClassName(generatedJavaClassName);
             xdesc.setAlias(tablenameAlias);
             NamespaceResolver nr = new NamespaceResolver();
-            nr.put("xsi", W3C_XML_SCHEMA_INSTANCE_NS_URI);
-            nr.put("xsd", W3C_XML_SCHEMA_NS_URI);
-            nr.put(TARGET_NAMESPACE_PREFIX, getTargetNamespace());
+            nr.setDefaultNamespaceURI(getTargetNamespace());
             xdesc.setNamespaceResolver(nr);
-            xdesc.setDefaultRootElement(TARGET_NAMESPACE_PREFIX + ":" + tablenameAlias);
+            xdesc.setDefaultRootElement(tablenameAlias);
+            XMLSchemaURLReference schemaReference = new XMLSchemaURLReference("");
+            schemaReference.setSchemaContext("/" + tablenameAlias);
+            schemaReference.setType(XMLSchemaReference.COMPLEX_TYPE);
+            xdesc.setSchemaReference(schemaReference);
             for (DbColumn dbColumn : dbTable.getColumns()) {
                 String columnName = dbColumn.getName();
                 int jdbcType = dbColumn.getJDBCType();
@@ -727,11 +748,8 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                 DatabaseField databaseField = new DatabaseField(columnName, tableName);
                 databaseField.setSqlType(jdbcType);
                 dtfm.setField(databaseField);
-                if (dbColumn.isPK()) {
-                    desc.addPrimaryKeyField(databaseField);
-                }
                 xdm.setAttributeName(fieldName);
-                String xPath = TARGET_NAMESPACE_PREFIX + ":";
+                String xPath = "";
                 ElementStyle style = nct.styleForElement(columnName);
                 if (style == NONE) {
                     continue;
@@ -751,8 +769,14 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                 XMLField xmlField = (XMLField)xdm.getField();
                 xmlField.setSchemaType(qName);
                 if (!isSwaRef && qName == BASE_64_BINARY_QNAME) {
+                    // need xsi, xsd namespaces 
+                    nr.put("xsi", W3C_XML_SCHEMA_INSTANCE_NS_URI);
+                    nr.put("xsd", W3C_XML_SCHEMA_NS_URI);
                     xmlField.setIsTypedTextField(true);
                     xmlField.addConversion(BASE_64_BINARY_QNAME, APBYTE);
+                }
+                if (dbColumn.isPK()) {
+                    desc.addPrimaryKeyField(databaseField);
                 }
           }
           ReadObjectQuery roq = new ReadObjectQuery();
@@ -813,20 +837,19 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                 XMLDescriptor xdesc = new XMLDescriptor();
                 xdesc.setAlias(alias);
                 xdesc.setJavaClassName(javaClassName);
-                xdesc.setDefaultRootElement(SERVICE_NAMESPACE_PREFIX + ":" + alias);
+                xdesc.setDefaultRootElement(alias);
                 NamespaceResolver nr = new NamespaceResolver();
-                nr.put(TARGET_NAMESPACE_PREFIX, getTargetNamespace());
-                nr.put(SERVICE_NAMESPACE_PREFIX, getTargetNamespace() + WSDLGenerator.SERVICE_SUFFIX);
+                nr.setDefaultNamespaceURI(getTargetNamespace());
                 xdesc.setNamespaceResolver(nr);
                 XMLSchemaURLReference schemaRef = new XMLSchemaURLReference();
-                schemaRef.setSchemaContext("/" + TARGET_NAMESPACE_PREFIX + ":" + arrayName);
-                schemaRef.setType(XMLSchemaReference.ELEMENT);
+                schemaRef.setSchemaContext("/" + arrayName);
+                schemaRef.setType(XMLSchemaReference.COMPLEX_TYPE);
                 xdesc.setSchemaReference(schemaRef);
                 XMLCompositeDirectCollectionMapping listOfStringsMapping = 
                     new XMLCompositeDirectCollectionMapping();
                 listOfStringsMapping.useCollectionClass(Vector.class);
                 listOfStringsMapping.setAttributeName("items");
-                listOfStringsMapping.setXPath(TARGET_NAMESPACE_PREFIX + ":item/text()");
+                listOfStringsMapping.setXPath("item/text()");
                 ((XMLField)listOfStringsMapping.getField()).setUsesSingleNode(false);
                 xdesc.addMapping(listOfStringsMapping);
                 oxProject.addDescriptor(xdesc);
@@ -874,7 +897,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         databaseLogin.setConnectionString(null);
         orProject.setLogin(databaseLogin);
         XMLLogin xmlLogin = new XMLLogin();
-        xmlLogin.setDatasourcePlatform(new SAXPlatform());
+        xmlLogin.setDatasourcePlatform(new DOMPlatform());
         xmlLogin.getProperties().remove("user");
         xmlLogin.getProperties().remove("password");
         oxProject.setLogin(xmlLogin);
@@ -941,143 +964,106 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
 
     @SuppressWarnings("unchecked")
     protected void buildSchema(NamingConventionTransformer nct) {
-        schema.setName(getProjectName());
-        schema.setTargetNamespace(getTargetNamespace());
-        ns.put(TARGET_NAMESPACE_PREFIX, getTargetNamespace());
-        schema.setDefaultNamespace(getTargetNamespace());
-        schema.setElementFormDefault(true);
-        for (DbTable dbTable : dbTables) {
-            String dbTableName = dbTable.getName();
-            String schemaAlias = nct.generateSchemaAlias(dbTableName);
-            ClassDescriptor desc = null;
-            Set<Map.Entry<Class, ClassDescriptor>> orDescriptorSet =
-                orProject.getDescriptors().entrySet();
-            for (Map.Entry<Class, ClassDescriptor> me : orDescriptorSet) {
-                desc = me.getValue();
-                if (desc.getAlias().equalsIgnoreCase(dbTableName)) {
-                    break;
-                }
-            }
-            if (desc != null) {
-	            String tablenameAlias = desc.getAlias();
-	            ComplexType complexType = new ComplexType();
-	            complexType.setName(schemaAlias);
-	            Sequence sequence = new Sequence();
-	            Iterator j = desc.getMappings().iterator();
-	            while (j.hasNext()) {
-	                DirectToFieldMapping mapping = (DirectToFieldMapping)j.next();
-                    DatabaseField field = mapping.getField();
-	                SimpleComponent component = null;
-                    StringBuilder sb = new StringBuilder();
-                    String dbColumnName = null;
-                    boolean optional = true;
-                    for (DbColumn dbColumn : dbTable.getColumns()) {
-                        dbColumnName = dbColumn.getName();
-                        if (dbColumnName.equals(field.getName())) {
-                            if (!dbColumn.isNullable() || dbColumn.isPK() || dbColumn.isUnique()) {
-                                optional = false;
-                            }
-                            int jdbcType = dbColumn.getJDBCType();
-                            QName qName = getXMLTypeFromJDBCType(jdbcType);
-                            if (qName == BASE_64_BINARY_QNAME) {
-                                Set<Map.Entry<Class, ClassDescriptor>> oxDescriptorSet =
-                                    oxProject.getDescriptors().entrySet();
-                                for (Map.Entry<Class, ClassDescriptor> me : oxDescriptorSet) {
-                                    ClassDescriptor oxDesc = me.getValue();
-                                    if (oxDesc.getAlias().equals(tablenameAlias)) {
-                                        DatabaseMapping dm =
-                                            oxDesc.getMappingForAttributeName(mapping.getAttributeName());
-                                        if (dm instanceof XMLBinaryDataMapping) {
-                                            XMLBinaryDataMapping xbdm = (XMLBinaryDataMapping)dm;
-                                            if (xbdm.isSwaRef()) {
-                                                sb.append(WSI_SWAREF_PREFIX + ":" + WSI_SWAREF);
-                                                schema.getNamespaceResolver().put(WSI_SWAREF_PREFIX,
-                                                    WSI_SWAREF_URI);
-                                            }
-                                            else {
-                                                sb.append(BASE_64_BINARY_QNAME.toString());
-                                            }
-                                        }
-                                        break;
-                                    }
-                                }
-                            }
-                            else {
-                                if (qName.getNamespaceURI().equalsIgnoreCase(W3C_XML_SCHEMA_NS_URI)) {
-                                    sb.append("xsd:");
-                                }
-                                sb.append(qName.getLocalPart());
-                            }
-                            break;
-                        }
-                    }
-                    String elementNameAlias = nct.generateElementAlias(dbColumnName);
-                    if (nct.styleForElement(dbColumnName) == ELEMENT) {
-                        component = new Element();
-                        sequence.addElement((Element)component);
-                    }
-                    else {
-                        component = new Attribute();
-                        complexType.getOrderedAttributes().add(component);
-                    }
-                    component.setName(elementNameAlias);
-                    component.setType(sb.toString());
-                    if (optional) {
-                        if (component instanceof Element) {
-                            Element element = (Element)component;
-                            element.setMinOccurs("0");
-                        }
-                    }
-                    else {
-                        if (component instanceof Element) {
-                            Element element = (Element)component;
-                            element.setMinOccurs("1");
-                        }
-                        else {
-                            Attribute attribute = (Attribute)component;
-                            attribute.setUse(Attribute.REQUIRED);
-                        }
-                    }
-	            }
-	            complexType.setSequence(sequence);
-	            schema.addTopLevelComplexTypes(complexType);
-	            Element wrapperElement = new Element();
-	            wrapperElement.setName(tablenameAlias);
-	            wrapperElement.setType(complexType.getName());
-	            schema.addTopLevelElement(wrapperElement);
+        
+        List<XMLDescriptor> descriptorsToProcess = new ArrayList<XMLDescriptor>();
+        for (XMLDescriptor desc : (Vector<XMLDescriptor>)oxProject.getOrderedDescriptors()) {
+            String alias = desc.getAlias();
+            if (!DEFAULT_SIMPLE_XML_FORMAT_TAG.equals(alias)) {
+                descriptorsToProcess.add(desc);
             }
         }
-        for (DbStoredProcedure storedProcedure : dbStoredProcedures) {
-            for (DbStoredArgument storedArgument : storedProcedure.getArguments()) {
-                if (storedArgument instanceof PLSQLStoredArgument) {
-                    PLSQLStoredArgument plsqlStoredArgument = (PLSQLStoredArgument)storedArgument;
-                    String schemaAlias = plsqlStoredArgument.getJdbcTypeName();
-                    /*
-                    <xsd:complexType name=${schemaAlias}>
-                      <xsd:sequence>
-                        <xs:element name="item" type="xsd:string" minOccurs=0 maxOccurs="unbounded"/>
-                      </xsd:sequence>
-                    </xsd:complexType>
-                    TODO - need to figure out nested complex types
-                     */
-                    ComplexType complexType = new ComplexType();
-                    complexType.setName(schemaAlias);
-                    Sequence sequence = new Sequence();
-                    complexType.setSequence(sequence);
-                    Element itemsElement = new Element();
-                    itemsElement.setName("item");
-                    itemsElement.setType("xsd:string");
-                    itemsElement.setMinOccurs("0");
-                    itemsElement.setMaxOccurs("unbounded");
-                    sequence.addElement(itemsElement);
-                    schema.addTopLevelComplexTypes(complexType);
-                    Element element = new Element();
-                    element.setName(schemaAlias);
-                    element.setType(complexType.getName());
-                    schema.addTopLevelElement(element);
-                    break;
+        if (descriptorsToProcess.size() > 0) {
+            // need a deep-copy clone of oxProject; simplest way is to marshall/unmarshall to a stream
+            StringWriter sw = new StringWriter();
+            XMLProjectWriter.write(oxProject, sw);
+            BaseEntityClassLoader specialLoader = new BaseEntityClassLoader(this.getClass().getClassLoader());
+            Project oxProjectClone = XMLProjectReader.read(new StringReader(sw.toString()), specialLoader);
+            oxProjectClone.convertClassNamesToClasses(specialLoader);
+            for (Iterator i = oxProjectClone.getDescriptors().values().iterator(); i.hasNext();) {
+                ClassDescriptor xdesc = (ClassDescriptor)i.next();
+                if (!BaseEntity.class.isAssignableFrom(xdesc.getJavaClass())) {
+                    continue;
+                }
+                int idx = 0;
+                for (Iterator j = xdesc.getMappings().iterator(); j.hasNext();) {
+                    DatabaseMapping xdm = (DatabaseMapping)j.next();
+                    String attributeName = xdm.getAttributeName();
+                    xdm.setAttributeAccessor(new BaseEntityAccessor(attributeName, idx));
+                    if (xdm != null) {
+                        if (xdm.isForeignReferenceMapping()) {
+                            ForeignReferenceMapping frm = (ForeignReferenceMapping)xdm;
+                            if (frm.usesIndirection() && frm.getIndirectionPolicy().getClass().
+                                isAssignableFrom(BasicIndirectionPolicy.class)) {
+                                xdm.setAttributeAccessor(new BaseEntityVHAccessor(attributeName, idx));
+                            } else {
+                                // no indirection or indirection that is transparent enough (!) to work
+                                xdm.setAttributeAccessor(new BaseEntityAccessor(attributeName, idx));
+                            }
+                        }
+                        else {
+                            xdm.setAttributeAccessor(new BaseEntityAccessor(attributeName, idx));
+                            if (xdm.isDirectToFieldMapping()) {
+                                XMLDirectMapping xmlDM = (XMLDirectMapping)xdm;
+                                XMLField xmlField = (XMLField)xmlDM.getField();
+                                Class clz = SCHEMA_2_CLASS.get(xmlField.getSchemaType());
+                                if (clz != null) {
+                                    xmlField.setType(clz);
+                                }
+                                else {
+                                    xmlField.setType(OBJECT);
+                                }
+                            }
+                            else if (xdm.isAbstractCompositeDirectCollectionMapping()) {
+                                AbstractCompositeDirectCollectionMapping acdcm =
+                                    (AbstractCompositeDirectCollectionMapping)xdm;
+                                XMLField xmlField = (XMLField)acdcm.getField();
+                                Class clz = SCHEMA_2_CLASS.get(xmlField.getSchemaType());
+                                if (clz != null) {
+                                    xmlField.setType(clz);
+                                }
+                                else {
+                                    xmlField.setType(OBJECT);
+                                }
+                            }
+                        }
+                    }
+                    idx++;
+                }
+                try {
+                    Class clz = xdesc.getJavaClass();
+                    Method setNumAttrs = clz.getMethod("setNumAttributes", Integer.class);
+                    setNumAttrs.invoke(clz, new Integer(idx));
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
+            specialLoader.dontGenerateSubclasses();
+            XMLLogin xmlLogin = new XMLLogin();
+            DOMPlatform domPlatform = new DOMPlatform();
+            domPlatform.getConversionManager().setLoader(specialLoader);
+            xmlLogin.setPlatform(domPlatform);
+            oxProjectClone.setLogin(xmlLogin);
+            oxProjectClone.createDatabaseSession(); // initialize reference descriptors
+            SchemaModelGenerator schemaGenerator = new SchemaModelGenerator();
+            SchemaModelGeneratorProperties sgProperties = new SchemaModelGeneratorProperties();
+            // set element form default to qualified for target namespace
+            sgProperties.addProperty(getTargetNamespace(), ELEMENT_FORM_QUALIFIED_KEY, true);
+            Map schemaMap = schemaGenerator.generateSchemas(descriptorsToProcess, sgProperties);
+            Schema s = (Schema)schemaMap.get(getTargetNamespace());
+            // check existing schema for any top-level ComplexTypes
+            if (schema != null && s != null) {
+                Map<String, ComplexType> topLevelComplexTypes = schema.getTopLevelComplexTypes();
+                for (Map.Entry<String, ComplexType> me : topLevelComplexTypes.entrySet()) {
+                    s.addTopLevelComplexTypes(me.getValue());
+                }
+                NamespaceResolver nr = schema.getNamespaceResolver();
+                schema = s; // switch
+                schema.setNamespaceResolver(nr);
+            }
+        }
+        else {
+            Util.addSimpleXMLFormat(schema);
+            schema.setTargetNamespace(getTargetNamespace());
         }
     }
 
@@ -1099,9 +1085,9 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
     protected void buildSessionsXML(OutputStream dbwsSessionsStream) {
         if (!isNullStream(dbwsSessionsStream)) {
             logMessage(FINEST, "Building " + getSessionsFileName());
-        SessionConfigs ts = packager.buildSessionsXML(dbwsSessionsStream, this);
-        XMLSessionConfigWriter.write(ts, new OutputStreamWriter(dbwsSessionsStream));
-        packager.closeSessionsStream(dbwsSessionsStream);
+            SessionConfigs ts = packager.buildSessionsXML(dbwsSessionsStream, this);
+            XMLSessionConfigWriter.write(ts, new OutputStreamWriter(dbwsSessionsStream));
+            packager.closeSessionsStream(dbwsSessionsStream);
         }
     }
 
@@ -1398,6 +1384,9 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
 
     public String getSessionsFileName() {
         String sessionsFileName = properties.get(SESSIONS_FILENAME_KEY);
+        if (NO_SESSIONS_FILENAME.equals(sessionsFileName)) {
+            return null;
+        }
         if (sessionsFileName == null || sessionsFileName.length() == 0) {
             sessionsFileName = DBWS_SESSIONS_XML;
             setSessionsFileName(sessionsFileName);
@@ -1539,5 +1528,80 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
             return true;
         }
         return false;
+    }
+
+    public SqlType getSqlType() {
+        return sqlType;
+    }
+    public void setSqlType(SqlType sqlType) {
+        this.sqlType = sqlType;
+    }
+
+    protected void buildDbStoredProcedure2QueryNameMap(List<DbStoredProcedure> dbStoredProcedures,
+        ArrayList<OperationModel> operations, boolean isOracle) {
+        for (OperationModel opModel : operations) {
+            if (opModel.isProcedureOperation()) {
+                ProcedureOperationModel procOpModel = (ProcedureOperationModel)opModel;
+                // scan all the dbStoredProcedures for matches
+                List<DbStoredProcedure> matches = new ArrayList<DbStoredProcedure>();
+                String modelCatalogPattern = 
+                    escapePunctuation(procOpModel.getCatalogPattern(), isOracle);
+                String modelSchemaPattern = 
+                    escapePunctuation(procOpModel.getSchemaPattern(), isOracle);
+                String modelProcedureNamePattern = 
+                    escapePunctuation(procOpModel.getProcedurePattern(), isOracle);
+                for (DbStoredProcedure storedProc : dbStoredProcedures) {
+                    boolean procedureNameMatch = 
+                        sqlMatch(modelProcedureNamePattern, storedProc.getName());
+                    if (storedProc.getCatalog() == null || modelCatalogPattern == null) {
+                        if (storedProc.getSchema() == null) {
+                            // solely determined by procedureName
+                            if (procedureNameMatch) {
+                                matches.add(storedProc);
+                            }
+                        }
+                        // combination of schema & procedureName
+                        else if (sqlMatch(modelSchemaPattern, storedProc.getSchema()) && procedureNameMatch) {
+                            matches.add(storedProc);
+                        }
+                    }
+                    else {
+                        boolean catalogMatch = 
+                            sqlMatch(modelCatalogPattern, storedProc.getCatalog());
+                        if (storedProc.getSchema() == null) {
+                            // determined by catalog * procedureName
+                            if (catalogMatch && procedureNameMatch) {
+                                matches.add(storedProc);
+                            }
+                        }
+                        // combination of catalog, schema & procedureName
+                        else if (sqlMatch(modelSchemaPattern, storedProc.getSchema()) && catalogMatch && procedureNameMatch) {
+                            matches.add(storedProc);
+                        }
+                    }
+                }
+                if (matches.size() == 1) {
+                    DbStoredProcedureNameAndModel nameAndModel = 
+                        new DbStoredProcedureNameAndModel(procOpModel.getName(), procOpModel);
+                    dbStoredProcedure2QueryName.put(matches.get(0), nameAndModel);
+                }
+                else {
+                    for (int i = 0, len = matches.size(); i < len;) {
+                        DbStoredProcedureNameAndModel nameAndModel = 
+                            new DbStoredProcedureNameAndModel(procOpModel.getName()+(i+1), procOpModel);
+                        dbStoredProcedure2QueryName.put(matches.get(i), nameAndModel);
+                        i++;
+                    }
+                }
+            }
+        }
+    }
+    class DbStoredProcedureNameAndModel {
+        String name;
+        ProcedureOperationModel procOpModel;
+        DbStoredProcedureNameAndModel(String name, ProcedureOperationModel procOpModel) {
+            this.name = name;
+            this.procOpModel = procOpModel;
+        }
     }
 }

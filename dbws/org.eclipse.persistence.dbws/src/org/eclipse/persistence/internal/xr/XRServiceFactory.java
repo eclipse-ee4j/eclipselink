@@ -13,15 +13,21 @@
 
 package org.eclipse.persistence.internal.xr;
 
-// Javase imports
+//javase imports
 import java.io.InputStream;
 import java.util.Iterator;
 import java.util.Map;
 
-// Java extension imports
+//java eXtension imports
 import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerFactory;
 
-// EclipseLink imports
+//EclipseLink imports
 import org.eclipse.persistence.exceptions.DBWSException;
 import org.eclipse.persistence.internal.dynamicpersist.BaseEntityClassLoader;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelProject;
@@ -29,6 +35,7 @@ import org.eclipse.persistence.internal.oxm.schema.model.Schema;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.XMLLogin;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.sessions.DatabaseSession;
@@ -39,6 +46,8 @@ import static org.eclipse.persistence.internal.xr.Util.DBWS_OX_SESSION_NAME_SUFF
 import static org.eclipse.persistence.internal.xr.Util.DBWS_SESSIONS_XML;
 import static org.eclipse.persistence.internal.xr.Util.META_INF_PATHS;
 import static org.eclipse.persistence.internal.xr.Util.TARGET_NAMESPACE_PREFIX;
+import static org.eclipse.persistence.oxm.XMLConstants.ANY;
+import static org.eclipse.persistence.oxm.XMLConstants.ANY_QNAME;
 
 /**
  * <p><b>INTERNAL</b>: helper class that knows how to build a {@link XRServiceAdapter} (a.k.a DBWS). An
@@ -233,6 +242,7 @@ public class XRServiceFactory  {
         else {
             throw DBWSException.couldNotLocateOXSessionForService(xrService.name);
         }
+        ((XMLLogin)xrService.oxSession.getDatasourceLogin()).setEqualNamespaceResolvers(false);
         ProjectHelper.fixOROXAccessors(xrService.orSession.getProject(),
             xrService.oxSession.getProject());
         xrService.xmlContext = new XMLContext(xrService.oxSession.getProject());
@@ -257,7 +267,7 @@ public class XRServiceFactory  {
             i.hasNext();) {
             XMLDescriptor xd = (XMLDescriptor)i.next();
             XMLSchemaReference schemaReference = xd.getSchemaReference();
-            if (schemaReference != null && schemaReference.getType() == XMLSchemaReference.ELEMENT) {
+            if (schemaReference != null && schemaReference.getType() == XMLSchemaReference.COMPLEX_TYPE) {
                 String context = schemaReference.getSchemaContext();
                 if (context != null && context.lastIndexOf('/') == 0) {
                     String elementNameNS = context.substring(1);
@@ -265,13 +275,8 @@ public class XRServiceFactory  {
                     if (elementName == null) {
                         continue;
                     }
-                    xrService.descriptorsByElement.put(elementName, xd);
+                    xrService.descriptorsByQName.put(elementName, xd);
                 }
-            }
-            QName descriptorQName = resolveName(xd.getDefaultRootElementField().getQualifiedName(),
-                    xd.getNamespaceResolver());
-            if (descriptorQName != null) {
-                xrService.descriptorsByElement.put(descriptorQName, xd);
             }
         }
     }
@@ -317,14 +322,49 @@ public class XRServiceFactory  {
      *
      */
     protected QName resolveName(String name, NamespaceResolver ns) {
+        if (ns == null) {
+            return null;
+        }
+        if (ANY.equals(name)) {
+            return ANY_QNAME;
+        }
         int index = name.indexOf(':');
         if (index != -1) {
             String uri = ns.resolveNamespacePrefix(name.substring(0, index));
             return new QName(uri, name.substring(index + 1));
         }
+        else if (ns.getDefaultNamespaceURI() != null) {
+                return new QName(ns.getDefaultNamespaceURI(), name);
+            }
         else {
             String uri = ns.resolveNamespacePrefix("xmlns");
             return new QName(uri, name);
         }
     }
+
+    public static DocumentBuilder getDocumentBuilder() {
+        DocumentBuilder db = null;
+        try {
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            dbf.setNamespaceAware(true);
+            db = dbf.newDocumentBuilder();
+        }
+        catch (ParserConfigurationException e) {
+            /* extremely rare, safe to ignore */
+        }
+        return db;
+    }
+    
+    public static Transformer getTransformer() {
+        Transformer transformer = null;
+        try {
+            TransformerFactory tf = TransformerFactory.newInstance();
+            transformer = tf.newTransformer();
+        }
+        catch (TransformerConfigurationException e) {
+            /* extremely rare, safe to ignore */
+        }
+        return transformer;
+    }
+
 }

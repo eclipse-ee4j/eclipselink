@@ -39,7 +39,7 @@ import static org.eclipse.persistence.internal.helper.ClassConstants.LONG;
 import static org.eclipse.persistence.internal.helper.ClassConstants.Object_Class;
 import static org.eclipse.persistence.internal.helper.ClassConstants.SHORT;
 import static org.eclipse.persistence.internal.helper.ClassConstants.STRING;
-import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.SIMPLE_XML_FORMAT_TYPE;
+import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.DEFAULT_SIMPLE_XML_FORMAT_TAG;
 import static org.eclipse.persistence.oxm.XMLConstants.ANY_SIMPLE_TYPE_QNAME;
 import static org.eclipse.persistence.oxm.XMLConstants.BASE_64_BINARY_QNAME;
 import static org.eclipse.persistence.oxm.XMLConstants.BOOLEAN_QNAME;
@@ -394,7 +394,7 @@ public class Util {
         return clz;
     }
 
-	public static final QName SXF_QNAME = new QName("", SIMPLE_XML_FORMAT_TYPE);
+	public static final QName SXF_QNAME = new QName("", DEFAULT_SIMPLE_XML_FORMAT_TAG);
     /*
      *
                             if (xmlField.getSchemaType().equals(DATE_QNAME)) {
@@ -476,4 +476,5 @@ public class Util {
         DBWS_OX_LABEL + "-session";
     public static final String TARGET_NAMESPACE_PREFIX = "ns1";
     public static final String SERVICE_NAMESPACE_PREFIX = "srvc";
+    public static final String SERVICE_SUFFIX = "Service";
 }

@@ -62,6 +62,7 @@ import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_SCHEMA_XML;
 import static org.eclipse.persistence.internal.xr.Util.TARGET_NAMESPACE_PREFIX;
+import static org.eclipse.persistence.internal.xr.Util.SERVICE_SUFFIX;
 import static org.eclipse.persistence.tools.dbws.Util.THE_INSTANCE_NAME;
 import static org.eclipse.persistence.tools.dbws.Util.WSI_SWAREF;
 import static org.eclipse.persistence.tools.dbws.Util.WSI_SWAREF_PREFIX;
@@ -81,7 +82,6 @@ public class WSDLGenerator {
     public static final String PORT_SUFFIX = "_Interface";
     public static final String REQUEST_SUFFIX = "Request";
     public static final String RESPONSE_SUFFIX = "Response";
-    public static final String SERVICE_SUFFIX = "Service";
     public static final String SOAP_STYLE = "document";
     public static final String SOAP_TRANSPORT = "http://schemas.xmlsoap.org/soap/http";
     public static final String SOAP_USE = "literal";

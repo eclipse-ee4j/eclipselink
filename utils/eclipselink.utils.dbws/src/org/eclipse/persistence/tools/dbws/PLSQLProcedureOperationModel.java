@@ -12,7 +12,6 @@ import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 //EclipseLink imports
 import org.eclipse.persistence.internal.xr.Attachment;
 import org.eclipse.persistence.internal.xr.CollectionResult;
-import org.eclipse.persistence.internal.xr.NamedQueryHandler;
 import org.eclipse.persistence.internal.xr.Parameter;
 import org.eclipse.persistence.internal.xr.ProcedureArgument;
 import org.eclipse.persistence.internal.xr.ProcedureOutputArgument;
@@ -26,9 +25,9 @@ import org.eclipse.persistence.tools.dbws.jdbc.DbStoredFunction;
 import org.eclipse.persistence.tools.dbws.jdbc.DbStoredProcedure;
 import org.eclipse.persistence.tools.dbws.oracle.OracleHelper;
 import org.eclipse.persistence.tools.dbws.oracle.PLSQLStoredArgument;
-import static org.eclipse.persistence.internal.xr.QNameTransformer.SCHEMA_QNAMES;
 import static org.eclipse.persistence.internal.xr.Util.SXF_QNAME;
 import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.DEFAULT_SIMPLE_XML_FORMAT_TAG;
+import static org.eclipse.persistence.internal.xr.QNameTransformer.SCHEMA_QNAMES;
 import static org.eclipse.persistence.tools.dbws.Util.SXF_QNAME_CURSOR;
 import static org.eclipse.persistence.tools.dbws.Util.addSimpleXMLFormat;
 import static org.eclipse.persistence.tools.dbws.Util.getXMLTypeFromJDBCType;
@@ -64,9 +63,6 @@ public class PLSQLProcedureOperationModel extends ProcedureOperationModel {
             }
             QueryOperation qo = new QueryOperation();
             qo.setName(sb.toString());
-            NamedQueryHandler nqh = new NamedQueryHandler();
-            nqh.setName(sb.toString());
-            qo.setQueryHandler(nqh);
             SimpleXMLFormat sxf = null;
             if (isSimpleXMLFormat() || getReturnType() == null) {
                 sxf = new SimpleXMLFormat();
@@ -202,9 +198,6 @@ public class PLSQLProcedureOperationModel extends ProcedureOperationModel {
                     }
                     if (arg instanceof PLSQLStoredArgument) {
                         pa.setComplexTypeName(((PLSQLStoredArgument)arg).getPlSqlTypeName());
-                        if (nqh.getDescriptor() == null) {
-                            nqh.setDescriptor(arg.getName());
-                        }
                     }
                     if (parm != null) {
                         qo.getParameters().add(parm);

@@ -120,10 +120,10 @@ public class QueryOperation extends Operation {
         QName resultType = result == null ? null : result.getType();
         if (resultType != null) {
             if (!resultType.getNamespaceURI().equals(W3C_XML_SCHEMA_NS_URI)) {
-                boolean sxf = resultType.getLocalPart().equals("sxfType") ||
-                    resultType.getLocalPart().equals("cursor of sxfType");
+                boolean sxf = resultType.getLocalPart().equals(DEFAULT_SIMPLE_XML_FORMAT_TAG) ||
+                    resultType.getLocalPart().equals("cursor of " + DEFAULT_SIMPLE_XML_FORMAT_TAG);
                 // check descriptor for Schema's high-level element type 'resultType'
-                if (!sxf && !xrService.descriptorsByElement.containsKey(resultType)) {
+                if (!sxf && !xrService.descriptorsByQName.containsKey(resultType)) {
                         throw DBWSException.resultHasNoMapping(resultType.toString(), name);
                 }
             }
@@ -149,6 +149,30 @@ public class QueryOperation extends Operation {
     @Override
     public void initialize(XRServiceAdapter xrService) {
         super.initialize(xrService);
+        if (queryHandler == null) {
+            // session query instead of named query
+            DatabaseQuery dq = xrService.getORSession().getQuery(name);
+            if (dq != null) {
+                queryHandler = new QueryHandler(){
+                    public void initializeDatabaseQuery(XRServiceAdapter xrService, QueryOperation queryOperation) {
+                        // do nothing
+                    }
+                    public void initializeArguments(XRServiceAdapter xrService,
+                        QueryOperation queryOperation, DatabaseQuery databaseQuery) {
+                        // do nothing
+                    }
+                    public void initializeCall(XRServiceAdapter xrService,
+                        QueryOperation queryOperation, DatabaseQuery databaseQuery) {
+                        // do nothing
+                    }
+                };
+                queryHandler.setDatabaseQuery(dq);
+            }
+        }
+        if (queryHandler == null) {
+            throw DBWSException.couldNotLocateQueryForSession(name,
+                xrService.getORSession().getName());
+        }
         queryHandler.initialize(xrService, this);
         Session oxSession = xrService.getOXSession();
         QName resultType = result == null ? null : result.getType();

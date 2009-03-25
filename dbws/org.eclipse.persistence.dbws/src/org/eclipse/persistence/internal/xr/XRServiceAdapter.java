@@ -39,7 +39,7 @@ public class XRServiceAdapter extends XRServiceModel {
     protected Session oxSession;
     protected XMLContext xmlContext;
     protected Schema schema;
-    protected Map<QName, XMLDescriptor> descriptorsByElement = new HashMap<QName, XMLDescriptor>();
+    protected Map<QName, XMLDescriptor> descriptorsByQName = new HashMap<QName, XMLDescriptor>();
 
     public Session getORSession() {
         return orSession;
@@ -76,15 +76,15 @@ public class XRServiceAdapter extends XRServiceModel {
         this.schema = schema;
     }
 
-    public Map<QName, XMLDescriptor> getDescriptorsByElement() {
-        return descriptorsByElement;
+    public Map<QName, XMLDescriptor> getDescriptorsByQName() {
+        return descriptorsByQName;
     }
-    public void setDescriptorsByElement(Map<QName, XMLDescriptor> descriptorsByElement) {
-        this.descriptorsByElement = descriptorsByElement;
+    public void setDescriptorsByQName(Map<QName, XMLDescriptor> descriptorsByQName) {
+        this.descriptorsByQName = descriptorsByQName;
     }
 
     public Class<?> getTypeClass(QName type) {
-        XMLDescriptor xdesc = descriptorsByElement.get(type);
+        XMLDescriptor xdesc = descriptorsByQName.get(type);
         if (xdesc != null) {
             return xdesc.getJavaClass();
         }

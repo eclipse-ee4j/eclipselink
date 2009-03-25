@@ -42,6 +42,7 @@ import org.eclipse.persistence.platform.database.PostgreSQLPlatform;
 import static org.eclipse.persistence.tools.dbws.Util.InOut.INOUT;
 import static org.eclipse.persistence.tools.dbws.Util.InOut.OUT;
 import static org.eclipse.persistence.tools.dbws.Util.InOut.RETURN;
+import static org.eclipse.persistence.tools.dbws.Util.escapePunctuation;
 
 /*
  * Known Problems/Limitations: Oracle
@@ -216,8 +217,8 @@ public class JDBCHelper {
 
         List<DbTable> dbTables = null;
         boolean isOracle = platform.getClass().getName().contains("Oracle") ? true : false;
-        String schemaPattern = trimPunctuation(originalSchemaPattern, isOracle);
-        String tablePattern = trimPunctuation(originalTablePattern, isOracle);
+        String schemaPattern = escapePunctuation(originalSchemaPattern, isOracle);
+        String tablePattern = escapePunctuation(originalTablePattern, isOracle);
         DatabaseMetaData databaseMetaData = getDatabaseMetaData(connection);
         boolean supportsCatalogsInTableDefinitions = true;
         try {
@@ -225,7 +226,7 @@ public class JDBCHelper {
                 databaseMetaData.supportsCatalogsInTableDefinitions();
         }
         catch (SQLException sqlException) { /* ignore*/ }
-        String catalogPattern = trimPunctuation(
+        String catalogPattern = escapePunctuation(
             supportsCatalogsInTableDefinitions ? originalCatalogPattern : "", isOracle);
         // Make sure table(s) is/are available
         ResultSet tablesInfo = null;
@@ -360,10 +361,10 @@ public class JDBCHelper {
         }
         // Oracle is 'special' - the catalogMatchDontCare logic only applies if the catalogPattern
         // is NULL vs. the empty "" string
-        boolean isOracle = platform.getClass().getName().matches("Oracle*Platform") ? true : false;
-        String catalogPattern = trimPunctuation(originalCatalogPattern, isOracle);
-        String schemaPattern = trimPunctuation(originalSchemaPattern, isOracle);
-        String procedurePattern = trimPunctuation(originalProcedurePattern, isOracle);
+        boolean isOracle = platform.getClass().getName().contains("Oracle") ? true : false;
+        String catalogPattern = escapePunctuation(originalCatalogPattern, isOracle);
+        String schemaPattern = escapePunctuation(originalSchemaPattern, isOracle);
+        String procedurePattern = escapePunctuation(originalProcedurePattern, isOracle);
         // Make sure procedure(s) is/are available
         ResultSet procsInfo = null;
         try {
@@ -575,36 +576,6 @@ public class JDBCHelper {
             throw new IllegalStateException("failure retrieving JDBC metadata", sqlException);
         }
         return databaseMetaData;
-    }
-
-    public static String trimPunctuation(String originalName, boolean isOracle) {
-        if (originalName == null ||
-            originalName.length() == 0) {
-            if (isOracle) {
-                return null;
-            }
-            else {
-                return originalName;
-            }
-        }
-        String nameWithNoPunctuation = null;
-        // paranoid much? - trim leading/trailing spaces
-        String tmpname1 = originalName.trim();
-        // strip out all punctuation except period (catalog/schema/package separator characater),
-        // underscore and percent (allowed in table names)
-        String tmpname2 = tmpname1.replaceAll("[\\p{Punct}&&[^\\._%]]", " ");
-        // now trim spaces and see if still same size as before
-        String tmpname3 = tmpname2.trim();
-        if (tmpname3.length() != tmpname1.length()) {
-            throw new IllegalArgumentException(originalName + " contains illegal characters");
-        }
-        if (isOracle) {
-            nameWithNoPunctuation = tmpname3.toUpperCase();
-        }
-        else {
-            nameWithNoPunctuation = tmpname3;
-        }
-        return nameWithNoPunctuation;
     }
 
     public static class OverloadHolder {

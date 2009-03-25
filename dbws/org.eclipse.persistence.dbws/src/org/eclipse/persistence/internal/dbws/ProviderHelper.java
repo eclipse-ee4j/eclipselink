@@ -43,6 +43,7 @@ import static javax.xml.soap.SOAPConstants.URI_NS_SOAP_1_1_ENVELOPE;
 
 // EclipseLink imports
 import org.eclipse.persistence.dbws.DBWSModelProject;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DBWSException;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
@@ -54,6 +55,7 @@ import org.eclipse.persistence.internal.oxm.schema.model.Schema;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.internal.xr.Invocation;
 import org.eclipse.persistence.internal.xr.Operation;
+import org.eclipse.persistence.internal.xr.Parameter;
 import org.eclipse.persistence.internal.xr.ValueObject;
 import org.eclipse.persistence.internal.xr.XRServiceAdapter;
 import org.eclipse.persistence.internal.xr.XRServiceFactory;
@@ -65,12 +67,14 @@ import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.mappings.XMLAnyCollectionMapping;
+import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.sessions.Project;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_SCHEMA_XML;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_SERVICE_XML;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_WSDL;
 import static org.eclipse.persistence.internal.xr.Util.META_INF_PATHS;
 import static org.eclipse.persistence.internal.xr.Util.SCHEMA_2_CLASS;
+import static org.eclipse.persistence.internal.xr.Util.SERVICE_NAMESPACE_PREFIX;
 import static org.eclipse.persistence.internal.xr.Util.WEB_INF_DIR;
 import static org.eclipse.persistence.internal.xr.Util.WSDL_DIR;
 import static org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT;
@@ -113,7 +117,6 @@ import static org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy.
  */
 public class ProviderHelper extends XRServiceFactory {
 
-    public static final String SERVICE_NS_PREFIX = "srvc";
     protected static final String XSL_PREAMBLE =
       "<?xml version=\"1.0\"?> " +
       "<xsl:stylesheet " +
@@ -122,7 +125,7 @@ public class ProviderHelper extends XRServiceFactory {
         "> " +
       "<xsl:output method=\"xml\" encoding=\"UTF-8\"/> ";
     protected static final String XSL_POSTSCRIPT = "</xsl:stylesheet>";
-    protected static final String MATCH_SCHEMA =
+    public static final String MATCH_SCHEMA =
       XSL_PREAMBLE +
         "<xsl:template match=\"/\">" +
              "<xsl:apply-templates/>" +
@@ -131,7 +134,7 @@ public class ProviderHelper extends XRServiceFactory {
           "<xsl:copy-of select=\".\"/>" +
         "</xsl:template>" +
       XSL_POSTSCRIPT;
-    protected SOAPResponseWriter responseWriter = null;
+    public SOAPResponseWriter responseWriter = null;
 
     // Default constructor required by servlet/jax-ws spec
     public ProviderHelper() {
@@ -212,7 +215,7 @@ public class ProviderHelper extends XRServiceFactory {
         }
         try {
             StreamSource wsdlStreamSource = new StreamSource(wsdlInputStream);
-        	Transformer t = getTransformerFactory().newTransformer(new StreamSource(
+        	Transformer t = TransformerFactory.newInstance().newTransformer(new StreamSource(
         	    new StringReader(MATCH_SCHEMA)));
         	StreamResult streamResult = new StreamResult(sw);
         	t.transform(wsdlStreamSource, streamResult);
@@ -228,32 +231,19 @@ public class ProviderHelper extends XRServiceFactory {
         	// that's Ok, WSDL may not contain inline schema
         }
 
+        String tns = dbwsAdapter.getExtendedSchema().getTargetNamespace();
         Project oxProject = dbwsAdapter.getOXSession().getProject();
-        for (Iterator i = oxProject.getDescriptors().values().iterator(); i.hasNext();) {
-          XMLDescriptor d = (XMLDescriptor)i.next();
-          NamespaceResolver ns = d.getNamespaceResolver();
-          String tns = dbwsAdapter.getExtendedSchema().getTargetNamespace();
-          if (ns != null) {
-            ns.put(SERVICE_NS_PREFIX, tns);
-          }
-          String defaultRootElement = d.getDefaultRootElement();
-          if (defaultRootElement != null ) {
-              int idx = defaultRootElement.indexOf(':');
-              if (idx > 0) {
-                  defaultRootElement = defaultRootElement.substring(idx+1);
-              }
-              d.addRootElement(SERVICE_NS_PREFIX + ":" + defaultRootElement);
-          }
-        }
         XMLDescriptor invocationDescriptor = new XMLDescriptor();
         invocationDescriptor.setJavaClass(Invocation.class);
-        NamespaceResolver ns = new NamespaceResolver();
-        invocationDescriptor.setNamespaceResolver(ns);
-        ns.put(SERVICE_NS_PREFIX, dbwsAdapter.getExtendedSchema().getTargetNamespace());
+        NamespaceResolver nr = new NamespaceResolver();
+        invocationDescriptor.setNamespaceResolver(nr);
+        nr.put(SERVICE_NAMESPACE_PREFIX, tns);
+        nr.setDefaultNamespaceURI(tns);
         XMLAnyCollectionMapping parametersMapping = new XMLAnyCollectionMapping();
         parametersMapping.setAttributeName("parameters");
         parametersMapping.setAttributeAccessor(new AttributeAccessor() {
             Project oxProject;
+            DBWSAdapter dbwsAdapter;
             @Override
             public Object getAttributeValueFromObject(Object object) {
               return ((Invocation)object).getParameters();
@@ -267,7 +257,7 @@ public class ProviderHelper extends XRServiceFactory {
                    *  if XML conforms to something mapped, it an object; else it is a DOM Element
                    *  (probably a scalar). Walk through operations for the types, converting
                    *   as required. The 'key' is the local name of the element - for mapped objects,
-                   *   have to get the root element name from the descriptor for the object
+                   *   have to get the element name from the schema context for the object
                    */
                   Object o = i.next();
                   if (o instanceof Element) {
@@ -279,7 +269,8 @@ public class ProviderHelper extends XRServiceFactory {
                             Node n = nl.item(j);
                             if (n.getNodeType() == Node.ELEMENT_NODE) {
                                 try {
-                                    Object theInstance = new XMLContext(oxProject).createUnmarshaller().unmarshal(n);
+                                    Object theInstance = 
+                                        dbwsAdapter.getXMLContext().createUnmarshaller().unmarshal(n);
                                     if (theInstance instanceof XMLRoot) {
                                         theInstance = ((XMLRoot)theInstance).getObject();
                                     }
@@ -293,12 +284,20 @@ public class ProviderHelper extends XRServiceFactory {
                         }
                     }
                     else {
-                        String lname = e.getLocalName();
-                        if (oxProject.getDescriptorForAlias(lname) != null) {
-                            Node n = e;
+                        ClassDescriptor desc = null;
+                        for (XMLDescriptor xdesc : (Vector<XMLDescriptor>)oxProject.getOrderedDescriptors()) {
+                            XMLSchemaReference schemaReference = xdesc.getSchemaReference();
+                            if (schemaReference != null && 
+                                schemaReference.getSchemaContext().equalsIgnoreCase(key)) {
+                                desc = xdesc;
+                                break;
+                            }
+                        }
+                        if (desc != null) {
                             try {
-                                Object theObject =
-                                    new XMLContext(oxProject).createUnmarshaller().unmarshal(n);
+                                Object theObject = 
+                                    dbwsAdapter.getXMLContext().createUnmarshaller().unmarshal(e,
+                                        desc.getJavaClass());
                                 if (theObject instanceof XMLRoot) {
                                     theObject = ((XMLRoot)theObject).getObject();
                                 }
@@ -309,8 +308,37 @@ public class ProviderHelper extends XRServiceFactory {
                             }
                         }
                         else {
-                            String val = e.getTextContent();
-                            invocation.setParameter(key, val);
+                            String serviceName = e.getParentNode().getLocalName();
+                            boolean found = false;
+                            for (Operation op : dbwsAdapter.getOperationsList()) {
+                                if (op.getName().equals(serviceName)) {
+                                    for (Parameter p : op.getParameters()) {
+                                        if (p.getName().equals(key)) {
+                                            desc = dbwsAdapter.getDescriptorsByQName().get(p.getType());
+                                            if (desc != null) {
+                                                found = true;
+                                            }
+                                            break;
+                                        }
+                                    }
+                                }
+                                if (found) {
+                                    break;
+                                }
+                            }
+                            if (found) {
+                                Object theObject = 
+                                    dbwsAdapter.getXMLContext().createUnmarshaller().unmarshal(e,
+                                        desc.getJavaClass());
+                                if (theObject instanceof XMLRoot) {
+                                    theObject = ((XMLRoot)theObject).getObject();
+                                }
+                                invocation.setParameter(key, theObject);
+                            }
+                            else {
+                                String val = e.getTextContent();
+                                invocation.setParameter(key, val);
+                            }
                         }
                     }
                   }
@@ -325,11 +353,12 @@ public class ProviderHelper extends XRServiceFactory {
                   }
                 }
             }
-            public AttributeAccessor setProject(Project oxProject) {
+            public AttributeAccessor setProjectAndAdapter(Project oxProject, DBWSAdapter dbwsAdapter) {
               this.oxProject = oxProject;
+              this.dbwsAdapter = dbwsAdapter;
               return this;
             }
-        }.setProject(oxProject));
+        }.setProjectAndAdapter(oxProject, dbwsAdapter));
         parametersMapping.setKeepAsElementPolicy(KEEP_UNKNOWN_AS_ELEMENT);
         invocationDescriptor.addMapping(parametersMapping);
         oxProject.addDescriptor(invocationDescriptor);
@@ -516,15 +545,6 @@ public class ProviderHelper extends XRServiceFactory {
     // thread-safe way of lazy-initializing a static singleton - please see
     // http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html
     // for more details
-    private static class LazyTransformerFactorySingleton {
-        static TransformerFactory tf = TransformerFactory.newInstance();
-        static TransformerFactory getInstance() {
-            return tf;
-        }
-    }
-    private static TransformerFactory getTransformerFactory() {
-        return LazyTransformerFactorySingleton.getInstance();
-    }
     private static class LazySOAPFactorySingleton {
         // little more complicated 'cause SOAPFactory.newInstance() throws a checked exception
         static SOAPFactory sf = null;
@@ -540,7 +560,7 @@ public class ProviderHelper extends XRServiceFactory {
             return sf;
         }
     }
-    private static SOAPFactory getSOAPFactory() {
+    public static SOAPFactory getSOAPFactory() {
         return LazySOAPFactorySingleton.getInstance();
     }
 }

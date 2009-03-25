@@ -14,6 +14,7 @@
 package org.eclipse.persistence.tools.dbws;
 
 //javase imports
+import java.util.regex.Pattern;
 import static java.sql.Types.BIGINT;
 import static java.sql.Types.CHAR;
 import static java.sql.Types.DATE;
@@ -29,6 +30,8 @@ import static java.sql.Types.TIME;
 import static java.sql.Types.TIMESTAMP;
 import static java.sql.Types.TINYINT;
 import static java.sql.Types.VARCHAR;
+
+//java eXtension imports
 import javax.xml.namespace.QName;
 import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
 import static javax.xml.XMLConstants.NULL_NS_URI;
@@ -37,14 +40,12 @@ import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 //EclipseLink imports
 import org.eclipse.persistence.internal.oxm.schema.model.Any;
 import org.eclipse.persistence.internal.oxm.schema.model.ComplexType;
-import org.eclipse.persistence.internal.oxm.schema.model.Element;
 import org.eclipse.persistence.internal.oxm.schema.model.Schema;
 import org.eclipse.persistence.internal.oxm.schema.model.Sequence;
 import org.eclipse.persistence.tools.dbws.jdbc.DbStoredArgument;
 import org.eclipse.persistence.tools.dbws.jdbc.DbStoredProcedure;
 import static org.eclipse.persistence.internal.xr.QNameTransformer.SCHEMA_QNAMES;
 import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.DEFAULT_SIMPLE_XML_FORMAT_TAG;
-import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.SIMPLE_XML_FORMAT_TYPE;
 import static org.eclipse.persistence.oxm.XMLConstants.BASE_64_BINARY_QNAME;
 import static org.eclipse.persistence.oxm.XMLConstants.DATE_QNAME;
 import static org.eclipse.persistence.oxm.XMLConstants.DATE_TIME_QNAME;
@@ -99,7 +100,7 @@ public class Util {
     public static final String DBWS_PROVIDER_CLASS_FILE = DBWS_PROVIDER_NAME + ".class";
     public static final String DBWS_PROVIDER_SOURCE_FILE = DBWS_PROVIDER_NAME + ".java";
 
-    public static final QName SXF_QNAME_CURSOR = new QName("", "cursor of " + SIMPLE_XML_FORMAT_TYPE);
+    public static final QName SXF_QNAME_CURSOR = new QName("", "cursor of " + DEFAULT_SIMPLE_XML_FORMAT_TAG);
     // TODO - expand to cover more cases
     public static QName getXMLTypeFromJDBCType(Short jdbcType) {
         return getXMLTypeFromJDBCType(jdbcType.intValue());
@@ -186,27 +187,22 @@ public class Util {
       <xsd:schema
         xmlns:xsd="http://www.w3.org/2001/XMLSchema"
         >
-        <xsd:complexType name="sxfType">
+        <xsd:complexType name="simple-xml-format">
           <xsd:sequence>
             <xsd:any minOccurs="0"/>
           </xsd:sequence>
         </xsd:complexType>
-        <xsd:element name="simple-xml-format" type="sxfType"/>
       </xsd:schema>
     */
     public static void addSimpleXMLFormat(Schema schema) {
         ComplexType anyType = new ComplexType();
-        anyType.setName(SIMPLE_XML_FORMAT_TYPE);
+        anyType.setName(DEFAULT_SIMPLE_XML_FORMAT_TAG);
         Sequence anySequence = new Sequence();
         Any any = new Any();
         any.setMinOccurs("0");
         anySequence.addAny(any);
         anyType.setSequence(anySequence);
         schema.addTopLevelComplexTypes(anyType);
-        Element wrapperElement = new Element();
-        wrapperElement.setName(DEFAULT_SIMPLE_XML_FORMAT_TAG);
-        wrapperElement.setType(SIMPLE_XML_FORMAT_TYPE);
-        schema.addTopLevelElement(wrapperElement);
     }
 
     public static boolean noOutArguments(DbStoredProcedure storedProcedure) {
@@ -224,9 +220,8 @@ public class Util {
         return noOutArguments;
     }
 
-    public static String trimPunctuation(String originalName, boolean isOracle) {
-        if (originalName == null ||
-            originalName.length() == 0) {
+    public static String escapePunctuation(String originalName, boolean isOracle) {
+        if (originalName == null || originalName.length() == 0) {
             if (isOracle) {
                 return null;
             }
@@ -234,23 +229,20 @@ public class Util {
                 return originalName;
             }
         }
-        String nameWithNoPunctuation = null;
-        // paranoid much? - trim leading/trailing spaces
-        String tmpname1 = originalName.trim();
-        // strip out all punctuation except period (catalog/schema/package separator characater),
-        // underscore and percent (allowed in table names)
-        String tmpname2 = tmpname1.replaceAll("[\\p{Punct}&&[^\\._%]]", " ");
-        // now trim spaces and see if still same size as before
-        String tmpname3 = tmpname2.trim();
-        if (tmpname3.length() != tmpname1.length()) {
-            throw new IllegalArgumentException(originalName + " contains illegal characters");
-        }
-        if (isOracle) {
-            nameWithNoPunctuation = tmpname3.toUpperCase();
+        // escape all punctuation except SQL 'LIKE' meta-characters:
+        // '_' (underscore) - matches any one character) and
+        // '%' (percent ) - matches a string of zero or more characters
+        return originalName.trim().replaceAll("[\\p{Punct}&&[^_%]]", "\\\\$0");
+    }
+
+    public static boolean sqlMatch(String pattern, String input) {
+        if (pattern != null && pattern.length() > 0) {
+            String tmp = pattern.replace('_', '.').replace("%", ".*");
+            Pattern p = Pattern.compile(tmp, Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+            return p.matcher(input).matches();
         }
         else {
-            nameWithNoPunctuation = tmpname3;
+            return false;
         }
-        return nameWithNoPunctuation;
     }
 }

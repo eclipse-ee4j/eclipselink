@@ -13,7 +13,7 @@
 
 package dbws.testing.veearray;
 
-// javase imports
+//javase imports
 import java.io.ByteArrayInputStream;
 import java.io.StringReader;
 import java.sql.SQLException;
@@ -22,18 +22,16 @@ import java.util.Vector;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-// Java extension imports
-import static javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI;
-import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
+//java eXtension imports
 
-// JUnit imports
+//JUnit4 imports
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-// EclipseLink imports
+//EclipseLink imports
 import org.eclipse.persistence.dbws.DBWSModel;
 import org.eclipse.persistence.dbws.DBWSModelProject;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
@@ -54,6 +52,8 @@ import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
+import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
+import org.eclipse.persistence.oxm.schema.XMLSchemaURLReference;
 import org.eclipse.persistence.platform.database.oracle.Oracle10Platform;
 import org.eclipse.persistence.platform.xml.XMLComparer;
 import org.eclipse.persistence.platform.xml.XMLParser;
@@ -64,11 +64,10 @@ import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.sessions.DatabaseLogin;
+import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Project;
 import static org.eclipse.persistence.oxm.XMLConstants.INT_QNAME;
 import static org.eclipse.persistence.oxm.XMLConstants.STRING_QNAME;
-
-// domain-specific (testing) imports
 
 public class VeearrayTestSuite {
 
@@ -89,7 +88,6 @@ public class VeearrayTestSuite {
         "        <xsd:element name=\"type\" type=\"xsd:string\" />\n" +
         "      </xsd:sequence>\n" +
         "   </xsd:complexType>\n" +
-        "   <xsd:element name=\"phone\" type=\"phoneType\"/>\n" +
         "   <xsd:complexType name=\"employeeType\">\n" +
         "      <xsd:sequence>\n" +
         "        <xsd:element name=\"id\" type=\"xsd:int\" />\n" +
@@ -100,7 +98,6 @@ public class VeearrayTestSuite {
         "        </xsd:sequence>\n" +
         "      </xsd:sequence>\n" +
         "   </xsd:complexType>\n" +
-        "   <xsd:element name=\"employee\" type=\"employeeType\"/>\n" +
         "</xsd:schema>";
     static final String VEEARRAY_XRMODEL =
         "<?xml version='1.0' encoding='UTF-8'?>\n" +
@@ -271,9 +268,7 @@ public class VeearrayTestSuite {
         employeeORDescriptor.getQueryManager().addQuery("updateVeeArrayPhones", dataModifyQuery);
 
         NamespaceResolver ns = new NamespaceResolver();
-        ns.put("xsi", W3C_XML_SCHEMA_INSTANCE_NS_URI);
-        ns.put("xsd", W3C_XML_SCHEMA_NS_URI);
-        ns.put("ns1", "urn:veearray");
+        ns.setDefaultNamespaceURI("urn:veearray");
         Project oxProject = new Project();
         oxProject.setName("ox-veearray");
         XMLLogin xmlLogin = new XMLLogin();
@@ -284,8 +279,13 @@ public class VeearrayTestSuite {
         XMLDescriptor employeeOXDescriptor = new XMLDescriptor();
         employeeOXDescriptor.setAlias("employee");
         employeeOXDescriptor.setJavaClass(Employee.class);
-        employeeOXDescriptor.setDefaultRootElement("ns1:employee");
+        employeeOXDescriptor.setDefaultRootElement("employee");
         employeeOXDescriptor.setNamespaceResolver(ns);
+        XMLSchemaURLReference schemaReference = new XMLSchemaURLReference();
+        schemaReference.setSchemaContext("/employeeType");
+        schemaReference.setType(XMLSchemaReference.COMPLEX_TYPE);
+        employeeOXDescriptor.setSchemaReference(schemaReference);
+        
         XMLDirectMapping xmlIdMapping = new XMLDirectMapping();
         xmlIdMapping.setAttributeName("id");
         XMLField idField = new XMLField();
@@ -296,47 +296,51 @@ public class VeearrayTestSuite {
         XMLDirectMapping xmlFirstNameMapping = new XMLDirectMapping();
         xmlFirstNameMapping.setAttributeName("firstName");
         XMLField firstNameField = new XMLField();
-        firstNameField.setName("ns1:first-name/text()");
+        firstNameField.setName("first-name/text()");
         firstNameField.setSchemaType(STRING_QNAME);
         xmlFirstNameMapping.setField(firstNameField);
         employeeOXDescriptor.addMapping(xmlFirstNameMapping);
         XMLDirectMapping xmlLastNameMapping = new XMLDirectMapping();
         xmlLastNameMapping.setAttributeName("lastName");
         XMLField lastNameField = new XMLField();
-        lastNameField.setName("ns1:last-name/text()");
+        lastNameField.setName("last-name/text()");
         lastNameField.setSchemaType(STRING_QNAME);
         xmlLastNameMapping.setField(lastNameField);
         employeeOXDescriptor.addMapping(xmlLastNameMapping);
         XMLCompositeCollectionMapping xmlPhonesMapping = new XMLCompositeCollectionMapping();
         xmlPhonesMapping.setAttributeName("phones");
         xmlPhonesMapping.setReferenceClass(Phone.class);
-        xmlPhonesMapping.setXPath("ns1:phones/ns1:phone");
+        xmlPhonesMapping.setXPath("phones/phone");
         employeeOXDescriptor.addMapping(xmlPhonesMapping);
         oxProject.addDescriptor(employeeOXDescriptor);
 
         XMLDescriptor phoneOXDescriptor = new XMLDescriptor();
         phoneOXDescriptor.setAlias("phone");
         phoneOXDescriptor.setJavaClass(Phone.class);
-        phoneOXDescriptor.setDefaultRootElement("ns1:phone");
+        phoneOXDescriptor.setDefaultRootElement("phone");
         phoneOXDescriptor.setNamespaceResolver(ns);
+        schemaReference = new XMLSchemaURLReference();
+        schemaReference.setSchemaContext("/phoneType");
+        schemaReference.setType(XMLSchemaReference.COMPLEX_TYPE);
+        phoneOXDescriptor.setSchemaReference(schemaReference);
         XMLDirectMapping areaCodeMapping = new XMLDirectMapping();
         areaCodeMapping.setAttributeName("areaCode");
         XMLField areaCodeField = new XMLField();
-        areaCodeField.setName("ns1:area-code/text()");
+        areaCodeField.setName("area-code/text()");
         areaCodeField.setSchemaType(STRING_QNAME);
         areaCodeMapping.setField(areaCodeField);
         phoneOXDescriptor.addMapping(areaCodeMapping);
         XMLDirectMapping phonenumberMapping = new XMLDirectMapping();
         phonenumberMapping.setAttributeName("phonenumber");
         XMLField phonenumberField = new XMLField();
-        phonenumberField.setName("ns1:phonenumber/text()");
+        phonenumberField.setName("phonenumber/text()");
         phonenumberField.setSchemaType(STRING_QNAME);
         phonenumberMapping.setField(phonenumberField);
         phoneOXDescriptor.addMapping(phonenumberMapping);
         XMLDirectMapping typeMapping = new XMLDirectMapping();
         typeMapping.setAttributeName("type");
         XMLField typeField = new XMLField();
-        typeField.setName("ns1:type/text()");
+        typeField.setName("type/text()");
         typeField.setSchemaType(STRING_QNAME);
         typeMapping.setField(typeField);
         phoneOXDescriptor.addMapping(typeMapping);
@@ -354,7 +358,9 @@ public class VeearrayTestSuite {
             }
             @Override
             public void buildSessions() {
-                xrService.setORSession(orProject.createDatabaseSession());
+                DatabaseSession ds = orProject.createDatabaseSession();
+                ds.dontLogMessages();
+                xrService.setORSession(ds);
                 xrService.setXMLContext(new XMLContext(oxProject));
                 xrService.setOXSession(xrService.getXMLContext().getSession(0));
             }
@@ -386,38 +392,38 @@ public class VeearrayTestSuite {
     public static final String INITIAL_EMPLOYEE_COLLECTION_XML =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
         "<employee-collection>" +
-          "<ns1:employee id=\"1\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:ns1=\"urn:veearray\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-             "<ns1:first-name>Mike</ns1:first-name>" +
-             "<ns1:last-name>Norman</ns1:last-name>" +
-             "<ns1:phones>" +
-                "<ns1:phone>" +
-                   "<ns1:area-code>613</ns1:area-code>" +
-                   "<ns1:phonenumber>288-4638</ns1:phonenumber>" +
-                   "<ns1:type>Work</ns1:type>" +
-                "</ns1:phone>" +
-                "<ns1:phone>" +
-                   "<ns1:area-code>613</ns1:area-code>" +
-                   "<ns1:phonenumber>228-1808</ns1:phonenumber>" +
-                   "<ns1:type>Home</ns1:type>" +
-                "</ns1:phone>" +
-             "</ns1:phones>" +
-          "</ns1:employee>" +
-          "<ns1:employee id=\"2\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:ns1=\"urn:veearray\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-             "<ns1:first-name>Rick</ns1:first-name>" +
-             "<ns1:last-name>Barkhouse</ns1:last-name>" +
-             "<ns1:phones>" +
-                "<ns1:phone>" +
-                   "<ns1:area-code>613</ns1:area-code>" +
-                   "<ns1:phonenumber>288-zzzz</ns1:phonenumber>" +
-                   "<ns1:type>Work</ns1:type>" +
-                "</ns1:phone>" +
-                "<ns1:phone>" +
-                   "<ns1:area-code>613</ns1:area-code>" +
-                   "<ns1:phonenumber>aaa-bbbb</ns1:phonenumber>" +
-                   "<ns1:type>Home</ns1:type>" +
-                "</ns1:phone>" +
-             "</ns1:phones>" +
-          "</ns1:employee>" +
+          "<employee id=\"1\" xmlns=\"urn:veearray\">" +
+             "<first-name>Mike</first-name>" +
+             "<last-name>Norman</last-name>" +
+             "<phones>" +
+                "<phone>" +
+                   "<area-code>613</area-code>" +
+                   "<phonenumber>288-4638</phonenumber>" +
+                   "<type>Work</type>" +
+                "</phone>" +
+                "<phone>" +
+                   "<area-code>613</area-code>" +
+                   "<phonenumber>228-1808</phonenumber>" +
+                   "<type>Home</type>" +
+                "</phone>" +
+             "</phones>" +
+          "</employee>" +
+          "<employee id=\"2\" xmlns=\"urn:veearray\">" +
+             "<first-name>Rick</first-name>" +
+             "<last-name>Barkhouse</last-name>" +
+             "<phones>" +
+                "<phone>" +
+                   "<area-code>613</area-code>" +
+                   "<phonenumber>288-zzzz</phonenumber>" +
+                   "<type>Work</type>" +
+                "</phone>" +
+                "<phone>" +
+                   "<area-code>613</area-code>" +
+                   "<phonenumber>aaa-bbbb</phonenumber>" +
+                   "<type>Home</type>" +
+                "</phone>" +
+             "</phones>" +
+          "</employee>" +
         "</employee-collection>";
 
     @SuppressWarnings("unchecked")
@@ -467,22 +473,22 @@ public class VeearrayTestSuite {
     }
     public static final String UPDATED_EMPLOYEE_XML =
     "<?xml version = '1.0' encoding = 'UTF-8'?>" +
-    "<ns1:employee id=\"2\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:ns1=\"urn:veearray\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-      "<ns1:first-name>Rick</ns1:first-name>" +
-      "<ns1:last-name>Barkhouse</ns1:last-name>" +
-      "<ns1:phones>" +
-        "<ns1:phone>" +
-          "<ns1:area-code>613</ns1:area-code>" +
-          "<ns1:phonenumber>288-4613</ns1:phonenumber>" +
-          "<ns1:type>Work</ns1:type>" +
-        "</ns1:phone>" +
-        "<ns1:phone>" +
-          "<ns1:area-code>613</ns1:area-code>" +
-          "<ns1:phonenumber>230-1579</ns1:phonenumber>" +
-          "<ns1:type>Home</ns1:type>" +
-        "</ns1:phone>" +
-      "</ns1:phones>" +
-    "</ns1:employee>";
+    "<employee id=\"2\" xmlns=\"urn:veearray\">" +
+      "<first-name>Rick</first-name>" +
+      "<last-name>Barkhouse</last-name>" +
+      "<phones>" +
+        "<phone>" +
+          "<area-code>613</area-code>" +
+          "<phonenumber>288-4613</phonenumber>" +
+          "<type>Work</type>" +
+        "</phone>" +
+        "<phone>" +
+          "<area-code>613</area-code>" +
+          "<phonenumber>230-1579</phonenumber>" +
+          "<type>Home</type>" +
+        "</phone>" +
+      "</phones>" +
+    "</employee>";
 
     @SuppressWarnings("unchecked")
     @Test

@@ -2,10 +2,9 @@
 <xsd:schema
   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
   >
-  <xsd:complexType name="sxfType">
+  <xsd:complexType name="simple-xml-format">
     <xsd:sequence>
       <xsd:any minOccurs="0"/>
     </xsd:sequence>
   </xsd:complexType>
-  <xsd:element name="simple-xml-format" type="sxfType"/>
 </xsd:schema>
