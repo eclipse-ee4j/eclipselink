@@ -136,7 +136,9 @@ public class DatabasePlatform extends DatasourcePlatform {
     /** bug 4241441: Allow custom batch writing to enable batching with optimistic locking**/
     protected boolean usesNativeBatchWriting;
 
-
+    /** Allow configuration option to use where clause joining or From clause joining**/
+    protected boolean printOuterJoinInWhereClause = false;
+    
     /** Allow for the code that is used for preparing cursored outs for a storedprocedure to be settable. **/
     protected int cursorCode;
 
@@ -1585,7 +1587,17 @@ public class DatabasePlatform extends DatasourcePlatform {
     public void setUsesStreamsForBinding(boolean usesStreamsForBinding) {
         this.usesStreamsForBinding = usesStreamsForBinding;
     }
-
+    /**
+     * PUBLIC:
+     * Changes the way that OuterJoins are done on the database.  With a value of 
+     * true, outerjoins are performed in the where clause using the outer join token 
+     * for that database.  
+     * 
+     *  With the value of false, outerjoins are performed in the from clause.
+     */
+    public void setPrintOuterJoinInWhereClause(boolean printOuterJoinInWhereClause) {
+        this.printOuterJoinInWhereClause = printOuterJoinInWhereClause;
+    }
     public void setUsesStringBinding(boolean aBool) {
         usesStringBinding = aBool;
     }
@@ -1661,7 +1673,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      * Some database require outer joins to be given in the where clause, others require it in the from clause.
      */
     public boolean shouldPrintOuterJoinInWhereClause() {
-        return false;
+        return printOuterJoinInWhereClause;
     }
 
     /**

@@ -30,6 +30,7 @@ public class TimesTenPlatform extends DatabasePlatform {
     
     public TimesTenPlatform() {
         supportsForeignKeyConstraints = true;
+        printOuterJoinInWhereClause = true;
     }
 
     /**
@@ -218,12 +219,6 @@ public class TimesTenPlatform extends DatabasePlatform {
         return result;
     }
 
-    /**
-     * Some database require outer joins to be given in the where clause, others require it in the from clause.
-     */
-    public boolean shouldPrintOuterJoinInWhereClause() {
-        return true;
-    }
 
     /**
      *  INTERNAL:

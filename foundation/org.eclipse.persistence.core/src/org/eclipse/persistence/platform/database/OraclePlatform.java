@@ -555,12 +555,6 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         return "SYSDATE";
     }
 
-    /**
-     * Some database require outer joins to be given in the where clause, others require it in the from clause.
-     */
-    public boolean shouldPrintOuterJoinInWhereClause() {
-        return true;
-    }
 
     /**
      * JDBC defines and outer join syntax, many drivers do not support this. So we normally avoid it.

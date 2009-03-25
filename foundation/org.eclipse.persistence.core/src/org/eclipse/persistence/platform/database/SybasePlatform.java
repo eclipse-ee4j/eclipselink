@@ -572,12 +572,6 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
         return false;
     }
 
-    /**
-     * Some database require outer joins to be given in the where clause, others require it in the from clause.
-     */
-    public boolean shouldPrintOuterJoinInWhereClause() {
-        return false;
-    }
 
     /* This is required in the construction of the stored procedures with
      * output parameters

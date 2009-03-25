@@ -251,12 +251,6 @@ public class InformixPlatform extends org.eclipse.persistence.platform.database.
         return true;
     }
 
-    /**
-     * Some database require outer joins to be given in the where clause, others require it in the from clause.
-     */
-    public boolean shouldPrintOuterJoinInWhereClause() {
-        return false;
-    }
 
     /**
      *  INTERNAL:
