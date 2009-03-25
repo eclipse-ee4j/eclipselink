@@ -91,6 +91,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
 
     public PLSQLStoredProcedureCall() {
         super();
+        setIsCallableStatementRequired(true);
     }
 
     /**
@@ -617,14 +618,22 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
             info = generateNestedFunction((ComplexDatabaseType)type);
         }
         if (argument.direction == IN) {
-            functions.add(info.sql2PlConv);
+            if (!functions.contains(info.sql2PlConv)) {
+                functions.add(info.sql2PlConv);
+            }
         }
         else if (argument.direction == INOUT) {
-            functions.add(info.sql2PlConv);
-            functions.add(info.pl2SqlConv);
+            if (!functions.contains(info.sql2PlConv)) {
+                functions.add(info.sql2PlConv);
+            }
+            if (!functions.contains(info.pl2SqlConv)) {
+                functions.add(info.pl2SqlConv);
+            }
         }
         else if (argument.direction == OUT) {
-            functions.add(info.pl2SqlConv);
+            if (!functions.contains(info.pl2SqlConv)) {
+                functions.add(info.pl2SqlConv);
+            }
         }
     }
 
@@ -1017,8 +1026,12 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
     @Override
     public AbstractRecord buildOutputRow(CallableStatement statement) throws SQLException {
 
-        // re-order elements in outputRow to conform to original indices
         AbstractRecord outputRow = super.buildOutputRow(statement);
+        if (!shouldBuildOutputRow) {
+            outputRow.put("", 1); // fake-out Oracle executeUpdate rowCount, always 1
+            return outputRow;
+        }
+        // re-order elements in outputRow to conform to original indices
         Vector outputRowFields = outputRow.getFields();
         Vector outputRowValues = outputRow.getValues();
         DatabaseRecord newOutputRow = new DatabaseRecord();

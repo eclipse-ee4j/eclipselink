@@ -15,6 +15,8 @@ package org.eclipse.persistence.internal.helper;
 import java.util.*;
 import java.math.*;
 
+import javax.xml.namespace.QName;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -117,6 +119,7 @@ public class ClassConstants {
     public static final Class TIME = java.sql.Time.class;
     public static final Class TIMESTAMP = java.sql.Timestamp.class;
     public static final Class UTILDATE = java.util.Date.class;
+    public static final Class QNAME = QName.class;
 
     //LOB support types
     public static final Class BLOB = java.sql.Blob.class;
