@@ -65,8 +65,8 @@ public class JAXBContextFactory {
         javax.xml.bind.JAXBContext jaxbContext = null;
         XMLContext xmlContext = null;
         JaxbClassLoader loader = new JaxbClassLoader(classLoader);
-        Generator generator = new Generator(new JavaModelInputImpl(classesToBeBound, new JavaModelImpl(loader)));
         try {
+            Generator generator = new Generator(new JavaModelInputImpl(classesToBeBound, new JavaModelImpl(loader)));        
             Project proj = generator.generateProject();
             ConversionManager conversionManager = null;
             if (classLoader != null) {

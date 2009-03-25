@@ -35,6 +35,7 @@ public class JAXBException extends EclipseLinkException {
     public static final int ANY_ATTRIBUTE_ON_NON_MAP_PROPERTY = 50004;
     public static final int MULTIPLE_ANY_ATTRIBUTE_MAPPING = 50005;
     public static final int INVALID_XML_ELEMENT_REF = 50006;
+    public static final int NAME_COLLISION = 50007;
     
     protected JAXBException(String message) {
         super(message);
@@ -92,6 +93,13 @@ public class JAXBException extends EclipseLinkException {
         Object[] args = {propertyName, className};
         JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, INVALID_XML_ELEMENT_REF, args));
         exception.setErrorCode(INVALID_XML_ELEMENT_REF);
+        return exception;
+    }    
+    
+    public static JAXBException nameCollision(String uri, String name) {
+        Object[] args = {uri, name};
+        JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, NAME_COLLISION, args));
+        exception.setErrorCode(NAME_COLLISION);
         return exception;
     }    
     
