@@ -290,8 +290,11 @@ public class JavaClassImpl implements JavaClass {
         return new JavaPackageImpl(jClass.getPackage());
     }
 
-    public String getPackageName() {
-        return jClass.getPackage().getName();
+    public String getPackageName() {    	
+    	if(jClass.getPackage() != null){
+    		return jClass.getPackage().getName();
+    	}
+    	return null;
     }
 
     public String getQualifiedName() {
