@@ -133,7 +133,7 @@ public abstract class MWAbstractXmlReferenceMapping extends MWAbstractReferenceM
 	
 	public MWXmlField firstMappedXmlField() {
 		MWXmlFieldPair firstFieldPair = xmlFieldPairAt(0); 
-		if (firstFieldPair.getSourceXmlField().isResolved()) {
+		if (firstFieldPair != null && firstFieldPair.getSourceXmlField() != null && firstFieldPair.getSourceXmlField().isResolved()) {
 			return firstFieldPair.getSourceXmlField();
 		}
 		else {
@@ -215,7 +215,10 @@ public abstract class MWAbstractXmlReferenceMapping extends MWAbstractReferenceM
 	}
 	
 	public MWXmlFieldPair xmlFieldPairAt(int index) {
-		return this.xmlFieldPairs.get(index);
+		if (index < this.xmlFieldPairsSize()) {
+			return this.xmlFieldPairs.get(index);
+		}
+		return null;
 	}
 	
 	public MWXmlFieldPair addFieldPair(String sourceXpath, String targetXpath) {
@@ -271,7 +274,28 @@ public abstract class MWAbstractXmlReferenceMapping extends MWAbstractReferenceM
 		
 		return runtimeMapping;
 	}
+			
+	//********************** Validation ***************************************
 	
+	@Override
+	protected void addProblemsTo(List newProblems) {
+		super.addProblemsTo(newProblems);
+		
+		checkXmlFieldPairsNotZero(newProblems);
+		checkTargetPrimaryKey(newProblems);
+	}
+	
+	protected void checkXmlFieldPairsNotZero(List newProblems) {
+		if (this.xmlFieldPairsSize() <= 0) {
+			newProblems.add(this.buildProblem(ProblemConstants.MAPPING_NO_XML_FIELD_PAIRS_SPECIFIED));
+		}
+	}
+	
+	@Override
+	protected void checkReferenceDescriptorCachIsolation(List newProblems) {
+		// doesn't apply to OX projects
+	}
+
 	@Override
 	protected void checkReferenceDescriptor(List newProblems)	{
 		MWDescriptor refDescriptor = this.getReferenceDescriptor();
@@ -284,20 +308,6 @@ public abstract class MWAbstractXmlReferenceMapping extends MWAbstractReferenceM
 			}
 			this.checkReferenceDescriptorCachIsolation(newProblems);
 		}
-	}
-		
-	//********************** Validation ***************************************
-	
-	@Override
-	protected void addProblemsTo(List newProblems) {
-		super.addProblemsTo(newProblems);
-		
-		checkTargetPrimaryKey(newProblems);
-	}
-	
-	@Override
-	protected void checkReferenceDescriptorCachIsolation(List newProblems) {
-		// doesn't apply to OX projects
 	}
 
 	protected void checkTargetPrimaryKey(List newProblems) {

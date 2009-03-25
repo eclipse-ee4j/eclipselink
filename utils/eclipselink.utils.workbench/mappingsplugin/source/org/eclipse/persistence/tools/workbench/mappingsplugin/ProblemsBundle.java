@@ -394,6 +394,7 @@ public class ProblemsBundle extends ListResourceBundle
 		
 		// *** MWAbstractXmlReferenceMapping ***
 		{"0626", "The selected target field \"{0}\" is not a primary key on the referenced descriptor."},
+		{"0627", "There are no XML field pairs defined for this mapping."},
 		
 		// *** MWAbstractCompositeMapping ***
 		{"0630", "The container accessor is not configured."},
