@@ -30,6 +30,7 @@ public class JAXBElementAttributeAccessor extends AttributeAccessor {
 	private ContainerPolicy containerPolicy;
 	private boolean isContainer;
 	private Map<QName, Class> qNamesToScopes;
+	private final static String JAXB_ELEMENT_CLASSNAME = "javax.xml.bind.JAXBElement";
 	
 	public JAXBElementAttributeAccessor(AttributeAccessor nestedAccessor) {
 		this.nestedAccessor = nestedAccessor;
@@ -65,7 +66,7 @@ public class JAXBElementAttributeAccessor extends AttributeAccessor {
 			}
 			value = results;
 		} else {
-			if(value instanceof JAXBElement) {
+			if(value !=null && value.getClass().getName().equals(JAXB_ELEMENT_CLASSNAME)) {
 				JAXBElement element = (JAXBElement)value;
 				XMLRoot root = new XMLRoot();
 				root.setLocalName(element.getName().getLocalPart());
@@ -119,6 +120,9 @@ public class JAXBElementAttributeAccessor extends AttributeAccessor {
     }	    
     
     private JAXBElement createJAXBElement(QName qname, Class theClass, Object value){
+    	if(value != null && value instanceof JAXBElement){
+    		return (JAXBElement)value;
+    	}
     	if(ClassConstants.XML_GREGORIAN_CALENDAR.isAssignableFrom(theClass)){
     		theClass = ClassConstants.XML_GREGORIAN_CALENDAR;
     	}else if(ClassConstants.DURATION.isAssignableFrom(theClass)){

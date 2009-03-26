@@ -178,15 +178,25 @@ public class MappingsGenerator {
         policy.setDefaultValues(new String[]{null});
         
         xmlDescriptor.setInstantiationPolicy(policy);
-        
-        XMLDirectMapping mapping = new XMLDirectMapping();
-        mapping.setAttributeName("value");
-        mapping.setGetMethodName("getValue");
-        mapping.setSetMethodName("setValue");
-        mapping.setXPath("text()");
-        mapping.setAttributeClassificationName(factoryMethodParamTypes[0]);
-        xmlDescriptor.addMapping(mapping);
-        
+        JavaClass paramClass = helper.getJavaClass(factoryMethodParamTypes[0]);        
+        if(helper.isBuiltInJavaType(paramClass)){        
+	        XMLDirectMapping mapping = new XMLDirectMapping();
+	        mapping.setAttributeName("value");
+	        mapping.setGetMethodName("getValue");
+	        mapping.setSetMethodName("setValue");
+	        mapping.setXPath("text()");
+	        Class attributeClassification = org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(factoryMethodParamTypes[0], getClass().getClassLoader());
+	        mapping.setAttributeClassification(attributeClassification);	        	        
+	        xmlDescriptor.addMapping(mapping);
+        }else{
+        	XMLCompositeObjectMapping mapping = new XMLCompositeObjectMapping();
+ 	        mapping.setAttributeName("value");
+ 	        mapping.setGetMethodName("getValue");
+ 	        mapping.setSetMethodName("setValue");
+ 	        mapping.setXPath(".");
+ 	        mapping.setReferenceClassName(factoryMethodParamTypes[0]);
+ 	        xmlDescriptor.addMapping(mapping);
+        }
         xmlDescriptor.setNamespaceResolver(nsr);
         
         project.addDescriptor(xmlDescriptor);
