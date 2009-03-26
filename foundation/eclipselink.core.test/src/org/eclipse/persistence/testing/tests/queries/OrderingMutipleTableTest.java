@@ -15,6 +15,7 @@ package org.eclipse.persistence.testing.tests.queries;
 import java.util.*;
 import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.testing.models.employee.domain.*;
+import org.eclipse.persistence.testing.models.employee.domain.Project;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.*;
 
@@ -27,25 +28,28 @@ public class OrderingMutipleTableTest extends OrderingTest {
     }
 
     public void test() {
-        ReadAllQuery query = new ReadAllQuery();
-        query.addAscendingOrdering("budget");
-        query.setReferenceClass(LargeProject.class);
-
-        orderedQueryObjects = (Vector)getSession().executeQuery(query);
-
+    	orderedQueryObjects = executeOrderingQuery(LargeProject.class, "budget");
     }
+
+    protected Vector executeOrderingQuery(Class class1, String orderField) {
+    	ReadAllQuery query = new ReadAllQuery();
+    	query.addAscendingOrdering(orderField);
+    	query.setReferenceClass(class1);
+
+    	return (Vector)getSession().executeQuery(query);
+	}
 
     protected void verify() {
         Record row;
-        LargeProject lproject;
+        org.eclipse.persistence.testing.models.employee.domain.Project project;
         String name;
 
         for (int i = 0; i < orderedQueryObjects.size(); i++) {
             row = (Record)customSQLRows.elementAt(i);
-            lproject = (LargeProject)orderedQueryObjects.elementAt(i);
+            project = (org.eclipse.persistence.testing.models.employee.domain.Project)orderedQueryObjects.elementAt(i);
             name = (String)row.get("PROJ_NAME");
 
-            if (!(lproject.getName().equals(name))) {
+            if (!(project.getName().equals(name))) {
                 throw new TestErrorException("The ordering test failed.  The results are not in the right order");
             }
         }

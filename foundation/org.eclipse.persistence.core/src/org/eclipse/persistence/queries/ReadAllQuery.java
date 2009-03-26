@@ -210,6 +210,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
         getOrderByExpressions().addElement(orderingExpression);
         //Bug2804042 Must un-prepare if prepared as the SQL may change.
         setIsPrepared(false);
+        setShouldOuterJoinSubclasses(true);
     }
 
     /**

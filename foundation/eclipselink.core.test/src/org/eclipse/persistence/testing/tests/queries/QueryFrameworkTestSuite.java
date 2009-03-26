@@ -136,6 +136,7 @@ public class QueryFrameworkTestSuite extends TestSuite {
 
         addTest(new OrderingTest());
         addTest(new OrderingMutipleTableTest());
+        addTest(new OrderingSuperClassTest());
         addTest(new OrderingByExpressionTest());
         addTest(new OrderingWithAnyOfTest());
         addTest(new ShallowRefreshTest());
