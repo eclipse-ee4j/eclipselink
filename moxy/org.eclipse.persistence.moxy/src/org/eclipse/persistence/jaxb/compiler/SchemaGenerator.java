@@ -329,7 +329,12 @@ public class SchemaGenerator {
                 if (!isChoice && helper.isAnnotationPresent(next.getElement(), XmlElementWrapper.class)) {
                     XmlElementWrapper wrapper = (XmlElementWrapper) helper.getAnnotation(next.getElement(), XmlElementWrapper.class);
                     Element wrapperElement = new Element();
-                    wrapperElement.setName(wrapper.name());
+                    String name = wrapper.name();
+                    if(name.equals("##default")) {
+                        name = next.getPropertyName();
+                    }
+
+                    wrapperElement.setName(name);
                     wrapperElement.setMinOccurs("0");
                     compositor.addElement(wrapperElement);
                     ComplexType wrapperType = new ComplexType();
@@ -398,7 +403,8 @@ public class SchemaGenerator {
                     if(lookupNamespace == null){
                     	lookupNamespace ="";
                     }
-                    NamespaceInfo namespaceInfo = getNamespaceInfoForNamespace(lookupNamespace);                     
+                    NamespaceInfo namespaceInfo = getNamespaceInfoForNamespace(lookupNamespace); 
+                    boolean isAttributeFormQualified = true;
                     if((namespaceInfo.isAttributeFormQualified() && !attributeName.getNamespaceURI().equals(lookupNamespace))
                     		|| (!namespaceInfo.isAttributeFormQualified() && !attributeName.getNamespaceURI().equals(""))){
                     
@@ -641,9 +647,12 @@ public class SchemaGenerator {
                     	lookupNamespace ="";
                     }
                     NamespaceInfo namespaceInfo = getNamespaceInfoForNamespace(lookupNamespace);     
-                    
-                    if((namespaceInfo.isElementFormQualified() && !elementName.getNamespaceURI().equals(lookupNamespace))
-                    		|| (!namespaceInfo.isElementFormQualified() && !elementName.getNamespaceURI().equals(""))){
+                    boolean isElementFormQualified = false;
+                    if(namespaceInfo != null) {
+                        isElementFormQualified = namespaceInfo.isElementFormQualified();
+                    }
+                    if((isElementFormQualified && !elementName.getNamespaceURI().equals(lookupNamespace))
+                    		|| (!isElementFormQualified && !elementName.getNamespaceURI().equals(""))){
                         Element reference = new Element();
                         reference.setMinOccurs(element.getMinOccurs());
                         reference.setMaxOccurs(element.getMaxOccurs());

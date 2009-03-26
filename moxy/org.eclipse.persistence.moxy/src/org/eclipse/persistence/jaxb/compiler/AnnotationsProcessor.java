@@ -465,6 +465,11 @@ public class AnnotationsProcessor {
                             String name = next.name();
                             String namespace = next.namespace();
                             QName qName = null;
+                            
+                            if(name.equals("##default")) {
+                                name = nextField.getName();
+                            }
+
                             if (!namespace.equals("##default")) {
                                 qName = new QName(namespace, name);
                             } else {
@@ -485,6 +490,8 @@ public class AnnotationsProcessor {
                                 	if(type.hasActualTypeArguments()) {
                                 		JavaClass itemType = (JavaClass)type.getActualTypeArguments().toArray()[0];
                                         choiceProp.setType(itemType);
+                                    } else {
+                                        choiceProp.setType(helper.getJavaClass("java.lang.Object"));
                                     }
                                  }else{
                                    	choiceProp.setType(type);	
@@ -690,7 +697,7 @@ public class AnnotationsProcessor {
             propertyName = Character.toLowerCase(propertyName.charAt(0)) + propertyName.substring(1);
             
             JavaClass[] paramTypes = { (JavaClass) getMethod.getReturnType() };
-            JavaMethod setMethod = cls.getMethod(setMethodName, paramTypes);
+            JavaMethod setMethod = cls.getDeclaredMethod(setMethodName, paramTypes);
             JavaMethod propertyMethod = null;
             if (setMethod != null && !setMethod.getAnnotations().isEmpty()) {
                 // use the set method if it exists and is annotated
@@ -796,6 +803,9 @@ public class AnnotationsProcessor {
                     String name = next.name();
                     String namespace = next.namespace();
                     QName qName = null;
+                    if(name.equals("##defualt")) {
+                        name = propertyName;
+                    }
                     if (!namespace.equals("##default")) {
                         qName = new QName(namespace, name);
                     } else {
@@ -1415,7 +1425,8 @@ public class AnnotationsProcessor {
                 || helper.isAnnotationPresent(elem, XmlElements.class)
                 || helper.isAnnotationPresent(elem, XmlElementRef.class)
                 || helper.isAnnotationPresent(elem, XmlElementRefs.class)
-                || helper.isAnnotationPresent(elem, XmlID.class)) {
+                || helper.isAnnotationPresent(elem, XmlID.class)
+                || helper.isAnnotationPresent(elem, XmlSchemaType.class)) {
            
                 return true;
         }
