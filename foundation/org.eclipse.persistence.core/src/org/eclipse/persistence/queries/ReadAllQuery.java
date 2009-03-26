@@ -209,6 +209,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
     public void addOrdering(Expression orderingExpression) {
         getOrderByExpressions().addElement(orderingExpression);
         //Bug2804042 Must un-prepare if prepared as the SQL may change.
+        setShouldOuterJoinSubclasses(true);
         setIsPrepared(false);
     }
 
