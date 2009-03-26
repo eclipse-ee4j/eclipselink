@@ -69,7 +69,7 @@ public class AnnotationsProcessor {
     private HashMap<String, MarshalCallback> marshalCallbacks;
     private HashMap<String, QName> userDefinedSchemaTypes;
     private HashMap<String, TypeInfo> typeInfo;
-    private HashMap<QName, TypeInfo> typeInfoByQName;
+    private ArrayList<QName> typeQNames;
     private HashMap<String, UnmarshalCallback> unmarshalCallbacks;
     private HashMap<QName, ElementDeclaration> globalElements;
     private HashMap<String, ElementDeclaration> xmlRootElements;
@@ -84,7 +84,7 @@ public class AnnotationsProcessor {
     public void processClassesAndProperties(JavaClass[] classes) {
         typeInfoClasses = new ArrayList<JavaClass>();
         typeInfo = new HashMap<String, TypeInfo>();
-        typeInfoByQName = new HashMap<QName, TypeInfo>();
+        typeQNames = new ArrayList<QName>();        
         userDefinedSchemaTypes = new HashMap<String, QName>();
         packageToNamespaceMappings = new HashMap<String, NamespaceInfo>(); 
         this.factoryMethods = new HashMap<String, JavaMethod>();
@@ -159,7 +159,7 @@ public class AnnotationsProcessor {
             // this is the first class. Initialize all the properties
             this.typeInfoClasses = new ArrayList<JavaClass>();
             this.typeInfo = new HashMap<String, TypeInfo>();
-            this.typeInfoByQName = new HashMap<QName, TypeInfo>();
+            this.typeQNames = new ArrayList<QName>();
             this.userDefinedSchemaTypes = new HashMap<String, QName>();
             this.packageToNamespaceMappings = new HashMap<String, NamespaceInfo>(); 
             this.namespaceResolver = new NamespaceResolver();
@@ -329,12 +329,14 @@ public class AnnotationsProcessor {
         
         typeInfoClasses.add(javaClass);
         typeInfo.put(javaClass.getQualifiedName(), info);
-        QName typeQName = new QName(packageNamespace.getNamespace(), typeName);
-        TypeInfo lookedUpTypeInfo = typeInfoByQName.get(typeQName);
-        if(lookedUpTypeInfo == null){
-        	typeInfoByQName.put(typeQName, info);
-        }else{
-        	throw JAXBException.nameCollision(typeQName.getNamespaceURI(), typeQName.getLocalPart());
+        if(typeName!= null && !("".equals(typeName))){
+        	QName typeQName = new QName(packageNamespace.getNamespace(), typeName);
+        	boolean containsQName = typeQNames.contains(typeQName);
+        	if(containsQName){
+        		throw JAXBException.nameCollision(typeQName.getNamespaceURI(), typeQName.getLocalPart());
+        	}else{
+        		typeQNames.add(typeQName);        	
+       		}        	
         }
         if (helper.isAnnotationPresent(javaClass, XmlAccessorType.class)) {
             XmlAccessorType accessorType = (XmlAccessorType) helper.getAnnotation(javaClass, XmlAccessorType.class);

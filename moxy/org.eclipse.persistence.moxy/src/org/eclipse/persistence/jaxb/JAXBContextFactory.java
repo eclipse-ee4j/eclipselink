@@ -65,8 +65,10 @@ public class JAXBContextFactory {
         javax.xml.bind.JAXBContext jaxbContext = null;
         XMLContext xmlContext = null;
         JaxbClassLoader loader = new JaxbClassLoader(classLoader);
+        
         try {
-            Generator generator = new Generator(new JavaModelInputImpl(classesToBeBound, new JavaModelImpl(loader)));        
+            Generator generator = new Generator(new JavaModelInputImpl(classesToBeBound, new JavaModelImpl(loader)));
+            	
             Project proj = generator.generateProject();
             ConversionManager conversionManager = null;
             if (classLoader != null) {
@@ -87,7 +89,7 @@ public class JAXBContextFactory {
             xmlContext = new XMLContext(proj, loader);
             jaxbContext = new org.eclipse.persistence.jaxb.JAXBContext(xmlContext, generator);
         } catch (Exception ex) {
-            throw new JAXBException(ex);
+            throw new JAXBException(ex.getMessage() ,ex);
         }
         return jaxbContext;
 
