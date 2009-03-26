@@ -79,7 +79,7 @@ public class WebLogicPlatform extends ServerPlatformBase {
      * 
      * There are 4 levels of implementation.
      * 1) use the property override weblogic.applicationName, or
-     * 2) perform a reflective weblogic.work.executeThreadRuntime.getApplicationName() call (build 10.3.3.1), or
+     * 2) perform a reflective weblogic.work.executeThreadRuntime.getApplicationName() call (build 10.3+), or
      * 3) extract the moduleName:persistence_unit from the weblogic classloader string representation (build 10.3), or
      * 3) defer to superclass - usually return "unknown"
      *

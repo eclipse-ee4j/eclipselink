@@ -291,7 +291,7 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform {
      * 
      * There are 4 levels of implementation.
      * 1) use the property override weblogic.moduleName, or
-     * 2) perform a reflective weblogic.work.executeThreadRuntime.getModuleName() call (build 10.3.3.1), or
+     * 2) perform a reflective weblogic.work.executeThreadRuntime.getModuleName() call (build 10.3+), or
      * 3) extract the moduleName:persistence_unit from the weblogic classloader string representation (build 10.3), or
      * 3) defer to superclass - usually return "unknown"
      *
@@ -309,7 +309,7 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform {
      * 
      * There are 4 levels of implementation.
      * 1) use the property override weblogic.applicationName, or
-     * 2) perform a reflective weblogic.work.executeThreadRuntime.getApplicationName() call (build 10.3.3.1), or
+     * 2) perform a reflective weblogic.work.executeThreadRuntime.getApplicationName() call (build 10.3+), or
      * 3) extract the moduleName:persistence_unit from the weblogic classloader string representation (build 10.3), or
      * 3) defer to superclass - usually return "unknown"
      *
@@ -334,7 +334,7 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform {
         } else {
         	jpaModuleName = getNameFromWeblogic(WLS_MODULE_NAME_GET_METHOD_NAME);
             
-            // If we are running a version of WebLogic 10.3 that does not support ExecuteThreadRuntime (from 10.3.3.1) then use the ClassLoader                    
+            // If we are running a version of WebLogic 10.3 that does not support ExecuteThreadRuntime (from 10.3+) then use the ClassLoader                    
             if(null != jpaModuleName && jpaModuleName.indexOf("@") != -1) {
                 this.moduleName = jpaModuleName.substring(jpaModuleName.indexOf("@") + 1);
             } else {
@@ -352,7 +352,7 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform {
                  jpaModuleName = super.getApplicationName();
              }
             
-            // If we are running a version of WebLogic 10.3 that does not support ExecuteThreadRuntime (from 10.3.3.1) then use the ClassLoader                    
+            // If we are running a version of WebLogic 10.3 that does not support ExecuteThreadRuntime (from 10.3+) then use the ClassLoader                    
             if(null != jpaApplicationName && jpaApplicationName.indexOf("@") > -1) {
                 this.applicationName = jpaApplicationName.substring(jpaApplicationName.indexOf("@") + 1);
             } else {
@@ -403,7 +403,7 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform {
                 }
                 
                 if(classLoaderOrString instanceof ClassLoader) {
-                    // If we are running a version of WebLogic 10.3 that does not support ExecuteThreadRuntime (from 10.3.3.1) then use the ClassLoader                    
+                    // If we are running a version of WebLogic 10.3 that does not support ExecuteThreadRuntime (from 10.3+) then use the ClassLoader                    
                     String jpaModuleNameRoot = ((ClassLoader)classLoaderOrString).toString();
                     classLoaderOrString = jpaModuleNameRoot.substring(jpaModuleNameRoot.indexOf(
                             WLS_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_PREFIX) + 
