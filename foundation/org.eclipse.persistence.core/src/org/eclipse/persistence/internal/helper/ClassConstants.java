@@ -15,6 +15,8 @@ package org.eclipse.persistence.internal.helper;
 import java.util.*;
 import java.math.*;
 
+import javax.xml.datatype.Duration;
+import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
 
 import org.w3c.dom.Document;
@@ -120,6 +122,8 @@ public class ClassConstants {
     public static final Class TIMESTAMP = java.sql.Timestamp.class;
     public static final Class UTILDATE = java.util.Date.class;
     public static final Class QNAME = QName.class;
+    public static final Class XML_GREGORIAN_CALENDAR = XMLGregorianCalendar.class;
+    public static final Class DURATION = Duration.class;    
 
     //LOB support types
     public static final Class BLOB = java.sql.Blob.class;

@@ -24,6 +24,7 @@ public class XMLConversionManagerTestSuite extends TestCase {
         suite.addTestSuite(Base64TestCases.class);
         suite.addTestSuite(ListTestCases.class);
         suite.addTestSuite(DoubleToBigDecimalTestCases.class);
+        suite.addTestSuite(XMLGregorianCalendarTestCases.class);
 
         return suite;
     }
