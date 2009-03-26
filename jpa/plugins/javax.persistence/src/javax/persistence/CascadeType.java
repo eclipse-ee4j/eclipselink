@@ -49,8 +49,8 @@ public enum CascadeType {
     /** Cascade refresh operation */
     REFRESH,
     /**
-     * Cascade clear operation 
+     * Cascade detach operation
      * @since Java Persistence API 2.0
      * */   
-    CLEAR
+    DETACH
 }

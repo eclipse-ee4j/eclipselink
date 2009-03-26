@@ -179,12 +179,12 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testPrimaryKeyUpdateSameValue"));
         suite.addTest(new EntityManagerJUnitTestSuite("testPrimaryKeyUpdate"));
         suite.addTest(new EntityManagerJUnitTestSuite("testRemoveNull"));
-        suite.addTest(new EntityManagerJUnitTestSuite("testClearNull"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testDetachNull"));
         suite.addTest(new EntityManagerJUnitTestSuite("testContainsNull"));
         suite.addTest(new EntityManagerJUnitTestSuite("testPersistNull"));
         suite.addTest(new EntityManagerJUnitTestSuite("testMergeNull"));
         suite.addTest(new EntityManagerJUnitTestSuite("testMergeRemovedObject"));
-        suite.addTest(new EntityManagerJUnitTestSuite("testClearRemovedObject"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testDetachRemovedObject"));
         suite.addTest(new EntityManagerJUnitTestSuite("testMergeDetachedObject"));
         suite.addTest(new EntityManagerJUnitTestSuite("testSerializedLazy"));
         suite.addTest(new EntityManagerJUnitTestSuite("testCloneable"));
@@ -207,7 +207,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testBeginTransactionClose"));
         suite.addTest(new EntityManagerJUnitTestSuite("testClose"));
         suite.addTest(new EntityManagerJUnitTestSuite("testPersistOnNonEntity"));
-        suite.addTest(new EntityManagerJUnitTestSuite("testClearNonEntity"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testDetachNonEntity"));
         suite.addTest(new EntityManagerJUnitTestSuite("testWRITELock"));
         /* KERNEL-SRG-TEMP
         suite.addTest(new EntityManagerJUnitTestSuite("testOPTIMISTIC_FORCE_INCREMENTLock"));
@@ -235,10 +235,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testCheckVersionOnMerge"));
         suite.addTest(new EntityManagerJUnitTestSuite("testFindWithNullPk"));
         suite.addTest(new EntityManagerJUnitTestSuite("testFindWithWrongTypePk"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testFindWithProperties"));
         suite.addTest(new EntityManagerJUnitTestSuite("testPersistManagedNoException"));
         suite.addTest(new EntityManagerJUnitTestSuite("testPersistManagedException"));
-        suite.addTest(new EntityManagerJUnitTestSuite("testClearManagedObject"));
-        suite.addTest(new EntityManagerJUnitTestSuite("testClearNonManagedObject"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testDetachManagedObject"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testDetachNonManagedObject"));
         suite.addTest(new EntityManagerJUnitTestSuite("testPersistRemoved"));
         /* KERNEL-SRG-TEMP
         suite.addTest(new EntityManagerJUnitTestSuite("testREADLock"));
@@ -1791,7 +1792,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         assertFalse("EntityExistsException was thrown for a registered Employee.", caughtException);
     }
 
-    public void testClearManagedObject() {
+    public void testDetachManagedObject() {
         EntityManager em = createEntityManager();
 
         // create test data
@@ -1802,10 +1803,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         Integer id = emp.getId();
         commitTransaction(em);
 
-        // Test that clear removes it from the persistence context
+        // Test that 'detach()' removes 'emp' from the persistence context
         beginTransaction(em);
-        em.clear(emp);
-        assertFalse("could not clear managed object", em.contains(emp));
+        em.detach(emp);
+        assertFalse("could not detach managed object", em.contains(emp));
 
         // clean up 
         emp = em.find(Employee.class, id);
@@ -1813,8 +1814,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         commitTransaction(em);
     }
 
-    //clearing an non-managed object should not throw any exception.
-    public void testClearNonManagedObject() {
+    //detaching an non-managed object should not throw any exception.
+    public void testDetachNonManagedObject() {
         EntityManager em = createEntityManager();
 
         // Create test data
@@ -1823,14 +1824,14 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         emp.setFirstName("beforePersist");
         boolean caughtException = false;
 
-        // Clear the object
-        em.clear(emp);
+        // detach the object
+        em.detach(emp);
         em.persist(emp);
 
         // Deleting the object
         em.remove(emp);
         commitTransaction(em);
-        assertFalse("Cannot_clear_Object Exception was thrown for a non-managed Entity", caughtException);
+        assertFalse("Cannot_detach_Object Exception was thrown for a non-managed Entity", caughtException);
     }
 
     // test for bug 4676587: 
@@ -2005,6 +2006,32 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
         fail("No exception thrown when null PK used in find operation.");
     }
+
+    public void testFindWithProperties(){
+        Employee employee = new Employee();
+        employee.setFirstName("Marc");
+        HashMap queryhints=new  HashMap();
+        EntityManager em = createEntityManager();
+        try {
+          beginTransaction(em);
+          em.persist(employee);
+          commitTransaction(em);
+          beginTransaction(em);
+          int empId=employee.getId();
+          Employee e1=em.find(Employee.class,empId);
+          e1.setFirstName("testfind");
+          queryhints.put(QueryHints.REFRESH, "TRUE");
+          Employee e2=em.find(Employee.class,empId ,queryhints);
+          assertFalse(e2.getFirstName().equals("testfind"));
+          commitTransaction(em);
+        } catch (IllegalArgumentException iae) {
+            return;
+        } catch (Exception e) {
+            fail("Wrong exception type thrown: " + e.getClass());
+        }finally{
+            closeEntityManager(em);
+        }
+      }
 
     public void testCheckVersionOnMerge() {
         Employee employee = new Employee();
@@ -3386,15 +3413,15 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         Assert.assertTrue(testPass);
     }
 
-    //Clear(nonentity) throws illegalArgumentException
-    public void testClearNonEntity()
+    //detach(nonentity) throws illegalArgumentException
+    public void testDetachNonEntity()
     {
         boolean testPass = false;
         Object nonEntity = new Object();
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
-            em.clear(nonEntity);
+            em.detach(nonEntity);
         } catch (IllegalArgumentException e) {
             testPass = true;
         } finally {
@@ -4719,13 +4746,13 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         } 
     }
 
-    //Clear(object) on a removed object does not throw exception. This test only
+    //detach(object) on a removed object does not throw exception. This test only
     //checks whether an removed object is completely deleted from the
-    //getDeletedObject()Map after 'clear(removedobject)' is invoked
-    public void testClearRemovedObject() {
+    //getDeletedObject()Map after 'detach(removedobject)' is invoked
+    public void testDetachRemovedObject() {
         //create an Employee
         Employee emp = new Employee();
-        emp.setFirstName("testClearRemovedObjectEmployee");
+        emp.setFirstName("testDetachRemovedObjectEmployee");
         emp.setId(71);
 
         //persist the Employee
@@ -4747,11 +4774,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         commitTransaction(em);
         beginTransaction(em);
         try{  
-            em.clear(emp);    //then attempt to clear the Employee
+            em.detach(emp);    //attempt to detach the Employee
             UnitOfWork uow=em1.getUnitOfWork();
             UnitOfWorkImpl uowImpl=(UnitOfWorkImpl)uow;
             boolean afterClear=uowImpl.getDeletedObjects().containsKey(emp);
-            assertFalse("exception thrown when clearing a removed entity is attempted.",afterClear);
+            assertFalse("exception thrown when detaching a removed entity is attempted.",afterClear);
         }catch (IllegalArgumentException iae){
             return;
         }catch (Exception e) {
@@ -4915,12 +4942,12 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         fail("No exception thrown when entityManager.contains(null) attempted.");        
     }
 
-    //Clear(null) should throw IllegalArgumentException
-    public void testClearNull() {
+    //detach(null) should throw IllegalArgumentException
+    public void testDetachNull() {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
-            em.clear(null);
+            em.detach(null);
         } catch (IllegalArgumentException iae) {
             return;
         } catch (Exception e) {
@@ -4929,7 +4956,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             rollbackTransaction(em);
             closeEntityManager(em);
         }
-        fail("No exception thrown when entityManager.clear(null) attempted.");
+        fail("No exception thrown when entityManager.detach(null) attempted.");
     }
 
     //bug gf732 - removing null entity should throw an IllegalArgumentException

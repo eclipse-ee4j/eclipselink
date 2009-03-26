@@ -370,9 +370,32 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 	 *             second argument is not a valid type for that entity's primary
 	 *             key.
 	 */
-	public <T> T find(Class<T> entityClass, Object primaryKey) {
-		return find(entityClass, primaryKey, null, null);
-	}
+	   public <T> T find(Class<T> entityClass, Object primaryKey) {
+        return find(entityClass, primaryKey, null, null);
+    }
+    
+    /**
+     * Find by primary key, using the specified properties.
+     * Search for an entity of the specified class and primary key.
+     * If the entity instance is contained in the persistence context
+     * it is returned from there.
+     * If a vendor-specific property or hint is not recognized,
+     * it is silently ignored.
+     * @param entityClass
+     * @param primaryKey
+     * @param properties standard and vendor-specific properties
+     * @return the found entity instance or null
+     * if the entity does not exist
+     * @throws IllegalArgumentException if the first argument does
+     * not denote an entity type or the second argument is
+     * is not a valid type for that entity’s primary key or
+     * is null
+     *
+     * @since Java Persistence API 2.0
+     */
+    public <T> T find(Class<T> entityClass, Object primaryKey, Map<String, Object> properties) {
+           return find(entityClass,primaryKey,null,properties);
+    }
 
 	/**
 	 * Find by primary key and lock. Search for an entity of the specified class
@@ -647,13 +670,34 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 
 	/**
 	 * Refresh the state of the instance from the database.
-	 *
-	 * @param entity
-	 *            instance registered in the current persistence context.
+	 * @param entity instance registered in the current persistence context.
 	 */
-	public void refresh(Object entity) {
-		refresh(entity, null);
-	}
+	   public void refresh(Object entity) {
+        refresh(entity, null, null);
+    }
+
+    /**
+     * Refresh the state of the instance from the database, using
+     * the specified properties, and overwriting changes made to
+     * the entity, if any.
+     * If a vendor-specific property or hint is not recognized,
+     * it is silently ignored.
+     * @param entity
+     * @param properties standard and vendor-specific properties
+     * @throws IllegalArgumentException if the instance is not
+     * an entity or the entity is not managed
+     * @throws TransactionRequiredException if invoked on a
+     * container-managed entity manager of type
+     * PersistenceContextType.TRANSACTION and there is
+     * no transaction.
+     * @throws EntityNotFoundException if the entity no longer
+     * exists in the database
+     *
+     * @since Java Persistence API 2.0
+     */
+     public void refresh(Object entity, Map<String, Object> properties) {
+        refresh(entity, null, properties);
+    }
 
 	/**
 	 * Refresh the state of the instance from the database, overwriting changes
@@ -1482,7 +1526,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 				this.shouldValidateExistence = "true".equalsIgnoreCase(shouldValidateExistence);
 			}
 			String flushClearCache = getPropertiesHandlerProperty(EntityManagerProperties.FLUSH_CLEAR_CACHE);
-			if (shouldValidateExistence != null) {
+			if (flushClearCache != null) {
 				this.flushClearCache = flushClearCache;
 			}
 		}
@@ -1829,13 +1873,20 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 		}
 	}
 
-	   /**
-     * Remove the given entity from the persistence context, causing
-     * a managed entity to become detached. Unflushed changes made
-     * to the entity if any (including removal of the entity),
-     * will not be synchronized to the database.
-     */
-    public void clear(Object entity) {
+	 /**
+      * Remove the given entity from the persistence context, causing
+      * a managed entity to become detached. Unflushed changes made
+      * to the entity if any (including removal of the entity),
+      * will not be synchronized to the database. Entities which
+      * previously referenced the detached entity will continue to
+      * reference it.
+      * @param entity
+      * @throws IllegalArgumentException if the instance is not an
+      * entity
+      *
+      * @since Java Persistence API 2.0
+      */
+    public void detach(Object entity) {
         try {
             verifyOpen();
             if (entity == null) {
@@ -1878,6 +1929,8 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * @return EntityManagerFactory instance
      * @throws IllegalStateException if the entity manager has
      * been closed.
+     *
+     * @since Java Persistence API 2.0
      */
     public EntityManagerFactory getEntityManagerFactory() {
         try {
@@ -1930,10 +1983,16 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * Get the properties and associated values that are in effect
      * for the entity manager. Changing the contents of the map does
      * not change the configuration in effect.
+     *
+     * @since Java Persistence API 2.0
      */
     public Map<String, Object> getProperties() {
-        Map propertyValue = new HashMap<String, Object>(this.factory.getServerSession().getProperties());
-        return Collections.unmodifiableMap(propertyValue);
+     Map sessionMap=new HashMap(this.getServerSession().getProperties());
+     if(this.properties!=null){
+         sessionMap.putAll(this.properties);
+     }
+      return Collections.unmodifiableMap(sessionMap);
+
     }
 
     /**
@@ -1947,6 +2006,8 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * supported by the provider. These properties may or may not
      * currently be in effect.
      * @return property names
+     *
+     * @since Java Persistence API 2.0
      */
     public Set<String> getSupportedProperties() {
 
@@ -1964,6 +2025,8 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * @return an instance of the specified class
      * @throws PersistenceException if the provider does not
      * support the call.
+     *
+     * @since Java Persistence API 2.0
      */
     public <T> T unwrap(Class<T> cls) {
         try {

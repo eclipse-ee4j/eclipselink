@@ -119,6 +119,27 @@ public interface EntityManager {
 	 */
 	public <T> T find(Class<T> entityClass, Object primaryKey);
 
+    /**
+     * Find by primary key, using the specified properties.
+     * Search for an entity of the specified class and primary key.
+     * If the entity instance is contained in the persistence context
+     * it is returned from there.
+     * If a vendor-specific property or hint is not recognized,
+     * it is silently ignored.
+     * @param entityClass
+     * @param primaryKey
+     * @param properties standard and vendor-specific properties
+     * @return the found entity instance or null
+     * if the entity does not exist
+     * @throws IllegalArgumentException if the first argument does
+     * not denote an entity type or the second argument is
+     * is not a valid type for that entity’s primary key or
+     * is null
+     * @since Java Persistence API 2.0
+     */
+    public <T> T find(Class<T> entityClass, Object primaryKey,
+                               Map<String, Object> properties);
+
 	/**
 	 * Find by primary key and lock. Search for an entity of the specified class
 	 * and primary key and lock it with respect to the specified lock type. If
@@ -312,6 +333,26 @@ public interface EntityManager {
 	 */
 	public void refresh(Object entity);
 
+    /**
+     * Refresh the state of the instance from the database, using
+     * the specified properties, and overwriting changes made to
+     * the entity, if any.
+     * If a vendor-specific property or hint is not recognized,
+     * it is silently ignored.
+     * @param entity
+     * @param properties standard and vendor-specific properties
+     * @throws IllegalArgumentException if the instance is not
+     * an entity or the entity is not managed
+     * @throws TransactionRequiredException if invoked on a
+     * container-managed entity manager of type
+     * PersistenceContextType.TRANSACTION and there is
+     * no transaction.
+     * @throws EntityNotFoundException if the entity no longer
+     * exists in the database
+     * @since Java Persistence API 2.0
+     */
+    public void refresh(Object entity,
+                          Map<String, Object> properties);
 	/**
 	 * Refresh the state of the instance from the database, overwriting changes
 	 * made to the entity, if any, and lock it with respect to given lock mode
@@ -394,17 +435,19 @@ public interface EntityManager {
 	public void clear();
 
 	/**
-	 * Remove the given entity from the persistence context, causing a managed
-	 * entity to become detached. Changes made to the entity that have not been
-	 * flushed, if any (including removal of the entity), will not be
-	 * synchronized to the database.
-	 *
-	 * @param entity
-	 * @throws IllegalArgumentException
-	 *             if the instance is not an entity
-	 * @since Java Persistence API 2.0
-	 */
-	public void clear(Object entity);
+     * Remove the given entity from the persistence context, causing
+     * a managed entity to become detached. Unflushed changes made
+     * to the entity if any (including removal of the entity),
+     * will not be synchronized to the database. Entities which
+     * previously referenced the detached entity will continue to
+     * reference it.
+     * @param entity
+     * @throws IllegalArgumentException if the instance is not an
+     * entity
+     *
+     * @since Java Persistence API 2.0
+     */
+    public void detach(Object entity);
 
 	/**
 	 * Check if the instance belongs to the current persistence context.
@@ -433,7 +476,7 @@ public interface EntityManager {
 	 */
 	public LockModeType getLockMode(Object entity);
 
-	/**
+    /**
 	 * Get the properties and associated values that are in effect for the
 	 * entity manager. Changing the contents of the map does not change the
 	 * configuration in effect.
