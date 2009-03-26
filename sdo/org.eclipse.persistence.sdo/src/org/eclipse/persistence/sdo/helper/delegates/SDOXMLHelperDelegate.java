@@ -699,15 +699,17 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
     public void setHelperContext(HelperContext helperContext) {
         aHelperContext = helperContext;
     }
-    
-    private void handleXMLMarshalException(XMLMarshalException xmlException) {    
+
+    private void handleXMLMarshalException(XMLMarshalException xmlException) throws IOException {
         if(xmlException.getErrorCode() == XMLMarshalException.NO_DESCRIPTOR_WITH_MATCHING_ROOT_ELEMENT || xmlException.getErrorCode() == XMLMarshalException.DESCRIPTOR_NOT_FOUND_IN_PROJECT){
-            throw SDOException.globalPropertyNotFound();                       
-        }else{
+            throw SDOException.globalPropertyNotFound();
+        } else if (xmlException.getCause() instanceof IOException) {
+            throw (IOException) xmlException.getCause();
+        } else{
             throw xmlException;
         }
     }
-    
+
     public XMLConversionManager getXmlConversionManager() {
         return (XMLConversionManager)getXmlContext().getSession(0).getDatasourceLogin().getDatasourcePlatform().getConversionManager();
     }

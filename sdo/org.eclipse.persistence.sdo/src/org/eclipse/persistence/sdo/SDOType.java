@@ -28,7 +28,9 @@ import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
 import org.eclipse.persistence.sdo.helper.SDOXMLHelper;
 import org.eclipse.persistence.sdo.helper.SDOXSDHelper;
 import org.eclipse.persistence.sdo.helper.extension.SDOUtil;
+import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.SDOException;
+import org.eclipse.persistence.internal.descriptors.InstantiationPolicy;
 import org.eclipse.persistence.internal.descriptors.Namespace;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.oxm.InheritanceNodeValue;
@@ -808,6 +810,10 @@ public class SDOType implements Type, Serializable {
         }
         if(!isDataType()) {
             getImplClass();
+            if(!isAbstract() && !isWrapperType()) {
+                TypeInstantiationPolicy tip = new TypeInstantiationPolicy(this);
+                this.xmlDescriptor.setInstantiationPolicy(tip);
+            }
         }
     }
 
@@ -847,7 +853,7 @@ public class SDOType implements Type, Serializable {
         return javaImplClass;
     }
 
-    public Object get(Property property) {        
+    public Object get(Property property) {
         return getPropertyValues().get(property);
     }
 
@@ -1071,6 +1077,24 @@ public class SDOType implements Type, Serializable {
 
     public boolean isOpenSequencedType() {
         return false;
+    }
+
+    public boolean isWrapperType() {
+        return false;
+    }
+
+    public static class TypeInstantiationPolicy extends InstantiationPolicy {
+
+        SDOType sdoType;
+
+        public TypeInstantiationPolicy(SDOType type) {
+            sdoType = type;
+        }
+
+        public Object buildNewInstance() throws DescriptorException {
+            return sdoType.getHelperContext().getDataFactory().create(sdoType);
+        }
+
     }
 
 }

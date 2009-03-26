@@ -25,6 +25,8 @@ public class SDOXMLHelperLoadOptionsType extends SDOType implements Type {
     public SDOXMLHelperLoadOptionsType(SDOTypeHelper sdoTypeHelper, SDOType typeType) {
         super(SDOConstants.ORACLE_SDO_URL, SDOConstants.XMLHELPER_LOAD_OPTIONS, sdoTypeHelper);
 
+        this.xmlDescriptor.setInstantiationPolicy(new TypeInstantiationPolicy(this));
+
         SDOProperty typeOptionProperty = new SDOProperty(aHelperContext);
         typeOptionProperty.setName(SDOConstants.TYPE_LOAD_OPTION);
         typeOptionProperty.setMany(false);

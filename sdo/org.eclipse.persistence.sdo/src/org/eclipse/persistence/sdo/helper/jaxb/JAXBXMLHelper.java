@@ -12,25 +12,8 @@
 ******************************************************************************/
 package org.eclipse.persistence.sdo.helper.jaxb;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-import java.io.StringReader;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.transform.Source;
-
-import org.eclipse.persistence.exceptions.SDOException;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
-import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
-import org.eclipse.persistence.oxm.XMLRoot;
-import org.eclipse.persistence.oxm.XMLUnmarshaller;
-import org.eclipse.persistence.sdo.helper.delegates.SDOXMLHelperDelegate;
-import org.xml.sax.InputSource;
-
-import commonj.sdo.DataObject;
 import commonj.sdo.helper.HelperContext;
-import commonj.sdo.helper.XMLDocument;
+import org.eclipse.persistence.sdo.helper.delegates.SDOXMLHelperDelegate;
 
 /**
  * This implementation of commonj.sdo.helper.XMLHelper is responsible for 
@@ -66,114 +49,6 @@ public class JAXBXMLHelper extends SDOXMLHelperDelegate {
     @Override
     public JAXBHelperContext getHelperContext() {
         return (JAXBHelperContext) super.getHelperContext();
-    }
-
-    @Override
-    public XMLDocument load(InputSource inputSource, String locationURI, Object options) throws IOException {
-        if(null == inputSource) {
-            return super.load(inputSource, locationURI, options);
-        }
-        try {
-            XMLRoot xmlRoot = (XMLRoot) createXMLUnmarshaller().unmarshal(inputSource);
-            return wrap(xmlRoot);
-        } catch (XMLMarshalException xmlMarshalException) {
-            return handleLoadException(xmlMarshalException);
-        }
-    }
-
-    @Override
-    public XMLDocument load(InputStream inputStream, String locationURI, Object options) throws IOException {
-        if(null == inputStream) {
-            return super.load(inputStream, locationURI, options);
-        }
-        return load(inputStream);
-    }
-
-    @Override
-    public XMLDocument load(InputStream inputStream) throws IOException {
-        if(null == inputStream) {
-            return super.load(inputStream);
-        }
-        try {
-            XMLRoot xmlRoot = (XMLRoot) createXMLUnmarshaller().unmarshal(inputStream);
-            return wrap(xmlRoot);
-        } catch(XMLMarshalException xmlMarshalException) {
-            return handleLoadException(xmlMarshalException);
-        }
-    }
-
-    @Override
-    public XMLDocument load(Reader inputReader, String locationURI, Object options) throws IOException {
-        if(null == inputReader) {
-            return super.load(inputReader, locationURI, options);
-        }
-        try {
-            XMLRoot xmlRoot = (XMLRoot) createXMLUnmarshaller().unmarshal(inputReader);
-            return wrap(xmlRoot);
-        } catch(XMLMarshalException xmlMarshalException) {
-            return handleLoadException(xmlMarshalException);
-        }
-    }
-
-    @Override
-    public XMLDocument load(Source source, String locationURI, Object options) throws IOException {
-        if(null == source) {
-            return super.load(source, locationURI, options);
-        }
-        try {
-            XMLRoot xmlRoot = (XMLRoot) createXMLUnmarshaller().unmarshal(source);
-            return wrap(xmlRoot);
-        } catch(XMLMarshalException xmlMarshalException) {
-            return handleLoadException(xmlMarshalException);
-        }
-    }
-
-    @Override
-    public XMLDocument load(String inputString) {
-        if(null == inputString) {
-            return super.load(inputString);
-        }
-        try {
-            StringReader reader = new StringReader(inputString);
-            return load(reader, null, null);
-        } catch(IOException e) {
-            return null;
-        }
-    }
-
-    private XMLUnmarshaller createXMLUnmarshaller() {
-        try {
-            JAXBUnmarshaller unmarshaller = (JAXBUnmarshaller) getHelperContext().getJAXBContext().createUnmarshaller();
-            XMLUnmarshaller xmlUnmarshaller = unmarshaller.getXMLUnmarshaller();
-            xmlUnmarshaller.setResultAlwaysXMLRoot(true);
-            return xmlUnmarshaller;
-        } catch(JAXBException e) {
-            throw SDOException.sdoJaxbErrorCreatingJAXBUnmarshaller(e);
-        }
-    }
-
-    /**
-     * Convert between an XMLRoot and an SDO  XMLDocument. 
-     */
-    private XMLDocument wrap(XMLRoot xmlRoot) {
-        DataObject dataObject = getHelperContext().wrap(xmlRoot.getObject());
-        XMLDocument xmlDocument =  getHelperContext().getXMLHelper().createDocument(dataObject, xmlRoot.getNamespaceURI(), xmlRoot.getLocalName());
-        xmlDocument.setEncoding(xmlRoot.getEncoding());
-        xmlDocument.setXMLVersion(xmlRoot.getXMLVersion());
-        xmlDocument.setSchemaLocation(xmlRoot.getSchemaLocation());
-        xmlDocument.setNoNamespaceSchemaLocation(xmlRoot.getNoNamespaceSchemaLocation());
-        return xmlDocument;
-    }
-
-    /**
-     * Convert the exception so that it is compatible with SDO. 
-     */
-    private XMLDocument handleLoadException(XMLMarshalException xmlMarshalException) throws IOException {
-        if(xmlMarshalException.getCause() instanceof IOException) {
-            throw (IOException) xmlMarshalException.getCause();
-        } else {
-            throw xmlMarshalException;
-        }
     }
 
 }

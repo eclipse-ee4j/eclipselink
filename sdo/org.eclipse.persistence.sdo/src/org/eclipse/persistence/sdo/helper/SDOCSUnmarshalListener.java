@@ -16,6 +16,7 @@ import commonj.sdo.Type;
 import commonj.sdo.helper.HelperContext;
 import org.eclipse.persistence.sdo.SDOChangeSummary;
 import org.eclipse.persistence.sdo.SDODataObject;
+import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.oxm.XMLUnmarshalListener;
 
 /**
@@ -40,16 +41,17 @@ public class SDOCSUnmarshalListener implements XMLUnmarshalListener {
 
     public void beforeUnmarshal(Object target, Object parent) {
         if (target instanceof SDODataObject) {
-            Type type = ((SDOTypeHelper) aHelperContext.getTypeHelper()).getTypeForImplClass(target.getClass());
-
-            // perform cleanup operations on objects that were instantiated with getInstance()
-            SDODataObject aDataObject = (SDODataObject)target;
-            // reset the HelperContext on target DataObject from default static context
-            // setting the Type requires a helpercontext so following 2 calls must be in this order
-            aDataObject._setHelperContext(aHelperContext);
-            aDataObject._setType(type);
+            SDOType type = ((SDOTypeHelper) aHelperContext.getTypeHelper()).getTypeForImplClass(target.getClass());
+            if(type.isWrapperType() || isCSUnmarshalListener) {
+                // perform cleanup operations on objects that were instantiated with getInstance()
+                SDODataObject aDataObject = (SDODataObject)target;
+                // reset the HelperContext on target DataObject from default static context
+                // setting the Type requires a helpercontext so following 2 calls must be in this order
+                aDataObject._setHelperContext(aHelperContext);
+                aDataObject._setType(type);
+            }
         } else if (target instanceof SDOChangeSummary) {
-            if (!isCSUnmarshalListener) {                     
+            if (!isCSUnmarshalListener) {
                 ((SDOChangeSummary)target).setHelperContext(aHelperContext);
             }
         }

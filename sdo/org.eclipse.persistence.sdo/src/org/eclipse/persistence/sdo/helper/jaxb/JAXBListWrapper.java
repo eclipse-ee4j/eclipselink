@@ -246,7 +246,6 @@ public class JAXBListWrapper extends ListWrapper {
 			        Object item = itemsIterator.next();
 			        if (item != null) {
 				        ((DataObject) item).set(oppositeProp, dataObject);
-			            dataObject.set(oppositeProp, null);
 			        }
 			    }
 		    }

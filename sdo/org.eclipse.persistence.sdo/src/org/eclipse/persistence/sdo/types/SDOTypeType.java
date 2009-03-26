@@ -37,10 +37,13 @@ public class SDOTypeType extends SDOType implements Type {
         Class implClass = getImplClass();
 
         xmlDescriptor.setJavaClass(implClass);
+        xmlDescriptor.setInstantiationPolicy(new TypeInstantiationPolicy(this));
         xmlDescriptor.setDefaultRootElement("sdo:type");
+
         XMLSchemaReference schemaReference = new XMLSchemaClassPathReference();
         schemaReference.setSchemaContext("/sdo:Type");
         xmlDescriptor.setSchemaReference(schemaReference);
+
         NamespaceResolver namespaceResolver = new NamespaceResolver();
         namespaceResolver.put(SDOConstants.SDO_PREFIX, SDOConstants.SDO_URL);
         SDOType propertyType = new SDOPropertyType(sdoTypeHelper, this);

@@ -46,7 +46,8 @@ public class XMLHelperProject extends Project {
         XMLDirectMapping nameMapping = new XMLDirectMapping();
         nameMapping.setAttributeName("name");
         nameMapping.setXPath("tns:name/text()");
-        
+        xmlDescriptor.addMapping(nameMapping);
+
         return xmlDescriptor;
     }
 

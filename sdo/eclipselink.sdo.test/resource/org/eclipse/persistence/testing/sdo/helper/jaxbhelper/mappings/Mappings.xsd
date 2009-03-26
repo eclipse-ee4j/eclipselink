@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema elementFormDefault="qualified" targetNamespace="urn:mappings" xmlns:tns="urn:mappings" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:sdox="commonj.sdo/xml">
         <xs:import namespace="commonj.sdo/xml" />
+        <xs:element name="root" type="root"/>
         <xs:complexType name="root">
                 <xs:sequence>
                         <xs:element name="name" type="xs:string"/>
@@ -22,7 +23,6 @@
                                 <xs:element name="child1" type="xs:IDREF" minOccurs="0" sdox:propertyType="tns:child1" sdox:oppositeProperty="child2"/>
                         </xs:sequence>
                         <xs:attribute name="id" type="xs:ID"/>
-                        <!-- xs:attribute name="child1" type="xs:IDREF" sdox:propertyType="tns:child1"/ -->
                 </xs:complexType>
         </xs:element>
 </xs:schema>

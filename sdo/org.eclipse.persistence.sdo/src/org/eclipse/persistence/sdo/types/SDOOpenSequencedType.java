@@ -29,6 +29,7 @@ public class SDOOpenSequencedType extends SDOType implements Type {
     public SDOOpenSequencedType(SDOTypeHelper sdoTypeHelper) {
         super(SDOConstants.ORACLE_SDO_URL, "OpenSequencedType", sdoTypeHelper);
         this.xmlDescriptor.setNamespaceResolver(new NamespaceResolver());
+        this.xmlDescriptor.setInstantiationPolicy(new TypeInstantiationPolicy(this));
 
         setInstanceClass(OpenSequencedType.class);
         setImplClassName(ORACLE_SDO_DO_URL + ".OpenSequencedTypeImpl");

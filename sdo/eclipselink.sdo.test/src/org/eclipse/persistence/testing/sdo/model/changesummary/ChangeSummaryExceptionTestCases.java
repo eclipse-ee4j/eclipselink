@@ -38,14 +38,13 @@ public class ChangeSummaryExceptionTestCases extends SDOTestCase {
 
         DataObject rootTypeDO = defineType("rootUri", "rootTypeName");
         addProperty(rootTypeDO, "csmProp", changeSummaryType, true, true, true);
-        SDOType rootType = (SDOType)typeHelper.define(rootTypeDO);
 
         try {
-            DataObject root = (SDODataObject)dataFactory.create(rootType);
-        } catch (IllegalArgumentException e) {            
+            SDOType rootType = (SDOType)typeHelper.define(rootTypeDO);
+        } catch (IllegalArgumentException e) {
             assertTrue(e.getMessage().equals("ChangeSummary can not be on a property with many set to true."));
             return;
         }
         fail("An Illegalargument should have occurred");
-    }   
+    }
 }

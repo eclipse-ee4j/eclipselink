@@ -28,17 +28,20 @@ import org.eclipse.persistence.sdo.helper.metadata.TypeStringConverter;
 
 public class SDOPropertyType extends SDOType implements Type {
 
+    private static final String SDO_DO_URL = "org.eclipse.persistence.sdo.dataobjects";
+
     private boolean initialized = false;
     private SDOTypeHelper typeHelper;
 
     public SDOPropertyType(SDOTypeHelper sdoTypeHelper, SDOType typeType) {
         super(SDOConstants.SDO_URL, SDOConstants.PROPERTY, sdoTypeHelper);
         this.typeHelper = sdoTypeHelper;
-        setInstanceClassName(SDOConstants.ORACLE_SDO_URL + ".PropertyClass");
-        getInstanceClass();
+
+        setImplClassName(SDO_DO_URL + ".PropertyImpl");
         Class implClass = getImplClass();
 
         xmlDescriptor.setJavaClass(implClass);
+        xmlDescriptor.setInstantiationPolicy(new TypeInstantiationPolicy(this));
 
         XMLSchemaReference schemaReference = new XMLSchemaClassPathReference();
         schemaReference.setSchemaContext("/sdo:Property");

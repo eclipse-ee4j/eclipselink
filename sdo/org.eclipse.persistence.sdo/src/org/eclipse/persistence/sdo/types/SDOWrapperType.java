@@ -203,6 +203,10 @@ public class SDOWrapperType extends SDOType implements Type {
         return true;
     }
 
+    public boolean isWrapperType() {
+        return true;
+    }
+
     public String toString() {
         StringBuffer str = new StringBuffer();
         str.append(getClass().getSimpleName() + "@" + Integer.toHexString(hashCode()));
