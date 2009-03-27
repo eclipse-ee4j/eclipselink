@@ -57,12 +57,16 @@ public class QueryBasedValueHolder extends DatabaseValueHolder {
     }
 
     /**
-     * Return the query.
+     * Return the query. The query for a QueryBasedValueHolder is constructed
+     * dynamically based on the original query on the parent object and the
+     * mapping configuration. If modifying a query the developer must be careful
+     * not to change the results returned as that may cause the application to
+     * see incorrect results.
      */
-    protected ReadQuery getQuery() {
+    public ReadQuery getQuery() {
         return query;
     }
-
+    
     protected Object instantiate() throws DatabaseException {
         return instantiate(getSession());
     }
