@@ -15,6 +15,7 @@ package org.eclipse.persistence.internal.oxm.schema.model;
 public class AnyAttribute {
     public static final String LAX = "lax";
     private String processContents;
+    private String namespace;
 
     public AnyAttribute() {
     }
@@ -25,5 +26,13 @@ public class AnyAttribute {
 
     public String getProcessContents() {
         return processContents;
+    }
+    
+    public String getNamespace() {
+        return namespace;
+    }
+    
+    public void setNamespace(String ns) {
+        this.namespace = ns;
     }
 }

@@ -467,9 +467,12 @@ public class SchemaGenerator {
                     }
                 } else if(next.isAny()) {
                 	Any any = new Any();
+                	any.setNamespace("##other");
                 	AnyProperty anyProp = (AnyProperty)next;
                 	if(anyProp.isLax()) {
-                		any.setProcessContents("lax");
+                		any.setProcessContents(Any.LAX);
+                	} else {
+                	    any.setProcessContents("skip");
                 	}
                     if(parentCompositor instanceof Sequence) {
                         ((Sequence)parentCompositor).addAny(any);

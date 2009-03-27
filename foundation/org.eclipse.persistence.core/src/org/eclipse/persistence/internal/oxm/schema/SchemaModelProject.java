@@ -703,6 +703,11 @@ public class SchemaModelProject extends Project {
         processContentsMapping.setAttributeName("processContents");
         processContentsMapping.setXPath("@processContents");
         descriptor.addMapping(processContentsMapping);
+        
+        XMLDirectMapping namespaceMapping = new XMLDirectMapping();
+        namespaceMapping.setAttributeName("namespace");
+        namespaceMapping.setXPath("@namespace");
+        descriptor.addMapping(namespaceMapping);
 
         XMLDirectMapping minOccursMapping = new XMLDirectMapping();
         minOccursMapping.setAttributeName("minOccurs");
@@ -789,6 +794,11 @@ public class SchemaModelProject extends Project {
         processContentsMapping.setAttributeName("processContents");
         processContentsMapping.setXPath("@processContents");
         descriptor.addMapping(processContentsMapping);
+        
+        XMLDirectMapping namespaceMapping = new XMLDirectMapping();
+        namespaceMapping.setAttributeName("namespace");
+        namespaceMapping.setXPath("@namespace");
+        descriptor.addMapping(namespaceMapping);
 
         return descriptor;
     }
