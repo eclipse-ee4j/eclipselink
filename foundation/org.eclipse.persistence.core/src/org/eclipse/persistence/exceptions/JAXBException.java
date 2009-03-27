@@ -37,6 +37,9 @@ public class JAXBException extends EclipseLinkException {
     public static final int INVALID_XML_ELEMENT_REF = 50006;
     public static final int NAME_COLLISION = 50007;
     public static final int UNSUPPORTED_NODE_CLASS = 50008;
+    public static final int TRANSIENT_IN_PROP_ORDER = 50009;
+    public static final int XMLVALUE_ATTRIBUTE_CONFLICT = 50010;
+    public static final int SUBCLASS_CANNOT_HAVE_XMLVALUE = 50011;
     
     protected JAXBException(String message) {
         super(message);
@@ -109,5 +112,24 @@ public class JAXBException extends EclipseLinkException {
         JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, UNSUPPORTED_NODE_CLASS, args));
         exception.setErrorCode(UNSUPPORTED_NODE_CLASS);
         return exception;
+    }
+    public static JAXBException transientInProporder(String fieldName) {
+        Object[] args = {fieldName};
+        JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, TRANSIENT_IN_PROP_ORDER, args));
+        exception.setErrorCode(TRANSIENT_IN_PROP_ORDER);
+        return exception;
     }   
+    
+    public static JAXBException propertyOrFieldShouldBeAnAttribute(String fieldName) {
+        Object[] args = {fieldName};
+        JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, XMLVALUE_ATTRIBUTE_CONFLICT, args));
+        exception.setErrorCode(XMLVALUE_ATTRIBUTE_CONFLICT);
+        return exception;
+    }  
+    public static JAXBException propertyOrFieldCannotBeXmlValue(String fieldName) {
+        Object[] args = {fieldName};
+        JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, SUBCLASS_CANNOT_HAVE_XMLVALUE, args));
+        exception.setErrorCode(SUBCLASS_CANNOT_HAVE_XMLVALUE);
+        return exception;
+    }  
 }

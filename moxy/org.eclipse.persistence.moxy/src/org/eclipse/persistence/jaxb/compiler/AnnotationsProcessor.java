@@ -17,9 +17,11 @@ import java.beans.Introspector;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
@@ -431,19 +433,30 @@ public class AnnotationsProcessor {
     }
     
     public ArrayList<Property> getPropertiesForClass(JavaClass cls, TypeInfo info) {
+    	ArrayList<Property> returnList;
         if (info.getAccessType() == XmlAccessType.FIELD) {
-            return getFieldPropertiesForClass(cls, info, false);
+        	returnList = getFieldPropertiesForClass(cls, info, false);
         } else if (info.getAccessType() == XmlAccessType.PROPERTY) {
-            return getPropertyPropertiesForClass(cls, info, false);
+        	returnList = getPropertyPropertiesForClass(cls, info, false);
         } else if (info.getAccessType() == XmlAccessType.PUBLIC_MEMBER) {
-            return getPublicMemberPropertiesForClass(cls, info);
+        	returnList = getPublicMemberPropertiesForClass(cls, info);
         } else {
-            return getNoAccessTypePropertiesForClass(cls, info);
+        	returnList = getNoAccessTypePropertiesForClass(cls, info);
         }
+        
+        if(info.getXmlValueProperty()!=null){
+	        for(Property nextProp:returnList) {	        
+	        	if(!nextProp.equals(info.getXmlValueProperty()) && !nextProp.isAttribute()){
+	        		throw JAXBException.propertyOrFieldShouldBeAnAttribute(nextProp.getPropertyName());
+	        	}
+	        }
+        }
+        
+        return returnList;
     }
     
     public ArrayList<Property> getFieldPropertiesForClass(JavaClass cls, TypeInfo info, boolean onlyPublic) {
-        ArrayList properties = new ArrayList();
+        ArrayList<Property> properties = new ArrayList<Property>();
         if (cls == null) { return properties; }
         
         boolean hasAnyAttribteProperty = false;
@@ -453,6 +466,7 @@ public class AnnotationsProcessor {
                 int modifiers = nextField.getModifiers();
                 if (!Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers) && ((Modifier.isPublic(nextField.getModifiers()) && onlyPublic) || !onlyPublic)) {
                     Property property = null;
+                    
                     if(helper.isAnnotationPresent((JavaHasAnnotations)nextField, XmlElements.class)) {
                         property = new ChoiceProperty(helper);
                         property.setElement((JavaHasAnnotations)nextField);
@@ -566,7 +580,7 @@ public class AnnotationsProcessor {
                     } else {
                         JavaClass parent = ptype.getSuperclass();
                         while (parent != null) {
-                            if (parent.getClass().getName().equals("java.lang.Object")) {
+                            if (parent.getName().equals("java.lang.Object")) {
                                 property.setType(parent);
                                 break;
                             }
@@ -627,12 +641,31 @@ public class AnnotationsProcessor {
                     // Check for XmlElement annotation and set required (a.k.a. minOccurs) accordingly
                     if (helper.isAnnotationPresent(property.getElement(), XmlElement.class)) {
                         property.setIsRequired(((XmlElement) helper.getAnnotation(property.getElement(), XmlElement.class)).required());
+                    }                                                            
+                                   
+                    if (helper.isAnnotationPresent(property.getElement(), XmlValue.class)) {                    
+                    	info.setXmlValueProperty(property);
+                    	                    	
+                    	JavaClass parent = cls.getSuperclass();                    	                    	
+                        while (parent != null && !(parent.getQualifiedName().equals("java.lang.Object"))) {
+                        	if(typeInfo.get(parent.getQualifiedName())!= null ){
+                        		throw JAXBException.propertyOrFieldCannotBeXmlValue(nextField.getName());
+                        	}
+                        	parent = parent.getSuperclass();
+                        }
                     }                    
-                    
+                                        
                     // Figure out schema name and namesapce
                     property.setSchemaName(getQNameForProperty(Introspector.decapitalize(nextField.getName()), nextField, getNamespaceInfoForPackage(cls.getPackage())));
                     properties.add(property);
                 }
+            }else{
+            	//If a property is marked transient ensure it doesn't exist in the propOrder            	
+            	List<String> propOrderList = Arrays.asList(info.getPropOrder());
+            	if(propOrderList.contains(nextField.getName())){
+            		throw JAXBException.transientInProporder(nextField.getName());
+            	}
+
             }
         }
         return properties;
@@ -667,7 +700,7 @@ public class AnnotationsProcessor {
     }
     
     public ArrayList<Property> getPropertyPropertiesForClass(JavaClass cls, TypeInfo info, boolean onlyPublic) {
-        ArrayList properties = new ArrayList();
+        ArrayList<Property> properties = new ArrayList<Property>();
         if (cls == null) { return properties; }
 
         // First collect all the getters
@@ -729,7 +762,7 @@ public class AnnotationsProcessor {
             } else {
                 JavaClass parent = returnClass.getSuperclass();
                 while (parent != null) {
-                    if (parent.getClass().getName().equals("java.lang.Object")) {
+                    if (parent.getName().equals("java.lang.Object")) {
                         property.setType(parent);
                         break;
                     }
@@ -867,10 +900,32 @@ public class AnnotationsProcessor {
                         }
                     }
                 }
+            }           
+            
+            if (helper.isAnnotationPresent(property.getElement(), XmlValue.class)) {
+            	info.setXmlValueProperty(property);
+            	
+            	JavaClass parent = cls.getSuperclass();
+            	while (parent != null && !(parent.getQualifiedName().equals("java.lang.Object"))) {                
+                	if(typeInfo.get(parent.getQualifiedName())!=null ){
+                		throw JAXBException.propertyOrFieldCannotBeXmlValue(propertyName);
+                	}
+                	parent = parent.getSuperclass();
+                }
             }
+                   
+            
             if (!helper.isAnnotationPresent(property.getElement(), XmlTransient.class)) {
                 properties.add(property);
-            }
+            } else {          
+                //If a property is marked transient ensure it doesn't exist in the propOrder            	
+                List<String> propOrderList = Arrays.asList(info.getPropOrder());
+                if(propOrderList.contains(propertyName)){
+                	throw JAXBException.transientInProporder(propertyName);
+                }
+            }                     
+            
+               
             // Check for XmlElement annotation and set required (a.k.a. minOccurs) accordingly
             if (helper.isAnnotationPresent(property.getElement(), XmlElement.class)) {
                 property.setIsRequired(((XmlElement) helper.getAnnotation(property.getElement(), XmlElement.class)).required());

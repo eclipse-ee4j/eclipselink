@@ -71,6 +71,7 @@ public class TypeInfo {
     private String objectFactoryClassName;
     private String factoryMethodName;
     private String[] factoryMethodParamTypes;
+    private Property xmlValueProperty;
     
     public TypeInfo(Helper helper) {
         propertyNames = new ArrayList<String>();
@@ -329,6 +330,14 @@ public class TypeInfo {
     public void setFactoryMethodParamTypes(String[] paramTypes) {
         this.factoryMethodParamTypes = paramTypes;
     }
-    
+
+    public Property getXmlValueProperty() {
+        return xmlValueProperty;
+    }
+
+    public void setXmlValueProperty(Property xmlValueProperty) {
+        this.xmlValueProperty = xmlValueProperty;
+    }
+   
 }
         
