@@ -169,7 +169,12 @@ public final class MWClassRepository
 
 	// queried reflectively by I/O Manager
 	private static final String SUB_DIRECTORY_NAME = "classes";
-
+	
+	//not peristed
+	private boolean persistLastRefresh;
+		public static final String PERSIST_LAST_REFRESH_PREFERENCE = "last refresh";
+		public static final boolean PERSIST_LAST_REFRESH_PREFERENCE_DEFAULT = true;
+	
 
 	// ********** constructors **********
 	
@@ -208,6 +213,7 @@ public final class MWClassRepository
 		this.userTypes = Collections.synchronizedSet(new HashSet());
 		this.classpathEntries = new Vector();
 		this.userTypeNames = new HashSet();
+		this.persistLastRefresh = true;
 	}
 	
 
@@ -1230,6 +1236,22 @@ public final class MWClassRepository
 			result.put(name.toLowerCase(), name);
 		}
 		return result;
+	}
+
+	public boolean isPersistLastRefresh() {
+		return persistLastRefresh;
+	}
+
+	public void setPersistLastRefresh(boolean persistLastRefresh) {
+		//must assure all classes get re-written next save if value changes from true to false
+		if (!persistLastRefresh) {
+			Iterator userTypeIter = this.userTypes();
+			while(userTypeIter.hasNext()) {
+				((MWClass)userTypeIter.next()).markBranchDirty();
+			}
+		}
+		this.persistLastRefresh = persistLastRefresh;
+		
 	}
 
 }

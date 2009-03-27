@@ -16,18 +16,23 @@ import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+
 import javax.swing.BorderFactory;
 import javax.swing.ButtonModel;
+import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
+
 import org.eclipse.persistence.tools.workbench.framework.context.PreferencesContext;
 import org.eclipse.persistence.tools.workbench.framework.ui.view.AbstractPanel;
+import org.eclipse.persistence.tools.workbench.mappingsmodel.meta.MWClassRepository;
 import org.eclipse.persistence.tools.workbench.mappingsplugin.ui.project.ZeroArgConstructorPreference;
 import org.eclipse.persistence.tools.workbench.uitools.LabelArea;
 import org.eclipse.persistence.tools.workbench.uitools.app.BufferedPropertyValueModel;
 import org.eclipse.persistence.tools.workbench.uitools.app.PropertyValueModel;
 import org.eclipse.persistence.tools.workbench.uitools.app.adapters.PreferencePropertyValueModel;
+import org.eclipse.persistence.tools.workbench.uitools.app.swing.CheckBoxModelAdapter;
 import org.eclipse.persistence.tools.workbench.uitools.app.swing.RadioButtonModelAdapter;
 import org.eclipse.persistence.tools.workbench.utility.string.BidiStringConverter;
 
@@ -136,7 +141,20 @@ final class ClassPreferencesPage extends AbstractPanel {
 		constraints.anchor     = GridBagConstraints.LINE_START;
 		constraints.insets     = new Insets(0, 5, 5, 5);
 		container.add(promptRadioButton, constraints);
-
+		
+		// last refresh
+		JCheckBox lastRefreshCheckBox = this.buildCheckBox("PREFERENCES.MAPPINGS.CLASS.PERSIST_LAST_REFRESH_TIMESTAMP", this.buildPersistLastRefreshModel());
+		constraints.gridx		= 0;
+		constraints.gridy		= 1;
+		constraints.gridwidth	= 1;
+		constraints.gridheight	= 1;
+		constraints.weightx		= 1;
+		constraints.weighty		= 1;
+		constraints.fill		= GridBagConstraints.NONE;
+		constraints.anchor		= GridBagConstraints.LINE_START;
+		constraints.insets		= new Insets(0, 0, 0, 0);
+		add(lastRefreshCheckBox, BorderLayout.NORTH);
+		
 		addHelpTopicId(this, "preferences.class");
 	}
 
@@ -180,4 +198,21 @@ final class ClassPreferencesPage extends AbstractPanel {
 			}
 		};
 	}
+	
+	// ***** persiste refresh check box
+	private ButtonModel buildPersistLastRefreshModel() {
+		return new CheckBoxModelAdapter(this.buildBufferedPersistLastRefreshAdapter());
+	}
+
+	private PropertyValueModel buildBufferedPersistLastRefreshAdapter() {
+		return new BufferedPropertyValueModel(this.buildPersistLastRefreshAdapter(), this.getPreferencesContext().getBufferTrigger());
+	}
+
+	private PropertyValueModel buildPersistLastRefreshAdapter() {
+		PreferencePropertyValueModel adapter = new PreferencePropertyValueModel(this.preferences(), MWClassRepository.PERSIST_LAST_REFRESH_PREFERENCE, MWClassRepository.PERSIST_LAST_REFRESH_PREFERENCE_DEFAULT);
+		adapter.setConverter(BidiStringConverter.BOOLEAN_CONVERTER);
+		return adapter;
+	}
+
+
 }

@@ -429,7 +429,18 @@ public final class MWClass extends MWModel
 		this.firePropertyChanged(LAST_REFRESH_TIMESTAMP_PROPERTY, old, lastRefreshTimestamp);
 	}
 	
-
+	private Date getLastRefreshTimestampForTopLink() {
+		Date value = null;
+		if (getRepository().isPersistLastRefresh()) {
+			value = this.lastRefreshTimestamp;
+		}
+		return value;
+	}
+	
+	private void setLastRefreshTimestampForTopLink(Date value) {
+		this.lastRefreshTimestamp = value;
+	}
+	
 	// ***** coreType
 	/**
 	 * return whether the type is a "core" type:
@@ -2401,7 +2412,7 @@ public final class MWClass extends MWModel
 	/**
 	 * refresh the type from the current set of external class descriptions;
 	 * if you would like to force the type to be refreshed from a newly-built
-	 * set of external class descriptoins, call 
+	 * set of external class descriptions, call 
 	 * MWClassRepository#refreshExternalClassDescriptions() first;
 	 * the type will be refreshed with the "default" external class description
 	 * returned by the external class repository
@@ -2898,7 +2909,7 @@ public final class MWClass extends MWModel
 		superclassHandleMapping.setXPath("superclass-handle");
 		descriptor.addMapping(superclassHandleMapping);
 		
-		descriptor.addDirectMapping("lastRefreshTimestamp", "last-refresh-timestamp/text()");
+		descriptor.addDirectMapping("lastRefreshTimestamp", "getLastRefreshTimestampForTopLink", "setLastRefreshTimestampForTopLink", "last-refresh-timestamp/text()");
 
 		XMLCompositeCollectionMapping interfaceHandlesMapping = new XMLCompositeCollectionMapping();
 		interfaceHandlesMapping.setAttributeName("interfaceHandles");
@@ -3060,6 +3071,7 @@ public final class MWClass extends MWModel
 	public void postProjectBuild() {
 		super.postProjectBuild();
 		this.primitive = this.defaultPrimitiveFlag();
+		
 	}
 
 	// ********** legacy TopLink 6.0 methods **********

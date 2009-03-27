@@ -16,10 +16,8 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.Map;
 
 import javax.swing.Icon;
 import javax.swing.JFileChooser;
@@ -41,11 +39,11 @@ import org.eclipse.persistence.tools.workbench.framework.context.WorkbenchContex
 import org.eclipse.persistence.tools.workbench.framework.resources.ResourceRepository;
 import org.eclipse.persistence.tools.workbench.mappingsio.ProjectIOManager;
 import org.eclipse.persistence.tools.workbench.mappingsio.ReadOnlyFilesException;
-import org.eclipse.persistence.tools.workbench.mappingsmodel.MWError;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.MWDescriptor;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.MWMapping;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.meta.MWClass;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.meta.MWClassAttribute;
+import org.eclipse.persistence.tools.workbench.mappingsmodel.meta.MWClassRepository;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.meta.MWMethod;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.project.MWProject;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.project.relational.MWRelationalProject;
@@ -61,7 +59,6 @@ import org.eclipse.persistence.tools.workbench.mappingsplugin.ManageNonDescripto
 import org.eclipse.persistence.tools.workbench.mappingsplugin.MappingsPlugin;
 import org.eclipse.persistence.tools.workbench.mappingsplugin.RefreshClassesAction;
 import org.eclipse.persistence.tools.workbench.mappingsplugin.ui.common.MappingsApplicationNode;
-import org.eclipse.persistence.tools.workbench.mappingsplugin.ui.common.StatusDialog;
 import org.eclipse.persistence.tools.workbench.mappingsplugin.ui.common.UiCommonBundle;
 import org.eclipse.persistence.tools.workbench.mappingsplugin.ui.descriptor.DescriptorNode;
 import org.eclipse.persistence.tools.workbench.mappingsplugin.ui.descriptor.DescriptorPackageNode;
@@ -441,6 +438,8 @@ public abstract class ProjectNode
 	}
 
 	public boolean save(File mostRecentSaveDirectory, WorkbenchContext workbenchContext) {
+		boolean persistLastRefresh = preferences().getBoolean(MWClassRepository.PERSIST_LAST_REFRESH_PREFERENCE, MWClassRepository.PERSIST_LAST_REFRESH_PREFERENCE_DEFAULT);
+		this.getProject().getClassRepository().setPersistLastRefresh(persistLastRefresh);
 		File saveFile = this.saveFile();
 		if (saveFile == null) {
 			// the save file will be null on new and legacy projects

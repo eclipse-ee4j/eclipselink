@@ -435,7 +435,7 @@ public class MappingsPluginResourceBundle extends ListResourceBundle {
 			{"PREFERENCES.MAPPINGS.CLASS.MAINTAIN_ZERO_ARGUMENT_CONSTRUCTOR_PROMPT", "&Prompt"},
 			{"PREFERENCES.MAPPINGS.CLASS.MAINTAIN_ZERO_ARGUMENT_CONSTRUCTOR_DIALOG.title", "Maintain Zero Argument Constructor"},
  			{"PREFERENCES.MAPPINGS.CLASS.MAINTAIN_ZERO_ARGUMENT_CONSTRUCTOR_DIALOG.message", "This action will result in the class ''{0}'' having no zero-argument constructor, something which TopLink requires for most persisted classes.{1}{1}Would you like to maintain a zero-argument constructor in this class?"},
- 			
+ 			{"PREFERENCES.MAPPINGS.CLASS.PERSIST_LAST_REFRESH_TIMESTAMP", "Persist Last Refresh Timestamp When Saving"},
 			
 			//****** Mappings.Ejb node
 			{"PREFERENCES.MAPPINGS.EJB",                                 "EJB"},	
