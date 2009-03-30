@@ -33,7 +33,7 @@ public class LocalizationTest extends AutoVerifyTestCase {
             throw new TestErrorException("LoggingLocalization.buildMessage could not find the correct translation.");
         }
 
-        if (!nonLocalizedString.equals("message_not_exist")) {
+        if (!nonLocalizedString.equals("message_not_exist (There is no English translation for this message.)")) {
             throw new TestErrorException("LoggingLocalization.buildMessage could not find NoTranslationForThisLocale message.");
         }
     }
