@@ -658,9 +658,14 @@ public class MappingsGenerator {
         mapping.useCollectionClassName(collectionType.getRawName());
         XMLField xmlField = getXPathForField(property, namespaceInfo, true);
         mapping.setField(xmlField);
+        
         if(XMLConstants.QNAME_QNAME.equals(property.getSchemaType())){
         	((XMLField) mapping.getField()).setSchemaType(XMLConstants.QNAME_QNAME);
-    	}    
+    	}
+        
+        if(xmlField.getXPathFragment().isAttribute()){
+    		mapping.setUsesSingleNode(true);
+    	}                
         if (helper.isAnnotationPresent(property.getElement(), XmlList.class)) {
             mapping.setUsesSingleNode(true);
         }
