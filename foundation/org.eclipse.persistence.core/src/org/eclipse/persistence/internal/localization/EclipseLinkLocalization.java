@@ -47,8 +47,7 @@ public abstract class EclipseLinkLocalization {
     public static String buildMessage(String localizationClassName, String key, Object[] arguments, boolean translate) {
         String message = key;
         ResourceBundle bundle = null;
-        String append = "";
-        
+
         // JDK 1.1 MessageFormat can't handle null arguments
         if (arguments != null) {
             for (int i = 0; i < arguments.length; i++) {
@@ -66,14 +65,16 @@ public abstract class EclipseLinkLocalization {
             // Found bundle, but couldn't find translation.
             // Get the current language's NoTranslationForThisLocale message.
             bundle = ResourceBundle.getBundle("org.eclipse.persistence.internal.localization.i18n.EclipseLinkLocalizationResource", Locale.getDefault());
+            String noTranslationMessage = bundle.getString("NoTranslationForThisLocale");
 
-            // Do display no translation message for English
-            if (translate && !Locale.getDefault().getLanguage().equals(Locale.ENGLISH.getLanguage())) {
-                append = bundle.getString("NoTranslationForThisLocale");
+            if(translate) {
+            	return MessageFormat.format(message, arguments) + noTranslationMessage;
+            } else {
+            	// For FINE* logs there is no translation
+            	return MessageFormat.format(message, arguments);
             }
         }
-
-        return MessageFormat.format(message, arguments) + append;
+        return MessageFormat.format(message, arguments);
     }
     
 }
