@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.oxm;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -45,7 +47,7 @@ import org.eclipse.persistence.oxm.XMLConstants;
 
 public class XMLConversionManager extends ConversionManager implements TimeZoneHolder {
     protected static final String GMT_ID = "GMT";
-    protected static final String GMT_SUFFIX = "Z";
+    protected static final String GMT_SUFFIX = "Z";    
 
     protected static XMLConversionManager defaultXMLManager;
 
@@ -60,6 +62,8 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
     protected static int TOTAL_NS_DIGITS = 9;  // total digits for nanosecond  formatting
     protected static long YEAR_ONE_AD_TIME = -62135769600000L; // time of 1 AD
 
+    private static final String PLUS = "+";
+    
     protected DatatypeFactory datatypeFactory;
 
     public XMLConversionManager() {
@@ -485,23 +489,18 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
      *         NumberFormatException if the String does not contain a
      *        parsable double.
      */
-   protected Double convertObjectToDouble(Object sourceObject) throws ConversionException {
-       try {
-           if (sourceObject instanceof String) {
-        	   if(XMLConstants.POSITIVE_INFINITY.equals(sourceObject)){
-        		   return new Double(Double.POSITIVE_INFINITY);
-        	   }else if(XMLConstants.NEGATIVE_INFINITY.equals(sourceObject)){
-        		   return new Double(Double.NEGATIVE_INFINITY);
-        	   }
-               return new Double((String)sourceObject);
-           }
-           if (sourceObject instanceof Number) {
-               return new Double(((Number)sourceObject).doubleValue());
-           }
-       } catch (NumberFormatException exception) {
-           throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.DOUBLE, exception);
-       }
-       throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.DOUBLE);
+   protected Double convertObjectToDouble(Object sourceObject) throws ConversionException {       
+       if (sourceObject instanceof String) {
+           if(XMLConstants.POSITIVE_INFINITY.equals(sourceObject)){
+        	   return new Double(Double.POSITIVE_INFINITY);
+           }else if(XMLConstants.NEGATIVE_INFINITY.equals(sourceObject)){
+        	   return new Double(Double.NEGATIVE_INFINITY);
+           }else{
+               return super.convertObjectToDouble(sourceObject);
+       	   }
+       }else{
+           return super.convertObjectToDouble(sourceObject);
+       }                  
    }
     
    /**
@@ -510,25 +509,99 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
     *         NumberFormatException if the String does not contain a
     *        parsable Float.
     */
-   protected Float convertObjectToFloat(Object sourceObject) throws ConversionException {
-       try {
-           if (sourceObject instanceof String) {
-        	   if(XMLConstants.POSITIVE_INFINITY.equals(sourceObject)){
-        		   return new Float(Float.POSITIVE_INFINITY);
-        	   }else if(XMLConstants.NEGATIVE_INFINITY.equals(sourceObject)){
-        		   return new Float(Float.NEGATIVE_INFINITY);
-        	   }               
-               return new Float((String)sourceObject);
-           }
-           if (sourceObject instanceof Number) {
-               return new Float(((Number)sourceObject).floatValue());
-           }
-       } catch (NumberFormatException exception) {
-           throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.FLOAT, exception);
+   protected Float convertObjectToFloat(Object sourceObject) throws ConversionException {       
+       if (sourceObject instanceof String) {
+           if(XMLConstants.POSITIVE_INFINITY.equals(sourceObject)){
+               return new Float(Float.POSITIVE_INFINITY);
+           }else if(XMLConstants.NEGATIVE_INFINITY.equals(sourceObject)){
+               return new Float(Float.NEGATIVE_INFINITY);
+           }               
+           return super.convertObjectToFloat(sourceObject);
+       }else{
+       	   return super.convertObjectToFloat(sourceObject);
        }
-
-       throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.FLOAT);
    }
+   
+   /**
+    * Build a valid Integer instance from a String or another Number instance.
+    * @caught exception    The Integer(String) constructor throws a
+    *         NumberFormatException if the String does not contain a
+    *        parsable integer.
+    */
+   protected Integer convertObjectToInteger(Object sourceObject) throws ConversionException {   
+       if(sourceObject instanceof String && ((String) sourceObject).startsWith(PLUS)){
+           return super.convertObjectToInteger(((String)sourceObject).substring(1));
+       }
+       return super.convertObjectToInteger(sourceObject);
+   }
+   
+   /**
+    * Build a valid Long instance from a String or another Number instance.
+    * @caught exception    The Long(String) constructor throws a
+    *         NumberFormatException if the String does not contain a
+    *        parsable long.
+    *
+    */
+  protected Long convertObjectToLong(Object sourceObject) throws ConversionException {
+      if(sourceObject instanceof String && ((String) sourceObject).startsWith(PLUS)){
+          return super.convertObjectToLong(((String)sourceObject).substring(1));
+      }
+      return super.convertObjectToLong(sourceObject);
+  }	  
+  
+  
+  /**
+   * INTERNAL:
+   * Build a valid Short instance from a String or another Number instance.
+   * @caught exception    The Short(String) constructor throws a
+   *     NumberFormatException if the String does not contain a
+   *    parsable short.
+   */
+  protected Short convertObjectToShort(Object sourceObject) throws ConversionException {
+      if(sourceObject instanceof String && ((String) sourceObject).startsWith(PLUS)){
+          return super.convertObjectToShort(((String)sourceObject).substring(1));
+      }
+      return super.convertObjectToShort(sourceObject);
+  }	  
+  
+  
+  /**
+   * INTERNAL:
+   * Build a valid BigDecimal instance from a String or another
+   * Number instance.  BigDecimal is the most general type so is
+   * must be returned when an object is converted to a number.
+   * @caught exception    The BigDecimal(String) constructor throws a
+   *     NumberFormatException if the String does not contain a
+   *    parsable BigDecimal.
+   */
+  protected BigDecimal convertObjectToNumber(Object sourceObject) throws ConversionException {	  
+      if(sourceObject instanceof String && ((String) sourceObject).startsWith(PLUS)){
+          return super.convertObjectToNumber(((String)sourceObject).substring(1));
+      }
+      return super.convertObjectToNumber(sourceObject);	  	  
+  }
+   
+   /**
+    * Build a valid instance of BigInteger from the provided sourceObject.
+    *    @param sourceObject    Valid instance of String, BigDecimal, or any Number
+    */
+   protected BigInteger convertObjectToBigInteger(Object sourceObject) throws ConversionException {	  
+       if(sourceObject instanceof String && ((String) sourceObject).startsWith(PLUS)){
+           return super.convertObjectToBigInteger(((String)sourceObject).substring(1));
+       }
+       return super.convertObjectToBigInteger(sourceObject);	  
+   }
+   
+   /**
+    * Build a valid instance of BigDecimal from the given sourceObject
+    *    @param sourceObject    Valid instance of String, BigInteger, any Number
+    */
+   protected BigDecimal convertObjectToBigDecimal(Object sourceObject) throws ConversionException {        
+       if(sourceObject instanceof String && ((String) sourceObject).startsWith(PLUS)){
+           return super.convertObjectToBigDecimal(((String)sourceObject).substring(1));
+       }       
+       return super.convertObjectToBigDecimal(sourceObject);	    
+    }
    
     public XMLGregorianCalendar convertStringToXMLGregorianCalendar(String sourceString, QName schemaTypeQName) {
         XMLGregorianCalendar xmlGregorianCalender = null; 
