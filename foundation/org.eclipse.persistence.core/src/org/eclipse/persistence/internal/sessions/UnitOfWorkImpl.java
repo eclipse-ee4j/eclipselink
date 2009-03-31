@@ -649,7 +649,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 for (Iterator deletedObjects = getDeletedObjects().keySet().iterator(); deletedObjects.hasNext();) {
                     Object deletedObject = deletedObjects.next();
                     ClassDescriptor descriptor = getDescriptor(deletedObject);
-                    if(descriptor.hasMappingsPostCalculateChanges()) {
+                    if(descriptor.hasMappingsPostCalculateChangesOnDeleted()) {
                         int size = descriptor.getMappingsPostCalculateChangesOnDeleted().size();
                         for(int i=0; i < size; i++) {
                             DatabaseMapping mapping = descriptor.getMappingsPostCalculateChangesOnDeleted().get(i); 
