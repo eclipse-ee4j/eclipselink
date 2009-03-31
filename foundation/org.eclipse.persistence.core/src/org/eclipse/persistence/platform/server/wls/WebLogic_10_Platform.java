@@ -14,6 +14,9 @@
  *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/248748</link>
  *     11/06/2008-1.1M5 Michael O'Brien 
  *       - 248746: Add getModuleName() implementation and new getApplicationName()
+ *     31/03/2009-1.1.1 Michael O'Brien 
+ *       - 265369: Cache runtimeServicesMBean until unregistration 
+ *       - backport of trunk 3309 27/01/2009 in bug# 256944 (except registration root)
  ******************************************************************************/  
 package org.eclipse.persistence.platform.server.wls;
 
@@ -61,7 +64,8 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform {
     /** This JNDI address is for JMX MBean unregistration */    
     private static final String JMX_JNDI_RUNTIME_UNREGISTER = "java:comp/jmx/runtime";
     /** This is the prefix for all MBeans that are registered with their specific session name appended */
-    private static final String JMX_REGISTRATION_PREFIX = "org.eclipse.persistence:Name=";
+    //private static final String JMX_REGISTRATION_PREFIX = "TopLink:Name="; // uncomment for EclipseLink 2.0
+    private static final String JMX_REGISTRATION_PREFIX = "org.eclipse.persistence:Name="; // uncomment for EclipseLink 1.1.1
     // Secondary override properties can be set to disable MBean registration
     /** This System property "eclipselink.register.dev.mbean" when set to true will enable registration/unregistration of the DevelopmentServices MBean */
     public static final String JMX_REGISTER_DEV_MBEAN_PROPERTY = "eclipselink.register.dev.mbean";
@@ -103,6 +107,8 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform {
     /** applicationName determination is available during MBean registration only */
     private String applicationName = null;
     
+    /** cache the RuntimeServices MBean */
+    private MBeanWebLogicRuntimeServices runtimeServicesMBean = null;    
     /**
      * INTERNAL:
      * Default Constructor: All behavior for the default constructor is inherited
@@ -151,13 +157,15 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform {
                         AbstractSessionLog.getLog().log(SessionLog.WARNING, "problem_registering_mbean", iaee);
                     } catch (MBeanRegistrationException registrationProblem) {
                         AbstractSessionLog.getLog().log(SessionLog.WARNING, "problem_registering_mbean", registrationProblem);
+                    } catch (Exception e) {
+                        AbstractSessionLog.getLog().log(SessionLog.WARNING, "problem_registering_mbean", e);
                     }
                     AbstractSessionLog.getLog().log(SessionLog.FINEST, "registered_mbean", info);
                 }
 
                 if (shouldRegisterRuntimeBean) {
                     try {
-                        name = new ObjectName(JMX_REGISTRATION_PREFIX + "Runtime-" + sessionName + ",Type=Reporting");                        
+                        name = new ObjectName(JMX_REGISTRATION_PREFIX + "Session(" + sessionName + ")");                        
                     } catch (MalformedObjectNameException mne) {
                         AbstractSessionLog.getLog().log(SessionLog.WARNING, "problem_registering_mbean", mne);
                     } catch (Exception exception) {
@@ -168,10 +176,13 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform {
                     ObjectInstance runtimeInstance = null;
                     try {
                         runtimeInstance = mBeanServerRuntime.registerMBean(runtimeServices, name);
+                        runtimeServicesMBean = runtimeServices;
                     } catch(InstanceAlreadyExistsException iaee) {
                         AbstractSessionLog.getLog().log(SessionLog.WARNING, "problem_registering_mbean", iaee);
                     } catch (MBeanRegistrationException registrationProblem) {
                         AbstractSessionLog.getLog().log(SessionLog.WARNING, "problem_registering_mbean", registrationProblem);
+                    } catch (Exception e) {
+                        AbstractSessionLog.getLog().log(SessionLog.WARNING, "problem_registering_mbean", e);
                     }
                     AbstractSessionLog.getLog().log(SessionLog.FINEST, "registered_mbean", runtimeInstance);          
                 }
@@ -236,7 +247,7 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform {
 
                 if (shouldRegisterRuntimeBean) {
                     try {                        
-                        name = new ObjectName(JMX_REGISTRATION_PREFIX + "Runtime_" + sessionName + ",Type=Reporting");                        
+                        name = new ObjectName(JMX_REGISTRATION_PREFIX + "Session(" + sessionName + ")");                        
                     } catch (MalformedObjectNameException mne) {
                         AbstractSessionLog.getLog().log(SessionLog.WARNING, "problem_unregistering_mbean", mne);
                     } catch (Exception exception) {
@@ -258,6 +269,8 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform {
                 // Trap a possible WebLogic specific [weblogic.management.NoAccessRuntimeException]
                 AbstractSessionLog.getLog().log(SessionLog.WARNING, "problem_unregistering_mbean", exception);
             } finally {
+                // de reference the mbean
+                runtimeServicesMBean = null;
                 // close the context
                 // see http://forums.bea.com/thread.jspa?threadID=600004445
                 // see http://e-docs.bea.com/wls/docs81/jndi/jndi.html#471919
@@ -282,14 +295,14 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform {
      * 
      * There are 4 levels of implementation.
      * 1) use the property override weblogic.moduleName, or
-     * 2) perform a reflective weblogic.work.executeThreadRuntime.getModuleName() call (build 10.3.3.1), or
+     * 2) perform a reflective weblogic.work.executeThreadRuntime.getModuleName() call (build 10.3+), or
      * 3) extract the moduleName:persistence_unit from the weblogic classloader string representation (build 10.3), or
      * 3) defer to superclass - usually return "unknown"
      *
      * @return String moduleName
      */
     public String getModuleName() {        
-        return moduleName;
+        return this.moduleName;
     }
     
     /**
@@ -300,14 +313,14 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform {
      * 
      * There are 4 levels of implementation.
      * 1) use the property override weblogic.applicationName, or
-     * 2) perform a reflective weblogic.work.executeThreadRuntime.getApplicationName() call (build 10.3.3.1), or
+     * 2) perform a reflective weblogic.work.executeThreadRuntime.getApplicationName() call (build 10.3+), or
      * 3) extract the moduleName:persistence_unit from the weblogic classloader string representation (build 10.3), or
      * 3) defer to superclass - usually return "unknown"
      *
      * @return String applicationName
      */
     public String getApplicationName() {
-        return applicationName;
+        return this.applicationName;
     }
     
     /**
@@ -316,85 +329,52 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform {
      * @return
      */
     private void initializeApplicationNameAndModuleName() {
-        /**
-         * ER 248746: Use reflection to obtain the application name (EJB, Web or MDB module)
-         * Get either a String containing the module/applicationName or a WebLogic classLoader that contains the module/applicationName in the format...
-         * weblogic.utils.classloaders.ChangeAwareClassLoader@19bb43f finder: weblogic.utils.classloaders.CodeGenClassFinder@ab7c2e annotation: org.eclipse.persistence.example.jpa.server.weblogic.enterpriseEAR@enterprise
-         * If the getExecuteThread call failed, use the classloader string representation as backup.
-         * If the classloader is not in the correct format, defer to superclass.
-         */
         // Get property from persistence.xml or sessions.xml
         String jpaModuleName = (String)getDatabaseSession().getProperty(WEBLOGIC_MODULENAME_PROPERTY);
-        String jpaApplicationName = (String)getDatabaseSession().getProperty(WEBLOGIC_APPLICATIONNAME_PROPERTY);        
+        String jpaApplicationName = (String)getDatabaseSession().getProperty(WEBLOGIC_APPLICATIONNAME_PROPERTY);      
+        
         if (jpaModuleName != null) {
-            moduleName = jpaModuleName;
+            this.moduleName = jpaModuleName;
         } else {
-            Object attribute = getAttributeStringOrClassLoader(WLS_MODULE_NAME_GET_METHOD_NAME);
-            if(null != attribute) {
-                // If the reflective call was successful just return the string
-                if(attribute instanceof String) {
-                    jpaModuleName = (String)attribute;
-                } else if(attribute instanceof ClassLoader) {
-                    // If we are running a version of WebLogic 10.3 that does not support ExecuteThreadRuntime (from 10.3.3.1) then use the ClassLoader                    
-                    String jpaModuleNameRoot = ((ClassLoader)attribute).toString();
-                    jpaModuleName = jpaModuleNameRoot.substring(jpaModuleNameRoot.indexOf(
-                            WLS_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_PREFIX) + 
-                            WLS_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_PREFIX.length());
-                }                
-            }
-            // defer to the superclass implementation if both ExecuteThreadRuntime and the ClassLoader methods failed            
-            if(null == jpaModuleName) { // Only checking for a null return from ExecuteThreadRuntime - an EMPTY_STRING is ok
-                 jpaModuleName = super.getModuleName();
-             }
+        	jpaModuleName = getNameFromWeblogic(WLS_MODULE_NAME_GET_METHOD_NAME);
             
-            // If we are running a version of WebLogic 10.3 that does not support ExecuteThreadRuntime (from 10.3.3.1) then use the ClassLoader                    
+            // If we are running a version of WebLogic 10.3 that does not support ExecuteThreadRuntime (from 10.3+) then use the ClassLoader                    
             if(null != jpaModuleName && jpaModuleName.indexOf("@") != -1) {
-                moduleName = jpaModuleName.substring(jpaModuleName.indexOf("@") + 1);
+                this.moduleName = jpaModuleName.substring(jpaModuleName.indexOf("@") + 1);
             } else {
-                moduleName = jpaModuleName;
+                this.moduleName = jpaModuleName;
             }
         }
 
         if (jpaApplicationName != null) {
-            applicationName = jpaApplicationName;
+            this.applicationName = jpaApplicationName;
         } else {
-            Object attribute = getAttributeStringOrClassLoader(WLS_APPLICATION_NAME_GET_METHOD_NAME);
-            if(null != attribute) {
-                // If the reflective call was successful just return the string
-                if(attribute instanceof String) {
-                    jpaApplicationName = (String)attribute;
-                } else if(attribute instanceof ClassLoader) {
-                    // If we are running a version of WebLogic 10.3 that does not support ExecuteThreadRuntime (from 10.3.3.1) then use the ClassLoader                    
-                    String jpaApplicationNameRoot = ((ClassLoader)attribute).toString();
-                    jpaApplicationName = jpaApplicationNameRoot.substring(jpaApplicationNameRoot.indexOf(
-                            WLS_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_PREFIX) + 
-                            WLS_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_PREFIX.length());
-                }                
-            }
+        	jpaApplicationName = getNameFromWeblogic(WLS_APPLICATION_NAME_GET_METHOD_NAME);
+
             // defer to the superclass implementation            
             if(null == jpaApplicationName) {
                  jpaModuleName = super.getApplicationName();
              }
             
-            // If we are running a version of WebLogic 10.3 that does not support ExecuteThreadRuntime (from 10.3.3.1) then use the ClassLoader                    
+            // If we are running a version of WebLogic 10.3 that does not support ExecuteThreadRuntime (from 10.3+) then use the ClassLoader                    
             if(null != jpaApplicationName && jpaApplicationName.indexOf("@") > -1) {
-                applicationName = jpaApplicationName.substring(jpaApplicationName.indexOf("@") + 1);
+                this.applicationName = jpaApplicationName.substring(jpaApplicationName.indexOf("@") + 1);
             } else {
-                applicationName = jpaApplicationName;                
+                this.applicationName = jpaApplicationName;                
             }            
         }
         
         // Final check for null values
-        if(null == applicationName) {
-            applicationName = DEFAULT_SERVER_NAME_AND_VERSION;
+        if(null == this.applicationName) {
+            this.applicationName = DEFAULT_SERVER_NAME_AND_VERSION;
         }
-        if(null == moduleName) {
-            moduleName = DEFAULT_SERVER_NAME_AND_VERSION;
+        if(null == this.moduleName) {
+            this.moduleName = DEFAULT_SERVER_NAME_AND_VERSION;
         }
         AbstractSessionLog.getLog().log(SessionLog.FINEST, "mbean_get_application_name", 
-                getDatabaseSession().getName(), applicationName);
+                getDatabaseSession().getName(), this.applicationName);
         AbstractSessionLog.getLog().log(SessionLog.FINEST, "mbean_get_module_name", 
-                getDatabaseSession().getName(), moduleName);
+                getDatabaseSession().getName(), this.moduleName);
     }
 
     /**
@@ -403,13 +383,18 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform {
      * If the call to executeThread on the MBean fails - return the current classloader
      * Thread.currentThread().getContextClassLoader() 
      * 
-     * @return Object (module|applicaitonName String or current ClassLoader)
+     * ER 248746: Use reflection to obtain the application name (EJB, Web or MDB module)
+     * Get either a String containing the module/applicationName or a WebLogic classLoader that contains the module/applicationName in the format...
+     * weblogic.utils.classloaders.ChangeAwareClassLoader@19bb43f finder: weblogic.utils.classloaders.CodeGenClassFinder@ab7c2e annotation: org.eclipse.persistence.example.jpa.server.weblogic.enterpriseEAR@enterprise
+     * If the getExecuteThread call failed, use the classloader string representation as backup.
+     * If the classloader is not in the correct format, defer to superclass.
+	 *
+     * @return String module|application Name from WLS
      */
-    private Object getAttributeStringOrClassLoader(String getMethodName) {
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        // Default to Thread.currentThread().getContextClassLoader()
-        Object classLoaderOrString = classLoader;
+    private String getNameFromWeblogic(String getMethodName) {
+        Object classLoaderOrString = null;//this.getDatabaseSession().getPlatform().getConversionManager().getLoader();
         Object executeThread = getExecuteThreadFromMBean();
+        
         if (executeThread != null) {
             try {
                 // perform a reflective public java.lang.String
@@ -420,6 +405,14 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform {
                 } else {
                     classLoaderOrString = PrivilegedAccessHelper.invokeMethod(getMethod, executeThread);
                 }
+                
+                if(classLoaderOrString instanceof ClassLoader) {
+                    // If we are running a version of WebLogic 10.3 that does not support ExecuteThreadRuntime (from 10.3+) then use the ClassLoader                    
+                    String jpaModuleNameRoot = ((ClassLoader)classLoaderOrString).toString();
+                    classLoaderOrString = jpaModuleNameRoot.substring(jpaModuleNameRoot.indexOf(
+                            WLS_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_PREFIX) + 
+                            WLS_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_PREFIX.length());
+                }        
             } catch (Exception ex) { // catch all Illegal*Exception and PrivilegedActionException
                 /*
                  * If the reflective call to ExecuteThreadRuntime failed for
@@ -429,7 +422,7 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform {
                 AbstractSessionLog.getLog().log(SessionLog.WARNING,  "problem_with_reflective_weblogic_call_mbean", ex, getMethodName);
             }
         }
-        return classLoaderOrString;
+        return (String)classLoaderOrString;
     }
 
     /**
@@ -483,6 +476,7 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform {
         }
         // Now that we know that the MBeanServer has been initialized - we use it
         // Initialize the threadPoolRuntime and get the executeThreadRuntime
+        //this.getDatabaseSession().getPlatform().getConversionManager().getLoader();
         if (wlsMBeanServer != null) {
             // Lazy load the ThreadPoolRuntime instance
             if (wlsThreadPoolRuntime == null) {
