@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root xsi:type="x:myTestSubType" xmlns:x="examplenamespace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="examplenamespace schema0.xsd">
+    <subTypeInt>66</subTypeInt>
+</root>

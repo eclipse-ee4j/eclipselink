@@ -16,10 +16,12 @@
   <responsibilities>responsibilities</responsibilities>
   <x:peep id="1">
    <firstName>name1</firstName>
+   <age>0</age>
    <lastName>lastName</lastName>
   </x:peep>
   <x:peep id ="2">
    <firstName>name2</firstName>
+   <age>0</age>
    <lastName>lastName</lastName>
   </x:peep>
 </x:employee-data>

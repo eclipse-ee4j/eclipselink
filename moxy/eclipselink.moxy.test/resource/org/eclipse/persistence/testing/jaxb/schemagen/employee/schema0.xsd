@@ -11,7 +11,7 @@
       <xsd:sequence>
          <xsd:element name="firstName" type="xsd:string"/>
          <xsd:element name="birthday" type="xsd:date" minOccurs="0"/>
-         <xsd:element name="age" type="xsd:int" minOccurs="0"/>
+         <xsd:element name="age" type="xsd:int"/>
          <xsd:element name="lastName" type="xsd:string" minOccurs="0"/>
          <xsd:element name="address" type="x:address-type" minOccurs="0"/>
          <xsd:element name="department" type="x:department" minOccurs="0"/>
@@ -28,7 +28,7 @@
    </xsd:complexType>
    <xsd:complexType name="myTestType">
       <xsd:sequence>
-         <xsd:element minOccurs="0" name="id" type="xsd:int"/>
+         <xsd:element name="id" type="xsd:int"/>
       </xsd:sequence>
    </xsd:complexType>
    <xsd:element name="peep" type="x:employee-type"/>

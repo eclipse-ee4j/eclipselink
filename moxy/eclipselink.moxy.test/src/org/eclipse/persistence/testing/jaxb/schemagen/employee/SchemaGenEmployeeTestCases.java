@@ -12,15 +12,20 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.jaxb.schemagen.employee;
 
+import org.eclipse.persistence.jaxb.JAXBContext;
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.compiler.Generator;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelImpl;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelInputImpl;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.StringReader;
 
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.stream.StreamSource;
@@ -29,9 +34,12 @@ import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 import junit.framework.TestCase;
 import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.oxm.XMLContext;
+import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.platform.xml.XMLComparer;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.platform.xml.XMLTransformer;
+import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.jaxb.JAXBXMLComparer;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -143,5 +151,111 @@ public class SchemaGenEmployeeTestCases extends TestCase {
         }
         assertTrue("Schema validation passed unexpectedly", exception);
         assertTrue("An unexpected exception occurred: " + msg, msg.contains("id"));
+    }
+
+    /**
+     * In this test the xsi:type of the root element set to subclass, which is valid.
+     */
+    public void testAbstractSuperclassVaildDoc() throws Exception {
+        boolean exception = false;
+        String msg = null;
+        String src = "org/eclipse/persistence/testing/jaxb/schemagen/employee/valid_inheritance.xml";
+        String tmpdir = System.getenv("T_WORK");
+
+        try {
+            Class[] jClasses = new Class[] { MyAbstractTestType.class, MyTestSubType.class };
+            Generator gen = new Generator(new JavaModelInputImpl(jClasses, new JavaModelImpl(Thread.currentThread().getContextClassLoader())));
+            gen.generateSchemaFiles(tmpdir, null);
+            SchemaFactory sFact = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
+            Schema theSchema = sFact.newSchema(new File(tmpdir + "/schema0.xsd"));
+            Validator validator = theSchema.newValidator();
+            StreamSource ss = new StreamSource(new File(src)); 
+            validator.validate(ss);
+        } catch (Exception ex) {
+            exception = true;
+            msg = ex.toString();
+        }
+        assertFalse("Schema validation failed unexpectedly: " + msg, exception);
+    }
+
+    /**
+     * In this test the xsi:type of the root element set to the abstract superclass,
+     * which should cause a validation exception.
+     */
+    public void testAbstractSuperclassInvaildDoc() throws Exception {
+        boolean exception = false;
+        String msg = null;
+        String src = "org/eclipse/persistence/testing/jaxb/schemagen/employee/invalid_inheritance.xml";
+        String tmpdir = System.getenv("T_WORK");
+
+        try {
+            Class[] jClasses = new Class[] { MyAbstractTestType.class, MyTestSubType.class };
+            Generator gen = new Generator(new JavaModelInputImpl(jClasses, new JavaModelImpl(Thread.currentThread().getContextClassLoader())));
+            gen.generateSchemaFiles(tmpdir, null);
+            SchemaFactory sFact = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
+            Schema theSchema = sFact.newSchema(new File(tmpdir + "/schema0.xsd"));
+            Validator validator = theSchema.newValidator();
+            StreamSource ss = new StreamSource(new File(src)); 
+            validator.validate(ss);
+        } catch (Exception ex) {
+            exception = true;
+            msg = ex.toString();
+        }
+        assertTrue("Schema validation did not fail as expected: " + msg, exception);
+    }
+    
+    /**
+     * This test will validate the descriptor's configuration wrt inheritance for
+     * an abstract superclass via marshal operation.
+     */
+    public void testAbstractSuperclassMarshal() throws Exception {
+        boolean exception = false;
+        String msg = null;
+        String tmpdir = System.getenv("T_WORK");
+        String src = "/output.xml";
+        MyTestSubType testObj = new MyTestSubType();
+        testObj.subTypeInt = 66;
+
+        try {
+            Class[] jClasses = new Class[] { MyAbstractTestType.class, MyTestSubType.class };
+            JAXBContext jCtx = (JAXBContext) JAXBContextFactory.createContext(jClasses, null);
+            Marshaller marshaller = jCtx.createMarshaller();
+            FileWriter fw = new FileWriter(tmpdir + src);
+            marshaller.marshal(testObj, fw);
+        } catch (Exception ex) {
+            exception = true;
+            ex.printStackTrace();
+            msg = ex.toString();
+        }
+        assertFalse("Marshal operation failed unexpectedly: " + msg, exception);
+    }
+    
+    /**
+     * This test will validate the descriptor's configuration wrt inheritance for
+     * an abstract superclass via unmarshal operation.
+     */
+    public void testAbstractSuperclassUnmarshal() throws Exception {
+        boolean exception = false;
+        String msg = null;
+        String src = "org/eclipse/persistence/testing/jaxb/schemagen/employee/mytestsubtype.xml";
+        String tmpdir = System.getenv("T_WORK");
+        Object obj = null;
+
+        try {
+            Class[] jClasses = new Class[] { MyAbstractTestType.class, MyTestSubType.class };
+            JAXBContext jCtx = (JAXBContext) JAXBContextFactory.createContext(jClasses, null);
+            Unmarshaller unmarshaller = jCtx.createUnmarshaller();
+            obj = unmarshaller.unmarshal(new File(src));
+        } catch (Exception ex) {
+            exception = true;
+            msg = ex.toString();
+        }
+        assertFalse("Unmarshal operation failed unexpectedly: " + msg, exception);
+        assertNotNull("Unmarshal operation resulted in null", obj);
+        if (obj instanceof MyTestSubType) {
+            
+        } else {
+            fail("Wrong object returned from unmarshal - expected [MyTestSubType] but was [" + obj + "]");
+        }
     }
 }

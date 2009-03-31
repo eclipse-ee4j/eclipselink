@@ -42,6 +42,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.*;
 import org.eclipse.persistence.oxm.mappings.*;
 import org.eclipse.persistence.oxm.mappings.converters.XMLRootConverter;
+import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.internal.jaxb.XMLJavaTypeConverter;
 import org.eclipse.persistence.sessions.Project;
 
@@ -100,12 +101,20 @@ public class MappingsGenerator {
         this.globalElements = globalElements;
         Project project = new Project();
 
+        // Generate descriptors
         for (JavaClass next : typeInfoClasses) {
             if (!next.isEnum()) {
                 generateDescriptor(next, project);
             }
         }
-        // now create mappings
+        // Setup inheritance for ABSTRACT parent class
+        for (JavaClass next : typeInfoClasses) {
+            if (!next.isEnum()) {
+                setupInheritance(next);
+            }
+        }
+        
+        // Now create mappings
         generateMappings();
         processGlobalElements(project);
         wrapperCounter = 0;
@@ -113,11 +122,6 @@ public class MappingsGenerator {
     }
     
     public void generateDescriptor(JavaClass javaClass, Project project) {
-        if(javaClass.isAbstract()) {
-            //don't generate a descriptor for abstract classes
-            return;
-        }
-        
         String jClassName = javaClass.getQualifiedName();
         TypeInfo info = typeInfo.get(jClassName);
         NamespaceInfo namespaceInfo = this.packageToNamespaceMappings.get(javaClass.getPackage().getQualifiedName());
@@ -154,11 +158,9 @@ public class MappingsGenerator {
         if (namespace.equals("")) {
             descriptor.setDefaultRootElement(elementName);
         } else {
-            String prefix = getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolver());
-            descriptor.setDefaultRootElement(prefix + ":" + elementName);
+            descriptor.setDefaultRootElement(getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolver()) + ":" + elementName);
         }
         descriptor.setNamespaceResolver(namespaceInfo.getNamespaceResolver());
-        
         project.addDescriptor(descriptor);
         info.setDescriptor(descriptor);
     }
@@ -697,6 +699,48 @@ public class MappingsGenerator {
         }
         return false;
     }
+
+    /**
+     * Setup inheritance for abstract superclass.  
+     * 
+     * NOTE: We currently only handle one level of inheritance in this case.  
+     * For multiple levels the code will need to be modified. The logic in 
+     * generateMappings() that determines when to copy down inherited 
+     * methods from the parent class will need to be changed as well. 
+     * 
+     * @param jClass
+     */
+    private void setupInheritance(JavaClass jClass) {
+        XMLDescriptor descriptor = typeInfo.get(jClass.getName()).getDescriptor();
+        if (descriptor == null) {
+            return;
+        }
+        JavaClass superClass = jClass.getSuperclass();
+        if (superClass != null && superClass.isAbstract()) {
+            XMLDescriptor superDescriptor = typeInfo.get(superClass.getName()).getDescriptor();
+            if (superDescriptor == null) {
+                return;
+            }
+            if (superDescriptor.getNamespaceResolver() == null) {
+                superDescriptor.setNamespaceResolver(new NamespaceResolver());
+            }
+            XMLField classIndicatorField = new XMLField("@xsi:type");
+            superDescriptor.getNamespaceResolver().put(XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL); 
+            superDescriptor.getInheritancePolicy().setClassIndicatorField(classIndicatorField);
+
+            XMLSchemaReference sRef = descriptor.getSchemaReference();
+            if (sRef == null || sRef.getSchemaContext() == null) {
+                return;
+            }
+            String sCtx = sRef.getSchemaContext();
+            if (sCtx.length() > 1 && sCtx.startsWith("/")) {
+                sCtx = sCtx.substring(1);
+            }
+            descriptor.getInheritancePolicy().setParentClassName(superClass.getName());
+            superDescriptor.getInheritancePolicy().addClassNameIndicator(jClass.getName(), sCtx);
+            superDescriptor.getInheritancePolicy().setShouldReadSubclasses(true);
+        }
+    }
     
     public void generateMappings() {
         Iterator javaClasses = this.typeInfo.keySet().iterator();
@@ -709,10 +753,11 @@ public class MappingsGenerator {
                 continue;
             }
             XMLDescriptor descriptor = info.getDescriptor();
-            //null descriptor for abstract classes
-            if(descriptor != null) {
-                TypeInfo parentInfo = this.typeInfo.get(javaClass.getSuperclass().getQualifiedName());
-                if (parentInfo != null) {
+            if (descriptor != null) {
+                JavaClass parentClass = javaClass.getSuperclass();
+                TypeInfo parentInfo = this.typeInfo.get(parentClass.getQualifiedName());
+                // only copy down parent mappings for non-abstract superclass as inheritance has been setup in that case
+                if (parentInfo != null && !parentClass.isAbstract()) {
                     //  generate inherited mappings first.
                     generateMappings(parentInfo, descriptor, namespaceInfo);
                 }
@@ -1159,5 +1204,5 @@ public class MappingsGenerator {
 	}    	
 	public HashMap<QName, Class> getQNamesToDeclaredClasses() {
 		return qNamesToDeclaredClasses;
-	}  
+	}
 }
