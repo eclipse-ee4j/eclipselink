@@ -16,6 +16,8 @@
  *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/248748</link>
  *     11/06/2008-1.1M5 Michael O'Brien 
  *       - 248746: Add getModuleName() implementation and new getApplicationName()
+ *     31/03/2009-1.1.1 Michael O'Brien 
+ *       - 270533: CCE on DefaultSessionLog cast narrowed for getLogFilename() 
  ******************************************************************************/  
 package org.eclipse.persistence.services.weblogic;
 
@@ -1272,9 +1274,11 @@ public class WebLogicRuntimeServices extends RuntimeServices {
     * @return String logFilename
     */
     public String getLogFilename() {
-        if (this.getLogType().equals(EclipseLink_Product_Name)) {
-            // returns String or null.
-            return ((DefaultSessionLog)session.getSessionLog()).getWriterFilename();
+        // returns String or null.
+        if (this.getLogType().equals(EclipseLink_Product_Name) && 
+                session.getSessionLog() instanceof DefaultSessionLog) {
+                // We are running on an application server here
+                return ((DefaultSessionLog)session.getSessionLog()).getWriterFilename();
         } else {
             return null;
         }
