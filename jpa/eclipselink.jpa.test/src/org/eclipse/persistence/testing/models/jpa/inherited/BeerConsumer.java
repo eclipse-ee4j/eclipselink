@@ -260,12 +260,11 @@ public class BeerConsumer<T> implements ChangeTracker, Cloneable{
     }
     
     @ElementCollection
+    // TODO: Correct resolving the T type without specifying the map key class
     // Map key class will get figured out through generic types.
+    @MapKeyClass(String.class)
     @MapKeyColumn(name="RS_KEY")
     @CollectionTable(name="CONSUMER_REDSTRIPES", joinColumns=@JoinColumn(name="C_ID", referencedColumnName="ID"))
-    // They better pass in the same type in this case ...
-    // ExpertBeerConsumer -> String
-    // NoviceBeerConsumer -> Integer
     public Map<T, RedStripe> getRedStripes() {
         return redStripeBeersToConsume;
     }
