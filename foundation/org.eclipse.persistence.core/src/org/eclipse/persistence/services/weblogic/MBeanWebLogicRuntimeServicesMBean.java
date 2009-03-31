@@ -14,6 +14,8 @@
  *     10/20/2008-1.1M4 Michael O'Brien 
  *       - 248748: Add WebLogic 10.3 specific JMX MBean attributes and functions
  *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/248748</link>
+ *     27/01/2009-1.1.1 Michael O'Brien 
+ *       - 262583: removal of category arg get*EclipseLinkLogLevel functions - rev 3308
  ******************************************************************************/  
 package org.eclipse.persistence.services.weblogic;
 

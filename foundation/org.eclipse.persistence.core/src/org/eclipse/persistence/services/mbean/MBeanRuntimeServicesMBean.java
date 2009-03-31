@@ -113,7 +113,7 @@ public interface MBeanRuntimeServicesMBean {
 
     /**
      *        This method is used to return those Class Names that have identity Maps in the Session.
-     * Please note that SubClasses and aggregates will be missing form this list as they do not have
+     * Please note that SubClasses and aggregates will be missing from this list as they do not have
      * separate identity maps.
      */
     public List getClassesInSession();

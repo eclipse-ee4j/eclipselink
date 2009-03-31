@@ -16,6 +16,8 @@
  *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/248748</link>
  *     11/06/2008-1.1M5 Michael O'Brien 
  *       - 248746: Add getModuleName() implementation and new getApplicationName()
+ *     27/01/2009-1.1.1 Michael O'Brien 
+ *       - 262583: removal of category arg get*EclipseLinkLogLevel functions - rev 3308
  *     31/03/2009-1.1.1 Michael O'Brien 
  *       - 270533: CCE on DefaultSessionLog cast narrowed for getLogFilename() 
  ******************************************************************************/  
