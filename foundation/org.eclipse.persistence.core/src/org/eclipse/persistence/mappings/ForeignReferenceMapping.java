@@ -778,6 +778,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      */
     public void initialize(AbstractSession session) throws DescriptorException {
         super.initialize(session);
+        if (isPrivateOwned) getDescriptor().addMappingsPostCalculateChanges(this);
         initializeReferenceDescriptor(session);
         initializeSelectionQuery(session);
         getIndirectionPolicy().initialize();
@@ -1034,6 +1035,13 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * It also ensures that private objects removed from collections are deleted and object added are inserted.
      */
     public void setIsPrivateOwned(boolean isPrivateOwned) {
+        if (this.descriptor != null && ! this.isMapKeyMapping()){ // initialized
+            if (isPrivateOwned && !this.isPrivateOwned){
+                this.descriptor.addMappingsPostCalculateChanges(this);
+            }else if (!isPrivateOwned && this.isPrivateOwned){
+                this.descriptor.getMappingsPostCalculateChanges().remove(this);
+            }
+        }
         this.isPrivateOwned = isPrivateOwned;
     }
 

@@ -14,6 +14,7 @@ package org.eclipse.persistence.mappings;
 
 import java.util.*;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.history.*;
@@ -142,6 +143,20 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
         return clone;
     }
 
+    /**
+     * INTERNAL:
+     * This method is called to update collection tables prior to commit.
+     */
+    @Override
+    public void earlyPreDelete(DeleteObjectQuery query){
+        AbstractSession querySession = query.getSession();
+        prepareTranslationRow(query.getTranslationRow(), query.getObject(), querySession);
+        querySession.executeQuery(getDeleteAllQuery(), query.getTranslationRow());
+
+        if ((getHistoryPolicy() != null) && getHistoryPolicy().shouldHandleWrites()) {
+            getHistoryPolicy().mappingLogicalDelete(getDeleteAllQuery(), query.getTranslationRow(), querySession);
+        }
+    }
     /**
      * INTERNAL
      * Called when a DatabaseMapping is used to map the key in a collection.  Returns the key.
@@ -462,6 +477,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      */
     public void initialize(AbstractSession session) throws DescriptorException {
         super.initialize(session);
+        getDescriptor().getPreDeleteMappings().add(this);
 
         initializeRelationTable(session);
         initializeSourceRelationKeys(session);
@@ -953,6 +969,13 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
     }
 
     /**
+     * For Many To Many mappings referenced objects are deleted one by one.
+     */
+    protected boolean mustDeleteReferenceObjectsOneByOne() {
+        return true;
+    }
+
+    /**
      * INTERNAL:
      * An object was added to the collection during an update, insert it if private.
      */
@@ -1090,27 +1113,29 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * INTERNAL:
      * Delete entries related to this mapping from the relation table.
      */
+    @Override
     public void preDelete(DeleteObjectQuery query) throws DatabaseException {
+        AbstractSession querySession = query.getSession();
+        if (querySession != null && querySession.isUnitOfWork()){
+            return;
+        }
         Object objectsIterator = null;
         ContainerPolicy containerPolicy = getContainerPolicy();
-
+        
         if (isReadOnly()) {
             return;
         }
-
-        Object objects = getRealCollectionAttributeValueFromObject(query.getObject(), query.getSession());
-
+        Object objects = null;
+        
         boolean cascade = shouldObjectModifyCascadeToParts(query);
         if (containerPolicy.propagatesEventsToCollection() || cascade) {
+            // if processed during UnitOfWork commit process the private owned delete will occur during change calculation
+            objects = getRealCollectionAttributeValueFromObject(query.getObject(), querySession);
             //this must be done up here because the select must be done before the entry in the relation table is deleted.
             objectsIterator = containerPolicy.iteratorFor(objects);
         }
-        prepareTranslationRow(query.getTranslationRow(), query.getObject(), query.getSession());
-        query.getSession().executeQuery(getDeleteAllQuery(), query.getTranslationRow());
-
-        if ((getHistoryPolicy() != null) && getHistoryPolicy().shouldHandleWrites()) {
-            getHistoryPolicy().mappingLogicalDelete(getDeleteAllQuery(), query.getTranslationRow(), query.getSession());
-        }
+        
+            earlyPreDelete(query);
 
         // If privately owned delete the objects, this does not handle removed objects (i.e. verify delete, not req in uow).
         // Does not try to optimize delete all like 1-m, (rarely used and hard to do).

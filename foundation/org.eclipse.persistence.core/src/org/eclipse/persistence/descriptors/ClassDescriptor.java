@@ -218,6 +218,10 @@ public class ClassDescriptor implements Cloneable, Serializable {
      *  These fields are generally foreign key fields that are required in addition to the fields in the descriptor's 
      *  mappings to uniquely identify the Aggregate*/
     protected transient List<DatabaseField> additionalAggregateCollectionKeyFields;
+    
+    /** stores a list of mappings that require preDelete as a group prior to the delete individually */
+    protected List<DatabaseMapping> preDeleteMappings;
+    
     /**
      * PUBLIC:
      * Return a new descriptor.
@@ -2153,6 +2157,14 @@ public class ClassDescriptor implements Cloneable, Serializable {
     }
 
     /**
+     * @return the preDeleteMappings
+     */
+    public List<DatabaseMapping> getPreDeleteMappings() {
+        if (preDeleteMappings == null) preDeleteMappings = new ArrayList<DatabaseMapping>();
+        return preDeleteMappings;
+    }
+
+    /**
      * PUBLIC:
      * Return the names of all the primary keys.
      */
@@ -2474,6 +2486,13 @@ public class ClassDescriptor implements Cloneable, Serializable {
      */
     public boolean hasMultipleTables() {
         return (getTables().size() > 1);
+    }
+
+    /**
+     * @return the preDeleteMappings
+     */
+    public boolean hasPreDeleteMappings() {
+        return preDeleteMappings != null;
     }
 
     /**

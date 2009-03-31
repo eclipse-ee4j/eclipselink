@@ -547,6 +547,30 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
 
     /**
      * INTERNAL:
+     * Overridden by mappings that require additional processing of the change record after the record has been calculated.
+     */
+    @Override
+    public void postCalculateChanges(org.eclipse.persistence.sessions.changesets.ChangeRecord changeRecord, UnitOfWorkImpl uow) {
+        // no need for private owned check.  This code is only registered for private owned mappings.
+        // targets are added to and/or removed to/from the source.
+        Object oldValue = ((ObjectReferenceChangeRecord)changeRecord).getOldValue();
+        uow.addDeletedPrivateOwnedObjects(this, oldValue);
+    }
+
+    /**
+     * INTERNAL:
+     * Overridden by mappings that require additional processing of the change record after the record has been calculated.
+     */
+    @Override
+    public void recordPrivateOwnedRemovals(Object object, UnitOfWorkImpl uow) {
+        Object target = getRealAttributeValueFromObject(object, uow);
+        if (target != null){
+            this.referenceDescriptor.getObjectBuilder().recordPrivateOwnedRemovals(target, uow, false);
+        }
+    }
+
+    /**
+     * INTERNAL:
      * Delete privately owned parts
      */
     public void postDelete(DeleteObjectQuery query) throws DatabaseException, OptimisticLockException {
@@ -634,9 +658,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
             }
         }            
             
-        if (query.shouldCascadeOnlyDependentParts()) {
-            query.getSession().getCommitManager().addObjectToDelete(objectInDatabase);
-        } else {
+        if (!query.shouldCascadeOnlyDependentParts()) {
             query.getSession().deleteObject(objectInDatabase);
         }
     }

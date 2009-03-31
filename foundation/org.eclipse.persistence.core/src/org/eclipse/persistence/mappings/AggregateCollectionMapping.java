@@ -401,7 +401,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
             backupCollection = getRealCollectionAttributeValueFromObject(backUp, session);
 
             if (cp.sizeFor(backupCollection) != cp.sizeFor(cloneCollection)) {
-                return convertToChangeRecord(cloneCollection, owner, session);
+                return convertToChangeRecord(cloneCollection, backupCollection, owner, session);
             }
             Object cloneIterator = cp.iteratorFor(cloneCollection);
             Object backUpIterator = cp.iteratorFor(backupCollection);
@@ -442,13 +442,13 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
                 }
             }
             if ((change == true) || (cp.hasNext(backUpIterator))) {
-                return convertToChangeRecord(cloneCollection, owner, session);
+                return convertToChangeRecord(cloneCollection, backupCollection, owner, session);
             } else {
                 return null;
             }
         }
 
-        return convertToChangeRecord(getRealCollectionAttributeValueFromObject(clone, session), owner, session);
+        return convertToChangeRecord(getRealCollectionAttributeValueFromObject(clone, session), containerPolicy.containerInstance(), owner, session);
     }
 
     /**
@@ -502,7 +502,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * @param cloneCollection Object the collection to convert
      * @param session org.eclipse.persistence.internal.sessions.AbstractSession
      */
-    protected ChangeRecord convertToChangeRecord(Object cloneCollection, ObjectChangeSet owner, AbstractSession session) {
+    protected ChangeRecord convertToChangeRecord(Object cloneCollection, Object backupCollection, ObjectChangeSet owner, AbstractSession session) {
         ContainerPolicy cp = getContainerPolicy();
         Object cloneIter = cp.iteratorFor(cloneCollection);
         Vector collectionChanges = new Vector(2);
@@ -522,6 +522,11 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         changeRecord.setAttribute(getAttributeName());
         changeRecord.setMapping(this);
         changeRecord.setChangedValues(collectionChanges);
+        
+        getContainerPolicy().compareCollectionsForChange(backupCollection, cloneCollection, changeRecord, session, remoteReferenceDescriptor);
+        
+        
+        
         return changeRecord;
     }
 
@@ -822,7 +827,9 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      */
     public void initialize(AbstractSession session) throws DescriptorException {
         super.initialize(session);
-
+        if (getDescriptor() != null){ // descriptor will only be null in special case where the mapping has not been added to a descriptor prior to initialization.
+            getDescriptor().addMappingsPostCalculateChanges(this); // always equivalent to Private Owned
+        }
         if (!getReferenceDescriptor().isAggregateCollectionDescriptor()) {
             session.getIntegrityChecker().handleError(DescriptorException.referenceDescriptorIsNotAggregateCollection(getReferenceClass().getName(), this));
         }
@@ -1730,7 +1737,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
             // change record as it should be built from the clone which has the changes allready
             Object cloneObject = ((UnitOfWorkChangeSet)changeSet.getUOWChangeSet()).getUOWCloneForObjectChangeSet(changeSet);
             Object cloneCollection = this.getRealAttributeValueFromObject(cloneObject, session);
-            collectionChangeRecord = (AggregateCollectionChangeRecord)convertToChangeRecord(cloneCollection, changeSet, session);
+            collectionChangeRecord = (AggregateCollectionChangeRecord)convertToChangeRecord(cloneCollection, containerPolicy.containerInstance(), changeSet, session);
             changeSet.addChange(collectionChangeRecord);
         } else {
             collectionChangeRecord.getChangedValues().add(changeSetToAdd);
@@ -1751,7 +1758,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
             // change record as it should be built from the clone which has the changes allready
             Object cloneObject = ((UnitOfWorkChangeSet)changeSet.getUOWChangeSet()).getUOWCloneForObjectChangeSet(changeSet);
             Object cloneCollection = this.getRealAttributeValueFromObject(cloneObject, session);
-            collectionChangeRecord = (AggregateCollectionChangeRecord)convertToChangeRecord(cloneCollection, changeSet, session);
+            collectionChangeRecord = (AggregateCollectionChangeRecord)convertToChangeRecord(cloneCollection, containerPolicy.containerInstance(), changeSet, session);
             changeSet.addChange(collectionChangeRecord);
         } else {
             collectionChangeRecord.getChangedValues().remove(changeSetToRemove);

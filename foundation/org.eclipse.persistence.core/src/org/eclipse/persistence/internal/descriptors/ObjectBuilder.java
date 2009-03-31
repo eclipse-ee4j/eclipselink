@@ -2328,6 +2328,20 @@ public class ObjectBuilder implements Cloneable, Serializable {
         }
     }
     
+    public void recordPrivateOwnedRemovals(Object object, UnitOfWorkImpl uow, boolean initialPass) {
+        if (!this.descriptor.isAggregateCollectionDescriptor() && !this.descriptor.isAggregateDescriptor()){
+            if (!initialPass && uow.getDeletedObjects().containsKey(object)){
+                return;
+            }
+            uow.getDeletedObjects().put(object, object);
+        }
+        if (this.descriptor.hasMappingsPostCalculateChanges()){
+            for (DatabaseMapping mapping : this.descriptor.getMappingsPostCalculateChanges()){
+                mapping.recordPrivateOwnedRemovals(object, uow);
+            }
+        }
+    }
+
     /**
      * INTERNAL:
      * Post initializations after mappings are initialized.

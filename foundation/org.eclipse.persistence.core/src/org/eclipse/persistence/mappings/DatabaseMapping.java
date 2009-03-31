@@ -107,6 +107,11 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * PERF: Cache the mappings attribute name.
      */
     protected String attributeName;
+    
+    /**
+     * Records if this mapping is being used as a MapKeyMapping.  This is important for recording main mappings
+     */
+    protected boolean isMapKeyMapping = false;
 
     /**
      * PUBLIC:
@@ -323,6 +328,13 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      */
     public UnitOfWorkValueHolder createUnitOfWorkValueHolder(ValueHolderInterface attributeValue, Object original, Object clone, AbstractRecord row, UnitOfWorkImpl unitOfWork, boolean buildDirectlyFromRow) {
         throw DescriptorException.invalidMappingOperation(this, "createUnitOfWorkValueHolder");
+    }
+
+    /**
+     * INTERNAL:
+     * This method is called to update collection tables prior to commit.
+     */
+    public void earlyPreDelete(DeleteObjectQuery query){
     }
 
     /**
@@ -762,6 +774,20 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      */
     public boolean isManyToManyMapping() {
         return false;
+    }
+
+    /**
+     * @return the isMapKeyMapping
+     */
+    public boolean isMapKeyMapping() {
+        return isMapKeyMapping;
+    }
+
+    /**
+     * @param isMapKeyMapping the isMapKeyMapping to set
+     */
+    public void setIsMapKeyMapping(boolean isMapKeyMapping) {
+        this.isMapKeyMapping = isMapKeyMapping;
     }
 
     /**
@@ -1640,13 +1666,19 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * INTERNAL:
      * Overridden by mappings that require additional processing of the change record after the record has been calculated.
      */
-    public void postCalculateChanges(org.eclipse.persistence.sessions.changesets.ChangeRecord changeRecord, AbstractSession session) {
+    public void postCalculateChanges(org.eclipse.persistence.sessions.changesets.ChangeRecord changeRecord, UnitOfWorkImpl uow) {
+    }
+    /**
+     * INTERNAL:
+     * Overridden by mappings that require objects to be deleted contribute to change set creation.
+     */
+    public void postCalculateChangesOnDeleted(Object deletedObject, UnitOfWorkChangeSet uowChangeSet, UnitOfWorkImpl uow) {
     }
 
     /**
      * INTERNAL:
      * Overridden by mappings that require objects to be deleted contribute to change set creation.
      */
-    public void postCalculateChangesOnDeleted(Object object, UnitOfWorkChangeSet changeSet, AbstractSession session) {
+    public void recordPrivateOwnedRemovals(Object object, UnitOfWorkImpl uow) {
     }
 }

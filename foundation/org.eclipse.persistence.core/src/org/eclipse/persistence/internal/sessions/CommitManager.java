@@ -345,7 +345,7 @@ public class CommitManager {
     /**
      * Deletion are cached until the end.
      */
-    protected List getObjectsToDelete() {
+    public List getObjectsToDelete() {
         if (objectsToDelete == null) {
             objectsToDelete = new ArrayList();
         }

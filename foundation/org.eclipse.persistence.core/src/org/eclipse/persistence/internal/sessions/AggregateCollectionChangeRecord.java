@@ -19,7 +19,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 /**
  * This change record records the changes for AggregateCollectionMapping.
  */
-public class AggregateCollectionChangeRecord extends ChangeRecord implements org.eclipse.persistence.sessions.changesets.AggregateCollectionChangeRecord {
+public class AggregateCollectionChangeRecord extends CollectionChangeRecord implements org.eclipse.persistence.sessions.changesets.AggregateCollectionChangeRecord {
     protected Vector changedValues;
 
     /**

@@ -87,6 +87,21 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
         }
         
         ObjectChangeSet changes = createObjectChangeSet(clone, backUp, changeSet, isNew, unitOfWork, descriptor);
+        if(changes.hasChanges() && descriptor.hasMappingsPostCalculateChanges() && ! changes.isNew() && ! unitOfWork.getCommitManager().isActive() && !unitOfWork.isNestedUnitOfWork()) {
+            // if we are in the commit because of an event skip this postCalculateChanges step as we have already executed it.
+            int size = descriptor.getMappingsPostCalculateChanges().size();
+            for(int i=0; i < size; i++) {
+                DatabaseMapping mapping = descriptor.getMappingsPostCalculateChanges().get(i); 
+                org.eclipse.persistence.sessions.changesets.ChangeRecord record = changes.getChangesForAttributeNamed(mapping.getAttributeName());
+                if(record != null) {
+                    // don't call postCalculateChanges if calculateDeferredChanges has been already called:
+                    // the latter calls the former (required by DeferredChangePolicy). 
+                    if(!changes.hasDeferredAttributes() || !changes.getDeferredSet().contains(mapping.getAttributeName())) {
+                        mapping.postCalculateChanges(record, unitOfWork);
+                    }
+                }
+            }
+        }
         //Check if the user set the PK to null and throw an exception (bug# 4569755)
         if (changes.getPrimaryKeys() == null && !isNew && !changes.isAggregate()) {
             if(!(unitOfWork.isNestedUnitOfWork()) || (unitOfWork.isNestedUnitOfWork() && !((UnitOfWorkImpl)unitOfWork.getParent()).isObjectNew(backUp))) {

@@ -16,6 +16,7 @@ import java.util.*;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.platform.database.TimesTenPlatform;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.DatabaseSession;
@@ -32,6 +33,8 @@ import org.eclipse.persistence.tools.schemaframework.*;
 public class TestSystem {
     protected DatabaseLogin login;
     public Project project;
+    
+    public Map<String, String> properties;
 
     /**
      * Add all of the descriptors.
@@ -114,7 +117,7 @@ public class TestSystem {
      * This file must be on the classpath, or system property set.
      */
     public void loadLoginFromProperties() {        
-        Map properties = JUnitTestCaseHelper.getDatabaseProperties();
+        this.properties = JUnitTestCaseHelper.getDatabaseProperties();
         login = new DatabaseLogin();
         login.setDriverClassName((String)properties.get(PersistenceUnitProperties.JDBC_DRIVER));
         login.setConnectionString((String)properties.get(PersistenceUnitProperties.JDBC_URL));
@@ -132,6 +135,7 @@ public class TestSystem {
 
         session = new Project(getLogin()).createDatabaseSession();
         addDescriptors(session);
+        session.setLogLevel(AbstractSessionLog.translateStringToLoggingLevel(properties.get(PersistenceUnitProperties.LOGGING_LEVEL)));
         session.login();
 
         return session;

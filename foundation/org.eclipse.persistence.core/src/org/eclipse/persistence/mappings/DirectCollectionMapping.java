@@ -1401,6 +1401,15 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
 
     /**
      * INTERNAL:
+     * Overridden by mappings that require additional processing of the change record after the record has been calculated.
+     */
+    @Override
+    public void postCalculateChanges(org.eclipse.persistence.sessions.changesets.ChangeRecord changeRecord, UnitOfWorkImpl uow) {
+        //no -op for this collection type
+    }
+
+    /**
+     * INTERNAL:
      * Insert the private owned object.
      */
     public void postInsert(WriteObjectQuery query) throws DatabaseException {
@@ -1603,6 +1612,13 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         }
     }
 
+    /**
+     * INTERNAL:
+     * Overridden by mappings that require additional processing of the change record after the record has been calculated.
+     */
+    @Override
+    public void recordPrivateOwnedRemovals(Object object, UnitOfWorkImpl uow) {
+    }
     /**
      * INTERNAL:
      * Once descriptors are serialized to the remote session. All its mappings and reference descriptors are traversed. Usually

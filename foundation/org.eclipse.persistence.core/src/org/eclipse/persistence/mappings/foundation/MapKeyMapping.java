@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.mappings.foundation;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -71,7 +72,7 @@ public interface MapKeyMapping extends MapComponentMapping {
      * @param object
      * @param manager
      */
-    public void addKeyToDeletedObjectsList(Object object, CommitManager manager);
+    public void addKeyToDeletedObjectsList(Object object, Map deletedObjects);
     
     /**
      * Build a clone of the given element in a unitOfWork

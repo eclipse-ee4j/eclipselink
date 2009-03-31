@@ -14,6 +14,7 @@ package org.eclipse.persistence.internal.sessions;
 
 import java.util.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
 
 /**
  * <p>
@@ -85,10 +86,10 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
     /**
      * This method takes a Map of objects, converts these into ObjectChangeSets.
      */
-    public void addAdditionChange(IdentityHashMap objectChanges, UnitOfWorkChangeSet changeSet, AbstractSession session) {
-        Iterator enumtr = objectChanges.keySet().iterator();
+    public void addAdditionChange(Map objectChanges, ContainerPolicy cp, UnitOfWorkChangeSet changeSet, AbstractSession session) {
+        Iterator enumtr = objectChanges.values().iterator();
         while (enumtr.hasNext()) {
-            Object object = enumtr.next();
+            Object object = cp.unwrapElement(enumtr.next());
             ObjectChangeSet change = session.getDescriptor(object.getClass()).getObjectBuilder().createObjectChangeSet(object, changeSet, session);
             if (change.hasKeys()){
                 // if change set has keys this is a map comparison.  Maps are
@@ -145,13 +146,13 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
     /**
      * This method takes a Map of objects, converts these into ObjectChangeSets.
      */
-    public void addRemoveChange(IdentityHashMap objectChanges, UnitOfWorkChangeSet changeSet, AbstractSession session) {
+    public void addRemoveChange(Map objectChanges, ContainerPolicy cp, UnitOfWorkChangeSet changeSet, AbstractSession session) {
         // There is no need to keep track of removed new objects because it will not be in the backup,
         // It will not be in the backup because it is new.
-        Iterator enumtr = objectChanges.keySet().iterator();
+        Iterator enumtr = objectChanges.values().iterator();
         while (enumtr.hasNext()) {
-            Object object = enumtr.next();
-            ClassDescriptor descriptor = session.getDescriptor(object.getClass());
+            Object object = cp.unwrapElement(enumtr.next());
+            ClassDescriptor descriptor = this.mapping.getReferenceDescriptor();
             ObjectChangeSet change = descriptor.getObjectBuilder().createObjectChangeSet(object, changeSet, session);
             if (change.hasKeys()) {
                 // if change set has keys this is a map comparison.  Maps are

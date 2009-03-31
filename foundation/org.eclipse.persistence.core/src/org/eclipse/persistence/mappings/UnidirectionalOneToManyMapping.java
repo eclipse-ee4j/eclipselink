@@ -34,6 +34,7 @@ import org.eclipse.persistence.internal.sessions.ChangeRecord;
 import org.eclipse.persistence.internal.sessions.CollectionChangeRecord;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.queries.ComplexQueryResult;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.DeleteObjectQuery;
@@ -41,6 +42,7 @@ import org.eclipse.persistence.queries.ObjectLevelModifyQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
+import org.eclipse.persistence.sessions.UnitOfWork;
 
 /**
  * <p><b>Purpose</b>: UnidirectionalOneToManyMapping doesn't have 1:1 back reference mapping.
@@ -97,10 +99,11 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
      * This method is used to create a change record from comparing two collections
      * @return org.eclipse.persistence.internal.sessions.ChangeRecord
      */
-    public ChangeRecord compareForChange(Object clone, Object backUp, ObjectChangeSet owner, AbstractSession session) {
-        ChangeRecord record = super.compareForChange(clone, backUp, owner, session);
+    @Override
+    public ChangeRecord compareForChange(Object clone, Object backUp, ObjectChangeSet owner, AbstractSession uow) {
+        ChangeRecord record = super.compareForChange(clone, backUp, owner, uow);
         if(record != null && getReferenceDescriptor().getOptimisticLockingPolicy() != null) {
-            postCalculateChanges(record, session);
+            postCalculateChanges(record, (UnitOfWorkImpl)uow);
         }
         return record;
     }
@@ -312,7 +315,8 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
      * INTERNAL:
      * Overridden by mappings that require additional processing of the change record after the record has been calculated.
      */
-    public void postCalculateChanges(org.eclipse.persistence.sessions.changesets.ChangeRecord changeRecord, AbstractSession session) {
+    @Override
+    public void postCalculateChanges(org.eclipse.persistence.sessions.changesets.ChangeRecord changeRecord, UnitOfWorkImpl uow) {
         // targets are added to and/or removed to/from the source.
         CollectionChangeRecord collectionChangeRecord = (CollectionChangeRecord)changeRecord;
         Iterator it = collectionChangeRecord.getAddObjectList().values().iterator();
@@ -320,18 +324,20 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
             ObjectChangeSet change = (ObjectChangeSet)it.next();
             if(!change.hasChanges()) {
                 change.setShouldModifyVersionField(Boolean.TRUE);
-                ((org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet)change.getUOWChangeSet()).addObjectChangeSet(change, session, false);
+                ((org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet)change.getUOWChangeSet()).addObjectChangeSet(change, uow, false);
             }
         }
         // in the mapping is privately owned then the target will be deleted - no need to modify target version.
-        if(!isPrivateOwned()) {
-            it = collectionChangeRecord.getRemoveObjectList().values().iterator();
-            while(it.hasNext()) {
-                ObjectChangeSet change = (ObjectChangeSet)it.next(); 
+        it = collectionChangeRecord.getRemoveObjectList().values().iterator();
+        while(it.hasNext()) {
+            ObjectChangeSet change = (ObjectChangeSet)it.next(); 
+            if (!isPrivateOwned()){
                 if(!change.hasChanges()) {
                     change.setShouldModifyVersionField(Boolean.TRUE);
-                    ((org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet)change.getUOWChangeSet()).addObjectChangeSet(change, session, false);
+                    ((org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet)change.getUOWChangeSet()).addObjectChangeSet(change, uow, false);
                 }
+            }else{
+                containerPolicy.postCalculateChanges(change, referenceDescriptor, this, uow);
             }
         }
     }
@@ -340,22 +346,23 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
      * INTERNAL:
      * Overridden by mappings that require objects to be deleted contribute to change set creation.
      */
-    public void postCalculateChangesOnDeleted(Object deletedObject, UnitOfWorkChangeSet uowChangeSet, AbstractSession session) {        
+    @Override
+    public void postCalculateChangesOnDeleted(Object deletedObject, UnitOfWorkChangeSet uowChangeSet, UnitOfWorkImpl uow) {        
         // the source is deleted:
         // trigger the indirection - we have to get optimistic lock exception
         // in case another thread has updated one of the targets:
         // triggered indirection caches the target with the old version,
         // then the version update waits until the other thread (which is locking the version field) commits,
         // then the version update is executed and it throws optimistic lock exception.
-        Object col = getRealCollectionAttributeValueFromObject(deletedObject, session);
+        Object col = getRealCollectionAttributeValueFromObject(deletedObject, uow);
         if (col != null) {
             Object iterator = containerPolicy.iteratorFor(col);
             while (containerPolicy.hasNext(iterator)) {
-                Object target = containerPolicy.next(iterator, session);
-                ObjectChangeSet change = referenceDescriptor.getObjectBuilder().createObjectChangeSet(target, uowChangeSet, session);
+                Object target = containerPolicy.next(iterator, uow);
+                ObjectChangeSet change = referenceDescriptor.getObjectBuilder().createObjectChangeSet(target, uowChangeSet, uow);
                 if (!change.hasChanges()) {
                     change.setShouldModifyVersionField(Boolean.TRUE);
-                    ((org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet)change.getUOWChangeSet()).addObjectChangeSet(change, session, false);
+                    ((org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet)change.getUOWChangeSet()).addObjectChangeSet(change, uow, false);
                 }
             }
         }
@@ -391,6 +398,21 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
     }
 
 
+    /**
+     * INTERNAL:
+     * Overridden by mappings that require additional processing of the change record after the record has been calculated.
+     */
+    @Override
+    public void recordPrivateOwnedRemovals(Object object, UnitOfWorkImpl uow) {
+        //need private owned check for this mapping as this method is called for any mapping
+        // that also registers a postCalculateChanges() method.  Most mappings only register the 
+        // postCalculateChanges if they are privately owned.  This Mapping is a special case an
+        // always registers a postCalculateChanges mapping when the target has OPT locking.
+        if (isPrivateOwned){
+            super.recordPrivateOwnedRemovals(object, uow);
+        }
+    }
+    
     /**
      * INTERNAL:
      * UnidirectionalOneToManyMapping performs some events after INSERT/UPDATE to maintain the keys

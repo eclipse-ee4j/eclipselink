@@ -152,7 +152,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * @param object
      * @param manager
      */
-    public void addKeyToDeletedObjectsList(Object object, CommitManager manager){
+    public void addKeyToDeletedObjectsList(Object object, Map deletedObjects){
     }
     
     /**

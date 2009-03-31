@@ -12,12 +12,14 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.collections.map;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.mappings.OneToManyMapping;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.models.collections.map.AggregateEntity1MMapHolder;
 import org.eclipse.persistence.testing.models.collections.map.EntityMapValue;
 import org.eclipse.persistence.testing.models.collections.map.AggregateEntityU1MMapHolder;
 import org.eclipse.persistence.testing.models.collections.map.AggregateMapKey;

@@ -30,6 +30,7 @@ import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
 import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -42,6 +43,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
 import org.eclipse.persistence.indirection.IndirectCollection;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.mappings.Association;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 
@@ -236,8 +238,8 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      * @param object
      * @param manager
      */
-    public void addToDeletedObjectsList(Object object, CommitManager manager){
-        manager.addObjectToDelete(object);
+    public void addToDeletedObjectsList(Object object, Map deletedObjects){
+        deletedObjects.put(object, object);
     }
     
     
@@ -444,7 +446,7 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      * @param session
      * @param referenceDescriptor
      */
-    protected void createChangeSetForKeys(IdentityHashMap originalKeyValues, CollectionChangeRecord changeRecord, AbstractSession session, ClassDescriptor referenceDescriptor){
+    protected void createChangeSetForKeys(Map originalKeyValues, CollectionChangeRecord changeRecord, AbstractSession session, ClassDescriptor referenceDescriptor){
     }
 
     /**
@@ -458,7 +460,7 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      * @param session
      * @param referenceDescriptor
      */
-    protected void collectObjectForNewCollection(IdentityHashMap originalKeyValues, IdentityHashMap cloneKeyValues, Object newCollection, CollectionChangeRecord changeRecord, AbstractSession session, ClassDescriptor referenceDescriptor){
+    protected void collectObjectForNewCollection(Map originalKeyValues, Map cloneKeyValues, Object newCollection, CollectionChangeRecord changeRecord, AbstractSession session, ClassDescriptor referenceDescriptor){
         Object cloneIter = iteratorFor(newCollection);
         
         while (hasNext(cloneIter)) {
@@ -467,11 +469,15 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
             // CR2378 null check to prevent a null pointer exception - XC
             // If value is null then nothing can be done with it.
             if (firstObject != null) {
-                if (originalKeyValues.containsKey(firstObject)) {
+                Object key = firstObject;
+                if (changeRecord.getMapping().isAggregateCollectionMapping()){
+                    key = referenceDescriptor.getObjectBuilder().extractPrimaryKeyFromObject(firstObject, session);
+                }
+                if (originalKeyValues.containsKey(key)) {
                     // There is an original in the cache
                     if ((compareKeys(firstObject, session))) {
                         // The keys have not changed
-                        originalKeyValues.remove(firstObject);
+                        originalKeyValues.remove(key);
                     } else {
                         // The keys have changed, create a changeSet 
                         // (it will be reused later) and set the old key 
@@ -489,12 +495,12 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
                         ObjectChangeSet changeSet = referenceDescriptor.getObjectBuilder().createObjectChangeSet(firstObject, (UnitOfWorkChangeSet) changeRecord.getOwner().getUOWChangeSet(), session);
                         changeSet.setOldKey(keyFrom(backUpVersion, session));
                         changeSet.setNewKey(keyFrom(firstObject, session));
-                        cloneKeyValues.put(firstObject, firstObject);
+                        cloneKeyValues.put(key, firstObject);
                     }
                 } else {
                     // Place it in the add collection
                     buildChangeSetForNewObjectInCollection(wrappedFirstObject, referenceDescriptor, (UnitOfWorkChangeSet) changeRecord.getOwner().getUOWChangeSet(), session);
-                    cloneKeyValues.put(firstObject, firstObject);
+                    cloneKeyValues.put(key, firstObject);
                 }
             }
         }
@@ -507,8 +513,15 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      */
     public void compareCollectionsForChange(Object oldCollection, Object newCollection, CollectionChangeRecord changeRecord, AbstractSession session, ClassDescriptor referenceDescriptor) {
         // 2612538 - the default size of Map (32) is appropriate
-        IdentityHashMap originalKeyValues = new IdentityHashMap();
-        IdentityHashMap cloneKeyValues = new IdentityHashMap();
+        Map originalKeyValues = null;
+        Map cloneKeyValues = null;
+        if (changeRecord.getMapping().isAggregateCollectionMapping()){
+            originalKeyValues = new HashMap();
+            cloneKeyValues = new HashMap();
+        }else{
+            originalKeyValues = new IdentityHashMap();
+            cloneKeyValues = new IdentityHashMap();
+        }
         // Collect the values from the oldCollection.
         if (oldCollection != null) {
             Object backUpIter = iteratorFor(oldCollection);
@@ -519,7 +532,11 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
     
                 // CR2378 null check to prevent a null pointer exception - XC
                 if (secondObject != null) {
-                    originalKeyValues.put(secondObject, wrappedSecondObject);
+                    Object key = secondObject;
+                    if (changeRecord.getMapping().isAggregateCollectionMapping()){
+                        key = referenceDescriptor.getObjectBuilder().extractPrimaryKeyFromObject(secondObject, session);
+                    }
+                    originalKeyValues.put(key, wrappedSecondObject);
                 }
             }
         }
@@ -527,8 +544,8 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
             collectObjectForNewCollection(originalKeyValues, cloneKeyValues, newCollection, changeRecord, session, referenceDescriptor);
         }
         createChangeSetForKeys(originalKeyValues, changeRecord, session, referenceDescriptor);
-        changeRecord.addAdditionChange(cloneKeyValues, (UnitOfWorkChangeSet) changeRecord.getOwner().getUOWChangeSet(), session);
-        changeRecord.addRemoveChange(originalKeyValues, (UnitOfWorkChangeSet) changeRecord.getOwner().getUOWChangeSet(), session);
+        changeRecord.addAdditionChange(cloneKeyValues, this, (UnitOfWorkChangeSet) changeRecord.getOwner().getUOWChangeSet(), session);
+        changeRecord.addRemoveChange(originalKeyValues, this, (UnitOfWorkChangeSet) changeRecord.getOwner().getUOWChangeSet(), session);
     }
     
     public void buildChangeSetForNewObjectInCollection(Object object, ClassDescriptor referenceDescriptor, UnitOfWorkChangeSet uowChangeSet, AbstractSession session){
@@ -1117,6 +1134,52 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
     }
 
     /**
+     * INTERNAL:
+     * Add the provided object to the deleted objects list on the commit manager.
+     * This may be overridden by subclasses to process a composite object
+     * 
+     * @see MappedKeyMapContainerPolicy
+     * @param object
+     * @param manager
+     */
+    public void postCalculateChanges(ObjectChangeSet ocs, ClassDescriptor referenceDescriptor, DatabaseMapping mapping, UnitOfWorkImpl uow){
+        if (mapping.isForeignReferenceMapping()){
+            Object clone = ocs.getUnitOfWorkClone();
+            uow.addDeletedPrivateOwnedObjects(mapping, clone);
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Add the provided object to the deleted objects list on the commit manager.
+     * This may be overridden by subclasses to process a composite object
+     * 
+     * @see MappedKeyMapContainerPolicy
+     * @param object
+     * @param manager
+     */
+    public void postCalculateChanges(Object key, Object value, ClassDescriptor referenceDescriptor, DatabaseMapping mapping, UnitOfWorkImpl uow){
+        if (! mapping.isDirectCollectionMapping() && ! mapping.isAggregateCollectionMapping()){
+            uow.addDeletedPrivateOwnedObjects(mapping, value);
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Add the provided object to the deleted objects list on the commit manager.
+     * This may be overridden by subclasses to process a composite object
+     * 
+     * @see MappedKeyMapContainerPolicy
+     * @param object
+     * @param manager
+     */
+    public void recordPrivateOwnedRemovals(Object object, ClassDescriptor referenceDescriptor, UnitOfWorkImpl uow){
+        if (referenceDescriptor != null){
+            referenceDescriptor.getObjectBuilder().recordPrivateOwnedRemovals(unwrapIteratorResult(object), uow, false);
+        }
+    }
+
+    /**
      * Prepare and validate.
      * Allow subclasses to override.
      */
@@ -1416,6 +1479,17 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
         return 0;
     }
     
+    /**
+     * INTERNAL: 
+     * MapContainerPolicy's iterator iterates on the Entries of a Map.
+     * This method returns the object from the iterator
+     * 
+     * @see MapContainerPolicy.nextWrapped(Object iterator)
+     */
+    public Object unwrapElement(Object object){
+       return object;
+    }
+
     /**
      * INTERNAL:
      * Depending on the container, the entries returned of iteration using the ContainerPolicy.iteratorFor() method

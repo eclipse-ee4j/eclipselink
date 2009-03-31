@@ -14,6 +14,7 @@ package org.eclipse.persistence.testing.tests.collections.map;
 
 import java.util.List;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
@@ -55,7 +56,7 @@ public class TestUpdateEntityEntityMapMapping extends TestCase {
         keyMapping = (ForeignReferenceMapping)((MappedKeyMapContainerPolicy)mapping.getContainerPolicy()).getKeyMapping();
         oldKeyPrivateOwnedValue = keyMapping.isPrivateOwned();
         keyMapping.setIsPrivateOwned(usePrivateOwned);
-        
+
         UnitOfWork uow = getSession().acquireUnitOfWork();
         holder = new EntityEntityMapHolder();
         EntityMapValue value = new EntityMapValue();

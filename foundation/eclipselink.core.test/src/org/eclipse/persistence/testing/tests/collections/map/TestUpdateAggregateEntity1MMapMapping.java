@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.collections.map;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.mappings.OneToManyMapping;
@@ -41,7 +42,8 @@ public class TestUpdateAggregateEntity1MMapMapping extends TestReadAggregateEnti
     }
     
     public void setup(){
-        mapping = (OneToManyMapping)getSession().getProject().getDescriptor(AggregateEntity1MMapHolder.class).getMappingForAttributeName("aggregateToEntityMap");
+        ClassDescriptor descriptor = getSession().getProject().getDescriptor(AggregateEntity1MMapHolder.class);
+        mapping = (OneToManyMapping)descriptor.getMappingForAttributeName("aggregateToEntityMap");
         oldPrivateOwnedValue = mapping.isPrivateOwned();
         mapping.setIsPrivateOwned(usePrivateOwned);
         super.setup();

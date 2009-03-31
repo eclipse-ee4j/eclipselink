@@ -54,7 +54,7 @@ public class JUnitTestCaseHelper {
      * The default location is "test.properties" file in current directory. 
      */
     @SuppressWarnings("deprecation")
-    public static Map getDatabaseProperties(){
+    public static Map<String, String> getDatabaseProperties(){
         if (propertiesMap == null){
             String dbDriver = System.getProperty(DB_DRIVER_KEY);
             String dbUrl = System.getProperty(DB_URL_KEY);

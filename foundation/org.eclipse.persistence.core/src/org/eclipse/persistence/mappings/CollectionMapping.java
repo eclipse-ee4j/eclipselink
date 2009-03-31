@@ -37,6 +37,7 @@ import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.remote.*;
 import org.eclipse.persistence.sessions.ObjectCopyingPolicy;
 import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.sessions.UnitOfWork;
 
 /**
  * <p><b>Purpose</b>: Abstract class for relationship mappings which store collection of objects
@@ -1106,17 +1107,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      */
     protected void objectRemovedDuringUpdate(ObjectLevelModifyQuery query, Object objectDeleted, Map extraData) throws DatabaseException, OptimisticLockException {
         if (isPrivateOwned()) {// Must check ownership for uow and cascading.
-            if (query.shouldCascadeOnlyDependentParts()) {
-                // If the session is a unit of work
-                if (query.getSession().isUnitOfWork()) {
-                    // ...and the object has not been explicitly deleted in the unit of work
-                    if (!(((UnitOfWorkImpl)query.getSession()).getDeletedObjects().containsKey(objectDeleted))) {
-                        containerPolicy.addToDeletedObjectsList(objectDeleted, query.getSession().getCommitManager());
-                    }
-                } else {
-                    containerPolicy.addToDeletedObjectsList(objectDeleted, query.getSession().getCommitManager());
-                }
-            } else {
+            if (!query.shouldCascadeOnlyDependentParts()) {
                 containerPolicy.deleteWrappedObject(objectDeleted, query.getSession());
             }
         }
@@ -1142,6 +1133,39 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         writeQuery.setObject(object);
         writeQuery.setCascadePolicy(query.getCascadePolicy());
         query.getSession().executeQuery(writeQuery);
+    }
+
+    /**
+     * INTERNAL:
+     * Overridden by mappings that require additional processing of the change record after the record has been calculated.
+     */
+    @Override
+    public void postCalculateChanges(org.eclipse.persistence.sessions.changesets.ChangeRecord changeRecord, UnitOfWorkImpl uow) {
+        // no need for private owned check.  This code is only registered for private owned mappings.
+        // targets are added to and/or removed to/from the source.
+        CollectionChangeRecord collectionChangeRecord = (CollectionChangeRecord)changeRecord;
+        Iterator it = collectionChangeRecord.getRemoveObjectList().values().iterator();
+        while(it.hasNext()) {
+            ObjectChangeSet ocs = (ObjectChangeSet)it.next();
+            containerPolicy.postCalculateChanges(ocs, referenceDescriptor, this, uow);
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Overridden by mappings that require additional processing of the change record after the record has been calculated.
+     */
+    @Override
+    public void recordPrivateOwnedRemovals(Object object, UnitOfWorkImpl uow) {
+        // no need for private owned check.  This code is only registered for private owned mappings.
+        // targets are added to and/or removed to/from the source.
+        if (mustDeleteReferenceObjectsOneByOne()) {
+            Iterator it = (Iterator) containerPolicy.iteratorFor(getRealAttributeValueFromObject(object, uow));
+            while (it.hasNext()) {
+                Object clone = it.next();
+                containerPolicy.recordPrivateOwnedRemovals(clone, referenceDescriptor, uow);
+            }
+        }
     }
 
     /**
@@ -1795,7 +1819,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         CollectionChangeRecord changeRecord = new CollectionChangeRecord(owner);
         changeRecord.setAttribute(getAttributeName());
         changeRecord.setMapping(this);
-        changeRecord.addAdditionChange(cloneKeyValues, (UnitOfWorkChangeSet)owner.getUOWChangeSet(), session);
+        changeRecord.addAdditionChange(cloneKeyValues, cp, (UnitOfWorkChangeSet)owner.getUOWChangeSet(), session);
         if (changeRecord.hasChanges()) {
             return changeRecord;
         }

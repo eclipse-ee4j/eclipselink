@@ -216,8 +216,8 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
         // record to be processed on the merge.
         Vector orderedIndicesToRemove = new Vector(indicesToRemove.values());
         Collections.sort(orderedIndicesToRemove);
-        changeRecord.addAdditionChange(objectsToAdd, (UnitOfWorkChangeSet) changeRecord.getOwner().getUOWChangeSet(), session);
-        changeRecord.addRemoveChange(oldListValueIndex, (UnitOfWorkChangeSet) changeRecord.getOwner().getUOWChangeSet(), session);
+        changeRecord.addAdditionChange(objectsToAdd, this, (UnitOfWorkChangeSet) changeRecord.getOwner().getUOWChangeSet(), session);
+        changeRecord.addRemoveChange(oldListValueIndex, this, (UnitOfWorkChangeSet) changeRecord.getOwner().getUOWChangeSet(), session);
         changeRecord.addOrderedAdditionChange(orderedObjectsToAdd, newListValueIndex, (UnitOfWorkChangeSet) changeRecord.getOwner().getUOWChangeSet(), session);
         changeRecord.addOrderedRemoveChange(orderedIndicesToRemove, oldListIndexValue, (UnitOfWorkChangeSet) changeRecord.getOwner().getUOWChangeSet(), session);                
     }

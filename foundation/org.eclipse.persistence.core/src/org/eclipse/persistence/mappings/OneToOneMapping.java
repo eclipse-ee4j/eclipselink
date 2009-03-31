@@ -197,8 +197,8 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * @param object
      * @param manager
      */
-    public void addKeyToDeletedObjectsList(Object object, CommitManager manager){
-        manager.addObjectToDelete(object);
+    public void addKeyToDeletedObjectsList(Object object, Map deletedObjects){
+        deletedObjects.put(object, object);
     }
     
     /**

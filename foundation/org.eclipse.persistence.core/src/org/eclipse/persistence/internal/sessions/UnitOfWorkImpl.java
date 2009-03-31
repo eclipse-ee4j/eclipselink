@@ -41,7 +41,9 @@ import org.eclipse.persistence.sessions.factories.ReferenceMode;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.internal.localization.LoggingLocalization;
+import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackingPolicy;
 import org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy;
@@ -259,6 +261,12 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     /** Used to store objects already deleted from the db and unregistered */
     protected Map unregisteredDeletedObjectsCloneToBackupAndOriginal;
     
+    /** This attribute records when the preDelete stage of Commit has completed */
+    protected boolean preDeleteComplete = false;
+    
+    /** Stores all of the private owned objects that have been removed and may need to cascade deletion */
+    protected Map<DatabaseMapping, List<Object>> deletedPrivateOwnedObjects;
+
     /**
      * INTERNAL:
      * Create and return a new unit of work with the session as its parent.
@@ -318,6 +326,24 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         uow.discoverAllUnregisteredNewObjectsInParent();
 
         return uow;
+    }
+
+    /**
+     * INTERNAL:
+     * Records a private owned object that has been de-referenced and will need to processed
+     * for related private owned objects.
+     */
+    public void addDeletedPrivateOwnedObjects(DatabaseMapping mapping, Object object)
+    {
+        if(deletedPrivateOwnedObjects == null){
+            deletedPrivateOwnedObjects = new IdentityHashMap();
+        }
+        List<Object> list = deletedPrivateOwnedObjects.get(mapping);
+        if(list == null){
+            list = new ArrayList<Object>();
+            deletedPrivateOwnedObjects.put(mapping, list);
+        }
+        list.add(object);
     }
 
     /**
@@ -595,7 +621,29 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 visitedNodes.put(object, object);
             }
         }
-        
+        if(hasDeletedObjects() && !isNestedUnitOfWork())
+        {
+            Object obj1;
+            for(Iterator iterator1 = ((IdentityHashMap)((IdentityHashMap)deletedObjects).clone()).keySet().iterator(); iterator1.hasNext(); getDescriptor(obj1).getObjectBuilder().recordPrivateOwnedRemovals(obj1, this, true))
+                obj1 = iterator1.next();
+
+        }
+        if(deletedPrivateOwnedObjects != null && !isNestedUnitOfWork())
+        {
+            for(Iterator iterator2 = deletedPrivateOwnedObjects.entrySet().iterator(); iterator2.hasNext();)
+            {
+                java.util.Map.Entry entry = (java.util.Map.Entry)iterator2.next();
+                DatabaseMapping databasemapping = (DatabaseMapping)entry.getKey();
+                Iterator iterator6 = ((List)entry.getValue()).iterator();
+                while(iterator6.hasNext()) 
+                {
+                    Object obj4 = iterator6.next();
+                    databasemapping.getReferenceDescriptor().getObjectBuilder().recordPrivateOwnedRemovals(obj4, this, false);
+                }
+            }
+
+            deletedPrivateOwnedObjects.clear();
+        }
         if (this.project.hasMappingsPostCalculateChangesOnDeleted()) {
             if (hasDeletedObjects()) {
                 for (Iterator deletedObjects = getDeletedObjects().keySet().iterator(); deletedObjects.hasNext();) {
@@ -1257,13 +1305,36 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             if(commitTransaction) {
                 setWasNonObjectLevelModifyQueryExecuted(false);
             }
+            this.preDeleteComplete = false;
             
             Vector deletedObjects = null;// PERF: Avoid deletion if nothing to delete.
             if (hasDeletedObjects()) {
                 deletedObjects = new Vector(getDeletedObjects().size());
                 for (Iterator objects = getDeletedObjects().keySet().iterator(); objects.hasNext();) {
-                    deletedObjects.addElement(objects.next());
+                    Object objectToDelete = objects.next();
+                    ClassDescriptor descriptor = getDescriptor(objectToDelete);
+                    if (descriptor.hasPreDeleteMappings()){
+                        for (Iterator iterator = descriptor.getPreDeleteMappings().iterator(); iterator.hasNext(); ){
+                            DatabaseMapping mapping = (DatabaseMapping)iterator.next();
+                            DeleteObjectQuery deleteQuery = descriptor.getQueryManager().getDeleteQuery();
+                            if (deleteQuery == null) {
+                                deleteQuery = new DeleteObjectQuery();
+                                deleteQuery.setDescriptor(descriptor);
+                            } else {
+                                // Ensure original query has been prepared.
+                                deleteQuery.checkPrepare(this, deleteQuery.getTranslationRow());
+                                deleteQuery = (DeleteObjectQuery)deleteQuery.clone();
+                            }
+                            deleteQuery.setIsExecutionClone(true);
+                            deleteQuery.setTranslationRow(new DatabaseRecord());
+                            deleteQuery.setObject(objectToDelete);
+                            deleteQuery.setSession(this);
+                            mapping.earlyPreDelete(deleteQuery);
+                        }
+                    }
+                    deletedObjects.addElement(objectToDelete);
                 }
+                this.preDeleteComplete = true;
             }
 
             if (shouldPerformDeletesFirst) {
@@ -1362,9 +1433,6 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                     // The sequence numbers are assigned outside of the commit transaction.
                     // This improves concurrency, avoids deadlock and in the case of three-tier will
                     // not leave invalid cached sequences on rollback.
-                    // Also must first set the commit manager active.
-                    getCommitManager().setIsActive(true);
-        
                     // Iterate over each clone and let the object build merge to clones into the originals.
                     // The change set may already exist if using change tracking.
                     if (this.unitOfWorkChangeSet == null) {
@@ -1372,6 +1440,9 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                     }
                     // PERF: clone is faster than new.
                     calculateChanges((IdentityHashMap)((IdentityHashMap)getCloneMapping()).clone(), this.unitOfWorkChangeSet, true);
+                    // Also must first set the commit manager active.
+                    getCommitManager().setIsActive(true);
+        
                 } catch (RuntimeException exception){
                     // The number of SQL statements been prepared need be stored into UOW 
                     // before any exception being thrown.
@@ -4647,6 +4718,13 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     }
 
     /**
+     * @param preDeleteComplete the preDeleteComplete to set
+     */
+    public void setPreDeleteComplete(boolean preDeleteComplete) {
+        this.preDeleteComplete = preDeleteComplete;
+    }
+
+    /**
      * INTERNAL:
      * Gives a new set of read-only classes to the receiver.
      * This set of classes given are checked that subclasses of a read-only class are also
@@ -5371,6 +5449,13 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      */
     public boolean isPessimisticLocked(Object clone) {
         return (this.pessimisticLockedObjects != null )&& this.pessimisticLockedObjects.containsKey(clone);
+    }
+
+    /**
+     * @return the preDeleteComplete
+     */
+    public boolean isPreDeleteComplete() {
+        return preDeleteComplete;
     }
 
     /**

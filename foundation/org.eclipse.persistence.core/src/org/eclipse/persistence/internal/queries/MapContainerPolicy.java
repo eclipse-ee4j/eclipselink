@@ -477,6 +477,21 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      * 
      * @see MapContainerPolicy.nextWrapped(Object iterator)
      */
+    public Object unwrapElement(Object object){
+        if (object instanceof Association){
+            return ((Association)object).getValue();
+        } else {
+            return object;
+        }
+    }
+
+    /**
+     * INTERNAL: 
+     * MapContainerPolicy's iterator iterates on the Entries of a Map.
+     * This method returns the object from the iterator
+     * 
+     * @see MapContainerPolicy.nextWrapped(Object iterator)
+     */
     public Object unwrapIteratorResult(Object object){
         if (object instanceof Map.Entry){
             return ((Map.Entry)object).getValue();
@@ -485,6 +500,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
         }
     }
     
+
     /**
      * INTERNAL:
      * Allow the key to be unwrapped.  This will be overridden by container policies that
@@ -687,7 +703,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      * @author tware
      *
      */
-    public static class MapContainerPolicyIterator{
+    public static class MapContainerPolicyIterator implements Iterator{
         
         private Iterator iterator;
         private Map.Entry currentEntry;
@@ -717,6 +733,11 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
                 return currentEntry.getValue();
             }
             return null;
+        }
+
+        @Override
+        public void remove() {
+            this.iterator.remove();
         }
     }
     

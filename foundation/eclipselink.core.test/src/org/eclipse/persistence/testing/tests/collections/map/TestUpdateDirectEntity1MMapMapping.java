@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.collections.map;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.mappings.OneToManyMapping;
@@ -42,6 +43,7 @@ public class TestUpdateDirectEntity1MMapMapping extends TestReadDirectEntity1MMa
         mapping = (OneToManyMapping)getSession().getProject().getDescriptor(DirectEntity1MMapHolder.class).getMappingForAttributeName("directToEntityMap");
         oldPrivateOwnedValue = mapping.isPrivateOwned();
         mapping.setIsPrivateOwned(usePrivateOwned);
+        
         super.setup();
     }
     

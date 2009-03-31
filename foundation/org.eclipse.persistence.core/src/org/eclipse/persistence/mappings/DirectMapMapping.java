@@ -569,6 +569,24 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
     
     /**
      * INTERNAL:
+     * Overridden by mappings that require additional processing of the change record after the record has been calculated.
+     */
+    @Override
+    public void postCalculateChanges(org.eclipse.persistence.sessions.changesets.ChangeRecord changeRecord, UnitOfWorkImpl uow) {
+        // no need for private owned check.  This code is only registered for private owned mappings.
+        // targets are added to and/or removed to/from the source.
+        DirectMapChangeRecord mapChangeRecord = (DirectMapChangeRecord)changeRecord;
+        
+        Iterator it = mapChangeRecord.getRemoveObjects().entrySet().iterator();
+        while(it.hasNext()) {
+            Map.Entry<Object, Object> entry = (Map.Entry<Object, Object>)it.next();
+            containerPolicy.postCalculateChanges(entry.getKey(), entry.getValue(), referenceDescriptor, this, uow);
+        }
+    }
+
+
+    /**
+     * INTERNAL:
      * Insert the private owned object.
      */
     public void postInsert(WriteObjectQuery query) throws DatabaseException {
@@ -689,6 +707,21 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
         super.preDelete(query);
     }
     
+    /**
+     * INTERNAL:
+     * Overridden by mappings that require additional processing of the change record after the record has been calculated.
+     */
+    @Override
+    public void recordPrivateOwnedRemovals(Object object, UnitOfWorkImpl uow) {
+        // no need for private owned check.  This code is only registered for private owned mappings.
+        // targets are added to and/or removed to/from the source.
+        Iterator it = (Iterator) containerPolicy.iteratorFor(getRealAttributeValueFromObject(object, uow));
+        while (it.hasNext()) {
+            Object clone = it.next();
+            containerPolicy.recordPrivateOwnedRemovals(clone, referenceDescriptor, uow);
+        }
+    }
+
     /**
      * INTERNAL:
      * Remove a value and its change set from the collection change record.  This is used by

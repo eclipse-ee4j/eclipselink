@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.queries;
 
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -204,11 +206,14 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements D
      * @param object
      * @param manager
      */
-    public void addToDeletedObjectsList(Object object, CommitManager manager){
+    @Override
+    public void addToDeletedObjectsList(Object object, Map deletedObjects){
         if (((DatabaseMapping)keyMapping).isPrivateOwned()){
-            keyMapping.addKeyToDeletedObjectsList(((Map.Entry)object).getKey(), manager);
+            Object key = ((Map.Entry)object).getKey();
+            keyMapping.addKeyToDeletedObjectsList(key, deletedObjects);
         }
-        manager.addObjectToDelete(unwrapIteratorResult(object));
+        Object unwrapped = unwrapIteratorResult(object);
+        deletedObjects.put(unwrapped, unwrapped);
     }
     
     /**
@@ -328,7 +333,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements D
          * @param session
          * @param referenceDescriptor
          */
-        protected void collectObjectForNewCollection(IdentityHashMap originalKeyValues, IdentityHashMap cloneKeyValues, Object newCollection, CollectionChangeRecord changeRecord, AbstractSession session, ClassDescriptor referenceDescriptor){
+        protected void collectObjectForNewCollection(HashMap originalKeyValues, HashMap cloneKeyValues, Object newCollection, CollectionChangeRecord changeRecord, AbstractSession session, ClassDescriptor referenceDescriptor){
             // Collect the objects from the new Collection.
             Object cloneIter = iteratorFor(newCollection);
             
@@ -338,12 +343,13 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements D
                 // CR2378 null check to prevent a null pointer exception - XC
                 // If value is null then nothing can be done with it.
                 if (firstObject != null) {
-                    if (originalKeyValues.containsKey(firstObject)) {
-                        originalKeyValues.remove(firstObject);
+                    Vector pks = referenceDescriptor.getObjectBuilder().extractPrimaryKeyFromObject(firstObject, session);
+                    if (originalKeyValues.containsKey(pks)) {
+                        originalKeyValues.remove(pks);
                     } else {
                         // Place it in the add collection
                         buildChangeSetForNewObjectInCollection(wrappedFirstObject, referenceDescriptor, (UnitOfWorkChangeSet) changeRecord.getOwner().getUOWChangeSet(), session);
-                        cloneKeyValues.put(firstObject, firstObject);
+                        cloneKeyValues.put(pks, firstObject);
                     }
                 }
             }
@@ -390,13 +396,13 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements D
      * @param session
      * @param referenceDescriptor
      */
-    protected void createChangeSetForKeys(IdentityHashMap originalKeyValues, CollectionChangeRecord changeRecord, AbstractSession session, ClassDescriptor referenceDescriptor){
-        Iterator originalKeyValuesIterator = originalKeyValues.keySet().iterator();
+    protected void createChangeSetForKeys(Map originalKeyValues, CollectionChangeRecord changeRecord, AbstractSession session, ClassDescriptor referenceDescriptor){
+        Iterator originalKeyValuesIterator = originalKeyValues.values().iterator();
         while (originalKeyValuesIterator.hasNext()){
-            Object object = originalKeyValuesIterator.next();
+            Association association = (Association)originalKeyValuesIterator.next();
+            Object object = association.getValue();
             ObjectChangeSet changeSet = referenceDescriptor.getObjectBuilder().createObjectChangeSet(object, (UnitOfWorkChangeSet) changeRecord.getOwner().getUOWChangeSet(), session);
-            Map.Entry entry = (Map.Entry)originalKeyValues.get(object);
-            changeSet.setOldKey(entry.getKey());
+            changeSet.setOldKey(association.getKey());
         }
     }
     
@@ -576,6 +582,58 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements D
     
     /**
      * INTERNAL:
+     * Add the provided object to the deleted objects list on the commit manager.
+     * This may be overridden by subclasses to process a composite object
+     * 
+     * @see ContainerPolicy
+     * @param object
+     * @param manager
+     */
+    @Override
+    public void postCalculateChanges(ObjectChangeSet ocs, ClassDescriptor referenceDescriptor, DatabaseMapping mapping, UnitOfWorkImpl uow){
+        if (((DatabaseMapping)getKeyMapping()).isForeignReferenceMapping()){
+            Object key = ocs.getOldKey();
+            uow.addDeletedPrivateOwnedObjects((DatabaseMapping)getKeyMapping(), key);
+        }
+        super.postCalculateChanges(ocs, referenceDescriptor, mapping, uow);
+    }
+
+    /**
+     * INTERNAL:
+     * Add the provided object to the deleted objects list on the commit manager.
+     * This may be overridden by subclasses to process a composite object
+     * 
+     * @see ContainerPolicy
+     * @param object
+     * @param manager
+     */
+    @Override
+    public void postCalculateChanges(Object key, Object value, ClassDescriptor referenceDescriptor, DatabaseMapping mapping, UnitOfWorkImpl uow){
+        if (((DatabaseMapping)getKeyMapping()).isForeignReferenceMapping()){
+            uow.addDeletedPrivateOwnedObjects((DatabaseMapping)getKeyMapping(), key);
+        }
+        super.postCalculateChanges(key, value, referenceDescriptor, mapping, uow);
+    }
+
+    /**
+     * INTERNAL:
+     * Add the key and value from provided association to the deleted objects list on the commit manager.
+     * 
+     * @see ContainerPolicy
+     * @param object
+     * @param manager
+     */
+    @Override
+    public void recordPrivateOwnedRemovals(Object object,ClassDescriptor referenceDescriptor, UnitOfWorkImpl uow){
+        if (((DatabaseMapping)keyMapping).isPrivateOwned()){
+            Object key = ((Map.Entry)object).getKey();
+            ((DatabaseMapping)keyMapping).getReferenceDescriptor().getObjectBuilder().recordPrivateOwnedRemovals(key, uow, false);
+        }
+        super.recordPrivateOwnedRemovals(((Map.Entry)object).getValue(), referenceDescriptor, uow);
+    }
+
+    /**
+     * INTERNAL:
      * Returns whether this ContainerPolicy requires data modification events when
      * objects are added or deleted during update
      * @return
@@ -739,6 +797,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements D
             throw ValidationException.mapKeyCannotUseIndirection((DatabaseMapping)mapping);
         }
         this.keyMapping = mapping;
+        ((DatabaseMapping)mapping).setIsMapKeyMapping(true);
     }
     
     /**
