@@ -168,11 +168,21 @@ public class WriteLockManager {
      * incomplete data.
      */
     public void transitionToDeferredLocks(MergeManager mergeManager){
-        if (mergeManager.isTransitionedToDeferredLocks()) return;
-        for (CacheKey cacheKey : mergeManager.getAcquiredLocks()){
-            cacheKey.transitionToDeferredLock();
+        try{
+            if (mergeManager.isTransitionedToDeferredLocks()) return;
+            for (CacheKey cacheKey : mergeManager.getAcquiredLocks()){
+                cacheKey.transitionToDeferredLock();
+            }
+            mergeManager.transitionToDeferredLocks();
+        }catch (RuntimeException ex){
+            for (CacheKey cacheKey : mergeManager.getAcquiredLocks()){
+                cacheKey.release();
+            }
+            ConcurrencyManager.getDeferredLockManager(Thread.currentThread()).setIsThreadComplete(true);
+            ConcurrencyManager.removeDeferredLockManager(Thread.currentThread());
+            mergeManager.getAcquiredLocks().clear();
+            throw ex;
         }
-        mergeManager.transitionToDeferredLocks();
     }
     
     /**

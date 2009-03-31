@@ -525,9 +525,6 @@ public class ConcurrencyManager implements Serializable {
             lockManager = new DeferredLockManager();
             putDeferredLock(currentThread, lockManager);
         }
-        if (lockManager.getThreadDepth() != 0){
-            throw ConcurrencyException.activeLockAlreadyTransitioned(currentThread);
-        }
         lockManager.incrementDepth();
         lockManager.addActiveLock(this);
     }

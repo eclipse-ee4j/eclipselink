@@ -47,6 +47,9 @@ public class AdvancedTableCreator extends TableCreator {
         addTableDefinition(buildWOMANTable());
         addTableDefinition(buildWORKWEEKTable());
         addTableDefinition(buildWORLDRANKTable());
+        addTableDefinition(buildCONCURRENCYATable());
+        addTableDefinition(buildCONCURRENCYBTable());
+        addTableDefinition(buildCONCURRENCYCTable());
         //addTableDefinition(buildEMPLOYEE_SEQTable());
     }
     
@@ -228,7 +231,116 @@ public class AdvancedTableCreator extends TableCreator {
         return table;
     }
     
-    public static TableDefinition buildCREDITCARDSTable() {
+     public static TableDefinition buildCONCURRENCYATable() {
+         TableDefinition table = new TableDefinition();
+         table.setName("CONCURRENCYA");
+
+         FieldDefinition fieldID = new FieldDefinition();
+         fieldID.setName("ID");
+         fieldID.setTypeName("NUMERIC");
+         fieldID.setSize(15);
+         fieldID.setSubSize(0);
+         fieldID.setIsPrimaryKey(true);
+         fieldID.setIsIdentity(true);
+         fieldID.setUnique(false);
+         fieldID.setShouldAllowNull(false);
+         table.addField(fieldID);
+
+         FieldDefinition fieldNAME = new FieldDefinition();
+         fieldNAME.setName("NAME");
+         fieldNAME.setTypeName("VARCHAR2");
+         fieldNAME.setSize(60);
+         fieldNAME.setSubSize(0);
+         fieldNAME.setIsPrimaryKey(false);
+         fieldNAME.setIsIdentity(false);
+         fieldNAME.setUnique(false);
+         fieldNAME.setShouldAllowNull(true);
+         table.addField(fieldNAME);
+
+         FieldDefinition fieldConcB = new FieldDefinition();
+         fieldConcB.setName("CONCURRENCYB_ID");
+         fieldConcB.setTypeName("NUMERIC");
+         fieldConcB.setSize(15);
+         fieldConcB.setSubSize(0);
+         fieldConcB.setIsPrimaryKey(false);
+         fieldConcB.setIsIdentity(false);
+         fieldConcB.setUnique(false);
+         fieldConcB.setShouldAllowNull(true);
+         table.addField(fieldConcB);
+
+         FieldDefinition fieldConcC = new FieldDefinition();
+         fieldConcC.setName("CONCURRENCYC_ID");
+         fieldConcC.setTypeName("NUMERIC");
+         fieldConcC.setSize(15);
+         fieldConcC.setSubSize(0);
+         fieldConcC.setIsPrimaryKey(false);
+         fieldConcC.setIsIdentity(false);
+         fieldConcC.setUnique(false);
+         fieldConcC.setShouldAllowNull(true);
+         table.addField(fieldConcC);
+         
+         return table;
+     }
+
+     public static TableDefinition buildCONCURRENCYBTable() {
+         TableDefinition table = new TableDefinition();
+         table.setName("CONCURRENCYB");
+
+         FieldDefinition fieldID = new FieldDefinition();
+         fieldID.setName("ID");
+         fieldID.setTypeName("NUMERIC");
+         fieldID.setSize(15);
+         fieldID.setSubSize(0);
+         fieldID.setIsPrimaryKey(true);
+         fieldID.setIsIdentity(true);
+         fieldID.setUnique(false);
+         fieldID.setShouldAllowNull(false);
+         table.addField(fieldID);
+
+         FieldDefinition fieldNAME = new FieldDefinition();
+         fieldNAME.setName("NAME");
+         fieldNAME.setTypeName("VARCHAR2");
+         fieldNAME.setSize(60);
+         fieldNAME.setSubSize(0);
+         fieldNAME.setIsPrimaryKey(false);
+         fieldNAME.setIsIdentity(false);
+         fieldNAME.setUnique(false);
+         fieldNAME.setShouldAllowNull(true);
+         table.addField(fieldNAME);
+         
+         return table;
+     }
+
+     public static TableDefinition buildCONCURRENCYCTable() {
+         TableDefinition table = new TableDefinition();
+         table.setName("CONCURRENCYC");
+
+         FieldDefinition fieldID = new FieldDefinition();
+         fieldID.setName("ID");
+         fieldID.setTypeName("NUMERIC");
+         fieldID.setSize(15);
+         fieldID.setSubSize(0);
+         fieldID.setIsPrimaryKey(true);
+         fieldID.setIsIdentity(true);
+         fieldID.setUnique(false);
+         fieldID.setShouldAllowNull(false);
+         table.addField(fieldID);
+
+         FieldDefinition fieldNAME = new FieldDefinition();
+         fieldNAME.setName("NAME");
+         fieldNAME.setTypeName("VARCHAR2");
+         fieldNAME.setSize(60);
+         fieldNAME.setSubSize(0);
+         fieldNAME.setIsPrimaryKey(false);
+         fieldNAME.setIsIdentity(false);
+         fieldNAME.setUnique(false);
+         fieldNAME.setShouldAllowNull(true);
+         table.addField(fieldNAME);
+
+         return table;
+     }
+
+     public static TableDefinition buildCREDITCARDSTable() {
         TableDefinition table = new TableDefinition();
         table.setName("Buyer_CREDITCARDS");
     
