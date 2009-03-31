@@ -14,6 +14,8 @@
  *     10/20/2008-1.1M4 Michael O'Brien 
  *       - 248748: Add WebLogic 10.3 specific JMX MBean attributes and functions
  *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/248748</link>
+ *     31/03/2009-1.1.1 Michael O'Brien 
+ *       - 262583: backport removal of category arg get*EclipseLinkLogLevel functions
  ******************************************************************************/  
 package org.eclipse.persistence.services.weblogic;
 
@@ -121,30 +123,11 @@ public interface MBeanWebLogicRuntimeServicesMBean extends MBeanRuntimeServicesM
     public String getDeployedEclipseLinkLogLevel();
 
     /**
-     *  Answer the EclipseLink log level at deployment time for the given category.
-     * This is read-only.
-     *
-     * @param String category: category of log level desired
-     */
-    public String getDeployedEclipseLinkLogLevel(String category);
-
-    /**
      *  Answer the EclipseLink log level that is changeable.
      * This does not affect the log level in the project (i.e. The next
      * time the application is deployed, changes are forgotten)
      */
     public String getCurrentEclipseLinkLogLevel();
-
-    /**
-     *  Answer the EclipseLink log level that is changeable, given the passed
-     * category.
-     *
-     * This does not affect the log level in the project (i.e. The next
-     * time the application is deployed, changes are forgotten)
-     *
-     * @param String category: category for level
-     */
-    public String getCurrentEclipseLinkLogLevel(String category);
 
     /**
      *  Set the EclipseLink log level to be used at runtime.
