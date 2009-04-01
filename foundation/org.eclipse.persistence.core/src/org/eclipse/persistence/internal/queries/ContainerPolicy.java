@@ -737,6 +737,17 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
     
     /**
      * INTERNAL:
+     * Used to create an iterator on a the Map object passed to CollectionChangeRecord.addRemoveChange()
+     * to access the values to be removed.  In the case of some container policies the values will actually
+     * be the keys.
+     */
+    
+    public Iterator getChangeValuesFrom(Map map){
+        return map.values().iterator();
+    }
+    
+    /**
+     * INTERNAL:
      * Used when objects are added or removed during an update.
      * This method returns either the clone from the ChangeSet or a packaged
      * version of it that contains things like map keys

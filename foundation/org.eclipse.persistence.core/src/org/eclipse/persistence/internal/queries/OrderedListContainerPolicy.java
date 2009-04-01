@@ -14,7 +14,9 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.queries;
 
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 import java.util.Hashtable;
 import java.util.Collections;
@@ -222,6 +224,17 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
         changeRecord.addOrderedRemoveChange(orderedIndicesToRemove, oldListIndexValue, (UnitOfWorkChangeSet) changeRecord.getOwner().getUOWChangeSet(), session);                
     }
     
+    /**
+     * INTERNAL:
+     * Used to create an iterator on a the Map object passed to CollectionChangeRecord.addRemoveChange()
+     * to access the values to be removed.  In the case of some container policies the values will actually
+     * be the keys.
+     */
+    
+    public Iterator getChangeValuesFrom(Map map){
+        return map.keySet().iterator();
+    }
+
     /**
      * INTERNAL:
      * Return an list iterator for the given container.

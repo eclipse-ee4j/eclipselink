@@ -149,7 +149,7 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
     public void addRemoveChange(Map objectChanges, ContainerPolicy cp, UnitOfWorkChangeSet changeSet, AbstractSession session) {
         // There is no need to keep track of removed new objects because it will not be in the backup,
         // It will not be in the backup because it is new.
-        Iterator enumtr = objectChanges.values().iterator();
+        Iterator enumtr = cp.getChangeValuesFrom(objectChanges);
         while (enumtr.hasNext()) {
             Object object = cp.unwrapElement(enumtr.next());
             ClassDescriptor descriptor = this.mapping.getReferenceDescriptor();
