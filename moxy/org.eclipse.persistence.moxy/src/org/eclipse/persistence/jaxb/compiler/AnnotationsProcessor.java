@@ -1140,6 +1140,15 @@ public class AnnotationsProcessor {
             }
             info.setAttributeFormQualified(xmlSchema.attributeFormDefault() == XmlNsForm.QUALIFIED);
             info.setElementFormQualified(xmlSchema.elementFormDefault() == XmlNsForm.QUALIFIED);
+            String location = xmlSchema.location();
+            if(location != null){
+	            if(location.equals("##generate")){
+	            	location = null;
+	            }else if(location.equals("")){
+	            	location = null;
+	            }
+            }
+            info.setLocation(location);
         }
         return info;
     }
@@ -1245,6 +1254,7 @@ public class AnnotationsProcessor {
                 XmlAccessorType xmlAccessorType = (XmlAccessorType) helper.getAnnotation(pack, XmlAccessorType.class);
                 packageNamespace.setAccessType(xmlAccessorType.value());
             }
+            
             packageToNamespaceMappings.put(pack.getQualifiedName(), packageNamespace);
         }
         return packageNamespace;

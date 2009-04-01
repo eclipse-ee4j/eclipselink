@@ -36,6 +36,7 @@ public class NamespaceInfo {
     private boolean elementFormQualified = false;
     private NamespaceResolver namespaceResolver;
     private XmlAccessType accessType = XmlAccessType.PUBLIC_MEMBER;
+    private String location;
     
     public String getNamespace() {
         return namespace;
@@ -74,6 +75,14 @@ public class NamespaceInfo {
     }
     public void setAccessType(XmlAccessType type) {
         this.accessType = type;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
     
 }
