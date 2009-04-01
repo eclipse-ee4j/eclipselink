@@ -182,8 +182,11 @@
         <echo message=" org.apache.tools.ant;version=&quot;1.6.0&quot;;resolution:=optional,${line.separator}"                                    file="META-INF/MANIFEST.MF" append="true"/>
         <echo message=" org.apache.tools.ant.types;version=&quot;1.6.0&quot;;resolution:=optional,${line.separator}"                              file="META-INF/MANIFEST.MF" append="true"/>
         <echo message=" org.osgi.framework;resolution:=optional,${line.separator}"                                                                       file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message=" org.osgi.service.packageadmin;resolution:=optional${line.separator}"                                                             file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message="HK2-Bundle-Name: org.eclipse.persistence:${ant.project.name}${line.separator}"                                            file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.osgi.service.packageadmin;resolution:=optional,${line.separator}"                                                             file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.xml.sax;resolution:=optional,${line.separator}" file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" javax.xml.parsers;resolution:=optional,${line.separator}" file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" javax.sql;resolution:=optional ${line.separator}" file="META-INF/MANIFEST.MF" append="true"/>
+         <echo message="HK2-Bundle-Name: org.eclipse.persistence:${ant.project.name}${line.separator}"                                            file="META-INF/MANIFEST.MF" append="true"/>
     </target>
 
 </project>
