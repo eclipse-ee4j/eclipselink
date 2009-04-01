@@ -39,5 +39,8 @@ Import-Package: javax.persistence;version="[1.99.0,2.1.0)",
  org.apache.tools.ant;version="1.6.0";resolution:=optional,
  org.apache.tools.ant.types;version="1.6.0";resolution:=optional,
  org.osgi.framework;resolution:=optional,
- org.osgi.service.packageadmin;resolution:=optional
+ org.osgi.service.packageadmin;resolution:=optional,
+ org.xml.sax;resolution:=optional,
+ javax.xml.parsers;resolution:=optional,
+ javax.sql;resolution:=optional 
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.jpa
