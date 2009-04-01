@@ -136,7 +136,6 @@ public class ListWrapper implements List, Serializable, Cloneable {
             Property oppositeProp = property.getOpposite();
             if (oppositeProp != null) {
             	((DataObject) item).set(oppositeProp, dataObject);
-                dataObject.set(oppositeProp, null);
             }
         }
 
@@ -193,7 +192,7 @@ public class ListWrapper implements List, Serializable, Cloneable {
     /**
      * INTERNAL:
      */
-    private boolean isLogging() {
+    protected boolean isLogging() {
         return ((dataObject != null) && (dataObject.getChangeSummary() != null) && dataObject.getChangeSummary().isLogging());
     }
 
@@ -447,7 +446,6 @@ public class ListWrapper implements List, Serializable, Cloneable {
 			        Object item = itemsIterator.next();
 			        if (item != null) {
 				        ((DataObject) item).set(oppositeProp, dataObject);
-			            dataObject.set(oppositeProp, null);
 			        }
 			    }
 		    }

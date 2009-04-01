@@ -16,8 +16,7 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import org.eclipse.persistence.testing.sdo.helper.datahelper.DataHelperToCalendarTest;
-import org.eclipse.persistence.testing.sdo.helper.datahelper.DataHelperToDateTest;
+import org.eclipse.persistence.testing.sdo.helper.jaxbhelper.changesummary.ChangeSummaryTestCases;
 import org.eclipse.persistence.testing.sdo.helper.jaxbhelper.containment.ContainmentTestCases;
 import org.eclipse.persistence.testing.sdo.helper.jaxbhelper.copyhelper.CopyHelperTestCases;
 import org.eclipse.persistence.testing.sdo.helper.jaxbhelper.datafactory.DataFactoryTestCases;
@@ -45,6 +44,7 @@ public class JAXBHelperTestSuite extends TestCase {
         suite.addTestSuite(ContainmentTestCases.class);
         suite.addTestSuite(IsSetAndUnsetTestCases.class);
         suite.addTestSuite(IdentityTestCases.class);
+        suite.addTestSuite(ChangeSummaryTestCases.class);
         return suite;
     }
 

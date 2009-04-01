@@ -9,11 +9,11 @@
 *
 * Contributors:
 *     bdoughan - Jan 27/2009 - 1.1 - Initial implementation
+*     bdoughan - Mar 31/2009 - 2.0 - Added ChangeSummary Support
 ******************************************************************************/
 package org.eclipse.persistence.sdo.helper.jaxb;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -29,6 +29,7 @@ import org.eclipse.persistence.internal.oxm.XPathNode;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jaxb.JAXBContext;
+import org.eclipse.persistence.mappings.AttributeAccessor;
 import org.eclipse.persistence.mappings.ContainerMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLDescriptor;
@@ -37,6 +38,7 @@ import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLObjectReferenceMapping;
+import org.eclipse.persistence.sdo.SDOChangeSummary;
 import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOType;
@@ -58,7 +60,7 @@ public class JAXBValueStore implements ValueStore {
     private Object entity;
     private XMLDescriptor descriptor;
     private SDODataObject dataObject;
-    private Map<Property, ListWrapper> listWrappers;
+    private Map<Property, JAXBListWrapper> listWrappers;
 
     public JAXBValueStore(JAXBHelperContext aJAXBHelperContext, SDOType sdoType) {
         this.jaxbHelperContext = aJAXBHelperContext;
@@ -66,7 +68,7 @@ public class JAXBValueStore implements ValueStore {
         if(null == xsdQName) {
             xsdQName = sdoType.getQName();
         }
-        listWrappers = new WeakHashMap<Property, ListWrapper>();
+        listWrappers = new WeakHashMap<Property, JAXBListWrapper>();
         XPathFragment xPathFragment = new XPathFragment(xsdQName.getLocalPart());
         xPathFragment.setNamespaceURI(xsdQName.getNamespaceURI());
         JAXBContext jaxbContext = (JAXBContext) jaxbHelperContext.getJAXBContext();
@@ -82,10 +84,22 @@ public class JAXBValueStore implements ValueStore {
 
     public JAXBValueStore(JAXBHelperContext aJAXBHelperContext, Object anEntity) {
         this.jaxbHelperContext = aJAXBHelperContext;
-        this.listWrappers = new WeakHashMap<Property, ListWrapper>();
+        this.listWrappers = new WeakHashMap<Property, JAXBListWrapper>();
         JAXBContext jaxbContext = (JAXBContext) jaxbHelperContext.getJAXBContext();
         this.descriptor = (XMLDescriptor) jaxbContext.getXMLContext().getSession(anEntity).getDescriptor(anEntity);
         this.entity = anEntity;
+    }
+
+    private JAXBValueStore(JAXBHelperContext aJAXBHelperContext, Object anEntity, XMLDescriptor aDescriptor, SDODataObject aDataObject, Map<Property, JAXBListWrapper> aMap) {
+        this.jaxbHelperContext = aJAXBHelperContext;
+        this.entity = anEntity;
+        this.descriptor = aDescriptor;
+        this.dataObject = aDataObject;
+        this.listWrappers = aMap;
+
+        for(JAXBListWrapper jaxbListWrapper : listWrappers.values()) {
+            jaxbListWrapper.getCurrentElements().setValueStore(this);
+        }
     }
 
     /**
@@ -131,22 +145,21 @@ public class JAXBValueStore implements ValueStore {
      */
     public Object getDeclaredProperty(int propertyIndex) {
         SDOProperty declaredProperty = (SDOProperty) dataObject.getType().getDeclaredProperties().get(propertyIndex);
+        if(declaredProperty.getType().isChangeSummaryType()) {
+            return dataObject.getChangeSummary();
+        }
         DatabaseMapping mapping = this.getJAXBMappingForProperty(declaredProperty);
         Object value = mapping.getAttributeAccessor().getAttributeValueFromObject(entity);
-        if (null == value || declaredProperty.getType().isDataType()) {
-            if (declaredProperty.isMany()) {
-                return new JAXBListWrapper(this, declaredProperty);
-            } else {
-                return value;
-            }
-        } else if (declaredProperty.isMany()) {
-            ListWrapper listWrapper = listWrappers.get(declaredProperty);
+        if (declaredProperty.isMany()) {
+            JAXBListWrapper listWrapper = listWrappers.get(declaredProperty);
             if (null != listWrapper) {
                 return listWrapper;
             }
             listWrapper = new JAXBListWrapper(this, declaredProperty);
             listWrappers.put(declaredProperty, listWrapper);
             return listWrapper;
+        } else if(null == value || declaredProperty.getType().isDataType()) {
+            return value;
         } else {
             if(declaredProperty.isContainment()) {
                 return jaxbHelperContext.wrap(value, declaredProperty, dataObject);
@@ -161,6 +174,10 @@ public class JAXBValueStore implements ValueStore {
      */
     public void setDeclaredProperty(int propertyIndex, Object value) {
         SDOProperty declaredProperty = (SDOProperty) dataObject.getType().getDeclaredProperties().get(propertyIndex);
+        if(declaredProperty.getType().isChangeSummaryType()) {
+            return;
+        }
+
         DatabaseMapping mapping = this.getJAXBMappingForProperty(declaredProperty);
 
         Object newValue = value;
@@ -181,7 +198,7 @@ public class JAXBValueStore implements ValueStore {
         } else if (declaredProperty.isMany()) {
             // Get a ListWrapper and set it's current elements
             ListWrapper listWrapper = (ListWrapper) getDeclaredProperty(propertyIndex);
-            listWrapper.setCurrentElements((List) newValue);
+            listWrapper.addAll((List) newValue);
         } else {
             // OLD VALUE
             if (mapping.isAbstractCompositeObjectMapping()) {
@@ -210,6 +227,9 @@ public class JAXBValueStore implements ValueStore {
      */
     public boolean isSetDeclaredProperty(int propertyIndex) {
         SDOProperty declaredProperty = (SDOProperty) dataObject.getType().getDeclaredProperties().get(propertyIndex);
+        if(declaredProperty.getType().isChangeSummaryType()) {
+            return true;
+        }
         DatabaseMapping mapping = this.getJAXBMappingForProperty(declaredProperty);
         if (declaredProperty.isMany()) {
             Collection collection = (Collection) mapping.getAttributeAccessor().getAttributeValueFromObject(entity);
@@ -287,26 +307,42 @@ public class JAXBValueStore implements ValueStore {
     }
 
     public void setManyProperty(Property property, Object value) {
-        DatabaseMapping mapping = this.getJAXBMappingForProperty((SDOProperty) property);
-        ContainerMapping containerMapping = (ContainerMapping) mapping;
-        ContainerPolicy containerPolicy = containerMapping.getContainerPolicy();
-        AbstractSession session = ((JAXBContext) jaxbHelperContext.getJAXBContext()).getXMLContext().getSession(entity);
-        Collection collection = (Collection) value;
-        if (!property.getType().isDataType()) {
-            collection = getJAXBHelperContext().unwrap(collection);
-        }
-
-        Iterator collectionIterator = collection.iterator();
-        Object container = containerMapping.getContainerPolicy().containerInstance();
-        while (collectionIterator.hasNext()) {
-            Object collectionValue = collectionIterator.next();
-            containerPolicy.addInto(collectionValue, container, session);
-        }
-        mapping.setAttributeValueInObject(entity, container);
     }
 
     public ValueStore copy() {
-        throw new UnsupportedOperationException();
+        AbstractSession session = ((JAXBContext) jaxbHelperContext.getJAXBContext()).getXMLContext().getSession(entity);        
+        Object originalEntity = entity;
+        entity = descriptor.getInstantiationPolicy().buildNewInstance();
+
+        for(SDOProperty sdoProperty : (List<SDOProperty>) dataObject.getType().getProperties()) {
+            if(!sdoProperty.getType().isChangeSummaryType()) {
+                DatabaseMapping mapping = getJAXBMappingForProperty(sdoProperty);
+                AttributeAccessor attributeAccessor = mapping.getAttributeAccessor();
+                Object attributeValue = attributeAccessor.getAttributeValueFromObject(originalEntity);
+                if(mapping.isCollectionMapping()) {
+                    Object containerCopy = null;
+                    SDOChangeSummary sdoChangeSummary = (SDOChangeSummary) dataObject.getChangeSummary();
+                    if(null != sdoChangeSummary) {
+                        List list = listWrappers.get(sdoProperty);
+                        containerCopy = (List) sdoChangeSummary.getOriginalElements().get(list);
+                    }
+                    if(null == containerCopy) {
+                        ContainerPolicy containerPolicy = mapping.getContainerPolicy();
+                        containerCopy = containerPolicy.containerInstance();
+                        if(null != attributeValue) {
+                            Object attributeValueIterator = containerPolicy.iteratorFor(attributeValue);
+                            while(containerPolicy.hasNext(attributeValueIterator)) {
+                                containerPolicy.addInto(containerPolicy.nextEntry(attributeValueIterator), containerCopy, session);
+                            }
+                        }
+                    }
+                    attributeAccessor.setAttributeValueInObject(entity, containerCopy);
+                } else {
+                    attributeAccessor.setAttributeValueInObject(entity, attributeValue);
+                }
+            }
+        }
+        return new JAXBValueStore(jaxbHelperContext, originalEntity, descriptor, dataObject, listWrappers);
     }
 
     /**

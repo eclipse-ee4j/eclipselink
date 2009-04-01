@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema elementFormDefault="qualified" targetNamespace="urn:changesummary" xmlns:tns="urn:changesummary" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:sdo="commonj.sdo" xmlns:sdox="commonj.sdo/xml">
+        <xs:import namespace="commonj.sdo" />
+        <xs:import namespace="commonj.sdo/xml" />
+        <xs:element name="root" type="root"/>
+        <xs:complexType name="root">
+                <xs:sequence>
+                        <xs:element name="name" type="xs:string"/>
+                        <xs:element name="simple-list" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+                        <xs:element name="child1" type="tns:child1"/>
+                        <xs:element ref="tns:child2" maxOccurs="unbounded"/>
+                        <xs:element name="sdo-change-summary" type="sdo:ChangeSummaryType" minOccurs="0" />
+                </xs:sequence>
+                <xs:attribute name="id" type="xs:string"/>
+        </xs:complexType>
+        <xs:complexType name="child1">
+                <xs:sequence>
+                        <xs:element name="child2" type="xs:IDREF" minOccurs="0" maxOccurs="unbounded" sdox:propertyType="tns:child2" sdox:oppositeProperty="child1"/>
+                </xs:sequence>
+                <xs:attribute name="id" type="xs:ID"/>
+        </xs:complexType>
+        <xs:element name="child2">
+                <xs:complexType>
+                        <xs:sequence>
+                                <xs:element name="child1" type="xs:IDREF" minOccurs="0" sdox:propertyType="tns:child1" sdox:oppositeProperty="child2"/>
+                        </xs:sequence>
+                        <xs:attribute name="id" type="xs:ID"/>
+                </xs:complexType>
+        </xs:element>
+</xs:schema>
