@@ -776,4 +776,9 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
     public Class getFieldClassification(DatabaseField fieldToClassify) {
         return getAttributeElementClass();
     }
+
+    public boolean isCollectionMapping() {
+        return true;
+    }
+
 }

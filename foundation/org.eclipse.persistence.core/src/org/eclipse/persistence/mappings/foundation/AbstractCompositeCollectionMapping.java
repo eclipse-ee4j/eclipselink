@@ -905,4 +905,9 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
         }
         record.put(this.getField(), null);
     }
+
+    public boolean isCollectionMapping() {
+        return true;
+    }
+
 }

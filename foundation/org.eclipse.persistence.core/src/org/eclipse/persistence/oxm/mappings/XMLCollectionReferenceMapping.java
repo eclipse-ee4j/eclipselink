@@ -347,4 +347,8 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
 
     }
 
+    public boolean isCollectionMapping() {
+        return true;
+    }
+
 }
