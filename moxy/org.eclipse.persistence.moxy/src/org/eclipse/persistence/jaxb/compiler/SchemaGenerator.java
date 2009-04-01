@@ -259,6 +259,11 @@ public class SchemaGenerator {
             ComplexType type = new ComplexType();
             JavaClass superClass = (JavaClass) myClass.getSuperclass();
             
+            // Handle mixed content
+            if (info.isMixed()) {
+                type.setMixed(true);
+            }
+            
             // Handle abstract class
             if (myClass.isAbstract()) {
                 type.setAbstractValue(true);

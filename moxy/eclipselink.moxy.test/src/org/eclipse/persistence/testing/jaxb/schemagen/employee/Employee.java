@@ -28,6 +28,7 @@ public class Employee
 
     public String lastName;
     
+    @XmlMixed
     public Address address;
     
     public Department department;

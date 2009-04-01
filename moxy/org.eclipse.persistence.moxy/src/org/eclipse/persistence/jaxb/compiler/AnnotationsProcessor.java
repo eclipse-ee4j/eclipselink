@@ -574,6 +574,11 @@ public class AnnotationsProcessor {
                         property.setElement((JavaHasAnnotations)nextField);
                     }
                     
+                    // Check for mixed context
+                    if (helper.isAnnotationPresent((JavaHasAnnotations)nextField, XmlMixed.class)) {
+                        info.setMixed(true);
+                    }
+
                     JavaClass ptype = (JavaClass) nextField.getResolvedType();
                     if (!helper.isAnnotationPresent(ptype, XmlTransient.class)) {
                         property.setType(ptype);
@@ -754,6 +759,12 @@ public class AnnotationsProcessor {
             } else {
                 property = new Property(helper);
             }
+
+            // Check for mixed context
+            if (helper.isAnnotationPresent(propertyMethod, XmlMixed.class)) {
+                info.setMixed(true);
+            }
+            
             property.setElement(propertyMethod);
             property.setSchemaName(getQNameForProperty(propertyName, propertyMethod, getNamespaceInfoForPackage(cls.getPackage())));
             property.setPropertyName(propertyName);
@@ -915,8 +926,7 @@ public class AnnotationsProcessor {
                 	parent = parent.getSuperclass();
                 }
             }
-                   
-            
+
             if (!helper.isAnnotationPresent(property.getElement(), XmlTransient.class)) {
                 properties.add(property);
             } else {          
@@ -926,7 +936,6 @@ public class AnnotationsProcessor {
                 	throw JAXBException.transientInProporder(propertyName);
                 }
             }                     
-            
                
             // Check for XmlElement annotation and set required (a.k.a. minOccurs) accordingly
             if (helper.isAnnotationPresent(property.getElement(), XmlElement.class)) {

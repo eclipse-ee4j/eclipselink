@@ -7,7 +7,7 @@
       </xsd:sequence>
       <xsd:attribute name="postal-code" type="xsd:string"/>
    </xsd:complexType>
-   <xsd:complexType name="employee-type">
+   <xsd:complexType name="employee-type" mixed="true">
       <xsd:sequence>
          <xsd:element name="firstName" type="xsd:string"/>
          <xsd:element name="birthday" type="xsd:date" minOccurs="0"/>

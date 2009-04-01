@@ -72,6 +72,7 @@ public class TypeInfo {
     private String factoryMethodName;
     private String[] factoryMethodParamTypes;
     private Property xmlValueProperty;
+    private boolean isMixed;
     
     public TypeInfo(Helper helper) {
         propertyNames = new ArrayList<String>();
@@ -160,6 +161,20 @@ public class TypeInfo {
     }
     public boolean isComplexType() {
         return complexType != null;
+    }
+    
+    /**
+     * Indicates mixed content
+     */
+    public boolean isMixed() {
+        return isMixed;
+    }
+
+    /**
+     * Set mixed content indicator
+     */
+    public void setMixed(boolean isMixed) {
+        this.isMixed = isMixed;
     }
     
     public TypeDefParticle getCompositor() {
