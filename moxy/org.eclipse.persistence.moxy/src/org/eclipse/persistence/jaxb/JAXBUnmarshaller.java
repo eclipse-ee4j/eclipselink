@@ -409,11 +409,18 @@ public class JAXBUnmarshaller implements Unmarshaller {
     	if(theClass == null){
     		return new JAXBElement(qname, Object.class, value);
     	}
-	    if(ClassConstants.XML_GREGORIAN_CALENDAR.isAssignableFrom(theClass)){
-	    	theClass = ClassConstants.XML_GREGORIAN_CALENDAR;
-	    }else if(ClassConstants.DURATION.isAssignableFrom(theClass)){
-	    	theClass = ClassConstants.DURATION;
-	    }
+    	org.eclipse.persistence.sessions.Session sess = (org.eclipse.persistence.sessions.Session)xmlUnmarshaller.getXMLContext().getSessions().get(0);
+
+    	XMLDescriptor desc = (XMLDescriptor) sess.getClassDescriptor(value);
+    	if(desc != null && desc.hasInheritance()){
+    		theClass = desc.getInheritancePolicy().getParentClass();
+    	}
+    	
+        if(ClassConstants.XML_GREGORIAN_CALENDAR.isAssignableFrom(theClass)){
+            theClass = ClassConstants.XML_GREGORIAN_CALENDAR;
+        }else if(ClassConstants.DURATION.isAssignableFrom(theClass)){
+            theClass = ClassConstants.DURATION;
+        }
     	
     	return new JAXBElement(qname, theClass, value);
     }
