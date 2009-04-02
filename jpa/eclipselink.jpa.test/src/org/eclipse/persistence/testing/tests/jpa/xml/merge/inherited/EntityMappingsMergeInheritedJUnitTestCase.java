@@ -22,12 +22,12 @@ import javax.persistence.EntityManager;
 
 import junit.framework.*;
 import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.xml.merge.inherited.Alpine;
 import org.eclipse.persistence.testing.models.jpa.xml.merge.inherited.BeerConsumer;
 import org.eclipse.persistence.testing.models.jpa.xml.merge.inherited.Canadian;
 import org.eclipse.persistence.testing.models.jpa.xml.merge.inherited.Certification;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
-import org.eclipse.persistence.testing.models.jpa.inherited.Beer;
+import org.eclipse.persistence.testing.models.jpa.xml.merge.inherited.Beer;
 import org.eclipse.persistence.testing.models.jpa.xml.merge.inherited.BeerListener;
 import org.eclipse.persistence.testing.models.jpa.xml.merge.inherited.EmbeddedSerialNumber;
 import org.eclipse.persistence.testing.models.jpa.xml.merge.inherited.TelephoneNumber;

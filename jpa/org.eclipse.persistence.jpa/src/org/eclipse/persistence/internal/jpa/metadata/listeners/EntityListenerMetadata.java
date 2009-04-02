@@ -33,7 +33,6 @@ import javax.persistence.PreUpdate;
 import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
@@ -315,7 +314,7 @@ public class EntityListenerMetadata extends ORMetadata {
         m_listener = new EntityListener(getClassForName(m_entityListenerClass.getName(), loader), descriptor.getJavaClass());
         
         // Process the callback methods defined from XML and annotations.
-        processCallbackMethods(getCandidateCallbackMethodsForEntityListener(), descriptor.getLogger());
+        processCallbackMethods(getCandidateCallbackMethodsForEntityListener(), descriptor);
     
         // Add the listener to the descriptor.
         if (isDefaultListener) {
@@ -329,7 +328,7 @@ public class EntityListenerMetadata extends ORMetadata {
      * INTERNAL:
      * Process the XML defined call back methods.
      */
-    protected void processCallbackMethods(Method[] methods, MetadataLogger logger) {
+    protected void processCallbackMethods(Method[] methods, MetadataDescriptor descriptor) {    
         // 1 - Set the XML specified methods first.
         if (m_postLoad != null) {
             setPostLoad(getCallbackMethod(m_postLoad, methods));
@@ -361,33 +360,33 @@ public class EntityListenerMetadata extends ORMetadata {
         
         // 2 - Set any annotation defined methods second.
         for (Method method : methods) {
-            MetadataMethod metadataMethod = new MetadataMethod(method, logger);
+            MetadataMethod metadataMethod = new MetadataMethod(method, descriptor.getLogger());
             
-            if (metadataMethod.isAnnotationPresent(PostLoad.class)) {
+            if (metadataMethod.isAnnotationPresent(PostLoad.class, descriptor)) {
                 setPostLoad(method);
             }
             
-            if (metadataMethod.isAnnotationPresent(PostPersist.class)) {
+            if (metadataMethod.isAnnotationPresent(PostPersist.class, descriptor)) {
                 setPostPersist(method);
             }
             
-            if (metadataMethod.isAnnotationPresent(PostRemove.class)) {
+            if (metadataMethod.isAnnotationPresent(PostRemove.class, descriptor)) {
                 setPostRemove(method);
             }
             
-            if (metadataMethod.isAnnotationPresent(PostUpdate.class)) {
+            if (metadataMethod.isAnnotationPresent(PostUpdate.class, descriptor)) {
                 setPostUpdate(method);
             }
             
-            if (metadataMethod.isAnnotationPresent(PrePersist.class)) {
+            if (metadataMethod.isAnnotationPresent(PrePersist.class, descriptor)) {
                 setPrePersist(method);
             }
             
-            if (metadataMethod.isAnnotationPresent(PreRemove.class)) {
+            if (metadataMethod.isAnnotationPresent(PreRemove.class, descriptor)) {
                 setPreRemove(method);
             }
             
-            if (metadataMethod.isAnnotationPresent(PreUpdate.class)) {
+            if (metadataMethod.isAnnotationPresent(PreUpdate.class, descriptor)) {
                 setPreUpdate(method);
             }
         }

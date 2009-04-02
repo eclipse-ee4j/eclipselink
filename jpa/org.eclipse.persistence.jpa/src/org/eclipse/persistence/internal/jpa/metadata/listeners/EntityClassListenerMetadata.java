@@ -18,6 +18,7 @@ package org.eclipse.persistence.internal.jpa.metadata.listeners;
 
 import java.util.List;
 
+import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.MappedSuperclassAccessor;
 
@@ -30,6 +31,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.MappedSup
  */
 public class EntityClassListenerMetadata extends EntityListenerMetadata {
     private EntityAccessor m_accessor;
+    private MetadataDescriptor m_descriptor;
     
     /**
      * INTERNAL: 
@@ -38,6 +40,7 @@ public class EntityClassListenerMetadata extends EntityListenerMetadata {
         super(null, null, accessor.getAccessibleObject());
     
         m_accessor = accessor;
+        m_descriptor = accessor.getDescriptor();
         
         // Set any XML defined call back method names.
         setPostLoad(accessor.getPostLoad());
@@ -58,19 +61,19 @@ public class EntityClassListenerMetadata extends EntityListenerMetadata {
         
         // Process the callback methods as defined in XML or annotations on the 
         // entity class first.
-        processCallbackMethods(getDeclaredMethods(m_accessor.getJavaClass()), m_accessor.getLogger());
+        processCallbackMethods(getDeclaredMethods(m_accessor.getJavaClass()), m_descriptor);
         
         // Process the callback methods as defined in XML or annotations 
         // on the mapped superclasses if not excluded second. 
-        if (! m_accessor.getDescriptor().excludeSuperclassListeners()) {
+        if (! m_descriptor.excludeSuperclassListeners()) {
             for (MappedSuperclassAccessor mappedSuperclass : mappedSuperclasses) {
-                processCallbackMethods(getDeclaredMethods(mappedSuperclass.getJavaClass()), m_accessor.getLogger());
+                processCallbackMethods(getDeclaredMethods(mappedSuperclass.getJavaClass()), m_descriptor);
             }
         }
         
         // Add the listener only if we actually found callback methods.
         if (m_listener.hasCallbackMethods()) {
-            m_accessor.getDescriptor().setEntityEventListener(m_listener);
+            m_descriptor.setEntityEventListener(m_listener);
         }
     }
 }
