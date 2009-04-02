@@ -1439,7 +1439,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                         this.unitOfWorkChangeSet = new UnitOfWorkChangeSet(this);
                     }
                     // PERF: clone is faster than new.
-                    calculateChanges((IdentityHashMap)((IdentityHashMap)getCloneMapping()).clone(), this.unitOfWorkChangeSet, true);
+                    calculateChanges(cloneMap(getCloneMapping()), this.unitOfWorkChangeSet, true);
                     // Also must first set the commit manager active.
                     getCommitManager().setIsActive(true);
         
@@ -5596,17 +5596,35 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             getProperties().put(DatasourceAccessor.STOREDPROCEDURE_STATEMENTS_COUNT_PROPERTY,new Integer(((DatasourceAccessor)getAccessor()).getStoredProcedureStatementsCount()));
         }
     }
-    
+  
+    /**
+     * This method is used internally to create a map to hold the persistenceContexts.  A weak map is returned if ReferenceMode is weak. 
+     */
     protected Map createMap(){
         if (this.referenceMode != null && this.referenceMode != ReferenceMode.HARD) return new IdentityWeakHashMap();
         return new IdentityHashMap();
     }
-     
+    /**
+     * This method is used internally to create a map to hold the persistenceContexts.  A weak map is returned if ReferenceMode is weak.  
+     * 
+     *  @param size
+     */ 
     protected Map createMap(int size){
         if (this.referenceMode != null && this.referenceMode != ReferenceMode.HARD) return new IdentityWeakHashMap(size);
         return new IdentityHashMap(size);
     }
+    /**
+     * This method is used internally to clone a map that holds the persistenceContexts.  A weak map is returned if ReferenceMode is weak.  
+     * 
+     */
 
+    protected Map cloneMap(Map map){
+        // bug 270413.  This method is needed to avoid the class cast exception when the reference mode is weak.
+    	if (this.referenceMode != null && this.referenceMode != ReferenceMode.HARD) return (IdentityWeakHashMap)((IdentityWeakHashMap)map).clone();
+        return (IdentityHashMap)((IdentityHashMap)map).clone();
+    }
+
+    
     public ReferenceMode getReferenceMode() {
         return referenceMode;
     }
