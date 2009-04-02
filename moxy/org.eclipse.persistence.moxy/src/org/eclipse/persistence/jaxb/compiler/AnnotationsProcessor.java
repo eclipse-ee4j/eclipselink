@@ -1151,15 +1151,23 @@ public class AnnotationsProcessor {
             }
             info.setAttributeFormQualified(xmlSchema.attributeFormDefault() == XmlNsForm.QUALIFIED);
             info.setElementFormQualified(xmlSchema.elementFormDefault() == XmlNsForm.QUALIFIED);
-            String location = xmlSchema.location();
-            if(location != null){
-	            if(location.equals("##generate")){
-	            	location = null;
-	            }else if(location.equals("")){
-	            	location = null;
-	            }
-            }
-            info.setLocation(location);
+            
+            //reflectively load XmlSchema class to avoid dependency            
+            try {
+                Method locationMethod = PrivilegedAccessHelper.getDeclaredMethod(XmlSchema.class, "location", new Class[]{});
+                String location = (String)PrivilegedAccessHelper.invokeMethod(locationMethod, xmlSchema, new Object[]{});
+                
+                if(location != null){
+    	            if(location.equals("##generate")){
+    	            	location = null;
+    	            }else if(location.equals("")){
+    	            	location = null;
+    	            }
+                }    		        		    	   
+                info.setLocation(location);
+            } catch(Exception ex) {
+            } 
+                                               
         }
         return info;
     }
