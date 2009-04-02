@@ -27,10 +27,12 @@ public class XMLAnyAttributeMappingTestSuite extends TestCase {
         suite.addTestSuite(org.eclipse.persistence.testing.oxm.mappings.anyattribute.withgroupingelement.AnyAttributeMultipleAttributesTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.oxm.mappings.anyattribute.withgroupingelement.AnyAttributeNoAttributesTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.oxm.mappings.anyattribute.withoutgroupingelement.AnyAttributeMultipleAttributesNSTestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.oxm.mappings.anyattribute.withoutgroupingelement.AnyAttributeMultipleAttributesNSExcludeTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.oxm.mappings.anyattribute.withoutgroupingelement.AnyAttributeNoAttributesNSTestCases.class);
         suite.addTestSuite(AnyAttributeNotInNRTestCases.class);
         suite.addTestSuite(AnyAttributeNSonRootTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.oxm.mappings.anyattribute.withgroupingelement.AnyAttributeMultipleAttributesNSTestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.oxm.mappings.anyattribute.withgroupingelement.AnyAttributeMultipleAttributesNSExcludeTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.oxm.mappings.anyattribute.withgroupingelement.AnyAttributeNoAttributesNSTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.oxm.mappings.anyattribute.usemaptests.AnyAttributeUsingMapTestCases.class);
         return suite;

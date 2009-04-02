@@ -3556,6 +3556,8 @@
         <xsd:sequence>
           <xsd:element minOccurs="0" name="field" type="field" />
           <xsd:element minOccurs="0" name="container" type="container-policy" />
+          <xsd:element minOccurs="0" name="include-namespace-declaration" type="xsd:boolean" />
+          <xsd:element minOccurs="0" name="include-schema-instance" type="xsd:boolean" />
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>

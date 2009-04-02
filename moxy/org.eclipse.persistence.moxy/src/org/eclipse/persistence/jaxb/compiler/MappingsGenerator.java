@@ -583,6 +583,8 @@ public class MappingsGenerator {
             mapping.setGetMethodName(property.getGetMethodName());
             mapping.setSetMethodName(property.getSetMethodName());
         }
+        mapping.setSchemaInstanceIncluded(false);
+        mapping.setNamespaceDeclarationIncluded(false);
         descriptor.addMapping(mapping);
     }
     

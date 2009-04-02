@@ -39,6 +39,7 @@ import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
@@ -69,9 +70,13 @@ import org.w3c.dom.Node;
 public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMapping {
     private XMLField field;
     private DirectMapContainerPolicy containerPolicy;
-
+    private boolean isNamespaceDeclarationIncluded;
+    private boolean isSchemaInstanceIncluded;
+    
     public XMLAnyAttributeMapping() {
         this.containerPolicy = new DirectMapContainerPolicy(HashMap.class);
+        this.isNamespaceDeclarationIncluded = true;
+        this.isSchemaInstanceIncluded = true;
     }
 
     /**
@@ -242,9 +247,19 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
             if (null == localName) {
                 localName = next.getName();
             }
-            QName key = new QName(next.getNamespaceURI(), localName);
-            String value = next.getValue();
-            cp.addInto(key, value, container, session);
+            String namespaceURI = next.getNamespaceURI();
+            boolean includeAttribute = true;
+            if(!isNamespaceDeclarationIncluded && XMLConstants.XMLNS_URL.equals(namespaceURI)){
+            	includeAttribute = false;            	
+            }else if(!isSchemaInstanceIncluded && XMLConstants.SCHEMA_INSTANCE_URL.equals(namespaceURI)){
+            	includeAttribute = false;            	
+            }                       
+                        
+            if(includeAttribute){
+            	String value = next.getValue();
+            	QName key = new QName(namespaceURI, localName);                        	
+            	cp.addInto(key, value, container, session);
+            }         
         }
         return container;
     }
@@ -301,12 +316,12 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
             return;
         }
         Element root = (Element) record.getDOM();
-
+        DOMRecord newRecord = new DOMRecord(root);
         if (field != null) {
             root = (Element) XPathEngine.getInstance().create((XMLField) getField(), root, session);
         }
         List extraNamespaces = new ArrayList();
-        NamespaceResolver nr = row.getNamespaceResolver();
+        NamespaceResolver nr = newRecord.getNamespaceResolver();
         for (Object iter = cp.iteratorFor(attributeValue); cp.hasNext(iter);) {
             Map.Entry entry = (Map.Entry)cp.nextEntry(iter, session);
             Object key = entry.getKey();
@@ -325,7 +340,7 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
                         qualifiedName = generatedPrefix + ":" + qualifiedName;
                         nr.put(generatedPrefix, attributeName.getNamespaceURI());
                         extraNamespaces.add(new Namespace(generatedPrefix, attributeName.getNamespaceURI()));
-                        row.getNamespaceResolver().put(generatedPrefix, attributeName.getNamespaceURI());
+                        newRecord.getNamespaceResolver().put(generatedPrefix, attributeName.getNamespaceURI());
                     }
                 }
                 if (namespaceURI != null) {
@@ -335,8 +350,9 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
                 }
             }
         }
-        ((XMLObjectBuilder) descriptor.getObjectBuilder()).writeExtraNamespaces(extraNamespaces, row);
-        ((XMLObjectBuilder) descriptor.getObjectBuilder()).removeExtraNamespacesFromNamespaceResolver(row, extraNamespaces, session);
+        
+        ((XMLObjectBuilder) descriptor.getObjectBuilder()).writeExtraNamespaces(extraNamespaces, newRecord);
+        ((XMLObjectBuilder) descriptor.getObjectBuilder()).removeExtraNamespacesFromNamespaceResolver(newRecord, extraNamespaces, session);
     }
 
     /**
@@ -356,4 +372,21 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
         this.setContainerPolicy(new DirectMapContainerPolicy());
         this.getContainerPolicy().setContainerClassName(concreteMapClassName);
     }
+
+    public boolean isNamespaceDeclarationIncluded() {
+        return isNamespaceDeclarationIncluded;
+    }
+
+    public void setNamespaceDeclarationIncluded(boolean isNamespaceDeclarationIncluded) {
+        this.isNamespaceDeclarationIncluded = isNamespaceDeclarationIncluded;
+    }
+
+    public boolean isSchemaInstanceIncluded() {
+        return isSchemaInstanceIncluded;
+    }
+
+    public void setSchemaInstanceIncluded(boolean isSchemaInstanceIncluded) {
+        this.isSchemaInstanceIncluded = isSchemaInstanceIncluded;
+    }
+
 }

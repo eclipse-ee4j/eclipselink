@@ -18,10 +18,14 @@ import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 
 // EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.mappings.transformers.ConstantTransformer;
 import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.mappings.XMLAnyAttributeMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
@@ -178,5 +182,27 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends ObjectPersist
         descriptor.addMapping(containerSetMethodMapping);
         
         return descriptor;
-    }     
+    }   
+    
+    protected ClassDescriptor buildXMLAnyAttributeMappingDescriptor() {
+    	ClassDescriptor descriptor = super.buildXMLAnyAttributeMappingDescriptor();
+        
+    	XMLDirectMapping includeNamespaceDeclarationMapping = new XMLDirectMapping();
+        includeNamespaceDeclarationMapping.setAttributeName("isNamespaceDeclarationIncluded");        
+        includeNamespaceDeclarationMapping.setGetMethodName("isNamespaceDeclarationIncluded");
+        includeNamespaceDeclarationMapping.setSetMethodName("setNamespaceDeclarationIncluded");
+        includeNamespaceDeclarationMapping.setXPath(getPrimaryNamespaceXPath() + "include-namespace-declaration/text()");
+        descriptor.addMapping(includeNamespaceDeclarationMapping);
+     
+        XMLDirectMapping includeSchemaInstanceMapping = new XMLDirectMapping();
+        includeSchemaInstanceMapping.setAttributeName("isSchemaInstanceIncluded");        
+        includeSchemaInstanceMapping.setGetMethodName("isSchemaInstanceIncluded");
+        includeSchemaInstanceMapping.setSetMethodName("setSchemaInstanceIncluded");
+        includeSchemaInstanceMapping.setXPath(getPrimaryNamespaceXPath() + "include-schema-instance/text()");
+        descriptor.addMapping(includeSchemaInstanceMapping);
+        
+        return descriptor;
+    }
+    
+    
 }

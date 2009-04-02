@@ -92,14 +92,20 @@ public class XMLAnyAttributeMappingNodeValue extends XMLSimpleMappingNodeValue i
     }
 
     public void attribute(UnmarshalRecord unmarshalRecord, String namespaceURI, String localName, String value) {
-        try {
-            DirectMapContainerPolicy cp = (DirectMapContainerPolicy) xmlAnyAttributeMapping.getContainerPolicy();
-            Object containerInstance = unmarshalRecord.getContainerInstance(this);
-            QName key = new QName(namespaceURI, localName);
-            cp.addInto(key, value, containerInstance, unmarshalRecord.getSession());
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        DirectMapContainerPolicy cp = (DirectMapContainerPolicy) xmlAnyAttributeMapping.getContainerPolicy();
+        Object containerInstance = unmarshalRecord.getContainerInstance(this);
+            
+        boolean includeAttribute = true;
+        if(!xmlAnyAttributeMapping.isNamespaceDeclarationIncluded() && XMLConstants.XMLNS_URL.equals(namespaceURI)){
+            includeAttribute = false;            	
+        }else if(!xmlAnyAttributeMapping.isSchemaInstanceIncluded() && XMLConstants.SCHEMA_INSTANCE_URL.equals(namespaceURI)){
+            includeAttribute = false;            	
         }
+                    
+        if(includeAttribute){
+            QName key = new QName(namespaceURI, localName);            
+            cp.addInto(key, value, containerInstance, unmarshalRecord.getSession());
+        }          
     }
 
     public Object getContainerInstance() {
