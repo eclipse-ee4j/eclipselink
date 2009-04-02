@@ -644,10 +644,11 @@ public class AnnotationsProcessor {
                     }
 
                     // Check for XmlElement annotation and set required (a.k.a. minOccurs) accordingly
-                    if (helper.isAnnotationPresent(property.getElement(), XmlElement.class)) {
-                        property.setIsRequired(((XmlElement) helper.getAnnotation(property.getElement(), XmlElement.class)).required());
-                    } else if (ptype.isPrimitive()) {
+                    // primitives are always required
+                    if (ptype.isPrimitive()) {
                         property.setIsRequired(true);
+                    } else if (helper.isAnnotationPresent(property.getElement(), XmlElement.class)) {
+                        property.setIsRequired(((XmlElement) helper.getAnnotation(property.getElement(), XmlElement.class)).required());
                     }                                                            
                                    
                     if (helper.isAnnotationPresent(property.getElement(), XmlValue.class)) {                    
@@ -938,10 +939,11 @@ public class AnnotationsProcessor {
             }                     
                
             // Check for XmlElement annotation and set required (a.k.a. minOccurs) accordingly
-            if (helper.isAnnotationPresent(property.getElement(), XmlElement.class)) {
-                property.setIsRequired(((XmlElement) helper.getAnnotation(property.getElement(), XmlElement.class)).required());
-            } else if (ptype.isPrimitive()) {
+            // primitives are always required
+            if (ptype.isPrimitive()) {
                 property.setIsRequired(true);
+            } else if (helper.isAnnotationPresent(property.getElement(), XmlElement.class)) {
+                property.setIsRequired(((XmlElement) helper.getAnnotation(property.getElement(), XmlElement.class)).required());
             }                    
         }
         return properties;
