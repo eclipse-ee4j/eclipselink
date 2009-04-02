@@ -1371,7 +1371,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                         this.unitOfWorkChangeSet = new UnitOfWorkChangeSet(this);
                     }
                     // PERF: clone is faster than new.
-                    calculateChanges((IdentityHashMap)((IdentityHashMap)getCloneMapping()).clone(), this.unitOfWorkChangeSet, true);
+                    calculateChanges(cloneMap(getCloneMapping()), this.unitOfWorkChangeSet, true);
                 } catch (RuntimeException exception){
                     // The number of SQL statements been prepared need be stored into UOW 
                     // before any exception being thrown.
@@ -5523,6 +5523,11 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         return new IdentityHashMap(size);
     }
 
+    protected Map cloneMap(Map map){
+        // bug 270413.  This method is needed to avoid the class cast exception when the reference mode is weak.
+    	if (this.referenceMode != null && this.referenceMode != ReferenceMode.HARD) return (IdentityWeakHashMap)((IdentityWeakHashMap)map).clone();
+        return (IdentityHashMap)((IdentityHashMap)map).clone();
+    }
     public ReferenceMode getReferenceMode() {
         return referenceMode;
     }
