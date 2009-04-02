@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     09/23/2008-1.1 Guy Pelletier 
  *       - 241651: JPA 2.0 Access Type support
+ *     04/02/2009-2.0 Guy Pelletier 
+ *       - 270853: testBeerLifeCycleMethodAnnotationIgnored within xml merge testing need to be relocated
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.xml.merge.inherited;
 
