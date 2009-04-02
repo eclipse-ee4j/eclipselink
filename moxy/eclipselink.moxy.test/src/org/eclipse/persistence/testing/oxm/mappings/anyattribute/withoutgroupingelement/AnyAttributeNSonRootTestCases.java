@@ -48,7 +48,7 @@ public class AnyAttributeNSonRootTestCases extends XMLMappingTestCases {
     }
 
     public static void main(String[] args) {
-        String[] arguments = { "-c", "oracle.eclipse.persistence.testing.oxm.mappings.anyattribute.withoutgroupingelement.AnyAttributeNSonRootTestCases" };
+        String[] arguments = { "-c", "org.eclipse.persistence.testing.oxm.mappings.anyattribute.withoutgroupingelement.AnyAttributeNSonRootTestCases" };
         junit.textui.TestRunner.main(arguments);
     }
 }

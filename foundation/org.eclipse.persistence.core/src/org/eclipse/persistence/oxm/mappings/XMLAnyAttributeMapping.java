@@ -315,13 +315,15 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
         if (record.getDOM().getNodeType() != Node.ELEMENT_NODE) {
             return;
         }
+        DOMRecord recordToModify = record;
         Element root = (Element) record.getDOM();
-        DOMRecord newRecord = new DOMRecord(root);
         if (field != null) {
             root = (Element) XPathEngine.getInstance().create((XMLField) getField(), root, session);
-        }
+            recordToModify = new DOMRecord(root);
+        }        
+
         List extraNamespaces = new ArrayList();
-        NamespaceResolver nr = newRecord.getNamespaceResolver();
+        NamespaceResolver nr = recordToModify.getNamespaceResolver();
         for (Object iter = cp.iteratorFor(attributeValue); cp.hasNext(iter);) {
             Map.Entry entry = (Map.Entry)cp.nextEntry(iter, session);
             Object key = entry.getKey();
@@ -340,7 +342,7 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
                         qualifiedName = generatedPrefix + ":" + qualifiedName;
                         nr.put(generatedPrefix, attributeName.getNamespaceURI());
                         extraNamespaces.add(new Namespace(generatedPrefix, attributeName.getNamespaceURI()));
-                        newRecord.getNamespaceResolver().put(generatedPrefix, attributeName.getNamespaceURI());
+                        recordToModify.getNamespaceResolver().put(generatedPrefix, attributeName.getNamespaceURI());
                     }
                 }
                 if (namespaceURI != null) {
@@ -351,8 +353,8 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
             }
         }
         
-        ((XMLObjectBuilder) descriptor.getObjectBuilder()).writeExtraNamespaces(extraNamespaces, newRecord);
-        ((XMLObjectBuilder) descriptor.getObjectBuilder()).removeExtraNamespacesFromNamespaceResolver(newRecord, extraNamespaces, session);
+        ((XMLObjectBuilder) descriptor.getObjectBuilder()).writeExtraNamespaces(extraNamespaces, recordToModify);
+        ((XMLObjectBuilder) descriptor.getObjectBuilder()).removeExtraNamespacesFromNamespaceResolver(recordToModify, extraNamespaces, session);
     }
 
     /**
