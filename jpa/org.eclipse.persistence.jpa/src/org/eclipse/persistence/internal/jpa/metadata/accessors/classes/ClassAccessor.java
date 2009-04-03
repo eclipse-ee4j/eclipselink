@@ -297,8 +297,8 @@ public abstract class ClassAccessor extends MetadataAccessor {
      * Return the access type of this accessor. Assumes all access processing
      * has been performed before calling this method.
      */
-    @Override
-    public String getAccess() {
+
+    public String getAccessType() {
         if (hasAccess()) {
             return super.getAccess();
         } else {
@@ -869,6 +869,6 @@ public abstract class ClassAccessor extends MetadataAccessor {
      * since we may be processing a mapped superclass.
      */
     public boolean usesPropertyAccess() {
-        return getAccess().equals(MetadataConstants.PROPERTY);
+        return getAccessType().equals(MetadataConstants.PROPERTY);
     }
 }

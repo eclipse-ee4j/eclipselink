@@ -93,7 +93,7 @@ public class EmbeddableAccessor extends ClassAccessor {
         // Set the default access type on the descriptor and log a message
         // to the user if we are defaulting the access type for this 
         // embeddable to that default.
-        String owningClassAccessorsAccess = getOwningDescriptor().getClassAccessor().getAccess();
+        String owningClassAccessorsAccess = getOwningDescriptor().getClassAccessor().getAccessType();
         getDescriptor().setDefaultAccess(owningClassAccessorsAccess);
         
         if (getAccess() == null) {

@@ -89,7 +89,7 @@ public class EmbeddedIdAccessor extends EmbeddedAccessor {
         // primary keys fields that we will eventually set on the owning 
         // descriptor metadata.
         if (getReferenceDescriptor().getMappings().isEmpty()) {
-            throw ValidationException.embeddedIdHasNoAttributes(getDescriptor().getJavaClass(), getReferenceDescriptor().getJavaClass(), getReferenceDescriptor().getClassAccessor().getAccess());
+            throw ValidationException.embeddedIdHasNoAttributes(getDescriptor().getJavaClass(), getReferenceDescriptor().getJavaClass(), getReferenceDescriptor().getClassAccessor().getAccessType());
         } else {
             // Go through all our mappings, the fields from those mappings will
             // make up the composite primary key.

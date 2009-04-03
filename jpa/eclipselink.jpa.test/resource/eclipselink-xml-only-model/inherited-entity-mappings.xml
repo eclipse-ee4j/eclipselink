@@ -35,7 +35,8 @@
             </id>
         </attributes>
     </mapped-superclass>
-    <mapped-superclass class="org.eclipse.persistence.testing.models.jpa.xml.inherited.Beer" access="FIELD">
+	<!-- Testing a mapped superclass with no explicit access specification -->
+    <mapped-superclass class="org.eclipse.persistence.testing.models.jpa.xml.inherited.Beer">
         <exclude-default-listeners/>
         <exclude-superclass-listeners/>
         <attributes>
