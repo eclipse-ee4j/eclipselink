@@ -37,7 +37,6 @@ import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.remote.*;
 import org.eclipse.persistence.sessions.ObjectCopyingPolicy;
 import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.sessions.UnitOfWork;
 
 /**
  * <p><b>Purpose</b>: Abstract class for relationship mappings which store collection of objects
@@ -338,7 +337,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                 uow.removePrivateOwnedObject(this, nextObject);
             }
             uow.discoverAndPersistUnregisteredNewObjects(nextObject, cascade, newObjects, unregisteredExistingObjects, visitedObjects);
-            containerPolicy.cascadeDiscoverAndPersistUnregisteredNewObjects(wrappedObject, cascade, newObjects, unregisteredExistingObjects, visitedObjects, uow);
+            containerPolicy.cascadeDiscoverAndPersistUnregisteredNewObjects(wrappedObject, newObjects, unregisteredExistingObjects, visitedObjects, uow);
         }
     }
     
@@ -1182,7 +1181,6 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * Recurse thru the parts to delete the reference objects after the actual object is deleted.
      */
     public void postDelete(DeleteObjectQuery query) throws DatabaseException {
-        super.postDelete(query);
         if (getContainerPolicy().propagatesEventsToCollection()){
             Object queryObject = query.getObject();
             Object values = getAttributeValueFromObject(queryObject);
@@ -1208,7 +1206,6 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * Recurse thru the parts to delete the reference objects after the actual object is deleted.
      */
     public void postInsert(UpdateObjectQuery query) throws DatabaseException {
-        super.postUpdate(query);
         if (getContainerPolicy().propagatesEventsToCollection()){
             Object queryObject = query.getObject();
             Object values = getAttributeValueFromObject(queryObject);
@@ -1225,7 +1222,6 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * Propagate preInsert event to container policy if necessary
      */
     public void preInsert(WriteObjectQuery query) throws DatabaseException, OptimisticLockException {
-        super.preInsert(query);
         if (getContainerPolicy().propagatesEventsToCollection()){
             Object queryObject = query.getObject();
             Object values = getAttributeValueFromObject(queryObject);
@@ -1243,7 +1239,6 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * Propagate preUpdate event to container policy if necessary
      */
     public void preUpdate(WriteObjectQuery query) throws DatabaseException {
-        super.preUpdate(query);
         if (getContainerPolicy().propagatesEventsToCollection()){
             Object queryObject = query.getObject();
             Object values = getAttributeValueFromObject(queryObject);

@@ -27,6 +27,7 @@ import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
+import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -286,15 +287,8 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements D
          * INTERNAL:
          * Cascade discover and persist new objects during commit to the map key
          */
-        public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, boolean cascade, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow) {
-            if (((DatabaseMapping)keyMapping).isOneToOneMapping()){
-                Object key = ((Map.Entry)object).getKey();
-                // remove private owned object from uow list if uow has private owned objects
-                if (uow.hasPrivateOwnedObjects()){
-                    uow.removePrivateOwnedObject(((DatabaseMapping)keyMapping), key);
-                }
-                uow.discoverAndPersistUnregisteredNewObjects(key, cascade, newObjects, unregisteredExistingObjects, visitedObjects);
-            }
+        public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow) {
+            keyMapping.cascadeDiscoverAndPersistUnregisteredNewObjects(((Map.Entry)object).getKey(), newObjects, unregisteredExistingObjects, visitedObjects, uow, false);     
         }
         
         /**
@@ -302,9 +296,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements D
          * Cascade registerNew to any mappings managed by the container policy. This will cascade the register to the key mapping.
          */
         public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
-            if (((DatabaseMapping)keyMapping).isOneToOneMapping()){
-                uow.performRemove(((Map.Entry)object).getKey(), visitedObjects);
-            }
+            keyMapping.cascadePerformRemoveIfRequired(((Map.Entry)object).getKey(), uow, visitedObjects, false);
         }
         
         /**
@@ -312,15 +304,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements D
          * Cascade registerNew to any mappings managed by the container policy. This will cascade the register to the key mapping.
          */
         public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
-            DatabaseMapping mapping = (DatabaseMapping)keyMapping;
-            if (mapping.isOneToOneMapping()){
-                Object key = ((Map.Entry)object).getKey();
-                // add private owned object to uow list if mapping is a candidate and uow should discover new objects
-                if (mapping.isCandidateForPrivateOwnedRemoval() && uow.shouldDiscoverNewObjects()) {
-                    uow.addPrivateOwnedObject(mapping, key);
-                }
-                uow.registerNewObjectForPersist(key, visitedObjects);
-            }
+            keyMapping.cascadeRegisterNewIfRequired(((Map.Entry)object).getKey(), uow, visitedObjects, false);
         }
         
         /**

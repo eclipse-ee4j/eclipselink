@@ -165,7 +165,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
             Object iterator = containerPolicy.iteratorFor(values);
             while (containerPolicy.hasNext(iterator)){
                 Object wrappedObject = containerPolicy.nextEntry(iterator, uow);
-                containerPolicy.cascadeDiscoverAndPersistUnregisteredNewObjects(wrappedObject, isCascadePersist(), newObjects, unregisteredExistingObjects, visitedObjects, uow);
+                containerPolicy.cascadeDiscoverAndPersistUnregisteredNewObjects(wrappedObject, newObjects, unregisteredExistingObjects, visitedObjects, uow);
             }
         }
     }

@@ -723,12 +723,27 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * Cascade registerNew for Create through mappings that require the cascade
      */
     public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects){
-        Object attributeValue = getAttributeValueFromObject(object);
+        cascadePerformRemoveIfRequired(object, uow, visitedObjects, true);
+    }
+    
+    /**
+     * INTERNAL:
+     * Cascade registerNew for Create through mappings that require the cascade
+     */
+    public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects, boolean getAttributeValueFromObject){
+        Object attributeValue = null;
+        if (getAttributeValueFromObject){
+            attributeValue = getAttributeValueFromObject(object);
+        } else {
+            attributeValue = object;
+        }
         if (attributeValue != null && this.isCascadeRemove() ){
-            Object reference = getIndirectionPolicy().getRealAttributeValueFromObject(object, attributeValue);
-            if (reference != null && (! visitedObjects.containsKey(reference)) ){
-                visitedObjects.put(reference, reference);
-                uow.performRemove(reference, visitedObjects);
+            if (getAttributeValueFromObject){
+                attributeValue = getIndirectionPolicy().getRealAttributeValueFromObject(object, attributeValue);
+            }
+            if (attributeValue != null && (! visitedObjects.containsKey(attributeValue)) ){
+                visitedObjects.put(attributeValue, attributeValue);
+                uow.performRemove(attributeValue, visitedObjects);
             }
         }
     }
@@ -755,14 +770,29 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * Cascade discover and persist new objects during commit.
      */
     public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow) {
-        Object attributeValue = getAttributeValueFromObject(object);
+        cascadeDiscoverAndPersistUnregisteredNewObjects(object, newObjects, unregisteredExistingObjects, visitedObjects, uow, true);
+    }
+    
+    /**
+     * INTERNAL:
+     * Cascade discover and persist new objects during commit.
+     */
+    public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow, boolean getAttributeValueFromObject) {
+        Object attributeValue = null;
+        if (getAttributeValueFromObject){
+            attributeValue = getAttributeValueFromObject(object);
+        } else {
+            attributeValue = object;
+        }
         if (attributeValue != null && getIndirectionPolicy().objectIsInstantiated(attributeValue)) {
-            Object reference = getIndirectionPolicy().getRealAttributeValueFromObject(object, attributeValue);
+            if (getAttributeValueFromObject){
+                attributeValue = getIndirectionPolicy().getRealAttributeValueFromObject(object, attributeValue);
+            }
             // remove private owned object from uow list if uow has private owned objects
             if (uow.hasPrivateOwnedObjects()) {
-                uow.removePrivateOwnedObject(this, reference);
+                uow.removePrivateOwnedObject(this, attributeValue);
             }
-            uow.discoverAndPersistUnregisteredNewObjects(reference, isCascadePersist(), newObjects, unregisteredExistingObjects, visitedObjects);
+            uow.discoverAndPersistUnregisteredNewObjects(attributeValue, isCascadePersist(), newObjects, unregisteredExistingObjects, visitedObjects);
         }
     }
     
@@ -771,13 +801,28 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * Cascade registerNew for Create through mappings that require the cascade
      */
     public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects){
-        Object attributeValue = getAttributeValueFromObject(object);
+        cascadeRegisterNewIfRequired(object, uow, visitedObjects, true);
+    }
+    
+    /**
+     * INTERNAL:
+     * Cascade registerNew for Create through mappings that require the cascade
+     */
+    public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects, boolean getAttributeValueFromObject){
+        Object attributeValue = null;
+        if (getAttributeValueFromObject){
+            attributeValue = getAttributeValueFromObject(object);
+        } else {
+            attributeValue = object;
+        }
         if (attributeValue != null && this.isCascadePersist() && getIndirectionPolicy().objectIsInstantiated(attributeValue)){
-            Object reference = getIndirectionPolicy().getRealAttributeValueFromObject(object, attributeValue);
-            uow.registerNewObjectForPersist(reference, visitedObjects);
+            if (getAttributeValueFromObject){
+                attributeValue = getIndirectionPolicy().getRealAttributeValueFromObject(object, attributeValue);
+            }
+            uow.registerNewObjectForPersist(attributeValue, visitedObjects);
             // add private owned object to uow list if mapping is a candidate and uow should discover new objects
             if (isCandidateForPrivateOwnedRemoval() && uow.shouldDiscoverNewObjects()) {
-                uow.addPrivateOwnedObject(this, reference);
+                uow.addPrivateOwnedObject(this, attributeValue);
             }
         }
     }

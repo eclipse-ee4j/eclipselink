@@ -547,12 +547,26 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
 
     /**
      * INTERNAL:
+     * Cascade discover and persist new objects during commit to the map key
+     */
+    public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow, boolean getAttributeValueFromObject){
+        ObjectBuilder builder = getReferenceDescriptor(object.getClass(), uow).getObjectBuilder();
+        builder.cascadeDiscoverAndPersistUnregisteredNewObjects(object, newObjects, unregisteredExistingObjects, visitedObjects, uow);
+    }
+    
+    /**
+     * INTERNAL:
      * Cascade perform delete through mappings that require the cascade
      */
-    public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
-        //objects referenced by this mapping are not registered as they have
-        // no identity, however mappings from the referenced object may need cascading.
-        Object objectReferenced = getAttributeValueFromObject(object);
+    public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects, boolean getAttributeValueFromObject) {
+        Object objectReferenced = null;
+        if (getAttributeValueFromObject){
+            //objects referenced by this mapping are not registered as they have
+            // no identity, however mappings from the referenced object may need cascading.
+            objectReferenced = getAttributeValueFromObject(object);
+        } else {
+            objectReferenced = object;
+        }
         if ((objectReferenced == null)) {
             return;
         }
@@ -561,6 +575,14 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
             ObjectBuilder builder = getReferenceDescriptor(objectReferenced.getClass(), uow).getObjectBuilder();
             builder.cascadePerformRemove(objectReferenced, uow, visitedObjects);
         }
+    }    
+    
+    /**
+     * INTERNAL:
+     * Cascade perform delete through mappings that require the cascade
+     */
+    public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
+        cascadePerformRemoveIfRequired(object, uow, visitedObjects, true);
     }
 
     /**
@@ -572,7 +594,6 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         if (attributeValue == null) {
             return;
         }
-        
         if (!visitedObjects.containsKey(attributeValue)) {
             visitedObjects.put(attributeValue, attributeValue);
             ObjectBuilder builder = getReferenceDescriptor(attributeValue, uow).getObjectBuilder();
@@ -585,9 +606,14 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade
      */
-    public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
+    public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects, boolean getAttributeValueFromObject) {
+        Object objectReferenced = null;
         //aggregate objects are not registered but their mappings should be.
-        Object objectReferenced = getAttributeValueFromObject(object);
+        if (getAttributeValueFromObject){
+            objectReferenced = getAttributeValueFromObject(object);
+        } else {
+            objectReferenced = object;
+        }
         if ((objectReferenced == null)) {
             return;
         }
@@ -596,6 +622,14 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
             ObjectBuilder builder = getReferenceDescriptor(objectReferenced.getClass(), uow).getObjectBuilder();
             builder.cascadeRegisterNewForCreate(objectReferenced, uow, visitedObjects);
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * Cascade registerNew for Create through mappings that require the cascade
+     */
+    public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
+        cascadeRegisterNewIfRequired(object, uow, visitedObjects, true);
     }
 
     /**
@@ -807,7 +841,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * INTERNAL:
      * Since aggregate object mappings clone their descriptors, for inheritance the correct child clone must be found.
      */
-    protected ClassDescriptor getReferenceDescriptor(Class theClass, AbstractSession session) {
+    public ClassDescriptor getReferenceDescriptor(Class theClass, AbstractSession session) {
         if (getReferenceDescriptor().getJavaClass().equals(theClass)) {
             return getReferenceDescriptor();
         }

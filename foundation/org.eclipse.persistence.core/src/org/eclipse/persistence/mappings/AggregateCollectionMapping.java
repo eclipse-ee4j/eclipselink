@@ -275,7 +275,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
             if (nextObject != null) {
                 builder = getReferenceDescriptor(nextObject.getClass(), uow).getObjectBuilder();
                 builder.cascadeDiscoverAndPersistUnregisteredNewObjects(nextObject, newObjects, unregisteredExistingObjects, visitedObjects, uow);
-                cp.cascadeDiscoverAndPersistUnregisteredNewObjects(wrappedObject, isCascadePersist(), newObjects, unregisteredExistingObjects, visitedObjects, uow);
+                cp.cascadeDiscoverAndPersistUnregisteredNewObjects(wrappedObject, newObjects, unregisteredExistingObjects, visitedObjects, uow);
             }
         }
     }

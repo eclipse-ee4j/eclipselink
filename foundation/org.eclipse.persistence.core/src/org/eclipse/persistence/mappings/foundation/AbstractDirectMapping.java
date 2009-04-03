@@ -308,9 +308,36 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
     
     /**
      * INTERNAL:
+     * Cascade discover and persist new objects during commit to the map key
+     */
+    public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow,  boolean getAttributeValueFromObject){
+        //objects referenced by this mapping are not registered as they have
+        // no identity, this is a no-op.
+    }
+    
+    /**
+     * INTERNAL:
+     * Cascade perform delete through mappings that require the cascade
+     */
+    public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects, boolean getAttributeValueFromObject) {
+        //objects referenced by this mapping are not registered as they have
+        // no identity, this is a no-op.
+    }
+    
+    /**
+     * INTERNAL:
      * Cascade perform delete through mappings that require the cascade
      */
     public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
+        //objects referenced by this mapping are not registered as they have
+        // no identity, this is a no-op.
+    }
+    
+    /**
+     * INTERNAL:
+     * Cascade registerNew for Create through mappings that require the cascade
+     */
+    public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects, boolean getAttributeValueFromObject) {
         //objects referenced by this mapping are not registered as they have
         // no identity, this is a no-op.
     }

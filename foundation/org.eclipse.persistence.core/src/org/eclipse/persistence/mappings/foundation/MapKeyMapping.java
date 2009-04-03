@@ -91,16 +91,31 @@ public interface MapKeyMapping extends MapComponentMapping {
      */
     public ReadQuery buildSelectionQueryForDirectCollectionKeyMapping(ContainerPolicy containerPolicy);
     
+    /**
+     * INTERNAL:
+     * Cascade discover and persist new objects during commit to the map key
+     */
+    public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow, boolean getAttributeValueFromObject);
 
+    /**
+     * INTERNAL:
+     * Cascade perform delete through mappings that require the cascade
+     */
+    public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects, boolean getAttributeValueFromObject);
+  
+    /**
+     * INTERNAL:
+     * Cascade registerNew for Create through mappings that require the cascade
+     */
+    public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects, boolean getAttributeValueFromObject);
+    
     /**
      * INTERNAL
      * Called when a DatabaseMapping is used to map the key in a collection and a join query is used.  
      * Returns the key.
      */
     public Object createMapComponentFromJoinedRow(AbstractRecord dbRow, JoinedAttributeManager joinManager, ObjectBuildingQuery query, AbstractSession session);
-
-    
-    
+       
     /**
      * INTERNAL:
      * For mappings used as MapKeys in MappedKeyContainerPolicy, Delete the passed object if necessary.

@@ -735,7 +735,6 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
             return null;
         }
 
-        @Override
         public void remove() {
             this.iterator.remove();
         }
