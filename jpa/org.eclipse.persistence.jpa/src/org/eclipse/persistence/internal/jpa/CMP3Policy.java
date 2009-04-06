@@ -362,26 +362,31 @@ public class CMP3Policy extends CMPPolicy {
      */
     protected KeyElementAccessor[] getKeyClassFields(Class clazz) {
         if (this.keyClassFields == null) {
-            this.keyClassFields = initializePrimaryKeyFields(this.pkClass == null ? clazz : this.pkClass);
-            // Also initialize the key mappings.
-            int size = this.keyClassFields.length;
-            DatabaseMapping[] mappings = new DatabaseMapping[size];
-            for (int index = 0; index < size; index++) {
-                KeyElementAccessor accessor = this.keyClassFields[index];
-                DatabaseMapping mapping = getDescriptor().getObjectBuilder().getMappingForAttributeName(accessor.getAttributeName());
-                if (mapping == null) {
-                    mapping = this.getDescriptor().getObjectBuilder().getMappingForField(accessor.getDatabaseField());
-                }
-                while (mapping.isAggregateObjectMapping()) {
-                    DatabaseMapping nestedMapping = mapping.getReferenceDescriptor().getObjectBuilder().getMappingForAttributeName(accessor.getAttributeName());
-                    if (nestedMapping == null) {// must be aggregate
-                        nestedMapping = mapping.getReferenceDescriptor().getObjectBuilder().getMappingForField(accessor.getDatabaseField());
+            synchronized(this) {
+                if (this.keyClassFields == null) {
+                    KeyElementAccessor[] tmpKeyClassFields = initializePrimaryKeyFields(this.pkClass == null ? clazz : this.pkClass);
+                    // Also initialize the key mappings.
+                    int size = tmpKeyClassFields.length;
+                    DatabaseMapping[] mappings = new DatabaseMapping[size];
+                    for (int index = 0; index < size; index++) {
+                        KeyElementAccessor accessor = tmpKeyClassFields[index];
+                        DatabaseMapping mapping = getDescriptor().getObjectBuilder().getMappingForAttributeName(accessor.getAttributeName());
+                        if (mapping == null) {
+                            mapping = this.getDescriptor().getObjectBuilder().getMappingForField(accessor.getDatabaseField());
+                        }
+                        while (mapping.isAggregateObjectMapping()) {
+                            DatabaseMapping nestedMapping = mapping.getReferenceDescriptor().getObjectBuilder().getMappingForAttributeName(accessor.getAttributeName());
+                            if (nestedMapping == null) {// must be aggregate
+                                nestedMapping = mapping.getReferenceDescriptor().getObjectBuilder().getMappingForField(accessor.getDatabaseField());
+                            }
+                            mapping = nestedMapping;
+                        }
+                        mappings[index] = mapping;
                     }
-                    mapping = nestedMapping;
+                    this.keyMappings = mappings;
+        			this.keyClassFields = tmpKeyClassFields;
                 }
-                mappings[index] = mapping;
             }
-            this.keyMappings = mappings;
         }
         return this.keyClassFields;
     }
