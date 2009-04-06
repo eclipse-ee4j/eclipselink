@@ -16,6 +16,8 @@
  *       - 248293: JPA 2.0 Element Collections (part 2)
  *     03/27/2009-2.0 Guy Pelletier 
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+ *     04/03/2009-2.0 Guy Pelletier
+ *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
@@ -35,9 +37,11 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.MapKeyClass;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.MapKeyTemporal;
 
+import static javax.persistence.FetchType.EAGER;
 import static javax.persistence.TemporalType.DATE;
 
 import org.eclipse.persistence.annotations.BasicCollection;
@@ -53,17 +57,38 @@ import org.eclipse.persistence.annotations.BasicCollection;
 public class ExpertBeerConsumer extends RatedBeerConsumer<String, String, String> {
     private Map<Date, String> quotes;
     private Collection<byte[]> audio;
+    private Map<Birthday, String> celebrations;
     
     public ExpertBeerConsumer() {
         super();
         audio = new ArrayList<byte[]>();
         quotes = new HashMap<Date, String>();
+        celebrations = new HashMap<Birthday, String>();
     }   
+    
+    public void addCelebration(Birthday birthday, String details) {
+        celebrations.put(birthday, details);
+    }
     
     @BasicCollection
     @Lob
     public Collection<byte[]> getAudio() {
         return audio;
+    }
+    
+    @ElementCollection(fetch=EAGER)
+    @MapKeyClass(Birthday.class)
+    @AttributeOverrides({
+      @AttributeOverride(name="key.day", column=@Column(name="BIRTH_DAY")),
+      @AttributeOverride(name="key.month", column=@Column(name="BIRTH_MONTH")),
+      @AttributeOverride(name="key.year", column=@Column(name="BIRTH_YEAR"))
+    })
+    @Column(name="DETAILS")
+    @CollectionTable(
+            name="EXPERT_CELEBRATIONS",
+            joinColumns=@JoinColumn(name="EBC_ID"))
+    public Map<Birthday, String> getCelebrations() {
+        return celebrations;
     }
     
     @ElementCollection
@@ -79,6 +104,10 @@ public class ExpertBeerConsumer extends RatedBeerConsumer<String, String, String
 
     public void setAudio(Collection<byte[]> audio) {
         this.audio = audio;
+    }
+    
+    public void setCelebrations(Map<Birthday, String> celebrations) {
+        this.celebrations = celebrations;
     }
     
     public void setQuotes(Map<Date, String> quotes) {

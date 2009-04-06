@@ -19,6 +19,8 @@
  *       - 248293: JPA 2.0 Element Collections (part 1)
  *     02/06/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 2)
+ *     04/03/2009-2.0 Guy Pelletier
+ *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -115,7 +117,7 @@ public class EmbeddedIdAccessor extends EmbeddedAccessor {
         // primary keys fields that we will eventually set on the owning 
         // descriptor metadata.
         if (getReferenceDescriptor().getMappings().isEmpty()) {
-            throw ValidationException.embeddedIdHasNoAttributes(getDescriptor().getJavaClass(), getReferenceDescriptor().getJavaClass(), getReferenceDescriptor().getClassAccessor().getAccess());
+            throw ValidationException.embeddedIdHasNoAttributes(getDescriptor().getJavaClass(), getReferenceDescriptor().getJavaClass(), getReferenceDescriptor().getClassAccessor().getAccessType());
         } else {
             // Go through all our mappings, the fields from those mappings will
             // make up the composite primary key.

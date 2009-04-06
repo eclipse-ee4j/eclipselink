@@ -509,7 +509,23 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
             Object object = iterator.next();
 
             if (!secondCounter.containsKey(object) || (((Integer)secondCounter.get(object)).intValue() != ((Integer)firstCounter.get(object)).intValue())) {
-                return false;
+                // containsKey(object) will fail when the objects are arrays.
+                boolean found = false;
+                
+                for (Iterator ii = secondCounter.keySet().iterator(); ii.hasNext();) {
+                    Object otherObject = ii.next();
+                    found = Helper.comparePotentialArrays(object, otherObject);
+                        
+                    if (found) {
+                        iterator.remove();
+                        secondCounter.remove(otherObject);
+                        break;
+                    }
+                }
+                
+                if (!found) {
+                    return false;
+                }
             } else {
                 iterator.remove();
                 secondCounter.remove(object);

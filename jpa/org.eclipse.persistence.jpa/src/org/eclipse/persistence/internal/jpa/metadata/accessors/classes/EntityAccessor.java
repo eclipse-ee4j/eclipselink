@@ -31,6 +31,8 @@
  *       - 248293: JPA 2.0 Element Collections (part 2)
  *     03/27/2009-2.0 Guy Pelletier 
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+ *     04/03/2009-2.0 Guy Pelletier
+ *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -225,55 +227,60 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         List<EntityAccessor> subclassAccessors = new ArrayList<EntityAccessor>();
         subclassAccessors.add(currentAccessor);
         
-        while (parent != Object.class) {
-            EntityAccessor parentAccessor = getProject().getEntityAccessor(parent.getName());
+        if (parent != Object.class) {
+            while (parent != Object.class) {
+                EntityAccessor parentAccessor = getProject().getEntityAccessor(parent.getName());
             
-            // We found a parent entity.
-            if (parentAccessor != null) {
-                // Set the immediate parent's descriptor the current descriptor.
-                currentAccessor.getDescriptor().setInheritanceParentDescriptor(parentAccessor.getDescriptor());
+                // We found a parent entity.
+                if (parentAccessor != null) {
+                    // Set the immediate parent's descriptor the current descriptor.
+                    currentAccessor.getDescriptor().setInheritanceParentDescriptor(parentAccessor.getDescriptor());
                 
-                // Remember the last accessor first ...
-                lastAccessor = currentAccessor;
-                // ... now, update the current accessor.
-                currentAccessor = parentAccessor;
+                    // Remember the last accessor first ...
+                    lastAccessor = currentAccessor;
+                    // ... now, update the current accessor.
+                    currentAccessor = parentAccessor;
                 
-                // Clear out any previous mapped superclasses and inheritance 
-                // parents that were discovered. We're going to re-discover
-                // them now.
-                currentAccessor.clearMappedSuperclassesAndInheritanceParents();
+                    // Clear out any previous mapped superclasses and inheritance 
+                    // parents that were discovered. We're going to re-discover
+                    // them now.
+                    currentAccessor.clearMappedSuperclassesAndInheritanceParents();
                 
-                // If we found an entity with inheritance metadata, set the 
-                // root descriptor on its subclasses.
-                if (currentAccessor.hasInheritance()) {
-                    for (EntityAccessor subclassAccessor : subclassAccessors) {
-                        subclassAccessor.getDescriptor().setInheritanceRootDescriptor(currentAccessor.getDescriptor());
-                    }
+                    // If we found an entity with inheritance metadata, set the 
+                    // root descriptor on its subclasses.
+                    if (currentAccessor.hasInheritance()) {
+                        for (EntityAccessor subclassAccessor : subclassAccessors) {
+                            subclassAccessor.getDescriptor().setInheritanceRootDescriptor(currentAccessor.getDescriptor());
+                        }
                     
-                    // Clear the subclass list, we'll keep looking but the 
-                    // inheritance strategy may have changed so we need to 
-                    // build a new list of subclasses.
-                    subclassAccessors.clear();
+                        // Clear the subclass list, we'll keep looking but the 
+                        // inheritance strategy may have changed so we need to 
+                        // build a new list of subclasses.
+                        subclassAccessors.clear();
+                    }
+                
+                    // Add the descriptor to the subclass list
+                    subclassAccessors.add(currentAccessor);
+                
+                    // Resolve any generic types from the generic parent onto the
+                    // current descriptor.
+                    currentAccessor.resolveGenericTypes(genericParent, lastAccessor.getDescriptor());
+                } else {
+                    // Might be a mapped superclass, check and add as needed.
+                    currentAccessor.addPotentialMappedSuperclass(parent);
+                
+                    // Resolve any generic types from the generic parent onto the
+                    // current descriptor.
+                    currentAccessor.resolveGenericTypes(genericParent, currentAccessor.getDescriptor());
                 }
-                
-                // Add the descriptor to the subclass list
-                subclassAccessors.add(currentAccessor);
-                
-                // Resolve any generic types from the generic parent onto the
-                // current descriptor.
-                currentAccessor.resolveGenericTypes(genericParent, lastAccessor.getDescriptor());
-            } else {
-                // Might be a mapped superclass, check and add as needed.
-                currentAccessor.addPotentialMappedSuperclass(parent);
-                
-                // Resolve any generic types from the generic parent onto the
-                // current descriptor.
-                currentAccessor.resolveGenericTypes(genericParent, currentAccessor.getDescriptor());
-            }
             
-            // Get the next parent and keep processing ...
-            genericParent = parent.getGenericSuperclass();
-            parent = parent.getSuperclass();
+                // Get the next parent and keep processing ...
+                genericParent = parent.getGenericSuperclass();
+                parent = parent.getSuperclass();
+            }
+        } else {
+            // Resolve any generic types we have (we may be an inheritance root).
+            currentAccessor.resolveGenericTypes(genericParent, currentAccessor.getDescriptor());
         }
         
         // Set our root descriptor of the inheritance hierarchy on all the 

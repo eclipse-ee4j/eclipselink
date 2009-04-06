@@ -458,25 +458,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
             return true;
         }
         
-        Class firstClasss = firstValue.getClass();
-        Class secondClass = secondValue.getClass();
-        // Arrays must be checked for equality because default does identity
-        if ((firstClasss == ClassConstants.APBYTE) && (secondClass == ClassConstants.APBYTE)) {
-            return Helper.compareByteArrays((byte[])firstValue, (byte[])secondValue);
-        }
-        if ((firstClasss == ClassConstants.APCHAR) && (secondClass == ClassConstants.APCHAR)) {
-            return Helper.compareCharArrays((char[])firstValue, (char[])secondValue);
-        }
-        if ((firstClasss.isArray()) && (secondClass.isArray())) {
-            return Helper.compareArrays((Object[])firstValue, (Object[])secondValue);
-        }
-
-        // BigDecimals equals does not consider the precision correctly
-        if (firstValue instanceof java.math.BigDecimal && secondValue instanceof java.math.BigDecimal) {
-            return Helper.compareBigDecimals((java.math.BigDecimal)firstValue, (java.math.BigDecimal)secondValue);
-        }
-
-        return false;
+        return Helper.comparePotentialArrays(firstValue, secondValue);
     }
     
     /**

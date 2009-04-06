@@ -13,6 +13,8 @@
  *       - 248293: JPA 2.0 Element Collections (part 1)
  *     03/27/2009-2.0 Guy Pelletier 
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+ *     04/03/2009-2.0 Guy Pelletier
+ *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.xml.inherited;
 
@@ -34,6 +36,7 @@ public class InheritedTableManager extends TableCreator {
         addTableDefinition(build_EXPERT_BEER_CONSUMER_AWARDS_Table());
         addTableDefinition(build_EXPERT_BEER_CONSUMER_ACCLAIMS_Table());
         addTableDefinition(build_EXPERT_BEER_CONSUMER_AUDIO_Table());
+        addTableDefinition(build_EXPERT_BEER_CONSUMER_CELEBRATIONS_Table());
         addTableDefinition(build_EXPERT_BEER_CONSUMER_DESIGNATIONS_Table());
         addTableDefinition(build_EXPERT_BEER_CONSUMER_QUOTES_Table());
         addTableDefinition(build_EXPERT_BEER_CONSUMER_RECORDS_Table());
@@ -620,6 +623,64 @@ public class InheritedTableManager extends TableCreator {
         return table;
     }
     
+	 public static TableDefinition build_EXPERT_BEER_CONSUMER_CELEBRATIONS_Table() {
+        TableDefinition table = new TableDefinition();
+        table.setName("XML_EBC_CELEBRATIONS");
+    
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("XML_EBC_ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setIsPrimaryKey(false);
+        fieldID.setUnique(false);
+        fieldID.setIsIdentity(false);
+        fieldID.setForeignKeyFieldName("XML_EXPERT_CONSUMER.ID");
+        table.addField(fieldID);
+    
+        FieldDefinition DETAILS_field = new FieldDefinition();
+        DETAILS_field.setName("DETAILS");
+        DETAILS_field.setTypeName("VARCHAR");
+        DETAILS_field.setSize(40);
+        DETAILS_field.setShouldAllowNull(true);
+        DETAILS_field.setIsPrimaryKey(false);
+        DETAILS_field.setUnique(false);
+        DETAILS_field.setIsIdentity(false);
+        table.addField(DETAILS_field);
+        
+        FieldDefinition BIRTH_DAY_field = new FieldDefinition();
+        BIRTH_DAY_field.setName("BIRTH_DAY");
+        BIRTH_DAY_field.setTypeName("NUMERIC");
+        BIRTH_DAY_field.setSize(2);
+        BIRTH_DAY_field.setShouldAllowNull(true);
+        BIRTH_DAY_field.setIsPrimaryKey(false);
+        BIRTH_DAY_field.setUnique(false);
+        BIRTH_DAY_field.setIsIdentity(false);
+        table.addField(BIRTH_DAY_field);
+        
+        FieldDefinition BIRTH_MONTH_field = new FieldDefinition();
+        BIRTH_MONTH_field.setName("BIRTH_MONTH");
+        BIRTH_MONTH_field.setTypeName("NUMERIC");
+        BIRTH_MONTH_field.setSize(2);
+        BIRTH_MONTH_field.setShouldAllowNull(true);
+        BIRTH_MONTH_field.setIsPrimaryKey(false);
+        BIRTH_MONTH_field.setUnique(false);
+        BIRTH_MONTH_field.setIsIdentity(false);
+        table.addField(BIRTH_MONTH_field);
+        
+        FieldDefinition BIRTH_YEAR_field = new FieldDefinition();
+        BIRTH_YEAR_field.setName("BIRTH_YEAR");
+        BIRTH_YEAR_field.setTypeName("NUMERIC");
+        BIRTH_YEAR_field.setSize(4);
+        BIRTH_YEAR_field.setShouldAllowNull(true);
+        BIRTH_YEAR_field.setIsPrimaryKey(false);
+        BIRTH_YEAR_field.setUnique(false);
+        BIRTH_YEAR_field.setIsIdentity(false);
+        table.addField(BIRTH_YEAR_field);
+    
+        return table;
+    }
+
     public static TableDefinition build_EXPERT_BEER_CONSUMER_DESIGNATIONS_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_EBC_DESIGNATIONS");

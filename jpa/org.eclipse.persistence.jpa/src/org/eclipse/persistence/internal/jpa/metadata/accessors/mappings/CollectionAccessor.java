@@ -21,6 +21,8 @@
  *       - 264001: dot notation for mapped-by and order-by
  *     03/27/2009-2.0 Guy Pelletier 
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+ *     04/03/2009-2.0 Guy Pelletier
+ *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -81,8 +83,8 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
     
     private EnumeratedMetadata m_mapKeyEnumerated;
     
-    private List<AssociationOverrideMetadata> m_associationOverrides;
-    private List<AttributeOverrideMetadata> m_attributeOverrides;
+    private List<AssociationOverrideMetadata> m_mapKeyAssociationOverrides;
+    private List<AttributeOverrideMetadata> m_mapKeyAttributeOverrides;
     private List<JoinColumnMetadata> m_mapKeyJoinColumns;
     
     private String m_mapKey;
@@ -144,31 +146,31 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
         }
         
         // Set the attribute overrides if some are present.
-        m_attributeOverrides = new ArrayList<AttributeOverrideMetadata>();
+        m_mapKeyAttributeOverrides = new ArrayList<AttributeOverrideMetadata>();
         // Process the attribute overrides first.
         if (isAnnotationPresent(AttributeOverrides.class)) {
             for (Annotation attributeOverride : (Annotation[]) MetadataHelper.invokeMethod("value", getAnnotation(AttributeOverrides.class))) {
-                m_attributeOverrides.add(new AttributeOverrideMetadata(attributeOverride, accessibleObject));
+                m_mapKeyAttributeOverrides.add(new AttributeOverrideMetadata(attributeOverride, accessibleObject));
             }
         }
         
         // Process the single attribute override second.  
         if (isAnnotationPresent(AttributeOverride.class)) {
-            m_attributeOverrides.add(new AttributeOverrideMetadata(getAnnotation(AttributeOverride.class), accessibleObject));
+            m_mapKeyAttributeOverrides.add(new AttributeOverrideMetadata(getAnnotation(AttributeOverride.class), accessibleObject));
         }
         
         // Set the association overrides if some are present.
-        m_associationOverrides = new ArrayList<AssociationOverrideMetadata>();
+        m_mapKeyAssociationOverrides = new ArrayList<AssociationOverrideMetadata>();
         // Process the attribute overrides first.
         if (isAnnotationPresent(AssociationOverrides.class)) {
             for (Annotation associationOverride : (Annotation[]) MetadataHelper.invokeMethod("value", getAnnotation(AssociationOverrides.class))) {
-                m_associationOverrides.add(new AssociationOverrideMetadata(associationOverride, accessibleObject));
+                m_mapKeyAssociationOverrides.add(new AssociationOverrideMetadata(associationOverride, accessibleObject));
             }
         }
         
         // Process the single attribute override second.  
         if (isAnnotationPresent(AssociationOverride.class)) {
-            m_associationOverrides.add(new AssociationOverrideMetadata(getAnnotation(AssociationOverride.class), accessibleObject));
+            m_mapKeyAssociationOverrides.add(new AssociationOverrideMetadata(getAnnotation(AssociationOverride.class), accessibleObject));
         }
         
         // Set the order column if one is defined.
@@ -190,22 +192,6 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
         if (isAnnotationPresent(MapKeyConvert.class)) {
             m_mapKeyConvert = (String) MetadataHelper.invokeMethod("value", getAnnotation(MapKeyConvert.class));
         }
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public List<AssociationOverrideMetadata> getAssociationOverrides() {
-        return m_associationOverrides;
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public List<AttributeOverrideMetadata> getAttributeOverrides() {
-        return m_attributeOverrides;
     }
     
     /**
@@ -240,6 +226,22 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
      */
     public String getMapKey() {
         return m_mapKey;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<AssociationOverrideMetadata> getMapKeyAssociationOverrides() {
+        return m_mapKeyAssociationOverrides;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<AttributeOverrideMetadata> getMapKeyAttributeOverrides() {
+        return m_mapKeyAttributeOverrides;
     }
     
     /**
@@ -428,8 +430,8 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
         
         // Init the list of ORMetadata objects.
         initXMLObjects(m_mapKeyJoinColumns, accessibleObject);
-        initXMLObjects(m_associationOverrides, accessibleObject);
-        initXMLObjects(m_attributeOverrides, accessibleObject);
+        initXMLObjects(m_mapKeyAssociationOverrides, accessibleObject);
+        initXMLObjects(m_mapKeyAttributeOverrides, accessibleObject);
         
         // Initialize single ORMetadata objects.
         initXMLObject(m_mapKeyColumn, accessibleObject);
@@ -566,24 +568,24 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setAssociationOverrides(List<AssociationOverrideMetadata> associationOverrides) {
-        m_associationOverrides = associationOverrides;
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public void setAttributeOverrides(List<AttributeOverrideMetadata> attributeOverrides) {
-        m_attributeOverrides = attributeOverrides;
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
     public void setMapKey(String mapKey) {
         m_mapKey = mapKey;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setMapKeyAssociationOverrides(List<AssociationOverrideMetadata> mapKeyAssociationOverrides) {
+        m_mapKeyAssociationOverrides = mapKeyAssociationOverrides;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setMapKeyAttributeOverrides(List<AttributeOverrideMetadata> mapKeyAttributeOverrides) {
+        m_mapKeyAttributeOverrides = mapKeyAttributeOverrides;
     }
     
     /**

@@ -11,7 +11,9 @@
  *     06/20/2008-1.0 Guy Pelletier 
  *       - 232975: Failure when attribute type is generic
  *     01/28/2009-2.0 Guy Pelletier 
- *       - 248293: JPA 2.0 Element Collections (part 1)   
+ *       - 248293: JPA 2.0 Element Collections (part 1)
+ *     04/03/2009-2.0 Guy Pelletier
+ *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes   
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.xml.inherited;
 
@@ -27,12 +29,18 @@ import javax.persistence.Lob;
 public class ExpertBeerConsumer extends RatedBeerConsumer<String, String, String> {
     private Map<Date, String> quotes;
     private Collection<byte[]> audio;
+    private Map<Birthday, String> celebrations;
     
     public ExpertBeerConsumer() {
         super();
-        quotes = new HashMap<Date, String>();
         audio = new ArrayList<byte[]>();
+        quotes = new HashMap<Date, String>();
+        celebrations = new HashMap<Birthday, String>();
     }   
+    
+    public void addCelebration(Birthday birthday, String details) {
+        celebrations.put(birthday, details);
+    }
     
     @ElementCollection
     @Lob
@@ -40,15 +48,23 @@ public class ExpertBeerConsumer extends RatedBeerConsumer<String, String, String
         return audio;
     }
     
-    public Map<Date, String> getQuotes() {
-        return quotes;
+    public Map<Birthday, String> getCelebrations() {
+        return celebrations;
     }
     
-    public void setQuotes(Map<Date, String> quotes) {
-        this.quotes = quotes;
+    public Map<Date, String> getQuotes() {
+        return quotes;
     }
 
     public void setAudio(Collection<byte[]> audio) {
         this.audio = audio;
+    }
+    
+    public void setCelebrations(Map<Birthday, String> celebrations) {
+        this.celebrations = celebrations;
+    }
+    
+    public void setQuotes(Map<Date, String> quotes) {
+        this.quotes = quotes;
     }
 }

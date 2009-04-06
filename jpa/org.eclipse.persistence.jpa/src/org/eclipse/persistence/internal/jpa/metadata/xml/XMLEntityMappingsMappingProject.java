@@ -25,6 +25,8 @@
  *       - 265359: JPA 2.0 Element Collections - Metadata processing portions
  *     03/27/2009-2.0 Guy Pelletier 
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+ *     04/03/2009-2.0 Guy Pelletier
+ *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  *******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
@@ -2923,9 +2925,9 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
      */
     protected XMLCompositeCollectionMapping getMapKeyAssociationOverrideMapping() {
         XMLCompositeCollectionMapping associationOverridesMapping = new XMLCompositeCollectionMapping();
-        associationOverridesMapping.setAttributeName("m_associationOverrides");
-        associationOverridesMapping.setGetMethodName("getAssociationOverrides");
-        associationOverridesMapping.setSetMethodName("setAssociationOverrides");
+        associationOverridesMapping.setAttributeName("m_mapKeyAssociationOverrides");
+        associationOverridesMapping.setGetMethodName("getMapKeyAssociationOverrides");
+        associationOverridesMapping.setSetMethodName("setMapKeyAssociationOverrides");
         associationOverridesMapping.setReferenceClass(AssociationOverrideMetadata.class);
         associationOverridesMapping.setXPath("orm:map-key-association-override");
         return associationOverridesMapping;
@@ -2936,9 +2938,9 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
      */
     protected XMLCompositeCollectionMapping getMapKeyAttributeOverrideMapping() {
         XMLCompositeCollectionMapping attributeOverridesMapping = new XMLCompositeCollectionMapping();
-        attributeOverridesMapping.setAttributeName("m_attributeOverrides");
-        attributeOverridesMapping.setGetMethodName("getAttributeOverrides");
-        attributeOverridesMapping.setSetMethodName("setAttributeOverrides");
+        attributeOverridesMapping.setAttributeName("m_mapKeyAttributeOverrides");
+        attributeOverridesMapping.setGetMethodName("getMapKeyAttributeOverrides");
+        attributeOverridesMapping.setSetMethodName("setMapKeyAttributeOverrides");
         attributeOverridesMapping.setReferenceClass(AttributeOverrideMetadata.class);
         attributeOverridesMapping.setXPath("orm:map-key-attribute-override");
         return attributeOverridesMapping;

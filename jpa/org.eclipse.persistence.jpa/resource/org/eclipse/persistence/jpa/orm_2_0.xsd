@@ -524,7 +524,7 @@
           <xsd:choice>
             <xsd:element name="map-key-temporal" type="orm:temporal" minOccurs="0"/>
             <xsd:element name="map-key-enumerated" type="orm:enumerated" minOccurs="0"/>
-            <xsd:element name="map-key-attribute-override" type="orm:attribute-override" minOccurs="0"/>
+            <xsd:element name="map-key-attribute-override" type="orm:attribute-override" minOccurs="0" maxOccurs="unbounded"/>
           </xsd:choice>
           <xsd:choice>
             <xsd:element name="map-key-column" type="orm:map-key-column" minOccurs="0"/>
@@ -972,7 +972,7 @@
           <xsd:choice>
             <xsd:element name="map-key-temporal" type="orm:temporal" minOccurs="0"/>
             <xsd:element name="map-key-enumerated" type="orm:enumerated" minOccurs="0"/>
-            <xsd:element name="map-key-attribute-override" type="orm:attribute-override" minOccurs="0"/>
+            <xsd:element name="map-key-attribute-override" type="orm:attribute-override" minOccurs="0" maxOccurs="unbounded"/>
           </xsd:choice>
           <xsd:choice>
             <xsd:element name="map-key-column" type="orm:map-key-column" minOccurs="0"/>
@@ -1234,7 +1234,7 @@
           <xsd:choice>
             <xsd:element name="map-key-temporal" type="orm:temporal" minOccurs="0"/>
             <xsd:element name="map-key-enumerated" type="orm:enumerated" minOccurs="0"/>
-            <xsd:element name="map-key-attribute-override" type="orm:attribute-override" minOccurs="0"/>
+            <xsd:element name="map-key-attribute-override" type="orm:attribute-override" minOccurs="0" maxOccurs="unbounded"/>
           </xsd:choice>
           <xsd:choice>
             <xsd:element name="map-key-column" type="orm:map-key-column" minOccurs="0"/>

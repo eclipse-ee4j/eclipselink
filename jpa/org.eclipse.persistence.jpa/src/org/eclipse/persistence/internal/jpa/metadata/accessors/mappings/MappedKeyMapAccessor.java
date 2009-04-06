@@ -10,6 +10,8 @@
  * Contributors:
  *     03/27/2009-2.0 Guy Pelletier 
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+ *     04/03/2009-2.0 Guy Pelletier
+ *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -33,12 +35,12 @@ public interface MappedKeyMapAccessor {
     /**
      * INTERNAL:
      */
-    public List<AssociationOverrideMetadata> getAssociationOverrides();
+    public List<AssociationOverrideMetadata> getMapKeyAssociationOverrides();
     
     /**
      * INTERNAL:
      */
-    public List<AttributeOverrideMetadata> getAttributeOverrides();
+    public List<AttributeOverrideMetadata> getMapKeyAttributeOverrides();
     
     /**
      * INTERNAL:

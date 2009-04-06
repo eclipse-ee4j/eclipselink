@@ -479,7 +479,7 @@ public class Helper implements Serializable {
         }
         return null;
     }
-
+    
     public static boolean compareArrays(Object[] array1, Object[] array2) {
         if (array1.length != array2.length) {
             return false;
@@ -620,6 +620,29 @@ public class Helper implements Serializable {
         return true;
     }
 
+    /**
+     * Compare two potential arrays and return true if they are the same. Will
+     * check for BigDecimals as well.
+     */
+    public static boolean comparePotentialArrays(Object firstValue, Object secondValue) {
+        Class firstClass = firstValue.getClass();
+        Class secondClass = secondValue.getClass();
+        
+        // Arrays must be checked for equality because default does identity
+        if ((firstClass == ClassConstants.APBYTE) && (secondClass == ClassConstants.APBYTE)) {
+            return compareByteArrays((byte[])firstValue, (byte[])secondValue);
+        } else if ((firstClass == ClassConstants.APCHAR) && (secondClass == ClassConstants.APCHAR)) {
+            return compareCharArrays((char[])firstValue, (char[])secondValue);
+        } else if ((firstClass.isArray()) && (secondClass.isArray())) {
+            return compareArrays((Object[])firstValue, (Object[])secondValue);
+        } else if (firstValue instanceof java.math.BigDecimal && secondValue instanceof java.math.BigDecimal) {
+            // BigDecimals equals does not consider the precision correctly
+            return compareBigDecimals((java.math.BigDecimal)firstValue, (java.math.BigDecimal)secondValue);
+        }
+
+        return false;   
+    }
+    
     /**
      * Compare the elements in two <code>Vector</code>s to see if they are equal.
      * The order of the elements is ignored.

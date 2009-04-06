@@ -31,6 +31,8 @@
  *       - 264001: dot notation for mapped-by and order-by
  *     03/27/2009-2.0 Guy Pelletier 
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+ *     04/03/2009-2.0 Guy Pelletier
+ *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes  
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -323,9 +325,8 @@ public abstract class ClassAccessor extends MetadataAccessor {
      * Return the access type of this accessor. Assumes all access processing
      * has been performed before calling this method.
      */
-    @Override
-    public String getAccess() {
-        if (hasAccess()) {
+    public String getAccessType() {
+        if (hasAccess()) {    
             return super.getAccess();
         } else {
             return getDescriptor().getDefaultAccess();
@@ -977,6 +978,6 @@ public abstract class ClassAccessor extends MetadataAccessor {
      * processing a mapped superclass.
      */
     public boolean usesPropertyAccess() {
-        return getAccess().equals(MetadataConstants.PROPERTY);
+        return getAccessType().equals(MetadataConstants.PROPERTY);
     }
 }

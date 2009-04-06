@@ -16,6 +16,8 @@
  *       - 265359: JPA 2.0 Element Collections - Metadata processing portions
  *     03/27/2009-2.0 Guy Pelletier 
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+ *     04/03/2009-2.0 Guy Pelletier
+ *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  ******************************************************************************/ 
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -82,7 +84,9 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
     private EnumeratedMetadata m_mapKeyEnumerated;
     
     private List<AssociationOverrideMetadata> m_associationOverrides;
+    private List<AssociationOverrideMetadata> m_mapKeyAssociationOverrides;
     private List<AttributeOverrideMetadata> m_attributeOverrides;
+    private List<AttributeOverrideMetadata> m_mapKeyAttributeOverrides;
     private List<JoinColumnMetadata> m_mapKeyJoinColumns; 
     
     private String m_mapKey;
@@ -112,30 +116,34 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
         
         // Set the attribute overrides if some are present.
         m_attributeOverrides = new ArrayList<AttributeOverrideMetadata>();
+        m_mapKeyAttributeOverrides = new ArrayList<AttributeOverrideMetadata>();
+        
         // Set the attribute overrides first if defined.
         if (isAnnotationPresent(AttributeOverrides.class)) {
             for (Annotation attributeOverride : (Annotation[]) MetadataHelper.invokeMethod("value", getAnnotation(AttributeOverrides.class))) {
-                m_attributeOverrides.add(new AttributeOverrideMetadata(attributeOverride, accessibleObject));
+                addAttributeOverride(new AttributeOverrideMetadata(attributeOverride, accessibleObject));
             }
         }
         
         // Set the single attribute override second if defined.
         if (isAnnotationPresent(AttributeOverride.class)) {
-            m_attributeOverrides.add(new AttributeOverrideMetadata(getAnnotation(AttributeOverride.class), accessibleObject));
+            addAttributeOverride(new AttributeOverrideMetadata(getAnnotation(AttributeOverride.class), accessibleObject));
         }
         
         // Set the association overrides if some are present.
         m_associationOverrides = new ArrayList<AssociationOverrideMetadata>();
+        m_mapKeyAssociationOverrides = new ArrayList<AssociationOverrideMetadata>();
+        
         // Set the association overrides first if defined.
         if (isAnnotationPresent(AssociationOverrides.class)) {
             for (Annotation associationOverride : (Annotation[]) MetadataHelper.invokeMethod("value", getAnnotation(AssociationOverrides.class))) {
-                m_associationOverrides.add(new AssociationOverrideMetadata(associationOverride, accessibleObject));
+                addAssociationOverride(new AssociationOverrideMetadata(associationOverride, accessibleObject));
             }
         }
         
         // Set the single association override second if defined.
         if (isAnnotationPresent(AssociationOverride.class)) {
-            m_associationOverrides.add(new AssociationOverrideMetadata(getAnnotation(AssociationOverride.class), accessibleObject));
+            addAssociationOverride(new AssociationOverrideMetadata(getAnnotation(AssociationOverride.class), accessibleObject));
         }
         
         // Set the column if one if defined.
@@ -186,6 +194,38 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
         // Set the order column if one is defined.
         if (isAnnotationPresent(OrderColumn.class)) {
             m_orderColumn = new ColumnMetadata(getAnnotation(OrderColumn.class), accessibleObject, getAttributeName());
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected void addAttributeOverride(AttributeOverrideMetadata attributeOverride) {
+        if (attributeOverride.getName().startsWith(KEY_DOT_NOTATION)) {
+            attributeOverride.setName(attributeOverride.getName().substring(KEY_DOT_NOTATION.length()));
+            m_mapKeyAttributeOverrides.add(attributeOverride);
+        } else {
+            if (attributeOverride.getName().startsWith(VALUE_DOT_NOTATION)) {
+                attributeOverride.setName(attributeOverride.getName().substring(VALUE_DOT_NOTATION.length()));
+            }
+            
+            m_attributeOverrides.add(attributeOverride);
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected void addAssociationOverride(AssociationOverrideMetadata associationOverride) {
+        if (associationOverride.getName().startsWith(KEY_DOT_NOTATION)) {
+            associationOverride.setName(associationOverride.getName().substring(KEY_DOT_NOTATION.length()));
+            m_mapKeyAssociationOverrides.add(associationOverride);
+        } else {
+            if (associationOverride.getName().startsWith(VALUE_DOT_NOTATION)) {
+                associationOverride.setName(associationOverride.getName().substring(VALUE_DOT_NOTATION.length()));
+            }
+            
+            m_associationOverrides.add(associationOverride);
         }
     }
     
@@ -267,6 +307,22 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
      */
     public Class getMapKeyClass() {
         return m_mapKeyClass;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<AssociationOverrideMetadata> getMapKeyAssociationOverrides() {
+        return m_mapKeyAssociationOverrides;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<AttributeOverrideMetadata> getMapKeyAttributeOverrides() {
+        return m_mapKeyAttributeOverrides;
     }
     
     /**
@@ -478,6 +534,8 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
         // Initialize lists of ORMetadata objects.
         initXMLObjects(m_attributeOverrides, accessibleObject);
         initXMLObjects(m_associationOverrides, accessibleObject);
+        initXMLObjects(m_mapKeyAssociationOverrides, accessibleObject);
+        initXMLObjects(m_mapKeyAttributeOverrides, accessibleObject);
         
         // Initialize single objects.
         initXMLObject(m_column, accessibleObject);
@@ -695,6 +753,22 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
      */
     public String setMapKey(String mapKey) {
         return m_mapKey;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setMapKeyAssociationOverrides(List<AssociationOverrideMetadata> mapKeyAssociationOverrides) {
+        m_mapKeyAssociationOverrides = mapKeyAssociationOverrides;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setMapKeyAttributeOverrides(List<AttributeOverrideMetadata> mapKeyAttributeOverrides) {
+        m_mapKeyAttributeOverrides = mapKeyAttributeOverrides;
     }
     
     /**

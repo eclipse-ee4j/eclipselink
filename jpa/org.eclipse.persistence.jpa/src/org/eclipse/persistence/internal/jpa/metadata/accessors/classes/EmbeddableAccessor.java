@@ -27,6 +27,8 @@
  *       - 264001: dot notation for mapped-by and order-by
  *     03/27/2009-2.0 Guy Pelletier 
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+ *     04/03/2009-2.0 Guy Pelletier
+ *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -166,7 +168,7 @@ public class EmbeddableAccessor extends ClassAccessor {
         // Set the default access type on the descriptor and log a message
         // to the user if we are defaulting the access type for this 
         // embeddable to that default.
-        String owningClassAccessorsAccess = getOwningDescriptor().getClassAccessor().getAccess();
+        String owningClassAccessorsAccess = getOwningDescriptor().getClassAccessor().getAccessType();
         getDescriptor().setDefaultAccess(owningClassAccessorsAccess);
         
         if (getAccess() == null) {

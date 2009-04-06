@@ -1347,8 +1347,8 @@
             <xsd:element name="map-key-enumerated" type="orm:enumerated" minOccurs="0"/>
             <xsd:element name="map-key-convert" type="xsd:string" minOccurs="0"/>
             <xsd:sequence>
-              <xsd:element name="map-key-attribute-override" type="orm:attribute-override" minOccurs="0"/>
-              <xsd:element name="map-key-association-override" type="orm:association-override" minOccurs="0"/>
+              <xsd:element name="map-key-attribute-override" type="orm:attribute-override" minOccurs="0" maxOccurs="unbounded"/>
+              <xsd:element name="map-key-association-override" type="orm:association-override" minOccurs="0" maxOccurs="unbounded"/>
             </xsd:sequence>
           </xsd:choice>
           <xsd:choice>
@@ -1917,8 +1917,8 @@
             <xsd:element name="map-key-enumerated" type="orm:enumerated" minOccurs="0"/>
             <xsd:element name="map-key-convert" type="xsd:string" minOccurs="0"/>
             <xsd:choice>
-              <xsd:element name="map-key-attribute-override" type="orm:attribute-override" minOccurs="0"/>
-              <xsd:element name="map-key-association-override" type="orm:association-override" minOccurs="0"/>
+              <xsd:element name="map-key-attribute-override" type="orm:attribute-override" minOccurs="0" maxOccurs="unbounded"/>
+              <xsd:element name="map-key-association-override" type="orm:association-override" minOccurs="0" maxOccurs="unbounded"/>
             </xsd:choice>
           </xsd:choice>
           <xsd:choice>
@@ -2328,8 +2328,8 @@
             <xsd:element name="map-key-enumerated" type="orm:enumerated" minOccurs="0"/>
             <xsd:element name="map-key-convert" type="xsd:string" minOccurs="0"/>
             <xsd:choice>
-              <xsd:element name="map-key-attribute-override" type="orm:attribute-override" minOccurs="0"/>
-              <xsd:element name="map-key-association-override" type="orm:association-override" minOccurs="0"/>
+              <xsd:element name="map-key-attribute-override" type="orm:attribute-override" minOccurs="0" maxOccurs="unbounded"/>
+              <xsd:element name="map-key-association-override" type="orm:association-override" minOccurs="0" maxOccurs="unbounded"/>
             </xsd:choice>
           </xsd:choice>
           <xsd:choice>

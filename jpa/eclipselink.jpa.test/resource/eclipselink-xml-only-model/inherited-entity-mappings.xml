@@ -37,7 +37,8 @@
             </id>
         </attributes>
     </mapped-superclass>
-    <mapped-superclass class="org.eclipse.persistence.testing.models.jpa.xml.inherited.Beer" access="FIELD">
+    <!-- Testing a mapped superclass with no explicit access specification -->
+    <mapped-superclass class="org.eclipse.persistence.testing.models.jpa.xml.inherited.Beer">
         <exclude-default-listeners/>
         <exclude-superclass-listeners/>
         <attributes>
@@ -261,6 +262,22 @@
                     <join-column name="EBC_ID"/>
                 </collection-table>
             </element-collection>
+            <element-collection name="celebrations" fetch="EAGER">
+                <map-key-class class="Birthday"/>
+                <map-key-attribute-override name="day">
+                    <column name="BIRTH_DAY"/>
+                </map-key-attribute-override>
+                <map-key-attribute-override name="month">
+                    <column name="BIRTH_MONTH"/>
+                </map-key-attribute-override>
+                <map-key-attribute-override name="year">
+                    <column name="BIRTH_YEAR"/>
+                </map-key-attribute-override>
+                <column name="DETAILS"/>
+                <collection-table name="XML_EBC_CELEBRATIONS">
+                    <join-column name="XML_EBC_ID"/>            
+                </collection-table>    
+            </element-collection>    
         </attributes>
     </entity>
     <embeddable class="org.eclipse.persistence.testing.models.jpa.xml.inherited.Record" access="PROPERTY">
@@ -290,4 +307,5 @@
             </basic>
         </attributes>
     </embeddable>
+    <embeddable class="Birthday"/>
 </entity-mappings>

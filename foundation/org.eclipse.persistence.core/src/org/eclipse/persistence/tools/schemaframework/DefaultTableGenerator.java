@@ -418,7 +418,9 @@ public class DefaultTableGenerator {
         tblDef.addField(getFieldDefFromDBField(mapping.getDirectField(), false));
 
         //if the mapping is direct-map field, add the direct key field to the table as well.
-        if (mapping.isDirectMapMapping()) {
+        // TODO: avoid generating DDL for map key mappings for the time being.
+        // Bug: 270814
+        if (mapping.isDirectMapMapping() && ! mapping.getContainerPolicy().isMappedKeyMapPolicy() ) {
             dbField = ((DirectMapMapping) mapping).getDirectKeyField();
             tblDef.addField(getFieldDefFromDBField(dbField, false));
         }

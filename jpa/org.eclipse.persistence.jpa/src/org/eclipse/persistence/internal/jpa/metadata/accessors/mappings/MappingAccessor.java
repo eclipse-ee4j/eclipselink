@@ -24,6 +24,8 @@
  *       - 265359: JPA 2.0 Element Collections - Metadata processing portions
  *     03/27/2009-2.0 Guy Pelletier 
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+ *     04/03/2009-2.0 Guy Pelletier
+ *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -97,8 +99,8 @@ public abstract class MappingAccessor extends MetadataAccessor {
     private static final String CONVERT_CLASS_INSTANCE = "class-instance";
 
     // Used for looking up attribute overrides for a map accessor. 
-    private static final String KEY_DOT_NOTATION = "key.";
-    private static final String VALUE_DOT_NOTATION = "value.";
+    protected static final String KEY_DOT_NOTATION = "key.";
+    protected static final String VALUE_DOT_NOTATION = "value.";
 
     private final static String DEFAULT_MAP_KEY_COLUMN_SUFFIX = "_KEY";
 
@@ -1132,11 +1134,14 @@ public abstract class MappingAccessor extends MetadataAccessor {
             mapKeyAccessor.process(getReferenceDescriptor());
         }
         
+        // Ensure the reference descriptor is marked as an embeddable collection.
+        mapKeyAccessor.getDescriptor().setIsEmbeddableCollection();
+        
         // Process the attribute overrides for this may key embeddable.
-        processAttributeOverrides(mappedKeyMapAccessor.getAttributeOverrides(), keyMapping, mapKeyAccessor.getDescriptor());
+        processAttributeOverrides(mappedKeyMapAccessor.getMapKeyAttributeOverrides(), keyMapping, mapKeyAccessor.getDescriptor());
         
         // Process the association overrides for this may key embeddable.
-        processAssociationOverrides(mappedKeyMapAccessor.getAssociationOverrides(), keyMapping, mapKeyAccessor.getDescriptor());
+        processAssociationOverrides(mappedKeyMapAccessor.getMapKeyAssociationOverrides(), keyMapping, mapKeyAccessor.getDescriptor());
         
         keyMapping.setDescriptor(getDescriptor().getClassDescriptor());
         

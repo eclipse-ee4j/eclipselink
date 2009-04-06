@@ -19,6 +19,8 @@
  *       - 248293: JPA 2.0 Element Collections (part 2)
  *     03/27/2009-2.0 Guy Pelletier 
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+ *     04/03/2009-2.0 Guy Pelletier
+ *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.inherited;
 
@@ -40,6 +42,7 @@ import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.inherited.Becks;
 import org.eclipse.persistence.testing.models.jpa.inherited.BecksTag;
 import org.eclipse.persistence.testing.models.jpa.inherited.BeerConsumer;
+import org.eclipse.persistence.testing.models.jpa.inherited.Birthday;
 import org.eclipse.persistence.testing.models.jpa.inherited.Blue;
 import org.eclipse.persistence.testing.models.jpa.inherited.Alpine;
 import org.eclipse.persistence.testing.models.jpa.inherited.BlueLight;
@@ -324,8 +327,9 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         
-        try {    
-            ExpertBeerConsumer beerConsumer = new ExpertBeerConsumer();
+        ExpertBeerConsumer beerConsumer = new ExpertBeerConsumer();
+        
+        try {        
             beerConsumer.setName("Expert Beer Consumer");
             beerConsumer.setIQ(110);
             
@@ -369,6 +373,18 @@ public class InheritedModelJunitTest extends JUnitTestCase {
             record2.setVenue(venue2);
             beerConsumer.getRecords().add(record2);
             
+            Birthday birthday1 = new Birthday();
+            birthday1.setDay(9);
+            birthday1.setMonth(7);
+            birthday1.setYear(2005);
+            beerConsumer.addCelebration(birthday1, "Drank a 24 of Heineken");
+            
+            Birthday birthday2 = new Birthday();
+            birthday2.setDay(10);
+            birthday2.setMonth(7);
+            birthday2.setYear(2006);
+            beerConsumer.addCelebration(birthday2, "Drank a 24 of Becks");
+            
             em.persist(beerConsumer);
             m_expertBeerConsumerId = beerConsumer.getId();
             commitTransaction(em);    
@@ -382,6 +398,11 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         }
         
         closeEntityManager(em);
+        
+        clearCache();
+        em = createEntityManager();
+        BeerConsumer refreshedBC = em.find(BeerConsumer.class, m_expertBeerConsumerId);       
+        assertTrue("The expert beer consumer read back did not match the original", getServerSession().compareObjects(beerConsumer, refreshedBC));
     }
     
     public void testHeinekenBeerConsumer() {
