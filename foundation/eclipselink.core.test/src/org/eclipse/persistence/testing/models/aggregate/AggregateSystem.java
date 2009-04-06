@@ -126,10 +126,6 @@ public class AggregateSystem extends TestSystem {
         Object instance;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
-        org.eclipse.persistence.descriptors.ClassDescriptor descriptor = session.getDescriptor(SellingPoint.class);
-        session.logMessage("-------- default table for Selling Point " + descriptor.getDefaultTable());
-        
-        
         instance = Employee1.example1();
         session.writeObject(instance);
         manager.registerObject(instance, "example1");
@@ -204,7 +200,6 @@ public class AggregateSystem extends TestSystem {
         //use uow to ensure that all parts get inserted not just privately owned parts
         UnitOfWork uow = session.acquireUnitOfWork();
         uow.registerObject(instance);
-        session.logMessage("************* Persist All");
         uow.commit();
         manager.registerObject(instance, "example1");
 
@@ -216,7 +211,6 @@ public class AggregateSystem extends TestSystem {
             //use uow to ensure that all parts get inserted not just privately owned parts
             uow = session.acquireUnitOfWork();
             uow.registerObject(instance);
-            session.logMessage("************* Persist Builder");
             uow.commit();
             manager.registerObject(instance, "example1");
         }

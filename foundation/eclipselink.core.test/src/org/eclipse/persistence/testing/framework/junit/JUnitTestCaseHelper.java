@@ -41,6 +41,7 @@ public class JUnitTestCaseHelper {
         // Some (or all) of them may override persistence properties.
         // Used by EntityManagerJUnitTestSuite.testPersistenceProperties()
         persistencePropertiesTestMap.put(PersistenceUnitProperties.JDBC_READ_CONNECTIONS_SHARED, "false");
+        persistencePropertiesTestMap.put(PersistenceUnitProperties.JDBC_WRITE_CONNECTIONS_INITIAL, "0");
         persistencePropertiesTestMap.put(PersistenceUnitProperties.JDBC_WRITE_CONNECTIONS_MIN, "4");
         persistencePropertiesTestMap.put(PersistenceUnitProperties.JDBC_WRITE_CONNECTIONS_MAX, "9");
         persistencePropertiesTestMap.put(PersistenceUnitProperties.JDBC_READ_CONNECTIONS_MIN, "4");

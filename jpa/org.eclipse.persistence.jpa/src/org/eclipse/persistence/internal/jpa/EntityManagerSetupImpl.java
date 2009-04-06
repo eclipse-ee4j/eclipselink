@@ -46,6 +46,7 @@ import org.eclipse.persistence.internal.sessions.PropertiesHandler;
 import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.sessions.server.ConnectionPolicy;
+import org.eclipse.persistence.sessions.server.ConnectionPool;
 import org.eclipse.persistence.sessions.server.ReadConnectionPool;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProcessor;
@@ -1003,9 +1004,9 @@ public class EntityManagerSetupImpl {
             }
         }
 
-        // mainDatasource is guaranteed to be non null
+        // mainDatasource is guaranteed to be non null - TODO: No it is not, if they did not set one it is null, should raise error, not null-pointer.
         if (!(login.getConnector() instanceof JNDIConnector)) {
-             JNDIConnector jndiConnector;
+            JNDIConnector jndiConnector;
             if (mainDatasource instanceof DataSourceImpl) {
                 //Bug5209363  Pass in the datasource name instead of the dummy datasource
                 jndiConnector = new JNDIConnector(((DataSourceImpl)mainDatasource).getName());                
@@ -1017,7 +1018,7 @@ public class EntityManagerSetupImpl {
         }
 
         // set readLogin
-        if(readDatasource != null) {
+        if (readDatasource != null) {
             DatasourceLogin readLogin = (DatasourceLogin)login.clone();
             readLogin.dontUseExternalTransactionController();
             JNDIConnector jndiConnector;
@@ -1077,45 +1078,104 @@ public class EntityManagerSetupImpl {
         }
     }
 
+    /**
+     * Configure the internal connection pooling parameters.
+     * By default if nothing is configured a default shared (exclusive) read/write pool is used with 32 min/max connections and 1 initial.
+     */
     protected void updatePools(Map m) {
+        // Configure default/write connection pool.
         // Sizes are irrelevant for external connection pool
-        if(!session.getDefaultConnectionPool().getLogin().shouldUseExternalConnectionPooling()) {
-            String strWriteMin = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_WRITE_CONNECTIONS_MIN, m, session);
-            if(strWriteMin != null) {
-                session.getDefaultConnectionPool().setMinNumberOfConnections(Integer.parseInt(strWriteMin));
+        if (!session.getDefaultConnectionPool().getLogin().shouldUseExternalConnectionPooling()) {
+            // CONNECTION and WRITE_CONNECTION properties both configure the default pool (mean the same thing, but WRITE normally used with READ).
+            String min = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_CONNECTIONS_MIN, m, session);
+            if (min != null) {
+                session.getDefaultConnectionPool().setMinNumberOfConnections(Integer.parseInt(min));
             }
-            String strWriteMax = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_WRITE_CONNECTIONS_MAX, m, session);
-            if(strWriteMax != null) {
-                session.getDefaultConnectionPool().setMaxNumberOfConnections(Integer.parseInt(strWriteMax));
+            String max = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_CONNECTIONS_MAX, m, session);
+            if (max != null) {
+                session.getDefaultConnectionPool().setMaxNumberOfConnections(Integer.parseInt(max));
+            }
+            String initial = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_CONNECTIONS_INITIAL, m, session);
+            if (initial != null) {
+                session.getDefaultConnectionPool().setInitialNumberOfConnections(Integer.parseInt(initial));
+            }
+            min = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_WRITE_CONNECTIONS_MIN, m, session);
+            if (min != null) {
+                session.getDefaultConnectionPool().setMinNumberOfConnections(Integer.parseInt(min));
+            }
+            max = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_WRITE_CONNECTIONS_MAX, m, session);
+            if (max != null) {
+                session.getDefaultConnectionPool().setMaxNumberOfConnections(Integer.parseInt(max));
+            }
+            initial = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_WRITE_CONNECTIONS_INITIAL, m, session);
+            if (initial != null) {
+                session.getDefaultConnectionPool().setInitialNumberOfConnections(Integer.parseInt(initial));
             }
         }
         
+        // Configure read connection pool if set.
         // Sizes and shared option are irrelevant for external connection pool
-        if (!session.getReadConnectionPool().getLogin().shouldUseExternalConnectionPooling()) {
-            String strReadMin = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_READ_CONNECTIONS_MIN, m, session);
-            if(strReadMin != null) {
-                session.getReadConnectionPool().setMinNumberOfConnections(Integer.parseInt(strReadMin));
+        if (!this.session.getReadConnectionPool().getLogin().shouldUseExternalConnectionPooling()) {
+            String shared = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_READ_CONNECTIONS_SHARED, m, session);
+            boolean isShared = false;
+            if (shared != null) {
+                isShared = Boolean.parseBoolean(shared);
+            }            
+            ConnectionPool pool = null;
+            if (isShared) {
+                pool = new ReadConnectionPool("read", this.session.getReadConnectionPool().getLogin(), this.session);
+            } else {
+                pool = new ConnectionPool("read", this.session.getReadConnectionPool().getLogin(), this.session);
             }
-            String strReadMax = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_READ_CONNECTIONS_MAX, m, session);
-            if (strReadMax != null) {
-                session.getReadConnectionPool().setMaxNumberOfConnections(Integer.parseInt(strReadMax));
+            String min = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_READ_CONNECTIONS_MIN, m, session);
+            if (min != null) {
+                pool.setMinNumberOfConnections(Integer.parseInt(min));
             }
-            String strShouldUseShared = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_READ_CONNECTIONS_SHARED, m,session);
-            if(strShouldUseShared != null) {
-                boolean shouldUseShared = Boolean.parseBoolean(strShouldUseShared);
-                boolean sessionUsesShared = session.getReadConnectionPool() instanceof ReadConnectionPool;
-                if(shouldUseShared != sessionUsesShared) {
-                    Login readLogin = session.getReadConnectionPool().getLogin();
-                    int nReadMin = session.getReadConnectionPool().getMinNumberOfConnections();
-                    int nReadMax = session.getReadConnectionPool().getMaxNumberOfConnections();
-                    if(shouldUseShared) {
-                        session.useReadConnectionPool(nReadMin, nReadMax);
-                    } else {
-                        session.useExclusiveReadConnectionPool(nReadMin, nReadMax);
-                    }
-                    // keep original readLogin
-                    session.getReadConnectionPool().setLogin(readLogin);
-                }
+            String max = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_READ_CONNECTIONS_MAX, m, session);
+            if (max != null) {
+                pool.setMaxNumberOfConnections(Integer.parseInt(max));
+            }
+            String initial = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_READ_CONNECTIONS_INITIAL, m, session);
+            if (initial != null) {
+                pool.setInitialNumberOfConnections(Integer.parseInt(initial));
+            }
+            // Only set the read pool if they configured it, otherwise use default shared read/write.
+            if (isShared || (min != null) || (max != null) || (initial != null)) {
+                this.session.setReadConnectionPool(pool);
+            }
+            String wait = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_CONNECTIONS_WAIT, m, session);
+            if (wait != null) {
+                session.getDefaultConnectionPool().setWaitTimeout(Integer.parseInt(wait));
+                pool.setWaitTimeout(Integer.parseInt(wait));
+            }
+        }
+        
+        // Configure sequence connection pool if set.
+        String sequence = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_SEQUENCE_CONNECTION_POOL, m, session);
+        if (sequence != null) {
+            this.session.getSequencingControl().setShouldUseSeparateConnection(Boolean.parseBoolean(sequence));
+        }
+        String sequenceDataSource = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_SEQUENCE_CONNECTION_POOL_DATASOURCE, m, session);
+        if (sequenceDataSource != null) {
+            DatasourceLogin login = (DatasourceLogin)this.session.getLogin().clone();
+            login.dontUseExternalTransactionController();
+            JNDIConnector jndiConnector = new JNDIConnector(sequenceDataSource);
+            login.setConnector(jndiConnector);
+            this.session.getSequencingControl().setLogin(login);
+        }        
+        // Sizes and shared option are irrelevant for external connection pool
+        if (!this.session.getReadConnectionPool().getLogin().shouldUseExternalConnectionPooling()) {
+            String min = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_SEQUENCE_CONNECTION_POOL_MIN, m, session);
+            if (min != null) {
+                this.session.getSequencingControl().setMinPoolSize(Integer.parseInt(min));
+            }
+            String max = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_SEQUENCE_CONNECTION_POOL_MAX, m, session);
+            if (max != null) {
+                this.session.getSequencingControl().setMaxPoolSize(Integer.parseInt(max));
+            }
+            String initial = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_SEQUENCE_CONNECTION_POOL_INITIAL, m, session);
+            if (initial != null) {
+                this.session.getSequencingControl().setInitialPoolSize(Integer.parseInt(initial));
             }
         }
     }

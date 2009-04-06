@@ -47,32 +47,138 @@ public class PersistenceUnitProperties {
     /** DataSource or JDBC DriverManager password. */
     public static final String JDBC_PASSWORD = "javax.persistence.jdbc.password";
 
+
     /**
      * EclipseLink JDBC (internal) connection pools properties. Ignored in case external connection pools are used.
-     * Maximum number of connections in TopLink write connection pool by default is 10.
+     * Set the time in milliseconds to wait for an available connection.
+     * If the wait time is exceeded an exception will occur.
+     * The default is 180000 or 3 minutes.
+     * A value of 0 means wait forever.
+     */
+    public static final String JDBC_CONNECTIONS_WAIT = "eclipselink.jdbc.connections.wait-timeout";
+    /**
+     * EclipseLink JDBC (internal) connection pools properties. Ignored in case external connection pools are used.
+     * Maximum number of connections in EclipseLink connection pool.
+     * If the maximum size is reached, threads requiring a connection will wait until one is released back to the pool.
+     * By default a single shared (exclusive) read/write pool is used with min/max 32 connections and 1 initial.
+     */
+    public static final String JDBC_CONNECTIONS_MAX = "eclipselink.jdbc.connections.max";
+    /**
+     * EclipseLink JDBC (internal) connection pools properties. Ignored in case external connection pools are used.
+     * Minimum number of connections in EclipseLink connection pool.
+     * Connections beyond the minimum will be disconnected when returned to the pool, so this should normally
+     * be equal to the number of active threads, or server's thread pool size.
+     * By default a single shared (exclusive) read/write pool is used with min/max 32 connections and 1 initial.
+     */
+    public static final String JDBC_CONNECTIONS_MIN = "eclipselink.jdbc.connections.min";
+    /**
+     * EclipseLink JDBC (internal) connection pools properties. Ignored in case external connection pools are used.
+     * Initial number of connections in EclipseLink connection pool.
+     * This is the number of connections connected at startup.
+     * By default a single shared (exclusive) read/write pool is used with min/max 32 connections and 1 initial.
+     */
+    public static final String JDBC_CONNECTIONS_INITIAL = "eclipselink.jdbc.connections.initial";
+    /**
+     * EclipseLink JDBC (internal) connection pools properties. Ignored in case external connection pools are used.
+     * Maximum number of connections in EclipseLink write connection pool.
+     * If the maximum size is reached, threads requiring a connection will wait until one is released back to the pool.
+     * By default a single shared (exclusive) read/write pool is used with min/max 32 connections and 1 initial.
      */
     public static final String JDBC_WRITE_CONNECTIONS_MAX = "eclipselink.jdbc.write-connections.max";
     /**
      * EclipseLink JDBC (internal) connection pools properties. Ignored in case external connection pools are used.
-     * Minimum number of connections in TopLink write connection pool by default is 5.
+     * Minimum number of connections in EclipseLink write connection pool.
+     * Connections beyond the minimum will be disconnected when returned to the pool, so this should normally
+     * be equal to the number of active threads, or server's thread pool size.
+     * By default a single shared (exclusive) read/write pool is used with min/max 32 connections and 1 initial.
      */
     public static final String JDBC_WRITE_CONNECTIONS_MIN = "eclipselink.jdbc.write-connections.min";
     /**
      * EclipseLink JDBC (internal) connection pools properties. Ignored in case external connection pools are used.
-     * Maximum number of connections in TopLink read connection pool by default is 2.
+     * Initial number of connections in EclipseLink write connection pool.
+     * This is the number of connections connected at startup.
+     * By default a single shared (exclusive) read/write pool is used with min/max 32 connections and 1 initial.
+     */
+    public static final String JDBC_WRITE_CONNECTIONS_INITIAL = "eclipselink.jdbc.write-connections.initial";
+    /**
+     * EclipseLink JDBC (internal) connection pools properties. Ignored in case external connection pools are used.
+     * Maximum number of connections in EclipseLink read connection pool.
+     * If the maximum size is reached, threads requiring a connection will wait until one is released back to the pool (unless shared).
+     * By default a separate read connection pool is not used.
+     * By default a single shared (exclusive) read/write pool is used with min/max 32 connections and 1 initial.
      */
     public static final String JDBC_READ_CONNECTIONS_MAX = "eclipselink.jdbc.read-connections.max";
     /**
      * EclipseLink JDBC (internal) connection pools properties. Ignored in case external connection pools are used.
-     * Minimum number of connections in TopLink read connection pool by default is 2.
+     * Minimum number of connections in EclipseLink read connection pool.
+     * Connections beyond the minimum will be disconnected when returned to the pool, so this should normally
+     * be equal to the number of active threads, or server's thread pool size.
+     * By default a separate read connection pool is not used.
+     * By default a single shared (exclusive) read/write pool is used with min/max 32 connections and 1 initial.
      */
     public static final String JDBC_READ_CONNECTIONS_MIN = "eclipselink.jdbc.read-connections.min";
     /**
      * EclipseLink JDBC (internal) connection pools properties. Ignored in case external connection pools are used.
-     * Indicates whether connections in TopLink read connection pool should be shared.
-     * Valid values are case-insensitive "false" and "true"; "false" is default.
+     * Initial number of connections in EclipseLink read connection pool.
+     * This is the number of connections connected at startup.
+     * By default a separate read connection pool is not used.
+     * By default a single shared (exclusive) read/write pool is used with min/max 32 connections and 1 initial.
+     */
+    public static final String JDBC_READ_CONNECTIONS_INITIAL = "eclipselink.jdbc.read-connections.initial";
+    /**
+     * EclipseLink JDBC (internal) connection pools properties. Ignored in case external connection pools are used.
+     * Indicates whether connections in EclipseLink read connection pool should be shared (not exclusive).
+     * Connection sharing means the same JDBC connection will be used concurrently for multiple reading threads.
+     * Valid values are case-insensitive "false" and "true"; "false" is default and is recommend.
      */
     public static final String JDBC_READ_CONNECTIONS_SHARED = "eclipselink.jdbc.read-connections.shared";
+    /**
+     * EclipseLink JDBC (internal) connection pools properties. Ignored in case external connection pools are used.
+     * Maximum number of connections in EclipseLink sequence connection pool.
+     * If the maximum size is reached, threads requiring a connection will wait until one is released back to the pool.
+     * By default a separate sequence connection pool is not used (the sequence is allocated on the write connection).
+     * If a sequence connection pool is used the default is 2.
+     * JDBC_SEQUENCE_CONNECTION_POOL must also be set to true.
+     * @see #JDBC_SEQUENCE_CONNECTION_POOL
+     */
+    public static final String JDBC_SEQUENCE_CONNECTION_POOL_MAX = "eclipselink.jdbc.sequence-connection-pool.max";
+    /**
+     * EclipseLink JDBC (internal) connection pools properties. Ignored in case external connection pools are used.
+     * Minimum number of connections in EclipseLink sequence connection pool.
+     * Connections beyond the minimum will be disconnected when returned to the pool, so this should normally
+     * be equal to the maximum to avoid connecting/disconnecting.
+     * By default a separate sequence connection pool is not used (the sequence is allocated on the write connection).
+     * If a sequence connection pool is used the default is 2.
+     * JDBC_SEQUENCE_CONNECTION_POOL must also be set to true.
+     * @see #JDBC_SEQUENCE_CONNECTION_POOL
+     */
+    public static final String JDBC_SEQUENCE_CONNECTION_POOL_MIN = "eclipselink.jdbc.sequence-connection-pool.min";
+    /**
+     * EclipseLink JDBC (internal) connection pools properties. Ignored in case external connection pools are used.
+     * Initial number of connections in EclipseLink sequence connection pool.
+     * This is the number of connections connected at startup.
+     * By default a separate sequence connection pool is not used (the sequence is allocated on the write connection).
+     * If a sequence connection pool is used the default is 1.
+     * JDBC_SEQUENCE_CONNECTION_POOL must also be set to true.
+     * @see #JDBC_SEQUENCE_CONNECTION_POOL
+     */
+    public static final String JDBC_SEQUENCE_CONNECTION_POOL_INITIAL = "eclipselink.jdbc.sequence-connection-pool.initial";
+    /**
+     * Configure is a separate connection pool should be used for sequencing.
+     * This improves sequence allocation by allocating sequencing outside the current transaction.
+     * This can be used with internal or external (DataSource) connection pooling,
+     * external must provide a non-jta-datasource.
+     * Valid values are case-insensitive "false" and "true"; "false" is default.
+     */
+    public static final String JDBC_SEQUENCE_CONNECTION_POOL = "eclipselink.jdbc.sequence-connection-pool";
+    /**
+     * Configure is a separate connection pool should be used for sequencing.
+     * This improves sequence allocation by allocating sequencing outside the current transaction.
+     * This can be used with internal or external (DataSource) connection pooling,
+     * external must provide a non-jta-datasource.
+     * Valid values are case-insensitive "false" and "true"; "false" is default.
+     */
+    public static final String JDBC_SEQUENCE_CONNECTION_POOL_DATASOURCE = "eclipselink.jdbc.sequence-connection-pool.non-jta-data-source";
 
     /**
      * Bind all parameters property. Valid values are case-insensitive "true" and "false"; "true" is default.
@@ -200,7 +306,7 @@ public class PersistenceUnitProperties {
     public static final String  LOGGING_EXCEPTIONS = "eclipselink.logging.exceptions";
     
     /**
-     * Valid values are defined in TargetDatabase class - they correspond to database platforms currently supported by TopLink.
+     * Valid values are defined in TargetDatabase class - they correspond to database platforms currently supported by EclipseLink.
      * Also a custom database platform may be specified by supplying a full class name.
      * Default value is TargetDatabase.Auto which means EclipseLink will try to automatically determine
      * the correct database platform type.

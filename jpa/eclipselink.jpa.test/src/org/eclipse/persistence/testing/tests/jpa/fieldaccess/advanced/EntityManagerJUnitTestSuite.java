@@ -4504,9 +4504,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         // make sure the sequence has both preallocation and callback
         // (the latter means not using sequencing connection pool, 
         // acquiring values before insert and requiring transaction).
-        if(ss.getSequencingControl().shouldUseSeparateConnection()) {
-            fail("setup failure: the test requires serverSession.getSequencingControl().shouldUseSeparateConnection()==false");
-        }
+        //if(ss.getSequencingControl().shouldUseSeparateConnection()) {
+        //    fail("setup failure: the test requires serverSession.getSequencingControl().shouldUseSeparateConnection()==false");
+        //}
         String seqName = ss.getDescriptor(Employee.class).getSequenceNumberName();
         Sequence sequence = getServerSession().getLogin().getSequence(seqName);
         if(sequence.getPreallocationSize() < 2) {

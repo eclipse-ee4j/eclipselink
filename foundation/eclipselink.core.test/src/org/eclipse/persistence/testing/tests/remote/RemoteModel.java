@@ -66,11 +66,11 @@ public abstract class RemoteModel extends TestModel {
 
         server.login();
         // ** this is a big hack but for the existing uow tests we need the read and writer connections to be the same to avoid transaction problems.
-        DatabaseAccessor readConnection = (DatabaseAccessor)server.getReadConnectionPool().getConnectionsAvailable().firstElement();
-        DatabaseAccessor writeConnection = (DatabaseAccessor)server.getDefaultConnectionPool().getConnectionsAvailable().firstElement();
+        DatabaseAccessor readConnection = (DatabaseAccessor)server.getReadConnectionPool().getConnectionsAvailable().get(0);
+        DatabaseAccessor writeConnection = (DatabaseAccessor)server.getDefaultConnectionPool().getConnectionsAvailable().get(0);
         writeConnection.disconnect(server);
-        server.getDefaultConnectionPool().getConnectionsAvailable().removeElement(writeConnection);
-        server.getDefaultConnectionPool().getConnectionsAvailable().addElement(readConnection);
+        server.getDefaultConnectionPool().getConnectionsAvailable().remove(writeConnection);
+        server.getDefaultConnectionPool().getConnectionsAvailable().add(readConnection);
 
         // Explicitly add a default read-only class to the server session since the default read-only
         // classes are not transferred at set up time in the test framework.

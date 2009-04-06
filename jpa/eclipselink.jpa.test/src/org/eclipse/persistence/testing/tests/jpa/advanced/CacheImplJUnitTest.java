@@ -93,7 +93,6 @@ public class CacheImplJUnitTest extends JUnitTestCase {
     public void testEvictClassObject() {
         String beforeCache;
         String afterCache;
-        System.out.println("evictclassObject");
         EntityManager em2 = createEntityManager("default1");
         beginTransaction(em2);
         Employee e2 = new Employee();
@@ -109,7 +108,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             emp1.setFirstName("foo");
             beforeCache = em3.find(Employee.class, 121).getFirstName();
             getEntityManagerFactory("default1").getCache().evict(Employee.class, 121);
-            Employee e3 = (Employee) em4.find(Employee.class, 121);
+            Employee e3 = em4.find(Employee.class, 121);
             afterCache = e3.getFirstName();
             assertNotSame("Assertion Error", beforeCache, afterCache);
         } catch (Exception e) {
@@ -124,7 +123,6 @@ public class CacheImplJUnitTest extends JUnitTestCase {
      * Test of evict method, of class CacheImpl.
      */
     public void testEvictClass() {
-        System.out.println("evict_class");
         EntityManager em5 = createEntityManager("default1");
         beginTransaction(em5);
         Employee e4 = new Employee();
@@ -140,7 +138,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             emp2.setFirstName("food");
             String expected = em6.find(Employee.class, 131).getFirstName();
             getEntityManagerFactory("default1").getCache().evict(Employee.class);
-            Employee e5 = (Employee) em7.find(Employee.class, 131);
+            Employee e5 = em7.find(Employee.class, 131);
             String actual = e5.getFirstName();
             assertNotSame("Assertion Error", expected, actual);
         } catch (Exception e) {
@@ -155,7 +153,6 @@ public class CacheImplJUnitTest extends JUnitTestCase {
      * Test of evictAll method, of class CacheImpl.
      */
     public void testEvictAll() {
-        System.out.println("evictAll");
         EntityManager em8 = createEntityManager("default1");
         beginTransaction(em8);
         Employee e6 = new Employee();
@@ -177,9 +174,9 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             emp3.setFirstName("foo");
             dept1.setName("science");
             getEntityManagerFactory("default1").getCache().evictAll();
-            Employee e4 = (Employee) em9.find(Employee.class, 141);
+            Employee e4 = em9.find(Employee.class, 141);
             String actualEmp = e4.getFirstName();
-            Department d2 = (Department) em9.find(Department.class, 3);
+            Department d2 = em9.find(Department.class, 3);
             String actualDept = d2.getName();
             assertEquals("Assertion Error", expectedEmp, actualEmp);
             assertEquals("Assertion Error", expectedDept, actualDept);

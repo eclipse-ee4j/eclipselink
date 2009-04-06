@@ -397,6 +397,10 @@ public class Project implements Serializable, Cloneable {
      * Factory method to create a server session.
      * This returns an implementor of the Server interface, which can be used to login
      * and add descriptors from other projects, configure connection pooling and acquire client sessions.
+     * <br>
+     * By default the ServerSession has a single shared read/write connection pool
+     * with 32 min/max connections and an initial of 1 connection.
+     * This pool is also used for TABLE sequencing.
      */
     public Server createServerSession() {
         return new ServerSession(this);
@@ -407,7 +411,7 @@ public class Project implements Serializable, Cloneable {
      * Factory method to create a server session.
      * This returns an implementor of the Server interface, which can be used to login
      * and add descriptors from other projects, configure connection pooling and acquire client sessions.
-     * Configure the min and max number of connections for the default pool.
+     * Configure the min and max number of connections for the default shared read/write pool.
      */
     public Server createServerSession(int min, int max) {
         return new ServerSession(this, min, max);
@@ -418,8 +422,23 @@ public class Project implements Serializable, Cloneable {
      * Factory method to create a server session.
      * This returns an implementor of the Server interface, which can be used to login
      * and add descriptors from other projects, configure connection pooling and acquire client sessions.
+     * Configure the min and max number of connections for the default shared read/write pool.
+     */
+    public Server createServerSession(int initial, int min, int max) {
+        return new ServerSession(this, initial, min, max);
+    }
+
+    /**
+     * PUBLIC:
+     * Factory method to create a server session.
+     * This returns an implementor of the Server interface, which can be used to login
+     * and add descriptors from other projects, configure connection pooling and acquire client sessions.
      * Configure the default connection policy to be used.
      * This policy is used on the "acquireClientSession()" protocol.
+     * <br>
+     * By default the ServerSession has a single shared read/write connection pool
+     * with 32 min/max connections and an initial of 1 connection.
+     * This pool is also used for TABLE sequencing.
      */
     public Server createServerSession(ConnectionPolicy defaultConnectionPolicy) {
         return new ServerSession(this, defaultConnectionPolicy);

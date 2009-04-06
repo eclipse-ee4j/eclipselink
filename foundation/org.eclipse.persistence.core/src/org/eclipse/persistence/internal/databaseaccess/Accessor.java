@@ -51,7 +51,7 @@ public interface Accessor extends Cloneable {
      * Final sql calls could be sent through the connection by this method
      * before it closes the connection.
      */
-    public void closeJTSConnection();
+    void closeJTSConnection();
 
     /**
      * Begin a transaction on the data store.
@@ -160,14 +160,14 @@ public interface Accessor extends Cloneable {
     /**
      * Return whether the accessor is in transaction.
      */
-    public boolean isInTransaction();
+    boolean isInTransaction();
 
     /**
      * Returns true if this Accessor can continue to be used.  This will be false if a communication
      * failure occurred during a call execution.  In the case of an invalid accessor the Accessor
      * will not be returned to the pool.
      */
-    public boolean isValid();
+    boolean isValid();
     
     /**
      * Reconnect to the database. This can be used if the connection was
@@ -184,7 +184,7 @@ public interface Accessor extends Cloneable {
      * This should be set to false if a communication failure occurred durring a call execution.  
      * In the case of an invalid accessor the Accessor will not be returned to the pool.
      */
-    public void setIsValid(boolean isValid);
+    void setIsValid(boolean isValid);
     
     /**
      * Return whether the accessor uses an external
@@ -203,7 +203,7 @@ public interface Accessor extends Cloneable {
      * from commitTransaction and may be called from writeChanges.   Its main
      * purpose is to ensure that the batched statements have been executed
      */
-    public void writesCompleted(AbstractSession session);
+    void writesCompleted(AbstractSession session);
 
     /**
      * Attempts to create ConnectionCustomizer. If created the customizer is cached by the accessor.
@@ -234,4 +234,9 @@ public interface Accessor extends Cloneable {
      * Ignored if there's no customizer. 
      */
     void releaseCustomizer(AbstractSession session);
+    
+    /**
+     * Reset the accessor before being released.
+     */
+    void reset();
 }

@@ -18,7 +18,7 @@ import org.eclipse.persistence.exceptions.*;
 
 /**
  * <p>
- * <b>Purpose</b>:The read connection pool is used for read access through the server session.
+ * <b>Purpose</b>: The read connection pool is used for read access through the server session.
  * Any of the connection pools can be used for the read pool however this is the default.
  * This pool allows for concurrent reads against the same JDBC connection and requires that
  * the JDBC connection support concurrent read access.
@@ -37,13 +37,29 @@ public class ReadConnectionPool extends ConnectionPool {
      * PUBLIC:
      * Build a new read connection pool.
      */
+    public ReadConnectionPool(String name, Login login, ServerSession owner) {
+        super(name, login, owner);
+    }
+
+    /**
+     * PUBLIC:
+     * Build a new read connection pool.
+     */
     public ReadConnectionPool(String name, Login login, int minNumberOfConnections, int maxNumberOfConnections, ServerSession owner) {
         super(name, login, minNumberOfConnections, maxNumberOfConnections, owner);
     }
 
     /**
+     * PUBLIC:
+     * Build a new read connection pool.
+     */
+    public ReadConnectionPool(String name, Login login, int initialNumberOfConnections, int minNumberOfConnections, int maxNumberOfConnections, ServerSession owner) {
+        super(name, login, initialNumberOfConnections, minNumberOfConnections, maxNumberOfConnections, owner);
+    }
+
+    /**
      * INTERNAL:
-     * Wait until a connection is avaiable and allocate the connection for the client.
+     * Wait until a connection is available and allocate the connection for the client.
      */
     public synchronized Accessor acquireConnection() throws ConcurrencyException {
         Accessor leastBusyConnection = null;
@@ -51,7 +67,7 @@ public class ReadConnectionPool extends ConnectionPool {
         // Search for an unused connection, also find the least busy in case all are used.
         int size = this.connectionsAvailable.size();
         for (int index = 0; index < size; index++) {
-            Accessor connection = (Accessor)connectionsAvailable.get(index);
+            Accessor connection = this.connectionsAvailable.get(index);
             //if the pool has encountered a connection failure on one of the accessors lets test the others.
             if (this.checkConnections){
                 if (this.getOwner().getLogin().isConnectionHealthValidatedOnError() && this.getOwner().getServerPlatform().wasFailureCommunicationBased(null, connection, this.getOwner())){

@@ -792,17 +792,13 @@ public class ClassWeaver extends ClassAdapter implements Constants {
                 label = new Label();
                 cv_get.visitJumpInsn(IF_ACMPNE, label);
                 // return this.address
-                // if this is a primitive, get the wrapper class
-                String wrapper = ClassWeaver.wrapperFor(attributeDetails.getReferenceClassType().getSort());
-                // first part of code to wrap primitives, for instance: new Integer(this.id)
-                if (wrapper != null){
-                    cv_get.visitTypeInsn(NEW, wrapper);
-                    cv_get.visitInsn(DUP);
-                }
                 cv_get.visitVarInsn(ALOAD, 0);
                 cv_get.visitFieldInsn(GETFIELD, classDetails.getClassName(), attributeDetails.getAttributeName(), attributeDetails.getReferenceClassType().getDescriptor());
-                if (wrapper != null){
-                    cv_get.visitMethodInsn(INVOKESPECIAL, wrapper, "<init>", "(" + attributeDetails.getReferenceClassType().getDescriptor() + ")V");
+                // if this is a primitive, get the wrapper class
+                String wrapper = ClassWeaver.wrapperFor(attributeDetails.getReferenceClassType().getSort());
+                if (wrapper != null) {
+                    // Call valueOf on the wrapper (more optimal than constructor).
+                    cv_get.visitMethodInsn(INVOKESTATIC, wrapper, "valueOf", "(" + attributeDetails.getReferenceClassType().getDescriptor() + ")L" + wrapper + ";");
                 }
                 
                 cv_get.visitInsn(ARETURN);

@@ -51,7 +51,7 @@ public class Server1 {
         ConnectionPool cp = this.serverSession.getConnectionPool("default");
         try {
             //close off one of the connections.  This part of the test sees if our reconnect on the fly works.
-            ((org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor)cp.getConnectionsAvailable().elementAt(0)).getConnection().close();
+            ((org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor)cp.getConnectionsAvailable().get(0)).getConnection().close();
         } catch (java.sql.SQLException e) {
             e.printStackTrace(System.out);
         }

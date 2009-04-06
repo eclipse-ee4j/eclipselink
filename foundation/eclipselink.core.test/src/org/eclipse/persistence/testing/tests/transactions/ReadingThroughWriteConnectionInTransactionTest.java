@@ -276,10 +276,10 @@ public class ReadingThroughWriteConnectionInTransactionTest extends org.eclipse.
         if (getBackupReadConnections() != null) {
             return;
         }
-        Vector readConnections = getServerSession().getReadConnectionPool().getConnectionsAvailable();
-        setBackupReadConnections((Vector)readConnections.clone());
-        readConnections.removeAllElements();
-        readConnections.insertElementAt(null, 0);
+        List readConnections = getServerSession().getReadConnectionPool().getConnectionsAvailable();
+        setBackupReadConnections(new Vector(readConnections));
+        readConnections.clear();
+        readConnections.add(null);
     }
 
     public Server getServerSession() {
@@ -332,8 +332,8 @@ public class ReadingThroughWriteConnectionInTransactionTest extends org.eclipse.
      */
     private void restoreServerReadConnections() {
         if (getBackupReadConnections() != null) {
-            Vector readConnections = getServerSession().getReadConnectionPool().getConnectionsAvailable();
-            readConnections.removeAllElements();
+            List readConnections = getServerSession().getReadConnectionPool().getConnectionsAvailable();
+            readConnections.clear();
             readConnections.addAll(getBackupReadConnections());
             setBackupReadConnections(null);
         }
@@ -352,6 +352,7 @@ public class ReadingThroughWriteConnectionInTransactionTest extends org.eclipse.
         try {
             setLogin((DatabaseLogin)getSession().getLogin().clone());
             setServerSession(new ServerSession(login));
+            getServerSession().useExclusiveReadConnectionPool(2, 2);
             Vector descriptors = new Vector(getAbstractSession().getDescriptors().values());
             getServerSession().addDescriptors(descriptors);
             getServerSession().setSessionLog(getSession().getSessionLog());
@@ -423,6 +424,7 @@ public class ReadingThroughWriteConnectionInTransactionTest extends org.eclipse.
                     // Value holder should execute on client, as emp belongs to an
                     // in transaction session.
                     Vector phoneNumbers = emp.getPhoneNumbers();
+                    phoneNumbers.size();
                     emp.getPolicies();
                 }
             }

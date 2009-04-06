@@ -85,8 +85,7 @@ public class AggregateCollectionChangeRecord extends CollectionChangeRecord impl
 
     /**
      * INTERNAL:
-     * Set the changed values
-     * @param newValue prototype.changeset.ObjectChanges
+     * Set the changed values.
      */
     public void setChangedValues(Vector newValues) {
         changedValues = newValues;

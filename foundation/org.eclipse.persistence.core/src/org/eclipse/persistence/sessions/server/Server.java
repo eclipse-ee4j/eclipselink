@@ -21,20 +21,22 @@ import org.eclipse.persistence.exceptions.*;
  * <p>
  * <b>Description</b>: This session supports a shared session that can be used by multiple users
  * or clients in a three-tiered application.  It brokers client sessions to allow read and write access
- * through a unified object cache.  The server session provides a shared read only database connection that
- * is used by all of its client for reads.  All changes to objects and the database must be done through
+ * through a unified object cache.  The server session uses a single connection pool by default, but allows multiple connection
+ * pools and separate read/write pools to be configured.  All changes to objects and the database must be done through
  * a unit of work acquired from the client session, this allows the changes to occur in a transactional object
  * space and under a exclusive database connection.
  * <p>
  * <b>Responsibilities</b>:
- *    <ul>
- *    <li> Connecting/disconnecting the default reading login.
+ * <ul>
+ *    <li> Connection pooling.
  *    <li> Reading objects and maintaining the object cache.
  *    <li> Brokering client sessions.
- *    <li> Disabling database modification through the shared connection.
- *    </ul>
+ *    <li> Requiring the UnitOfWork to be used for modification.
+ * </ul>
+ * 
+ * @see Server
  * @see ClientSession
- * @see org.eclipse.persistence.sessions.UnitOfWork UnitOfWork
+ * @see UnitOfWork
  */
 public interface Server extends org.eclipse.persistence.sessions.DatabaseSession {
 
@@ -99,7 +101,7 @@ public interface Server extends org.eclipse.persistence.sessions.DatabaseSession
     /**
      * PUBLIC:
      * The default connection policy is used by default by the acquireClientConnection() protocol.
-     * By default it is a connection pool with min 5 and max 10 lazy pooled connections.
+     * By default it uses the default connection pool.
      */
     public ConnectionPolicy getDefaultConnectionPolicy();
 
@@ -122,9 +124,7 @@ public interface Server extends org.eclipse.persistence.sessions.DatabaseSession
      * PUBLIC:
      * Handles allocating connections for read queries.
      * <p>
-     * By default a read connection pool is created and configured automatically in the
-     * constructor.  A default read connection pool is one with two connections, and
-     * does not support concurrent reads.
+     * By default a read connection pool is not used, the default connection pool is used for reading.
      * <p> The read connection pool is not used while in transaction.
      * @see #setReadConnectionPool(ConnectionPool)
      * @see #useExclusiveReadConnectionPool
@@ -142,7 +142,7 @@ public interface Server extends org.eclipse.persistence.sessions.DatabaseSession
     /**
      * PUBLIC:
      * The default connection policy is used by default by the acquireClientConnection() protocol.
-     * By default it is a connection pool with min 5 and max 10 lazy pooled connections.
+     * By default it uses the default connection pool.
      */
     public void setDefaultConnectionPolicy(ConnectionPolicy defaultConnectionPolicy);
 
@@ -169,18 +169,14 @@ public interface Server extends org.eclipse.persistence.sessions.DatabaseSession
 
     /**
      * PUBLIC:
-     * Sets the read connection pool to be a standard <code>ConnectionPool</code>.
+     * Sets the read connection pool to be a separate exclusive <code>ConnectionPool</code>
+     * with the minimum and maximum number of connections.
      * <p>
-     * Minimum and maximum number of connections is determined from the ConnectionPolicy.  The defaults are 2 for both.
-     * <p>
-     * Since the same type of connection pool is used as for writing, no
-     * two users will use the same connection for reading at the same time.
-     * <p>
-     * This read connection pool is the default as some JDBC drivers do not support
-     * concurrent reading.
-     * <p>
-     * Unless <code>this</code> {@link org.eclipse.persistence.sessions.Session#hasExternalTransactionController hasExternalTransactionController()}
-     * a read connection pool of this type will be setup in the constructor.
+     * A separate read connection pool is not used by default, by default the default connection pool is used for reading.
+     * A separate read connection pool can be used to dedicate a pool of connections only for reading.
+     * It can also be used to use a non-JTA DataSource for reading to avoid JTA overhead,
+     * or to use a different user login for reading.
+     * 
      * @see #getReadConnectionPool
      * @see #setReadConnectionPool(ConnectionPool)
      * @see #useReadConnectionPool
@@ -190,11 +186,28 @@ public interface Server extends org.eclipse.persistence.sessions.DatabaseSession
 
     /**
      * PUBLIC:
+     * Sets the read connection pool to be a separate exclusive <code>ConnectionPool</code>
+     * with the initial, minimum and maximum number of connections.
+     * <p>
+     * A separate read connection pool is not used by default, by default the default connection pool is used for reading.
+     * A separate read connection pool can be used to dedicate a pool of connections only for reading.
+     * It can also be used to use a non-JTA DataSource for reading to avoid JTA overhead,
+     * or to use a different user login for reading.
+     * 
+     * @see #getReadConnectionPool
+     * @see #setReadConnectionPool(ConnectionPool)
+     * @see #useReadConnectionPool
+     * @see #useExternalReadConnectionPool
+     */
+    public void useExclusiveReadConnectionPool(int initialNumberOfConnections, int minNumberOfConnections, int maxNumberOfConnections);
+
+    /**
+     * PUBLIC:
      * Sets the read connection pool to be an <code>ExternalConnectionPool</code>.
      * <p>
      * This type of connection pool will be created and configured automatically if
-     * an external transaction controller is used.
-     * @see org.eclipse.persistence.sessions.Session#hasExternalTransactionController
+     * an external connection pooling is used.
+     * 
      * @see #getReadConnectionPool
      * @see #setReadConnectionPool(ConnectionPool)
      * @see #useReadConnectionPool
@@ -204,11 +217,17 @@ public interface Server extends org.eclipse.persistence.sessions.DatabaseSession
 
     /**
      * PUBLIC:
-     * Sets the read connection pool to be a <code>ReadConnectionPool</code>.
+     * Sets the read connection pool to be a separate shared <code>ConnectionPool</code>
+     * with the minimum and maximum number of connections.
+     * <p>
+     * A separate read connection pool is not used by default, by default the default connection pool is used for reading.
+     * A separate read connection pool can be used to dedicate a pool of connections only for reading.
+     * It can also be used to use a non-JTA DataSource for reading to avoid JTA overhead,
+     * or to use a different user login for reading.
      * <p>
      * Since read connections are not used for writing, multiple users can
-     * theoretically use the same connection at the same time.  Most JDBC drivers
-     * have concurrent reading which supports this.
+     * theoretically use the same connection at the same time.
+     * However some JDBC drivers do not allow this, or have poor concurrency when this is done.
      * <p>
      * Use this read connection pool to take advantage of concurrent reading.
      * <p>
@@ -221,5 +240,32 @@ public interface Server extends org.eclipse.persistence.sessions.DatabaseSession
      * @see #useExclusiveReadConnectionPool
      */
     public void useReadConnectionPool(int minNumberOfConnections, int maxNumberOfConnections);
+    
+    /**
+     * PUBLIC:
+     * Sets the read connection pool to be a separate shared <code>ConnectionPool</code>
+     * with the minimum and maximum number of connections.
+     * <p>
+     * A separate read connection pool is not used by default, by default the default connection pool is used for reading.
+     * A separate read connection pool can be used to dedicate a pool of connections only for reading.
+     * It can also be used to use a non-JTA DataSource for reading to avoid JTA overhead,
+     * or to use a different user login for reading.
+     * <p>
+     * Since read connections are not used for writing, multiple users can
+     * theoretically use the same connection at the same time.
+     * However some JDBC drivers do not allow this, or have poor concurrency when this is done.
+     * <p>
+     * Use this read connection pool to take advantage of concurrent reading.
+     * <p>
+     * @param initialNumberOfConnections connections connected at startup
+     * @param minNumberOfConnections connections that are pooled
+     * @param maxNumberOfConnections As multiple readers can use the same connection
+     * concurrently fewer connections are needed.
+     * @see #getReadConnectionPool
+     * @see #setReadConnectionPool(ConnectionPool)
+     * @see #useExternalReadConnectionPool
+     * @see #useExclusiveReadConnectionPool
+     */
+    public void useReadConnectionPool(int initialNumberOfConnections, int minNumberOfConnections, int maxNumberOfConnections);
 
 }

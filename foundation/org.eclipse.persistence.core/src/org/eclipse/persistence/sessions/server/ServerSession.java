@@ -16,6 +16,7 @@ import java.util.*;
 import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.Login;
+import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.sequencing.SequencingServer;
 import org.eclipse.persistence.logging.SessionLog;
@@ -30,20 +31,22 @@ import org.eclipse.persistence.internal.sessions.*;
  * <p>
  * <b>Description</b>: This session supports a shared session that can be used by multiple users
  * or clients in a three-tiered application.  It brokers client sessions to allow read and write access
- * through a unified object cache.  The server session provides a shared read only database connection that
- * is used by all of its client for reads.  All changes to objects and the database must be done through
+ * through a unified object cache.  The server session uses a single connection pool by default, but allows multiple connection
+ * pools and separate read/write pools to be configured.  All changes to objects and the database must be done through
  * a unit of work acquired from the client session, this allows the changes to occur in a transactional object
  * space and under a exclusive database connection.
  * <p>
  * <b>Responsibilities</b>:
  *    <ul>
- *    <li> Connecting/disconnecting the default reading login.
+ *    <li> Connection pooling.
  *    <li> Reading objects and maintaining the object cache.
  *    <li> Brokering client sessions.
- *    <li> Disabling database modification through the shared connection.
+ *    <li> Requiring the UnitOfWork to be used for modification.
  *    </ul>
+ *    
+ * @see Server
  * @see ClientSession
- * @see UnitOfWorkImpl
+ * @see UnitOfWork
  */
 public class ServerSession extends DatabaseSessionImpl implements Server {
     protected ConnectionPool readConnectionPool;
@@ -52,13 +55,11 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
     protected int maxNumberOfNonPooledConnections;
     public static final int NO_MAX = -1;
     protected int numberOfNonPooledConnectionsUsed;
-    public static final int MAX_WRITE_CONNECTIONS = 10;	
-    public static final int MIN_WRITE_CONNECTIONS = 5;	
     
     /**
      * INTERNAL:
      * Create and return a new default server session.
-     * Used for EJB SessionManager to instantiate a server session
+     * @see Project#createServerSession()
      */
     public ServerSession() {
         super();
@@ -66,174 +67,133 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
     }
 
     /**
-     * PUBLIC:
+     * INTERNAL:
      * Create and return a new server session.
-     * By giving the login information on creation this allows the session to initialize itself
-     * to the platform given in the login. This constructor does not return a connected session.
-     * To connect the session to the database login() must be sent to it. The login(userName, password)
-     * method may also be used to connect the session, this allows for the user name and password
-     * to be given at login but for the other database information to be provided when the session is created.
-     * By default the server session uses a default connection pool with 5 min 10 max number of connections
-     * and a max number 50 non-pooled connections allowed.
+     * @see Project#createServerSession()
      */
     public ServerSession(Login login) {
-        this(new org.eclipse.persistence.sessions.Project(login));
+        this(new Project(login));
     }
 
     /**
-     * PUBLIC:
+     * INTERNAL:
      * Create and return a new server session.
-     * Configure the min and max number of connections for the default pool.
+     * @see Project#createServerSession(int, int)
      */
     public ServerSession(Login login, int minNumberOfPooledConnection, int maxNumberOfPooledConnection) {
-        this(new org.eclipse.persistence.sessions.Project(login), minNumberOfPooledConnection, maxNumberOfPooledConnection);
+        this(new Project(login), minNumberOfPooledConnection, maxNumberOfPooledConnection);
     }
 
     /**
-     * PUBLIC:
-     * Create and return a new server session.
-     * Configure the default connection policy to be used.
-     * This policy is used on the "acquireClientSession()" protocol.
+     * INTERNAL:
+     * Create and return a new default server session.
+     * @see Project#createServerSession(ConnectionPolicy)
      */
     public ServerSession(Login login, ConnectionPolicy defaultConnectionPolicy) {
-        this(new org.eclipse.persistence.sessions.Project(login), defaultConnectionPolicy);
+        this(new Project(login), defaultConnectionPolicy);
     }
 
     /**
-     * PUBLIC:
+     * INTERNAL:
      * Create and return a new server session.
-     * By giving the project information on creation this allows the session to initialize itself
-     * to the platform given in the login. This constructor does not return a connected session.
-     * To connect the session to the database login() must be sent to it. The login(userName, password)
-     * method may also be used to connect the session, this allows for the user name and password
-     * to be given at login but for the other database information to be provided when the session is created.
-     * By default the server session uses a default connection pool with 5 min 10 max number of connections
-     * and a max number 50 non-pooled connections allowed.
+     * @see Project#createServerSession()
+     * 
+     * This is used by JPA, and SessionManager.
      */
-    public ServerSession(org.eclipse.persistence.sessions.Project project) {
-        this(project, MIN_WRITE_CONNECTIONS, MAX_WRITE_CONNECTIONS);
+    public ServerSession(Project project) {
+        this(project, ConnectionPool.MIN_CONNECTIONS, ConnectionPool.MAX_CONNECTIONS);
     }
 
     /**
-     * PUBLIC:
+     * INTERNAL:
      * Create and return a new server session.
-     * Configure the min and max number of connections for the default pool.
+     * @see Project#createServerSession(int, int)
      */
-    public ServerSession(org.eclipse.persistence.sessions.Project project, int minNumberOfPooledConnection, int maxNumberOfPooledConnection) {
-        this(project, new ConnectionPolicy("default"));
-
-        ConnectionPool pool = null;
-        if (project.getDatasourceLogin().shouldUseExternalConnectionPooling()) {
-            pool = new ExternalConnectionPool("default", project.getDatasourceLogin(), this);
-        } else {
-            pool = new ConnectionPool("default", project.getDatasourceLogin(), minNumberOfPooledConnection, maxNumberOfPooledConnection, this);
-        }
-        this.connectionPools.put("default", pool);
+    public ServerSession(Project project, int minNumberOfPooledConnection, int maxNumberOfPooledConnection) {
+        this(project, ConnectionPool.INITIAL_CONNECTIONS, minNumberOfPooledConnection, maxNumberOfPooledConnection);
     }
 
     /**
-     * PUBLIC:
+     * INTERNAL:
      * Create and return a new server session.
-     * Configure the min and max number of connections for the default pool.
-     * Use the login from the project for the write pool. Use the passed
-     * in login for the read pool, if specified, or the project login if not.
+     * @see Project#createServerSession(int, int, int)
+     */
+    public ServerSession(Project project, int initialNumberOfPooledConnection, int minNumberOfPooledConnection, int maxNumberOfPooledConnection) {
+        this(project, new ConnectionPolicy("default"), ConnectionPool.INITIAL_CONNECTIONS, minNumberOfPooledConnection, maxNumberOfPooledConnection, null, null);
+    }
+
+    /**
+     * INTERNAL:
+     * Create and return a new server session.
+     * @see Project#createServerSession(int, int)
      *
      * @param project the project associated with this session
      * @param minNumberOfPooledConnection the minimum number of connections in the pool
      * @param maxNumberOfPooledConnection the maximum number of connections in the pool
      * @param readLogin the login used to create the read connection pool
      */
-    public ServerSession(org.eclipse.persistence.sessions.Project project, int minNumberOfPooledConnection, int maxNumberOfPooledConnection, org.eclipse.persistence.sessions.Login readLogin) {
-        this(project, new ConnectionPolicy("default"), readLogin);
-
-        ConnectionPool pool = null;
-        if (project.getDatasourceLogin().shouldUseExternalConnectionPooling()) {
-            pool = new ExternalConnectionPool("default", project.getDatasourceLogin(), this);
-        } else {
-            pool = new ConnectionPool("default", project.getDatasourceLogin(), minNumberOfPooledConnection, maxNumberOfPooledConnection, this);
-        }
-        this.connectionPools.put("default", pool);
+    public ServerSession(Project project, int minNumberOfPooledConnection, int maxNumberOfPooledConnection, Login readLogin) {
+        this(project, minNumberOfPooledConnection, maxNumberOfPooledConnection, readLogin, null);
     }
 
     /**
-     * PUBLIC:
+     * INTERNAL:
      * Create and return a new server session.
-     * Configure the min and max number of connections for the default pool.
+     * @see Project#createServerSession(int, int)
+     */
+    public ServerSession(Project project, int minNumberOfPooledConnection, int maxNumberOfPooledConnection, Login readLogin, Login sequenceLogin) {
+        this(project, new ConnectionPolicy("default"), ConnectionPool.INITIAL_CONNECTIONS, minNumberOfPooledConnection, maxNumberOfPooledConnection, readLogin, sequenceLogin);
+    }
+
+    /**
+     * INTERNAL:
+     * Create and return a new server session.
+     * <p>
+     * Configure the initial, min and max number of connections for the default pool.
+     * <p>
+     * Configure the default connection policy to be used.
+     * This policy is used on the "acquireClientSession()" protocol.
+     * <p>
      * Use the login from the project for the write pool. Use the passed
      * in login for the read pool, if specified, or the project login if not.
      * Use the sequenceLogin, if specified, for creating a connection pool
      * to be used by sequencing through SequencingConnectionHandler
      * sequenceLogin *MUST*:
-     * 1. specify *NON-JTS* connections (such as NON_JTS driver or read-only datasource);
-     * 2. sequenceLogin.shouldUseExternalTransactionController()==false
+     * <br>1. specify *NON-JTS* connections (such as NON_JTS driver or read-only datasource);
+     * <br>2. sequenceLogin.shouldUseExternalTransactionController()==false
      *
      * @param project the project associated with this session
-     * @param minNumberOfPooledConnection the minimum number of connections in the pool
-     * @param maxNumberOfPooledConnection the maximum number of connections in the pool
+     * @param defaultConnectionPolicy the default connection policy to be used
+     * @param initialNumberOfPooledConnections the minimum number of connections in the pool
+     * @param minNumberOfPooledConnections the minimum number of connections in the pool
+     * @param maxNumberOfPooledConnections the maximum number of connections in the pool
      * @param readLogin the login used to create the read connection pool
      * @param sequenceLogin the login used to create a connection pool for sequencing
+     * 
+     * @see Project#createServerSession(int, int)
      */
-    public ServerSession(org.eclipse.persistence.sessions.Project project, int minNumberOfPooledConnection, int maxNumberOfPooledConnection, org.eclipse.persistence.sessions.Login readLogin, org.eclipse.persistence.sessions.Login sequenceLogin) {
-        this(project, new ConnectionPolicy("default"), readLogin, sequenceLogin);
+    public ServerSession(Project project, ConnectionPolicy defaultConnectionPolicy, int initialNumberOfPooledConnections, int minNumberOfPooledConnections, int maxNumberOfPooledConnections, Login readLogin, Login sequenceLogin) {
+        super(project);
+        this.connectionPools = new HashMap(10);
+        this.defaultConnectionPolicy = defaultConnectionPolicy;
+        this.maxNumberOfNonPooledConnections = 50;
+        this.numberOfNonPooledConnectionsUsed = 0;
 
+        // Configure the default write connection pool.
         ConnectionPool pool = null;
         if (project.getDatasourceLogin().shouldUseExternalConnectionPooling()) {
             pool = new ExternalConnectionPool("default", project.getDatasourceLogin(), this);
         } else {
-            pool = new ConnectionPool("default", project.getDatasourceLogin(), minNumberOfPooledConnection, maxNumberOfPooledConnection, this);
+            pool = new ConnectionPool("default", project.getDatasourceLogin(), initialNumberOfPooledConnections, minNumberOfPooledConnections, maxNumberOfPooledConnections, this);
         }
         this.connectionPools.put("default", pool);
-    }
-
-    /**
-     * PUBLIC:
-     * Create and return a new server session.
-     * Configure the default connection policy to be used.
-     * This policy is used on the "acquireClientSession()" protocol.
-     */
-    public ServerSession(org.eclipse.persistence.sessions.Project project, ConnectionPolicy defaultConnectionPolicy) {
-        super(project);
-        this.connectionPools = new HashMap(10);
-        this.defaultConnectionPolicy = defaultConnectionPolicy;
-        this.maxNumberOfNonPooledConnections = 50;
-        this.numberOfNonPooledConnectionsUsed = 0;
-        setReadConnectionPool(project.getDatasourceLogin());
-    }
-
-    /**
-     * PUBLIC:
-     * Create and return a new server session.
-     * Configure the default connection policy to be used.
-     * This policy is used on the "acquireClientSession()" protocol.
-     * Use the readLogin, if specified, for logging into the read
-     * connection pool.
-     */
-    public ServerSession(org.eclipse.persistence.sessions.Project project, ConnectionPolicy defaultConnectionPolicy, org.eclipse.persistence.sessions.Login readLogin) {
-        super(project);
-        this.connectionPools = new HashMap(10);
-        this.defaultConnectionPolicy = defaultConnectionPolicy;
-        this.maxNumberOfNonPooledConnections = 50;
-        this.numberOfNonPooledConnectionsUsed = 0;
-        Login login = (readLogin != null) ? readLogin : project.getDatasourceLogin();
-        setReadConnectionPool(login);
-    }
-
-    /**
-     * PUBLIC:
-     * Create and return a new server session.
-     * Configure the default connection policy to be used.
-     * This policy is used on the "acquireClientSession()" protocol.
-     * Use the readLogin, if specified, for logging into the read
-     * connection pool.
-     * Use the sequenceLogin, if specified, for creating a connection pool
-     * to be used by sequencing through SequencingConnectionHandler
-     * sequenceLogin *MUST*:
-     * 1. specify *NON-JTS* connections (such as NON_JTS driver or read-only datasource);
-     * 2. sequenceLogin.shouldUseExternalTransactionController()==false
-     *
-     */
-    public ServerSession(org.eclipse.persistence.sessions.Project project, ConnectionPolicy defaultConnectionPolicy, org.eclipse.persistence.sessions.Login readLogin, org.eclipse.persistence.sessions.Login sequenceLogin) {
-        this(project, defaultConnectionPolicy, readLogin);
+        
+        // If a read login was not used, then share the same connection pool for reading and writing.
+        if (readLogin != null) {
+            setReadConnectionPool(readLogin);
+        } else {
+            setReadConnectionPool(pool);
+        }
 
         if (sequenceLogin != null) {
             // Even if getSequencingControl().setShouldUseSeparateConnection(true) is specified,
@@ -242,6 +202,33 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
             getSequencingControl().setShouldUseSeparateConnection(true);
             getSequencingControl().setLogin(sequenceLogin);
         }
+    }
+
+    /**
+     * INTERNAL:
+     * Create and return a new server session.
+     * @see Project#createServerSession(ConnectionPolicy)
+     */
+    public ServerSession(Project project, ConnectionPolicy defaultConnectionPolicy) {
+        this(project, defaultConnectionPolicy, null);
+    }
+
+    /**
+     * INTERNAL:
+     * Create and return a new server session.
+     * @see Project#createServerSession(ConnectionPolicy)
+     */
+    public ServerSession(Project project, ConnectionPolicy defaultConnectionPolicy, Login readLogin) {
+        this(project, defaultConnectionPolicy, readLogin, null);
+    }
+
+    /**
+     * INTERNAL:
+     * Create and return a new server session.
+     * @see Project#createServerSession(ConnectionPolicy)
+     */
+    public ServerSession(Project project, ConnectionPolicy defaultConnectionPolicy, Login readLogin, Login sequenceLogin) {
+        this(project, defaultConnectionPolicy, ConnectionPool.INITIAL_CONNECTIONS, ConnectionPool.MIN_CONNECTIONS, ConnectionPool.MAX_CONNECTIONS, readLogin, sequenceLogin);
     }
 
     /**
@@ -649,12 +636,6 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * PUBLIC:
      * Return the read connection pool.
      * The read connection pool handles allocating connection for read queries.
-     * By default a ReadConnnectionPool with a single connection.  This is normally sufficient
-     * as a JDBC connection can support concurrent reading.  Multiple connections can also
-     * be specified and may improve concurrency on some JDBC drivers/databases.
-     * If external connection pooling is used, an external connection pool will be used by default.
-     * If your JDBC driver does not support concurrency corrently a normal ConnectionPool can be used
-     * to ensure exclusive access to the read connection, note that this will give less concurrency.
      */
     public ConnectionPool getReadConnectionPool() {
         return readConnectionPool;
@@ -769,7 +750,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
     /**
      * INTERNAL:
      * This method is called to indicate that all available connections should be checked.
-     * Noop on external connection pools.
+     * No-op on external connection pools.
      */
     public void setCheckConnections() {
         getReadConnectionPool().setCheckConnections();
@@ -804,7 +785,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * Creates and adds "default" connection pool using default parameter values
      */
     public void setDefaultConnectionPool() {
-        addConnectionPool("default", getDatasourceLogin(), 5, 10);
+        addConnectionPool("default", getDatasourceLogin(), ConnectionPool.MIN_CONNECTIONS, ConnectionPool.MAX_CONNECTIONS);
     }
 
     /**
@@ -818,8 +799,9 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
     }
 
     /**
-     *  Set the current number of connections being used that are not from a connection pool.
-     *  @param int
+     * INTERNAL:
+     * Set the current number of connections being used that are not from a connection pool.
+     * @param int
      */
     public void setNumberOfNonPooledConnectionsUsed(int numberOfNonPooledConnectionsUsed) {
         this.numberOfNonPooledConnectionsUsed = numberOfNonPooledConnectionsUsed;
@@ -829,12 +811,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * PUBLIC:
      * Set the read connection pool.
      * The read connection pool handles allocating connection for read queries.
-     * By default a ReadConnnectionPool with a single connection.  This is normally sufficient
-     * as a JDBC connection can support concurrent reading.  Multiple connections can also
-     * be specified and may improve concurrency on some JDBC drivers/databases.
      * If external connection pooling is used, an external connection pool will be used by default.
-     * If your JDBC driver does not support concurrency corrently a normal ConnectionPool can be used
-     * to ensure exclusive access to the read connection, note that this will give less concurrency.
      */
     public void setReadConnectionPool(ConnectionPool readConnectionPool) {
         if (isConnected()) {
@@ -847,6 +824,9 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
     /**
      * PUBLIC:
      * Creates and sets the new read connection pool.
+     * By default the same connection pool is used for read and write,
+     * this allows a different login/pool to be used for reading.
+     * By default 32 min/max connections are used in the pool with an initial of 1 connection.
      */
     public void setReadConnectionPool(Login readLogin) throws ValidationException {
         if (isConnected()) {
@@ -856,7 +836,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
         if (readLogin.shouldUseExternalConnectionPooling()) {
             pool = new ExternalConnectionPool("read", readLogin, this);
         } else {
-            pool = new ConnectionPool("read", readLogin, 2, 2, this);
+            pool = new ConnectionPool("read", readLogin, this);
         }
         this.readConnectionPool = pool;
     }
@@ -896,12 +876,6 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * PUBLIC:
      * Configure the read connection pool.
      * The read connection pool handles allocating connection for read queries.
-     * By default a ReadConnnectionPool with a single connection.  This is normally sufficient
-     * as a JDBC connection can support concurrent reading.  Multiple connections can also
-     * be specified and may improve concurrency on some JDBC drivers/databases.
-     * If external connection pooling is used, an external connection pool will be used by default.
-     * If your JDBC driver does not support concurrency corrently a normal ConnectionPool can be used
-     * to ensure exclusive access to the read connection, note that this will give less concurrency.
      */
     public void useExclusiveReadConnectionPool(int minNumerOfConnections, int maxNumerOfConnections) {
         setReadConnectionPool(new ConnectionPool("read", getDatasourceLogin(), minNumerOfConnections, maxNumerOfConnections, this));
@@ -911,12 +885,15 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * PUBLIC:
      * Configure the read connection pool.
      * The read connection pool handles allocating connection for read queries.
-     * By default a ReadConnnectionPool with a single connection.  This is normally sufficient
-     * as a JDBC connection can support concurrent reading.  Multiple connections can also
-     * be specified and may improve concurrency on some JDBC drivers/databases.
-     * If external connection pooling is used, an external connection pool will be used by default.
-     * If your JDBC driver does not support concurrency corrently a normal ConnectionPool can be used
-     * to ensure exclusive access to the read connection, note that this will give less concurrency.
+     */
+    public void useExclusiveReadConnectionPool(int initialNumberOfConnections, int minNumerOfConnections, int maxNumerOfConnections) {
+        setReadConnectionPool(new ConnectionPool("read", getDatasourceLogin(), initialNumberOfConnections, minNumerOfConnections, maxNumerOfConnections, this));
+    }
+
+    /**
+     * PUBLIC:
+     * Configure the read connection pool.
+     * The read connection pool handles allocating connection for read queries.
      */
     public void useExternalReadConnectionPool() {
         setReadConnectionPool(new ExternalConnectionPool("read", getDatasourceLogin(), this));
@@ -926,15 +903,28 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * PUBLIC:
      * Configure the read connection pool.
      * The read connection pool handles allocating connection for read queries.
-     * By default a ReadConnnectionPool with a single connection.  This is normally sufficient
-     * as a JDBC connection can support concurrent reading.  Multiple connections can also
-     * be specified and may improve concurrency on some JDBC drivers/databases.
      * If external connection pooling is used, an external connection pool will be used by default.
-     * If your JDBC driver does not support concurrency corrently a normal ConnectionPool can be used
-     * to ensure exclusive access to the read connection, note that this will give less concurrency.
+     * This API uses a ReadConnectionPool which shares read connections.
+     * Some JDBC drivers may not support concurrent access to a connection, or have poor concurrency,
+     * so an exclusive read connection pool is normally recommended.
+     * @see #useExclusiveReadConnectionPool(int, int)
      */
     public void useReadConnectionPool(int minNumerOfConnections, int maxNumerOfConnections) {
         setReadConnectionPool(new ReadConnectionPool("read", getDatasourceLogin(), minNumerOfConnections, maxNumerOfConnections, this));
+    }
+
+    /**
+     * PUBLIC:
+     * Configure the read connection pool.
+     * The read connection pool handles allocating connection for read queries.
+     * If external connection pooling is used, an external connection pool will be used by default.
+     * This API uses a ReadConnectionPool which shares read connections.
+     * Some JDBC drivers may not support concurrent access to a connection, or have poor concurrency,
+     * so an exclusive read connection pool is normally recommended.
+     * @see #useExclusiveReadConnectionPool(int, int, int)
+     */
+    public void useReadConnectionPool(int initialNumerOfConnections, int minNumerOfConnections, int maxNumerOfConnections) {
+        setReadConnectionPool(new ReadConnectionPool("read", getDatasourceLogin(), initialNumerOfConnections, minNumerOfConnections, maxNumerOfConnections, this));
     }
 
     /**

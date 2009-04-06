@@ -223,6 +223,8 @@ public class MultithreadTestCase extends AutoVerifyTestCase {
             serverSession.setSessionLog(databaseSession.getSessionLog());
             if (useSequenceConnectionPool) {
                 serverSession.getSequencingControl().setShouldUseSeparateConnection(true);
+            } else {
+                serverSession.getSequencingControl().setShouldUseSeparateConnection(false);                
             }
             serverSession.login();
 

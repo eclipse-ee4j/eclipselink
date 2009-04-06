@@ -110,8 +110,10 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
     private Sequencing seq;
     private boolean shouldUseSeparateConnection;
     private Login login;
-    private int minPoolSize;
-    private int maxPoolSize;
+    private int minPoolSize = -1;
+    private int maxPoolSize = -1;
+    private int initialPoolSize = -1;
+    private ConnectionPool connectionPool;
 
     public SequencingManager(DatabaseSessionImpl ownerSession) {
         this.ownerSession = ownerSession;
@@ -142,21 +144,29 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
 
         if (isServerSession) {
             ConnectionPool pool = null;
-            if (getLogin().shouldUseExternalConnectionPooling()) {
-                pool = new ExternalConnectionPool("sequencing", getLogin(), (ServerSession)getOwnerSession());
-            } else {
-                if ((getMinPoolSize() == 0) && (getMaxPoolSize() == 0)) {
-                    setMinPoolSize(2);
-                    setMaxPoolSize(2);
+            if (this.connectionPool == null) {
+                if (getLogin().shouldUseExternalConnectionPooling()) {
+                    pool = new ExternalConnectionPool("sequencing", getLogin(), (ServerSession)getOwnerSession());
+                } else {
+                    if (getMinPoolSize() == -1) {
+                        setMinPoolSize(2);
+                    }
+                    if (getMaxPoolSize() == -1) {
+                        setMinPoolSize(2);
+                    }
+                    if (getInitialPoolSize() == -1) {
+                        setInitialPoolSize(1);
+                    }
+                    pool = new ConnectionPool("sequencing", getLogin(), getInitialPoolSize(), getMinPoolSize(), getMaxPoolSize(), (ServerSession)getOwnerSession());
                 }
-                pool = new ConnectionPool("sequencing", getLogin(), getMinPoolSize(), getMaxPoolSize(), (ServerSession)getOwnerSession());
+            } else {
+                pool = this.connectionPool;
             }
 
             setConnectionHandler(new ServerSessionConnectionHandler(pool));
 
         } else {
             setConnectionHandler(new DatabaseSessionConnectionHandler(getOwnerSession(), getLogin()));
-
         }
     }
 
@@ -224,6 +234,14 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
         this.maxPoolSize = size;
     }
 
+    public int getInitialPoolSize() {
+        return this.initialPoolSize;
+    }
+
+    public void setInitialPoolSize(int size) {
+        this.initialPoolSize = size;
+    }
+
     public boolean isConnected() {
         return states != null;
     }
@@ -238,11 +256,10 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
     }
 
     public ConnectionPool getConnectionPool() {
-        ConnectionPool pool = null;
-        if(getConnectionHandler()!=null && getConnectionHandler() instanceof ServerSessionConnectionHandler) {
-            pool = ((ServerSessionConnectionHandler)getConnectionHandler()).getPool();
+        if ((getConnectionHandler() != null) && (getConnectionHandler() instanceof ServerSessionConnectionHandler)) {
+            return ((ServerSessionConnectionHandler)getConnectionHandler()).getPool();
         }
-        return pool;
+        return this.connectionPool;
     }
     
     public Object getNextValue(Class cls) {
@@ -950,5 +967,9 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
 
     protected Sequence getSequence(String seqName) {
         return getOwnerSession().getDatasourcePlatform().getSequence(seqName);
+    }
+
+    public void setConnectionPool(ConnectionPool connectionPool) {
+        this.connectionPool = connectionPool;
     }
 }

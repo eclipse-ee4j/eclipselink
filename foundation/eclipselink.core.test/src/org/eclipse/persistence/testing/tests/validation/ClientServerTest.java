@@ -12,8 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.validation;
 
-import java.util.Enumeration;
-import java.util.Vector;
+import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
@@ -111,13 +111,12 @@ public class ClientServerTest extends AutoVerifyTestCase {
         try {
             int counter = 0;
             ConnectionPool pool = (ConnectionPool)server.serverSession.getConnectionPools().get("default");
-            Vector connections = pool.getConnectionsAvailable();
-            for (Enumeration enumtr = connections.elements(); enumtr.hasMoreElements(); ) {
-                if (((DatabaseAccessor)enumtr.nextElement()).isConnected()) {
+            List connections = pool.getConnectionsAvailable();
+            for (Iterator iterator = connections.iterator(); iterator.hasNext(); ) {
+                if (((DatabaseAccessor)iterator.next()).isConnected()) {
                     counter = counter + 1;
                 }
             }
-
 
             if (counter < minimumConnections) {
                 throw new TestErrorException("too many connections are disconnected!!");

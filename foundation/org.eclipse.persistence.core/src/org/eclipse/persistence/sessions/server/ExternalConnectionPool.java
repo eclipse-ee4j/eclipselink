@@ -38,7 +38,7 @@ public class ExternalConnectionPool extends ConnectionPool {
      * Build a new external connection pool.  The JDBC driver is responsible for pooling the connections.
      */
     public ExternalConnectionPool(String name, Login login, ServerSession owner) {
-        super(name, login, 0, 0, owner);
+        super(name, login, 0, 0, 0, owner);
     }
 
     /**

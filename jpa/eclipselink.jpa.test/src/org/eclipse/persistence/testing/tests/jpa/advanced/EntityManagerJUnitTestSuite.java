@@ -3581,6 +3581,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             fail("writeMin is wrong");
         }
         
+        int writeInitial = ss.getDefaultConnectionPool().getInitialNumberOfConnections();
+        if(writeInitial != Integer.parseInt((String)JUnitTestCaseHelper.propertiesMap.get(PersistenceUnitProperties.JDBC_WRITE_CONNECTIONS_INITIAL))) {
+            fail("writeInitial is wrong");
+        }
+        
         int writeMax = ss.getDefaultConnectionPool().getMaxNumberOfConnections();
         if(writeMax != Integer.parseInt((String)JUnitTestCaseHelper.propertiesMap.get(PersistenceUnitProperties.JDBC_WRITE_CONNECTIONS_MAX))) {
             fail("writeMax is wrong");
@@ -6816,9 +6821,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         // make sure the sequence has both preallocation and callback
         // (the latter means not using sequencing connection pool, 
         // acquiring values before insert and requiring transaction).
-        if(ss.getSequencingControl().shouldUseSeparateConnection()) {
-            fail("setup failure: the test requires serverSession.getSequencingControl().shouldUseSeparateConnection()==false");
-        }
+        //if(ss.getSequencingControl().shouldUseSeparateConnection()) {
+        //    fail("setup failure: the test requires serverSession.getSequencingControl().shouldUseSeparateConnection()==false");
+        //}
         String seqName = ss.getDescriptor(Employee.class).getSequenceNumberName();
         Sequence sequence = getServerSession().getLogin().getSequence(seqName);
         if(sequence.getPreallocationSize() < 2) {
@@ -7577,7 +7582,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         DriverWrapper.breakOldConnections();
 
         // close factory
-        RuntimeException exception = null;
         try {
             closeEntityManagerFactory();
         } finally {
@@ -7590,19 +7594,19 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         em = createEntityManager();
         //verify connections
         Iterator<ConnectionPool> itPools = ((EntityManagerImpl)em).getServerSession().getConnectionPools().values().iterator();
-        while(itPools.hasNext()) {
+        while (itPools.hasNext()) {
             ConnectionPool pool = itPools.next();
             int disconnected = 0;
-            for(int i=0; i < pool.getConnectionsAvailable().size(); i++) {
-                if(!((Accessor)(pool.getConnectionsAvailable().get(i))).isConnected()) {
+            for (int i=0; i < pool.getConnectionsAvailable().size(); i++) {
+                if (!(pool.getConnectionsAvailable().get(i)).isConnected()) {
                     disconnected++;
                 }
             }
-            if(disconnected > 0) {
+            if (disconnected > 0) {
                 errorMsg += pool.getName() + " has " + disconnected + " connections; ";
             }
         }
-        if(errorMsg.length() > 0) {
+        if (errorMsg.length() > 0) {
             fail(errorMsg);
         }
     }

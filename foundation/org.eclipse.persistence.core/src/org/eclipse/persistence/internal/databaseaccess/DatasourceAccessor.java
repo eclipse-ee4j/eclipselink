@@ -310,10 +310,10 @@ public abstract class DatasourceAccessor implements Accessor {
     /**
      * Reset statement count.
      */
-    public void resetStatmentsCount() {
-        readStatementsCount=0;
-        writeStatementsCount=0;
-        storedProcedureStatementsCount=0;
+    public void reset() {
+        this.readStatementsCount = 0;
+        this.writeStatementsCount = 0;
+        this.storedProcedureStatementsCount = 0;
     }
 
     /**

@@ -207,7 +207,6 @@ public class EntityMappingsInheritedJUnitTestCase extends JUnitTestCase {
         clearCache();
         em = createEntityManager();
         BeerConsumer refreshedBC = em.find(BeerConsumer.class, beerConsumerId);
-        System.out.println(refreshedBC.getCoronaBeersToConsume().size());
         assertTrue("The beer consumer read back did not match the original", getServerSession().compareObjects(initialBC, refreshedBC));
     }
     
@@ -516,8 +515,6 @@ public class EntityMappingsInheritedJUnitTestCase extends JUnitTestCase {
         clearCache();
         em = createEntityManager();
         BeerConsumer refreshedBC = em.find(BeerConsumer.class, beerConsumerId);
-        System.out.println(refreshedBC.getHeinekenBeersToConsume().size());
-        System.out.println(initialBC.getHeinekenBeersToConsume().size());
         assertTrue("The beer consumer read back did not match the original", getServerSession().compareObjects(initialBC, refreshedBC));
         
     }
