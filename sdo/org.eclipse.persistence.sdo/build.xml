@@ -47,10 +47,11 @@
     <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
     <tstamp>
        <format property="build.date" pattern="yyyyMMdd"/>
+       <format property="build.time" pattern="HHmm"/>
     </tstamp>
     <property name="build.type" value="SNAPSHOT"/>
     <property name="svn.revision" value="NA"/>
-    <property name="version.string" value="${release.version}.${build.date}-${build.type}"/>
+    <property name="version.string" value="${release.version}.qualifier"/>
     <property name="release.designation"  value="EclipseLink DeveloperBuild"/>
 
     <!-- Set Compile Path-->
@@ -98,7 +99,7 @@
 
     <!-- package -->
     <target name="package" description="jar OSGI bundle">
-        <jar jarfile="${sdo.2.common.plugins.dir}/${eclipselink.sdo.bndl.prefix}_${version.string}.jar" manifest="META-INF/MANIFEST.MF">
+        <jar jarfile="${sdo.2.common.plugins.dir}/${eclipselink.sdo.bndl.prefix}_${version.string}.jar" manifest="${classes.dir}/MANIFEST.MF">
             <fileset dir="${sdo.2.base.dir}">
                 <include name="about.html"/>
                 <include name="readme.html"/>
@@ -130,25 +131,27 @@
     </target>
 
     <target name="generate-manifest" description="Generate the OSGi bundle manifest before jarring">
-        <delete file="META-INF/MANIFEST.MF" quiet="true"/>
-        <echo message="Manifest-Version: 1.0${line.separator}"                                                      file="META-INF/MANIFEST.MF" append="false"/>
-        <echo message="Bundle-ManifestVersion: 2${line.separator}"                                                  file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-Name: EclipseLink SDO${line.separator}"                                               file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-SymbolicName: ${ant.project.name}${line.separator}"                                   file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-Version: ${release.version}${line.separator}"                                         file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message="Require-Bundle: org.eclipse.persistence.core;bundle-version=&quot;${release.version}&quot;;visibility:=reexport,${line.separator}" file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.asm;bundle-version=&quot;${release.version}&quot;,${line.separator}"                                      file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.moxy;bundle-version=&quot;${release.version}&quot;;resolution:=optional${line.separator}"                 file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message="Export-Package: org.eclipse.persistence.sdo;version=&quot;${release.version}&quot;,${line.separator}"                              file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.sdo.helper;version=&quot;${release.version}&quot;,${line.separator}"                                      file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.sdo.helper.delegates;version=&quot;${release.version}&quot;,${line.separator}"                            file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.sdo.helper.extension;version=&quot;${release.version}&quot;,${line.separator}"                            file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.sdo.types;version=&quot;${release.version}&quot;${line.separator}"                                        file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-ClassPath: .${line.separator}"                                                                                              file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message="Import-Package: commonj.sdo;version=&quot;2.1.1&quot;;resolution:=optional,${line.separator}"                                      file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message=" commonj.sdo.helper;version=&quot;2.1.1&quot;;resolution:=optional,${line.separator}"                                              file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message=" commonj.sdo.impl;version=&quot;2.1.1&quot;;resolution:=optional${line.separator}"                                                 file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message="HK2-Bundle-Name: org.eclipse.persistence:${ant.project.name}${line.separator}"                                                     file="META-INF/MANIFEST.MF" append="true"/>
+        <delete file="${classes.dir}/MANIFEST.MF" quiet="true"/>
+        <echo message="Manifest-Version: 1.0${line.separator}"                                                      file="${classes.dir}/MANIFEST.MF" append="false"/>
+        <echo message="Bundle-ManifestVersion: 2${line.separator}"                                                  file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-Name: EclipseLink SDO${line.separator}"                                               file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-SymbolicName: ${ant.project.name}${line.separator}"                                   file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-Vendor: EclipseLink Project${line.separator}"                                         file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-Version: ${release.version}${line.separator}"                                          file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-RequiredExecutionEnvironment: J2SE-1.5${line.separator}"                                                                    file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Require-Bundle: org.eclipse.persistence.core;bundle-version=&quot;${release.version}&quot;;visibility:=reexport,${line.separator}" file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.asm;bundle-version=&quot;${release.version}&quot;,${line.separator}"                                      file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.moxy;bundle-version=&quot;${release.version}&quot;;resolution:=optional${line.separator}"                 file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Export-Package: org.eclipse.persistence.sdo;version=&quot;${release.version}&quot;,${line.separator}"                              file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.sdo.helper;version=&quot;${release.version}&quot;,${line.separator}"                                      file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.sdo.helper.delegates;version=&quot;${release.version}&quot;,${line.separator}"                            file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.sdo.helper.extension;version=&quot;${release.version}&quot;,${line.separator}"                            file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.sdo.types;version=&quot;${release.version}&quot;${line.separator}"                                        file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-ClassPath: .${line.separator}"                                                                                              file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Import-Package: commonj.sdo;version=&quot;2.1.1&quot;;resolution:=optional,${line.separator}"                                      file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" commonj.sdo.helper;version=&quot;2.1.1&quot;;resolution:=optional,${line.separator}"                                              file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" commonj.sdo.impl;version=&quot;2.1.1&quot;;resolution:=optional${line.separator}"                                                 file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="HK2-Bundle-Name: org.eclipse.persistence:${ant.project.name}${line.separator}"                                                     file="${classes.dir}/MANIFEST.MF" append="true"/>
     </target>
 
     <target name="build_sdo_lib_jar" depends="compile-sdo-lib, package-sdo-lib-jar" description="Build SDO API lib"/>
@@ -177,12 +180,14 @@
         <echo message="Implementation-Version: ${version.string}"/>
         <jar jarfile="../plugins/${commonj.sdo.jar}">
              <manifest>
-                <attribute name="Manifest-Version"    value="1.0"/>
-                <attribute name="Bundle-ManifestVersion"   value="2"/>
-                <attribute name="Bundle-Name"  value="SDO"/>
-                <attribute name="Bundle-SymbolicName"   value="commonj.sdo"/>
-                <attribute name="Bundle-Version"  value="2.1.1"/>
-                <attribute name="Export-Package" value="${osgi.export.package}"/>
+                <attribute name="Manifest-Version"                    value="1.0"/>
+                <attribute name="Bundle-ManifestVersion"              value="2"/>
+                <attribute name="Bundle-Name"                         value="SDO"/>
+                <attribute name="Bundle-Vendor"                       value="EclipseLink Project"/>
+                <attribute name="Bundle-SymbolicName"                 value="commonj.sdo"/>
+                <attribute name="Bundle-RequiredExecutionEnvironment" value="J2SE-1.5"/>
+                <attribute name="Bundle-Version"                      value="2.1.1"/>
+                <attribute name="Export-Package"                      value="${osgi.export.package}"/>
             </manifest>
             <fileset
                 dir="../plugins/${commonj.sdo.dir}/${classes.dir}"

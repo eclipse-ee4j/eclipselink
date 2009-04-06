@@ -29,7 +29,9 @@ public class Version {
     // This will be used by all product components and included in exceptions.
     private static String product = "Eclipse Persistence Services";
     private static final String version = "@VERSION@";
+    // Should be in the format YYYYMMDD
     private static final String buildDate = "@BUILD_DATE@";
+    private static final String buildTime = "@BUILD_TIME@";
     private static final String buildRevision = "@BUILD_REVISION@";
     private static final String buildType = "@BUILD_TYPE@";
  
@@ -40,14 +42,10 @@ public class Version {
 
     public static String getVersionString ( ) {
         String verString;
-        if( getBuildType()=="RELEASE" ) {
-            verString = getVersion() + ".r" + getBuildRevision();
+        if( getBuildRevision()=="NA" ) {
+            verString = getVersion() + ".qualifier";
         }else {
-            if( getBuildRevision()=="NA" ) {
-                verString = getVersion() + "." + getBuildDate() + "-" + getBuildType();
-            }else {
-                verString = getVersion() + ".r" + getBuildRevision() + "-" + getBuildType();
-            }
+            verString = getVersion() + ".v" + getBuildDate() + "-r" + getBuildRevision();
         }
         return( verString );
     }
@@ -70,6 +68,10 @@ public class Version {
     
     public static String getBuildDate() {
         return buildDate;
+    }
+
+    public static String getBuildTime() {
+        return buildTime;
     }
 
     public static String getBuildRevision() {

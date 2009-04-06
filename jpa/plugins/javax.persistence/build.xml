@@ -38,13 +38,13 @@
     </condition>
     <property name="jpaproto.2.common.plugins.dir" value="${jpaproto.2.base.dir}/plugins"/>
 
-    <property name="jpaproto.version" value="1.99.0"/>
-    <property name="jpaproto.jar"     value="${ant.project.name}_1.99.0.jar"/>
-    <property name="jpaproto.src.jar" value="${ant.project.name}.source_1.99.0.jar"/>
-    <property name="src.dir"          value="src"/>
-    <property name="package.dir"      value=".."/>
-    <property name="classes.dir"      value="classes"/>
-    <property name="jpaproto.resource.dir"     value="META-INF"/>
+    <property name="jpaproto.version"      value="1.99.0"/>
+    <property name="jpaproto.jar"          value="${ant.project.name}_1.99.0.jar"/>
+    <property name="jpaproto.src.jar"      value="${ant.project.name}.source_1.99.0.jar"/>
+    <property name="src.dir"               value="src"/>
+    <property name="package.dir"           value=".."/>
+    <property name="classes.dir"           value="classes"/>
+    <property name="jpaproto.resource.dir" value="META-INF"/>
 
     <property name="javac.debug"       value="true"/>
     <property name="javac.optimize"    value="off"/>
@@ -88,7 +88,7 @@
 
     <!-- package -->
     <target name="package" description="package ${ant.project.name}">
-        <jar jarfile="${package.dir}/${jpaproto.jar}" manifest="${jpaproto.resource.dir}/MANIFEST.MF">
+        <jar jarfile="${package.dir}/${jpaproto.jar}" duplicate="preserve" manifest="${classes.dir}/MANIFEST.MF">
             <fileset dir="${jpaproto.2.base.dir}">
                 <include name="about.html"/>
                 <include name="readme.html"/>
@@ -101,14 +101,14 @@
                 includes="**/*.xsd"
             />
             <fileset dir="${classes.dir}"
-                includes="**"
+                includes="**/*.class"
             />
             <fileset dir="${jpaproto.resource.dir}"
                 includes="**"
                 excludes="MANIFEST.MF"
             />
         </jar>
-        <jar jarfile="${package.dir}/${jpaproto.src.jar}">
+        <jar jarfile="${package.dir}/${jpaproto.src.jar}" duplicate="preserve">
             <manifest>
                 <attribute name="Bundle-ManifestVersion" value="2"/>
                 <attribute name="Bundle-Name"            value="EclipseLink's javax.persistence 1.99 Library Source"/>
@@ -131,18 +131,20 @@
     </target>
 
     <target name="generate-manifest" description="Generate the OSGi bundle manifest before jarring">
-        <delete file="${jpaproto.resource.dir}/MANIFEST.MF" quiet="true"/>
-        <echo message="Manifest-Version: 1.0${line.separator}"                                                      file="${jpaproto.resource.dir}/MANIFEST.MF" append="false"/>
-        <echo message="Bundle-ManifestVersion: 2${line.separator}"                                                  file="${jpaproto.resource.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-Name: JPA 1.99 - Extended for OSGi${line.separator}"                                       file="${jpaproto.resource.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-SymbolicName: ${ant.project.name}${line.separator}"                                     file="${jpaproto.resource.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-Version: ${jpaproto.version}${line.separator}"                                        file="${jpaproto.resource.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Export-Package: javax.persistence;version=&quot;${jpaproto.version}&quot;,${line.separator}" file="${jpaproto.resource.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.persistence.spi;version=&quot;${jpaproto.version}&quot;${line.separator}"             file="${jpaproto.resource.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-Activator: javax.persistence.osgi.Activator${line.separator}"                         file="${jpaproto.resource.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-ClassPath: .${line.separator}"                                                        file="${jpaproto.resource.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Import-Package: org.osgi.framework;resolution:=optional,${line.separator}"                   file="${jpaproto.resource.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.osgi.util.tracker;resolution:=optional${line.separator}"                                file="${jpaproto.resource.dir}/MANIFEST.MF" append="true"/>
+        <delete file="${classes.dir}/MANIFEST.MF" quiet="true"/>
+        <echo message="Manifest-Version: 1.0${line.separator}"                                                      file="${classes.dir}/MANIFEST.MF" append="false"/>
+        <echo message="Bundle-ManifestVersion: 2${line.separator}"                                                  file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-Name: JPA 1.99 - Extended for OSGi${line.separator}"                                  file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-SymbolicName: ${ant.project.name}${line.separator}"                                   file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-Vendor: EclipseLink Project${line.separator}"                                         file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-Version: ${jpaproto.version}${line.separator}"                                        file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-RequiredExecutionEnvironment: J2SE-1.5${line.separator}"                              file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Export-Package: javax.persistence;version=&quot;${jpaproto.version}&quot;,${line.separator}" file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" javax.persistence.spi;version=&quot;${jpaproto.version}&quot;${line.separator}"             file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-Activator: javax.persistence.osgi.Activator${line.separator}"                         file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-ClassPath: .${line.separator}"                                                        file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Import-Package: org.osgi.framework;resolution:=optional,${line.separator}"                   file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.osgi.util.tracker;resolution:=optional${line.separator}"                                file="${classes.dir}/MANIFEST.MF" append="true"/>
     </target>
 
 </project>

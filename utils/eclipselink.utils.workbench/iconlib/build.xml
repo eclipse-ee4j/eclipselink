@@ -28,7 +28,7 @@
     <!-- =================================================================== -->
     <target name="init">
         <tstamp>
-            <format property="build.date" pattern="yyMMdd"/>
+            <format property="build.date" pattern="yyyyMMdd"/>
             <format property="build.time" pattern="HHmm"/>
         </tstamp>
         <property environment="env"/>

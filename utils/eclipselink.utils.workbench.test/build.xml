@@ -73,7 +73,7 @@
         <tstamp>
             <format property="_TodayMD" pattern="MMdd"/>
             <format property="_TodayDMonthY" pattern="dd, MMMMM yyyy"/>
-            <format property="build.date" pattern="yyMMdd"/>
+            <format property="build.date" pattern="yyyyMMdd"/>
             <format property="build.time" pattern="HHmm"/>
         </tstamp>
         <property environment="env"/>

@@ -89,7 +89,7 @@
         <tstamp>
             <format property="_TodayMD" pattern="MMdd"/>
             <format property="_TodayDMonthY" pattern="dd, MMMMM yyyy"/>
-            <format property="build.date" pattern="yyMMdd"/>
+            <format property="build.date" pattern="yyyyMMdd"/>
             <format property="build.time" pattern="HHmm"/>
             <format property="CurYear" pattern="yyyy"/>
         </tstamp>
@@ -103,7 +103,7 @@
 
         <property name="build.type" value="SNAPSHOT"/>
         <property name="release.designation" value="EclipseLink DeveloperBuild"/>
-        <property name="version.string" value="${release.version}.${build.date}-${build.type}"/>
+        <property name="version.string" value="${release.version}.qualifier"/>
         
         <echo message="release.designation='${release.designation}'"/>
         <echo message="BuildDate.BuildTime='${build.date}.${build.time}'"/>

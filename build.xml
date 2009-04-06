@@ -109,10 +109,14 @@
     <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
     <tstamp>
        <format property="build.date" pattern="yyyyMMdd"/>
+       <format property="build.time" pattern="HHmm"/>
     </tstamp>
     <property name="build.type" value="SNAPSHOT"/>
     <property name="svn.revision" value="NA"/>
-    <property name="version.string" value="${release.version}.${build.date}-${build.type}"/>
+    <condition property="version.string" value="${release.version}.qualifier" 
+                                          else="${release.version}.v${build.date}-r${svn.revision}">
+        <equals arg1="${svn.revision}" arg2="NA"/>
+    </condition>
     <property name="release.designation"  value="EclipseLink DeveloperBuild"/>
 
     <path id="javadoc.path">

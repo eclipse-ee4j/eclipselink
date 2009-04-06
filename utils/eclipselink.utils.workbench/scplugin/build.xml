@@ -28,7 +28,7 @@
     <!-- =================================================================== -->
     <target name="init">
         <tstamp>
-            <format property="build.date" pattern="yyMMdd"/>
+            <format property="build.date" pattern="yyyyMMdd"/>
             <format property="build.time" pattern="HHmm"/>
         </tstamp>
         <property environment="env"/>
@@ -81,7 +81,7 @@
         <property file="build.properties"/>
         <property name="build.type" value="SNAPSHOT"/>
         <property name="release.designation" value="EclipseLink DeveloperBuild"/>
-        <property name="version.string" value="${release.version}.${build.date}-${build.type}"/>
+        <property name="version.string" value="${release.version}.qualifier"/>
         <mkdir dir="${_classesDestDir}"/>
         <mkdir dir="${_jarDestDir}"/>
     </target>
