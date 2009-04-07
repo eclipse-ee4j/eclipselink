@@ -375,5 +375,6 @@
         <SetupCompileRunTeardown testsuite-name="InlineBinary"/>
         <SetupCompileRunTeardown testsuite-name="SimpleTable"/>
         <SetupCompileRunTeardown testsuite-name="SimpleSP"/>
+        <SetupCompileRunTeardown testsuite-name="SimpleTableWithNestedSQL"/>
     </target>
 </project>

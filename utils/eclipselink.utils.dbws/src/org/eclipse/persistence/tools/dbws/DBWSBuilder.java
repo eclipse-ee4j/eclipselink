@@ -1108,6 +1108,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                 if (buildCRUDoperations) {
                     QueryOperation findByPKQueryOperation = new QueryOperation();
                     findByPKQueryOperation.setName(PK_QUERYNAME + "_" + tablenameAlias);
+                    findByPKQueryOperation.setUserDefined(false);
                     NamedQueryHandler nqh1 = new NamedQueryHandler();
                     nqh1.setName(PK_QUERYNAME);
                     nqh1.setDescriptor(tablenameAlias);
@@ -1127,6 +1128,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                     xrServiceModel.getOperations().put(findByPKQueryOperation.getName(), findByPKQueryOperation);
                     QueryOperation findAllOperation = new QueryOperation();
                     findAllOperation.setName(FINDALL_QUERYNAME + "_" + tablenameAlias);
+                    findAllOperation.setUserDefined(false);
                     NamedQueryHandler nqh2 = new NamedQueryHandler();
                     nqh2.setName(FINDALL_QUERYNAME);
                     nqh2.setDescriptor(tablenameAlias);

@@ -416,7 +416,12 @@ public class WSDLGenerator {
                         Sequence nestedSequence = new Sequence();
                         nestedComplexType.setSequence(nestedSequence);
                         Element nestedElement = new Element();
-                        nestedElement.setRef(TARGET_NAMESPACE_PREFIX + ":" + tableNameAlias);
+                        if (!q.isUserDefined()) {
+                            nestedElement.setRef(TARGET_NAMESPACE_PREFIX + ":" + tableNameAlias);
+                        }
+                        else {
+                            nestedElement.setRef(TARGET_NAMESPACE_PREFIX + ":" + q.getResultType().getLocalPart());
+                        }
                         nestedElement.setMinOccurs("0");
                         if (q.isCollection()) {
                             nestedElement.setMaxOccurs("unbounded");
