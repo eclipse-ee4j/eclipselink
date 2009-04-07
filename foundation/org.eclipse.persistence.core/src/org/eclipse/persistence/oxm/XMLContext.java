@@ -43,6 +43,7 @@ import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.SessionEventListener;
+import org.eclipse.persistence.sessions.SessionEventManager;
 import org.eclipse.persistence.sessions.factories.SessionManager;
 import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
 
@@ -163,7 +164,26 @@ public class XMLContext {
         this(project, Thread.currentThread().getContextClassLoader());
     }
 
+    /**
+     * Create a new XMLContext based on the specified Project and ClassLoader.
+     *
+     * @param project An EclipseLink project
+     * @param classLoader The ClassLoader to be used 
+     */
     public XMLContext(Project project, ClassLoader classLoader) {
+        this (project, classLoader, null);
+    }
+    
+    /**
+     * Create a new XMLContext based on the specified Project and ClassLoader.
+     *
+     * @param project An EclipseLink project
+     * @param classLoader The ClassLoader to be used 
+     * @param sessionEventListener If non-null, this listener will be registered with the SessionEventManager
+     * @see SessionEventListener
+     * @see SessionEventManager
+     */
+    public XMLContext(Project project, ClassLoader classLoader, SessionEventListener sessionEventListener) {
         if ((project.getDatasourceLogin() == null) || !(project.getDatasourceLogin().getDatasourcePlatform() instanceof XMLPlatform)) {
             XMLPlatform platform = new SAXPlatform();
             platform.getConversionManager().setLoader(classLoader);
@@ -171,6 +191,11 @@ public class XMLContext {
         }
         sessions = new ArrayList(1);
         DatabaseSession session = project.createDatabaseSession();
+        
+        // if an event listener was passed in as a parameter, register it with the event manager
+        if (sessionEventListener != null) {
+            session.getEventManager().addListener(sessionEventListener);
+        }
 
         // turn logging for this session off and leave the global session up
         // Note: setting level to SEVERE or WARNING will printout stacktraces for expected exceptions
@@ -179,6 +204,7 @@ public class XMLContext {
         //AbstractSessionLog.getLog().log(AbstractSessionLog.INFO, "ox_turn_global_logging_off", getClass());        			
         //AbstractSessionLog.getLog().setLevel(AbstractSessionLog.OFF);
         setupDocumentPreservationPolicy(session);
+
         session.login();
         sessions.add(session);
         descriptorsByQName = new HashMap();

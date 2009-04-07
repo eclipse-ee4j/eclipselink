@@ -28,6 +28,7 @@ import org.eclipse.persistence.jaxb.compiler.*;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelImpl;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelInputImpl;
 import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
+import org.eclipse.persistence.internal.jaxb.SessionEventListener;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.sessions.Project;
@@ -86,7 +87,12 @@ public class JAXBContextFactory {
                     descriptor.setJavaClass(conversionManager.convertClassNameToClass(descriptor.getJavaClassName()));
                 }
             }
-            xmlContext = new XMLContext(proj, loader);
+            
+            // disable instantiation policy validation during descriptor initialization
+            SessionEventListener eventListener = new SessionEventListener();
+            eventListener.setShouldValidateInstantiationPolicy(false);
+            
+            xmlContext = new XMLContext(proj, loader, eventListener);
             jaxbContext = new org.eclipse.persistence.jaxb.JAXBContext(xmlContext, generator);
         } catch (Exception ex) {
             throw new JAXBException(ex.getMessage() ,ex);
