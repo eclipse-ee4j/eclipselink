@@ -14,5 +14,11 @@ Export-Package: org.eclipse.persistence.sdo;version="2.0.0",
 Bundle-ClassPath: .
 Import-Package: commonj.sdo;version="2.1.1";resolution:=optional,
  commonj.sdo.helper;version="2.1.1";resolution:=optional,
- commonj.sdo.impl;version="2.1.1";resolution:=optional
+ commonj.sdo.impl;version="2.1.1";resolution:=optional,
+ javax.xml.bind;version="2.0.0",
+ javax.xml.bind.annotation;version="2.0.0",
+ javax.xml.bind.annotation.adapters;version="2.0.0",
+ javax.xml.bind.attachment;version="2.0.0",
+ javax.xml.bind.helpers;version="2.0.0",
+ javax.xml.bind.util;version="2.0.0"
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.sdo
