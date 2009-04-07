@@ -388,7 +388,10 @@ public class JavaClassImpl implements JavaClass {
 
 //---------------- unimplemented methods ----------------//
     public JavaClass getComponentType() {
-        return null;
+        if(!isArray()) {
+            return null;
+        }
+        return new JavaClassImpl(this.jClass.getComponentType());
     }
 
     public JavaAnnotation getDeclaredAnnotation(JavaClass arg0) {

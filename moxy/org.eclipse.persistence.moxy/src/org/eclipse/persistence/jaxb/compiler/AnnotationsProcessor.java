@@ -789,7 +789,9 @@ public class AnnotationsProcessor {
             }
             property.setGenericType(helper.getGenericReturnType(getMethod));
             property.setGetMethodName(getMethod.getName());
-            property.setSetMethodName(setMethodName);
+            if(setMethod != null) {
+                property.setSetMethodName(setMethodName);
+            }
             property.setMethodProperty(true);
             JavaClass ptype = property.getType();
             if (helper.isAnnotationPresent(property.getElement(), XmlJavaTypeAdapter.class)) {
@@ -1514,7 +1516,10 @@ public class AnnotationsProcessor {
                 || helper.isAnnotationPresent(elem, XmlElementRef.class)
                 || helper.isAnnotationPresent(elem, XmlElementRefs.class)
                 || helper.isAnnotationPresent(elem, XmlID.class)
-                || helper.isAnnotationPresent(elem, XmlSchemaType.class)) {
+                || helper.isAnnotationPresent(elem, XmlSchemaType.class)
+                || helper.isAnnotationPresent(elem, XmlElementWrapper.class)
+                || helper.isAnnotationPresent(elem, XmlID.class)
+                || helper.isAnnotationPresent(elem, XmlIDREF.class)) {
            
                 return true;
         }

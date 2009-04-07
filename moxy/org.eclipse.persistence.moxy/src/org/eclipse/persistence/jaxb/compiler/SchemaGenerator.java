@@ -190,7 +190,14 @@ public class SchemaGenerator {
                 type.setRestriction(restriction);
             } else {
                 valueField = info.getProperties().get(propertyNames.get(0));
-                QName baseType = getSchemaTypeFor(valueField.getType());
+                QName baseType = null;
+                if(valueField.getType().isArray()) {
+                    baseType = getSchemaTypeFor(valueField.getType().getComponentType());
+                } else if(valueField.getGenericType() != null) {
+                    baseType = getSchemaTypeFor(valueField.getGenericType());
+                } else {
+                    baseType = getSchemaTypeFor(valueField.getType());
+                }
                 String prefix = null;
                 if(baseType.getNamespaceURI() != null && !baseType.getNamespaceURI().equals("")) {
                     if(baseType.getNamespaceURI().equals(XMLConstants.SCHEMA_URL)) {
@@ -203,7 +210,7 @@ public class SchemaGenerator {
                 if(prefix != null) {
                     baseTypeName = prefix + ":" + baseTypeName;
                 }
-                if (helper.isAnnotationPresent(valueField.getElement(), XmlList.class)) {
+                if (helper.isAnnotationPresent(valueField.getElement(), XmlList.class) || isCollectionType(valueField)) {
                     //generate a list instead of a restriction
                     List list = new List();
                     list.setItemType(baseTypeName);
@@ -603,12 +610,16 @@ public class SchemaGenerator {
                             }
                         }                        	                                             
                     } else {
-                        QName schemaType = next.getSchemaType();
-                        if (schemaType == null) {
-                            schemaType = getSchemaTypeFor(javaType);
-                        }
-                        if (schemaType != null) {
-                            typeName = XMLConstants.SCHEMA_PREFIX + ":" + schemaType.getLocalPart();
+                        if (helper.isAnnotationPresent(next.getElement(), XmlID.class)) {
+                            typeName = XMLConstants.SCHEMA_PREFIX + ":ID";
+                        } else {
+                            QName schemaType = next.getSchemaType();
+                            if (schemaType == null) {
+                                schemaType = getSchemaTypeFor(javaType);
+                            }
+                            if (schemaType != null) {
+                                typeName = XMLConstants.SCHEMA_PREFIX + ":" + schemaType.getLocalPart();
+                            }
                         }
                     }
                     
@@ -755,7 +766,8 @@ public class SchemaGenerator {
         JavaClass type = field.getType();
         return (helper.getJavaClass(java.util.Collection.class).isAssignableFrom(type) 
                 || helper.getJavaClass(java.util.List.class).isAssignableFrom(type) 
-                || helper.getJavaClass(java.util.Set.class).isAssignableFrom(type));
+                || helper.getJavaClass(java.util.Set.class).isAssignableFrom(type)
+                || type.isArray());
     } 
     
     private Schema getSchemaForNamespace(String namespace) {

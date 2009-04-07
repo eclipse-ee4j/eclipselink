@@ -31,6 +31,8 @@ import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaMethod;
 import org.eclipse.persistence.jaxb.JAXBEnumTypeConverter;
+import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.internal.descriptors.MethodAttributeAccessor;
 import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
 import org.eclipse.persistence.internal.jaxb.DomHandlerConverter;
 import org.eclipse.persistence.internal.jaxb.MultiArgInstantiationPolicy;
@@ -300,8 +302,12 @@ public class MappingsGenerator {
         XMLChoiceObjectMapping mapping = new XMLChoiceObjectMapping();
         mapping.setAttributeName(property.getPropertyName());
         if(property.isMethodProperty()) {
-            mapping.setGetMethodName(property.getGetMethodName());
-            mapping.setSetMethodName(property.getSetMethodName());
+            if(property.getSetMethodName() != null) {
+                mapping.setSetMethodName(property.getSetMethodName());
+                mapping.setGetMethodName(property.getGetMethodName());
+            } else {
+                mapping.setGetMethodName(property.getGetMethodName());
+            }
         }
         Iterator<Property> choiceProperties = prop.getChoiceProperties().iterator();
         while(choiceProperties.hasNext()) {
@@ -318,8 +324,12 @@ public class MappingsGenerator {
         XMLChoiceCollectionMapping mapping = new XMLChoiceCollectionMapping();
         mapping.setAttributeName(property.getPropertyName());
         if(property.isMethodProperty()) {
-            mapping.setGetMethodName(property.getGetMethodName());
-            mapping.setSetMethodName(property.getSetMethodName());
+            if(property.getSetMethodName() != null) {
+                mapping.setSetMethodName(property.getSetMethodName());
+                mapping.setGetMethodName(property.getGetMethodName());
+            } else {
+                mapping.setGetMethodName(property.getGetMethodName());
+            }
         }
         JavaClass collectionType = property.getType();
         if (areEquals(collectionType, Collection.class) || areEquals(collectionType, List.class)) {
@@ -350,8 +360,12 @@ public class MappingsGenerator {
         }
         mapping.setAttributeName(property.getPropertyName());
         if(property.isMethodProperty()) {
-            mapping.setGetMethodName(property.getGetMethodName());
-            mapping.setSetMethodName(property.getSetMethodName());
+            if(property.getSetMethodName() != null) {
+                mapping.setSetMethodName(property.getSetMethodName());
+                mapping.setGetMethodName(property.getGetMethodName());
+            } else {
+                mapping.setGetMethodName(property.getGetMethodName());
+            }
         }
 
         List<ElementDeclaration> referencedElements = property.getReferencedElements();
@@ -391,8 +405,12 @@ public class MappingsGenerator {
         
         mapping.setAttributeName(property.getPropertyName());
         if(property.isMethodProperty()) {
-            mapping.setGetMethodName(property.getGetMethodName());
-            mapping.setSetMethodName(property.getSetMethodName());
+            if(property.getSetMethodName() != null) {
+                mapping.setSetMethodName(property.getSetMethodName());
+                mapping.setGetMethodName(property.getGetMethodName());
+            } else {
+                mapping.setGetMethodName(property.getGetMethodName());
+            }
         }
 
         List<ElementDeclaration> referencedElements = property.getReferencedElements();
@@ -442,8 +460,12 @@ public class MappingsGenerator {
         mapping.setReferenceClassName(referenceClass.getQualifiedName());
         mapping.setAttributeName(property.getPropertyName());
         if(property.isMethodProperty()) {
-            mapping.setGetMethodName(property.getGetMethodName());
-            mapping.setSetMethodName(property.getSetMethodName());
+            if(property.getSetMethodName() != null) {
+                mapping.setSetMethodName(property.getSetMethodName());
+                mapping.setGetMethodName(property.getGetMethodName());
+            } else {
+                mapping.setGetMethodName(property.getGetMethodName());
+            }
         }
         mapping.setXPath(getXPathForField(property, namespaceInfo, false).getXPath());
         if(helper.isAnnotationPresent(property.getElement(), XmlContainerProperty.class)) {
@@ -464,8 +486,12 @@ public class MappingsGenerator {
         XMLDirectMapping mapping = new XMLDirectMapping();
         mapping.setAttributeName(property.getPropertyName());
         if(property.isMethodProperty()) {
-            mapping.setGetMethodName(property.getGetMethodName());
-            mapping.setSetMethodName(property.getSetMethodName());
+            if(property.getSetMethodName() != null) {
+                mapping.setSetMethodName(property.getSetMethodName());
+                mapping.setGetMethodName(property.getGetMethodName());
+            } else {
+                mapping.setGetMethodName(property.getGetMethodName());
+            }
         }
         mapping.setField(getXPathForField(property, namespaceInfo, true));
         if(XMLConstants.QNAME_QNAME.equals(property.getSchemaType())){
@@ -478,8 +504,12 @@ public class MappingsGenerator {
         XMLBinaryDataMapping mapping = new XMLBinaryDataMapping();
         mapping.setAttributeName(property.getPropertyName());
         if(property.isMethodProperty()) {
-            mapping.setGetMethodName(property.getGetMethodName());
-            mapping.setSetMethodName(property.getSetMethodName());
+            if(property.getSetMethodName() != null) {
+                mapping.setSetMethodName(property.getSetMethodName());
+                mapping.setGetMethodName(property.getGetMethodName());
+            } else {
+                mapping.setGetMethodName(property.getGetMethodName());
+            }
         }
         mapping.setField(getXPathForField(property, namespaceInfo, false));
         if (property.isSwaAttachmentRef()) {
@@ -503,8 +533,12 @@ public class MappingsGenerator {
         mapping.setConverter(buildJAXBEnumTypeConverter(mapping, enumInfo));
         mapping.setAttributeName(property.getPropertyName());
         if(property.isMethodProperty()) {
-            mapping.setGetMethodName(property.getGetMethodName());
-            mapping.setSetMethodName(property.getSetMethodName());
+            if(property.getSetMethodName() != null) {
+                mapping.setSetMethodName(property.getSetMethodName());
+                mapping.setGetMethodName(property.getGetMethodName());
+            } else {
+                mapping.setGetMethodName(property.getGetMethodName());
+            }
         }
         mapping.setField(getXPathForField(property, namespaceInfo, true));
    
@@ -554,8 +588,12 @@ public class MappingsGenerator {
         XMLCompositeDirectCollectionMapping mapping = new XMLCompositeDirectCollectionMapping();
         mapping.setAttributeName(property.getPropertyName());
         if(property.isMethodProperty()) {
-            mapping.setGetMethodName(property.getGetMethodName());
-            mapping.setSetMethodName(property.getSetMethodName());
+            if(property.getSetMethodName() != null) {
+                mapping.setSetMethodName(property.getSetMethodName());
+                mapping.setGetMethodName(property.getGetMethodName());
+            } else {
+                mapping.setGetMethodName(property.getGetMethodName());
+            }
         }
 
         mapping.setValueConverter(buildJAXBEnumTypeConverter(mapping, info));
@@ -580,8 +618,12 @@ public class MappingsGenerator {
         XMLAnyAttributeMapping mapping = new XMLAnyAttributeMapping();
         mapping.setAttributeName(property.getPropertyName());
         if(property.isMethodProperty()) {
-            mapping.setGetMethodName(property.getGetMethodName());
-            mapping.setSetMethodName(property.getSetMethodName());
+            if(property.getSetMethodName() != null) {
+                mapping.setSetMethodName(property.getSetMethodName());
+                mapping.setGetMethodName(property.getGetMethodName());
+            } else {
+                mapping.setGetMethodName(property.getGetMethodName());
+            }
         }
         mapping.setSchemaInstanceIncluded(false);
         mapping.setNamespaceDeclarationIncluded(false);
@@ -591,9 +633,13 @@ public class MappingsGenerator {
     public void generateAnyObjectMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
         XMLAnyObjectMapping mapping = new XMLAnyObjectMapping();
         mapping.setAttributeName(property.getPropertyName());
-        if (property.isMethodProperty()) {
-            mapping.setGetMethodName(property.getGetMethodName());
-            mapping.setSetMethodName(property.getSetMethodName());
+        if(property.isMethodProperty()) {
+            if(property.getSetMethodName() != null) {
+                mapping.setSetMethodName(property.getSetMethodName());
+                mapping.setGetMethodName(property.getGetMethodName());
+            } else {
+                mapping.setGetMethodName(property.getGetMethodName());
+            }
         }
         if(property.getType().getQualifiedName().equals("org.w3c.dom.Element")){
             mapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT);        	
@@ -615,8 +661,12 @@ public class MappingsGenerator {
         XMLCompositeCollectionMapping mapping = new XMLCompositeCollectionMapping();
         mapping.setAttributeName(property.getPropertyName());
         if(property.isMethodProperty()) {
-            mapping.setGetMethodName(property.getGetMethodName());
-            mapping.setSetMethodName(property.getSetMethodName());
+            if(property.getSetMethodName() != null) {
+                mapping.setSetMethodName(property.getSetMethodName());
+                mapping.setGetMethodName(property.getSetMethodName());
+            } else {
+                mapping.setGetMethodName(property.getGetMethodName());
+            }
         }
         mapping.setReferenceClassName(referenceClass.getQualifiedName());
         
@@ -649,8 +699,12 @@ public class MappingsGenerator {
         XMLCompositeDirectCollectionMapping mapping = new XMLCompositeDirectCollectionMapping();
         mapping.setAttributeName(property.getPropertyName());
         if(property.isMethodProperty()) {
-            mapping.setGetMethodName(property.getGetMethodName());
-            mapping.setSetMethodName(property.getSetMethodName());
+            if(property.getSetMethodName() != null) {
+                mapping.setSetMethodName(property.getSetMethodName());
+                mapping.setGetMethodName(property.getGetMethodName());
+            } else {
+                mapping.setGetMethodName(property.getGetMethodName());
+            }
         }
         JavaClass collectionType = property.getType();
         
@@ -799,6 +853,14 @@ public class MappingsGenerator {
         XMLField srcXPath = getXPathForField(property, namespaceInfo, true);
         XMLCollectionReferenceMapping mapping = new XMLCollectionReferenceMapping();
         mapping.setAttributeName(property.getPropertyName());
+        if(property.isMethodProperty()) {
+            if(property.getSetMethodName() != null) {
+                mapping.setSetMethodName(property.getSetMethodName());
+                mapping.setGetMethodName(property.getGetMethodName());
+            } else {
+                mapping.setGetMethodName(property.getGetMethodName());
+            }
+        }
         mapping.setReferenceClassName(referenceClass.getQualifiedName());
 
         JavaClass collectionType = property.getType();
@@ -834,6 +896,14 @@ public class MappingsGenerator {
 
         XMLObjectReferenceMapping mapping = new XMLObjectReferenceMapping();
         mapping.setAttributeName(property.getPropertyName());
+        if(property.isMethodProperty()) {
+            if(property.getSetMethodName() != null) {
+                mapping.setSetMethodName(property.getSetMethodName());
+                mapping.setGetMethodName(property.getGetMethodName());
+            } else {
+                mapping.setGetMethodName(property.getGetMethodName());
+            }
+        }
         mapping.setReferenceClassName(referenceClass.getQualifiedName());
 
         // here we need to setup source/target key field associations
@@ -1207,4 +1277,5 @@ public class MappingsGenerator {
 	public HashMap<QName, Class> getQNamesToDeclaredClasses() {
 		return qNamesToDeclaredClasses;
 	}
+	
 }
