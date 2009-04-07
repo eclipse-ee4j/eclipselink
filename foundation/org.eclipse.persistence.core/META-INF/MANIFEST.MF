@@ -145,10 +145,10 @@ Export-Package: org.eclipse.persistence;version="2.0.0",
  org.eclipse.persistence.transaction.wls;version="2.0.0",
  xsd;version="2.0.0"
 Bundle-ClassPath: .
-Import-Package: javax.activation;version="1.1.0";resolution:=optional,
+Import-Package: javax.activation;resolution:=optional;vendor=sun,
  javax.jms;version="1.1.0";resolution:=optional,
- javax.mail;version="1.4.0";resolution:=optional,
- javax.mail.internet;version="1.4.0";resolution:=optional,
+ javax.mail;resolution:=optional,
+ javax.mail.internet;resolution:=optional,
  javax.persistence;version="1.0.0";resolution:=optional,
  javax.persistence.spi;version="1.0.0";resolution:=optional,
  javax.resource;version="1.5.0";resolution:=optional,
