@@ -14,16 +14,16 @@ Export-Package: org.eclipse.persistence.internal.jaxb;version="1.1.1",
  org.eclipse.persistence.jaxb.javamodel;version="1.1.1",
  org.eclipse.persistence.jaxb.javamodel.reflection;version="1.1.1"
 Bundle-ClassPath: .
-Import-Package: javax.activation;version="1.1.0";resolution:=optional,
- javax.mail;version="1.4.0";resolution:=optional,
+Import-Package: javax.activation;vendor=sun;resolution:=optional,
+ javax.mail;resolution:=optional,
  javax.xml.bind;version="2.0.0";resolution:=optional,
  javax.xml.bind.annotation;version="2.0.0";resolution:=optional,
  javax.xml.bind.annotation.adapters;version="2.0.0";resolution:=optional,
  javax.xml.bind.attachment;version="2.0.0";resolution:=optional,
  javax.xml.bind.helpers;version="2.0.0";resolution:=optional,
  javax.xml.bind.util;version="2.0.0";resolution:=optional,
- javax.xml.soap;version="1.3.0";resolution:=optional,
- javax.xml.stream;version="1.0.0";resolution:=optional,
- javax.xml.stream.events;version="1.0.0";resolution:=optional,
- javax.xml.stream.util;version="1.0.0";resolution:=optional
+ javax.xml.soap;resolution:=optional,
+ javax.xml.stream;version="1.0.1";resolution:=optional,
+ javax.xml.stream.events;resolution:=optional,
+ javax.xml.stream.util;resolution:=optional
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.moxy
