@@ -159,11 +159,11 @@
                 <include name="license.*"/>
             </fileset>
             <fileset dir="${classes.dir}">
-                <include name="org/eclipse/persistence/Version.java"
+                <include name="org/eclipse/persistence/Version.java"/>
             </fileset>
             <fileset dir="${src.dir}">
                 <include name="org/eclipse/persistence/**/*.java"/>
-                <exclude name="org/eclipse/persistence/Version.java"
+                <exclude name="org/eclipse/persistence/Version.java"/>
             </fileset>
             <fileset dir="${resource.dir}">
                 <include name="xsd/*.xsd"/>
