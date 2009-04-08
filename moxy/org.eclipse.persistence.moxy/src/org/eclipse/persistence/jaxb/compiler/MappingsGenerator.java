@@ -661,7 +661,7 @@ public class MappingsGenerator {
         if(property.isMethodProperty()) {
             if(property.getSetMethodName() != null) {
                 mapping.setSetMethodName(property.getSetMethodName());
-                mapping.setGetMethodName(property.getSetMethodName());
+                mapping.setGetMethodName(property.getGetMethodName());
             } else {
                 mapping.setGetMethodName(property.getGetMethodName());
             }
