@@ -8,5 +8,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.sdo"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.core"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/javax.activation"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/commonj.sdo 2.1.1"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/javax.xml.bind"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

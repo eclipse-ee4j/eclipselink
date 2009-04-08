@@ -9,18 +9,21 @@ Require-Bundle: org.eclipse.persistence.core;bundle-version="1.1.1";visibility:=
  org.eclipse.persistence.asm;bundle-version="1.1.1",
  org.eclipse.persistence.moxy;bundle-version="1.1.1";resolution:=optional
 Export-Package: org.eclipse.persistence.sdo;version="1.1.1",
+ org.eclipse.persistence.sdo.dataobjects,
  org.eclipse.persistence.sdo.helper;version="1.1.1",
  org.eclipse.persistence.sdo.helper.delegates;version="1.1.1",
  org.eclipse.persistence.sdo.helper.extension;version="1.1.1",
+ org.eclipse.persistence.sdo.helper.jaxb,
+ org.eclipse.persistence.sdo.helper.metadata,
  org.eclipse.persistence.sdo.types;version="1.1.1"
 Bundle-ClassPath: .
-Import-Package: commonj.sdo;version="2.1.1";resolution:=optional,
- commonj.sdo.helper;version="2.1.1";resolution:=optional,
- commonj.sdo.impl;version="2.1.1";resolution:=optional,
- javax.xml.bind;version="2.0.0",
- javax.xml.bind.annotation;version="2.0.0",
- javax.xml.bind.annotation.adapters;version="2.0.0",
- javax.xml.bind.attachment;version="2.0.0",
- javax.xml.bind.helpers;version="2.0.0",
- javax.xml.bind.util;version="2.0.0"
+Import-Package: commonj.sdo;version="2.1.1",
+ commonj.sdo.helper;version="2.1.1",
+ commonj.sdo.impl;version="2.1.1",
+ javax.xml.bind;version="2.0.0";resolution:=optional,
+ javax.xml.bind.annotation;version="2.0.0";resolution:=optional,
+ javax.xml.bind.annotation.adapters;version="2.0.0";resolution:=optional,
+ javax.xml.bind.attachment;version="2.0.0";resolution:=optional,
+ javax.xml.bind.helpers;version="2.0.0";resolution:=optional,
+ javax.xml.bind.util;version="2.0.0";resolution:=optional
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.sdo
