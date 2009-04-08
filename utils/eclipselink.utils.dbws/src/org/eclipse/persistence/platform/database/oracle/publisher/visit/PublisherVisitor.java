@@ -18,6 +18,7 @@ import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.PlsqlR
 import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.PlsqlTableType;
 import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.SqlObjectType;
 import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.SqlPackageType;
+import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.SqlToplevelType;
 
 public interface PublisherVisitor {
     
@@ -26,6 +27,8 @@ public interface PublisherVisitor {
     public void visit(SqlObjectType sqlObjectType);
 
     public void visit(SqlPackageType sqlPackageType);
+
+    public void visit(SqlToplevelType sqlToplevelType);
 
     public void visit(PlsqlRecordType plsqlRecordType);
 

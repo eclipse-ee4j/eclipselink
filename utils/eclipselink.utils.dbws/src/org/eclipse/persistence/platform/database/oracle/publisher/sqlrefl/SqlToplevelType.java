@@ -21,6 +21,8 @@ import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.Fiel
 import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.MethodInfo;
 import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.ParamInfo;
 import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.ResultInfo;
+import org.eclipse.persistence.platform.database.oracle.publisher.visit.PublisherVisitor;
+import org.eclipse.persistence.platform.database.oracle.publisher.visit.PublisherWalker;
 
 @SuppressWarnings("unchecked")
 public class SqlToplevelType extends SqlTypeWithMethods {
@@ -29,6 +31,10 @@ public class SqlToplevelType extends SqlTypeWithMethods {
         return true;
     }
 
+    public boolean isTopLevel() {
+        return true;
+    }
+    
     public SqlToplevelType(SqlName sqlName, SqlType parentType, MethodFilter methodFilter,
         SqlReflector reflector) throws SQLException {
         super(sqlName, OracleTypes.PACKAGE, true, parentType, methodFilter, reflector);
@@ -117,4 +123,7 @@ public class SqlToplevelType extends SqlTypeWithMethods {
         return ParamInfo.getParamInfo(iter);
     }
 
+    public void accept(PublisherVisitor v) {
+        ((PublisherWalker)v).visit(this);
+    }
 }

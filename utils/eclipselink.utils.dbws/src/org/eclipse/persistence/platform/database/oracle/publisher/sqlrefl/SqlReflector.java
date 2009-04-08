@@ -39,6 +39,7 @@ import static org.eclipse.persistence.platform.database.oracle.publisher.Util.IS
 import static org.eclipse.persistence.platform.database.oracle.publisher.Util.IS_TOPLEVEL;
 import static org.eclipse.persistence.platform.database.oracle.publisher.Util.IS_TYPE;
 import static org.eclipse.persistence.platform.database.oracle.publisher.Util.MAX_IDENTIFIER_LENGTH;
+import static org.eclipse.persistence.platform.database.oracle.publisher.Util.TOPLEVEL;
 
 /*
  * SQL Type Reflection Facility
@@ -1333,7 +1334,7 @@ public class SqlReflector {
                 int count = rs.getInt(1);
                 if (count > 0) {
                     SqlType t = addSqlUserType(schema, "", Util.IS_TOPLEVEL, true, 0, 0, null);
-                    String userName = SqlName.sqlIdToJavaId("TOPLEVEL", true);
+                    String userName = SqlName.sqlIdToJavaId(TOPLEVEL, true);
                     t.getSqlName().setLangName("", userName, null, null, null, null, null, null,
                         true);
                 }

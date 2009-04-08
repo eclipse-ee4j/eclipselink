@@ -19,6 +19,7 @@ import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.PlsqlR
 import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.PlsqlTableType;
 import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.SqlObjectType;
 import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.SqlPackageType;
+import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.SqlToplevelType;
 import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.SqlType;
 import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.TypeClass;
 
@@ -62,6 +63,18 @@ public class PublisherWalker implements PublisherVisitor {
             e.printStackTrace();
         }
         listener.endPackage();
+    }
+    
+    public void visit(SqlToplevelType sqlToplevelType) {
+        try {
+            ProcedureMethod[] declaredMethods = sqlToplevelType.getDeclaredMethods();
+            for (ProcedureMethod m : declaredMethods) {
+                m.accept(this);
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     
     public void visit(PlsqlRecordType plsqlRecordType) {

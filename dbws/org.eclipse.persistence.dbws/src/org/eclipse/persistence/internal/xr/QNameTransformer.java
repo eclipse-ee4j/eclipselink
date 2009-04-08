@@ -14,10 +14,10 @@
 package org.eclipse.persistence.internal.xr;
 
 //javase imports
-
-//java eXtension imports
 import java.util.HashMap;
 import java.util.Map;
+
+//java eXtension imports
 import javax.xml.namespace.QName;
 import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
 import static javax.xml.XMLConstants.NULL_NS_URI;

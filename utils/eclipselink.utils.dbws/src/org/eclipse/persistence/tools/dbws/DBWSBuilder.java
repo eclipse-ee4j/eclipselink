@@ -164,6 +164,7 @@ import static org.eclipse.persistence.internal.xr.Util.SCHEMA_2_CLASS;
 import static org.eclipse.persistence.internal.xr.Util.TARGET_NAMESPACE_PREFIX;
 import static org.eclipse.persistence.internal.xr.Util.getClassFromJDBCType;
 import static org.eclipse.persistence.oxm.XMLConstants.BASE_64_BINARY_QNAME;
+import static org.eclipse.persistence.platform.database.oracle.publisher.Util.TOPLEVEL;
 import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.archive;
 import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.noArchive;
 import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.ignore;
@@ -835,11 +836,15 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
             chain.addListener(oxDescriptorBuilder);
             PublisherWalker walker = new PublisherWalker(chain);
             sqlType.accept(walker);
-            for (ObjectRelationalDataTypeDescriptor ordtDescriptor : orDescriptorBuilder.getDescriptors()) {
-                orProject.addDescriptor(ordtDescriptor);
-            } 
-            for (XMLDescriptor xdesc : oxDescriptorBuilder.getDescriptors()) {
-                oxProject.addDescriptor(xdesc);
+            if (orDescriptorBuilder.getDescriptors() != null) {
+                for (ObjectRelationalDataTypeDescriptor ordtDescriptor : orDescriptorBuilder.getDescriptors()) {
+                    orProject.addDescriptor(ordtDescriptor);
+                }
+            }
+            if (oxDescriptorBuilder.getDescriptors() != null) {
+                for (XMLDescriptor xdesc : oxDescriptorBuilder.getDescriptors()) {
+                    oxProject.addDescriptor(xdesc);
+                }
             }
             for (DbStoredProcedure storedProcedure : dbStoredProcedures) {
                 boolean isPLSQLStoredProc = false; 
@@ -851,7 +856,15 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                 }
                 if (isPLSQLStoredProc) {
                     PLSQLStoredProcedureCall call = new PLSQLStoredProcedureCall();
-                    call.setProcedureName(storedProcedure.getCatalog() + "." + storedProcedure.getName());
+                    String catalogPrefix = null;
+                    String cat = storedProcedure.getCatalog();
+                    if (cat == null | cat.length() == 0) {
+                        catalogPrefix = "";
+                    }
+                    else {
+                        catalogPrefix = cat + ".";
+                    }
+                    call.setProcedureName(catalogPrefix + storedProcedure.getName());
                     DatabaseQuery dq = null;
                     DbStoredProcedureNameAndModel nameAndModel = 
                         dbStoredProcedure2QueryName.get(storedProcedure);
@@ -1150,6 +1163,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                 if (buildCRUDoperations) {
                     QueryOperation findByPKQueryOperation = new QueryOperation();
                     findByPKQueryOperation.setName(PK_QUERYNAME + "_" + tablenameAlias);
+                    findByPKQueryOperation.setUserDefined(false);
                     NamedQueryHandler nqh1 = new NamedQueryHandler();
                     nqh1.setName(PK_QUERYNAME);
                     nqh1.setDescriptor(tablenameAlias);
@@ -1169,6 +1183,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                     xrServiceModel.getOperations().put(findByPKQueryOperation.getName(), findByPKQueryOperation);
                     QueryOperation findAllOperation = new QueryOperation();
                     findAllOperation.setName(FINDALL_QUERYNAME + "_" + tablenameAlias);
+                    findAllOperation.setUserDefined(false);
                     NamedQueryHandler nqh2 = new NamedQueryHandler();
                     nqh2.setName(FINDALL_QUERYNAME);
                     nqh2.setDescriptor(tablenameAlias);
@@ -1588,6 +1603,9 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                 List<DbStoredProcedure> matches = new ArrayList<DbStoredProcedure>();
                 String modelCatalogPattern = 
                     escapePunctuation(procOpModel.getCatalogPattern(), isOracle);
+                if (TOPLEVEL.equalsIgnoreCase(modelCatalogPattern)) {
+                    modelCatalogPattern = null;
+                }
                 String modelSchemaPattern = 
                     escapePunctuation(procOpModel.getSchemaPattern(), isOracle);
                 String modelProcedureNamePattern = 

@@ -33,6 +33,7 @@
         <xsd:sequence minOccurs="0" maxOccurs="unbounded">
           <xsd:choice>
             <xsd:element name="procedure" type="procedure-operation" />
+            <xsd:element name="plsql-procedure" type="procedure-operation" />
             <xsd:element name="sql" type="sql-operation" />
           </xsd:choice>
         </xsd:sequence>
@@ -66,6 +67,7 @@
       </xsd:element>
       <xsd:sequence minOccurs="0" maxOccurs="unbounded">
         <xsd:choice>
+          <xsd:element name="plsql-procedure" type="procedure-operation" />
           <xsd:element name="procedure" type="procedure-operation" />
           <xsd:element name="sql" type="sql-operation" />
           <xsd:element name="table" type="table-operation" />

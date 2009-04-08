@@ -36,6 +36,11 @@ import org.eclipse.persistence.tools.dbws.Util.InOut;
 import org.eclipse.persistence.tools.dbws.jdbc.DbStoredArgument;
 import org.eclipse.persistence.tools.dbws.jdbc.DbStoredFunction;
 import org.eclipse.persistence.tools.dbws.jdbc.DbStoredProcedure;
+import static org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQLTypes.BinaryInteger;
+import static org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQLTypes.PLSQLBoolean;
+import static org.eclipse.persistence.platform.database.oracle.publisher.Util.IS_PACKAGE;
+import static org.eclipse.persistence.platform.database.oracle.publisher.Util.IS_TOPLEVEL;
+import static org.eclipse.persistence.platform.database.oracle.publisher.Util.TOPLEVEL;
 import static org.eclipse.persistence.tools.dbws.Util.sqlMatch;
 import static org.eclipse.persistence.tools.dbws.Util.escapePunctuation;
 import static org.eclipse.persistence.tools.dbws.Util.InOut.IN;
@@ -58,8 +63,13 @@ public class OracleHelper {
         }
         SqlReflector sqlReflector = new SqlReflector(connection,username);
         try {
+            int whatItIs = IS_PACKAGE;
+            if (TOPLEVEL.equalsIgnoreCase(packageName)) {
+                whatItIs = IS_TOPLEVEL;
+                packageName = "";
+            }
             SqlTypeWithMethods typ = (SqlTypeWithMethods)sqlReflector.addSqlUserType(schemaPattern,
-                packageName, 4, true, 0, 0, new MethodFilter() {
+                packageName, whatItIs, true, 0, 0, new MethodFilter() {
                     public boolean acceptMethod(ProcedureMethod method, boolean preApprove) {
                         String methodName = method.getName();
                         if (sqlMatch(procedurePattern, methodName)) {
@@ -147,12 +157,26 @@ public class OracleHelper {
     }
 
     public static QName getXMLTypeFromJDBCType(DbStoredArgument arg, String targetNamespace) {
+        QName fromJDBCType = null;
         if (OracleTypes.ARRAY == arg.getJdbcType() ||
             OracleTypes.STRUCT == arg.getJdbcType()) {
-            return new QName(targetNamespace, arg.getJdbcTypeName());
+            fromJDBCType = new QName(targetNamespace, arg.getJdbcTypeName());
         }
         else {
-            return  Util.getXMLTypeFromJDBCType(arg.getJdbcType());
+            int typ = arg.getJdbcType();
+            if (arg.isPLSQLArgument()) {
+                PLSQLStoredArgument plsqlArg = (PLSQLStoredArgument)arg;
+                String plsqlTypeName = plsqlArg.getPlSqlTypeName();
+                if ("BOOLEAN".equals(plsqlTypeName)) {
+                    typ = PLSQLBoolean.getConversionCode();
+                }
+                else {
+                    typ = BinaryInteger.getConversionCode();
+                    
+                }
+            }
+            fromJDBCType = Util.getXMLTypeFromJDBCType(typ);
         }
+        return fromJDBCType;
     }
 }

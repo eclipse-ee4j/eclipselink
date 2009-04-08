@@ -30,6 +30,10 @@ public abstract class SqlTypeWithFields extends SqlType {
         super(sqlName, typecode, generateMe, parentType, reflector);
     }
 
+    public boolean isTopLevel() {
+        return false;
+    }
+    
     /**
      * Returns an array of Field objects reflecting all the fields declared by this
      * SqlTypeWithFields object. Returns an array of length 0 if this SqlTypeWithFields object

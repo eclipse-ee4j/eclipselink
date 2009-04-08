@@ -107,29 +107,29 @@ public class Util {
     }
     public static QName getXMLTypeFromJDBCType(int jdbcType) {
         switch (jdbcType) {
-        case CHAR:
-        case LONGVARCHAR:
-        case VARCHAR:
-            return STRING_QNAME;
-        case BIGINT:
-            return INTEGER_QNAME;
-        case INTEGER:
-        case SMALLINT:
-        case TINYINT:
-            return INT_QNAME;
-        case DECIMAL:
-            return DECIMAL_QNAME;
-        case DOUBLE:
-        case FLOAT:
-        case NUMERIC:
-        case REAL:
-            return DOUBLE_QNAME;
-        case DATE:
-          return DATE_QNAME;
-        case TIME:
-          return TIME_QNAME;
-        case TIMESTAMP:
-            return DATE_TIME_QNAME;
+            case CHAR:
+            case LONGVARCHAR:
+            case VARCHAR:
+                return STRING_QNAME;
+            case BIGINT:
+                return INTEGER_QNAME;
+            case INTEGER:
+            case SMALLINT:
+            case TINYINT:
+                return INT_QNAME;
+            case DECIMAL:
+                return DECIMAL_QNAME;
+            case DOUBLE:
+            case FLOAT:
+            case NUMERIC:
+            case REAL:
+                return DOUBLE_QNAME;
+            case DATE:
+              return DATE_QNAME;
+            case TIME:
+              return TIME_QNAME;
+            case TIMESTAMP:
+                return DATE_TIME_QNAME;
         default:
             return BASE_64_BINARY_QNAME;
         }

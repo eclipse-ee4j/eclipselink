@@ -74,6 +74,7 @@ public class QueryOperation extends Operation {
 
     protected Result result;
     protected QueryHandler queryHandler;
+    protected boolean userDefined = true;
 
     public Result getResult() {
         return result;
@@ -87,6 +88,13 @@ public class QueryOperation extends Operation {
     }
     public void setQueryHandler(QueryHandler queryHandler) {
         this.queryHandler = queryHandler;
+    }
+
+    public boolean isUserDefined() {
+        return userDefined;
+    }
+    public void setUserDefined(boolean userDefined) {
+        this.userDefined = userDefined;
     }
 
     @Override

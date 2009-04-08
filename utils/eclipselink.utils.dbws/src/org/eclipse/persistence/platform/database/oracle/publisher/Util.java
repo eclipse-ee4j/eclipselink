@@ -69,6 +69,7 @@ public class Util {
     public static final int JDBC_USERTYPES = 16;
     public static final int USERTYPES_MASK = JDBC_USERTYPES;
 
+    public static final String TOPLEVEL = "TOPLEVEL";
     public static final int IS_OBJECT = 1;
     public static final int IS_COLLECTION = 2;
     public static final int IS_TYPE = 3;
