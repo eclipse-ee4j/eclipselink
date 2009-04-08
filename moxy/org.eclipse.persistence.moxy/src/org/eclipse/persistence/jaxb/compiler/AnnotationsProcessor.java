@@ -98,7 +98,7 @@ public class AnnotationsProcessor {
         for(JavaClass javaClass:classes) {
         	if(helper.isAnnotationPresent(javaClass, XmlRegistry.class)) {
         		this.processObjectFactory(javaClass, classesToProcess);
-        	} else if(!helper.isAnnotationPresent(javaClass, XmlTransient.class)){
+        	} else {        	
         		classesToProcess.add(javaClass);
         		//reflectively load XmlSeeAlso class to avoid dependency
         		Class xmlSeeAlsoClass = null;
@@ -225,6 +225,10 @@ public class AnnotationsProcessor {
             info = new TypeInfo(helper);
         }
 
+        if (helper.isAnnotationPresent(javaClass, XmlTransient.class)) {
+        	info.setTransient(true);
+        }
+        
         JavaMethod factoryMethod = this.factoryMethods.get(javaClass.getRawName()); 
         if(factoryMethod != null) {
             //set up factory method info for mappings.
@@ -434,7 +438,9 @@ public class AnnotationsProcessor {
     
     public ArrayList<Property> getPropertiesForClass(JavaClass cls, TypeInfo info) {
     	ArrayList<Property> returnList;
-        if (info.getAccessType() == XmlAccessType.FIELD) {
+    	if(info.isTransient()){
+    		returnList = getNoAccessTypePropertiesForClass(cls, info);
+    	}else if (info.getAccessType() == XmlAccessType.FIELD) {
         	returnList = getFieldPropertiesForClass(cls, info, false);
         } else if (info.getAccessType() == XmlAccessType.PROPERTY) {
         	returnList = getPropertyPropertiesForClass(cls, info, false);
@@ -1434,7 +1440,8 @@ public class AnnotationsProcessor {
         
         //Look for XmlRootElement declarations
         for(JavaClass javaClass:classesToProcess) {
-            if (helper.isAnnotationPresent(javaClass, XmlRootElement.class)) {
+        	
+            if  (!(helper.isAnnotationPresent(javaClass, XmlTransient.class)) && helper.isAnnotationPresent(javaClass, XmlRootElement.class)) {
                 XmlRootElement rootElemAnnotation = (XmlRootElement) helper.getAnnotation(javaClass, XmlRootElement.class);
                 NamespaceInfo namespaceInfo;
                 JavaPackage pack = javaClass.getPackage();

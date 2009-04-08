@@ -107,7 +107,7 @@ public class MappingsGenerator {
                 generateDescriptor(next, project);
             }
         }
-        // Setup inheritance for ABSTRACT parent class
+        // Setup inheritance
         for (JavaClass next : typeInfoClasses) {
             if (!next.isEnum()) {
                 setupInheritance(next);
@@ -124,6 +124,9 @@ public class MappingsGenerator {
     public void generateDescriptor(JavaClass javaClass, Project project) {
         String jClassName = javaClass.getQualifiedName();
         TypeInfo info = typeInfo.get(jClassName);
+        if(info.isTransient()){
+            return;
+        }
         NamespaceInfo namespaceInfo = this.packageToNamespaceMappings.get(javaClass.getPackage().getQualifiedName());
         String packageNamespace = namespaceInfo.getNamespace();
         String elementName;
@@ -766,34 +769,96 @@ public class MappingsGenerator {
      */
     private void setupInheritance(JavaClass jClass) {
         XMLDescriptor descriptor = typeInfo.get(jClass.getName()).getDescriptor();
+        NamespaceInfo namespaceInfo = this.packageToNamespaceMappings.get(jClass.getPackageName());
         if (descriptor == null) {
             return;
         }
-        JavaClass superClass = jClass.getSuperclass();
-        if (superClass != null && superClass.isAbstract()) {
-            XMLDescriptor superDescriptor = typeInfo.get(superClass.getName()).getDescriptor();
-            if (superDescriptor == null) {
-                return;
-            }
-            if (superDescriptor.getNamespaceResolver() == null) {
-                superDescriptor.setNamespaceResolver(new NamespaceResolver());
-            }
-            XMLField classIndicatorField = new XMLField("@xsi:type");
-            superDescriptor.getNamespaceResolver().put(XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL); 
-            superDescriptor.getInheritancePolicy().setClassIndicatorField(classIndicatorField);
-
+           
+        JavaClass superClass = getNextMappedSuperClass(jClass, descriptor, namespaceInfo);
+        if(superClass == null){
+            return;
+        }
+    
+        TypeInfo superTypeInfo =  typeInfo.get(superClass.getName());
+        XMLDescriptor superDescriptor = superTypeInfo.getDescriptor();
+        if (superDescriptor != null) {                	        
             XMLSchemaReference sRef = descriptor.getSchemaReference();
             if (sRef == null || sRef.getSchemaContext() == null) {
                 return;
+            }	      
+ 	        
+            JavaClass rootMappedSuperClass = getRootMappedSuperClass(superClass, descriptor, namespaceInfo); 	         	  
+ 	        
+            TypeInfo rootTypeInfo =  typeInfo.get(rootMappedSuperClass.getName());
+
+            XMLDescriptor rootDescriptor = rootTypeInfo.getDescriptor();
+            if (rootDescriptor.getNamespaceResolver() == null) {
+                rootDescriptor.setNamespaceResolver(new NamespaceResolver());
             }
+        	
+            if(rootDescriptor.getInheritancePolicy().getClassIndicatorField() == null){
+                String prefix = rootDescriptor.getNamespaceResolver().resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
+                if(prefix == null){
+                    prefix = rootDescriptor.getNamespaceResolver().generatePrefix(XMLConstants.SCHEMA_INSTANCE_PREFIX);
+                }
+                XMLField classIndicatorField = new XMLField("@"+ prefix + ":type");
+                rootDescriptor.getNamespaceResolver().put(prefix, XMLConstants.SCHEMA_INSTANCE_URL); 
+                rootDescriptor.getInheritancePolicy().setClassIndicatorField(classIndicatorField);	               	
+            }
+        	 	        
             String sCtx = sRef.getSchemaContext();
             if (sCtx.length() > 1 && sCtx.startsWith("/")) {
                 sCtx = sCtx.substring(1);
             }
             descriptor.getInheritancePolicy().setParentClassName(superClass.getName());
-            superDescriptor.getInheritancePolicy().addClassNameIndicator(jClass.getName(), sCtx);
-            superDescriptor.getInheritancePolicy().setShouldReadSubclasses(true);
+            rootDescriptor.getInheritancePolicy().addClassNameIndicator(jClass.getName(), sCtx);
+            Object value = rootDescriptor.getInheritancePolicy().getClassNameIndicatorMapping().get(rootDescriptor.getJavaClassName());
+            if(value == null){
+                XMLSchemaReference rootSRef = rootDescriptor.getSchemaReference();
+                if (rootSRef != null && rootSRef.getSchemaContext() != null) {
+                    String rootSCtx = rootSRef.getSchemaContext();
+                    if (rootSCtx.length() > 1 && rootSCtx.startsWith("/")) {
+                        rootSCtx = rootSCtx.substring(1);
+                    }
+                    rootDescriptor.getInheritancePolicy().addClassNameIndicator(rootDescriptor.getJavaClassName(), rootSCtx);
+                }	 	        	
+            }
+            rootDescriptor.getInheritancePolicy().setShouldReadSubclasses(true);  
+        }                      
+    }
+    
+    private JavaClass getNextMappedSuperClass(JavaClass jClass, XMLDescriptor descriptor, NamespaceInfo namespaceInfo){ 
+        JavaClass superClass = jClass.getSuperclass();
+	    
+        if(superClass == null){
+            return null;
         }
+	    
+        TypeInfo superTypeInfo =  typeInfo.get(superClass.getName());
+        if(superTypeInfo == null){
+        	return null;
+        }
+        
+        if(superTypeInfo.isTransient()){    
+            generateMappings(superTypeInfo, descriptor, namespaceInfo);
+            return getNextMappedSuperClass(superClass, descriptor, namespaceInfo);
+        }
+        return superClass;
+    }
+    
+    private JavaClass getRootMappedSuperClass(JavaClass javaClass, XMLDescriptor descriptor, NamespaceInfo namespaceInfo){
+        JavaClass rootMappedSuperClass = javaClass;
+    	
+        JavaClass nextMappedSuperClass = rootMappedSuperClass;
+        while(nextMappedSuperClass != null){
+            nextMappedSuperClass = getNextMappedSuperClass(nextMappedSuperClass, descriptor, namespaceInfo);
+            if(nextMappedSuperClass == null){
+                return rootMappedSuperClass;
+            }
+            rootMappedSuperClass = nextMappedSuperClass;
+        }
+    	
+        return rootMappedSuperClass;    	
     }
     
     public void generateMappings() {
@@ -808,13 +873,6 @@ public class MappingsGenerator {
             }
             XMLDescriptor descriptor = info.getDescriptor();
             if (descriptor != null) {
-                JavaClass parentClass = javaClass.getSuperclass();
-                TypeInfo parentInfo = this.typeInfo.get(parentClass.getQualifiedName());
-                // only copy down parent mappings for non-abstract superclass as inheritance has been setup in that case
-                if (parentInfo != null && !parentClass.isAbstract()) {
-                    //  generate inherited mappings first.
-                    generateMappings(parentInfo, descriptor, namespaceInfo);
-                }
                 generateMappings(info, descriptor, namespaceInfo);
             }
         }
@@ -826,7 +884,7 @@ public class MappingsGenerator {
             ArrayList<String> propertyNames = info.getPropertyNames();
             for (int i = 0; i < propertyNames.size(); i++) {
                 String nextPropertyKey = propertyNames.get(i);
-                Property next = info.getProperties().get(nextPropertyKey);
+                Property next = info.getProperties().get(nextPropertyKey);                
                 generateMapping(next, descriptor, namespaceInfo);
             }
         } else {
@@ -1062,7 +1120,7 @@ public class MappingsGenerator {
     		ElementDeclaration nextElement = this.globalElements.get(next);
     		String nextClassName = nextElement.getJavaTypeName();
     		TypeInfo type = this.typeInfo.get(nextClassName);
-    		
+    		  	
     		if(helper.isBuiltInJavaType(nextElement.getJavaType()) || (type !=null && type.isEnumerationType())){
     			//generate a class/descriptor for this element
     			
@@ -1152,7 +1210,7 @@ public class MappingsGenerator {
     				}
     			}
     			project.addDescriptor(desc);
-    		}else if(type != null){
+    		}else if(type != null && !type.isTransient()){
     			if(next.getNamespaceURI() == null || next.getNamespaceURI().equals("")) {
     				type.getDescriptor().addRootElement(next.getLocalPart());
     			} else {    				
@@ -1166,7 +1224,7 @@ public class MappingsGenerator {
     				descriptor.addRootElement(prefix + ":" + next.getLocalPart());
     			}
     		}
-    	}    	
+		}
     }
     
     private NamespaceInfo getNamespaceInfoForURI(String namespaceUri) {

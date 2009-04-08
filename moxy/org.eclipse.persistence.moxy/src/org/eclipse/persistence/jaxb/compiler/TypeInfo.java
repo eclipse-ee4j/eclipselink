@@ -73,6 +73,7 @@ public class TypeInfo {
     private String[] factoryMethodParamTypes;
     private Property xmlValueProperty;
     private boolean isMixed;
+    private boolean isTransient;
     
     public TypeInfo(Helper helper) {
         propertyNames = new ArrayList<String>();
@@ -352,6 +353,14 @@ public class TypeInfo {
 
     public void setXmlValueProperty(Property xmlValueProperty) {
         this.xmlValueProperty = xmlValueProperty;
+    }
+
+    public boolean isTransient() {
+        return isTransient;
+    }
+
+    public void setTransient(boolean isTransient) {
+        this.isTransient = isTransient;
     }
    
 }

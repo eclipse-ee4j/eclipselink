@@ -92,6 +92,9 @@ public class SchemaGenerator {
         String myClassName = myClass.getQualifiedName();
         Element rootElement = null;
         TypeInfo  info = (TypeInfo)typeInfo.get(myClassName);
+        if(info.isTransient()){
+            return;
+        }
         SchemaTypeInfo schemaTypeInfo = new SchemaTypeInfo();
         schemaTypeInfo.setSchemaTypeName(new QName(info.getClassNamespace(), info.getSchemaTypeName()));
         this.schemaTypeInfo.put(myClass.getQualifiedName(), schemaTypeInfo);
@@ -856,12 +859,12 @@ public class SchemaGenerator {
 
                 ElementDeclaration nextElement = additionalElements.get(next);
                 JavaClass javaClass = helper.getJavaClass(nextElement.getJavaTypeName());
-            
+
                 //First check for built in type
                 QName schemaType = (QName) helper.getXMLToJavaTypeMap().get(javaClass.getRawName());
                 if (schemaType != null) {
                     element.setType(XMLConstants.SCHEMA_PREFIX + ":" + schemaType.getLocalPart());
-                } else {
+                } else { 
                     TypeInfo type = (TypeInfo)this.typeInfo.get(javaClass.getQualifiedName());
                     if (type != null) {
                         String typeName = null;
@@ -903,6 +906,7 @@ public class SchemaGenerator {
                         element.setSubstitutionGroup(prefix + ":" + subLocal);
                     }
                 }
+                
                 targetSchema.addTopLevelElement(element);
                 SchemaTypeInfo info = this.schemaTypeInfo.get(javaClass.getQualifiedName());
                 if (info == null) {

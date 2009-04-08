@@ -983,12 +983,7 @@ public class XMLMarshaller {
         boolean writeTypeAttribute = false;
 
         if (isXMLRoot && (descriptor != null)) {
-            XMLRoot xr = (XMLRoot) object;
-            QName qName = new QName(xr.getNamespaceURI(),xr.getLocalName());
-            XMLDescriptor xdesc = xmlContext.getDescriptor(qName);
-            if (xdesc != null) {
-                return xdesc.getJavaClass() != descriptor.getJavaClass();
-            }
+            XMLRoot xr = (XMLRoot) object;          
             
             if (descriptor.hasInheritance()) {
                 XMLField classIndicatorField = (XMLField) descriptor.getInheritancePolicy().getClassIndicatorField();
@@ -1004,6 +999,12 @@ public class XMLMarshaller {
                 }
             }
 
+            QName qName = new QName(xr.getNamespaceURI(),xr.getLocalName());
+            XMLDescriptor xdesc = xmlContext.getDescriptor(qName);
+            if (xdesc != null) {
+                return xdesc.getJavaClass() != descriptor.getJavaClass();
+            }
+            
             if (descriptor.getSchemaReference() == null) {
                 return false;
             }

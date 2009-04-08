@@ -24,6 +24,7 @@ import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.StringReader;
 
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.DocumentBuilder;
@@ -252,10 +253,8 @@ public class SchemaGenEmployeeTestCases extends TestCase {
         }
         assertFalse("Unmarshal operation failed unexpectedly: " + msg, exception);
         assertNotNull("Unmarshal operation resulted in null", obj);
-        if (obj instanceof MyTestSubType) {
-            
-        } else {
-            fail("Wrong object returned from unmarshal - expected [MyTestSubType] but was [" + obj + "]");
-        }
+      
+        assertTrue(obj instanceof JAXBElement);
+        assertEquals(MyAbstractTestType.class, ((JAXBElement)obj).getDeclaredType());
     }
 }

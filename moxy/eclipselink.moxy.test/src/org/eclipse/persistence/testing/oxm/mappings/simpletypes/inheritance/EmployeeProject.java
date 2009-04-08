@@ -18,6 +18,7 @@ import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
+import org.eclipse.persistence.oxm.schema.XMLSchemaClassPathReference;
 
 public class EmployeeProject extends Project {
 
@@ -45,6 +46,11 @@ public class EmployeeProject extends Project {
 		mapping.setXPath("text()");
 		xmlDescriptor.addMapping(mapping);
 		
+		XMLSchemaClassPathReference schemaReference = new XMLSchemaClassPathReference();
+		schemaReference.setSchemaContext("/employee");
+		schemaReference.setType(XMLSchemaClassPathReference.COMPLEX_TYPE);
+		xmlDescriptor.setSchemaReference(schemaReference);
+		
 		return xmlDescriptor;
 	}
 
@@ -54,7 +60,7 @@ public class EmployeeProject extends Project {
 		xmlDescriptor.setDefaultRootElement("person");
 		xmlDescriptor.setNamespaceResolver(namespaceResolver);		
 		XMLField classIndicatorField = new XMLField("@xsi:type");		
-    xmlDescriptor.getInheritancePolicy().setClassIndicatorField(classIndicatorField);
+        xmlDescriptor.getInheritancePolicy().setClassIndicatorField(classIndicatorField);
 		xmlDescriptor.getInheritancePolicy().addClassIndicator(Employee.class, "employee");
 
 		XMLDirectMapping mapping = new XMLDirectMapping();
@@ -66,6 +72,11 @@ public class EmployeeProject extends Project {
 		mapping2.setAttributeName("lastname");
 		mapping2.setXPath("lastName/text()");
 		xmlDescriptor.addMapping(mapping2);
+		
+		XMLSchemaClassPathReference schemaReference = new XMLSchemaClassPathReference();
+		schemaReference.setSchemaContext("/person");
+		schemaReference.setType(XMLSchemaClassPathReference.COMPLEX_TYPE);
+		xmlDescriptor.setSchemaReference(schemaReference);
 		
 		return xmlDescriptor;
 	}

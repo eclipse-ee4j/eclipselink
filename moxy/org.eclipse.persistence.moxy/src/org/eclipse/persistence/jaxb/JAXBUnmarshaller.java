@@ -166,7 +166,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
      * @param obj
      * @return
      */
-    private JAXBElement buildJAXBElementFromObject(Object obj) {
+    private JAXBElement buildJAXBElementFromObject(Object obj) {    
     	// if an XMLRoot was returned, the root element != the default root 
     	// element of the object being marshalled to - need to create a 
     	// JAXBElement from the returned XMLRoot object
@@ -371,7 +371,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
         ((JAXBUnmarshalListener)xmlUnmarshaller.getUnmarshalListener()).setClassBasedUnmarshalEvents(callbacks);
     }        
         
-    private Object createJAXBElementIfRequired(Object value){
+    private Object createJAXBElementIfRequired(Object value){    	
     	if(value instanceof WrappedValue) {
     		return createJAXBElementFromWrappedValue(((WrappedValue)value));
         }            		        	
@@ -393,28 +393,31 @@ public class JAXBUnmarshaller implements Unmarshaller {
     	if(value == null){    		    		
     		return createJAXBElement(qname, Object.class, value);
     	}
+    	    
     	if(qNamesToDeclaredClasses != null){
     		Class declaredClass = qNamesToDeclaredClasses.get(qname);
     		if(declaredClass != null){
     			return createJAXBElement(qname, declaredClass, value);
     		}
     	}
+    	
+    	XMLDescriptor descriptorForQName = xmlUnmarshaller.getXMLContext().getDescriptor(qname);
+    	if(descriptorForQName != null){
+    		return createJAXBElement(qname, descriptorForQName.getJavaClass(), value);
+    	}
+    	
     	    	
     	return createJAXBElement(qname, value.getClass(), value);    		
     	
     }
+      
     
     private JAXBElement createJAXBElement(QName qname, Class theClass, Object value){
    
     	if(theClass == null){
     		return new JAXBElement(qname, Object.class, value);
     	}
-    	org.eclipse.persistence.sessions.Session sess = (org.eclipse.persistence.sessions.Session)xmlUnmarshaller.getXMLContext().getSessions().get(0);
-
-    	XMLDescriptor desc = (XMLDescriptor) sess.getClassDescriptor(value);
-    	if(desc != null && desc.hasInheritance()){
-    		theClass = desc.getInheritancePolicy().getParentClass();
-    	}
+    	org.eclipse.persistence.sessions.Session sess = (org.eclipse.persistence.sessions.Session)xmlUnmarshaller.getXMLContext().getSessions().get(0);    
     	
         if(ClassConstants.XML_GREGORIAN_CALENDAR.isAssignableFrom(theClass)){
             theClass = ClassConstants.XML_GREGORIAN_CALENDAR;

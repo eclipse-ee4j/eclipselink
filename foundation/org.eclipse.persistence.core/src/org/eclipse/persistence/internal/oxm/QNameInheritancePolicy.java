@@ -14,10 +14,14 @@ package org.eclipse.persistence.internal.oxm;
 
 import java.util.Iterator;
 import java.util.HashMap;
+import java.util.Vector;
+
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
@@ -45,6 +49,31 @@ public class QNameInheritancePolicy extends InheritancePolicy {
 
     public QNameInheritancePolicy(ClassDescriptor desc) {
         super(desc);
+    }
+    
+    /**
+     * Override to control order of uniqueTables, child tablenames should be first since 
+     * getDefaultRootElement on an XMLDescriptor will return the first table.
+     */
+    protected void updateTables(){
+        // Unique is required because the builder can add the same table many times.
+        Vector<DatabaseTable> childTables = getDescriptor().getTables();
+        Vector<DatabaseTable> parentTables = getParentDescriptor().getTables();
+        Vector<DatabaseTable> uniqueTables = Helper.concatenateUniqueVectors(childTables, parentTables);
+        getDescriptor().setTables(uniqueTables);
+        
+        
+        // After filtering out any duplicate tables, set the default table
+        // if one is not already set. This must be done now before any other
+        // initialization occurs. In a joined strategy case, the default 
+        // table will be at an index greater than 0. Which is where
+        // setDefaultTable() assumes it is. Therefore, we need to send the 
+        // actual default table instead.
+        if (childTables.isEmpty()) {
+            getDescriptor().setInternalDefaultTable();
+        } else {
+            getDescriptor().setInternalDefaultTable(uniqueTables.get(uniqueTables.indexOf(childTables.get(0))));
+        }
     }
 
     /**

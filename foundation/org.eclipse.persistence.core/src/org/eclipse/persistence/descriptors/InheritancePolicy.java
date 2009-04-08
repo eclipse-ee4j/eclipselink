@@ -889,7 +889,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
             setShouldReadSubclasses(!getChildDescriptors().isEmpty());
         }
 
-        if (isChildDescriptor()) {
+        if (isChildDescriptor()) {        	
             getDescriptor().setMappings(Helper.concatenateVectors(getParentDescriptor().getMappings(), getDescriptor().getMappings()));
             getDescriptor().setQueryKeys(Helper.concatenateMaps(getParentDescriptor().getQueryKeys(), getDescriptor().getQueryKeys()));
             addFieldsToParent(getDescriptor().getFields());
@@ -1076,23 +1076,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
     public void preInitialize(AbstractSession session) throws DescriptorException {
         // Make sure that parent is already preinitialized.
         if (isChildDescriptor()) {
-            // Unique is required because the builder can add the same table many times.
-            Vector<DatabaseTable> childTables = getDescriptor().getTables();
-            Vector<DatabaseTable> parentTables = getParentDescriptor().getTables();
-            Vector<DatabaseTable> uniqueTables = Helper.concatenateUniqueVectors(parentTables, childTables);
-            getDescriptor().setTables(uniqueTables);
-            
-            // After filtering out any duplicate tables, set the default table
-            // if one is not already set. This must be done now before any other
-            // initialization occurs. In a joined strategy case, the default 
-            // table will be at an index greater than 0. Which is where
-            // setDefaultTable() assumes it is. Therefore, we need to send the 
-            // actual default table instead.
-            if (childTables.isEmpty()) {
-                getDescriptor().setInternalDefaultTable();
-            } else {
-                getDescriptor().setInternalDefaultTable(uniqueTables.get(uniqueTables.indexOf(childTables.get(0))));
-            }
+            updateTables();                       
         
             setClassIndicatorMapping(getParentDescriptor().getInheritancePolicy().getClassIndicatorMapping());
             setShouldUseClassNameAsIndicator(getParentDescriptor().getInheritancePolicy().shouldUseClassNameAsIndicator());
@@ -1168,7 +1152,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
     public void readSubclassesOnQueries() {
         setShouldReadSubclasses(true);
     }
-
+    
     /**
      * INTERNAL:
      * Used to initialize a remote descriptor.
@@ -1737,6 +1721,32 @@ public class InheritancePolicy implements Serializable, Cloneable {
         return Helper.getShortClassName(getClass()) + "(" + getDescriptor() + ")";
     }
 
+    /**
+     * INTERNAL:
+     * set the tables on the child descriptor 
+     * overridden in org.eclipse.persistence.internal.oxm.QNameInheritancePolicy
+     */
+    protected void updateTables(){
+        // Unique is required because the builder can add the same table many times.
+        Vector<DatabaseTable> childTables = getDescriptor().getTables();
+        Vector<DatabaseTable> parentTables = getParentDescriptor().getTables();
+        Vector<DatabaseTable> uniqueTables = Helper.concatenateUniqueVectors(parentTables, childTables);
+        getDescriptor().setTables(uniqueTables);
+        
+        // After filtering out any duplicate tables, set the default table
+        // if one is not already set. This must be done now before any other
+        // initialization occurs. In a joined strategy case, the default 
+        // table will be at an index greater than 0. Which is where
+        // setDefaultTable() assumes it is. Therefore, we need to send the 
+        // actual default table instead.
+        if (childTables.isEmpty()) {
+            getDescriptor().setInternalDefaultTable();
+        } else {
+            getDescriptor().setInternalDefaultTable(uniqueTables.get(uniqueTables.indexOf(childTables.get(0))));
+        }
+    }
+    
+    
     /**
      * PUBLIC:
      * Set the descriptor to use the classes full name as the indicator.

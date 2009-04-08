@@ -17,6 +17,7 @@ import java.io.InputStream;
 
 // TopLink imports
 import org.eclipse.persistence.oxm.XMLMarshaller;
+import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 
@@ -35,12 +36,16 @@ public class InheritanceRootTestCases extends XMLMappingTestCases {
 	}
 
 	protected Object getControlObject() {
+		XMLRoot theRoot = new XMLRoot();		
+		theRoot.setLocalName("person");
 		Employee employee = new Employee();
 		employee.setFirstName(CONTROL_EMPLOYEE_FIRST_NAME);
 		employee.setLastName(CONTROL_EMPLOYEE_LAST_NAME);		
 		employee.setJobTitle(CONTROL_EMPLOYEE_TITLE);
 		
-		return employee;
+		theRoot.setObject(employee);
+		
+		return theRoot;
 	}
 	
 }
