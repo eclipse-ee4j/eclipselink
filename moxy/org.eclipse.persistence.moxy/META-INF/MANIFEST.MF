@@ -20,7 +20,6 @@ Import-Package: javax.activation;vendor=sun;resolution:=optional,
  javax.xml.bind.attachment;version="2.0.0";resolution:=optional,
  javax.xml.bind.helpers;version="2.0.0";resolution:=optional,
  javax.xml.bind.util;version="2.0.0";resolution:=optional,
- javax.xml.soap;resolution:=optional,
  javax.xml.stream;version="1.0.0";resolution:=optional,
  javax.xml.stream.events;version="1.0.0";resolution:=optional,
  javax.xml.stream.util;version="1.0.0";resolution:=optional

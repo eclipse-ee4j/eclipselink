@@ -10,7 +10,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/javax.activation"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/javax.mail"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/javax.xml.bind"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/javax.xml.soap"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/javax.xml.stream"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
