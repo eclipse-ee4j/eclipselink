@@ -12,7 +12,6 @@
  ******************************************************************************/ 
 package org.eclipse.persistence.sdo.helper;
 
-import commonj.sdo.Type;
 import commonj.sdo.helper.HelperContext;
 import org.eclipse.persistence.sdo.SDOChangeSummary;
 import org.eclipse.persistence.sdo.SDODataObject;
