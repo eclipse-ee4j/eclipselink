@@ -112,7 +112,6 @@
                fork="true"
                classpathref="core.compile.path"
         />
-        <delete file="${classes.dir}/org/eclipse/persistence/Version.java"/>
         <javac srcdir="${src.dir}"
                destdir="${classes.dir}"
                includes="org/eclipse/persistence/**, deprecated/**"
@@ -159,14 +158,19 @@
                 <include name="readme.html"/>
                 <include name="license.*"/>
             </fileset>
+            <fileset dir="${classes.dir}">
+                <include name="org/eclipse/persistence/Version.java"
+            </fileset>
             <fileset dir="${src.dir}">
                 <include name="org/eclipse/persistence/**/*.java"/>
+                <exclude name="org/eclipse/persistence/Version.java"
             </fileset>
             <fileset dir="${resource.dir}">
                 <include name="xsd/*.xsd"/>
                 <include name="org/eclipse/persistence/internal/helper/VendorNameToPlatformMapping.properties"/>
             </fileset>
         </jar>
+        <delete file="${classes.dir}/org/eclipse/persistence/Version.java"/>
     </target>
 
     <target name="generate-manifest" description="Generate the OSGi bundle manifest before jarring">
