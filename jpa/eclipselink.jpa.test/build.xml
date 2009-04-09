@@ -696,14 +696,12 @@
     </target>
 
     <target name="generate-report">
-        <copy todir="${env.JAVA_HOME}/jre/lib" file="${eclipselink.jpa.test}/resource/${server.name}/jaxp.properties" failonerror="false"/>
         <junitreport todir="${eclipselink.jpa.test}/${report.dir}">
             <fileset dir="${eclipselink.jpa.test}/${report.dir}">
                 <include name="*test-results.xml"/>
             </fileset>
             <report format="noframes" todir="${eclipselink.jpa.test}/${report.dir}"/>
         </junitreport>
-        <delete file="${env.JAVA_HOME}/jre/lib/jaxp.properties" failonerror="false"/>
     </target>
 
     <!-- Runs the test using the PromptTestRunner -->
@@ -1117,6 +1115,14 @@
         <antcall target="server-test-lrg" inheritRefs="true"/>
     </target>
 
+    <target name="generate-servertest-report">
+        <!-- WebLogic and WebSphere servers require specific jaxp.properties for generating report -->
+        <delete file="${env.JAVA_HOME}/jre/lib/jaxp.properties" failonerror="false"/>
+        <copy todir="${env.JAVA_HOME}/jre/lib" file="${eclipselink.jpa.test}/resource/${server.name}/jaxp.properties" failonerror="false"/>
+        <antcall target="generate-report" inheritRefs="true"/>
+        <delete file="${env.JAVA_HOME}/jre/lib/jaxp.properties" failonerror="false"/>
+    </target>
+
     <!-- Run all the JPA tests in the server -->
     <target name="server-test-lrg" depends="clean-test">
         <antcall target="server-test-advanced" inheritRefs="true"/>
@@ -1137,7 +1143,7 @@
         <antcall target="server-test-xml-mergeinherited" inheritRefs="true"/>
         <antcall target="server-test-xmltest" inheritRefs="true"/>
         <antcall target="server-test-oracle-timestamptz" inheritRefs="true"/>
-        <antcall target="generate-report" inheritRefs="true"/>
+        <antcall target="generate-servertest-report" inheritRefs="true"/>
     </target>
 
     <target name="server-test-advanced">
