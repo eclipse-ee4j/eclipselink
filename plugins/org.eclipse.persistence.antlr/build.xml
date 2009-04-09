@@ -44,7 +44,8 @@
     <property name="release.version"     value="1.1.1"/>
     <property name="build.type"          value="SNAPSHOT"/>
     <property name="svn.revision"        value="NA"/>
-    <property name="version.string"      value="${release.version}.qualifier"/>
+    <property name="version.qualifier" value="qualifier"/>
+    <property name="version.string" value="${release.version}.${version.qualifier}"/>
     <property name="release.designation" value="EclipseLink DeveloperBuild"/>
 
     <property name="eclipselink.antlr.bndl.prefix" value="${ant.project.name}"/>
@@ -62,7 +63,7 @@
             <fileset dir="${antlr.2.common.plugins.dir}" includes="${eclipselink.antlr.bndl.prefix}*.jar"/>
        </delete>
     </target>
-    
+
     <!-- package -->
     <target name="package" description="jar OSGI bundle">
         <jar jarfile="${antlr.2.common.plugins.dir}/${eclipselink.antlr.bndl.prefix}_${version.string}.jar" manifest="${temp.dir}/MANIFEST.MF">
@@ -77,11 +78,16 @@
         </jar>
         <jar jarfile="${antlr.2.common.plugins.dir}/${eclipselink.antlr.bndl.prefix}.source_${version.string}.jar">
              <manifest>
+                <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
+                <attribute name="Specification-Version"  value="${release.version}"/>
+                <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
+                <attribute name="Implementation-Version" value="${version.string}"/>
                 <attribute name="Bundle-ManifestVersion" value="2"/>
                 <attribute name="Bundle-Name"            value="EclipseLink ANTLR Source"/>
                 <attribute name="Bundle-SymbolicName"    value="${ant.project.name}.source"/>
-                <attribute name="Bundle-Version"         value="${release.version}"/>
-                <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${release.version}&quot;"/>
+                <attribute name="Bundle-Vendor"          value="${implementation.vendor}"/>
+                <attribute name="Bundle-Version"         value="${version.string}"/>
+                <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${version.string}&quot;"/>
             </manifest>
             <fileset dir="${antlr.2.base.dir}">
                 <include name="about.html"/>
@@ -97,17 +103,21 @@
     <target name="generate-manifest" description="Generate the OSGi bundle manifest before jarring">
         <delete file="${temp.dir}/MANIFEST.MF" quiet="true"/>
         <mkdir dir="${temp.dir}"/>
-        <echo message="Manifest-Version: 1.0${line.separator}"                                                                                            file="${temp.dir}/MANIFEST.MF" append="false"/>
-        <echo message="Bundle-ManifestVersion: 2${line.separator}"                                                                                        file="${temp.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-Name: EclipseLink ANTLR${line.separator}"                                                                                   file="${temp.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-SymbolicName: ${ant.project.name}${line.separator}"                                                                         file="${temp.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-Vendor: EclipseLink Project${line.separator}"                                                                               file="${temp.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-Version: ${release.version}${line.separator}"                                                                               file="${temp.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-RequiredExecutionEnvironment: J2SE-1.5${line.separator}"                                                                    file="${temp.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Export-Package: org.eclipse.persistence.internal.libraries.antlr.runtime;version=&quot;${release.version}&quot;,${line.separator}" file="${temp.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.libraries.antlr.runtime.tree;version=&quot;${release.version}&quot;${line.separator}"            file="${temp.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-ClassPath: .${line.separator}"                                                                                              file="${temp.dir}/MANIFEST.MF" append="true"/>
-        <echo message="HK2-Bundle-Name: org.eclipse.persistence:${ant.project.name}${line.separator}"                                                     file="${temp.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Manifest-Version: 1.0${line.separator}"                                                                                           file="${temp.dir}/MANIFEST.MF" append="false"/>
+        <echo message="Specification-Vendor: ${line.separator}"                                                                                          file="${temp.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Specification-Version: ${line.separator}"                                                                                         file="${temp.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Implementation-Vendor: ${implementation.vendor}${line.separator}"                                                                 file="${temp.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Implementation-Version: ${version.string}${line.separator}"                                                                       file="${temp.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-ManifestVersion: 2${line.separator}"                                                                                       file="${temp.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-Name: EclipseLink ANTLR${line.separator}"                                                                                  file="${temp.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-SymbolicName: ${ant.project.name}${line.separator}"                                                                        file="${temp.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-Vendor: ${implementation.vendor}${line.separator}"                                                                         file="${temp.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-Version: ${version.string}${line.separator}"                                                                               file="${temp.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-RequiredExecutionEnvironment: J2SE-1.5${line.separator}"                                                                   file="${temp.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Export-Package: org.eclipse.persistence.internal.libraries.antlr.runtime;version=&quot;${version.string}&quot;,${line.separator}" file="${temp.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.libraries.antlr.runtime.tree;version=&quot;${version.string}&quot;${line.separator}"            file="${temp.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-ClassPath: .${line.separator}"                                                                                             file="${temp.dir}/MANIFEST.MF" append="true"/>
+        <echo message="HK2-Bundle-Name: org.eclipse.persistence:${ant.project.name}${line.separator}"                                                    file="${temp.dir}/MANIFEST.MF" append="true"/>
     </target>
-    
+
 </project>

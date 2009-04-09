@@ -48,7 +48,8 @@
     </tstamp>
     <property name="build.type" value="SNAPSHOT"/>
     <property name="svn.revision" value="NA"/>
-    <property name="version.string" value="${release.version}.qualifier"/>
+    <property name="version.qualifier" value="qualifier"/>
+    <property name="version.string" value="${release.version}.${version.qualifier}"/>
     <property name="release.designation"  value="EclipseLink DeveloperBuild"/>
 
     <!-- Set Compile Path-->
@@ -112,11 +113,16 @@
         </jar>
         <jar jarfile="${jpa.2.common.plugins.dir}/${eclipselink.jpa.bndl.prefix}.source_${version.string}.jar" duplicate="preserve">
              <manifest>
+                <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
+                <attribute name="Specification-Version"  value="${release.version}"/>
+                <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
+                <attribute name="Implementation-Version" value="${version.string}"/>
                 <attribute name="Bundle-ManifestVersion" value="2"/>
                 <attribute name="Bundle-Name"            value="EclipseLink JPA Source"/>
                 <attribute name="Bundle-SymbolicName"    value="${ant.project.name}.source"/>
-                <attribute name="Bundle-Version"         value="${release.version}"/>
-                <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${release.version}&quot;"/>
+                <attribute name="Bundle-Vendor"          value="${implementation.vendor}"/>
+                <attribute name="Bundle-Version"         value="${version.string}"/>
+                <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${version.string}&quot;"/>
             </manifest>
             <fileset dir="${jpa.2.base.dir}">
                 <include name="about.html"/>
@@ -136,40 +142,44 @@
     <target name="generate-manifest" description="Generate the OSGi bundle manifest before jarring">
         <delete file="${classes.dir}/MANIFEST.MF" quiet="true"/>
         <echo message="Manifest-Version: 1.0${line.separator}"                                                      file="${classes.dir}/MANIFEST.MF" append="false"/>
+        <echo message="Specification-Vendor: ${specification.vendor}${line.separator}"                              file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Specification-Version: ${release.version}${line.separator}"                                  file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Implementation-Vendor: ${implementation.vendor}${line.separator}"                            file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Implementation-Version: ${version.string}${line.separator}"                                  file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="Bundle-ManifestVersion: 2${line.separator}"                                                  file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="Bundle-Name: EclipseLink JPA${line.separator}"                                               file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="Bundle-SymbolicName: ${ant.project.name}${line.separator}"                                   file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-Vendor: EclipseLink Project${line.separator}"                                         file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-Version: ${release.version}${line.separator}"                                          file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-RequiredExecutionEnvironment: J2SE-1.5${line.separator}"                                                                   file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Require-Bundle: org.eclipse.persistence.core;bundle-version=&quot;${release.version}&quot;;visibility:=reexport${line.separator}" file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Export-Package: org.eclipse.persistence.internal.jpa;version=&quot;${release.version}&quot;,${line.separator}"                    file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.jpa.deployment;version=&quot;${release.version}&quot;,${line.separator}"                        file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.jpa.deployment.osgi;version=&quot;${release.version}&quot;,${line.separator}"                   file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.jpa.deployment.xml.parser;version=&quot;${release.version}&quot;,${line.separator}"             file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.jpa.jdbc;version=&quot;${release.version}&quot;,${line.separator}"                              file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.jpa.metadata;version=&quot;${release.version}&quot;,${line.separator}"                          file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.jpa.metadata.accessors;version=&quot;${release.version}&quot;,${line.separator}"                file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.jpa.metadata.accessors.classes;version=&quot;${release.version}&quot;,${line.separator}"        file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;version=&quot;${release.version}&quot;,${line.separator}"       file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.jpa.metadata.accessors.objects;version=&quot;${release.version}&quot;,${line.separator}"        file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.jpa.metadata.cache;version=&quot;${release.version}&quot;,${line.separator}"                    file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.jpa.metadata.changetracking;version=&quot;${release.version}&quot;,${line.separator}"           file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.jpa.metadata.columns;version=&quot;${release.version}&quot;,${line.separator}"                  file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.jpa.metadata.converters;version=&quot;${release.version}&quot;,${line.separator}"               file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.jpa.metadata.copypolicy;version=&quot;${release.version}&quot;,${line.separator}"               file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.jpa.metadata.inheritance;version=&quot;${release.version}&quot;,${line.separator}"              file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.jpa.metadata.listeners;version=&quot;${release.version}&quot;,${line.separator}"                file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.jpa.metadata.locking;version=&quot;${release.version}&quot;,${line.separator}"                  file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.jpa.metadata.queries;version=&quot;${release.version}&quot;,${line.separator}"                  file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.jpa.metadata.sequencing;version=&quot;${release.version}&quot;,${line.separator}"               file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.jpa.metadata.tables;version=&quot;${release.version}&quot;,${line.separator}"                   file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.jpa.metadata.transformers;version=&quot;${release.version}&quot;,${line.separator}"             file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.jpa.metadata.xml;version=&quot;${release.version}&quot;,${line.separator}"                      file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.jpa.transaction;version=&quot;${release.version}&quot;,${line.separator}"                       file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.jpa;version=&quot;${release.version}&quot;,${line.separator}"                                            file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.jpa.osgi;version=&quot;${release.version}&quot;,${line.separator}"                                       file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.tools.weaving.jpa;version=&quot;${release.version}&quot;${line.separator}"                               file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-Vendor: ${implementation.vendor}${line.separator}"                                    file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-Version: ${version.string}${line.separator}"                                          file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-RequiredExecutionEnvironment: J2SE-1.5${line.separator}"                                                                  file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Require-Bundle: org.eclipse.persistence.core;bundle-version=&quot;${version.string}&quot;;visibility:=reexport${line.separator}" file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Export-Package: org.eclipse.persistence.internal.jpa;version=&quot;${version.string}&quot;,${line.separator}"                    file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.jpa.deployment;version=&quot;${version.string}&quot;,${line.separator}"                        file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.jpa.deployment.osgi;version=&quot;${version.string}&quot;,${line.separator}"                   file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.jpa.deployment.xml.parser;version=&quot;${version.string}&quot;,${line.separator}"             file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.jpa.jdbc;version=&quot;${version.string}&quot;,${line.separator}"                              file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.jpa.metadata;version=&quot;${version.string}&quot;,${line.separator}"                          file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.jpa.metadata.accessors;version=&quot;${version.string}&quot;,${line.separator}"                file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.jpa.metadata.accessors.classes;version=&quot;${version.string}&quot;,${line.separator}"        file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;version=&quot;${version.string}&quot;,${line.separator}"       file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.jpa.metadata.accessors.objects;version=&quot;${version.string}&quot;,${line.separator}"        file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.jpa.metadata.cache;version=&quot;${version.string}&quot;,${line.separator}"                    file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.jpa.metadata.changetracking;version=&quot;${version.string}&quot;,${line.separator}"           file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.jpa.metadata.columns;version=&quot;${version.string}&quot;,${line.separator}"                  file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.jpa.metadata.converters;version=&quot;${version.string}&quot;,${line.separator}"               file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.jpa.metadata.copypolicy;version=&quot;${version.string}&quot;,${line.separator}"               file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.jpa.metadata.inheritance;version=&quot;${version.string}&quot;,${line.separator}"              file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.jpa.metadata.listeners;version=&quot;${version.string}&quot;,${line.separator}"                file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.jpa.metadata.locking;version=&quot;${version.string}&quot;,${line.separator}"                  file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.jpa.metadata.queries;version=&quot;${version.string}&quot;,${line.separator}"                  file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.jpa.metadata.sequencing;version=&quot;${version.string}&quot;,${line.separator}"               file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.jpa.metadata.tables;version=&quot;${version.string}&quot;,${line.separator}"                   file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.jpa.metadata.transformers;version=&quot;${version.string}&quot;,${line.separator}"             file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.jpa.metadata.xml;version=&quot;${version.string}&quot;,${line.separator}"                      file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.jpa.transaction;version=&quot;${version.string}&quot;,${line.separator}"                       file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.jpa;version=&quot;${version.string}&quot;,${line.separator}"                                            file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.jpa.osgi;version=&quot;${version.string}&quot;,${line.separator}"                                       file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.tools.weaving.jpa;version=&quot;${version.string}&quot;${line.separator}"                               file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="Bundle-Activator: org.eclipse.persistence.jpa.osgi.Activator${line.separator}"                                                    file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="Bundle-ClassPath: .${line.separator}"                                                                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="Import-Package: javax.persistence;version=&quot;[1.99.0,2.1.0)&quot;,${line.separator}"                                           file="${classes.dir}/MANIFEST.MF" append="true"/>

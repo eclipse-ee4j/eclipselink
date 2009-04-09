@@ -62,7 +62,7 @@
             <fileset dir="${asm.2.common.plugins.dir}" includes="${eclipselink.asm.bndl.prefix}*.jar"/>
        </delete>
     </target>
-    
+
     <!-- package -->
     <target name="package" description="jar OSGI bundle">
         <jar jarfile="${asm.2.common.plugins.dir}/${eclipselink.asm.bndl.prefix}_${version.string}.jar" manifest="${temp.dir}/MANIFEST.MF">
@@ -81,7 +81,7 @@
                 <attribute name="Bundle-Name"            value="EclipseLink ASM Source"/>
                 <attribute name="Bundle-SymbolicName"    value="${ant.project.name}.source"/>
                 <attribute name="Bundle-Version"         value="${release.version}"/>
-                <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${release.version}&quot;"/>
+                <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${version.string}&quot;"/>
             </manifest>
             <fileset dir="${asm.2.base.dir}">
                 <include name="about.html"/>
@@ -97,23 +97,27 @@
     <target name="generate-manifest" description="Generate the OSGi bundle manifest before jarring">
         <delete file="${temp.dir}/MANIFEST.MF" quiet="true"/>
         <mkdir dir="${temp.dir}"/>
-        <echo message="Manifest-Version: 1.0${line.separator}"                                                                                  file="${temp.dir}/MANIFEST.MF" append="false"/>
-        <echo message="Bundle-ManifestVersion: 2${line.separator}"                                                                              file="${temp.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-Name: EclipseLink ASM${line.separator}"                                                                           file="${temp.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-SymbolicName: ${ant.project.name}${line.separator}"                                                               file="${temp.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-Vendor: EclipseLink Project${line.separator}"                                                                     file="${temp.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-Version: ${release.version}${line.separator}"                                                                     file="${temp.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-RequiredExecutionEnvironment: J2SE-1.5${line.separator}"                                                          file="${temp.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Export-Package: org.eclipse.persistence.internal.libraries.asm;version=&quot;${release.version}&quot;,${line.separator}" file="${temp.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.libraries.asm.attrs;version=&quot;${release.version}&quot;,${line.separator}"          file="${temp.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.libraries.asm.commons;version=&quot;${release.version}&quot;,${line.separator}"        file="${temp.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.libraries.asm.tree;version=&quot;${release.version}&quot;,${line.separator}"           file="${temp.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.libraries.asm.tree.analysis;version=&quot;${release.version}&quot;,${line.separator}"  file="${temp.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.libraries.asm.util;version=&quot;${release.version}&quot;,${line.separator}"           file="${temp.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.libraries.asm.util.attrs;version=&quot;${release.version}&quot;,${line.separator}"     file="${temp.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.libraries.asm.xml;version=&quot;${release.version}&quot;${line.separator}"             file="${temp.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Manifest-Version: 1.0${line.separator}"                                                                                 file="${temp.dir}/MANIFEST.MF" append="false"/>
+        <echo message="Specification-Vendor: ${line.separator}"                                                                                file="${temp.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Specification-Version: ${line.separator}"                                                                               file="${temp.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Implementation-Vendor: ${implementation.vendor}${line.separator}"                                                       file="${temp.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Implementation-Version: ${version.string}${line.separator}"                                                             file="${temp.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-ManifestVersion: 2${line.separator}"                                                                             file="${temp.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-Name: EclipseLink ASM${line.separator}"                                                                          file="${temp.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-SymbolicName: ${ant.project.name}${line.separator}"                                                              file="${temp.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-Vendor: ${implementation.vendor}${line.separator}"                                                               file="${temp.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-Version: ${version.string}${line.separator}"                                                                     file="${temp.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-RequiredExecutionEnvironment: J2SE-1.5${line.separator}"                                                         file="${temp.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Export-Package: org.eclipse.persistence.internal.libraries.asm;version=&quot;${version.string}&quot;,${line.separator}" file="${temp.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.libraries.asm.attrs;version=&quot;${version.string}&quot;,${line.separator}"          file="${temp.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.libraries.asm.commons;version=&quot;${version.string}&quot;,${line.separator}"        file="${temp.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.libraries.asm.tree;version=&quot;${version.string}&quot;,${line.separator}"           file="${temp.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.libraries.asm.tree.analysis;version=&quot;${version.string}&quot;,${line.separator}"  file="${temp.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.libraries.asm.util;version=&quot;${version.string}&quot;,${line.separator}"           file="${temp.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.libraries.asm.util.attrs;version=&quot;${version.string}&quot;,${line.separator}"     file="${temp.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.libraries.asm.xml;version=&quot;${version.string}&quot;${line.separator}"             file="${temp.dir}/MANIFEST.MF" append="true"/>
         <echo message="Bundle-ClassPath: .${line.separator}"                                                                                    file="${temp.dir}/MANIFEST.MF" append="true"/>
         <echo message="HK2-Bundle-Name: org.eclipse.persistence:${ant.project.name}${line.separator}"                                           file="${temp.dir}/MANIFEST.MF" append="true"/>
     </target>
-    
+
 </project>
