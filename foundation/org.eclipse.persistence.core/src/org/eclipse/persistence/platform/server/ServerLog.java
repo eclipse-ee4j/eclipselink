@@ -58,7 +58,15 @@ public class ServerLog extends AbstractSessionLog {
         String message = getSupplementDetailString(entry);
 
         if (entry.hasException()) {
-            message += entry.getException();
+            if (entry.getLevel() == SEVERE) {
+                message += Helper.printStackTraceToString(entry.getException());
+            } else if (entry.getLevel() <= WARNING) {
+                if (shouldLogExceptionStackTrace()) {
+                    message += Helper.printStackTraceToString(entry.getException());
+                } else {
+                    message += entry.getException();
+                }
+            }
         } else {
             message += formatMessage(entry);
         }

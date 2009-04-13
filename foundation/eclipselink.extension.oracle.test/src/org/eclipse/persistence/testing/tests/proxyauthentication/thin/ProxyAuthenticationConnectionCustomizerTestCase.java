@@ -49,6 +49,10 @@ public class ProxyAuthenticationConnectionCustomizerTestCase extends TestCase {
     // Substitutes the original session with the one required for the test; restores the original one after the test.
     SessionExchanger exchanger = new SessionExchanger();
     
+    // Set to true to test for Bug 267880: JPA/ProxyAuthentication tests failed with "java.sql.SQLException: Closed Statement":
+    // the bug caused tests using internal connection pools to fail.
+    boolean shouldEnableStatementCaching = true;
+    
     private String writeUser;
     class Listener extends SessionEventAdapter {
         public void outputParametersDetected(SessionEvent event) {
@@ -184,6 +188,9 @@ public class ProxyAuthenticationConnectionCustomizerTestCase extends TestCase {
     
     void testServerSession() {
         ServerSession ss = (ServerSession)getSession();
+        if(shouldEnableStatementCaching) {
+            ss.getPlatform().setShouldCacheAllStatements(true);
+        }
         verifyUser("ServerSession first read", getReadUser(ss), expectedMainSessionUser);
         
         // The first ClientSession created without proxy properties - should always use the same user as ServerSession.

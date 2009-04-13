@@ -45,10 +45,16 @@ public class WebLogicPlatform extends ServerPlatformBase {
     protected Class weblogicConnectionClass;
 
     /**
-     * Cached WLConnection.getVendorConnectionMethod() Method used for
+     * Cached WLConnection.getVendorConnection() Method used for
      * unwrapping connections.
      */
     protected Method vendorConnectionMethod;
+    
+    /**
+     * Cached WLConnection.clearStatementCache() Method used for
+     * clearing statement cache.
+     */
+    protected Method clearStatementCacheMethod;
     
     /**
      * INTERNAL: Default Constructor: All behavior for the default constructor
@@ -155,4 +161,38 @@ public class WebLogicPlatform extends ServerPlatformBase {
         return super.unwrapConnection(connection);
     }
 
+    /**
+     * Return the method for the WebLogic connection clearStatementCache method.
+     */
+    protected Method getClearStatementCacheMethod() {
+        if ((this.clearStatementCacheMethod == null) && (!getWebLogicConnectionClass().equals(void.class))) {
+            try {
+                this.clearStatementCacheMethod = PrivilegedAccessHelper.getDeclaredMethod(getWebLogicConnectionClass(), "clearStatementCache", new Class[0]);
+            } catch (NoSuchMethodException exception) {
+                getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, exception);
+            }
+        }
+
+        return this.clearStatementCacheMethod;
+    }
+
+    /**
+     * INTERNAL:
+     * Clears statement cache of WebLogic connection using the WebLogic API reflectively.
+     * Required by Oracle proxy authentication: currently connection statement cache
+     * becomes invalid on switching to/from proxy session.
+     * This method is called by OracleJDBC_10_1_0_2ProxyConnectionCustomizer  
+     * before opening proxy session and before closing it.
+     */
+    public void clearStatementCache(Connection connection) {   
+        if (getWebLogicConnectionClass().isInstance(connection) && getClearStatementCacheMethod() != null) {
+            try {
+                PrivilegedAccessHelper.invokeMethod(getClearStatementCacheMethod(), connection);
+            } catch (IllegalAccessException exception) {
+                getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, exception);
+            } catch (InvocationTargetException exception) {
+                getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, exception);
+            }
+        }
+    }
 }

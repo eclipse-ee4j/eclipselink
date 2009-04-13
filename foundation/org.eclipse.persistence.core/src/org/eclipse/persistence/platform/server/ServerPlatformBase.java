@@ -476,4 +476,15 @@ public abstract class ServerPlatformBase implements ServerPlatform {
     public JPAClassLoaderHolder getNewTempClassLoader(PersistenceUnitInfo puInfo) {
         return new JPAClassLoaderHolder(puInfo.getNewTempClassLoader(), true);
     }
+
+    /**
+     * INTERNAL:
+     * Clears statement cache of the wrapper connection.
+     * Required by Oracle proxy authentication: currently connection statement cache
+     * becomes invalid on switching to/from proxy session.
+     * This method is called by OracleJDBC_10_1_0_2ProxyConnectionCustomizer  
+     * before opening proxy session and before closing it.
+     */
+    public void clearStatementCache(java.sql.Connection connection) {   
+    }
 }

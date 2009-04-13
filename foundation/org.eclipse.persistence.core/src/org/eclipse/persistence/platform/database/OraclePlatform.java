@@ -249,6 +249,13 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
 
     /**
      * INTERNAL:
+     * Clears both implicit and explicit caches of OracleConnection on Oracle9Platform, noop here.
+     */
+    public void clearOracleConnectionCache(Connection conn) {    
+    }
+    
+    /**
+     * INTERNAL:
      * Used for stored function calls.
      */
     public String getAssignmentString() {
