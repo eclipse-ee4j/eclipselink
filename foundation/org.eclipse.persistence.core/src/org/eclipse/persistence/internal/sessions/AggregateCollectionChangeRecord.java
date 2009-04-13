@@ -71,6 +71,11 @@ public class AggregateCollectionChangeRecord extends CollectionChangeRecord impl
      * associated with this ChangeRecord
      */
     public void prepareForSynchronization(AbstractSession session) {
+        //these two sets are calculated to detect private ownership removal but will cause
+        //errors (null pointers as the Aggregate ObjectChangeSet  writeCompleteChangeSet is called and the 
+        // descriptor is not initialized)during cache co-ordination if left in place.
+        getAddObjectList().clear();
+        getRemoveObjectList().clear();
         Enumeration changes = getChangedValues().elements();
         while (changes.hasMoreElements()) {
             ObjectChangeSet changedObject = (ObjectChangeSet)changes.nextElement();
