@@ -58,7 +58,7 @@ public class CMP3Policy extends CMPPolicy {
     protected String pkClassName;
     
     // Stores the class version of the PKClass
-    protected Class pkClass;
+    protected Class pkClass = null;
 
     public CMP3Policy() {
         super();
@@ -240,9 +240,10 @@ public class CMP3Policy extends CMPPolicy {
      * these fields may have been loaded with the wrong loader (thank you Kirk).
      * If the key is compound, we also have to look up the fields for the key.
      */
-    protected KeyElementAccessor[] initializePrimaryKeyFields(Class keyClass) {
+    protected KeyElementAccessor[] initializePrimaryKeyFields(Class keyClass, AbstractSession session) {
         KeyElementAccessor[] pkAttributes = null;
         ClassDescriptor descriptor = this.getDescriptor();
+
         fieldToAccessorMap = new HashMap<DatabaseField,KeyElementAccessor>();
         int numberOfIDFields = descriptor.getPrimaryKeyFields().size();
         pkAttributes = new KeyElementAccessor[numberOfIDFields];
@@ -317,7 +318,10 @@ public class CMP3Policy extends CMPPolicy {
                     if (mapping.isDirectToFieldMapping()){
                         setPKClass(ConversionManager.getObjectClass(mapping.getAttributeClassification()));
                     } else if (mapping.isOneToOneMapping()) {
-                        CMPPolicy refPolicy = mapping.getReferenceDescriptor().getCMPPolicy();
+                        ClassDescriptor refDescriptor = mapping.getReferenceDescriptor();
+                        //ensure the referenced descriptor was initialized
+                        refDescriptor.initialize(session);
+                        CMPPolicy refPolicy = refDescriptor.getCMPPolicy();
                         setPKClass(refPolicy.getPKClass());
                     } 
                     fieldToAccessorMap.put(field, pkAttributes[i]);
@@ -380,9 +384,6 @@ public class CMP3Policy extends CMPPolicy {
      * @return Returns the keyClassFields.
      */
     protected KeyElementAccessor[] getKeyClassFields(Class clazz) {
-        if (this.keyClassFields == null) {
-            this.keyClassFields = initializePrimaryKeyFields(this.pkClass );
-        }
         return this.keyClassFields;
     }
 
@@ -553,5 +554,15 @@ public class CMP3Policy extends CMPPolicy {
             }
         }
         return fieldValue;
+    }
+    
+    /**
+     * INTERNAL:
+     * Initialize the CMPPolicy settings.
+     */
+    public void initialize(ClassDescriptor descriptor, AbstractSession session) throws DescriptorException {
+        super.initialize(descriptor, session);
+        
+        this.keyClassFields = initializePrimaryKeyFields(this.pkClass, session);
     }
 }
