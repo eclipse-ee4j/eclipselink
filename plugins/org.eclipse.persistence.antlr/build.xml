@@ -60,13 +60,13 @@
     <target name="clean" description="Clean the build">
         <delete dir="temp.dir" quiet="true"/>
         <delete includeEmptyDirs="true" failonerror="false">
-            <fileset dir="${antlr.2.common.plugins.dir}" includes="${eclipselink.antlr.bndl.prefix}*.jar"/>
+            <fileset dir="${antlr.2.common.plugins.dir}" includes="${ant.project.name}_*.jar, ${ant.project.name}.source_*.jar"/>
        </delete>
     </target>
 
     <!-- package -->
     <target name="package" description="jar OSGI bundle">
-        <jar jarfile="${antlr.2.common.plugins.dir}/${eclipselink.antlr.bndl.prefix}_${version.string}.jar" manifest="${temp.dir}/MANIFEST.MF">
+        <jar jarfile="${antlr.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" manifest="${temp.dir}/MANIFEST.MF">
             <fileset dir="${antlr.2.base.dir}">
                 <include name="about.html"/>
                 <include name="readme.html"/>
@@ -76,7 +76,7 @@
                 <include name="org/eclipse/persistence/**/*.class"/>
             </fileset>
         </jar>
-        <jar jarfile="${antlr.2.common.plugins.dir}/${eclipselink.antlr.bndl.prefix}.source_${version.string}.jar">
+        <jar jarfile="${antlr.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar">
              <manifest>
                 <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
                 <attribute name="Specification-Version"  value="${release.version}"/>

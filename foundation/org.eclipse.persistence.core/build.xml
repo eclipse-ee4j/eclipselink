@@ -78,7 +78,7 @@
     <target name="clean" description="Clean the build">
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${classes.dir}"/>
-            <fileset dir="${core.2.common.plugins.dir}" includes="${eclipselink.core.bndl.prefix}*.jar"/>
+            <fileset dir="${core.2.common.plugins.dir}" includes="${ant.project.name}_*.jar, ${ant.project.name}.source_*.jar"/>
         </delete>
     </target>
 
@@ -134,7 +134,7 @@
 
     <!-- package -->
     <target name="package" description="jar OSGI bundle">
-        <jar jarfile="${core.2.common.plugins.dir}/${eclipselink.core.bndl.prefix}_${version.string}.jar" manifest="${classes.dir}/MANIFEST.MF">
+        <jar jarfile="${core.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" manifest="${classes.dir}/MANIFEST.MF">
             <fileset dir="${core.2.base.dir}">
                 <include name="about.html"/>
                 <include name="readme.html"/>
@@ -148,7 +148,7 @@
                 <include name="org/eclipse/persistence/internal/helper/VendorNameToPlatformMapping.properties"/>
             </fileset>
         </jar>
-        <jar jarfile="${core.2.common.plugins.dir}/${eclipselink.core.bndl.prefix}.source_${version.string}.jar">
+        <jar jarfile="${core.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar">
              <manifest>
                 <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
                 <attribute name="Specification-Version"  value="${release.version}"/>

@@ -73,7 +73,7 @@
     <target name="clean" description="Clean all generated content">
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${classes.dir}"/>
-            <fileset dir="${sdo.2.common.plugins.dir}" includes="${eclipselink.sdo.bndl.prefix}*.jar"/>
+            <fileset dir="${sdo.2.common.plugins.dir}" includes="${ant.project.name}_*.jar, ${ant.project.name}.source_*.jar"/>
         </delete>
     </target>
 
@@ -100,7 +100,7 @@
 
     <!-- package -->
     <target name="package" description="jar OSGI bundle">
-        <jar jarfile="${sdo.2.common.plugins.dir}/${eclipselink.sdo.bndl.prefix}_${version.string}.jar" manifest="${classes.dir}/MANIFEST.MF">
+        <jar jarfile="${sdo.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" manifest="${classes.dir}/MANIFEST.MF">
             <fileset dir="${sdo.2.base.dir}">
                 <include name="about.html"/>
                 <include name="readme.html"/>
@@ -111,7 +111,7 @@
                 <include name="commonj/sdo/impl/HelperProviderImpl.class"/>
             </fileset>
         </jar>
-        <jar jarfile="${sdo.2.common.plugins.dir}/${eclipselink.sdo.bndl.prefix}.source_${version.string}.jar">
+        <jar jarfile="${sdo.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar">
              <manifest>
                 <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
                 <attribute name="Specification-Version"  value="${release.version}"/>
