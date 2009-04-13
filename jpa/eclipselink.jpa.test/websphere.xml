@@ -42,12 +42,12 @@
     <!-- This copy junit.jar to WebSphere server lib/ext. -->
     <target name="websphere-install">
         <copy file="${junit.lib}" todir="${was.home}/lib/ext"/>
-        <copy file="${eclipselink.jar.dir}/eclipselink.jar" todir="${was.home}/lib/ext"/>
     </target>
 
     <!-- Start the server. -->
     <target name="websphere-start">
         <echo message="WebSphere Server is Starting......"/>
+        <copy file="${eclipselink.jar.dir}/eclipselink.jar" todir="${was.home}/lib/ext"/>
         <exec executable="${was.home}/bin/startServer.${suffix}">
             <arg value="server1"/>
         </exec> 
