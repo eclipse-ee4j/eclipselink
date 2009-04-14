@@ -5,15 +5,36 @@ Bundle-SymbolicName: org.eclipse.persistence.oracle
 Bundle-Vendor: EclipseLink Project
 Bundle-Version: 1.1.1
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Require-Bundle: org.eclipse.persistence.core;bundle-version="1.1.1";visibility:=reexport
-Export-Package: org.eclipse.persistence.eis.adapters.aq;version="1.1.1",
- org.eclipse.persistence.internal.eis.adapters.aq;version="1.1.1",
+Fragment-Host: org.eclipse.persistence.core;bundle-version="1.1.1"
+Export-Package: org.eclipse.persistence.internal.eis.adapters.aq;version="1.1.1",
  org.eclipse.persistence.internal.platform.database.oracle;version="1.1.1",
  org.eclipse.persistence.internal.platform.database.oracle.xdb;version="1.1.1",
  org.eclipse.persistence.platform.database.oracle;version="1.1.1",
  org.eclipse.persistence.platform.database.oracle.converters;version="1.1.1",
  org.eclipse.persistence.platform.xml.xdk;version="1.1.1"
 Bundle-ClassPath: .
-Import-Package: javax.resource;version="1.5.0";resolution:=optional,
- javax.resource.cci;version="1.5.0"
+Import-Package: javax.naming;resolution:=optional,
+ javax.resource;version="1.5.0";resolution:=optional,
+ javax.resource.cci;version="1.5.0";resolution:=optional,
+ javax.sql;resolution:=optional,
+ javax.xml.parsers;resolution:=optional,
+ javax.xml.transform;resolution:=optional,
+ javax.xml.transform.dom;resolution:=optional,
+ javax.xml.transform.sax;resolution:=optional,
+ javax.xml.transform.stream;resolution:=optional,
+ javax.xml.validation;resolution:=optional,
+ oracle.AQ;resolution:=optional,
+ oracle.jdbc,
+ oracle.jdbc.internal,
+ oracle.jdbc.pool,
+ oracle.spatial.geometry;resolution:=optional,
+ oracle.sql;resolution:=optional,
+ oracle.xdb;resolution:=optional,
+ oracle.xdb.dom;resolution:=optional,
+ oracle.xml.jaxp;resolution:=optional,
+ oracle.xml.parser.schema;resolution:=optional,
+ oracle.xml.parser.v2;resolution:=optional,
+ oracle.xml.util;resolution:=optional,
+ org.w3c.dom;resolution:=optional,
+ org.xml.sax;resolution:=optional
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.oracle

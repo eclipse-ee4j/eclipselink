@@ -14,6 +14,7 @@ package org.eclipse.persistence.jpa.osgi;
 
 import java.util.Hashtable;
 
+import org.eclipse.persistence.internal.jpa.deployment.osgi.OSGiPersistenceInitializationHelper;
 import org.eclipse.persistence.internal.localization.LoggingLocalization;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
@@ -90,15 +91,17 @@ public class Activator implements BundleActivator, SynchronousBundleListener {
      * @param bundle
      */
     private void registerBundle(Bundle bundle) {
-        if ((bundle.getState() & (Bundle.STARTING | Bundle.ACTIVE)) != 0) {
-            try {
-                String[] persistenceUnitNames = getPersistenceUnitNames(bundle);
-                if (persistenceUnitNames != null) {
-                    org.eclipse.persistence.internal.jpa.deployment.osgi.OSGiPersistenceInitializationHelper.addBundle(bundle, persistenceUnitNames);
-                }
-            } catch (Exception e) {
-                AbstractSessionLog.getLog().logThrowable(SessionLog.WARNING, e);
-            }
+        if ((bundle.getState() & (Bundle.STARTING | Bundle.RESOLVED | Bundle.ACTIVE)) != 0) {
+        	if (!OSGiPersistenceInitializationHelper.includesBundle(bundle)) {
+	            try {
+	                String[] persistenceUnitNames = getPersistenceUnitNames(bundle);
+	                if (persistenceUnitNames != null) {
+	                    OSGiPersistenceInitializationHelper.addBundle(bundle, persistenceUnitNames);
+	                }
+	            } catch (Exception e) {
+	                AbstractSessionLog.getLog().logThrowable(SessionLog.WARNING, e);
+	            }
+        	}
         }
     }
     
@@ -110,6 +113,7 @@ public class Activator implements BundleActivator, SynchronousBundleListener {
             return null;
         }
     }
+    
     
     private void deregisterBundle(Bundle bundle) {
         org.eclipse.persistence.internal.jpa.deployment.osgi.OSGiPersistenceInitializationHelper.removeBundle(bundle);

@@ -34,7 +34,6 @@ Export-Package: org.eclipse.persistence.internal.jpa;version="1.1.1",
  org.eclipse.persistence.jpa.osgi;version="1.1.1",
  org.eclipse.persistence.tools.weaving.jpa;version="1.1.1"
 Bundle-Activator: org.eclipse.persistence.jpa.osgi.Activator
-Bundle-ClassPath: .
 Import-Package: javax.persistence;version="[1.99.0,2.1.0)",
  javax.persistence.spi;version="[1.99.0,2.1.0)",
  javax.transaction;version="1.1.0";resolution:=optional,

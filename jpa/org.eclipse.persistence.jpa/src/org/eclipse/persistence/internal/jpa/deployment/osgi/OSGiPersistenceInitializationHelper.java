@@ -12,19 +12,22 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.deployment.osgi;
 
-import java.util.Map;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.logging.AbstractSessionLog;
-import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.exceptions.EntityManagerSetupException;
 import org.eclipse.persistence.internal.jpa.deployment.JPAInitializer;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceInitializationHelper;
 import org.eclipse.persistence.internal.localization.LoggingLocalization;
-import org.eclipse.persistence.exceptions.EntityManagerSetupException;
-
+import org.eclipse.persistence.jpa.osgi.Activator;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 
 /**
  * Overrides the default persistence initialization behavior to allow classloaders to be obtained
@@ -33,6 +36,7 @@ import org.osgi.framework.Bundle;
  * @see PersistenceInitialization helper
  * 
  * @author tware
+ * @author shsmith
  *
  */
 public class OSGiPersistenceInitializationHelper extends PersistenceInitializationHelper {
@@ -40,11 +44,14 @@ public class OSGiPersistenceInitializationHelper extends PersistenceInitializati
     private String initializerClassName = null;
     
     public static final String EQUINOX_INITIALIZER_NAME = "org.eclipse.persistence.internal.jpa.deployment.osgi.equinox.EquinoxInitializer";
+    private static final String ORG_ECLIPSE_PERSISTENCE_CORE = "org.eclipse.persistence.core";
     
     // these maps are used to retrieve the classloader used for different bundles
     private static Map<String, Bundle> puToBundle = Collections.synchronizedMap(new HashMap<String,Bundle>());
     private static Map<Bundle, String[]> bundleToPUs = Collections.synchronizedMap(new HashMap<Bundle, String[]>());
     
+    private Map<String,ClassLoader> puClassLoaders = new HashMap<String, ClassLoader>();
+
     /**
      * Add a bundle to the list of bundles managed by this persistence provider
      * The bundle is indexed so it's classloader can be accessed
@@ -78,27 +85,82 @@ public class OSGiPersistenceInitializationHelper extends PersistenceInitializati
         this.initializerClassName = initializerClassName;
     }
     /**
-     * Answer the classloader to use to create an EntityManager.
-     * If a classloader is not found in the properties map then 
-     * attempt to locate one in the bundle registry.
+     * Answer the ClassLoader to use to create an EntityManager. 
+     * The result is a CompositeClassLoader capable of loading 
+     * classes from the optionally provided ClassLoader, the 
+     * bundle that provides the persistence unit (i.e., contains the
+     * persistence.xml, and EclipseLink classes (since the 
+     * persistence unit bundle may not have an explicit dependency
+     * on EclipseLink).
      * 
-     * @param emName
+     * @param persistenceUnitName
      * @param properties
      * @return ClassLoader
      */
-    public ClassLoader getClassLoader(String emName, Map properties) {
-        ClassLoader bundleClassLoader = null;
+    public ClassLoader getClassLoader(String persistenceUnitName, Map properties) {
+        // This method is called more than once for the same persistence unit so
+        // check to see if a ClassLoader already constructed and if so return it.
+        ClassLoader previouslyDefinedLoader = puClassLoaders.get(persistenceUnitName);
+        if (previouslyDefinedLoader != null) {
+            return previouslyDefinedLoader;
+        }
+        
+        List<ClassLoader> loaders = new ArrayList<ClassLoader>();
+        ClassLoader propertyClassLoader = null;
+
+        // Look for a ClassLoader in the properties.
         if (properties != null) {
-            bundleClassLoader = (ClassLoader)properties.get(PersistenceUnitProperties.CLASSLOADER);
-        }
-        if (bundleClassLoader == null) {
-            Bundle bundle = puToBundle.get(emName);
-            if (bundle == null) {
-                throw EntityManagerSetupException.couldNotFindPersistenceUnitBundle(emName);
+            Object propertyValue = properties.get(PersistenceUnitProperties.CLASSLOADER);
+            if ((propertyValue != null) && (propertyValue instanceof ClassLoader)) {
+               propertyClassLoader = (ClassLoader)propertyValue;
+                loaders.add(propertyClassLoader);
             }
-            bundleClassLoader = new BundleProxyClassLoader(bundle);
         }
-        return bundleClassLoader;
+        
+        // If a bundle has registered for a persistence unit
+        // then wrap the bundle to support the ClassLoader interface.
+        Bundle bundle = puToBundle.get(persistenceUnitName);
+        if (bundle != null) {
+            ClassLoader bundleClassLoader = new BundleProxyClassLoader(bundle);
+            loaders.add(bundleClassLoader);
+        }
+        
+        if ((propertyClassLoader == null) && (bundle == null)) {
+            throw EntityManagerSetupException.couldNotFindPersistenceUnitBundle(persistenceUnitName);
+        }
+
+        // Add the EclipseLink Core bundle loader so we can see classes 
+        // (such as platforms) in fragments,
+        BundleContext context = Activator.getContext();
+        if (context != null) {
+            // context is set in the Activator which may might
+            // not be called in an RCP application
+            Bundle[] bundles = context.getBundles();
+            Bundle coreBundle = null;
+            for (int i = 0; i < bundles.length; i++) {
+                if (bundles[i].getSymbolicName().equals(ORG_ECLIPSE_PERSISTENCE_CORE)) {
+                    coreBundle = bundles[i];
+                    loaders.add(new BundleProxyClassLoader(coreBundle));
+                    break;
+                }
+            }
+            // Add the EclipseLink JPA bundle ClassLoader so that we can load
+            // EclipseLink classes.
+            ClassLoader eclipseLinkJpaClassLoader = new BundleProxyClassLoader(context.getBundle());
+            loaders.add(eclipseLinkJpaClassLoader);
+        }
+        
+        // If the only classloader is the one passes as a property
+        // then no point building a composite--just use the one passed.
+        ClassLoader puClassLoader = null;
+        if ((loaders.size() == 1) && (loaders.get(0) == propertyClassLoader)) {
+            puClassLoader = propertyClassLoader;
+        } else {
+            puClassLoader = new CompositeClassLoader(loaders);
+        }
+        
+	  puClassLoaders.put(persistenceUnitName, puClassLoader);  // cache to avoid reconstruction
+	  return puClassLoader;
     }
             
     /**
@@ -123,5 +185,9 @@ public class OSGiPersistenceInitializationHelper extends PersistenceInitializati
         }
         return new OSGiInitializer(classLoader);
     }
+
+	public static boolean includesBundle(Bundle bundle) {
+		return bundleToPUs.containsKey(bundle);
+	}
 
 }
