@@ -981,10 +981,6 @@ public class EntityManagerSetupImpl {
             return;
         }
         
-        if (session.getProject().usesSequencing()) {
-            session.getSequencingControl().setShouldUseSeparateConnection(nonjtaDatasource !=  null);
-        }
-        
         login.setUsesExternalTransactionController(transactionType == PersistenceUnitTransactionType.JTA);
 
         javax.sql.DataSource mainDatasource = null;
