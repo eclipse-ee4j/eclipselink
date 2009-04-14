@@ -234,7 +234,7 @@ public class MappingsGenerator {
                 if (isCollectionType(property)) {
                     generateCompositeCollectionMapping(property, descriptor, namespaceInfo, valueType).setConverter(new XMLJavaTypeConverter(adapterClass.getQualifiedName()));
                 } else {
-                    generateCompositeObjectMapping(property, descriptor, namespaceInfo, valueType).setConverter(new XMLJavaTypeConverter(adapterClass.getQualifiedName()));
+                    generateCompositeObjectMapping(property, descriptor, namespaceInfo, valueType.getQualifiedName()).setConverter(new XMLJavaTypeConverter(adapterClass.getQualifiedName()));
                 }
             } else {
                 if (isCollectionType(property)) {
@@ -283,7 +283,7 @@ public class MappingsGenerator {
                     if (reference.isEnumerationType()) {
                         generateDirectEnumerationMapping(property, descriptor, namespaceInfo, (EnumTypeInfo) reference);
                     } else {
-                        generateCompositeObjectMapping(property, descriptor, namespaceInfo, referenceClass);
+                        generateCompositeObjectMapping(property, descriptor, namespaceInfo, referenceClass.getQualifiedName());
                     }
                 }
             } else {
@@ -291,7 +291,8 @@ public class MappingsGenerator {
                     generateBinaryMapping(property, descriptor, namespaceInfo);
                 } else {
                     if (referenceClass.getQualifiedName().equals("java.lang.Object")) {
-                        generateAnyObjectMapping(property, descriptor, namespaceInfo);
+                        XMLCompositeObjectMapping coMapping = generateCompositeObjectMapping(property, descriptor, namespaceInfo, null);
+                        coMapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
                     } else {
                         generateDirectMapping(property, descriptor, namespaceInfo);
                     }
@@ -458,9 +459,9 @@ public class MappingsGenerator {
         descriptor.addMapping(mapping);
         return mapping;
     }
-    public XMLCompositeObjectMapping generateCompositeObjectMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo, JavaClass referenceClass) {
+    public XMLCompositeObjectMapping generateCompositeObjectMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo, String referenceClassName) {
         XMLCompositeObjectMapping mapping = new XMLCompositeObjectMapping();
-        mapping.setReferenceClassName(referenceClass.getQualifiedName());
+        mapping.setReferenceClassName(referenceClassName);
         mapping.setAttributeName(property.getPropertyName());
         if(property.isMethodProperty()) {
             if(property.getSetMethodName() != null) {

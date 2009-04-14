@@ -155,12 +155,11 @@ import org.w3c.dom.Text;
  *
  * @since Oracle TopLink 10<i>g</i> Release 2 (10.1.3)
  */
-public class XMLAnyObjectMapping extends DatabaseMapping implements XMLMapping {
+public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMapping {
     private XMLField field;
     private boolean useXMLRoot;
     private boolean areOtherMappingInThisContext = true;
     private XMLConverter converter;
-    private UnmarshalKeepAsElementPolicy keepAsElementPolicy;
 
     public XMLAnyObjectMapping() {
         useXMLRoot = false;
@@ -321,24 +320,8 @@ public class XMLAnyObjectMapping extends DatabaseMapping implements XMLMapping {
 
                 if (!useXMLRoot) {
                     referenceDescriptor = getDescriptor(nestedRecord, session, null);
-
-                    if (referenceDescriptor != null && keepAsElementPolicy != UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT) {
-                        ObjectBuilder builder = referenceDescriptor.getObjectBuilder();
-                        objectValue = builder.buildObject(query, nestedRecord, joinManager);
-                    	if(getConverter() != null) {
-                    		objectValue = getConverter().convertDataValueToObjectValue(objectValue, session, record.getUnmarshaller());
-                    	}
-                        return objectValue;
-                    } else {
-                        if ((keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) || (keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)) {
-                            XMLPlatformFactory.getInstance().getXMLPlatform().namespaceQualifyFragment((Element) next);
-                            objectValue = next;
-                            if(getConverter() != null) {
-                                objectValue = getConverter().convertDataValueToObjectValue(objectValue, session, record.getUnmarshaller());
-                            }
-                            return objectValue;
-                        }
-                    }
+                    
+                    return buildObjectForNonXMLRoot(referenceDescriptor, getConverter(), query, record, nestedRecord, joinManager, session, next, null, null);
                 } else {
                     String schemaType = ((Element) next).getAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
                     QName schemaTypeQName = null;
@@ -373,14 +356,7 @@ public class XMLAnyObjectMapping extends DatabaseMapping implements XMLMapping {
                     	}
                         return updated;
                     } else if ((referenceDescriptor != null) && (getKeepAsElementPolicy() != UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)) {
-                        ObjectBuilder builder = referenceDescriptor.getObjectBuilder();
-                        objectValue = builder.buildObject(query, nestedRecord, joinManager);
-                        Object updated = ((XMLDescriptor) referenceDescriptor).wrapObjectInXMLRoot(objectValue, next.getNamespaceURI(), next.getLocalName(), next.getPrefix(), false);
-
-                        if(getConverter() != null) {
-                            updated = getConverter().convertDataValueToObjectValue(updated, session, record.getUnmarshaller());
-                        }                       
-                        return updated;
+                        return buildObjectAndWrapInXMLRoot(referenceDescriptor, getConverter(), query, record, nestedRecord, joinManager, session, next, null, null);
                     } else {
                         Object value = null;
                         Node textchild = ((Element) next).getFirstChild();
@@ -411,20 +387,6 @@ public class XMLAnyObjectMapping extends DatabaseMapping implements XMLMapping {
             i++;
         }
         return null;
-    }
-
-    protected XMLDescriptor getDescriptor(XMLRecord xmlRecord, AbstractSession session, QName rootQName) throws XMLMarshalException {
-        if (rootQName == null) {
-            rootQName = new QName(xmlRecord.getNamespaceURI(), xmlRecord.getLocalName());
-        }
-        XMLContext xmlContext = xmlRecord.getUnmarshaller().getXMLContext();
-        XMLDescriptor xmlDescriptor = xmlContext.getDescriptor(rootQName);
-        if (null == xmlDescriptor) {
-            if (!((keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) || (keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT))) {
-                throw XMLMarshalException.noDescriptorWithMatchingRootElement(xmlRecord.getLocalName());
-            }
-        }
-        return xmlDescriptor;
     }
 
     public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session) throws DescriptorException {
@@ -717,11 +679,4 @@ public class XMLAnyObjectMapping extends DatabaseMapping implements XMLMapping {
     	this.converter = converter;
     }
 
-    public UnmarshalKeepAsElementPolicy getKeepAsElementPolicy() {
-        return keepAsElementPolicy;
-    }
-
-    public void setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy keepAsElementPolicy) {
-        this.keepAsElementPolicy = keepAsElementPolicy;
-    }
 }

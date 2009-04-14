@@ -23,8 +23,10 @@ import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
+import org.eclipse.persistence.mappings.converters.EnumTypeConverter;
 import org.eclipse.persistence.mappings.transformers.ConstantTransformer;
 import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy;
 import org.eclipse.persistence.oxm.mappings.XMLAnyAttributeMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
@@ -149,6 +151,15 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends ObjectPersist
         ((NullPolicy)containerSetMethodMapping.getNullPolicy()).setSetPerformedForAbsentNode(false);
         descriptor.addMapping(containerSetMethodMapping);
         
+        XMLDirectMapping keepAsElementMapping = new XMLDirectMapping();
+        keepAsElementMapping.setAttributeName("keepAsElementPolicy");
+        keepAsElementMapping.setGetMethodName("getKeepAsElementPolicy");
+        keepAsElementMapping.setSetMethodName("setKeepAsElementPolicy");
+        keepAsElementMapping.setXPath(getPrimaryNamespaceXPath() + "keep-as-element-policy");
+        EnumTypeConverter converter = new EnumTypeConverter(keepAsElementMapping, UnmarshalKeepAsElementPolicy.class, false);
+        keepAsElementMapping.setConverter(converter);
+        descriptor.addMapping(keepAsElementMapping);
+        
         return descriptor;
     }
     
@@ -204,5 +215,19 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends ObjectPersist
         return descriptor;
     }
     
+    protected ClassDescriptor buildXMLAnyObjectMappingDescriptor() {
+        ClassDescriptor descriptor = super.buildXMLAnyObjectMappingDescriptor();
+        
+        XMLDirectMapping keepAsElementMapping = new XMLDirectMapping();
+        keepAsElementMapping.setAttributeName("keepAsElementPolicy");
+        keepAsElementMapping.setGetMethodName("getKeepAsElementPolicy");
+        keepAsElementMapping.setSetMethodName("setKeepAsElementPolicy");
+        keepAsElementMapping.setXPath(getPrimaryNamespaceXPath() + "keep-as-element-policy");
+        EnumTypeConverter converter = new EnumTypeConverter(keepAsElementMapping, UnmarshalKeepAsElementPolicy.class, false);
+        keepAsElementMapping.setConverter(converter);
+        descriptor.addMapping(keepAsElementMapping);
+        
+        return descriptor;
+    }
     
 }

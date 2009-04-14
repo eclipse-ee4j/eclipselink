@@ -643,15 +643,6 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         xmlRootMapping.setNullValue(Boolean.FALSE);
         descriptor.addMapping(xmlRootMapping);
 
-        XMLDirectMapping keepAsElementMapping = new XMLDirectMapping();
-        keepAsElementMapping.setAttributeName("keepAsElementPolicy");
-        keepAsElementMapping.setGetMethodName("getKeepAsElementPolicy");
-        keepAsElementMapping.setSetMethodName("setKeepAsElementPolicy");
-        keepAsElementMapping.setXPath(getPrimaryNamespaceXPath() + "keep-as-element-policy");
-        EnumTypeConverter converter = new EnumTypeConverter(keepAsElementMapping, UnmarshalKeepAsElementPolicy.class, false);
-        keepAsElementMapping.setConverter(converter);
-        descriptor.addMapping(keepAsElementMapping);        
-        
         return descriptor;
     }
 

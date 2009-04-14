@@ -13,6 +13,9 @@
 package org.eclipse.persistence.oxm.mappings;
 
 import java.lang.reflect.Modifier;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+
 import javax.xml.namespace.QName;
 
 import org.w3c.dom.Element;
@@ -20,6 +23,7 @@ import org.w3c.dom.Element;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.descriptors.InstanceVariableAttributeAccessor;
 import org.eclipse.persistence.internal.descriptors.MethodAttributeAccessor;
@@ -27,11 +31,14 @@ import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XMLObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.AttributeAccessor;
 import org.eclipse.persistence.mappings.foundation.AbstractCompositeObjectMapping;
 import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
@@ -40,6 +47,7 @@ import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
 import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
+import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 
 /**
@@ -193,6 +201,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
 
     AbstractNullPolicy nullPolicy;
     private AttributeAccessor containerAccessor;
+    private UnmarshalKeepAsElementPolicy keepAsElementPolicy;
 
     public XMLCompositeObjectMapping() {
         super();
@@ -395,20 +404,33 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
     }
 
     protected Object buildCompositeRow(Object attributeValue, AbstractSession session, AbstractRecord databaseRow) {
-        ClassDescriptor classDesc = getReferenceDescriptor(attributeValue, session);
-        XMLObjectBuilder objectBuilder = (XMLObjectBuilder) classDesc.getObjectBuilder();
-
-        XMLField xmlFld = (XMLField) getField();
-        if (xmlFld.hasLastXPathFragment() && xmlFld.getLastXPathFragment().hasLeafElementType()) {
-            XMLRecord xmlRec = (XMLRecord) databaseRow;
-            xmlRec.setLeafElementType(xmlFld.getLastXPathFragment().getLeafElementType());
+        XMLDescriptor xmlReferenceDescriptor = (XMLDescriptor) getReferenceDescriptor(attributeValue, session);
+        
+        if (xmlReferenceDescriptor == null) {
+            xmlReferenceDescriptor = (XMLDescriptor) session.getDescriptor(attributeValue.getClass());
         }
-        XMLRecord parent = (XMLRecord) databaseRow;
-        boolean addXsiType = shouldAddXsiType((XMLRecord) databaseRow, classDesc);
-        XMLRecord child = (XMLRecord) objectBuilder.createRecordFor(attributeValue, (XMLField) getField(), parent, this);
-        child.setNamespaceResolver(parent.getNamespaceResolver());
-        objectBuilder.buildIntoNestedRow(child, attributeValue, session, addXsiType);
-        return child;
+            
+        if (xmlReferenceDescriptor != null) {            
+            XMLObjectBuilder objectBuilder = (XMLObjectBuilder) xmlReferenceDescriptor.getObjectBuilder();
+
+            XMLField xmlFld = (XMLField) getField();
+            if (xmlFld.hasLastXPathFragment() && xmlFld.getLastXPathFragment().hasLeafElementType()) {
+                XMLRecord xmlRec = (XMLRecord) databaseRow;
+                xmlRec.setLeafElementType(xmlFld.getLastXPathFragment().getLeafElementType());
+            }
+            XMLRecord parent = (XMLRecord) databaseRow;
+            boolean addXsiType = shouldAddXsiType((XMLRecord) databaseRow, xmlReferenceDescriptor);
+            XMLRecord child = (XMLRecord) objectBuilder.createRecordFor(attributeValue, (XMLField) getField(), parent, this);
+            child.setNamespaceResolver(parent.getNamespaceResolver());
+            objectBuilder.buildIntoNestedRow(child, attributeValue, session, addXsiType);
+            return child;
+        } else {
+            if (attributeValue instanceof Element && getKeepAsElementPolicy() == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) {
+                return new DOMRecord((Element) attributeValue);
+            }
+        }
+        
+        return null;
     }
 
     protected Object buildCompositeObject(ObjectBuilder objectBuilder, AbstractRecord nestedRow, ObjectBuildingQuery query, JoinedAttributeManager joinManager) {
@@ -452,7 +474,23 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
         // pretty sure we can ignore inheritance here:                
         Object toReturn;
         // Use local descriptor - not the instance variable on DatabaseMapping
-        ClassDescriptor aDescriptor = getReferenceDescriptor((DOMRecord) nestedRow);
+        
+        ClassDescriptor aDescriptor = null;
+        try {
+            aDescriptor = getReferenceDescriptor((DOMRecord) nestedRow);
+        } catch (XMLMarshalException e) {
+            if ((getKeepAsElementPolicy() == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) || (getKeepAsElementPolicy() == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)) {
+                XMLPlatformFactory.getInstance().getXMLPlatform().namespaceQualifyFragment((Element) nestedRow.getDOM());
+                toReturn = nestedRow.getDOM();
+                if (getConverter() != null) {
+                    toReturn = ((XMLConverter) getConverter()).convertDataValueToObjectValue(toReturn, executionSession, nestedRow.getUnmarshaller());
+                }
+                return toReturn;
+            } else {
+                throw e;
+            }
+        }
+        
         if (aDescriptor.hasInheritance()) {
             Class classValue = aDescriptor.getInheritancePolicy().classFromRow(nestedRow, executionSession);
             if (classValue == null) {
@@ -599,7 +637,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
         }
 
         ClassDescriptor subDescriptor = session.getDescriptor(theClass);
-        if (subDescriptor == null) {
+        if (subDescriptor == null && getKeepAsElementPolicy() != UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) {
             throw DescriptorException.noSubClassMatch(theClass, this);
         } else {
             return subDescriptor;
@@ -633,4 +671,54 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
         }
         return false;
     }
+    
+    public UnmarshalKeepAsElementPolicy getKeepAsElementPolicy() {
+        return keepAsElementPolicy;
+    }
+
+    public void setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy keepAsElementPolicy) {
+        this.keepAsElementPolicy = keepAsElementPolicy;
+    }
+    
+    protected XMLDescriptor getDescriptor(XMLRecord xmlRecord, AbstractSession session, QName rootQName) throws XMLMarshalException {
+        if (rootQName == null) {
+            rootQName = new QName(xmlRecord.getNamespaceURI(), xmlRecord.getLocalName());
+        }
+        XMLContext xmlContext = xmlRecord.getUnmarshaller().getXMLContext();
+        XMLDescriptor xmlDescriptor = xmlContext.getDescriptor(rootQName);
+        if (null == xmlDescriptor) {
+            if (!((getKeepAsElementPolicy() == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) || (getKeepAsElementPolicy() == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT))) {
+                throw XMLMarshalException.noDescriptorWithMatchingRootElement(xmlRecord.getLocalName());
+            }
+        }
+        return xmlDescriptor;
+    }
+
+    /**
+     * INTERNAL:
+     * Convert all the class-name-based settings in this mapping to actual class-based
+     * settings. This method is used when converting a project that has been built
+     * with class names to a project with classes.
+     * @param classLoader 
+     */
+    public void convertClassNamesToClasses(ClassLoader classLoader){
+        Class referenceClass = null;
+        try{
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                try {
+                    referenceClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(getReferenceClassName(), true, classLoader));
+                } catch (PrivilegedActionException exception) {
+                    throw ValidationException.classNotFoundWhileConvertingClassNames(getReferenceClassName(), exception.getException());
+                }
+            } else {
+                if (getReferenceClassName() != null) {
+                    referenceClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(getReferenceClassName(), true, classLoader);
+                }
+            }
+        } catch (ClassNotFoundException exc){
+            throw ValidationException.classNotFoundWhileConvertingClassNames(getReferenceClassName(), exc);
+        }
+        setReferenceClass(referenceClass);
+    }
+    
 }

@@ -23,6 +23,7 @@ import org.eclipse.persistence.testing.oxm.mappings.compositeobject.identifiedby
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.identifiedbynamespace.CompositeObjectIdentifiedByNamespaceTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.identifiedbynamespace.CompositeObjectNoReferenceClassTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.identifiedbyposition.CompositeObjectIdentifiedByPositionTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.compositeobject.keepaselement.CompositeObjectKeepUnknownAsElementTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.nested.CompositeObjectNestedTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.nillable.CompositeObjectIsSetNodeNullPolicyFalseTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.nillable.CompositeObjectIsSetNodeNullPolicyTrueTestCases;
@@ -106,6 +107,8 @@ public class CompositeObjectMappingTestSuite extends TestCase {
         suite.addTestSuite(CompositeObjectIsSetNodeNullPolicyTrueTestCases.class);
         suite.addTestSuite(CompositeObjectIsSetNodeNullPolicyFalseTestCases.class);
 
+        suite.addTestSuite(CompositeObjectKeepUnknownAsElementTestCases.class);
+        
         return suite;
     }
 

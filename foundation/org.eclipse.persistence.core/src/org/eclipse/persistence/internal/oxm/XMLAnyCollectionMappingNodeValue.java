@@ -122,23 +122,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
             workingDescriptor = xmlDescriptor;
             UnmarshalKeepAsElementPolicy policy = xmlAnyCollectionMapping.getKeepAsElementPolicy();
             if (((xmlDescriptor == null) && (policy == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT)) || (policy == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)) {
-                //setup handler stuff
-                SAXFragmentBuilder builder = unmarshalRecord.getFragmentBuilder();
-                builder.setOwningRecord(unmarshalRecord);
-                try {
-                    String namespaceURI = "";
-                    if (xPathFragment.getNamespaceURI() != null) {
-                        namespaceURI = xPathFragment.getNamespaceURI();
-                    }
-                    String qName = xPathFragment.getLocalName();
-                    if (xPathFragment.getPrefix() != null) {
-                        qName = xPathFragment.getPrefix() + ":" + qName;
-                    }
-
-                    builder.startElement(namespaceURI, xPathFragment.getLocalName(), qName, atts);
-                    unmarshalRecord.getXMLReader().setContentHandler(builder);
-                } catch (SAXException ex) {
-                }
+                setupHandlerForKeepAsElementPolicy(unmarshalRecord, xPathFragment, atts);
             } else if (xmlDescriptor != null) {
                 processChild(xPathFragment, unmarshalRecord, atts, xmlDescriptor);
             } else {
@@ -191,12 +175,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
 
             UnmarshalKeepAsElementPolicy keepAsElementPolicy = xmlAnyCollectionMapping.getKeepAsElementPolicy();
             if ((((keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) || (keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT))) && (builder.getNodes().size() != 0)) {
-                //Grab the fragment and put it into the collection
-            	Object node = builder.getNodes().pop();
-            	if(xmlAnyCollectionMapping.getConverter() != null) {
-            		node = xmlAnyCollectionMapping.getConverter().convertDataValueToObjectValue(node, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller());
-            	}
-                unmarshalRecord.addAttributeValue(this, node);
+                setOrAddAttributeValueForKeepAsElement(builder, xmlAnyCollectionMapping, xmlAnyCollectionMapping.getConverter(), unmarshalRecord, true);
             } else {
                 //TEXT VALUE
                 endElementProcessText(unmarshalRecord, collection, xPathFragment);

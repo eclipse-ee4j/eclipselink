@@ -22,7 +22,6 @@ import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
-import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XMLObjectBuilder;
@@ -156,19 +155,18 @@ import org.w3c.dom.Text;
  *
  * @since Oracle TopLink 10<i>g</i> Release 2 (10.1.3)
  */
-public class XMLAnyCollectionMapping extends DatabaseMapping implements XMLMapping, ContainerMapping {
+public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements XMLMapping, ContainerMapping {
     private XMLField field;
     private ContainerPolicy containerPolicy;
     private boolean useXMLRoot;
     private boolean mixedContent = true;
-    private UnmarshalKeepAsElementPolicy keepAsElementPolicy;
     private boolean areOtherMappingInThisContext = true;
     private XMLConverter valueConverter;
 
     public XMLAnyCollectionMapping() {
         this.containerPolicy = ContainerPolicy.buildDefaultPolicy();
         useXMLRoot = false;
-        keepAsElementPolicy = UnmarshalKeepAsElementPolicy.KEEP_NONE_AS_ELEMENT;
+        setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_NONE_AS_ELEMENT);
     }
 
     /**
@@ -350,24 +348,7 @@ public class XMLAnyCollectionMapping extends DatabaseMapping implements XMLMappi
 
                     if (!useXMLRoot) {
                         referenceDescriptor = getDescriptor(nestedRecord, session, null);
-
-                        if ((referenceDescriptor != null) && (keepAsElementPolicy != UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)) {
-                            ObjectBuilder builder = referenceDescriptor.getObjectBuilder();
-                            objectValue = builder.buildObject(query, nestedRecord, joinManager);
-                            if(getConverter() != null) {
-                            	objectValue = getConverter().convertDataValueToObjectValue(objectValue, session, record.getUnmarshaller());
-                            }                    	
-                            cp.addInto(objectValue, container, session);
-                        } else {
-                            if ((keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) || (keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)) {
-                                XMLPlatformFactory.getInstance().getXMLPlatform().namespaceQualifyFragment((Element) next);
-                                objectValue = next;
-                                if(getConverter() != null) {
-                                	objectValue = getConverter().convertDataValueToObjectValue(objectValue, session, record.getUnmarshaller());
-                                }                    	
-                                cp.addInto(objectValue, container, session);
-                            }
-                        }
+                        objectValue = buildObjectForNonXMLRoot(referenceDescriptor, getConverter(), query, record, nestedRecord, joinManager, session, next, container, cp);
                     } else {
                         String schemaType = ((Element) next).getAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
                         QName schemaTypeQName = null;
@@ -398,21 +379,9 @@ public class XMLAnyCollectionMapping extends DatabaseMapping implements XMLMappi
                             }
                         }
                         if ((referenceDescriptor != null) && (getKeepAsElementPolicy() != UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)) {
-                            ObjectBuilder builder = referenceDescriptor.getObjectBuilder();
-                            objectValue = builder.buildObject(query, nestedRecord, joinManager);
-                            Object updated = ((XMLDescriptor) referenceDescriptor).wrapObjectInXMLRoot(objectValue, next.getNamespaceURI(), next.getLocalName(), next.getPrefix(), false);
-
-                            if(getConverter() != null) {
-                            	updated = getConverter().convertDataValueToObjectValue(updated, session, record.getUnmarshaller());
-                            }                    	
-                            cp.addInto(updated, container, session);
-                        } else if ((referenceDescriptor == null) && (keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT)) {
-                            XMLPlatformFactory.getInstance().getXMLPlatform().namespaceQualifyFragment((Element) next);
-                            objectValue = next;
-                            if(getConverter() != null) {
-                            	objectValue = getConverter().convertDataValueToObjectValue(objectValue, session, record.getUnmarshaller());
-                            }                    	
-                            cp.addInto(objectValue, container, session);
+                            buildObjectAndWrapInXMLRoot(referenceDescriptor, getConverter(), query, record, nestedRecord, joinManager, session, next, container, cp);
+                        } else if ((referenceDescriptor == null) && (getKeepAsElementPolicy() == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT)) {
+                            buildObjectNoReferenceDescriptor(record, session, next, container, cp);
                         } else {
                             Object value = null;
                             Node textchild = ((Element) next).getFirstChild();
@@ -444,20 +413,6 @@ public class XMLAnyCollectionMapping extends DatabaseMapping implements XMLMappi
             next = next.getNextSibling();
         }
         return container;
-    }
-
-    protected XMLDescriptor getDescriptor(XMLRecord xmlRecord, AbstractSession session, QName rootQName) throws XMLMarshalException {
-        if (rootQName == null) {
-            rootQName = new QName(xmlRecord.getNamespaceURI(), xmlRecord.getLocalName());
-        }
-        XMLContext xmlContext = xmlRecord.getUnmarshaller().getXMLContext();
-        XMLDescriptor xmlDescriptor = xmlContext.getDescriptor(rootQName);
-        if (null == xmlDescriptor) {
-            if (!((keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) || (keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT))) {
-                throw XMLMarshalException.noDescriptorWithMatchingRootElement(xmlRecord.getLocalName());
-            }
-        }
-        return xmlDescriptor;
     }
 
     public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session) throws DescriptorException {
@@ -731,14 +686,6 @@ public class XMLAnyCollectionMapping extends DatabaseMapping implements XMLMappi
 
     public void setMixedContent(boolean mixed) {
         mixedContent = mixed;
-    }
-
-    public UnmarshalKeepAsElementPolicy getKeepAsElementPolicy() {
-        return keepAsElementPolicy;
-    }
-
-    public void setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy policy) {
-        keepAsElementPolicy = policy;
     }
 
     /**

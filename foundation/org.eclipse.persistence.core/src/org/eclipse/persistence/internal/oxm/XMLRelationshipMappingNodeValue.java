@@ -24,6 +24,8 @@ import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.mappings.XMLMapping;
+import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
@@ -164,4 +166,38 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
         }
   
     }
+    
+    protected void setupHandlerForKeepAsElementPolicy(UnmarshalRecord unmarshalRecord, XPathFragment xPathFragment, Attributes atts) {
+        SAXFragmentBuilder builder = unmarshalRecord.getFragmentBuilder();
+        builder.setOwningRecord(unmarshalRecord);
+        try {
+            String namespaceURI = "";
+            if (xPathFragment.getNamespaceURI() != null) {
+                namespaceURI = xPathFragment.getNamespaceURI();
+            }
+            String qName = xPathFragment.getLocalName();
+            if (xPathFragment.getPrefix() != null) {
+                qName = xPathFragment.getPrefix() + ":" + qName;
+            }
+
+            builder.startElement(namespaceURI, xPathFragment.getLocalName(), qName, atts);
+            unmarshalRecord.getXMLReader().setContentHandler(builder);
+        } catch (SAXException ex) {
+        }   
+    }
+ 
+    protected void setOrAddAttributeValueForKeepAsElement(SAXFragmentBuilder builder, XMLMapping mapping, XMLConverter converter, UnmarshalRecord unmarshalRecord, boolean isCollection) {
+        Object node = builder.getNodes().pop();
+        
+        if (converter != null) {
+            node = converter.convertDataValueToObjectValue(node, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller());
+        }
+        
+        if (isCollection) {
+            unmarshalRecord.addAttributeValue((ContainerValue) this, node);
+        } else {
+            unmarshalRecord.setAttributeValue(node, (DatabaseMapping) mapping);
+        }
+    }
+    
 }

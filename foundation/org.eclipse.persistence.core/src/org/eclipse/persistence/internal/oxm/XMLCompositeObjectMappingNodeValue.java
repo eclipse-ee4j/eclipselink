@@ -27,7 +27,9 @@ import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLMarshaller;
+import org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
+import org.eclipse.persistence.oxm.mappings.XMLMapping;
 import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
@@ -107,6 +109,13 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
         }
         XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
         marshalRecord.closeStartGroupingElements(groupingFragment);
+        
+        UnmarshalKeepAsElementPolicy keepAsElementPolicy = xmlCompositeObjectMapping.getKeepAsElementPolicy();
+        if (((keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) || (keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)) && objectValue instanceof org.w3c.dom.Node) {
+            marshalRecord.node((org.w3c.dom.Node) objectValue, marshalRecord.getNamespaceResolver());
+            return true;
+        }
+        
         XMLDescriptor descriptor = (XMLDescriptor)session.getDescriptor(objectValue);
         TreeObjectBuilder objectBuilder = (TreeObjectBuilder)descriptor.getObjectBuilder();
 
@@ -119,7 +128,9 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
         if ((xmlCompositeObjectMapping.getReferenceDescriptor() == null) && (descriptor.getSchemaReference() != null)) {
             addTypeAttributeIfNeeded(descriptor, xmlCompositeObjectMapping, marshalRecord);
         }
+        
         objectBuilder.buildRow(marshalRecord, objectValue, session, marshaller);
+        
         if (!xPathFragment.isSelfFragment()) {
             marshalRecord.endElement(xPathFragment, namespaceResolver);
         }
@@ -136,9 +147,19 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
 
             XMLDescriptor xmlDescriptor = (XMLDescriptor)xmlCompositeObjectMapping.getReferenceDescriptor();
             if (null == xmlDescriptor) {
-                xmlDescriptor = findReferenceDescriptor(unmarshalRecord, atts, xmlCompositeObjectMapping);
+                try {
+                    xmlDescriptor = findReferenceDescriptor(unmarshalRecord, atts, xmlCompositeObjectMapping);
+                } catch (XMLMarshalException xme) {
+                    UnmarshalKeepAsElementPolicy policy = xmlCompositeObjectMapping.getKeepAsElementPolicy();                    
+                    if (policy == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT || policy == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT) {
+                        setupHandlerForKeepAsElementPolicy(unmarshalRecord, xPathFragment, atts);
+                        return true;
+                    } else {
+                        throw xme;
+                    }
+                }
             }
-
+            
             /**
              * Null Composite Objects are marshalled in 2 ways when the input XML node is empty.
              * (1) as null
@@ -183,24 +204,34 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
     }
 
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord) {
+
         if (null == unmarshalRecord.getChildRecord()) {
-            return;
-        }
-        Object object = unmarshalRecord.getChildRecord().getCurrentObject();
-        if (xmlCompositeObjectMapping.getConverter() != null) {
-            Converter converter = xmlCompositeObjectMapping.getConverter();
-            if (converter instanceof XMLConverter) {
-                object = ((XMLConverter)converter).convertDataValueToObjectValue(object, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller());
-            } else {
-                object = converter.convertDataValueToObjectValue(object, unmarshalRecord.getSession());
+            SAXFragmentBuilder builder = unmarshalRecord.getFragmentBuilder();
+            UnmarshalKeepAsElementPolicy keepAsElementPolicy = xmlCompositeObjectMapping.getKeepAsElementPolicy();        
+            
+            if (builder.getDocument() != null) {
+                if ((((keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) || (keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT))) && (builder.getNodes().size() != 0)) {
+                    setOrAddAttributeValueForKeepAsElement(builder, (XMLMapping) xmlCompositeObjectMapping, (XMLConverter) xmlCompositeObjectMapping.getConverter(), unmarshalRecord, false);
+                    return;
+                }
             }
+        } else {        
+            Object object = unmarshalRecord.getChildRecord().getCurrentObject();
+            if (xmlCompositeObjectMapping.getConverter() != null) {
+                Converter converter = xmlCompositeObjectMapping.getConverter();
+                if (converter instanceof XMLConverter) {
+                    object = ((XMLConverter)converter).convertDataValueToObjectValue(object, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller());
+                } else {
+                    object = converter.convertDataValueToObjectValue(object, unmarshalRecord.getSession());
+                }
+            }
+            // Set the child object on the parent
+            unmarshalRecord.setAttributeValue(object, xmlCompositeObjectMapping);
+            if(xmlCompositeObjectMapping.getContainerAccessor() != null) {
+            	xmlCompositeObjectMapping.getContainerAccessor().setAttributeValueInObject(object, unmarshalRecord.getCurrentObject());
+            }        
+            unmarshalRecord.setChildRecord(null);
         }
-        // Set the child object on the parent
-        unmarshalRecord.setAttributeValue(object, xmlCompositeObjectMapping);
-        if(xmlCompositeObjectMapping.getContainerAccessor() != null) {
-        	xmlCompositeObjectMapping.getContainerAccessor().setAttributeValueInObject(object, unmarshalRecord.getCurrentObject());
-        }        
-        unmarshalRecord.setChildRecord(null);
     }
 
     public UnmarshalRecord buildSelfRecord(UnmarshalRecord unmarshalRecord, Attributes atts) {

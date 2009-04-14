@@ -3484,6 +3484,7 @@
       <xsd:extension base="abstract-composite-object-mapping">
         <xsd:sequence>
           <xsd:element minOccurs="0" name="null-policy" type="abstract-null-policy" />
+          <xsd:element minOccurs="0" name="keep-as-element-policy" type="xsd:string" />
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>

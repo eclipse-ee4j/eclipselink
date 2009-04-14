@@ -190,23 +190,7 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
             workingDescriptor = xmlDescriptor;
             UnmarshalKeepAsElementPolicy policy = xmlAnyObjectMapping.getKeepAsElementPolicy();
             if (((xmlDescriptor == null) && (policy == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT)) || (policy == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)) {
-                //setup handler stuff
-                SAXFragmentBuilder builder = unmarshalRecord.getFragmentBuilder();
-                builder.setOwningRecord(unmarshalRecord);
-                try {
-                    String namespaceURI = "";
-                    if (xPathFragment.getNamespaceURI() != null) {
-                        namespaceURI = xPathFragment.getNamespaceURI();
-                    }
-                    String qName = xPathFragment.getLocalName();
-                    if (xPathFragment.getPrefix() != null) {
-                        qName = xPathFragment.getPrefix() + ":" + qName;
-                    }
-
-                    builder.startElement(namespaceURI, xPathFragment.getLocalName(), qName, atts);
-                    unmarshalRecord.getXMLReader().setContentHandler(builder);
-                } catch (SAXException ex) {
-                }
+                setupHandlerForKeepAsElementPolicy(unmarshalRecord, xPathFragment, atts);
             }            
             
             else if (xmlDescriptor != null) {            	
@@ -256,11 +240,7 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
             UnmarshalKeepAsElementPolicy keepAsElementPolicy = xmlAnyObjectMapping.getKeepAsElementPolicy();
 
             if ((((keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) || (keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT))) && (builder.getNodes().size() != 0)) {
-                Object node = builder.getNodes().pop();
-                if(xmlAnyObjectMapping.getConverter() != null) {
-                    node = xmlAnyObjectMapping.getConverter().convertDataValueToObjectValue(node, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller());
-                }
-                unmarshalRecord.setAttributeValue(node, xmlAnyObjectMapping);
+                setOrAddAttributeValueForKeepAsElement(builder, xmlAnyObjectMapping, xmlAnyObjectMapping.getConverter(), unmarshalRecord, false);
             } else {
                 // TEXT VALUE             
                 endElementProcessText(unmarshalRecord, xPathFragment);
