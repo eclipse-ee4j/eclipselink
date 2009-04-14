@@ -145,9 +145,16 @@
         <echo message=" org.eclipse.persistence.sdo.helper.extension;version=&quot;${release.version}&quot;,${line.separator}"                            file="META-INF/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.sdo.types;version=&quot;${release.version}&quot;${line.separator}"                                        file="META-INF/MANIFEST.MF" append="true"/>
         <echo message="Bundle-ClassPath: .${line.separator}"                                                                                              file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message="Import-Package: commonj.sdo;version=&quot;2.1.1&quot;;resolution:=optional,${line.separator}"                                      file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message=" commonj.sdo.helper;version=&quot;2.1.1&quot;;resolution:=optional,${line.separator}"                                              file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message=" commonj.sdo.impl;version=&quot;2.1.1&quot;;resolution:=optional${line.separator}"                                                 file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message="Import-Package: commonj.sdo;version=&quot;2.1.1&quot;,${line.separator}"                                      file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" commonj.sdo.helper;version=&quot;2.1.1&quot;,${line.separator}"                                              file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" commonj.sdo.impl;version=&quot;2.1.1&quot;,${line.separator}"                                                 file="META-INF/MANIFEST.MF" append="true"/>
+
+        <echo message=" javax.xml.bind;version=&quot;2.0.0&quot;;resolution:=optional,${line.separator}"                                                 file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" javax.xml.bind.annotation;version=&quot;2.0.0&quot;;resolution:=optional,${line.separator}"                                                 file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" javax.xml.bind.annotation.adapters;version=&quot;2.0.0&quot;;resolution:=optional,${line.separator}"                                                 file="META-INF/MANIFEST.MF" append="true"/>
+         <echo message=" javax.xml.bind.attachment;version=&quot;2.0.0&quot;;resolution:=optional,${line.separator}"                                                 file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" javax.xml.bind.helpers;version=&quot;2.0.0&quot;;resolution:=optional,${line.separator}"                                                 file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" javax.xml.bind.util;version=&quot;2.0.0&quot;;resolution:=optional${line.separator}"                                                 file="META-INF/MANIFEST.MF" append="true"/>
         <echo message="HK2-Bundle-Name: org.eclipse.persistence:${ant.project.name}${line.separator}"                                                     file="META-INF/MANIFEST.MF" append="true"/>
     </target>
 

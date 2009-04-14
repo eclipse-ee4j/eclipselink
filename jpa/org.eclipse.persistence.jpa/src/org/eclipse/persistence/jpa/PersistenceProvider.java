@@ -91,11 +91,9 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
 
         JPAInitializer initializer = initializationHelper.getInitializer(classLoader, nonNullProperties);
         EntityManagerSetupImpl emSetupImpl = null;
-        // get a class loader to use with this specific EM
-        ClassLoader currentLoader = initializationHelper.getClassLoader(emName, nonNullProperties);
 
         try {
-            Enumeration<URL> resources = currentLoader.getResources("META-INF/persistence.xml");
+            Enumeration<URL> resources = classLoader.getResources("META-INF/persistence.xml");
             boolean initialized = false;
             while (resources.hasMoreElements()) {
                 String puName = PersistenceUnitProcessor.buildPersistenceUnitName(PersistenceUnitProcessor.computePURootURL(resources.nextElement()), name);
@@ -132,7 +130,7 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
                 }
             }
         } catch (Exception e) {
-            throw PersistenceUnitLoadingException.exceptionSearchingForPersistenceResources(currentLoader, e);
+            throw PersistenceUnitLoadingException.exceptionSearchingForPersistenceResources(classLoader, e);
         }
 
         //gf bug 854  Returns null if EntityManagerSetupImpl for the name doesn't exist (e.g. a non-existent PU)

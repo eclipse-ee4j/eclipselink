@@ -27,14 +27,15 @@ import org.eclipse.osgi.baseadaptor.loader.ClasspathEntry;
 import org.eclipse.osgi.baseadaptor.loader.ClasspathManager;
 import org.eclipse.osgi.framework.adaptor.ClassLoaderDelegate;
 import org.eclipse.osgi.internal.baseadaptor.DefaultClassLoader;
-import org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider;
-import org.eclipse.persistence.internal.jpa.deployment.PersistenceInitializationHelper;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider;
+import org.eclipse.persistence.internal.jpa.deployment.JPAInitializer;
+import org.eclipse.persistence.internal.jpa.deployment.PersistenceInitializationHelper;
+import org.eclipse.persistence.internal.jpa.deployment.osgi.CompositeClassLoader;
 import org.eclipse.persistence.jpa.equinox.weaving.IWeaver;
 import org.eclipse.persistence.jpa.osgi.Activator;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.internal.jpa.deployment.JPAInitializer;
 
 
 /**
@@ -49,6 +50,7 @@ public class EquinoxInitializer extends JPAInitializer {
      * @param bundleClassloader for the bundle containing a persistence.xml
      * @param m a map containing the set of properties to instantiate with.
      */
+    @SuppressWarnings("unchecked")
     public EquinoxInitializer(ClassLoader bundleClassloader, Map m, PersistenceInitializationHelper helper) {
         this.initializationClassloader = bundleClassloader;
         initialize(m, helper);
@@ -58,6 +60,7 @@ public class EquinoxInitializer extends JPAInitializer {
      * Check whether weaving is possible and update the properties and variable as appropriate
      * @param properties The list of properties to check for weaving and update if weaving is not needed
      */
+    @SuppressWarnings("unchecked")
     public void checkWeaving(Map properties){
         String weaving = EntityManagerFactoryProvider.getConfigPropertyAsString(PersistenceUnitProperties.WEAVING, properties, null);
         if (weaving == null) {
@@ -74,6 +77,7 @@ public class EquinoxInitializer extends JPAInitializer {
      * thrown away.  This allows classes to be introspected prior to loading them
      * with application's main class loader enabling weaving.
      */
+    @SuppressWarnings("unchecked")
     protected ClassLoader createTempLoader(Collection classNames) {
         return createTempLoader(classNames, true);
     }
@@ -87,37 +91,46 @@ public class EquinoxInitializer extends JPAInitializer {
      * Note: This classloader will attempt to load Entities, MappedSuperclasses and Embeddables
      * without allowing them to be loaded by other class loaders.
      */
+    @SuppressWarnings({ "restriction", "unchecked" })
     protected ClassLoader createTempLoader(Collection classNames, boolean shouldOverrideLoadClassForCollectionMembers) {
         if (!shouldCreateInternalLoader) {
             return initializationClassloader;
         }
+       if (initializationClassloader instanceof CompositeClassLoader) {
+            // The first classloader in the composite with be the one passed
+            // as a property if it was supplied.  A CompositeClassLoader's
+            // list of loaders will never be empty.
+            CompositeClassLoader compositeLoader = (CompositeClassLoader) initializationClassloader;
+            ClassLoader firstLoader = compositeLoader.getClassLoaders().get(0);
+            if (firstLoader instanceof DefaultClassLoader) {
+                DefaultClassLoader baseClassLoader = (DefaultClassLoader) firstLoader;
+                ClassLoaderDelegate delegate = baseClassLoader.getDelegate();
+                ProtectionDomain domain = baseClassLoader.getDomain();
+                ClasspathManager classpathManager = baseClassLoader.getClasspathManager();
+                ClasspathEntry[] entries = classpathManager.getHostClasspathEntries();
+                String[] classpath = new String[entries.length];
+                for (int i = 0; i < entries.length; i++) {
+                    BundleFile bundleFile = entries[i].getBundleFile();
+                    if (bundleFile instanceof ZipBundleFile) {
+                        classpath[i] = ".";  // the classpath entry is the root of the jar/zip
+                    } else {
+                        classpath[i] = bundleFile.getBaseFile().getAbsolutePath();
+                    }
+                }
+                BaseData bundledata = classpathManager.getBaseData();
+                
+                DefaultClassLoader tempLoader = new TempEquinoxEntityLoader(baseClassLoader, delegate, domain, bundledata, classpath, classNames, true);
+                 
+                AbstractSessionLog.getLog().log(SessionLog.FINER, "cmp_init_tempLoader_created", tempLoader);
+                AbstractSessionLog.getLog().log(SessionLog.FINER, "cmp_init_shouldOverrideLoadClassForCollectionMembers", Boolean.valueOf(shouldOverrideLoadClassForCollectionMembers));
 
-        ClassLoader currentLoader = initializationClassloader;
-        if (!(currentLoader instanceof DefaultClassLoader)) {
-        	return currentLoader;
-        } 
-        DefaultClassLoader baseClassLoader = (DefaultClassLoader) currentLoader;
-		ClassLoaderDelegate delegate = baseClassLoader.getDelegate();
-		ProtectionDomain domain = baseClassLoader.getDomain();
-		ClasspathManager classpathManager = baseClassLoader.getClasspathManager();
-		ClasspathEntry[] entries = classpathManager.getHostClasspathEntries();
-		String[] classpath = new String[entries.length];
-		for (int i = 0; i < entries.length; i++) {
-			BundleFile bundleFile = entries[i].getBundleFile();
-			if (bundleFile instanceof ZipBundleFile) {
-				classpath[i] = ".";  // the classpath entry is the root of the jar/zip
-			} else {
-				classpath[i] = bundleFile.getBaseFile().getAbsolutePath();				
-			}
-		}
-		BaseData bundledata = classpathManager.getBaseData();
-		
-		DefaultClassLoader tempLoader = new TempEquinoxEntityLoader(baseClassLoader, delegate, domain, bundledata, classpath, classNames, true);
- 
-        AbstractSessionLog.getLog().log(SessionLog.FINER, "cmp_init_tempLoader_created", tempLoader);
-        AbstractSessionLog.getLog().log(SessionLog.FINER, "cmp_init_shouldOverrideLoadClassForCollectionMembers", Boolean.valueOf(shouldOverrideLoadClassForCollectionMembers));
-
-        return tempLoader;
+                return tempLoader;
+        	} else {
+        		return compositeLoader;
+        	} 
+        } else {
+        	return initializationClassloader;
+        }
     }
     
 
@@ -128,7 +141,8 @@ public class EquinoxInitializer extends JPAInitializer {
      * @param transformer
      * @param persistenceUnitInfo
      */
-    public void registerTransformer(final ClassTransformer transformer, PersistenceUnitInfo persistenceUnitInfo){
+    @SuppressWarnings("unchecked")
+	public void registerTransformer(final ClassTransformer transformer, PersistenceUnitInfo persistenceUnitInfo){
         // If we got a transformer then register it 
         if (transformer != null) {
             AbstractSessionLog.getLog().log(SessionLog.FINER, "cmp_init_register_transformer", persistenceUnitInfo.getPersistenceUnitName());
@@ -143,8 +157,9 @@ public class EquinoxInitializer extends JPAInitializer {
     /**
      * Temporary classloader that can override loading of classes in a persistence unit
      */
-    private class TempEquinoxEntityLoader extends DefaultClassLoader {
-        Collection classNames;
+    @SuppressWarnings("unchecked")
+	private class TempEquinoxEntityLoader extends DefaultClassLoader {
+		Collection classNames;
         boolean shouldOverrideLoadClassForCollectionMembers = true;
 
         public TempEquinoxEntityLoader(ClassLoader parent, ClassLoaderDelegate delegate, ProtectionDomain domain, BaseData bundledata, String[] classpath){
@@ -173,7 +188,7 @@ public class EquinoxInitializer extends JPAInitializer {
             }
         }
 
-        protected synchronized Class loadClass(String name, boolean resolve) throws ClassNotFoundException {
+		protected synchronized Class loadClass(String name, boolean resolve) throws ClassNotFoundException {
             if (shouldOverrideLoadClass(name)) {
                 // First, check if the class has already been loaded.
                 // Note that the check only for classes loaded by this loader,

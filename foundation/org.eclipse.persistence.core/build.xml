@@ -325,10 +325,10 @@
         <echo message=" org.eclipse.persistence.transaction.wls;version=&quot;${release.version}&quot;,${line.separator}"                                       file="META-INF/MANIFEST.MF" append="true"/>
         <echo message=" xsd;version=&quot;${release.version}&quot;${line.separator}"                                                                            file="META-INF/MANIFEST.MF" append="true"/>
         <echo message="Bundle-ClassPath: .${line.separator}"                                                                                                    file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message="Import-Package: javax.activation;version=&quot;1.1.0&quot;;resolution:=optional,${line.separator}"                                       file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message="Import-Package: javax.activation;vendor=sun;resolution:=optional,${line.separator}"                                       file="META-INF/MANIFEST.MF" append="true"/>
         <echo message=" javax.jms;version=&quot;1.1.0&quot;;resolution:=optional,${line.separator}"                                                             file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message=" javax.mail;version=&quot;1.4.0&quot;;resolution:=optional,${line.separator}"                                                            file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message=" javax.mail.internet;version=&quot;1.4.0&quot;;resolution:=optional,${line.separator}"                                                   file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" javax.mail;resolution:=optional,${line.separator}"                                                            file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" javax.mail.internet;resolution:=optional,${line.separator}"                                                   file="META-INF/MANIFEST.MF" append="true"/>
         <echo message=" javax.persistence;version=&quot;1.0.0&quot;;resolution:=optional,${line.separator}"                                                     file="META-INF/MANIFEST.MF" append="true"/>
         <echo message=" javax.persistence.spi;version=&quot;1.0.0&quot;;resolution:=optional,${line.separator}"                                                 file="META-INF/MANIFEST.MF" append="true"/>
         <echo message=" javax.resource;version=&quot;1.5.0&quot;;resolution:=optional,${line.separator}"                                                        file="META-INF/MANIFEST.MF" append="true"/>

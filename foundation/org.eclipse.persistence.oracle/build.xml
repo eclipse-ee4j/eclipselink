@@ -147,7 +147,7 @@
         <echo message="Bundle-Name: EclipseLink Oracle Extensions${line.separator}"                                 file="META-INF/MANIFEST.MF" append="true"/>
         <echo message="Bundle-SymbolicName: ${ant.project.name}${line.separator}"                                   file="META-INF/MANIFEST.MF" append="true"/>
         <echo message="Bundle-Version: ${release.version}${line.separator}"                                         file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message="Require-Bundle: org.eclipse.persistence.core;bundle-version=&quot;${release.version}&quot;;visibility:=reexport${line.separator}"       file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message="Fragment-Host: org.eclipse.persistence.core;bundle-version=&quot;${release.version}&quot;{line.separator}"       file="META-INF/MANIFEST.MF" append="true"/>
         <echo message="Export-Package: org.eclipse.persistence.eis.adapters.aq;version=&quot;${release.version}&quot;,${line.separator}"        file="META-INF/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.internal.eis.adapters.aq;version=&quot;${release.version}&quot;,${line.separator}"              file="META-INF/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.internal.platform.database.oracle;version=&quot;${release.version}&quot;,${line.separator}"     file="META-INF/MANIFEST.MF" append="true"/>
@@ -157,7 +157,32 @@
         <echo message=" org.eclipse.persistence.platform.xml.xdk;version=&quot;${release.version}&quot;${line.separator}"                       file="META-INF/MANIFEST.MF" append="true"/>
         <echo message="Bundle-ClassPath: .${line.separator}"                                                                  file="META-INF/MANIFEST.MF" append="true"/>
         <echo message="Import-Package: javax.resource;version=&quot;1.5.0&quot;;resolution:=optional,${line.separator}"       file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message=" javax.resource.cci;version=&quot;1.5.0&quot;${line.separator}"                                        file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" javax.naming;resolution:=optional,${line.separator}"                                                                  file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" javax.resource.cci;version=&quot;1.5.0&quot;;resolution:=optional,${line.separator}"                                             file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" javax.sql;resolution:=optional,${line.separator}"                                             file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" javax.xml.parsers;resolution:=optional,${line.separator}"                                             file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" javax.xml.transform;resolution:=optional,${line.separator}"                                             file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" javax.xml.transform.dom;resolution:=optional,${line.separator}"                                             file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" javax.xml.transform.sax;resolution:=optional,${line.separator}"                                             file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" javax.xml.transform.stream;resolution:=optional,${line.separator}"                                             file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" javax.xml.validation;resolution:=optional,${line.separator}"                                             file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" oracle.AQ;resolution:=optional,${line.separator}"                                             file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" oracle.jdbc,${line.separator}"
+        file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" oracle.jdbc.internal,${line.separator}"
+        file="META-INF/MANIFEST.MF" append="true"/>
+         <echo message=" oracle.jdbc.pool,${line.separator}"
+        file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" oracle.spatial.geometry;resolution:=optional,${line.separator}"                                             file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" oracle.sql;resolution:=optional,${line.separator}"                                             file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" oracle.xdb;resolution:=optional,${line.separator}"                                             file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" oracle.xdb.dom;resolution:=optional,${line.separator}"                                             file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" oracle.xml.jaxp;resolution:=optional,${line.separator}"                                             file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" oracle.xml.parser.schema;resolution:=optional,${line.separator}"                                             file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" oracle.xml.parser.v2;resolution:=optional,${line.separator}"                                             file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" oracle.xml.util;resolution:=optional,${line.separator}"                                             file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.w3c.dom;resolution:=optional,${line.separator}"                                             file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.xml.sax;resolution:=optional${line.separator}"                                             file="META-INF/MANIFEST.MF" append="true"/>
         <echo message="HK2-Bundle-Name: org.eclipse.persistence:${ant.project.name}${line.separator}"              file="META-INF/MANIFEST.MF" append="true"/>
     </target>
 

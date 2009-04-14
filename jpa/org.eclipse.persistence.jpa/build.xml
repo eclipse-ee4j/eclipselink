@@ -175,12 +175,11 @@
         <echo message=" org.eclipse.persistence.jpa.osgi;version=&quot;${release.version}&quot;,${line.separator}"                                       file="META-INF/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.tools.weaving.jpa;version=&quot;${release.version}&quot;${line.separator}"                               file="META-INF/MANIFEST.MF" append="true"/>
         <echo message="Bundle-Activator: org.eclipse.persistence.jpa.osgi.Activator${line.separator}"                                             file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-ClassPath: .${line.separator}"                                                                                      file="META-INF/MANIFEST.MF" append="true"/>
         <echo message="Import-Package: javax.persistence;version=&quot;[1.99.0,2.1.0)&quot;,${line.separator}"                                                    file="META-INF/MANIFEST.MF" append="true"/>
         <echo message=" javax.persistence.spi;version=&quot;[1.99.0,2.1.0)&quot;,${line.separator}"                                                               file="META-INF/MANIFEST.MF" append="true"/>
         <echo message=" javax.transaction;version=&quot;1.1.0&quot;;resolution:=optional,${line.separator}"                                       file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message=" org.apache.tools.ant;version=&quot;1.6.0&quot;;resolution:=optional,${line.separator}"                                    file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message=" org.apache.tools.ant.types;version=&quot;1.6.0&quot;;resolution:=optional,${line.separator}"                              file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.apache.tools.ant;resolution:=optional,${line.separator}"                                    file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.apache.tools.ant.types;resolution:=optional,${line.separator}"                              file="META-INF/MANIFEST.MF" append="true"/>
         <echo message=" org.osgi.framework;resolution:=optional,${line.separator}"                                                                       file="META-INF/MANIFEST.MF" append="true"/>
         <echo message=" org.osgi.service.packageadmin;resolution:=optional,${line.separator}"                                                             file="META-INF/MANIFEST.MF" append="true"/>
         <echo message=" org.xml.sax;resolution:=optional,${line.separator}" file="META-INF/MANIFEST.MF" append="true"/>
