@@ -33,4 +33,7 @@ public interface WrappedValue {
 	public Class getWrappedValueClass();
 	
 	public QName getQName();
+	
+	public boolean isSetValue();	
+	
 }

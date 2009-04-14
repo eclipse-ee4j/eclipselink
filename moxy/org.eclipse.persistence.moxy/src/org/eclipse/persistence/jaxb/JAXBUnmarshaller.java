@@ -78,6 +78,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
         xmlUnmarshaller = newXMLUnmarshaller;
         xmlUnmarshaller.setValidationMode(XMLUnmarshaller.NONVALIDATING);
         xmlUnmarshaller.setUnmarshalListener(new JAXBUnmarshalListener(this));
+        
     }
 
     public XMLUnmarshaller getXMLUnmarshaller() {
@@ -383,6 +384,11 @@ public class JAXBUnmarshaller implements Unmarshaller {
     
     private JAXBElement createJAXBElementFromWrappedValue(WrappedValue wrappedValue){
     	Object unwrappedValue = wrappedValue.getWrappedValue();
+    	if(unwrappedValue == null && wrappedValue.getWrappedValueClass().equals(ClassConstants.STRING)){
+    		if(!wrappedValue.isSetValue()){
+    			unwrappedValue = "";
+    		}
+    	}
     	return createJAXBElement(wrappedValue.getQName(), wrappedValue.getWrappedValueClass(), unwrappedValue);
     }
         

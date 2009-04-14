@@ -119,10 +119,10 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
         this.stringBuffer = new StrBuffer();
         this.isBufferCDATA = false;
         this.treeObjectBuilder = treeObjectBuilder;
+        nullCapableValues = new ArrayList();
         if (null != treeObjectBuilder) {
             this.xPathNode = treeObjectBuilder.getRootXPathNode();
-            if (null != treeObjectBuilder.getNullCapableValues()) {
-                nullCapableValues = new ArrayList();
+            if (null != treeObjectBuilder.getNullCapableValues()) {                
                 nullCapableValues.addAll(treeObjectBuilder.getNullCapableValues());
             }
         }
@@ -226,14 +226,11 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
         this.uriToPrefixMap = uriToPrefixMap;
     }
 
-    public List getNullCapableValues() {
+    public List getNullCapableValues() {    	
         return this.nullCapableValues;
     }
 
-    public void removeNullCapableValue(NullCapableValue nullCapableValue) {
-        if (null == getNullCapableValues()) {
-            return;
-        }
+    public void removeNullCapableValue(NullCapableValue nullCapableValue) {        
         getNullCapableValues().remove(nullCapableValue);
     }
 
@@ -425,16 +422,14 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
 
             // PROCESS NULL CAPABLE VALUES
             // This must be done because the node may not have existed to 
-            // trigger the mapping.
-            if (null != getNullCapableValues()) {
-                int nullValuesSize = getNullCapableValues().size();
-                NullCapableValue nullCapableValue;
-                for (int x = 0; x < nullValuesSize; x++) {
-                    nullCapableValue = (NullCapableValue)getNullCapableValues().get(x);
-                    nullCapableValue.setNullValue(object, session);
-                }
+            // trigger the mapping.            
+            int nullValuesSize = getNullCapableValues().size();
+            NullCapableValue nullCapableValue;
+            for (int x = 0; x < nullValuesSize; x++) {
+                nullCapableValue = (NullCapableValue)getNullCapableValues().get(x);
+                nullCapableValue.setNullValue(object, session);
             }
-
+            
             // PROCESS TRANSFORMATION MAPPINGS
             List transformationMappings = treeObjectBuilder.getTransformationMappings();
             if (null != transformationMappings) {
