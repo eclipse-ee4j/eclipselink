@@ -332,7 +332,7 @@ public class WriteLockManager {
                                         //wait on the lock of the object that we couldn't get.
                                         synchronized (activeCacheKey.getMutex()) {
                                             // verify that the cache key is still locked before we wait on it, as
-                                            //it may have been releases since we tried to acquire it.
+                                            //it may have been released since we tried to acquire it.
                                             if (activeCacheKey.getMutex().isAcquired() && (activeCacheKey.getMutex().getActiveThread() != Thread.currentThread())) {
                                                 activeCacheKey.getMutex().wait();
                                             }
