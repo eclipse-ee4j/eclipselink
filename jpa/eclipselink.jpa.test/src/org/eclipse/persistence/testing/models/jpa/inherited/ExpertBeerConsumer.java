@@ -21,8 +21,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,15 +34,12 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.MapKeyClass;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.MapKeyTemporal;
 
 import static javax.persistence.FetchType.EAGER;
 import static javax.persistence.TemporalType.DATE;
-
-import org.eclipse.persistence.annotations.BasicCollection;
 
 @Entity(name="EXPERT_CONSUMER")
 @DiscriminatorValue(value="EBC")
@@ -56,12 +51,12 @@ import org.eclipse.persistence.annotations.BasicCollection;
 @AssociationOverride(name="records.location", joinColumns=@JoinColumn(name="LOCATION_ID", referencedColumnName="ID"))
 public class ExpertBeerConsumer extends RatedBeerConsumer<String, String, String> {
     private Map<Date, String> quotes;
-    private Collection<byte[]> audio;
+    //private Collection<byte[]> audio;
     private Map<Birthday, String> celebrations;
     
     public ExpertBeerConsumer() {
         super();
-        audio = new ArrayList<byte[]>();
+        //audio = new ArrayList<byte[]>();
         quotes = new HashMap<Date, String>();
         celebrations = new HashMap<Birthday, String>();
     }   
@@ -70,11 +65,12 @@ public class ExpertBeerConsumer extends RatedBeerConsumer<String, String, String
         celebrations.put(birthday, details);
     }
     
-    @BasicCollection
-    @Lob
-    public Collection<byte[]> getAudio() {
-        return audio;
-    }
+    // Commenting out this mapping until bug 272298 is resolved.
+    //@BasicCollection
+    //@Lob
+    //public Collection<byte[]> getAudio() {
+        //return audio;
+    //}
     
     @ElementCollection(fetch=EAGER)
     @MapKeyClass(Birthday.class)
@@ -102,9 +98,9 @@ public class ExpertBeerConsumer extends RatedBeerConsumer<String, String, String
         return quotes;
     }
 
-    public void setAudio(Collection<byte[]> audio) {
-        this.audio = audio;
-    }
+    //public void setAudio(Collection<byte[]> audio) {
+      //  this.audio = audio;
+    //}
     
     public void setCelebrations(Map<Birthday, String> celebrations) {
         this.celebrations = celebrations;
