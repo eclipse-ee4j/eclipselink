@@ -17,23 +17,18 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.xml.inherited;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.ElementCollection;
-import javax.persistence.Lob;
-
 public class ExpertBeerConsumer extends RatedBeerConsumer<String, String, String> {
     private Map<Date, String> quotes;
-    private Collection<byte[]> audio;
+    //private Collection<byte[]> audio;
     private Map<Birthday, String> celebrations;
     
     public ExpertBeerConsumer() {
         super();
-        audio = new ArrayList<byte[]>();
+        //audio = new ArrayList<byte[]>();
         quotes = new HashMap<Date, String>();
         celebrations = new HashMap<Birthday, String>();
     }   
@@ -42,11 +37,12 @@ public class ExpertBeerConsumer extends RatedBeerConsumer<String, String, String
         celebrations.put(birthday, details);
     }
     
-    @ElementCollection
-    @Lob
-    public Collection<byte[]> getAudio() {
-        return audio;
-    }
+    // Commenting out this mapping until bug 272298 is resolved.
+    //@ElementCollection
+    //@Lob
+    //public Collection<byte[]> getAudio() {
+      //  return audio;
+    //}
     
     public Map<Birthday, String> getCelebrations() {
         return celebrations;
@@ -56,9 +52,9 @@ public class ExpertBeerConsumer extends RatedBeerConsumer<String, String, String
         return quotes;
     }
 
-    public void setAudio(Collection<byte[]> audio) {
-        this.audio = audio;
-    }
+    //public void setAudio(Collection<byte[]> audio) {
+      //  this.audio = audio;
+    //}
     
     public void setCelebrations(Map<Birthday, String> celebrations) {
         this.celebrations = celebrations;

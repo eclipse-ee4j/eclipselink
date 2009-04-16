@@ -289,9 +289,10 @@ public class EntityMappingsInheritedJUnitTestCase extends JUnitTestCase {
             beerConsumer.getAcclaims().add("B");
             beerConsumer.getAcclaims().add("C");
             
-            beerConsumer.getAudio().add(new byte[]{1});
-            beerConsumer.getAudio().add(new byte[]{2});
-            beerConsumer.getAudio().add(new byte[]{3});
+            // Commenting out this mapping until bug 272298 is resolved.
+            //beerConsumer.getAudio().add(new byte[]{1});
+            //beerConsumer.getAudio().add(new byte[]{2});
+            //beerConsumer.getAudio().add(new byte[]{3});
             
             beerConsumer.getAwards().put("A", "A");
             beerConsumer.getAwards().put("B", "B");
@@ -437,7 +438,8 @@ public class EntityMappingsInheritedJUnitTestCase extends JUnitTestCase {
         assertTrue("Missing acclaim - B", consumer.getAcclaims().contains("B"));
         assertTrue("Missing acclaim - C", consumer.getAcclaims().contains("C"));
         
-        assertTrue("Incorrect number of audio returned.", consumer.getAudio().size() == 3);
+        // Commenting out this mapping until bug 272298 is resolved.
+        //assertTrue("Incorrect number of audio returned.", consumer.getAudio().size() == 3);
         // don't individually check them, assume they are correct.
         
         assertTrue("Incorrect number of awards returned.", consumer.getAwards().size() == 3);
