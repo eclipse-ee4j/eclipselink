@@ -13,6 +13,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.sdo.helper;
 
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
@@ -72,7 +73,7 @@ public class SDOHelperContext implements HelperContext {
     // Each application will have its own helper context - it is assumed that application 
     // names/loaders are unique within each active server instance
     private static ConcurrentHashMap<Object, HelperContext> helperContexts = new ConcurrentHashMap<Object, HelperContext>();
-    private static WeakHashMap<ClassLoader, HelperContext> userSetHelperContexts = new WeakHashMap<ClassLoader, HelperContext>();
+    private static WeakHashMap<ClassLoader, WeakReference<HelperContext>> userSetHelperContexts = new WeakHashMap<ClassLoader, WeakReference<HelperContext>>();
     
     private static String OC4J_CLASSLOADER_NAME = "oracle";
     private static String WLS_CLASSLOADER_NAME = "weblogic";
@@ -183,7 +184,26 @@ public class SDOHelperContext implements HelperContext {
         if (key == null || value == null) {
             return;
         }
-        userSetHelperContexts.put(key, value);
+        userSetHelperContexts.put(key, new WeakReference<HelperContext>(value));
+    }
+    
+    /**
+     * INTERNAL:
+     * Retrieve the HelperContext for a given ClassLoader from the Thread 
+     * HelperContext map.
+     * 
+     * @param key class loader
+     * @return HelperContext for the given key if key exists in the map, otherwise null
+     */
+    private static HelperContext getHelperContext(ClassLoader key) {
+        if (key == null) {
+            return null;
+        }
+        WeakReference<HelperContext> wRef = userSetHelperContexts.get(key);
+        if (wRef == null) {
+            return null;
+        }
+        return wRef.get();
     }
     
     /**
@@ -215,7 +235,7 @@ public class SDOHelperContext implements HelperContext {
     public static HelperContext getHelperContext() {
         ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
         // check the map for contextClassLoader and return it if it exists
-        HelperContext hCtx = userSetHelperContexts.get(contextClassLoader);
+        HelperContext hCtx = getHelperContext(contextClassLoader);
         if (hCtx != null) {
             return hCtx;
         }
