@@ -1,10 +1,8 @@
 package org.eclipse.persistence.testing.models.jpa.advanced;
 
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
 
 @Entity
 public class ConcurrencyB {

@@ -3,14 +3,10 @@ package org.eclipse.persistence.testing.tests.jpa.advanced.concurrency;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
-import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
-import org.eclipse.persistence.testing.models.jpa.advanced.ConcurrencyA;
 import org.eclipse.persistence.testing.models.jpa.advanced.ConcurrencyB;
 import org.eclipse.persistence.testing.models.jpa.advanced.ConcurrencyC;
-import org.eclipse.persistence.testing.models.jpa.advanced.Department;
-import org.eclipse.persistence.testing.models.jpa.advanced.Equipment;
 
 public class TransitionRunner1 implements Runnable {
     protected ConcurrencyB concB;

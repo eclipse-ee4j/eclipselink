@@ -30,11 +30,6 @@ import org.eclipse.persistence.testing.models.jpa.cascadedeletes.MachineState;
 import org.eclipse.persistence.testing.models.jpa.cascadedeletes.PersistentIdentity;
 import org.eclipse.persistence.testing.models.jpa.cascadedeletes.RootA;
 import org.eclipse.persistence.testing.models.jpa.cascadedeletes.ThreadInfo;
-import org.eclipse.persistence.testing.models.jpa.inherited.Beer;
-import org.eclipse.persistence.testing.models.jpa.inherited.Alpine;
-import org.eclipse.persistence.testing.models.jpa.inherited.BeerConsumer;
-import org.eclipse.persistence.testing.models.jpa.inherited.SerialNumber;
-import org.eclipse.persistence.testing.models.jpa.inherited.InheritedTableManager;
 
 @SuppressWarnings("deprecation")
 public class CascadeDeletesJUnitTestSuite extends JUnitTestCase {
