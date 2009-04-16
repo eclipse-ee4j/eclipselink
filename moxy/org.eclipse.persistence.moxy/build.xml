@@ -44,7 +44,7 @@
     </propertyset>
 
     <!-- Needed because this package is only included in JDK6 and beyond -->
-    <condition property="jaxb-api.lib" value="javax.xml.bind_2.0.0.jar" else="">
+    <condition property="jaxb-api.lib" value="${jaxb-api.jar}" else="">
         <contains string="${java.version}" substring="1.5"/>
     </condition>
     <!-- for dependencies found it local plugins dir, add more as needed   -->
