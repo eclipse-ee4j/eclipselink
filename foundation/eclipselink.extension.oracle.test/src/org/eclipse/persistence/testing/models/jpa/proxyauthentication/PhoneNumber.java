@@ -13,14 +13,7 @@
 package org.eclipse.persistence.testing.models.jpa.proxyauthentication;
 
 import java.io.*;
-import java.util.Collection;
-import java.util.Vector;
-
 import javax.persistence.*;
-import static javax.persistence.EnumType.STRING;
-
-import org.eclipse.persistence.annotations.BasicCollection;
-import org.eclipse.persistence.annotations.CollectionTable;
 import org.eclipse.persistence.annotations.Cache;
 
 @IdClass(org.eclipse.persistence.testing.models.jpa.proxyauthentication.PhoneNumberPK.class)
