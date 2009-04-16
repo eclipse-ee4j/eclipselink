@@ -11,24 +11,9 @@
  *     Oracle  - initial API and implementation from Oracle TopLink
  *     dmccann - Nov. 7/2008 - Added delegate key logic from AbstractHelperDelegator
  ******************************************************************************/  
-
-/**
- * INTERNAL:
- * <b>Purpose:</b>
- * <ul><li>This class is a reference implementation of an instantiable {@link Sequence commonj.sdo.HelperContext}.</li>
- * </ul>
- * <b>Responsibilities:</b>
- * <ul>
- * <li>Provide access to a instances of helper objects.</li>
- * </ul>
- * <p/>
- * Use this class in place of the default HelperProvider.DefaultHelperContext implementation.
- * <br/>
- *
- * @since Oracle TopLink 11.1.1.0.0
- */
 package org.eclipse.persistence.sdo.helper;
 
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
@@ -61,6 +46,21 @@ import commonj.sdo.helper.XMLHelper;
 import commonj.sdo.helper.XSDHelper;
 import commonj.sdo.impl.ExternalizableDelegator;
 
+/**
+ * INTERNAL:
+ * <b>Purpose:</b>
+ * <ul><li>This class is a reference implementation of an instantiable {@link Sequence commonj.sdo.HelperContext}.</li>
+ * </ul>
+ * <b>Responsibilities:</b>
+ * <ul>
+ * <li>Provide access to a instances of helper objects.</li>
+ * </ul>
+ * <p/>
+ * Use this class in place of the default HelperProvider.DefaultHelperContext implementation.
+ * <br/>
+ *
+ * @since Oracle TopLink 11.1.1.0.0
+ */
 public class SDOHelperContext implements HelperContext {
     protected CopyHelper copyHelper;
     protected DataFactory dataFactory;
@@ -73,7 +73,7 @@ public class SDOHelperContext implements HelperContext {
     // Each application will have its own helper context - it is assumed that application 
     // names/loaders are unique within each active server instance
     private static ConcurrentHashMap<Object, HelperContext> helperContexts = new ConcurrentHashMap<Object, HelperContext>();
-    private static WeakHashMap<ClassLoader, HelperContext> userSetHelperContexts = new WeakHashMap<ClassLoader, HelperContext>();
+    private static WeakHashMap<ClassLoader, WeakReference<HelperContext>> userSetHelperContexts = new WeakHashMap<ClassLoader, WeakReference<HelperContext>>();
     
     private static String OC4J_CLASSLOADER_NAME = "oracle";
     private static String WLS_CLASSLOADER_NAME = "weblogic";
@@ -95,7 +95,7 @@ public class SDOHelperContext implements HelperContext {
     private static final String WLS_APPLICATION_NAME_GET_METHOD_NAME = "getApplicationName";
     private static final String WLS_ACTIVE_VERSION_STATE = "ActiveVersionState";
     private static final Class[] PARAMETER_TYPES = {};
-    
+
     /**
      * The default constructor will use the current thread's context
      * class loader.
@@ -184,7 +184,26 @@ public class SDOHelperContext implements HelperContext {
         if (key == null || value == null) {
             return;
         }
-        userSetHelperContexts.put(key, value);
+        userSetHelperContexts.put(key, new WeakReference<HelperContext>(value));
+    }
+    
+    /**
+     * INTERNAL:
+     * Retrieve the HelperContext for a given ClassLoader from the Thread 
+     * HelperContext map.
+     * 
+     * @param key class loader
+     * @return HelperContext for the given key if key exists in the map, otherwise null
+     */
+    private static HelperContext getHelperContext(ClassLoader key) {
+        if (key == null) {
+            return null;
+        }
+        WeakReference<HelperContext> wRef = userSetHelperContexts.get(key);
+        if (wRef == null) {
+            return null;
+        }
+        return wRef.get();
     }
     
     /**
@@ -216,7 +235,7 @@ public class SDOHelperContext implements HelperContext {
     public static HelperContext getHelperContext() {
         ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
         // check the map for contextClassLoader and return it if it exists
-        HelperContext hCtx = userSetHelperContexts.get(contextClassLoader);
+        HelperContext hCtx = getHelperContext(contextClassLoader);
         if (hCtx != null) {
             return hCtx;
         }
@@ -288,7 +307,7 @@ public class SDOHelperContext implements HelperContext {
                 try {
                     Method getMethod = PrivilegedAccessHelper.getPublicMethod(executeThread.getClass(), WLS_APPLICATION_NAME_GET_METHOD_NAME, PARAMETER_TYPES, false);
                     delegateKey = PrivilegedAccessHelper.invokeMethod(getMethod, executeThread);
-                    //ExecuteThread returns null
+                    // ExecuteThread returns null
                     if (delegateKey == null) {
                         delegateKey = classLoader;
                     }
