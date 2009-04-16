@@ -14,7 +14,6 @@ package org.eclipse.persistence.testing.tests.collections.map;
 
 import java.util.List;
 
-import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.mappings.ManyToManyMapping;
@@ -22,7 +21,6 @@ import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.TestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
-import org.eclipse.persistence.testing.models.collections.map.AggregateEntity1MMapHolder;
 import org.eclipse.persistence.testing.models.collections.map.AggregateEntityMapHolder;
 import org.eclipse.persistence.testing.models.collections.map.AggregateMapKey;
 import org.eclipse.persistence.testing.models.collections.map.EntityMapValue;

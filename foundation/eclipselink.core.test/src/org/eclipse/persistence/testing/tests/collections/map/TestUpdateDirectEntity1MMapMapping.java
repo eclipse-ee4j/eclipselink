@@ -12,7 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.collections.map;
 
-import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.mappings.OneToManyMapping;

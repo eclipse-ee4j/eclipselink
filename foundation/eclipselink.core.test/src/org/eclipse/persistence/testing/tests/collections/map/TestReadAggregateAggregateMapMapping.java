@@ -21,7 +21,6 @@ import org.eclipse.persistence.testing.framework.TestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.models.collections.map.AggregateAggregateMapHolder;
 import org.eclipse.persistence.testing.models.collections.map.AggregateMapKey;
-import org.eclipse.persistence.testing.models.collections.map.AggregateMapValue;
 
 public class TestReadAggregateAggregateMapMapping extends TestCase {
     

@@ -15,7 +15,6 @@ package org.eclipse.persistence.testing.tests.collections.map;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.models.collections.map.AggregateMapKey;
-import org.eclipse.persistence.testing.models.collections.map.AggregateMapValue;
 import org.eclipse.persistence.testing.models.collections.map.AggregateAggregateMapHolder;
 
 public class TestUpdateAggregateAggregateMapMapping extends TestReadAggregateAggregateMapMapping {

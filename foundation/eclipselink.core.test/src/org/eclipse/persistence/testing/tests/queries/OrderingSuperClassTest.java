@@ -1,12 +1,7 @@
 package org.eclipse.persistence.testing.tests.queries;
 
-import java.util.Vector;
-
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.testing.models.employee.domain.Project;
-
-import junit.framework.Test;
-import junit.framework.TestResult;
 
 public class OrderingSuperClassTest extends OrderingMutipleTableTest {
     protected void setup() {
