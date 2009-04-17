@@ -113,7 +113,8 @@ public class EntityManagerSetupImpl {
 
     // 253701: cache initializationHelper for later use during undeploy() - set by PersistenceProvider.createEntityManagerFactory()
     protected PersistenceInitializationHelper persistenceInitializationHelper = null;
-    
+
+    protected List<StructConverter> structConverters = null;
     // factoryCount==0; session==null
     public static final String STATE_INITIAL        = "Initial";
     
@@ -196,7 +197,7 @@ public class EntityManagerSetupImpl {
         }
         // state is PREDEPLOYED or DEPLOYED
         session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "deploy_begin", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), state, factoryCount});
-        List<StructConverter> structConverters = null;
+        
         try {
             Map deployProperties = mergeMaps(additionalProperties, predeployProperties);
             translateOldProperties(deployProperties, session);
