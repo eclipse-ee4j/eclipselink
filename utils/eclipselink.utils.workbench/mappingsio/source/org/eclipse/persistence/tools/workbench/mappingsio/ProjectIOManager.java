@@ -344,6 +344,12 @@ public class ProjectIOManager {
 		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.query.relational.MWRelationalSpecificQueryOptions.buildDescriptor());
 		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.query.relational.MWRelationalReadObjectQuery.buildDescriptor());
 		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.query.relational.MWReportQuery.buildDescriptor());
+		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.query.relational.MWAbstractCustomQuery.buildDescriptor());
+		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.query.relational.MWInsertQuery.buildDescriptor());
+		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.query.relational.MWDeleteQuery.buildDescriptor());
+		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.query.relational.MWUpdateQuery.buildDescriptor());
+		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.query.relational.MWCustomReadAllQuery.buildDescriptor());
+		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.query.relational.MWCustomReadObjectQuery.buildDescriptor());
 		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.query.relational.MWReportAttributeItem.buildDescriptor());
 		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.query.relational.MWAttributeItem.buildDescriptor());
 		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.query.relational.MWGroupingItem.buildDescriptor());
@@ -367,7 +373,8 @@ public class ProjectIOManager {
 		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.query.relational.MWQueryParameterArgument.buildDescriptor());
 		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.query.relational.MWSQLQueryFormat.buildDescriptor());
 		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.query.relational.MWStringQueryFormat.buildDescriptor());
-
+		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.query.relational.MWStoredProcedureQueryFormat.buildDescriptor());
+		
 		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.query.xml.MWEisQueryManager.buildDescriptor());
 		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.query.xml.MWOXQueryManager.buildDescriptor());
 		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.query.xml.MWAbstractEisReadQuery.buildDescriptor());
@@ -375,7 +382,20 @@ public class ProjectIOManager {
 		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.query.xml.MWEisReadObjectQuery.buildDescriptor());
 		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.query.xml.MWEisInteraction.buildDescriptor());
 		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.query.xml.MWEisInteraction.ArgumentPair.buildDescriptor());						
-
+		
+		//stored procedures
+		
+		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.query.MWProcedure.buildDescriptor());
+		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.query.MWAbstractProcedureArgument.buildDescriptor());
+		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.query.MWAbstractProcedureInOutputArgument.buildDescriptor());
+		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.query.MWProcedureNamedInArgument.buildDescriptor());
+		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.query.MWProcedureUnamedInArgument.buildDescriptor());
+		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.query.MWProcedureNamedOutputArgument.buildDescriptor());
+		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.query.MWProcedureUnamedOutputArgument.buildDescriptor());
+		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.query.MWProcedureNamedInOutputArgument.buildDescriptor());
+		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.query.MWProcedureUnamedInOutputArgument.buildDescriptor());
+		
+		
 		return topLinkProject;
 	}
 

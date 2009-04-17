@@ -96,6 +96,8 @@ public final class ProblemConstants
 	public static final String QUERYABLE_NULL_FOR_REPORT_ITEM								= "0259";
 	public static final String QUERYABLE_NOT_VALID_FOR_REPORT_QUERY_ATTRIBUTE              = "0260";
 	
+	public static final String STORED_PROCEDURE_INOUTARGUMENT_REQUIREMENTS					= "0261";
+
 	public static final String LITERAL_ARGUMENT_ILLEGAL_BYTE_FORMAT	 						= "0262";
 	public static final String LITERAL_ARGUMENT_ILLEGAL_BOOLEAN_FORMAT	 					= "0263";
 	public static final String LITERAL_ARGUMENT_ILLEGAL_CHARACTER_FORMAT	 				= "0264";

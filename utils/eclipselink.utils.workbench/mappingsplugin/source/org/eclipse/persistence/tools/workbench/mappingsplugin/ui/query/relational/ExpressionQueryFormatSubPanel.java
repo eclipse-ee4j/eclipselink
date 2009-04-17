@@ -30,6 +30,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeSelectionModel;
 
 import org.eclipse.persistence.tools.workbench.framework.context.WorkbenchContextHolder;
+import org.eclipse.persistence.tools.workbench.framework.ui.view.AbstractSubjectPanel;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.query.relational.MWExpressionQueryFormat;
 import org.eclipse.persistence.tools.workbench.uitools.ComponentEnabler;
 import org.eclipse.persistence.tools.workbench.uitools.app.FilteringPropertyValueModel;
@@ -44,7 +45,7 @@ import org.eclipse.persistence.tools.workbench.uitools.app.ValueModel;
  * for the query format.  It contains a panel with a tree for viewing the expression
  * and an Edit button to edit the expression.
  */
-final class ExpressionQueryFormatSubPanel extends QueryFormatSubPanel
+final class ExpressionQueryFormatSubPanel extends AbstractSubjectPanel
 {
 	private DefaultTreeModel expressionTreeModel;
 	private TreeSelectionModel treeSelectionModel;
@@ -52,8 +53,8 @@ final class ExpressionQueryFormatSubPanel extends QueryFormatSubPanel
 	private PropertyValueModel expressionQueryFormatHolder;
 	
 				
-	ExpressionQueryFormatSubPanel(PropertyValueModel queryHolder, PropertyValueModel queryFormatHolder, WorkbenchContextHolder contextHolder) {
-		super(queryHolder, queryFormatHolder, contextHolder);
+	ExpressionQueryFormatSubPanel(ValueModel queryFormatHolder, WorkbenchContextHolder contextHolder) {
+		super(queryFormatHolder, contextHolder);
 	}
 	
 	protected ActionListener buildEditExpressionAction() {
@@ -72,7 +73,7 @@ final class ExpressionQueryFormatSubPanel extends QueryFormatSubPanel
 		};
 	}
 	
-	protected void initialize() 
+	protected void initializeLayout() 
 	{
 		this.expressionQueryFormatHolder = buildExpressionQueryFormatHolder();
 		this.expressionQueryFormatHolder.addPropertyChangeListener(ValueModel.VALUE, buildQueryPropertyChangeListener());
@@ -143,7 +144,7 @@ final class ExpressionQueryFormatSubPanel extends QueryFormatSubPanel
 	}
 
 	private PropertyValueModel buildExpressionQueryFormatHolder() {
-		return new FilteringPropertyValueModel(getQueryFormatHolder()) {
+		return new FilteringPropertyValueModel((PropertyValueModel)getSubjectHolder()) {
 			protected boolean accept(Object value) {
 				return value instanceof MWExpressionQueryFormat;
 			}
@@ -181,7 +182,7 @@ final class ExpressionQueryFormatSubPanel extends QueryFormatSubPanel
 	}
 	
 	private ValueModel buildQueryBooleanHolder() {
-		return new PropertyAspectAdapter(getQueryHolder()) {
+		return new PropertyAspectAdapter(getSubjectHolder()) {
 			public Object buildValue() {
 				return this.subject == null ? Boolean.FALSE : Boolean.TRUE;
 			}

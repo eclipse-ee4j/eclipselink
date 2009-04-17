@@ -25,6 +25,7 @@ import org.eclipse.persistence.tools.workbench.utility.node.Node;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
+import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 
 public final class MWRelationalSpecificQueryOptions 
@@ -182,8 +183,11 @@ public final class MWRelationalSpecificQueryOptions
 		else if (queryFormat == EJBQL_FORMAT) {
 			setQueryFormatToEjbql();
 		}
+		else if (queryFormat == STORED_PROCEDURE_FORMAT) {
+			setQueryFormatToStoredProcedure();
+		}
 		else {
-			throw new IllegalArgumentException("queryFormatType must be set to : MWQuery.EXPRESSION_FORMAT, MWQuery.AUTO_GENERATED_FORMAT, MWQuery.SQL_FORMAT, or MWQuery.EJBQL_FORMAT");
+			throw new IllegalArgumentException("queryFormatType must be set to : MWQuery.EXPRESSION_FORMAT, MWQuery.AUTO_GENERATED_FORMAT, MWQuery.SQL_FORMAT, MWQuery.STORED_PROCEDURE_FORMAT, or MWQuery.EJBQL_FORMAT");
 		}
 		
 		firePropertyChanged(QUERY_FORMAT_TYPE_PROPERTY, oldValue, getQueryFormatType());
@@ -203,18 +207,23 @@ public final class MWRelationalSpecificQueryOptions
     void setQueryFormatToEjbql() {
 		MWStringQueryFormat queryFormat = new MWEJBQLQueryFormat(this);
 		setQueryFormat(queryFormat);
-        ((MWRelationalQuery) getQuery()).formatSetToEjbql();
+        ((MWRelationalQuery) getParent()).formatSetToEjbql();
 	}	
 
     void setQueryFormatToExpression() {
 		MWExpressionQueryFormat queryFormat = new MWExpressionQueryFormat(this);
 		setQueryFormat(queryFormat);
 	}
-	
+    
+    void setQueryFormatToStoredProcedure() {
+    	MWStoredProcedureQueryFormat queryFormat = new MWStoredProcedureQueryFormat(this);
+    	setQueryFormat(queryFormat);
+    }
+
     void setQueryFormatToSql() {
 		MWStringQueryFormat queryFormat = new MWSQLQueryFormat(this);
 		setQueryFormat(queryFormat);
-        ((MWRelationalQuery) getQuery()).formatSetToSql();
+        ((MWRelationalQuery) getParent()).formatSetToSql();
 	}
 		
     private void setQueryFormat(MWQueryFormat queryFormat) {
@@ -267,7 +276,7 @@ public final class MWRelationalSpecificQueryOptions
 
 	// ***************** runtime conversion ***************
 	
-	void adjustRuntimeQuery(ObjectLevelReadQuery runtimeQuery) {
+	void adjustRuntimeQuery(DatabaseQuery runtimeQuery) {
 		
 		runtimeQuery.setShouldPrepare(isPrepare());
 
@@ -281,7 +290,7 @@ public final class MWRelationalSpecificQueryOptions
 	}
 
 
-	public void adjustFromRuntime(ObjectLevelReadQuery runtimeQuery) {		
+	public void adjustFromRuntime(DatabaseQuery runtimeQuery) {		
 		setPrepare(runtimeQuery.shouldPrepare());
 		
 		if (!runtimeQuery.shouldIgnoreBindAllParameters())

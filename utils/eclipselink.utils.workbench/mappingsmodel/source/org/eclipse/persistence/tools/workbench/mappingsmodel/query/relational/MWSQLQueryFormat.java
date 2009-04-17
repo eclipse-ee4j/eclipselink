@@ -16,6 +16,7 @@ import org.eclipse.persistence.tools.workbench.mappingsmodel.MWModel;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 
 /**
@@ -61,18 +62,16 @@ public final class MWSQLQueryFormat extends MWStringQueryFormat
 	}
 	
 	//Conversion to Runtime
-	void convertToRuntime(ObjectLevelReadQuery runtimeQuery) 
+	void convertToRuntime(DatabaseQuery runtimeQuery) 
 	{
 			runtimeQuery.setSQLString(getQueryString());
 	}
 
-	void convertFromRuntime(ObjectLevelReadQuery runtimeQuery)
+	void convertFromRuntime(DatabaseQuery runtimeQuery)
 	{
 		if (runtimeQuery.getSQLString() != null) {
 			this.setQueryString(runtimeQuery.getSQLString());
 		}
 	}
 	
-	
-
 }

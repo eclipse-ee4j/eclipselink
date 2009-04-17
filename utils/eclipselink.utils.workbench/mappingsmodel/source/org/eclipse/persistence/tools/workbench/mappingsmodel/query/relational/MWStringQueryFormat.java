@@ -18,6 +18,7 @@ import org.eclipse.persistence.tools.workbench.utility.node.Node;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 
 /**
  * This abstract class is used MWQuery if the format SQL or EJBQL is chosen
@@ -56,6 +57,11 @@ public abstract class MWStringQueryFormat extends MWQueryFormat
 		return this.queryString;
 	}
 
+	//legacy toplink use only
+	protected void legacySetQueryStringForTopLink(String newQueryString) {
+		this.queryString = newQueryString;
+	}
+
 	public void setQueryString(String newQueryString) 
 	{
 		String oldQueryString = this.queryString;
@@ -78,7 +84,7 @@ public abstract class MWStringQueryFormat extends MWQueryFormat
 		descriptor.setJavaClass(MWStringQueryFormat.class);
 		descriptor.getInheritancePolicy().setParentClass(MWQueryFormat.class);
 	
-		descriptor.addDirectMapping("queryString", "query-string/text()");
+		((XMLDirectMapping)descriptor.addDirectMapping("queryString", "query-string/text()")).setNullValue("");
 
 		return descriptor;
 	}	

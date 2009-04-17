@@ -94,7 +94,7 @@ public final class MappingsPlugin
 	public static final String REMOVE_EJB_2X_INFO_DO_NOT_THIS_SHOW_AGAIN_PREFERENCE = "persistence type remove ejb2x info";
 	public static final String REMOVE_EJB_INFO_DO_NOT_THIS_SHOW_AGAIN_PREFERENCE = "persistence type remove ejb info";
 	public static final String CHANGE_QUERY_TYPE_DO_NOT_THIS_SHOW_AGAIN_PREFERENCE ="query change query type";
-	public static final String CHANGE_QUERY_FORMAT_DO_NOT_THIS_SHOW_AGAIN_PREFERENCE ="query change query format";
+	public static final String CHANGE_QUERY_FORMAT_DO_NOT_SHOW_THIS_AGAIN_PREFERENCE ="query change query format";
 	public static final String EXPORT_LOCATION_PREFERENCE = "export location";
 
 	/**

@@ -325,6 +325,9 @@ public class NewNameDialog extends AbstractValidatingDialog {
 		throw new IllegalStateException("dialog was not confirmed");
 	}
 
+	protected String getNameInternal() {
+		return this.textField.getText();
+	}
 
 	// ********** member classes **********
 

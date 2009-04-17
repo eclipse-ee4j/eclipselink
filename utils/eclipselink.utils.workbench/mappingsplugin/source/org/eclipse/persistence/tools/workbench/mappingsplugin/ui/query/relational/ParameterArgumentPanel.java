@@ -52,7 +52,7 @@ import org.eclipse.persistence.tools.workbench.utility.NameTools;
 final class ParameterArgumentPanel 
 	extends ArgumentPanel 
 {
-    private PropertyValueModel queryAggumentHolder;
+    private PropertyValueModel queryArgumentHolder;
 	
 	ParameterArgumentPanel(PropertyValueModel argumentHolder, WorkbenchContextHolder contextHolder, Collection enablingComponents) {
 		super(argumentHolder, contextHolder);

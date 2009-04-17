@@ -80,7 +80,7 @@ final class MappingsPreferencesPage extends AbstractPanel
 	private PropertyValueModel buildChangeQueryFormatAdapter() {
 		PreferencePropertyValueModel adapter = new PreferencePropertyValueModel(
 			this.preferences(),
-			MappingsPlugin.CHANGE_QUERY_FORMAT_DO_NOT_THIS_SHOW_AGAIN_PREFERENCE);
+			MappingsPlugin.CHANGE_QUERY_FORMAT_DO_NOT_SHOW_THIS_AGAIN_PREFERENCE);
 
 		applyConverter(adapter);
 		return buildBufferedAdapter(adapter);

@@ -28,6 +28,7 @@ public interface MWRelationalQuery extends MWNode {
 		String EXPRESSION_FORMAT = "expressionFormat";
 		String SQL_FORMAT = "sqlFormat";
 		String EJBQL_FORMAT = "ejbqlFormat";
+		String STORED_PROCEDURE_FORMAT = "storedProcedure";
 		String AUTO_GENERATED_FORMAT = "autoGenerateFormat";
 
 	

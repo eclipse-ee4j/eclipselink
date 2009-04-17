@@ -19,6 +19,15 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Vector;
 
+import org.eclipse.persistence.descriptors.DescriptorQueryManager;
+import org.eclipse.persistence.descriptors.InheritancePolicy;
+import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
+import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
+import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.QueryResultsCachePolicy;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.MWModel;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.TopLinkOption;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.TopLinkOptionSet;
@@ -34,17 +43,6 @@ import org.eclipse.persistence.tools.workbench.utility.NameTools;
 import org.eclipse.persistence.tools.workbench.utility.iterators.CloneListIterator;
 import org.eclipse.persistence.tools.workbench.utility.iterators.TransformationListIterator;
 import org.eclipse.persistence.tools.workbench.utility.node.Node;
-
-import org.eclipse.persistence.descriptors.DescriptorEvent;
-import org.eclipse.persistence.descriptors.DescriptorQueryManager;
-import org.eclipse.persistence.descriptors.InheritancePolicy;
-import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
-import org.eclipse.persistence.oxm.XMLDescriptor;
-import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
-import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
-import org.eclipse.persistence.queries.DatabaseQuery;
-import org.eclipse.persistence.queries.ObjectLevelReadQuery;
-import org.eclipse.persistence.queries.QueryResultsCachePolicy;
 
 public abstract class MWAbstractQuery 
 	extends MWModel 

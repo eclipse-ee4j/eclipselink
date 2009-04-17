@@ -24,11 +24,13 @@ import javax.swing.UIManager;
 import javax.swing.text.Document;
 
 import org.eclipse.persistence.tools.workbench.framework.context.WorkbenchContextHolder;
+import org.eclipse.persistence.tools.workbench.framework.ui.view.AbstractSubjectPanel;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.query.relational.MWStringQueryFormat;
 import org.eclipse.persistence.tools.workbench.uitools.ComponentEnabler;
 import org.eclipse.persistence.tools.workbench.uitools.app.PropertyAspectAdapter;
 import org.eclipse.persistence.tools.workbench.uitools.app.PropertyValueModel;
 import org.eclipse.persistence.tools.workbench.uitools.app.TransformationPropertyValueModel;
+import org.eclipse.persistence.tools.workbench.uitools.app.ValueModel;
 import org.eclipse.persistence.tools.workbench.uitools.app.swing.DocumentAdapter;
 
 
@@ -38,14 +40,14 @@ import org.eclipse.persistence.tools.workbench.uitools.app.swing.DocumentAdapter
  * for the query format.  It contains a panel with textArea for editing the query string
  */
 final class StringQueryFormatSubPanel 
-	extends QueryFormatSubPanel
+	extends AbstractSubjectPanel
 {
 				
-	StringQueryFormatSubPanel(PropertyValueModel queryHolder, PropertyValueModel queryFormatHolder, WorkbenchContextHolder contextHolder) {
-		super(queryHolder, queryFormatHolder, contextHolder);
+	StringQueryFormatSubPanel(ValueModel queryFormatHolder, WorkbenchContextHolder contextHolder) {
+		super(queryFormatHolder, contextHolder);
 	}
 	
-	protected void initialize() {
+	protected void initializeLayout() {
 		GridBagConstraints constraints = new GridBagConstraints();
 
 		// Query string format label
@@ -77,16 +79,16 @@ final class StringQueryFormatSubPanel
 		constraints.insets     = new Insets(1, 0, 0, 0);
 		add(stringAreaPane, constraints);
 
-		new ComponentEnabler(buildEnablementHolder(), new Component[] { queryStringLabel, queryStringTextArea});
+//		new ComponentEnabler(buildEnablementHolder(), new Component[] { queryStringLabel, queryStringTextArea});
 	}
 
-	private PropertyValueModel buildEnablementHolder() {
-		return new TransformationPropertyValueModel(buildStringQueryFormatHolder()) {
-			protected Object transform(Object value) {
-				return (value != null) ? Boolean.TRUE : Boolean.FALSE;
-			}
-		};
-	}
+//	private PropertyValueModel buildEnablementHolder() {
+//		return new TransformationPropertyValueModel(getSubjectHolder()) {
+//			protected Object transform(Object value) {
+//				return (value != null) ? Boolean.TRUE : Boolean.FALSE;
+//			}
+//		};
+//	}
 	
 	// ************ query string ***********
 	private JTextArea buildQueryStringTextArea() {
@@ -103,7 +105,7 @@ final class StringQueryFormatSubPanel
 	}
 	
 	private PropertyValueModel buildQueryStringHolder() {
-		return new PropertyAspectAdapter(buildStringQueryFormatHolder(), MWStringQueryFormat.QUERY_STRING_PROPERTY) {
+		return new PropertyAspectAdapter(getSubjectHolder(), MWStringQueryFormat.QUERY_STRING_PROPERTY) {
 			protected Object getValueFromSubject() {
 				return ((MWStringQueryFormat) subject).getQueryString();
 			}
@@ -112,13 +114,5 @@ final class StringQueryFormatSubPanel
 			}
 		};
 	}
-	private PropertyValueModel buildStringQueryFormatHolder() {
-		return new TransformationPropertyValueModel(getQueryFormatHolder()) {
-			protected Object transform(Object value) {
-				return value instanceof MWStringQueryFormat ? value : null;
-			}
-		};
-	}
-	
 
 }

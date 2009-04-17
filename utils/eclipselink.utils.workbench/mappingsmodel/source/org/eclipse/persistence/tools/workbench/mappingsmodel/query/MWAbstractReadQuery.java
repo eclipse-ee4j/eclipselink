@@ -14,15 +14,13 @@ package org.eclipse.persistence.tools.workbench.mappingsmodel.query;
 
 import java.util.List;
 
-import org.eclipse.persistence.tools.workbench.mappingsmodel.ProblemConstants;
-import org.eclipse.persistence.tools.workbench.utility.node.Node;
-
-import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.tools.workbench.mappingsmodel.ProblemConstants;
+import org.eclipse.persistence.tools.workbench.utility.node.Node;
 
 public abstract class MWAbstractReadQuery 
 	extends MWAbstractQuery

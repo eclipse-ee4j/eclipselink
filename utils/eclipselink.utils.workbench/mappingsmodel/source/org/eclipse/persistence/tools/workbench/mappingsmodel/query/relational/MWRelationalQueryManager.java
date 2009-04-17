@@ -13,34 +13,40 @@
 package org.eclipse.persistence.tools.workbench.mappingsmodel.query.relational;
 
 import java.util.Iterator;
+import java.util.List;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.DescriptorEvent;
+import org.eclipse.persistence.descriptors.DescriptorQueryManager;
+import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
+import org.eclipse.persistence.queries.DeleteObjectQuery;
+import org.eclipse.persistence.queries.InsertObjectQuery;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.queries.UpdateObjectQuery;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.MWModel;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.relational.MWRelationalTransactionalPolicy;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.query.MWQueryManager;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.query.MWReadAllQuery;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.query.MWReadObjectQuery;
-import org.eclipse.persistence.tools.workbench.utility.string.StringTools;
-
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.descriptors.DescriptorQueryManager;
-import org.eclipse.persistence.mappings.DirectToFieldMapping;
-import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.tools.workbench.utility.node.Node;
 
 /**
  * This class holds any custom sql the user has created.
  */
 public final class MWRelationalQueryManager extends MWQueryManager {
 
-	private volatile String insertSQLString;
-		public final static String INSERT_SQL_STRING_PROPERTY = "insertSQLString";
-	private volatile String updateSQLString;
-		public final static String UPDATE_SQL_STRING_PROPERTY = "updateSQLString";
-	private volatile String deleteSQLString;
-		public final static String DELETE_SQL_STRING_PROPERTY = "deleteSQLString";
-	private volatile String readObjectSQLString;
-		public final static String READ_OBJECT_SQL_STRING_PROPERTY = "readObjectSQLString";
-	private volatile String readAllSQLString;
-		public final static String READ_ALL_SQL_STRING_PROPERTY = "readAllSQLString";
+	private volatile MWInsertQuery insertQuery;
+		public final static String INSERT_QUERY_PROPERTY = "insertQuery";
+	private volatile MWUpdateQuery updateQuery;
+		public final static String UPDATE_QUERY_PROPERTY = "updateQuery";
+	private volatile MWDeleteQuery deleteQuery;
+		public final static String DELETE_QUERY_PROPERTY = "deleteQuery";
+	private volatile MWCustomReadObjectQuery readObjectQuery;
+		public final static String READ_OBJECT_QUERY_PROPERTY = "readObjectQuery";
+	private volatile MWCustomReadAllQuery readAllQuery;
+		public final static String READ_ALL_QUERY_PROPERTY = "readAllQuery";
 	
         
     private String legacyDescriptorAlias;
@@ -55,6 +61,25 @@ public final class MWRelationalQueryManager extends MWQueryManager {
 		super(descriptor);
 	}
 	
+	@Override
+	protected void initialize(Node parent) {
+		super.initialize(parent);
+		this.insertQuery = new MWInsertQuery(this);
+		this.deleteQuery = new MWDeleteQuery(this);
+		this.updateQuery = new MWUpdateQuery(this);
+		this.readObjectQuery = new MWCustomReadObjectQuery(this);
+		this.readAllQuery = new MWCustomReadAllQuery(this);
+	}
+
+	@Override
+	protected void addChildrenTo(List children) {
+		super.addChildrenTo(children);
+		children.add(this.insertQuery);
+		children.add(this.deleteQuery);
+		children.add(this.updateQuery);
+		children.add(this.readObjectQuery);
+		children.add(this.readAllQuery);
+	}
 	
 	//Persistence
 	public static XMLDescriptor buildDescriptor() {
@@ -65,15 +90,65 @@ public final class MWRelationalQueryManager extends MWQueryManager {
 		
 		descriptor.getInheritancePolicy().setParentClass(MWQueryManager.class);
 		
-		descriptor.addDirectMapping("insertSQLString", "insert-string/text()");
-		descriptor.addDirectMapping("updateSQLString", "update-string/text()");
-		descriptor.addDirectMapping("deleteSQLString", "delete-string/text()");
-		descriptor.addDirectMapping("readObjectSQLString", "read-object-string/text()");
-		descriptor.addDirectMapping("readAllSQLString", "read-all-string/text()");
-		
+		//custom queries
+		XMLCompositeObjectMapping insertQueryMapping = new XMLCompositeObjectMapping();
+		insertQueryMapping.setAttributeName("insertQuery");
+		insertQueryMapping.setGetMethodName("getInsertQueryForTopLink");
+		insertQueryMapping.setSetMethodName("setInsertQueryForTopLink");
+		insertQueryMapping.setReferenceClass(MWInsertQuery.class);
+		insertQueryMapping.setXPath("insert-query");
+		descriptor.addMapping(insertQueryMapping);
+
+		XMLCompositeObjectMapping deleteQueryMapping = new XMLCompositeObjectMapping();
+		deleteQueryMapping.setAttributeName("deleteQuery");
+		deleteQueryMapping.setGetMethodName("getDeleteQueryForTopLink");
+		deleteQueryMapping.setSetMethodName("setDeleteQueryForTopLink");
+		deleteQueryMapping.setReferenceClass(MWDeleteQuery.class);
+		deleteQueryMapping.setXPath("delete-query");
+		descriptor.addMapping(deleteQueryMapping);
+
+		XMLCompositeObjectMapping updateQueryMapping = new XMLCompositeObjectMapping();
+		updateQueryMapping.setAttributeName("updateQuery");
+		updateQueryMapping.setGetMethodName("getUpdateQueryForTopLink");
+		updateQueryMapping.setSetMethodName("setUpdateQueryForTopLink");
+		updateQueryMapping.setReferenceClass(MWUpdateQuery.class);
+		updateQueryMapping.setXPath("update-query");
+		descriptor.addMapping(updateQueryMapping);
+
+		XMLCompositeObjectMapping readObjectQueryMapping = new XMLCompositeObjectMapping();
+		readObjectQueryMapping.setAttributeName("readObjectQuery");
+		readObjectQueryMapping.setGetMethodName("getReadObjectQueryForTopLink");
+		readObjectQueryMapping.setSetMethodName("setReadObjectQueryForTopLink");
+		readObjectQueryMapping.setReferenceClass(MWCustomReadObjectQuery.class);
+		readObjectQueryMapping.setXPath("read-object-query");
+		descriptor.addMapping(readObjectQueryMapping);
+
+		XMLCompositeObjectMapping readAllQueryMapping = new XMLCompositeObjectMapping();
+		readAllQueryMapping.setAttributeName("readAllQuery");
+		readAllQueryMapping.setGetMethodName("getReadAllQueryForTopLink");
+		readAllQueryMapping.setSetMethodName("setReadAllQueryForTopLink");
+		readAllQueryMapping.setReferenceClass(MWCustomReadAllQuery.class);
+		readAllQueryMapping.setXPath("read-all-query");
+		descriptor.addMapping(readAllQueryMapping);
+
 		return descriptor;
 	}
 	
+	public static XMLDescriptor buildStandalone60Descriptor() {
+		XMLDescriptor descriptor = MWModel.legacy60BuildStandardDescriptor();
+
+		descriptor.setJavaClass(MWRelationalQueryManager.class);
+
+		descriptor.getInheritancePolicy().setParentClass(MWQueryManager.class);
+
+		descriptor.addDirectMapping("insertSQLString", "legacyGetInsertSQLString", "legacySetInsertSQLString", "insert-string/text()");
+		descriptor.addDirectMapping("updateSQLString", "legacyGetUpdateSQLString", "legacySetUpdateSQLString", "update-string/text()");
+		descriptor.addDirectMapping("deleteSQLString", "legacyGetDeleteSQLString", "legacySetDeleteSQLString", "delete-string/text()");
+		descriptor.addDirectMapping("readObjectSQLString", "legacyGetReadObjectSQLString", "legacySetReadObjectSQLString", "read-object-string/text()");
+		descriptor.addDirectMapping("readAllSQLString", "legacyGetReadAllSQLString", "legacySetReadAllSQLString", "read-all-string/text()");
+
+		return descriptor;
+	}
 	public MWReportQuery addReportQuery(String queryName) {
 		return (MWReportQuery) this.addQuery(new MWReportQuery(this, queryName));		
 	}
@@ -90,59 +165,236 @@ public final class MWRelationalQueryManager extends MWQueryManager {
 		return true;
 	}
 	
-	public String getDeleteSQLString() {
-		return this.deleteSQLString;
-	}
-	
-	public String getInsertSQLString() {
-		return this.insertSQLString;
-	}
-	
-	public String getReadAllSQLString() {
-		return this.readAllSQLString;
-	}
-	
-	public String getReadObjectSQLString(){
-		return this.readObjectSQLString;
+	public MWDeleteQuery getDeleteQuery() {
+		return this.deleteQuery;
 	}
 
-	public String getUpdateSQLString() {
-		return this.updateSQLString;
+	public MWInsertQuery getInsertQuery() {
+		return this.insertQuery;
 	}
 
-	public void setDeleteSQLString(String deleteSQLString) {
-		String oldDeleteSQLString = getDeleteSQLString();
-		this.deleteSQLString = deleteSQLString;
-		firePropertyChanged(DELETE_SQL_STRING_PROPERTY, oldDeleteSQLString, deleteSQLString);
+	public MWCustomReadAllQuery getReadAllQuery() {
+		return this.readAllQuery;
 	}
-	public void setInsertSQLString(String insertSQLString) {
-		String oldInsertSQLString = getInsertSQLString();
-		this.insertSQLString = insertSQLString;
-		firePropertyChanged(INSERT_SQL_STRING_PROPERTY, oldInsertSQLString, insertSQLString);
+
+	public MWCustomReadObjectQuery getReadObjectQuery(){
+		return this.readObjectQuery;
 	}
-		
-	public void setReadAllSQLString(String readAllSQLString) {
-		String oldReadAllSQLString = getReadAllSQLString();
-		this.readAllSQLString = readAllSQLString;
-		firePropertyChanged(READ_ALL_SQL_STRING_PROPERTY, oldReadAllSQLString, readAllSQLString);
+
+	public MWUpdateQuery getUpdateQuery() {
+		return this.updateQuery;
 	}
-	
-	public void setReadObjectSQLString(String readObjectSQLString) {
-		String oldReadObjectSQLString = getReadObjectSQLString();
-		this.readObjectSQLString = readObjectSQLString;
-		firePropertyChanged(READ_OBJECT_SQL_STRING_PROPERTY, oldReadObjectSQLString, readObjectSQLString);
+
+	public void setDeleteQuery(MWDeleteQuery delete) {
+		MWDeleteQuery oldDelete = getDeleteQuery();
+		this.deleteQuery = delete;
+		firePropertyChanged(DELETE_QUERY_PROPERTY, oldDelete, delete);
 	}
 	
-	public void setUpdateSQLString(String updateSQLString) {
-		String oldUpdateSQLString = getUpdateSQLString();
-		this.updateSQLString = updateSQLString;
-		firePropertyChanged(UPDATE_SQL_STRING_PROPERTY, oldUpdateSQLString, updateSQLString);
+	public void setDeleteSQLString(String sqlString) {
+		this.deleteQuery.setSQLString(sqlString);
 	}
-		
+	
+	public void setInsertQuery(MWInsertQuery insert) {
+		MWInsertQuery oldInsert = getInsertQuery();
+		this.insertQuery = insert;
+		firePropertyChanged(INSERT_QUERY_PROPERTY, oldInsert, insert);
+	}
+
+	public void setInsertSQLString(String sqlString) {
+		this.insertQuery.setSQLString(sqlString);
+	}
+
+	public void setReadAllQuery(MWCustomReadAllQuery readAll) {
+		MWCustomReadAllQuery oldReadAll = getReadAllQuery();
+		this.readAllQuery = readAll;
+		firePropertyChanged(READ_ALL_QUERY_PROPERTY, oldReadAll, readAll);
+	}
+
+	public void setReadAllSQLString(String sqlString) {
+		this.readAllQuery.setSQLString(sqlString);
+	}
+	
+	public void setReadObjectQuery(MWCustomReadObjectQuery readObject) {
+		MWCustomReadObjectQuery oldReadObject = getReadObjectQuery();
+		this.readObjectQuery = readObject;
+		firePropertyChanged(READ_OBJECT_QUERY_PROPERTY, oldReadObject, readObject);
+	}
+
+	public void setReadObjectSQLString(String sqlString) {
+		this.readObjectQuery.setSQLString(sqlString);
+	}
+	
+	public void setUpdateQuery(MWUpdateQuery update) {
+		MWUpdateQuery oldUpdate = getUpdateQuery();
+		this.updateQuery = update;
+		firePropertyChanged(UPDATE_QUERY_PROPERTY, oldUpdate, update);
+	}
+
+	public void setUpdateSQLString(String sqlString) {
+		this.updateQuery.setSQLString(sqlString);
+	}
+	
 	public void notifyExpressionsToRecalculateQueryables(){
 		for (Iterator queries = queries(); queries.hasNext();) {
 			((MWRelationalQuery) queries.next()).notifyExpressionsToRecalculateQueryables();
 		}	
+	}
+	
+	//TopLink use only
+	private MWInsertQuery getInsertQueryForTopLink() {
+		return this.insertQuery;
+	}
+	
+	//TopLink use only
+	private MWDeleteQuery getDeleteQueryForTopLink() {
+		return this.deleteQuery;
+	}
+
+	//TopLink use only
+	private MWUpdateQuery getUpdateQueryForTopLink() {
+		return this.updateQuery;
+	}
+	
+	//TopLink use only
+	private MWCustomReadObjectQuery getReadObjectQueryForTopLink() {
+		return this.readObjectQuery;
+	}
+	
+	//TopLink use only
+	private MWCustomReadAllQuery getReadAllQueryForTopLink() {
+		return this.readAllQuery;
+	}
+
+	//TopLink use only
+	private void setInsertQueryForTopLink(MWInsertQuery query) {
+		this.insertQuery = query;
+	}
+
+	//TopLink use only
+	private void setDeleteQueryForTopLink(MWDeleteQuery query) {
+		this.deleteQuery = query;
+	}
+
+	//TopLink use only
+	private void setUpdateQueryForTopLink(MWUpdateQuery query) {
+		this.updateQuery = query;
+	}
+
+	//TopLink use only
+	private void setReadObjectQueryForTopLink(MWCustomReadObjectQuery query) {
+		this.readObjectQuery = query;
+	}
+
+	//TopLink use only
+	private void setReadAllQueryForTopLink(MWCustomReadAllQuery query) {
+		this.readAllQuery = query;
+	}
+	
+	@Override
+	protected void legacy60PostBuild(DescriptorEvent event) {
+		// TODO Auto-generated method stub
+		super.legacy60PostBuild(event);
+
+		// Checks null since in cases where sql was specified,
+		// these object will be not null.
+		
+		if (this.deleteQuery == null) {
+			this.deleteQuery = new MWDeleteQuery(this);
+		}
+		if (this.insertQuery == null) {
+			this.insertQuery = new MWInsertQuery(this);
+		}
+		if (this.readAllQuery == null) {
+			this.readAllQuery = new MWCustomReadAllQuery(this);
+		}
+		if (this.readObjectQuery == null) {
+			this.readObjectQuery =  new MWCustomReadObjectQuery(this);;
+		}
+		if (this.updateQuery == null) {
+			this.updateQuery = new MWUpdateQuery(this);
+		}
+
+	}
+
+	//for legacy TopLink use only
+	private String legacyGetInsertSQLString() {
+		//this should never be called
+		throw new IllegalStateException();
+	}
+
+	//for legacy TopLink use only
+	private String legacyGetUpdateSQLString() {
+		//this should never be called
+		throw new IllegalStateException();
+	}
+
+	//for legacy TopLink use only
+	private String legacyGetDeleteSQLString() {
+		//this should never be called
+		throw new IllegalStateException();
+	}
+
+	//for legacy TopLink use only
+	private String legacyGetReadObjectSQLString() {
+		//this should never be called
+		throw new IllegalStateException();
+	}
+
+	//for legacy TopLink use only
+	private String legacyGetReadAllSQLString() {
+		//this should never be called
+		throw new IllegalStateException();
+	}
+
+	//for legacy TopLink use only
+	private void legacySetInsertSQLString(String sql) {
+		if (sql != null) {
+			this.insertQuery = new MWInsertQuery(this);
+			this.insertQuery.setQueryFormatType(MWRelationalQuery.SQL_FORMAT);
+			MWSQLQueryFormat queryFormat = (MWSQLQueryFormat)this.insertQuery.getQueryFormat();
+			queryFormat.legacySetQueryStringForTopLink(sql);
+		}
+	}
+
+	//for legacy TopLink use only
+	private void legacySetUpdateSQLString(String sql) {
+		if (sql != null) {
+			this.updateQuery = new MWUpdateQuery(this);
+			this.updateQuery.setQueryFormatType(MWRelationalQuery.SQL_FORMAT);
+			MWSQLQueryFormat queryFormat = (MWSQLQueryFormat)this.updateQuery.getQueryFormat();
+			queryFormat.legacySetQueryStringForTopLink(sql);
+		}
+	}
+
+	//for legacy TopLink use only
+	private void legacySetDeleteSQLString(String sql) {
+		if (sql != null) {
+			this.deleteQuery = new MWDeleteQuery(this);
+			this.deleteQuery.setQueryFormatType(MWRelationalQuery.SQL_FORMAT);
+			MWSQLQueryFormat queryFormat = (MWSQLQueryFormat)this.deleteQuery.getQueryFormat();
+			queryFormat.legacySetQueryStringForTopLink(sql);
+		}
+	}
+
+	//for legacy TopLink use only
+	private void legacySetReadObjectSQLString(String sql) {
+		if (sql != null) {
+			this.readObjectQuery = new MWCustomReadObjectQuery(this);
+			this.readObjectQuery.setQueryFormatType(MWRelationalQuery.SQL_FORMAT);
+			MWSQLQueryFormat queryFormat = (MWSQLQueryFormat)this.readObjectQuery.getQueryFormat();
+			queryFormat.legacySetQueryStringForTopLink(sql);
+		}
+	}
+
+	//for legacy TopLink use only
+	private void legacySetReadAllSQLString(String sql) {
+		if (sql != null) {
+			this.readAllQuery = new MWCustomReadAllQuery(this);
+			this.readAllQuery.setQueryFormatType(MWRelationalQuery.SQL_FORMAT);
+			MWSQLQueryFormat queryFormat = (MWSQLQueryFormat)this.readAllQuery.getQueryFormat();
+			queryFormat.legacySetQueryStringForTopLink(sql);
+		}
 	}
 
 	//Conversion methods
@@ -151,22 +403,37 @@ public final class MWRelationalQueryManager extends MWQueryManager {
 
 		DescriptorQueryManager rtQueryManager = (DescriptorQueryManager) runtimeDescriptor.getQueryManager();
 
-		// Custom SQL
-		if (!StringTools.stringIsEmpty(getDeleteSQLString())) {
-			rtQueryManager.setDeleteSQLString(getDeleteSQLString());
+		// Custom Calls
+		if (!this.deleteQuery.isContentEmpty()) {
+			DeleteObjectQuery rtDeleteQuery = (DeleteObjectQuery)this.deleteQuery.buildRuntimeQuery();
+			this.deleteQuery.adjustRuntimeQuery(rtDeleteQuery);
+			rtQueryManager.setDeleteQuery(rtDeleteQuery);
 		}
-		if (!StringTools.stringIsEmpty(getInsertSQLString())) {
-			rtQueryManager.setInsertSQLString(getInsertSQLString());
+		
+		if (!this.insertQuery.isContentEmpty()) {
+			InsertObjectQuery rtInsertQuery = (InsertObjectQuery)this.insertQuery.buildRuntimeQuery();
+			this.insertQuery.adjustRuntimeQuery(rtInsertQuery);
+			rtQueryManager.setInsertQuery(rtInsertQuery);
 		}
-		if (!StringTools.stringIsEmpty(getUpdateSQLString())) {
-			rtQueryManager.setUpdateSQLString(getUpdateSQLString());
+		
+		if (!this.updateQuery.isContentEmpty()) {
+			UpdateObjectQuery rtUpdateQuery = (UpdateObjectQuery)this.updateQuery.buildRuntimeQuery();
+			this.updateQuery.adjustRuntimeQuery(rtUpdateQuery);
+			rtQueryManager.setUpdateQuery(rtUpdateQuery);
 		}
-		if (!StringTools.stringIsEmpty(getReadAllSQLString())) {
-			rtQueryManager.setReadAllSQLString(getReadAllSQLString());
+		
+		if (!this.readAllQuery.isContentEmpty()) {
+			ReadAllQuery rtReadAllQuery = (ReadAllQuery)this.readAllQuery.buildRuntimeQuery();
+			this.readAllQuery.adjustRuntimeQuery(rtReadAllQuery);
+			rtQueryManager.setReadAllQuery(rtReadAllQuery);
 		}
-		if (!StringTools.stringIsEmpty(getReadObjectSQLString())) {
-			rtQueryManager.setReadObjectSQLString(getReadObjectSQLString());
+		
+		if (!this.readObjectQuery.isContentEmpty()) {
+			ReadObjectQuery rtReadObjectQuery = (ReadObjectQuery)this.readObjectQuery.buildRuntimeQuery();
+			this.readObjectQuery.adjustRuntimeQuery(rtReadObjectQuery);
+			rtQueryManager.setReadObjectQuery(rtReadObjectQuery);
 		}
+		
 	}
 	
 	public void adjustFromRuntimeDescriptor(ClassDescriptor runtimeDescriptor) {
@@ -174,13 +441,44 @@ public final class MWRelationalQueryManager extends MWQueryManager {
 
 		DescriptorQueryManager rtQueryManager = (DescriptorQueryManager) runtimeDescriptor.getQueryManager();
 		
-		// Custom SQL
-		setDeleteSQLString(rtQueryManager.getDeleteSQLString());
-		setInsertSQLString(rtQueryManager.getInsertSQLString());
-		setUpdateSQLString(rtQueryManager.getUpdateSQLString());
-		setReadAllSQLString(rtQueryManager.getReadAllSQLString());
-		setReadObjectSQLString(rtQueryManager.getReadObjectSQLString());		
+		// Custom Calls
+		DeleteObjectQuery rtDeleteQuery = (DeleteObjectQuery)this.deleteQuery.buildRuntimeQuery();
+		this.deleteQuery.adjustRuntimeQuery(rtDeleteQuery);
+		rtQueryManager.setDeleteQuery(rtDeleteQuery);
+		
+		InsertObjectQuery rtInsertQuery = (InsertObjectQuery)this.insertQuery.buildRuntimeQuery();
+		this.insertQuery.adjustRuntimeQuery(rtInsertQuery);
+		rtQueryManager.setInsertQuery(rtInsertQuery);
+		
+		UpdateObjectQuery rtUpdateQuery = (UpdateObjectQuery)this.updateQuery.buildRuntimeQuery();
+		this.updateQuery.adjustRuntimeQuery(rtUpdateQuery);
+		rtQueryManager.setUpdateQuery(rtUpdateQuery);
+		
+		ReadAllQuery rtReadAllQuery = (ReadAllQuery)this.readAllQuery.buildRuntimeQuery();
+		this.readAllQuery.adjustRuntimeQuery(rtReadAllQuery);
+		rtQueryManager.setReadAllQuery(rtReadAllQuery);
+		
+		ReadObjectQuery rtReadObjectQuery = (ReadObjectQuery)this.readObjectQuery.buildRuntimeQuery();
+		this.readObjectQuery.adjustRuntimeQuery(rtReadObjectQuery);
+		rtQueryManager.setReadObjectQuery(rtReadObjectQuery);
+		
 
 	}
 
+	public static XMLDescriptor legacy60BuildDescriptor() {
+
+		XMLDescriptor descriptor = MWModel.legacy60BuildStandardDescriptor();
+
+		descriptor.setJavaClass(MWRelationalQueryManager.class);
+
+		descriptor.getInheritancePolicy().setParentClass(MWQueryManager.class);
+
+		descriptor.addDirectMapping("insertSQLString", "legacyGetInsertSQLString", "legacySetInsertSQLString", "insert-string/text()");
+		descriptor.addDirectMapping("updateSQLString", "legacyGetUpdateSQLString", "legacySetUpdateSQLString", "update-string/text()");
+		descriptor.addDirectMapping("deleteSQLString", "legacyGetDeleteSQLString", "legacySetDeleteSQLString", "delete-string/text()");
+		descriptor.addDirectMapping("readObjectSQLString", "legacyGetReadObjectSQLString", "legacySetReadObjectSQLString", "read-object-string/text()");
+		descriptor.addDirectMapping("readAllSQLString", "legacyGetReadAllSQLString", "legacySetReadAllSQLString", "read-all-string/text()");
+
+		return descriptor;
+	}
 }

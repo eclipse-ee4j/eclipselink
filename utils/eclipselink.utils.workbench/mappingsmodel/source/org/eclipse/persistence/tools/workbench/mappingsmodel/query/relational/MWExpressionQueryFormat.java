@@ -21,6 +21,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
+import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 
 /**
@@ -117,11 +118,11 @@ public final class MWExpressionQueryFormat extends MWQueryFormat
 	}
 
 	//Conversion methods
-	void convertToRuntime(ObjectLevelReadQuery runtimeQuery) 
+	void convertToRuntime(DatabaseQuery runtimeQuery) 
 	{
-		runtimeQuery.setSelectionCriteria(getExpression().buildRuntimeExpression(runtimeQuery.getExpressionBuilder())); 	
+		runtimeQuery.setSelectionCriteria(getExpression().buildRuntimeExpression(((ObjectLevelReadQuery)runtimeQuery).getExpressionBuilder())); 	
 	}
-	void convertFromRuntime(ObjectLevelReadQuery runtimeQuery)
+	void convertFromRuntime(DatabaseQuery runtimeQuery)
 	{		
 		Expression selectionCriteria = runtimeQuery.getSelectionCriteria();
 		

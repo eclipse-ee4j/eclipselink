@@ -95,7 +95,9 @@ public class ProblemsBundle extends ListResourceBundle
 		{"0259", "The query {0} has no attribute chosen for the report attribute {1}."},
         {"0260", "The report attribute {0} for query {1} is not valid.  Report query attributes must be either query keys or direct mappings."},
 		
-        {"0262", "The format for {2} must be between 0 and 127 inclusive.  Literal argument of expression (line {0}) on query {1} is invalid."},
+		{"0261", "The in/out argument specifies pass by value yet has no out field named or java class name specified, both are required for pass by value arguments."},
+
+		{"0262", "The format for {2} must be between 0 and 127 inclusive.  Literal argument of expression (line {0}) on query {1} is invalid."},
         {"0263", "The format for {2} must be either 'true' or 'false'.  Literal argument of expression (line {0}) on query {1} is invalid."},
         {"0264", "The format for {2} must be a single character.  Literal argument of expression (line {0}) on query {1} is invalid."},
         {"0265", "The format for {2} must be between {3} and {4}.  Literal argument of expression (line {0}) on query {1} is invalid."},

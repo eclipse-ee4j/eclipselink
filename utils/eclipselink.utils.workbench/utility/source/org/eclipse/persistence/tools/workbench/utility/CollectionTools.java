@@ -1084,6 +1084,13 @@ public final class CollectionTools {
 	}
 	
 	/**
+	 * Return a list iterator for the specified iterator.
+	 */
+	public static <T> ListIterator<T> listIterator(Iterator<T> iterator) {
+		return list(iterator).listIterator();
+	}
+	
+	/**
 	 * Return a list corresponding to the specified array.
 	 * Unlike java.util.Arrays.asList(Object[]), the list
 	 * is modifiable and is not backed by the array.
