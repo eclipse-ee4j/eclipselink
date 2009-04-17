@@ -97,6 +97,7 @@
     <target name="clean" description="Clean all generated content">
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${classes.dir}"/>
+            <fileset dir="${feature.build.location}" includes="org.eclipse.persistence.*.jar"/>
         </delete>
     </target>
 
