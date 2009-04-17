@@ -521,10 +521,16 @@ public class QueryRuntimeProject {
 		// Query manager.
 		descriptor.getDescriptorQueryManager().checkCacheForDoesExist();
 		descriptor.getDescriptorQueryManager().setReadObjectSQLString("Read an object");
+		descriptor.getDescriptorQueryManager().getReadObjectQuery().setShouldBindAllParameters(true);
 		descriptor.getDescriptorQueryManager().setReadAllSQLString("Here's how to Read all");
+		descriptor.getDescriptorQueryManager().getReadAllQuery().setShouldBindAllParameters(true);
 		descriptor.getDescriptorQueryManager().setInsertSQLString("Inserting stuff");
+		descriptor.getDescriptorQueryManager().getInsertQuery().setShouldBindAllParameters(true);
 		descriptor.getDescriptorQueryManager().setUpdateSQLString("Updating sql");
+		descriptor.getDescriptorQueryManager().getUpdateQuery().setShouldBindAllParameters(true);
 		descriptor.getDescriptorQueryManager().setDeleteSQLString("Deleting stuff");
+		descriptor.getDescriptorQueryManager().getDeleteQuery().setShouldBindAllParameters(true);
+
 		//Named Queries
 
 		// Event manager.

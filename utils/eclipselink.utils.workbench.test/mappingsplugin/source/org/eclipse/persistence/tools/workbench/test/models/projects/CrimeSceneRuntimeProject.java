@@ -384,6 +384,7 @@ public class CrimeSceneRuntimeProject {
 		// Query manager.
 		descriptor.getDescriptorQueryManager().assumeExistenceForDoesExist();
 		descriptor.getDescriptorQueryManager().setDeleteSQLString("KILL 'EM ALL!!!!!");
+		descriptor.getDescriptorQueryManager().getDeleteQuery().setShouldBindAllParameters(true);
 
 		//Named Queries
 		//Named Query -- findByIQ

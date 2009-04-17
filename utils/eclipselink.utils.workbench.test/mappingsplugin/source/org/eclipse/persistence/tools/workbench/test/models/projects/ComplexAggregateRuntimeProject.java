@@ -184,10 +184,16 @@ public class ComplexAggregateRuntimeProject {
 		// Query manager.
 		descriptor.getDescriptorQueryManager().assumeNonExistenceForDoesExist();
 		descriptor.getDescriptorQueryManager().setReadObjectSQLString("read the object");
+		descriptor.getDescriptorQueryManager().getReadObjectQuery().setShouldBindAllParameters(true);
 		descriptor.getDescriptorQueryManager().setReadAllSQLString("read everything");
+		descriptor.getDescriptorQueryManager().getReadAllQuery().setShouldBindAllParameters(true);
 		descriptor.getDescriptorQueryManager().setInsertSQLString("an insert");
+		descriptor.getDescriptorQueryManager().getInsertQuery().setShouldBindAllParameters(true);
 		descriptor.getDescriptorQueryManager().setUpdateSQLString("an update");
+		descriptor.getDescriptorQueryManager().getUpdateQuery().setShouldBindAllParameters(true);
 		descriptor.getDescriptorQueryManager().setDeleteSQLString("an update");
+		descriptor.getDescriptorQueryManager().getDeleteQuery().setShouldBindAllParameters(true);
+
 		//Named Queries
 		//Named Query -- query3
 		ReadObjectQuery namedQuery0 = new ReadObjectQuery();

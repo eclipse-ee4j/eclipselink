@@ -264,7 +264,7 @@ public class MappingsModelTestTools {
 			rd.addKeyFieldsNamed("indicatorValue", "descriptorValueHandle");
 
 		rd = diffEngine.addReflectiveDifferentiator(MWClassRepository.class);
-			rd.ignoreFieldsNamed(new String[] {"externalClassRepository", "userTypeNames"});
+			rd.ignoreFieldsNamed(new String[] {"externalClassRepository", "userTypeNames", "persistLastRefresh"});
 			Differentiator typesFieldDifferentiator = rd.getFieldDifferentiator("types");
 			rd.setFieldDifferentiator("types", new ClassRepositoryTypesFieldDifferentiator(typesFieldDifferentiator));
 			rd.setFieldDifferentiator("typeNames", new ClassRepositoryTypesFieldDifferentiator(typesFieldDifferentiator));
