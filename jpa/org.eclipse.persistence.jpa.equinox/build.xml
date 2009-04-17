@@ -47,10 +47,12 @@
        <format property="build.date" pattern="yyyyMMdd"/>
        <format property="build.time" pattern="HHmm"/>
     </tstamp>
-    <property name="build.type" value="SNAPSHOT"/>
-    <property name="svn.revision" value="NA"/>
-    <property name="version.qualifier" value="qualifier"/>
-    <property name="version.string" value="${release.version}.${version.qualifier}"/>
+    <property name="build.type"            value="SNAPSHOT"/>
+    <property name="svn.revision"          value="NA"/>
+    <property name="version.qualifier"     value="qualifier"/>
+    <property name="version.string"        value="${release.version}.${version.qualifier}"/>
+    <property name="specification.vendor"  value="EclipseLink Project"/>
+    <property name="implementation.vendor" value="EclipseLink Project"/>
 
     <!-- Set Compile Path-->
     <path id="equinox.compile.path">
@@ -72,7 +74,7 @@
     <available file="${equinox.2.common.plugins.dir}/${ant.project.name}.weaving_${version.string}.jar" property="weaving.bundle.exist"/>
 
     <!-- all -->
-    <target name="build" depends="clean, compile, generate-manifest, package" description="build JPA Equinox component"/>
+    <target name="build" if="weaving.bundle.exist" depends="clean, compile, generate-manifest, package" description="build JPA Equinox component"/>
 
     <!-- clean -->
     <target name="clean" description="Clean all generated content">
@@ -83,7 +85,7 @@
     </target>
 
     <!-- compile -->
-    <target name="compile" description="Compile EclipseLink JPA">
+    <target name="compile" if="weaving.bundle.exist" description="Compile EclipseLink JPA">
         <fail message="Cannot find Core: '${equinox.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar'." unless="core.bundle.exist"/>
         <fail message="Cannot find JPA: '${equinox.2.common.plugins.dir}/org.eclipse.persistence.jpa_${version.string}.jar'." unless="jpa.bundle.exist"/>
         <fail message="Cannot find Weaving: '${equinox.2.common.plugins.dir}/${ant.project.name}.weaving_${version.string}.jar'." unless="weaving.bundle.exist"/>
@@ -105,7 +107,7 @@
     </target>
 
     <!-- package -->
-    <target name="package" description="jar OSGI bundle">
+    <target name="package" if="weaving.bundle.exist" description="jar OSGI bundle">
         <jar jarfile="${equinox.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" manifest="${classes.dir}/MANIFEST.MF">
             <fileset dir="${equinox.2.base.dir}">
                 <include name="about.html"/>
@@ -144,7 +146,7 @@
         </jar>
     </target>
 
-    <target name="generate-manifest" description="Generate the OSGi bundle manifest before jarring">
+    <target name="generate-manifest" if="weaving.bundle.exist" description="Generate the OSGi bundle manifest before jarring">
         <delete file="${classes.dir}/MANIFEST.MF" quiet="true"/>
         <echo message="Manifest-Version: 1.0${line.separator}"                                                                            file="${classes.dir}/MANIFEST.MF" append="false"/>
         <echo message="Specification-Vendor: ${specification.vendor}${line.separator}"                                                    file="${classes.dir}/MANIFEST.MF" append="true"/>

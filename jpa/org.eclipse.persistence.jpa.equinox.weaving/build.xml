@@ -47,11 +47,15 @@
        <format property="build.date" pattern="yyyyMMdd"/>
        <format property="build.time" pattern="HHmm"/>
     </tstamp>
-    <property name="build.type" value="SNAPSHOT"/>
-    <property name="svn.revision" value="NA"/>
-    <property name="version.qualifier" value="qualifier"/>
-    <property name="version.string" value="${release.version}.${version.qualifier}"/>
-
+    <property name="build.type"            value="SNAPSHOT"/>
+    <property name="svn.revision"          value="NA"/>
+    <property name="version.qualifier"     value="qualifier"/>
+    <property name="version.string"        value="${release.version}.${version.qualifier}"/>
+    <property name="specification.vendor"  value="EclipseLink Project"/>
+    <property name="implementation.vendor" value="EclipseLink Project"/>
+    
+    <property name="eclipse.osgi.jar"      value="org.eclipse.osgi_3.5.0.v20090311-1300.jar"/>
+    
     <!-- Set Compile Path-->
     <path id="weaving.compile.path">
         <fileset
@@ -62,12 +66,13 @@
             "/>
         <fileset
             dir="${weaving.2.jpa.plugins.dir}"
-            includes="org.eclipse.osgi_3.5.0.v20090311-1300.jar,
+            includes="org.eclipse.osgi_*.jar,
                       javax.persistence_1.99.0.jar
             "/>
     </path>
     <available file="${weaving.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar" property="core.bundle.exist"/>
     <available file="${weaving.2.common.plugins.dir}/org.eclipse.persistence.jpa_${version.string}.jar" property="jpa.bundle.exist"/>
+    <available file="${weaving.2.jpa.plugins.dir}/${eclipse.osgi.jar}" property="osgi.bundle.exist"/>
 
     <!-- all -->
     <target name="build" depends="clean, compile, generate-manifest, package" description="build JPA Equinox weaving component"/>
@@ -81,7 +86,7 @@
     </target>
 
     <!-- compile -->
-    <target name="compile" description="Compile EclipseLink JPA">
+    <target name="compile" if="osgi.bundle.exist" description="Compile EclipseLink JPA">
         <fail message="Cannot find Core: '${weaving.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar'." unless="core.bundle.exist"/>
         <fail message="Cannot find JPA: '${weaving.2.common.plugins.dir}/org.eclipse.persistence.jpa_${version.string}.jar'." unless="jpa.bundle.exist"/>
         <mkdir dir="${classes.dir}"/>
@@ -102,7 +107,7 @@
     </target>
 
     <!-- package -->
-    <target name="package" description="jar OSGI bundle">
+    <target name="package" if="osgi.bundle.exist" description="jar OSGI bundle">
         <jar jarfile="${weaving.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" manifest="${classes.dir}/MANIFEST.MF">
             <fileset dir="${weaving.2.base.dir}">
                 <include name="about.html"/>
@@ -141,7 +146,7 @@
         </jar>
     </target>
 
-    <target name="generate-manifest" description="Generate the OSGi bundle manifest before jarring">
+    <target name="generate-manifest" if="osgi.bundle.exist" description="Generate the OSGi bundle manifest before jarring">
         <delete file="${classes.dir}/MANIFEST.MF" quiet="true"/>
         <echo message="Manifest-Version: 1.0${line.separator}"                                                                            file="${classes.dir}/MANIFEST.MF" append="false"/>
         <echo message="Specification-Vendor: ${specification.vendor}${line.separator}"                                                    file="${classes.dir}/MANIFEST.MF" append="true"/>

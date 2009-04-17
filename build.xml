@@ -167,6 +167,8 @@
         <ant antfile="build.xml" dir="${eclipselink.extension.oracle}" target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.dbws}"             target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.jpa}"              target="clean"/>
+        <ant antfile="build.xml" dir="${eclipselink.weaving}"          target="clean"/>
+        <ant antfile="build.xml" dir="${eclipselink.equinox}"          target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.moxy}"             target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.sdo}"              target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.util.dbws}"        target="clean"/>
@@ -189,14 +191,16 @@
 
     <!-- Compiles all runtime components (excluding Tests, Oracle extensions). -->
     <target name="build-core">
-        <ant antfile="build.xml" dir="${jpa.prototype}"     target="build"/>
-        <ant antfile="build.xml" dir="${eclipselink.asm}"   target="build"/>
-        <ant antfile="build.xml" dir="${eclipselink.antlr}" target="build"/>
-        <ant antfile="build.xml" dir="${eclipselink.core}"  target="build"/>
-        <ant antfile="build.xml" dir="${eclipselink.jpa}"   target="build"/>
-        <ant antfile="build.xml" dir="${eclipselink.moxy}"  target="build"/>
-        <ant antfile="build.xml" dir="${eclipselink.sdo}"   target="build"/>
-        <ant antfile="build.xml" dir="${eclipselink.dbws}"  target="build"/>
+        <ant antfile="build.xml" dir="${jpa.prototype}"       target="build"/>
+        <ant antfile="build.xml" dir="${eclipselink.asm}"     target="build"/>
+        <ant antfile="build.xml" dir="${eclipselink.antlr}"   target="build"/>
+        <ant antfile="build.xml" dir="${eclipselink.core}"    target="build"/>
+        <ant antfile="build.xml" dir="${eclipselink.jpa}"     target="build"/>
+        <ant antfile="build.xml" dir="${eclipselink.weaving}" target="build"/>
+        <ant antfile="build.xml" dir="${eclipselink.equinox}" target="build"/>
+        <ant antfile="build.xml" dir="${eclipselink.moxy}"    target="build"/>
+        <ant antfile="build.xml" dir="${eclipselink.sdo}"     target="build"/>
+        <ant antfile="build.xml" dir="${eclipselink.dbws}"    target="build"/>
     </target>
 
     <!-- Compiles all utils components. -->
