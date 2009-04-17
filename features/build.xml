@@ -45,9 +45,12 @@
     <property name="feature.2.common.plugins.dir" value="${feature.2.base.dir}/plugins"/>
     
     <!-- Defaults of Pre-Set variables -->
+    <property name="release.version"                    value="1.1.1"/>
     <property name="eclipselink.plugins.install.prefix" value="eclipselink-plugins"/>
     <property name="eclipselink.zip.suffix"             value=".zip"/>
     <property name="version.qualifier"                  value="qualifier"/>
+    <property name="version.string"                     value="${release.version}.${version.qualifier}"/>
+    <property name="classes.dir"                        value="classes"/>
     
     <!-- Tool definitions -->
     <property name="p2.SDK.install.dir" value="C:\eclipseSDK\eclipse"/>
@@ -86,24 +89,61 @@
     <!-- Questions: Is this copy the generation of the P2 repository? should it go to the server and not be "temp"?
                     How does this work for older "revisions of the repository?"
                     -->
-    <target name="build" depends="create-deployable-features, clear-repos, populate-repos-site, generate-p2-repos"/>
+    <target name="build"    depends="clean, create-deployable-features, build-p2"/>
+    <target name="build-p2" depends="clear-repos, populate-repos-site, generate-p2-repos"/>
         
-    <target name="populate-repos-site" if="bundle.installer.exist">
-        <unzip src="${feature.2.base.dir}/${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}"
-               dest="${p2.bundle.dir}">
-            <patternset>
-                <include name="**/*.jar"/>
-            </patternset>
-        </unzip>
+    <!-- Feature Targets -->
+    <!-- clean -->
+    <target name="clean" description="Clean all generated content">
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="${classes.dir}"/>
+        </delete>
+    </target>
+
+    <!-- build feature jars -->
+    <target name="create-deployable-features">
+        <mkdir dir="${classes.dir}"/>
         <filter token="QUALIFIER"  value="${version.qualifier}"/>
-        <copy todir="${p2.feature.dir}" filtering="true">
+        <copy todir="${classes.dir}" filtering="true">
             <fileset dir="${feature.build.location}">
-                <include name="**/*"/>
+                <include name="**/*.xml"/>
                 <exclude name="build.xml"/>
             </fileset>
         </copy>
+        <jar jarfile="${feature.build.location}/org.eclipse.persistence.jpa_${version.string}.jar" duplicate="preserve">
+            <fileset dir="${classes.dir}/org.eclipse.persistence.jpa.feature">
+                <include name="*.xml"/>
+            </fileset>
+        </jar>
+        <jar jarfile="${feature.build.location}/org.eclipse.persistence.moxy_${version.string}.jar" duplicate="preserve">
+            <fileset dir="${classes.dir}/org.eclipse.persistence.moxy.feature">
+                <include name="*.xml"/>
+            </fileset>
+        </jar>
+        <jar jarfile="${feature.build.location}/org.eclipse.persistence.sdo_${version.string}.jar" duplicate="preserve">
+            <fileset dir="${classes.dir}/org.eclipse.persistence.sdo.feature">
+                <include name="*.xml"/>
+            </fileset>
+        </jar>
+        <jar jarfile="${feature.build.location}/org.eclipse.persistence.jpa.source_${version.string}.jar" duplicate="preserve">
+            <fileset dir="${classes.dir}/org.eclipse.persistence.jpa.source.feature">
+                <include name="*.xml"/>
+            </fileset>
+        </jar>
+        <jar jarfile="${feature.build.location}/org.eclipse.persistence.moxy.source_${version.string}.jar" duplicate="preserve">
+            <fileset dir="${classes.dir}/org.eclipse.persistence.moxy.source.feature">
+                <include name="*.xml"/>
+            </fileset>
+        </jar>
+        <jar jarfile="${feature.build.location}/org.eclipse.persistence.sdo.source_${version.string}.jar" duplicate="preserve">
+            <fileset dir="${classes.dir}/org.eclipse.persistence.sdo.source.feature">
+                <include name="*.xml"/>
+            </fileset>
+        </jar>
     </target>
 
+    <!-- P2 Targets -->
+    <!-- clean -->
     <target name="test-ready-to-go" unless="bundle.installer.exist">
         <echo message="Bundle Installer not found! Skipping P2 repos generation."/>
     </target>
@@ -119,11 +159,16 @@
                 <include name="**/*.jar"/>
             </patternset>
         </unzip>
-        <filter token="QUALIFIER"  value="${version.qualifier}"/>
+        <!-- filter token="QUALIFIER"  value="${version.qualifier}"/>
         <copy todir="${p2.feature.dir}" filtering="true">
             <fileset dir="${feature.build.location}">
                 <include name="**/*"/>
                 <exclude name="build.xml"/>
+            </fileset>
+        </copy -->
+        <copy todir="${p2.feature.dir}">
+            <fileset dir="${feature.build.location}">
+                <include name="**/*.jar"/>
             </fileset>
         </copy>
     </target>

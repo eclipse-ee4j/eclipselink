@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.persistence.jpa.feature"
       label="EclipseLink JPA"
-      version="1.1.1.qualifier"
+      version="1.1.1.@QUALIFIER@"
       provider-name="EclipseLink Project">
 
    <description url="http://www.example.com/description">
@@ -80,49 +80,49 @@
          id="org.eclipse.persistence.antlr"
          download-size="69"
          install-size="69"
-         version="1.1.1.qualifier"
+         version="1.1.1.@QUALIFIER@"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.persistence.asm"
          download-size="222"
          install-size="222"
-         version="1.1.1.qualifier"
+         version="1.1.1.@QUALIFIER@"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.persistence.core"
          download-size="3003"
          install-size="3003"
-         version="1.1.1.qualifier"
+         version="1.1.1.@QUALIFIER@"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.persistence.jpa"
          download-size="439"
          install-size="439"
-         version="1.1.1.qualifier"
+         version="1.1.1.@QUALIFIER@"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.persistence.jpa.equinox"
          download-size="18"
          install-size="18"
-         version="1.1.1.qualifier"
+         version="1.1.1.@QUALIFIER@"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.persistence.jpa.equinox.weaving"
          download-size="17"
          install-size="17"
-         version="1.1.1.qualifier"
+         version="1.1.1.@QUALIFIER@"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.persistence.oracle"
          download-size="63"
          install-size="63"
-         version="1.1.1.qualifier"
+         version="1.1.1.@QUALIFIER@"
          unpack="false"/>
 
 </feature>

@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.persistence.sdo.feature"
       label="EclipseLink SDO"
-      version="1.1.1.qualifier"
+      version="1.1.1.@QUALIFIER@"
       provider-name="EclipseLink Project">
 
    <description url="http://www.example.com/description">
@@ -26,85 +26,85 @@
 
    <plugin
          id="javax.jms"
-         download-size="0"
-         install-size="0"
+         download-size="25"
+         install-size="25"
          version="1.1.0"
          unpack="false"/>
 
    <plugin
          id="javax.mail"
-         download-size="0"
-         install-size="0"
+         download-size="313"
+         install-size="313"
          version="1.4.0"
          unpack="false"/>
 
    <plugin
          id="javax.persistence"
-         download-size="68"
-         install-size="68"
+         download-size="0"
+         install-size="0"
          version="1.99.0"
          unpack="false"/>
 
    <plugin
          id="javax.resource"
-         download-size="0"
-         install-size="0"
+         download-size="42"
+         install-size="42"
          version="1.5.0"
          unpack="false"/>
 
    <plugin
          id="javax.transaction"
-         download-size="0"
-         install-size="0"
+         download-size="10"
+         install-size="10"
          version="1.1.0"
          unpack="false"/>
 
    <plugin
          id="javax.xml.rpc"
-         download-size="0"
+         download-size="31"
          install-size="0"
          version="1.1.0"/>
 
    <plugin
          id="javax.xml.soap"
-         download-size="0"
-         install-size="0"
+         download-size="19"
+         install-size="19"
          version="1.3.0"
          unpack="false"/>
 
    <plugin
          id="javax.xml.stream"
-         download-size="0"
-         install-size="0"
+         download-size="38"
+         install-size="38"
          version="1.0.0"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.persistence.asm"
-         download-size="0"
-         install-size="0"
-         version="1.1.1.qualifier"
+         download-size="222"
+         install-size="222"
+         version="1.1.1.@QUALIFIER@"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.persistence.core"
-         download-size="0"
-         install-size="0"
-         version="1.1.1.qualifier"
+         download-size="3003"
+         install-size="3003"
+         version="1.1.1.@QUALIFIER@"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.persistence.moxy"
          download-size="107"
          install-size="107"
-         version="1.1.1.qualifier"
+         version="1.1.1.@QUALIFIER@"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.persistence.sdo"
          download-size="253"
          install-size="253"
-         version="1.1.1.qualifier"
+         version="1.1.1.@QUALIFIER@"
          unpack="false"/>
 
 </feature>
