@@ -109,6 +109,7 @@ public class EntityManagerSetupImpl {
     // indicates that classes have already been woven
     protected boolean isWeavingStatic = false;
     protected SecurableObjectHolder securableObjectHolder = new SecurableObjectHolder();
+    protected List<StructConverter> structConverters = null;
 
     // 253701: cache initializationHelper for later use during undeploy() - set by PersistenceProvider.createEntityManagerFactory()
     protected PersistenceInitializationHelper persistenceInitializationHelper = null;
@@ -195,7 +196,6 @@ public class EntityManagerSetupImpl {
         }
         // state is PREDEPLOYED or DEPLOYED
         session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "deploy_begin", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), state, factoryCount});
-        List<StructConverter> structConverters = null;
         try {
             Map deployProperties = mergeMaps(additionalProperties, predeployProperties);
             translateOldProperties(deployProperties, session);
