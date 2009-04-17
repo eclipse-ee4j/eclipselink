@@ -181,8 +181,6 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "toplink_ejb_jar_in_jar", "toplink-ejb-jar.xml is included in jar({0}) file, no migration therefore will be performed for this jar." },
         { "jta_cannot_be_disabled_in_cmp", "When using Container Managed Persistence (CMP), JTA cannot be disabled. EclipseLink will act as if JTA is enabled." },
         { "descriptor_named_query_cannot_be_added", "Cannot add a descriptor named query whose name conflict with an existing query. Query To Be Added: [{0}] is named: [{1}] with arguments [{2}]." },
-        { "dead_lock_encountered_on_write_no_cachekey", "Potential deadlock encountered while thread: {2} attempted to lock object of class: {0} with id: {1}, entering deadlock avoidance algorythm.  This is a notice only."},
-
         { "metadata_access_type", "The access type for the persistent class [{1}] is set to [{0}]." },        
         { "metadata_default_alias", "The alias name for the entity class [{0}] is being defaulted to: {1}." },
         { "metadata_default_map_key_attribute_name", "The map key attribute name for the mapping element [{0}] is being defaulted to: {1}." },
@@ -358,8 +356,11 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "jmx_mbean_runtime_services_threadpool_initialize_failed", "Failed to initialize MBean threadPoolRuntime: {0}" },
         { "jmx_mbean_runtime_services_get_executethreadruntime_object_failed", "Version of WebLogic does not support executeThreadRuntime - using ClassLoader: {0}" },
         { "nested_entity_manager_flush_not_executed_pre_query_changes_may_be_pending", "The class {0} is already flushing. The query will be executed without further changes being written to the database.  If the query is conditional upon changed data the changes may not be reflected in the results.  Users should issue a flush() call upon completion of the dependent changes and prior to this flush() to ensure correct results." },
+        // MESSAGES end
         
         
+        
+        // KEYS start
         // newly added for message id
         // The corresponding key mapping for a key:message mapping above is added below only if I18N is required - or was missed
         {"oracle.core.ojdl.logging.MessageIdSuffixResourceBundle" ,"oracle.core.ojdl.logging.MessageIdSuffixResourceBundle"},  
@@ -614,9 +615,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "jmx_mbean_runtime_services_mbeanserver_lookup_failed.MSGID", "TOP-50230"},
         { "jmx_mbean_runtime_services_threadpool_initialize_failed.MSGID", "TOP-50231"},
         { "jmx_mbean_runtime_services_get_executethreadruntime_object_failed.MSGID", "TOP-50232"},        
-        { "nested_entity_manager_flush_not_executed_pre_query_changes_may_be_pending.MSGID", "TOP-50233"},
-        { "dead_lock_encountered_on_write_no_cachekey.MSGID", "TOP-50234"}
-        
+        { "nested_entity_manager_flush_not_executed_pre_query_changes_may_be_pending.MSGID", "TOP-50233"}
     }; 
      
     /**

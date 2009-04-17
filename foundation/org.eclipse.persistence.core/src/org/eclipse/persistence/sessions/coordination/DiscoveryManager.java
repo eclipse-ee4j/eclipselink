@@ -69,7 +69,7 @@ public class DiscoveryManager implements Runnable {
     protected RemoteCommandManager rcm;
 
     /**
-     * Constructors to create a discvovery manager.
+     * Constructors to create a discovery manager.
      */
     public DiscoveryManager(RemoteCommandManager mgr) {
         this.rcm = mgr;
