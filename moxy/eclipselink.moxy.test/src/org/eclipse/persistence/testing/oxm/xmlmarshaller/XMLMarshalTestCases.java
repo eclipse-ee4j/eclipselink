@@ -393,6 +393,39 @@ public class XMLMarshalTestCases extends OXTestCase {
             assertXMLIdentical(controlDocument, testDocument);
         }
 
+        public void testMarshalObjectToStreamResult3() throws Exception {
+            File file = new File("tmpFile.txt");
+            StreamResult result = new StreamResult(file);
+            marshaller.marshal(controlObject, result);
+
+            FileReader reader = new FileReader(file);
+            InputSource inputSource = new InputSource(reader);
+            Document testDocument = parser.parse(inputSource);
+            removeEmptyTextNodes(testDocument);
+
+            log(controlDocument);
+            log(testDocument);
+
+            assertXMLIdentical(controlDocument, testDocument);
+        }
+
+
+        public void testMarshalObjectToStreamResult4() throws Exception {
+            File file = new File("tmpFile.txt");
+            StreamResult result = new StreamResult(file.toURI().toURL().toString());
+            marshaller.marshal(controlObject, result);
+
+            FileReader reader = new FileReader(file);
+            InputSource inputSource = new InputSource(reader);
+            Document testDocument = parser.parse(inputSource);
+            removeEmptyTextNodes(testDocument);
+
+            log(controlDocument);
+            log(testDocument);
+
+            assertXMLIdentical(controlDocument, testDocument);
+        }
+
         public void testMarshalObjectToContentHandler() {
             SAXDocumentBuilder builder = new SAXDocumentBuilder();
 
