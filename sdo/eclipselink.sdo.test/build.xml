@@ -63,6 +63,11 @@
     <property name="version.string" value="${release.version}.qualifier"/>
     <property name="release.designation"  value="EclipseLink DeveloperBuild"/>
 
+     <!-- Needed because this package is only included in JDK6 and beyond -->
+    <condition property="jaxb-api.lib" value="${jaxb-api.jar}" else="">
+        <contains string="${java.version}" substring="1.5"/>
+    </condition>
+
     <!-- path to OSGi Bundle compile dependencies -->
     <path id="sdotest.bundle.compile.path">
         <fileset
@@ -82,7 +87,7 @@
             "/>
         <pathelement path="${junit.lib}"/>
         <pathelement path="${sdotest.plugins.dir}/${commonj.sdo.lib}"/>
-        <pathelement path="${sdotest.2.moxy.plugins.dir}/javax.xml.bind_2.0.0.jar"/>
+        <pathelement path="${sdotest.2.moxy.plugins.dir}/${jaxb-api.lib}"/>
     </path>
     <!-- Run path without product components -->
     <path id="sdotest.thirdparty.run.path">
