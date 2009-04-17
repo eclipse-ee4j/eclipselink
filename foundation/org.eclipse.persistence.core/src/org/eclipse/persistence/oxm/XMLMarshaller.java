@@ -13,6 +13,8 @@
 package org.eclipse.persistence.oxm;
 
 import java.io.*;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.List;
 import java.util.Properties;
 
@@ -248,10 +250,17 @@ public class XMLMarshaller {
             } else if (result instanceof StreamResult) {
                 StreamResult streamResult = (StreamResult) result;
                 Writer writer = streamResult.getWriter();
-                if (null == writer) {
+                if (writer != null) {
+                    marshal(object, writer);
+                } else if (streamResult.getOutputStream() != null) {
                     marshal(object, streamResult.getOutputStream());
                 } else {
-                    marshal(object, writer);
+                    try {
+                        File f = new File(new URL(streamResult.getSystemId()).toURI());
+                        marshal(object, new FileWriter(f));
+                    } catch (Exception e) {
+                        throw XMLMarshalException.marshalException(e);
+                    }
                 }
             } else {
             	java.io.StringWriter writer = new java.io.StringWriter();
