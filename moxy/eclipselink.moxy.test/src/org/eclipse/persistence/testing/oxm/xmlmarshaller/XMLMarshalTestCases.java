@@ -394,7 +394,7 @@ public class XMLMarshalTestCases extends OXTestCase {
         }
 
         public void testMarshalObjectToStreamResult3() throws Exception {
-            File file = new File("tmpFile.txt");
+            File file = new File("output.txt");
             StreamResult result = new StreamResult(file);
             marshaller.marshal(controlObject, result);
 
@@ -409,9 +409,8 @@ public class XMLMarshalTestCases extends OXTestCase {
             assertXMLIdentical(controlDocument, testDocument);
         }
 
-
         public void testMarshalObjectToStreamResult4() throws Exception {
-            File file = new File("tmpFile.txt");
+            File file = new File("output.txt");
             StreamResult result = new StreamResult(file.toURI().toURL().toString());
             marshaller.marshal(controlObject, result);
 
