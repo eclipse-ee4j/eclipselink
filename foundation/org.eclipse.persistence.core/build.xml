@@ -88,18 +88,18 @@
         <fail message="Cannot find ASM: '${core.2.common.plugins.dir}/${asm}_${version.string}.jar'." unless="asm.bundle.exist"/>
         <mkdir dir="${classes.dir}"/>
         <echo message="Stamping the following values:"/>
-        <echo message="version:        '${release.version}'"/>
-        <echo message="buildDate:      '${build.date}'"/>
-        <echo message="buildTime:      '${build.time}'"/>
-        <echo message="buildType:      '${build.type}'"/>
-        <echo message="buildRevision:  '${svn.revision}'"/>
-        <echo message="buildQualifier: '${version.qualifier}'"/>
+        <echo message="version:       '${release.version}'"/>
+        <echo message="qualifier:     '${version.qualifier}'"/>
+        <echo message="buildDate:     '${build.date}'"/>
+        <echo message="buildTime:     '${build.time}'"/>
+        <echo message="buildType:     '${build.type}'"/>
+        <echo message="buildRevision: '${svn.revision}'"/>
         <filter token="VERSION"         value="${release.version}"/>
+        <filter token="QUALIFIER"       value="${version.qualifier}"/>
         <filter token="BUILD_DATE"      value="${build.date}"/>
         <filter token="BUILD_TIME"      value="${build.time}"/>
         <filter token="BUILD_TYPE"      value="${build.type}"/>
         <filter token="BUILD_REVISION"  value="${svn.revision}"/>
-        <filter token="BUILD_QUALIFIER" value="${version.qualifier}"/>
         <copy file="${src.dir}/org/eclipse/persistence/Version.java" tofile="${basedir}/${classes.dir}/org/eclipse/persistence/Version.java" filtering="true"/>
         <javac srcdir="${classes.dir}"
                destdir="${classes.dir}"
