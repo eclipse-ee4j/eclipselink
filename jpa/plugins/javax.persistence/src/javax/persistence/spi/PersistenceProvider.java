@@ -13,7 +13,7 @@
  * Sun Microsystems, Inc. 
  *
  * Contributors:
- *     dclarke - Java Persistence API 2.0 Public Draft
+ *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
  *     			 Specification and licensing terms available from
  *     		   	 http://jcp.org/en/jsr/detail?id=317
  *
@@ -22,7 +22,6 @@
  * Java Community Process (JCP) and is made available for testing and evaluation 
  * purposes only. The code is not compatible with any specification of the JCP.
  ******************************************************************************/
-
 package javax.persistence.spi;
 
 import java.util.Map;
@@ -30,45 +29,106 @@ import java.util.Map;
 import javax.persistence.EntityManagerFactory;
 
 /**
- * Interface implemented by a persistence provider. The implementation of this
- * interface that is to be used for a given
- * {@link javax.persistence.EntityManager} is specified in persistence.xml file
- * in the persistence archive. This interface is invoked by the Container when
- * it needs to create an {@link javax.persistence.EntityManagerFactory}, or by
- * the Persistence class when running outside the Container.
+ * Interface implemented by the persistence provider.
  * 
- * @since Java Persistence API 1.0
+ * It is invoked by the container in Java EE environments and by the Persistence
+ * class in Java SE environments to create an EntityManagerFactory.
+ * 
+ * It is also invoked by the PersistenceUtil implementation to determine the
+ * load status of an entity or entity attribute.
  */
 public interface PersistenceProvider {
+    /**
+     * Called by Persistence class when an EntityManagerFactory is to be
+     * created.
+     * 
+     * @param emName
+     *            The name of the persistence unit
+     * @param map
+     *            A Map of properties for use by the persistence provider. These
+     *            properties may be used to override the values of the
+     *            corresponding elements in the persistence.xml file or specify
+     *            values for properties not specified in the persistence.xml
+     *            (and may be null if no properties are specified).
+     * @return EntityManagerFactory for the persistence unit, or null if the
+     *         provider is not the right provider
+     */
+    public EntityManagerFactory createEntityManagerFactory(String emName, Map map);
 
-	/**
-	 * Called by Persistence class when an EntityManagerFactory is to be
-	 * created.
-	 * 
-	 * @param emName
-	 *            The name of the persistence unit
-	 * @param map
-	 *            A Map of properties for use by the persistence provider. These
-	 *            properties may be used to override the values of the
-	 *            corresponding elements in the persistence.xml file or specify
-	 *            values for properties not specified in the persistence.xml
-	 *            (and may be null if no properties are specified).
-	 * @return EntityManagerFactory for the persistence unit, or null if the
-	 *         provider is not the right provider
-	 */
-	public EntityManagerFactory createEntityManagerFactory(String emName, Map map);
+    /**
+     * Called by the container when an EntityManagerFactory is to be created.
+     * 
+     * @param info
+     *            Metadata for use by the persistence provider
+     * @return EntityManagerFactory for the persistence unit specified by the
+     *         metadata
+     * @param map
+     *            A Map of integration-level properties for use by the
+     *            persistence provider (may be null if no properties are
+     *            specified). If a Bean Validation provider is present in the
+     *            classpath, the container must pass the ValidatorFactory
+     *            instance in the map with the key
+     *            "javax.persistence.validation.factory".
+     */
+    public EntityManagerFactory createContainerEntityManagerFactory(PersistenceUnitInfo info, Map map);
 
-	/**
-	 * Called by the container when an EntityManagerFactory is to be created.
-	 * 
-	 * @param info
-	 *            Metadata for use by the persistence provider
-	 * @return EntityManagerFactory for the persistence unit specified by the
-	 *         metadata
-	 * @param map
-	 *            A Map of integration-level properties for use by the
-	 *            persistence provider (may be null if no properties are
-	 *            specified).
-	 */
-	public EntityManagerFactory createContainerEntityManagerFactory(PersistenceUnitInfo info, Map map);
+    /**
+     * If the provider determines that the entity has been provided by itself
+     * and that the state of the specified attribute has been loaded, this
+     * method returns LoadState.LOADED. If the provider determines that the
+     * entity has been provided by itself and that either entity attributes with
+     * FetchType EAGER have not been loaded or that the state of the specified
+     * attribute has not been loaded, this methods returns LoadState.NOT_LOADED.
+     * If a provider cannot determine the load state, this method returns
+     * LoadState.UNKNOWN. The provider's implementation of this method must not
+     * obtain a reference to an attribute value, as this could trigger the
+     * loading of entity state if the entity has been provided by a different
+     * provider.
+     * 
+     * @param entity
+     * @param attributeName
+     *            name of attribute whose load status is to be determined
+     * @return load status of the attribute
+     */
+    public LoadState isLoadedWithoutReference(Object entity, String attributeName);
+
+    /**
+     * If the provider determines that the entity has been provided by itself
+     * and that the state of the specified attribute has been loaded, this
+     * method returns LoadState.LOADED. If a provider determines that the entity
+     * has been provided by itself and that either the entity attributes with
+     * FetchType EAGER have not been loaded or that the state of the specified
+     * attribute has not been loaded, this method returns return
+     * LoadState.NOT_LOADED. If the provider cannot determine the load state,
+     * this method returns LoadState.UNKNOWN. The provider's implementation of
+     * this method is permitted to obtain a reference to the attribute value.
+     * (This access is safe because providers which might trigger the loading of
+     * the attribute state will have already been determined by
+     * isLoadedWithoutReference. )
+     * 
+     * @param entity
+     * @param attributeName
+     *            name of attribute whose load status is to be determined
+     * @return load status of the attribute
+     */
+    public LoadState isLoadedWithReference(Object entity, String attributeName);
+
+    /**
+     * If the provider determines that the entity has been provided by itself
+     * and that the state of all attributes for which FetchType EAGER has been
+     * specified have been loaded, this method returns LoadState.LOADED. If the
+     * provider determines that the entity has been provided by itself and that
+     * not all attributes with FetchType EAGER have been loaded, this method
+     * returns LoadState.NOT_LOADED. If the provider cannot determine if the
+     * entity has been provided by itself, this method returns
+     * LoadState.UNKNOWN. The provider's implementation of this method must not
+     * obtain a reference to any attribute value, as this could trigger the
+     * loading of entity state if the entity has been provided by a different
+     * provider.
+     * 
+     * @param entity
+     *            whose loaded status is to be determined
+     * @return load status of the entity
+     */
+    public LoadState isLoaded(Object entity);
 }

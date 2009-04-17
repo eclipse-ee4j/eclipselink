@@ -13,26 +13,38 @@
  * Sun Microsystems, Inc. 
  *
  * Contributors:
- *     dclarke - Java Persistence API 2.0 Public Draft
+ *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
  *     			 Specification and licensing terms available from
  *     		   	 http://jcp.org/en/jsr/detail?id=317
- *     
- * IMPORTANT: The Criteria API is defined as per the public draft specification
- * but is not implemented in the EclipseLink's early access.
  *
  * EARLY ACCESS - PUBLIC DRAFT
  * This is an implementation of an early-draft specification developed under the 
  * Java Community Process (JCP) and is made available for testing and evaluation 
  * purposes only. The code is not compatible with any specification of the JCP.
  ******************************************************************************/
-
 package javax.persistence;
 
 /**
- * Instances of this interface can be used as subqueries.
+ * The <code>javax.persistence.cachePutMode</code> property specifies the
+ * behavior when data is read from the database and when data is committed into
+ * the database.
  * 
- * @since Java Persistence API 2.0
+ *@since Java Persistence 2.0
  */
-public interface Subquery extends PredicateOperand{
-
+public enum CachePutMode {
+    /**
+     * Insert/update entity data into cache when read from database and when
+     * committed into database: this is the default behavior.
+     */
+    USE,
+    
+    /**
+     * Don't insert into cache.
+     */
+    BYPASS,
+    
+    /**
+     * Force refresh of cache for items read from database.
+     */
+    REFRESH
 }

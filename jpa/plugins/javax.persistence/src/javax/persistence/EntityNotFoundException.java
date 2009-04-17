@@ -33,8 +33,13 @@ package javax.persistence;
  * object no longer exists in the database. The current transaction, if one is
  * active, will be marked for rollback.
  * 
- * @see javax.persistence.EntityManager#getReference(Class,Object)
- * @see javax.persistence.EntityManager#refresh(Object)
+ * @see EntityManager#getReference(Class,Object)
+ * @see EntityManager#refresh(Object)
+ * @see EntityManager#refresh(Object, LockModeType)
+ * @see EntityManager#refresh(Object, java.util.Map)
+ * @see EntityManager#refresh(Object, LockModeType, java.util.Map)
+ * @see EntityManager#lock(Object, LockModeType)
+ * @see EntityManager#lock(Object, LockModeType, java.util.Map)
  * 
  * @since Java Persistence API 1.0
  */

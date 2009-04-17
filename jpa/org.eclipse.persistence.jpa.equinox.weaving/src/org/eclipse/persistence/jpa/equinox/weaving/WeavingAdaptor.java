@@ -21,7 +21,6 @@ import org.eclipse.osgi.baseadaptor.hooks.AdaptorHook;
 import org.eclipse.osgi.framework.log.FrameworkLog;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
-import org.osgi.util.tracker.ServiceTracker;
 
 public class WeavingAdaptor implements AdaptorHook {
 

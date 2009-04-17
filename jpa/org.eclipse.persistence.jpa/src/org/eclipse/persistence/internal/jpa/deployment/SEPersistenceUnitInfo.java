@@ -12,8 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.deployment;
 
-import javax.persistence.spi.PersistenceUnitTransactionType;
-import javax.persistence.spi.ClassTransformer;
+import javax.persistence.*;
+import javax.persistence.spi.*;
 import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -275,5 +275,32 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
 
     public Collection<String> getJarFiles() {
         return jarFiles;
+    }
+
+    /**
+     * @see PersistenceUnitInfo#PersistenceXMLSchemaVersion()
+     * @since Java Persistence 2.0
+     */
+    public String PersistenceXMLSchemaVersion() {
+        // TODO 
+        throw new PersistenceException("Not Yet Implemented");
+    }
+
+    /**
+     * @see PersistenceUnitInfo#getCaching()
+     * @since Java Persistence 2.0
+     */
+    public CachingType getCaching() {
+        // TODO 
+        throw new PersistenceException("Not Yet Implemented");
+    }
+
+    /**
+     * @see PersistenceUnitInfo#getValidationMode()
+     * @since Java Persistence 2.0
+     */
+    public ValidationMode getValidationMode() {
+        // TODO 
+        throw new PersistenceException("Not Yet Implemented");
     }
 }

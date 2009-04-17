@@ -3702,6 +3702,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             Employee emp4 = new Employee();
             Employee emp5 = new Employee();
             Employee emp6= new Employee();
+            Employee emp7= new Employee();
             emp.setFirstName("Douglas");
             emp.setLastName("McRae");
             emp1.setFirstName("kaul");
@@ -3716,6 +3717,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             emp5.setLastName("Morrison");
             emp6.setFirstName("Edward");
             emp6.setLastName("Bratt");
+            emp7.setFirstName("TJ");
+            emp7.setLastName("Thomas");
             em.persist(emp);
             em.persist(emp1);
             em.persist(emp2);
@@ -3723,29 +3726,36 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             em.persist(emp4);
             em.persist(emp5);
             em.persist(emp6);
+            em.persist(emp7);
             commitTransaction(em);
             beginTransaction(em);
             em.lock(emp, LockModeType.OPTIMISTIC);
             LockModeType lt = em.getLockMode(emp);
             em.lock(emp1, LockModeType.OPTIMISTIC_FORCE_INCREMENT);
             LockModeType lt1 = em.getLockMode(emp1);
-            em.lock(emp2, LockModeType.PESSIMISTIC);
+            em.lock(emp2, LockModeType.PESSIMISTIC_READ);
             LockModeType lt2 = em.getLockMode(emp2);
-            em.lock(emp3, LockModeType.PESSIMISTIC_FORCE_INCREMENT);
+            em.lock(emp3, LockModeType.PESSIMISTIC_WRITE);
             LockModeType lt3 = em.getLockMode(emp3);
-            em.lock(emp4, LockModeType.READ);
+            em.lock(emp4, LockModeType.PESSIMISTIC_FORCE_INCREMENT);
             LockModeType lt4 = em.getLockMode(emp4);
-            em.lock(emp5, LockModeType.WRITE);
+            em.lock(emp5, LockModeType.READ);
             LockModeType lt5 = em.getLockMode(emp5);
-            em.lock(emp6, LockModeType.NONE);
+            em.lock(emp6, LockModeType.WRITE);
             LockModeType lt6 = em.getLockMode(emp6);
+            em.lock(emp7, LockModeType.NONE);
+            LockModeType lt7 = em.getLockMode(emp7);
             assertEquals("Did not return correct LockModeType", LockModeType.OPTIMISTIC, lt);
             assertEquals("Did not return correct LockModeType", LockModeType.OPTIMISTIC_FORCE_INCREMENT, lt1);
-            assertEquals("Did not return correct LockModeType", LockModeType.PESSIMISTIC, lt2);
-            assertEquals("Did not return correct LockModeType", LockModeType.PESSIMISTIC_FORCE_INCREMENT, lt3);
-            assertEquals("Did not return correct LockModeType", LockModeType.OPTIMISTIC, lt4);
-            assertEquals("Did not return correct LockModeType", LockModeType.OPTIMISTIC_FORCE_INCREMENT, lt5);
-            assertEquals("Did not return correct LockModeType", LockModeType.NONE, lt6);
+
+            // Note: On some databases EclipseLink automatically upgrade LockModeType to PESSIMSITIC_WRITE
+            assertTrue("Did not return correct LockModeType", lt2 == LockModeType.PESSIMISTIC_WRITE || lt2 == LockModeType.PESSIMISTIC_READ);
+            
+            assertEquals("Did not return correct LockModeType", LockModeType.PESSIMISTIC_WRITE, lt3);
+            assertEquals("Did not return correct LockModeType", LockModeType.PESSIMISTIC_FORCE_INCREMENT, lt4);
+            assertEquals("Did not return correct LockModeType", LockModeType.OPTIMISTIC, lt5);
+            assertEquals("Did not return correct LockModeType", LockModeType.OPTIMISTIC_FORCE_INCREMENT, lt6);
+            assertEquals("Did not return correct LockModeType", LockModeType.NONE, lt7);
         } catch (UnsupportedOperationException use) {
             return;
         } catch (Exception e) {

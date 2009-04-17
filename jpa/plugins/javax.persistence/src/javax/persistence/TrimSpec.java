@@ -13,12 +13,9 @@
  * Sun Microsystems, Inc. 
  *
  * Contributors:
- *     dclarke - Java Persistence API 2.0 Public Draft
+ *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
  *     			 Specification and licensing terms available from
  *     		   	 http://jcp.org/en/jsr/detail?id=317
- *     
- * IMPORTANT: The Criteria API is defined as per the public draft specification
- * but is not implemented in the EclipseLink's early access.
  *
  * EARLY ACCESS - PUBLIC DRAFT
  * This is an implementation of an early-draft specification developed under the 
@@ -31,7 +28,7 @@ package javax.persistence;
 /**
  * Used to specify the trimming of strings
  * 
- * @since Java Persistence API 2.0
+ * @since Java Persistence 2.0
  */
 public enum TrimSpec {
 	LEADING, TRAILING, BOTH

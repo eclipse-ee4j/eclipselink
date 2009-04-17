@@ -14,8 +14,8 @@
  *
  * Contributors:
  *     dclarke - Java Persistence API 2.0 Public Draft
- *     			 Specification and licensing terms available from
- *     		   	 http://jcp.org/en/jsr/detail?id=317
+ *               Specification and licensing terms available from
+ *               http://jcp.org/en/jsr/detail?id=317
  *
  * EARLY ACCESS - PUBLIC DRAFT
  * This is an implementation of an early-draft specification developed under the 
@@ -25,56 +25,58 @@
 
 package javax.persistence;
 
-/**
- * The <code>EntityTransaction</code> interface is used to control 
- * resource transactions on resource-local entity managers. The 
- * {@link EntityManager#getTransaction EntityManager.getTransaction()} 
- * method returns the <code>EntityTransaction</code> interface.
- *
- * @since Java Persistence API 1.0
- */
 public interface EntityTransaction {
     /**
-     * Start the resource transaction.
-     * @throws IllegalStateException if {@link #isActive()} is true.
+     * Start a resource transaction.
+     * 
+     * @throws IllegalStateException
+     *             if isActive() is true.
      */
     public void begin();
- 
+
     /**
-     * Commit the current transaction, writing any unflushed
-     * changes to the database.
-     * @throws IllegalStateException if {@link #isActive()} is false.
-     * @throws RollbackException if the commit fails.
+     * Commit the current transaction, writing any non-flushed changes to the
+     * database.
+     * 
+     * @throws IllegalStateException
+     *             if isActive() is false.
+     * @throws RollbackException
+     *             if the commit fails.
      */
     public void commit();
- 
+
     /**
-     * Roll back the current transaction
-     * @throws IllegalStateException if {@link #isActive()} is false.
-     * @throws PersistenceException if an unexpected error
-     * condition is encountered.
+     * Roll back the current transaction.
+     * 
+     * @throws IllegalStateException
+     *             if isActive() is false.
+     * @throws PersistenceException
+     *             if an unexpected error condition is encountered.
      */
     public void rollback();
 
     /**
-     * Mark the current transaction so that the only possible
-     * outcome of the transaction is for the transaction to be
-     * rolled back.
-     * @throws IllegalStateException if {@link #isActive()} is false.
+     * Mark the current transaction so that the only possible outcome of the
+     * transaction is for the transaction to be rolled back.
+     * 
+     * @throws IllegalStateException
+     *             if isActive() is false.
      */
     public void setRollbackOnly();
 
     /**
-     * Determine whether the current transaction has been marked
-     * for rollback.
-     * @throws IllegalStateException if {@link #isActive()} is false.
+     * Determine whether the current transaction has been marked for rollback.
+     * 
+     * @throws IllegalStateException
+     *             if isActive() is false.
      */
     public boolean getRollbackOnly();
- 
+
     /**
      * Indicate whether a transaction is in progress.
-     * @throws PersistenceException if an unexpected error
-     * condition is encountered.
+     * 
+     * @throws PersistenceException
+     *             if an unexpected error condition is encountered.
      */
     public boolean isActive();
 }

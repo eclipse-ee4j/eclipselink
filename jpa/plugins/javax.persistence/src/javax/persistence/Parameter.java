@@ -13,51 +13,42 @@
  * Sun Microsystems, Inc. 
  *
  * Contributors:
- *     dclarke - Java Persistence API 2.0 Public Draft
+ *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
  *     			 Specification and licensing terms available from
  *     		   	 http://jcp.org/en/jsr/detail?id=317
- *     
- * IMPORTANT: The Criteria API is defined as per the public draft specification
- * but is not implemented in the EclipseLink's early access.
  *
  * EARLY ACCESS - PUBLIC DRAFT
  * This is an implementation of an early-draft specification developed under the 
  * Java Community Process (JCP) and is made available for testing and evaluation 
  * purposes only. The code is not compatible with any specification of the JCP.
  ******************************************************************************/
+
 package javax.persistence;
 
+import javax.persistence.criteria.Expression;
+
 /**
- * Interface used to define compound predicates.
+ * Type for query parameters.
  * 
- * @since Java Persistence API 2.0
+ * @param <T>
+ *            the type of the parameter
+ *            
+ * @since Java Persistence 2.0
  */
-public interface Predicate {
-	/**
-	 * Creates an AND of the predicate with the argument.
-	 * 
-	 * @param predicate
-	 *            - A simple or compound predicate
-	 * @return the predicate that is the AND of the original simple or compound
-	 *         predicate and the argument.
-	 */
-	Predicate and(Predicate predicate);
+public interface Parameter<T> extends Expression<T> {
+    /**
+     * Return the parameter name, or null if the parameter is not a named
+     * parameter.
+     * 
+     * @return parameter name
+     */
+    String getName();
 
-	/**
-	 * Creates an OR of the predicate with the argument.
-	 * 
-	 * @param predicate
-	 *            - A simple or compound predicate
-	 * @return the predicate that is the OR of the original simple or compound
-	 *         predicate and the argument.
-	 */
-	Predicate or(Predicate predicate);
-
-	/**
-	 * Creates a negation of the predicate with the argument.
-	 * 
-	 * @return the predicate that is the negation of the original simple or
-	 *         compound predicate.
-	 */
-	Predicate not();
+    /**
+     * Return the parameter position, or null if the parameter is not a
+     * positional parameter.
+     * 
+     * @return position of parameter
+     */
+    Integer getPosition();
 }

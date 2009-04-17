@@ -13,9 +13,9 @@
  * Sun Microsystems, Inc. 
  *
  * Contributors:
- *     pkrogh -        Java Persistence API 2.0 Public Draft
- *                     Specification and licensing terms available from
- *                     http://jcp.org/en/jsr/detail?id=317
+ *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
+ *               Specification and licensing terms available from
+ *               http://jcp.org/en/jsr/detail?id=317
  *
  * EARLY ACCESS - PUBLIC DRAFT
  * This is an implementation of an early-draft specification developed under the 
@@ -33,7 +33,8 @@ package javax.persistence;
  * key to which the relationship attribute corresponds. If the entity’s primary
  * key is of the same Java type as the primary key of the entity referenced by
  * the relationship, the value attribute is not specified.
- * @since Java Persistence API 2.0
+ * 
+ * @since Java Persistence 2.0
  */
 import java.lang.annotation.Target;
 import java.lang.annotation.Retention;

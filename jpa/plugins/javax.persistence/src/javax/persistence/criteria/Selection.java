@@ -13,25 +13,31 @@
  * Sun Microsystems, Inc. 
  *
  * Contributors:
- *     dclarke - Java Persistence API 2.0 Public Draft
+ *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
  *     			 Specification and licensing terms available from
  *     		   	 http://jcp.org/en/jsr/detail?id=317
- *     
- * IMPORTANT: The Criteria API is defined as per the public draft specification
- * but is not implemented in the EclipseLink's early access.
  *
  * EARLY ACCESS - PUBLIC DRAFT
  * This is an implementation of an early-draft specification developed under the 
  * Java Community Process (JCP) and is made available for testing and evaluation 
  * purposes only. The code is not compatible with any specification of the JCP.
  ******************************************************************************/
-package javax.persistence;
+package javax.persistence.criteria;
+
+import javax.persistence.ResultItem;
 
 /**
-* Instances of this interface can be used as orderBy arguments.
-* 
-* @since Java Persistence API 2.0
-*/
-public interface OrderByItem {
-
+ * The Selection interface defines an item that is returned by a query.
+ * 
+ * @param <X>
+ *            the type of the selection item
+ */
+public interface Selection<X> extends ResultItem<X> {
+    /**
+     * Assign an alias to the selection.
+     * 
+     * @param name
+     *            alias
+     */
+    void setAlias(String name);
 }

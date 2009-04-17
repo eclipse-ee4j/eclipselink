@@ -13,9 +13,9 @@
  * Sun Microsystems, Inc. 
  *
  * Contributors:
- *     dclarke - Java Persistence API 2.0 Public Draft
- *     			 Specification and licensing terms available from
- *     		   	 http://jcp.org/en/jsr/detail?id=317
+ *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
+ *               Specification and licensing terms available from
+ *               http://jcp.org/en/jsr/detail?id=317
  *
  * EARLY ACCESS - PUBLIC DRAFT
  * This is an implementation of an early-draft specification developed under the 
@@ -31,7 +31,9 @@ package javax.persistence;
  * This exception will not cause the current transaction, if one is active, to
  * be marked for rollback.
  * 
- * @see javax.persistence.Query#getSingleResult()
+ * @see Query#getSingleResult()
+ * @see Query#getTypedSingleResult()
+ * 
  * @since Java Persistence API 1.0
  */
 public class NoResultException extends PersistenceException {

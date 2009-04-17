@@ -13,9 +13,9 @@
  * Sun Microsystems, Inc. 
  *
  * Contributors:
- *     dclarke - Java Persistence API 2.0 Public Draft
- *     			 Specification and licensing terms available from
- *     		   	 http://jcp.org/en/jsr/detail?id=317
+ *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
+ *               Specification and licensing terms available from
+ *               http://jcp.org/en/jsr/detail?id=317
  *
  * EARLY ACCESS - PUBLIC DRAFT
  * This is an implementation of an early-draft specification developed under the 
@@ -30,28 +30,27 @@ package javax.persistence;
  * use, the methods of this interface have no effect, except for contains, which
  * returns false.
  * 
- * @since Java Persistence API 2.0
+ * @since Java Persistence 2.0
  */
 public interface Cache {
-	
-	/**
-	 * Whether the cache contains data for the given entity.
-	 */
-	public boolean contains(Class cls, Object primaryKey);
+    /**
+     * Whether the cache contains data for the given entity.
+     */
+    public boolean contains(Class cls, Object primaryKey);
 
-	/**
-	 * Remove the data for the given entity from the cache.
-	 */
-	public void evict(Class cls, Object primaryKey);
+    /**
+     * Remove the data for the given entity from the cache.
+     */
+    public void evict(Class cls, Object primaryKey);
 
-	/**
-	 * Remove the data for entities of the specified class (and its subclasses)
-	 * from the cache.
-	 */
-	public void evict(Class cls);
+    /**
+     * Remove the data for entities of the specified class (and its subclasses)
+     * from the cache.
+     */
+    public void evict(Class cls);
 
-	/**
-	 * Clear the cache.
-	 */
-	public void evictAll();
+    /**
+     * Clear the cache.
+     */
+    public void evictAll();
 }

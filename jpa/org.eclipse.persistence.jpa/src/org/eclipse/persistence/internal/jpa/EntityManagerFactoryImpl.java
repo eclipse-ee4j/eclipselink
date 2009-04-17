@@ -16,6 +16,8 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.*;
+import javax.persistence.criteria.QueryBuilder;
+import javax.persistence.metamodel.Metamodel;
 
 import org.eclipse.persistence.config.EntityManagerProperties;
 import org.eclipse.persistence.config.FlushClearCache;
@@ -377,12 +379,21 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory {
 
 	/**
 	 * @see javax.persistence.EntityManagerFactory#getQueryBuilder()
-	 * @since Java Persistence API 2.0
+	 * @since Java Persistence 2.0
 	 */
 	public QueryBuilder getQueryBuilder() {
-		// TODO - May be removed when criteria API is finalized
+		// TODO
 		throw new PersistenceException("Not Yet Implemented");
 	}
+
+	/**
+     * @see javax.persistence.EntityManagerFactory#getMetamodel()
+     * @since Java Persistence 2.0
+     */
+    public Metamodel getMetamodel() {
+        // TODO 
+        throw new PersistenceException("Not Yet Implemented");
+    }
 
 	/**
 	 * @see javax.persistence.EntityManagerFactory#getSupportedProperties()

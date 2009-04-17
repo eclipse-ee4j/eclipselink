@@ -13,43 +13,40 @@
  * Sun Microsystems, Inc. 
  *
  * Contributors:
- *     dclarke - Java Persistence API 2.0 Public Draft
- *     			 Specification and licensing terms available from
- *     		   	 http://jcp.org/en/jsr/detail?id=317
- *     
- * IMPORTANT: The Criteria API is defined as per the public draft specification
- * but is not implemented in the EclipseLink's early access.
+ *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
+ *               Specification and licensing terms available from
+ *               http://jcp.org/en/jsr/detail?id=317
  *
  * EARLY ACCESS - PUBLIC DRAFT
  * This is an implementation of an early-draft specification developed under the 
  * Java Community Process (JCP) and is made available for testing and evaluation 
  * purposes only. The code is not compatible with any specification of the JCP.
  ******************************************************************************/
-package javax.persistence;
+package javax.persistence.metamodel;
 
 /**
- * SelectItem instances are used in specifying the query's select list.
+ * Instances of the type Bindable represent object or attribute types that can
+ * be bound into the from clause.
  * 
- * The methods of this interface are used to define arguments that can be passed
- * to the orderBy method for use in ordering selected items of the query result.
- * 
- * @since Java Persistence API 2.0
+ * @param <T>
+ *            The type of the represented object or attribute
  */
-public interface SelectItem extends OrderByItem {
-	/**
-	 * Return an OrderByItem referencing the SelectItem and specifying ascending
-	 * ordering. The SelectItem must correspond to an orderable value.
-	 * 
-	 * @return order-by item
-	 */
-	OrderByItem asc();
+public interface Bindable<T> {
+    public static enum BindableType {
+        ATTRIBUTE, COLLECTION, MANAGED_TYPE
+    }
 
-	/**
-	 * Return an OrderByItem referencing the SelectItem and specifying
-	 * descending ordering. The SelectItem must correspond to an orderable
-	 * value.
-	 * 
-	 * @return order-by item
-	 */
-	OrderByItem desc();
+    /**
+     * Return the bindable type of the represented object.
+     * 
+     * @return bindable type
+     */
+    BindableType getBindableType();
+
+    /**
+     * Return the Java type of the represented object.
+     * 
+     * @return Java type
+     */
+    Class<T> getJavaType();
 }

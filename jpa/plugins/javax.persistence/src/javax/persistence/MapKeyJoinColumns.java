@@ -13,24 +13,17 @@
  * Sun Microsystems, Inc. 
  *
  * Contributors:
- *     pkrogh -        Java Persistence API 2.0 Public Draft
- *                     Specification and licensing terms available from
- *                     http://jcp.org/en/jsr/detail?id=317
+ *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
+ *               Specification and licensing terms available from
+ *               http://jcp.org/en/jsr/detail?id=317
  *
  * EARLY ACCESS - PUBLIC DRAFT
  * This is an implementation of an early-draft specification developed under the 
  * Java Community Process (JCP) and is made available for testing and evaluation 
  * purposes only. The code is not compatible with any specification of the JCP.
  ******************************************************************************/
-package javax.persistence;
 
-/**
- * When the MapKeyJoinColumns annotation is used, both the name and the
- * referencedColumnName elements must be specified in each of the grouped
- * MapKeyJoinColumn annotations.
- * 
- * @since Java Persistence API 2.0
- */
+package javax.persistence;
 
 import java.lang.annotation.Target;
 import java.lang.annotation.Retention;
@@ -38,6 +31,15 @@ import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
+/**
+ * When the MapKeyJoinColumns annotation is used, both the name and the
+ * referencedColumnName elements must be specified in each of the grouped
+ * MapKeyJoinColumn annotations.
+ * 
+ * @see MapKeyJoinColumn
+ * 
+ * @since Java Persistence 2.0
+ */
 @Target( { METHOD, FIELD })
 @Retention(RUNTIME)
 public @interface MapKeyJoinColumns {

@@ -21,8 +21,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.spi.ClassTransformer;
-import javax.persistence.spi.PersistenceUnitInfo;
+import javax.persistence.PersistenceException;
+import javax.persistence.spi.*;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.exceptions.PersistenceUnitLoadingException;
@@ -233,6 +233,21 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
             factory.getServerSession();
         }
         return factory;
+    }
+
+    public LoadState isLoaded(Object entity) {
+        // TODO 
+       throw new PersistenceException("Not Yet Implemented");
+    }
+
+    public LoadState isLoadedWithReference(Object entity, String attributeName) {
+        // TODO 
+        throw new PersistenceException("Not Yet Implemented");
+    }
+
+    public LoadState isLoadedWithoutReference(Object entity, String attributeName) {
+        // TODO 
+        throw new PersistenceException("Not Yet Implemented");
     }
 
 }

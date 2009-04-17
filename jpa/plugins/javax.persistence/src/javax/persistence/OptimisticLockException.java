@@ -13,9 +13,9 @@
  * Sun Microsystems, Inc. 
  *
  * Contributors:
- *     dclarke - Java Persistence API 2.0 Public Draft
- *     			 Specification and licensing terms available from
- *     		   	 http://jcp.org/en/jsr/detail?id=317
+ *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
+ *               Specification and licensing terms available from
+ *               http://jcp.org/en/jsr/detail?id=317
  *
  * EARLY ACCESS - PUBLIC DRAFT
  * This is an implementation of an early-draft specification developed under the 
@@ -30,6 +30,11 @@ package javax.persistence;
  * occurs. This exception may be thrown as part of an API call, a flush or at
  * commit time. The current transaction, if one is active, will be marked for
  * rollback.
+ * 
+ * @see EntityManager#find(Class, Object, LockModeType)
+ * @see EntityManager#find(Class, Object, LockModeType, java.util.Map)
+ * @see EntityManager#lock(Object, LockModeType)
+ * @see EntityManager#lock(Object, LockModeType, java.util.Map)
  * 
  * @since Java Persistence API 1.0
  */

@@ -13,29 +13,25 @@
  * Sun Microsystems, Inc. 
  *
  * Contributors:
- *     dclarke - Java Persistence API 2.0 Public Draft
- *     			 Specification and licensing terms available from
- *     		   	 http://jcp.org/en/jsr/detail?id=317
- *     
- * IMPORTANT: The Criteria API is defined as per the public draft specification
- * but is not implemented in the EclipseLink's early access.
+ *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
+ *               Specification and licensing terms available from
+ *               http://jcp.org/en/jsr/detail?id=317
  *
  * EARLY ACCESS - PUBLIC DRAFT
  * This is an implementation of an early-draft specification developed under the 
  * Java Community Process (JCP) and is made available for testing and evaluation 
  * purposes only. The code is not compatible with any specification of the JCP.
  ******************************************************************************/
-package javax.persistence;
+package javax.persistence.metamodel;
 
 /**
- * Type of the result of an aggregate operation
+ * Instances of the type Collection represent persistent Collection-valued
+ * attributes.
  * 
- * @since Java Persistence API 2.0
+ * @param <X>
+ *            The type the represented Collection belongs to
+ * @param <E>
+ *            The element type of the represented Collection
  */
-public interface Aggregate extends Expression {
-	/**
-	 * Specify that duplicates are to be removed before the aggregate operation
-	 * is invoked.
-	 */
-	Expression distinct();
+public interface Collection<X, E> extends AbstractCollection<X, java.util.Collection<E>, E> {
 }

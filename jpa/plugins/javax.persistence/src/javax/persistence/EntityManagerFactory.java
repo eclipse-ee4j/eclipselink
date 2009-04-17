@@ -13,7 +13,7 @@
  * Sun Microsystems, Inc. 
  *
  * Contributors:
- *     dclarke - Java Persistence API 2.0 Public Draft
+ *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
  *     			 Specification and licensing terms available from
  *     		   	 http://jcp.org/en/jsr/detail?id=317
  *
@@ -28,90 +28,100 @@ package javax.persistence;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.criteria.QueryBuilder;
+import javax.persistence.metamodel.Metamodel;
+
 /**
- * The <code>EntityManagerFactory</code> interface is used to interact with the
- * entity manager factory for a persistence unit.
- * <p>
- * When the application has finished using the entity manager factory, and/or at
- * application shutdown, the application should close the entity manager
- * factory. Once an <code>EntityManagerFactory</code> has been closed, all its
- * entity managers are considered to be in the closed state.
- * 
- * @since Java Persistence API 1.0
+ * Interface used to interact with the entity manager factory for the
+ * persistence unit.
  */
 public interface EntityManagerFactory {
+    /**
+     * Create a new EntityManager. This method returns a new EntityManager
+     * instance each time it is invoked. The isOpen method will return true on
+     * the returned instance.
+     * 
+     * @throws IllegalStateException
+     *             if the entity manager factory has been closed.
+     */
+    public EntityManager createEntityManager();
 
-	/**
-	 * Create a new EntityManager. This method returns a new EntityManager
-	 * instance each time it is invoked. The isOpen method will return true on
-	 * the returned instance.
-	 */
-	EntityManager createEntityManager();
+    /**
+     * Create a new EntityManager with the specified Map of properties. This
+     * method returns a new EntityManager instance each time it is invoked. The
+     * isOpen method will return true on the returned instance.
+     * 
+     * @throws IllegalStateException
+     *             if the entity manager factory has been closed.
+     */
+    public EntityManager createEntityManager(Map map);
 
-	/**
-	 * Create a new EntityManager with the specified Map of properties. This
-	 * method returns a new EntityManager instance each time it is invoked. The
-	 * isOpen method will return true on the returned instance.
-	 */
-	EntityManager createEntityManager(Map map);
+    /**
+     * Return an instance of QueryBuilder for the creation of CriteriaQuery
+     * objects.
+     * 
+     * @return QueryBuilder instance
+     * @throws IllegalStateException
+     *             if the entity manager factory has been closed.
+     */
+    public QueryBuilder getQueryBuilder();
 
-	/**
-	 * Return an instance of QueryBuilder for the creation of Criteria API
-	 * QueryDefinition objects.
-	 * 
-	 * @return QueryBuilder instance
-	 * @throws IllegalStateException
-	 *             if the entity manager factory has been closed.
-	 * @since Java Persistence API 2.0
-	 */
-	public QueryBuilder getQueryBuilder();
+    /**
+     * Return an instance of Metamodel interface for access to the metamodel of
+     * the persistence unit.
+     * 
+     * @return Metamodel instance
+     * @throws IllegalStateException
+     *             if the entity manager has been closed.
+     */
+    public Metamodel getMetamodel();
 
-	/**
-	 * Close the factory, releasing any resources that it holds. After a factory
-	 * instance is closed, all methods invoked on it will throw an
-	 * IllegalStateException, except for isOpen, which will return false. Once
-	 * an EntityManagerFactory has been closed, all its entity managers are
-	 * considered to be in the closed state.
-	 */
-	void close();
+    /**
+     * Indicates whether the factory is open. Returns true until the factory has
+     * been closed.
+     */
+    public boolean isOpen();
 
-	/**
-	 * Indicates whether or not this factory is open. Returns true until a call
-	 * to close has been made.
-	 */
-	public boolean isOpen();
+    /**
+     * Close the factory, releasing any resources that it holds. After a factory
+     * instance is closed, all methods invoked on it will throw an
+     * IllegalStateException, except for isOpen, which will return false. Once
+     * an EntityManagerFactory has been closed, all its entity managers are
+     * considered to be in the closed state.
+     * 
+     * @throws IllegalStateException
+     *             if the entity manager factory has been closed.
+     */
+    public void close();
 
-	/**
-	 * Get the properties and associated values that are in effect for the
-	 * entity manager factory. Changing the contents of the map does not change
-	 * the configuration in effect.
-	 * 
-	 * @return properties
-	 * @since Java Persistence API 2.0
-	 */
-	public Map getProperties();
+    /**
+     * Get the properties and associated values that are in effect for the
+     * entity manager factory. Changing the contents of the map does not change
+     * the configuration in effect.
+     * 
+     * @return properties
+     */
+    public Map<String, Object> getProperties();
 
-	/**
-	 * Get the names of the properties that are supported for use with the
-	 * entity manager factory. These correspond to properties that may be passed
-	 * to the methods of the EntityManagerFactory interface that take a
-	 * properties argument. These include all standard properties as well as
-	 * vendor-specific properties supported by the provider. These properties
-	 * may or may not currently be in effect.
-	 * 
-	 * @return properties and hints
-	 * @since Java Persistence API 2.0
-	 */
-	public Set<String> getSupportedProperties();
+    /**
+     * Get the names of the properties that are supported for use with the
+     * entity manager factory. These correspond to properties that may be passed
+     * to the methods of the EntityManagerFactory interface that take a
+     * properties argument. These include all standard properties as well as
+     * vendor-specific properties supported by the provider. These properties
+     * may or may not currently be in effect.
+     * 
+     * @return properties and hints
+     */
+    public Set<String> getSupportedProperties();
 
-	/**
-	 * Access the cache that is associated with the entity manager factory(the
-	 * "second level cache").
-	 * 
-	 * @return instance of the Cache interface
-	 * @throws IllegalStateException
-	 *             if the entity manager factory has been closed.
-	 * @since Java Persistence API 2.0
-	 */
-	public Cache getCache();
+    /**
+     * Access the cache that is associated with the entity manager factory (the
+     * "second level cache").
+     * 
+     * @return instance of the Cache interface
+     * @throws IllegalStateException
+     *             if the entity manager factory has been closed.
+     */
+    public Cache getCache();
 }

@@ -10,14 +10,20 @@
  * 
  * Contributors:
  *     tware,mkeith - Initial OSGi support for JPA 
- *
+ *     smith - Cleanup of activator/listener into this class
  ******************************************************************************/
 
 package javax.persistence.osgi;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.persistence.spi.PersistenceProvider;
+import javax.persistence.spi.PersistenceProviderResolver;
+import javax.persistence.spi.PersistenceProviderResolverHolder;
+
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
@@ -25,87 +31,117 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
-import javax.persistence.Persistence;
-import javax.persistence.Persistence.ProviderResolver;
-import javax.persistence.spi.PersistenceProvider;
-
 /**
  * Uses OSGi services to discover JPA persistence providers
- *
- * Also acts as a resolver class (called by the Persistence 
- * class when resolving providers).
+ * 
+ * Also acts as a resolver class (called by the Persistence class when resolving
+ * providers).
  */
-public class Activator implements BundleActivator, ProviderResolver {
+public class Activator implements BundleActivator, PersistenceProviderResolver {
 
     public static final String PERSISTENCE_PROVIDER = "javax.persistence.spi.PersistenceProvider";
 
-	private BundleContext ctx;
-	private ServiceTracker serviceTracker;
-	
-	//-------------------------------------------------------------
-	// Bundle life cycle method
-	//-------------------------------------------------------------
-	public void start(BundleContext context) throws Exception {
-		log("Persistence bundle starting...");
-		
-		// Init the bundle context
-		this.ctx = context;
-		
-		// Set the persistence provider resolver to use OSGi services 
-		Persistence.setProviderResolver(this);
+    private BundleContext ctx;
+    private ServiceTracker serviceTracker;
+    private Map<String, PersistenceProvider> providers;
 
-		// Set up a tracker to add providers as they register themselves
-		ServiceTrackerCustomizer customizer = new ProviderTrackerCustomizer(ctx);
-		serviceTracker = new ServiceTracker(ctx, PERSISTENCE_PROVIDER, customizer);
-		serviceTracker.open();
+    public void start(BundleContext context) throws Exception {
+        log("Persistence bundle starting...");
 
-		log("Persistence bundle started.");
-	}
-	
-	//-------------------------------------------------------------
-	// Bundle life cycle method
-	//-------------------------------------------------------------
-	public void stop(BundleContext context) throws Exception {
-		log("Persistence bundle stopping...");
+        // Init the bundle context
+        this.ctx = context;
 
-		// Close the service tracker
-		serviceTracker.close();
-		serviceTracker = null;
-		
-		// Nil out the known provider list
-		Persistence.resetProviders();
+        // Set up a tracker to add providers as they register themselves
+        ServiceTrackerCustomizer customizer = new ProviderTrackerCustomizer(this);
+        serviceTracker = new ServiceTracker(ctx, PERSISTENCE_PROVIDER, customizer);
+        serviceTracker.open();
 
-		log("Persistence bundle stopped.");
-	}
+        // Set the persistence provider resolver to use OSGi services
+        PersistenceProviderResolverHolder.setPersistenceProviderResolver(this);
 
-	//-------------------------------------------------------------
-	// Resolve/return existing providers 
-	// (Implementation method for the ProviderResolver interface.)
-	//-------------------------------------------------------------
-	public Collection<PersistenceProvider> findAllProviders() throws IOException {
-	    log("OSGi - Find all providers.");
+        this.providers = new HashMap<String, PersistenceProvider>();
 
-		Collection<PersistenceProvider> providers = new HashSet<PersistenceProvider>();
-		
-		// Provider bundles should require this bundle to be started before 
-		// they start, so it is very unlikely that provider bundles will have 
-		// already loaded and registered but we'll do this just in case... 
+        // Provider bundles should require this bundle to be started before
+        // they start, so it is very unlikely that provider bundles will have
+        // already loaded and registered but we'll do this just in case...
+        ServiceReference[] refs = null;
+        try {
+            refs = ctx.getServiceReferences(PERSISTENCE_PROVIDER, null);
+        } catch (InvalidSyntaxException invEx) {
+        } // Can't happen since filter is null
+        if (refs != null) {
+            for (ServiceReference ref : refs) {
+                addProvider(ref);
+            }
+        }
 
-		ServiceReference[] refs = null;
-		try { refs = ctx.getServiceReferences(PERSISTENCE_PROVIDER, null); }
-		catch (InvalidSyntaxException invEx) {} // Can't happen since filter is null
-		if (refs != null){
-    		for (ServiceReference ref : refs) {
-    			providers.add((PersistenceProvider)ctx.getService(ref));
-    		}
-		}
+        log("Persistence bundle started.");
+    }
 
-		// Newly started providers should dynamically add themselves to the 
-		// list of providers using OSGi service registration facilities
-		return providers;
+    /**
+     * Obtain the provider from the reference and store it under it's name, if
+     * supplied or a generated name otherwise.
+     */
+    PersistenceProvider addProvider(ServiceReference ref) {
+        PersistenceProvider provider = (PersistenceProvider) ctx.getService(ref);
+        String providerName = getProviderName(ref);
+        this.providers.put(providerName, provider);
+        return provider;
+    }
+
+    /**
+     * Remove the provider keyed by it's name.
+     */
+    protected void removeProvider(ServiceReference ref) {
+        String providerName = getProviderName(ref);
+        this.providers.remove(providerName);
+    }
+
+    public void stop(BundleContext context) throws Exception {
+        log("Persistence bundle stopping...");
+
+        // Close the service tracker
+        serviceTracker.close();
+        serviceTracker = null;
+
+        // Nil out the known provider list
+        // Note: the holder is in this bundle so it will no longer be available
+        // anyways
+        // This is done to ensure all refs to providers in other bundles is
+        // removed
+        PersistenceProviderResolverHolder.setPersistenceProviderResolver(null);
+
+        log("Persistence bundle stopped.");
+    }
+
+    /**
+     * Assumes that provider services are registered with property that
+     * indicates the name of the provider impl class.
+     */
+    public String getProviderName(ServiceReference ref) {
+        String providerName = (String) ref.getProperty(PERSISTENCE_PROVIDER);
+
+        if (providerName == null) {
+            providerName = "PersistenceProvider-" + ref.hashCode();
+        }
+
+        return providerName;
+    }
+
+    protected Map<String, PersistenceProvider> getProviders() {
+        return this.providers;
+    }
+
+    /**
+     * Resolve/return existing providers (Implementation method for the
+     * ProviderResolver interface.)
+     */
+    public List<PersistenceProvider> getPersistenceProviders() {
+        return new ArrayList<PersistenceProvider>(getProviders().values());
     }
 
     private void log(String message) {
-    	System.out.println(message);
+        System.out.println(message);
     }
+
 }

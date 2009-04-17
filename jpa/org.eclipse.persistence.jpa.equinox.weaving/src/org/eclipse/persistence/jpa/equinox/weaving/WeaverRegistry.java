@@ -12,8 +12,6 @@
  ******************************************************************************/  
  package org.eclipse.persistence.jpa.equinox.weaving;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -34,7 +32,7 @@ import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
 public class WeaverRegistry implements ClassLoadingHook, ServiceTrackerCustomizer {
 	private static WeaverRegistry instance = new WeaverRegistry();
-	private List weaverServices = new ArrayList();
+	private List<ServiceReference> weaverServices = new ArrayList<ServiceReference>();
 	private BundleContext ctx;
 	private ServiceTracker serviceTracker;
 	
@@ -74,8 +72,8 @@ public class WeaverRegistry implements ClassLoadingHook, ServiceTrackerCustomize
 		if (this.weaverServices.isEmpty()) {
 			return null;
 		}
-		for (Iterator iterator = this.weaverServices.iterator(); iterator.hasNext();) {
-			ServiceReference reference = (ServiceReference) iterator.next();
+		for (Iterator<ServiceReference> iterator = this.weaverServices.iterator(); iterator.hasNext();) {
+			ServiceReference reference = iterator.next();
 			IWeaver weaver = (IWeaver)ctx.getService(reference);
 			if (weaver != null) {
 				byte[] transformedBytes = weaver.transform(name, classbytes);
@@ -86,37 +84,6 @@ public class WeaverRegistry implements ClassLoadingHook, ServiceTrackerCustomize
 			}
 		}
 		return null;
-
-//		try {
-//			for (Iterator iterator = this.weaverServices.iterator(); iterator.hasNext();) {
-//				ServiceReference reference = (ServiceReference) iterator.next();
-//				Object weaver = ctx.getService(reference);
-//				if (weaver != null) {
-//					Class weaverClass = weaver.getClass();
-//					Method transformMethod;
-//						transformMethod = weaverClass.getMethod("transform", new Class[]{String.class, byte[].class});
-//					byte[] transformedBytes = (byte[]) transformMethod.invoke(weaver, new Object[]{name, classbytes});
-//					if (transformedBytes != null) {
-//						return transformedBytes;
-//					}
-//				}
-//			}
-//		} catch (SecurityException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (NoSuchMethodException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (IllegalArgumentException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (IllegalAccessException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (InvocationTargetException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
 	}
 
 	public void start(BundleContext context) {
@@ -129,8 +96,7 @@ public class WeaverRegistry implements ClassLoadingHook, ServiceTrackerCustomize
 		// Close the service tracker
 		serviceTracker.close();
 		serviceTracker = null;
-		
-		weaverServices = new ArrayList();
+		weaverServices = new ArrayList<ServiceReference>();
 	}
 	
 	public Object addingService(ServiceReference reference) {

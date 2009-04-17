@@ -138,7 +138,7 @@ public class OSGiPersistenceInitializationHelper extends PersistenceInitializati
             Bundle[] bundles = context.getBundles();
             Bundle coreBundle = null;
             for (int i = 0; i < bundles.length; i++) {
-                if (bundles[i].getSymbolicName().equals(ORG_ECLIPSE_PERSISTENCE_CORE)) {
+                if (ORG_ECLIPSE_PERSISTENCE_CORE.equals(bundles[i].getSymbolicName())) {
                     coreBundle = bundles[i];
                     loaders.add(new BundleProxyClassLoader(coreBundle));
                     break;
