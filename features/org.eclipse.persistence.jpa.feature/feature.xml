@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="org.eclipse.persistence.jpa.feature"
+      label="EclipseLink JPA"
+      version="1.1.1.qualifier"
+      provider-name="EclipseLink Project">
+
+   <description url="http://www.example.com/description">
+      [Enter Feature Description here.]
+   </description>
+
+   <copyright url="http://www.example.com/copyright">
+      [Enter Copyright Description here.]
+   </copyright>
+
+   <license url="http://www.example.com/license">
+      [Enter License Description here.]
+   </license>
+
+   <requires>
+      <import plugin="org.eclipse.osgi"/>
+   </requires>
+
+   <plugin
+         id="javax.jms"
+         download-size="25"
+         install-size="25"
+         version="1.1.0"
+         unpack="false"/>
+
+   <plugin
+         id="javax.mail"
+         download-size="313"
+         install-size="313"
+         version="1.4.0"
+         unpack="false"/>
+
+   <plugin
+         id="javax.persistence"
+         download-size="0"
+         install-size="0"
+         version="1.99.0"
+         unpack="false"/>
+
+   <plugin
+         id="javax.resource"
+         download-size="42"
+         install-size="42"
+         version="1.5.0"
+         unpack="false"/>
+
+   <plugin
+         id="javax.transaction"
+         download-size="10"
+         install-size="10"
+         version="1.1.0"
+         unpack="false"/>
+
+   <plugin
+         id="javax.xml.rpc"
+         download-size="31"
+         install-size="0"
+         version="1.1.0"/>
+
+   <plugin
+         id="javax.xml.soap"
+         download-size="19"
+         install-size="19"
+         version="1.3.0"
+         unpack="false"/>
+
+   <plugin
+         id="javax.xml.stream"
+         download-size="38"
+         install-size="38"
+         version="1.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.persistence.antlr"
+         download-size="69"
+         install-size="69"
+         version="1.1.1.qualifier"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.persistence.asm"
+         download-size="222"
+         install-size="222"
+         version="1.1.1.qualifier"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.persistence.core"
+         download-size="3003"
+         install-size="3003"
+         version="1.1.1.qualifier"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.persistence.jpa"
+         download-size="439"
+         install-size="439"
+         version="1.1.1.qualifier"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.persistence.jpa.equinox"
+         download-size="18"
+         install-size="18"
+         version="1.1.1.qualifier"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.persistence.jpa.equinox.weaving"
+         download-size="17"
+         install-size="17"
+         version="1.1.1.qualifier"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.persistence.oracle"
+         download-size="63"
+         install-size="63"
+         version="1.1.1.qualifier"
+         unpack="false"/>
+
+</feature>

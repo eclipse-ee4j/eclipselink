@@ -1,0 +1,157 @@
+<!--/*******************************************************************************
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+* which accompanies this distribution.
+* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+* and the Eclipse Distribution License is available at
+* http://www.eclipse.org/org/documents/edl-v10.php.
+*
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*   - multi-word targets use hyphens '-'
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatinated
+*     e.g. 'runpathref'
+*   - multi-word tasks (taskdef) names are concatinated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+*
+* Contributors:
+*     egwin  - initial API and implementation
+#******************************************************************************/-->
+<!-- =============================================================================
+*  General Comments
+*  This buildfile contains:
+*        - targets to generate a p2 repository for eclipselink on the 
+*          download site.
+*================================================================================= -->
+
+<project name="features" default="build" basedir=".">
+
+    <available file="../${ant.project.name}" type="dir" property="p2.is.local"/>
+    <!-- Test to make sure that the calling script doesn't inherit the variable -->
+    <!-- (should be set locally, and be destroyed upon return) -->
+    <fail message="Not running from '${ant.project.name}' directory" unless="p2.is.local"/>
+
+    <dirname  property="feature.build.location" file="${ant.file.features}"/>
+    <property name="feature.2.base.dir" value=".."/>
+    <!-- condition property="feature.2.base.dir" value="../.." else="..">
+        <contains string="${feature.build.location}" substring="features"/>
+    </condition -->
+    <property name="feature.2.common.plugins.dir" value="${feature.2.base.dir}/plugins"/>
+    
+    <!-- Defaults of Pre-Set variables -->
+    <property name="eclipselink.plugins.install.prefix" value="eclipselink-plugins"/>
+    <property name="eclipselink.zip.suffix"             value=".zip"/>
+    <property name="version.qualifier"                  value="qualifier"/>
+    
+    <!-- Tool definitions -->
+    <property name="p2.SDK.install.dir" value="C:\eclipseSDK\eclipse"/>
+    <property name="p2.generator.jar" value="org.eclipse.equinox.p2.metadata.generator_*.jar"/>
+    <property name="p2.launcher.jar" value="org.eclipse.equinox.launcher_*.jar"/>
+    <!-- property name="p2.ant.tasks.classpath" value="${p2.SDK.install.dir}\plugins\${p2.generator.jar}" / -->
+
+    <!-- Input definitions -->
+    <property name="p2.base.dir" value="C:\__EL-RepositorySite"/>
+    <property name="p2.feature.dir" value="${p2.base.dir}/features"/>
+    <property name="p2.bundle.dir" value="${p2.base.dir}/plugins"/>
+    <!-- Output definitions -->
+    <property name="p2.repository.url" value="file:/${p2.base.dir}"/>
+    
+    <echo message="ant.project.name='${ant.project.name}'"/>
+    <echo message="feature.build.location='${feature.build.location}'"/>
+    <echo message="feature.2.base.dir='${feature.2.base.dir}'"/>
+    <echo message="feature.2.common.plugins.dir='${feature.2.common.plugins.dir}'"/>
+    <echo message=" ---"/>
+    <echo message="p2.SDK.install.dir='${p2.SDK.install.dir}'"/>
+    <echo message="p2.generator.jar='${p2.generator.jar}'"/>
+    <echo message="p2.launcher.jar='${p2.launcher.jar}'"/>
+    <!-- echo message="p2.ant.tasks.classpath='${p2.ant.tasks.classpath}'"/ -->
+    <echo message=" ---"/>
+    <echo message="p2.feature.dir='${p2.feature.dir}'"/>
+    <echo message="p2.bundle.dir='${p2.bundle.dir}'"/>
+    <echo message="p2.repository.url='${p2.repository.url}'"/>
+
+    <!-- Make sure the bundle installer exists -->
+    <available file="${feature.2.base.dir}/${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}" property="bundle.installer.exist"/>
+  
+    <!-- Need to copy only the bundles that will be in the features into the "p2.base.dir/plugins" dir
+         (so must copy from main plugins to new temp location). Also need to filter copy the feature xml
+         files to "p2.base.dir/features" to substitute the actual version.qualifer string into it. 
+         Then can Generate P2.                                                                               -->
+    <!-- Questions: Is this copy the generation of the P2 repository? should it go to the server and not be "temp"?
+                    How does this work for older "revisions of the repository?"
+                    -->
+    <target name="build" depends="create-deployable-features, clear-repos, populate-repos-site, generate-p2-repos"/>
+        
+    <target name="populate-repos-site" if="bundle.installer.exist">
+        <unzip src="${feature.2.base.dir}/${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}"
+               dest="${p2.bundle.dir}">
+            <patternset>
+                <include name="**/*.jar"/>
+            </patternset>
+        </unzip>
+        <filter token="QUALIFIER"  value="${version.qualifier}"/>
+        <copy todir="${p2.feature.dir}" filtering="true">
+            <fileset dir="${feature.build.location}">
+                <include name="**/*"/>
+                <exclude name="build.xml"/>
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="test-ready-to-go" unless="bundle.installer.exist">
+        <echo message="Bundle Installer not found! Skipping P2 repos generation."/>
+    </target>
+    
+    <target name="clear-repos" if="bundle.installer.exist" depends="test-ready-to-go">
+        <delete dir="${p2.base.dir}" failonerror="false"/>
+    </target>
+    
+    <target name="populate-repos-site" if="bundle.installer.exist">
+        <unzip src="${feature.2.base.dir}/${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}"
+               dest="${p2.bundle.dir}">
+            <patternset>
+                <include name="**/*.jar"/>
+            </patternset>
+        </unzip>
+        <filter token="QUALIFIER"  value="${version.qualifier}"/>
+        <copy todir="${p2.feature.dir}" filtering="true">
+            <fileset dir="${feature.build.location}">
+                <include name="**/*"/>
+                <exclude name="build.xml"/>
+            </fileset>
+        </copy>
+    </target>
+
+    <!-- target name="generate-p2-repos-with-anttask">
+        <taskdef name="p2" classname="org.eclipse.equinox.internal.p2.metadata.generator.ant.GeneratorTask" classpath="${p2-ant-tasks.classpath}"/>
+        <p2.composite.artifact.repository.create compressed="true" name="EclipseLink Repository" location="${p2.repository.url}"  />
+        <p2.composite.metadata.repository.create compressed="false" name="EclipseLink Repository" location="${p2.repository.url}" />
+    </target -->
+    
+    <target name="generate-p2-repos" if="bundle.installer.exist">
+        <java classname="org.eclipse.equinox.launcher.Main" fork="true" timeout="10800000" taskname="p2"
+            jvm="${java.home}/bin/java" failonerror="false" maxmemory="256m">
+            <classpath>
+                <fileset dir="${p2.SDK.install.dir}\plugins"
+                    includes="${p2.launcher.jar},
+                              ${p2.generator.jar}
+                    "/>
+                <pathelement location="${p2.SDK.install.dir}\plugins" />
+            </classpath>
+            <arg line=" -application org.eclipse.equinox.p2.metadata.generator.EclipseGenerator" />
+            <arg line=" -base ${p2.base.dir}" />
+            <arg line=" -features ${p2.feature.dir}" />
+            <arg line=" -bundles ${p2.bundle.dir}" />
+            <arg line=" -metadataRepository ${p2.repository.url}/ -metadataRepositoryName &quot;EclipseLink Repository&quot;" />
+            <arg line=" -artifactRepository ${p2.repository.url}/ -artifactRepositoryName &quot;EclipseLink Artifacts&quot;" />
+            <arg line=" -append -noDefaultIUs -compress -reusePack200Files" />
+        </java>
+    </target>
+    
+</project>

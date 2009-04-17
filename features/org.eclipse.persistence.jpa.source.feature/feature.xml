@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="org.eclipse.persistence.jpa.source.feature"
+      label="EclipseLink JPA Source"
+      version="1.1.1.qualifier"
+      provider-name="EclipseLink Project">
+
+   <description url="http://www.example.com/description">
+      [Enter Feature Description here.]
+   </description>
+
+   <copyright url="http://www.example.com/copyright">
+      [Enter Copyright Description here.]
+   </copyright>
+
+   <license url="http://www.example.com/license">
+      [Enter License Description here.]
+   </license>
+
+   <plugin
+         id="org.eclipse.persistence.antlr.source"
+         download-size="0"
+         install-size="0"
+         version="1.1.1.qualifier"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.persistence.asm.source"
+         download-size="0"
+         install-size="0"
+         version="1.1.1.qualifier"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.persistence.core.source"
+         download-size="0"
+         install-size="0"
+         version="1.1.1.qualifier"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.persistence.jpa.source"
+         download-size="0"
+         install-size="0"
+         version="1.1.1.qualifier"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.persistence.jpa.equinox.source"
+         download-size="0"
+         install-size="0"
+         version="1.1.1.qualifier"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.persistence.jpa.equinox.weaving.source"
+         download-size="0"
+         install-size="0"
+         version="1.1.1.qualifier"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.persistence.oracle.source"
+         download-size="0"
+         install-size="0"
+         version="1.1.1.qualifier"
+         unpack="false"/>
+
+</feature>
