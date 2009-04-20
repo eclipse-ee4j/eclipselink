@@ -46,10 +46,10 @@
     
     <!-- Defaults of Pre-Set variables -->
     <property name="release.version"                    value="1.1.1"/>
-    <property name="eclipselink.plugins.install.prefix" value="eclipselink-plugins"/>
-    <property name="eclipselink.zip.suffix"             value=".zip"/>
     <property name="version.qualifier"                  value="qualifier"/>
     <property name="version.string"                     value="${release.version}.${version.qualifier}"/>
+    <property name="eclipselink.plugins.install.prefix" value="eclipselink-plugins"/>
+    <property name="eclipselink.zip.suffix"             value=".zip"/>
     <property name="classes.dir"                        value="classes"/>
     
     <!-- Tool definitions -->

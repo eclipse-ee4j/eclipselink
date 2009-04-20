@@ -267,7 +267,8 @@
                 <include name="${antlr}_${version.string}.jar"/>
                 <include name="org.eclipse.persistence*.jar"/>
                 <exclude name="*source*.jar"/>
-            </zipgroupfileset>
+                <exclude name="*equinox*.jar"/>
+               </zipgroupfileset>
             <zipgroupfileset dir="${eclipselink.extension.oracle.dir}">
                 <include name="${eclipselink.extension.oracle.bndl.prefix}.jar"/>
                 <exclude name="*source*.jar"/>
@@ -288,6 +289,7 @@
         <zip destfile="${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}">
             <zipfileset dir="${eclipselink.plugins}">
                 <include name="**.jar"/>
+                <exclude name="javax.persistence_1.0.0.jar"/>
                 <exclude name="osgi.cmpn_4.1.0.jar"/>
                 <exclude name="javax.ejb_3.0.0.jar"/>
                 <exclude name="org.apache.ant_1.7.0.v20080627-1145.zip"/>
