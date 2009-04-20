@@ -441,6 +441,30 @@ public class Oracle9Platform extends Oracle8Platform {
     }
     
     /**
+     * INTERNAL:
+     * Clears both implicit and explicit caches of OracleConnection
+     */
+    public void clearOracleConnectionCache(Connection conn) {
+        if(conn instanceof OracleConnection){
+            OracleConnection oracleConnection = (OracleConnection)conn;
+            try {
+                if(oracleConnection.getImplicitCachingEnabled()) {
+                    oracleConnection.purgeImplicitCache();
+                }
+            } catch(SQLException ex) {
+                // ignore
+            }
+            try {
+                if(oracleConnection.getExplicitCachingEnabled()) {
+                    oracleConnection.purgeExplicitCache();
+                }
+            } catch(SQLException ex) {
+                // ignore
+            }
+        }
+    }
+    
+    /**
      *  INTERNAL:
      *  Note that index (not index+1) is used in statement.setObject(index, parameter)
      *    Binding starts with a 1 not 0, so make sure that index > 0.

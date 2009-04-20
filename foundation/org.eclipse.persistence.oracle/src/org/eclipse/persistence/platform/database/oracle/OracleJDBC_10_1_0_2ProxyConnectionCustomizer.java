@@ -25,6 +25,8 @@ import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.databaseaccess.ConnectionCustomizer;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.sessions.Session;
 
 /**
@@ -71,6 +73,7 @@ public class OracleJDBC_10_1_0_2ProxyConnectionCustomizer extends ConnectionCust
             }
         }
         try {
+            clearConnectionCache();
             oracleConnection.openProxySession(proxyType, proxyProperties); 
         } catch (SQLException exception) {
             oracleConnection = null;
@@ -99,6 +102,7 @@ public class OracleJDBC_10_1_0_2ProxyConnectionCustomizer extends ConnectionCust
      */
     public void clear() {
         try {
+            clearConnectionCache();
             oracleConnection.close(OracleConnection.PROXY_SESSION);
         } catch (SQLException exception) {
             // Ignore
@@ -195,5 +199,14 @@ public class OracleJDBC_10_1_0_2ProxyConnectionCustomizer extends ConnectionCust
         if(proxyRoles != null && !((proxyRoles instanceof String) && (((String)proxyRoles).length() == 0))) {
             proxyProperties.put(OracleConnection.PROXY_ROLES, proxyRoles);
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * Clears connection's both implicit and explicit caches.
+     */
+    protected void clearConnectionCache() {
+        this.getSession().getServerPlatform().clearStatementCache(this.getAccessor().getConnection());
+        ((DatabaseAccessor)this.getAccessor()).clearStatementCache((AbstractSession)this.getSession());
     }
 }
