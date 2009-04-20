@@ -1981,7 +1981,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
                 }
             } else { // Not optimistically locked
                 if (uowImpl.getPessimisticLockedObjects().get(entity) != null) {
-                    lockMode = LockModeType.PESSIMISTIC_READ;
+                    lockMode = LockModeType.PESSIMISTIC_WRITE;
                 }
             }
             return lockMode;
