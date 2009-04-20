@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.Enumeration;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
@@ -122,6 +123,30 @@ public class CascadeLockingPolicy {
         }
         
         return m_parentMapping;
+     }
+     
+     
+     /**
+      * Get the descriptor that really represents this object
+      * In the case of inheritance, the object may represent a subclass of class the descriptor
+      * represents. 
+      * 
+      * If there is no InheritancePolicy, we return our parentDescriptor
+      * If there is inheritance we will search for a descriptor that represents parentObj and
+      * return that descriptor
+      * @param parentObj
+      * @return
+      */
+     protected ClassDescriptor getParentDescriptorFromInheritancePolicy(Object parentObj){
+         ClassDescriptor realParentDescriptor = m_parentDescriptor;
+         if (realParentDescriptor.hasInheritance()){
+             InheritancePolicy inheritancePolicy = realParentDescriptor.getInheritancePolicy();
+             ClassDescriptor childDescriptor = inheritancePolicy.getDescriptor(parentObj.getClass());
+             if (childDescriptor != null){
+                 realParentDescriptor = childDescriptor;
+             }
+         }
+         return realParentDescriptor;
      }
      
     /**
@@ -239,7 +264,7 @@ public class CascadeLockingPolicy {
         if (parentMapping != null && parentMapping.isObjectReferenceMapping()) {
             parentObj = parentMapping.getRealAttributeValueFromObject(obj, uow);
         } 
-    
+
         // If the parent object is still null at this point, try a query.
         // check out why no query keys.
         if (parentObj == null) {
@@ -274,6 +299,10 @@ public class CascadeLockingPolicy {
                 m_parentDescriptor.getWrapperPolicy().unwrapObject(parentObj, uow);   
             }
         }
+        ClassDescriptor realParentDescriptor = m_parentDescriptor;
+        if (parentObj != null){
+            realParentDescriptor = getParentDescriptorFromInheritancePolicy(parentObj);
+        }
     
         // If we have a parent object, force update the version field if one 
         // exists, and keep firing the notification up the chain.
@@ -281,8 +310,8 @@ public class CascadeLockingPolicy {
         if (parentObj != null) {
             // Need to check if we are a non cascade locking node within a 
             // cascade locking policy chain.
-            if (m_parentDescriptor.usesOptimisticLocking() && m_parentDescriptor.getOptimisticLockingPolicy().isCascaded()) {
-                ObjectChangeSet ocs = m_parentDescriptor.getObjectBuilder().createObjectChangeSet(parentObj, changeSet, uow);
+            if (realParentDescriptor.usesOptimisticLocking() && realParentDescriptor.getOptimisticLockingPolicy().isCascaded()) {
+                ObjectChangeSet ocs = realParentDescriptor.getObjectBuilder().createObjectChangeSet(parentObj, changeSet, uow);
                 
                 if (!ocs.hasForcedChangesFromCascadeLocking()) {
                     ocs.setHasForcedChangesFromCascadeLocking(true);
@@ -291,8 +320,8 @@ public class CascadeLockingPolicy {
             }
         
             // Keep sending the notification up the chain ...
-            if (m_parentDescriptor.hasCascadeLockingPolicies()) {
-                for (Enumeration policies = m_parentDescriptor.getCascadeLockingPolicies().elements(); policies.hasMoreElements();) {
+            if (realParentDescriptor.hasCascadeLockingPolicies()) {
+                for (Enumeration policies = realParentDescriptor.getCascadeLockingPolicies().elements(); policies.hasMoreElements();) {
                     CascadeLockingPolicy policy = (CascadeLockingPolicy) policies.nextElement();
                     policy.lockNotifyParent(parentObj, changeSet, uow);
                 }

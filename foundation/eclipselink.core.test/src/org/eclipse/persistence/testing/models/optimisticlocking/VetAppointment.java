@@ -15,46 +15,46 @@ package org.eclipse.persistence.testing.models.optimisticlocking;
 import org.eclipse.persistence.indirection.ValueHolder;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
 
-public class Toy {
+public class VetAppointment {
 
     private int id;
+    private int cost;
     private int version;
-    private String name;
-    private ValueHolderInterface owner;
-    
-    public Toy(){
-        owner = new ValueHolder();
+    private ValueHolderInterface animal;
+
+    public VetAppointment(){
+        animal = new ValueHolder();
     }
     
-    public ValueHolderInterface getOwnerVH() {
-        return owner;
+    public ValueHolderInterface getAnimal() {
+        return animal;
     }
-    public void setOwnerVH(ValueHolderInterface owner) {
-        this.owner = owner;
+
+    public void setAnimal(ValueHolderInterface animalvh) {
+        this.animal = animalvh;
     }
-    public Animal getOwner() {
-        return (Animal)owner.getValue();
-    }
-    public void setOwner(Animal owner) {
-        this.owner.setValue(owner);
-    }
+
     public int getId() {
         return id;
     }
+
     public void setId(int id) {
         this.id = id;
     }
+
+    public int getCost() {
+        return cost;
+    }
+
+    public void setCost(int cost) {
+        this.cost = cost;
+    }
+    
     public int getVersion() {
         return version;
     }
     public void setVersion(int version) {
         this.version = version;
-    }
-    public String getName() {
-        return name;
-    }
-    public void setName(String name) {
-        this.name = name;
     }
 
 }

@@ -19,48 +19,51 @@ import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.models.optimisticlocking.Cat;
-import org.eclipse.persistence.testing.models.optimisticlocking.Toy;
+import org.eclipse.persistence.testing.models.optimisticlocking.VetAppointment;
 
 /**
- * EclipseLink Bug 247104
- * 
- * Ensure cascaded optimistic locking is properly cascaded in inheritance
+ * Bug 270017 - Test cascaded locking on a subclass when a list attribute of it's superclass is updated
+ * @author tware
  *
  */
-public class Cascaded12MInheritanceOptimisticLockingTest extends AutoVerifyTestCase {
+public class Cascaded12MInheritanceListOnSuperOptimisticLockingTest extends AutoVerifyTestCase {
 
-    private Toy toy = null;
+    private VetAppointment appt = null;
     private Cat cat = null;
     private int catVersion = 0;
-    private int toyVersion = 0;
+    private int apptVersion = 0;
+    
+    public void reset()  {  
+        getAbstractSession().rollbackTransaction();
+        getSession().getIdentityMapAccessor().initializeIdentityMaps();
+    }
 
     public void setup()  {   
-        getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
-        getAbstractSession().beginTransaction();
-        UnitOfWork uow = getSession().acquireUnitOfWork();
-        cat = new Cat();
-        cat.setName("Bud");
-        toy = new Toy();
-        toy.setName("Ball");
-        List toys = new ArrayList();
-        toys.add(toy);
-        cat.setToys(toys);
-        toy.setOwner(cat);
-        uow.registerObject(cat);
-        uow.registerObject(toy);
-        uow.commit();
-        cat = (Cat)getSession().refreshObject(cat);
-        toy = (Toy)getSession().refreshObject(toy);
-        catVersion = cat.getVersion();
-        toyVersion = toy.getVersion();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
     
     public void test(){
+        getAbstractSession().beginTransaction();
         UnitOfWork uow = getSession().acquireUnitOfWork();
+        cat = new Cat();
+        cat.setName("Bud");
+        appt = new VetAppointment();
+        appt.setCost(100);
+        List appts = new ArrayList();
+        appts.add(appt);
+        appt.getAnimal().setValue(cat);
+        uow.registerObject(cat);
+        uow.registerObject(appt);
+        uow.commit();
+        cat = (Cat)getSession().refreshObject(cat);
+        appt = (VetAppointment)getSession().refreshObject(appt);
+        catVersion = cat.getVersion();
+        apptVersion = appt.getVersion();
+        getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
+        uow = getSession().acquireUnitOfWork();
         cat = (Cat)uow.readObject(cat);
-        toy = (Toy)cat.getToys().get(0);
-        toy.setName("Red Ball");
+        appt = (VetAppointment)cat.getAppointments().get(0);
+        appt.setCost(99);
         uow.commit();
     }
     
@@ -69,11 +72,6 @@ public class Cascaded12MInheritanceOptimisticLockingTest extends AutoVerifyTestC
         if (cat.getVersion() <= catVersion){
             throw new TestErrorException("Version of owner was not updated through cascading.");
         }
-    }
-
-     public void reset()  { 
-        getAbstractSession().rollbackTransaction();
-        getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
     
 }
