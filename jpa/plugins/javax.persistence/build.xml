@@ -134,10 +134,12 @@
         <delete file="${jpaproto.resource.dir}/MANIFEST.MF" quiet="true"/>
         <echo message="Manifest-Version: 1.0${line.separator}"                                                      file="${jpaproto.resource.dir}/MANIFEST.MF" append="false"/>
         <echo message="Bundle-ManifestVersion: 2${line.separator}"                                                  file="${jpaproto.resource.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-Name: JPA 2.0 Preview - Extended for OSGi${line.separator}"                                       file="${jpaproto.resource.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-SymbolicName: ${ant.project.name}${line.separator}"                                     file="${jpaproto.resource.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-Name: JPA 2.0 Preview - Extended for OSGi${line.separator}"                           file="${jpaproto.resource.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-SymbolicName: ${ant.project.name}${line.separator}"                                   file="${jpaproto.resource.dir}/MANIFEST.MF" append="true"/>
         <echo message="Bundle-Version: ${jpaproto.version}${line.separator}"                                        file="${jpaproto.resource.dir}/MANIFEST.MF" append="true"/>
         <echo message="Export-Package: javax.persistence;version=&quot;${jpaproto.version}&quot;,${line.separator}" file="${jpaproto.resource.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" javax.persistence.criteria;version=&quot;${jpaproto.version}&quot;,${line.separator}"       file="${jpaproto.resource.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" javax.persistence.metamodel;version=&quot;${jpaproto.version}&quot;,${line.separator}"      file="${jpaproto.resource.dir}/MANIFEST.MF" append="true"/>
         <echo message=" javax.persistence.spi;version=&quot;${jpaproto.version}&quot;${line.separator}"             file="${jpaproto.resource.dir}/MANIFEST.MF" append="true"/>
         <echo message="Bundle-Activator: javax.persistence.osgi.Activator${line.separator}"                         file="${jpaproto.resource.dir}/MANIFEST.MF" append="true"/>
         <echo message="Bundle-ClassPath: .${line.separator}"                                                        file="${jpaproto.resource.dir}/MANIFEST.MF" append="true"/>
