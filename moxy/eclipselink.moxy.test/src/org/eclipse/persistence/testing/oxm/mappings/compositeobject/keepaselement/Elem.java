@@ -13,22 +13,11 @@
 
 package org.eclipse.persistence.testing.oxm.mappings.compositeobject.keepaselement;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
-
 import org.w3c.dom.Element;
 
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "elem", propOrder = {
-
-})
 public class Elem {
 
-    @XmlElement(required = true)
     protected Object elem;
-    @XmlElement(required = true)
     protected Object elem1;
 
     public Object getElem() {

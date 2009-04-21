@@ -654,7 +654,9 @@ public class AnnotationsProcessor {
                     if (ptype.isPrimitive()) {
                         property.setIsRequired(true);
                     } else if (helper.isAnnotationPresent(property.getElement(), XmlElement.class)) {
-                        property.setIsRequired(((XmlElement) helper.getAnnotation(property.getElement(), XmlElement.class)).required());
+                    	XmlElement xmlElement = (XmlElement) helper.getAnnotation(property.getElement(), XmlElement.class);
+                        property.setIsRequired(xmlElement.required());
+                        property.setNillable(xmlElement.nillable());
                     }                                                            
                                    
                     if (helper.isAnnotationPresent(property.getElement(), XmlValue.class)) {                    
@@ -951,7 +953,9 @@ public class AnnotationsProcessor {
             if (ptype.isPrimitive()) {
                 property.setIsRequired(true);
             } else if (helper.isAnnotationPresent(property.getElement(), XmlElement.class)) {
-                property.setIsRequired(((XmlElement) helper.getAnnotation(property.getElement(), XmlElement.class)).required());
+                XmlElement xmlElement = (XmlElement) helper.getAnnotation(property.getElement(), XmlElement.class);
+                property.setIsRequired(xmlElement.required());
+                property.setNillable(xmlElement.nillable());
             }                    
         }
         return properties;

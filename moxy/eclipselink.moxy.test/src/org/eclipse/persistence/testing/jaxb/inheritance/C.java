@@ -14,7 +14,7 @@ package org.eclipse.persistence.testing.jaxb.inheritance;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-@XmlTransient
+//@XmlTransient
 public class C extends B{
 	@XmlElement(name="ccc")
 	protected int ccc;

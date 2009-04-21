@@ -66,7 +66,7 @@ public class JAXBTestSuite extends TestCase {
         suite.addTestSuite(JAXBElementSimpleTestCases.class);
         suite.addTestSuite(JAXBElementComplexTestCases.class);
         suite.addTestSuite(RootWithCompositeObjectTestCases.class);
-        suite.addTestSuite(JAXBInheritanceTestCases.class);
+       // suite.addTestSuite(JAXBInheritanceTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.events.RootWithCompositeCollectionTestCases.class);
         suite.addTest(XmlAdapterTestSuite.suite());
         suite.addTest(SchemaGenTestSuite.suite());

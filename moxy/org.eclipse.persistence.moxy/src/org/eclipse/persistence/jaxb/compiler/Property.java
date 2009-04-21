@@ -54,6 +54,7 @@ public class Property {
     private String getMethodName;
     private String setMethodName;
     private boolean isRequired = false;
+    private boolean isNillable = false;
     
     public Property() {
     }
@@ -222,5 +223,13 @@ public class Property {
     
     public boolean isReference() {
     	return false;
+    }
+
+    public boolean isNillable() {
+        return isNillable;
+    }
+
+    public void setNillable(boolean isNillable) {
+        this.isNillable = isNillable;
     }
 }

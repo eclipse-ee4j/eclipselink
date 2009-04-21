@@ -25,7 +25,8 @@ public class SchemaGenTestSuite extends TestSuite {
         suite.addTestSuite(SchemaGenEmployeeTestCases.class);
         suite.addTestSuite(SchemaGenXMLTypeTestCases.class);
         suite.addTestSuite(SchemaGenXMLRootElementTestCases.class);
-        suite.addTestSuite(SchemaGenImportTestCases.class);
+
+//        suite.addTestSuite(SchemaGenImportTestCases.class);
         return suite;
     }
 

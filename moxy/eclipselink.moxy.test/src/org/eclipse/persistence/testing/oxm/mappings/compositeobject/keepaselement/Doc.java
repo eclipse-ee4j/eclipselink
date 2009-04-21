@@ -13,25 +13,12 @@
 
 package org.eclipse.persistence.testing.oxm.mappings.compositeobject.keepaselement;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-
 import org.eclipse.persistence.testing.oxm.mappings.anyobject.withoutgroupingelement.RootKeepAsElement;
 import org.w3c.dom.Element;
 
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-
-})
-@XmlRootElement(name = "doc")
 public class Doc {
 
-    @XmlElement(required = true)
     protected Elem elem;
-    @XmlElement(required = true)
     protected Object elem1;
 
     public Elem getElem() {

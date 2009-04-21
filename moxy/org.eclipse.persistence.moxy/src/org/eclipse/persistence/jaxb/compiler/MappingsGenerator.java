@@ -232,7 +232,7 @@ public class MappingsGenerator {
             // a composite object mapping, otherwise create a direct mapping
             if (typeInfo.containsKey(valueType.getQualifiedName())) {
                 if (isCollectionType(property)) {
-                    generateCompositeCollectionMapping(property, descriptor, namespaceInfo, valueType).setConverter(new XMLJavaTypeConverter(adapterClass.getQualifiedName()));
+                    generateCompositeCollectionMapping(property, descriptor, namespaceInfo, valueType.getQualifiedName()).setConverter(new XMLJavaTypeConverter(adapterClass.getQualifiedName()));
                 } else {
                     generateCompositeObjectMapping(property, descriptor, namespaceInfo, valueType.getQualifiedName()).setConverter(new XMLJavaTypeConverter(adapterClass.getQualifiedName()));
                 }
@@ -471,6 +471,9 @@ public class MappingsGenerator {
                 mapping.setGetMethodName(property.getGetMethodName());
             }
         }
+        if(property.isNillable()){
+        	mapping.getNullPolicy().setNullRepresentedByXsiNil(true);
+        }
         mapping.setXPath(getXPathForField(property, namespaceInfo, false).getXPath());
         if(helper.isAnnotationPresent(property.getElement(), XmlContainerProperty.class)) {
             XmlContainerProperty containerProp = (XmlContainerProperty)helper.getAnnotation(property.getElement(), XmlContainerProperty.class);
@@ -496,6 +499,9 @@ public class MappingsGenerator {
             } else {
                 mapping.setGetMethodName(property.getGetMethodName());
             }
+        }
+        if(property.isNillable()){
+        	mapping.getNullPolicy().setNullRepresentedByXsiNil(true);
         }
         mapping.setField(getXPathForField(property, namespaceInfo, true));
         if(XMLConstants.QNAME_QNAME.equals(property.getSchemaType())){
@@ -580,7 +586,7 @@ public class MappingsGenerator {
                 if (helper.isAnnotationPresent(property.getElement(), XmlIDREF.class)) {
                     generateXMLCollectionReferenceMapping(property, descriptor, namespaceInfo, javaClass);
                 } else {
-                    generateCompositeCollectionMapping(property, descriptor, namespaceInfo, javaClass);
+                    generateCompositeCollectionMapping(property, descriptor, namespaceInfo, javaClass.getQualifiedName());
                 }
             }
         } else {
@@ -661,7 +667,7 @@ public class MappingsGenerator {
         return src.getRawName().equals(tgt.getCanonicalName());
     }
     
-    public XMLCompositeCollectionMapping generateCompositeCollectionMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo, JavaClass referenceClass) {
+    public XMLCompositeCollectionMapping generateCompositeCollectionMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo, String referenceClassName) {
         XMLCompositeCollectionMapping mapping = new XMLCompositeCollectionMapping();
         mapping.setAttributeName(property.getPropertyName());
         if(property.isMethodProperty()) {
@@ -672,8 +678,10 @@ public class MappingsGenerator {
                 mapping.setGetMethodName(property.getGetMethodName());
             }
         }
-        mapping.setReferenceClassName(referenceClass.getQualifiedName());
-        
+        mapping.setReferenceClassName(referenceClassName);
+        if(property.isNillable()){
+        	mapping.getNullPolicy().setNullRepresentedByXsiNil(true);
+        }
         JavaClass collectionType = property.getType();
         if (areEquals(collectionType, Collection.class) || areEquals(collectionType, List.class)) {
             collectionType = jotArrayList;
