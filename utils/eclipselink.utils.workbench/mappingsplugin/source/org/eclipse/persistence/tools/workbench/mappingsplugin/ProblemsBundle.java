@@ -425,6 +425,7 @@ public class ProblemsBundle extends ListResourceBundle
 		// *** MWXmlSchema ***
 		{"0800", "Prefix required for namespace \"{0}\"."},
 		{"0801", "Duplicate prefix: \"{0}\"."},
+		{"0802", "Namespace prefix for : \"{0}\" contains a space, this is invalid and can cause errors at runtime."},
 		
 		// *** MWXpath ***
 		{"0810", "No XPath specified."},

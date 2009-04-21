@@ -443,6 +443,7 @@ public final class ProblemConstants
 	// *** MWXmlSchema ***
 	public static final String SCHEMA_NAMESPACE_PREFIX_NOT_SPECIFIED						= "0800";
 	public static final String SCHEMA_NAMESPACE_PREFIX_DUPLICATED							= "0801";
+	public static final String SCHEMA_NAMESPACE_PREFIX_CONTAINS_SPACE						= "0802";
 	
 	// *** MWXpath ***
 	// (Not sure where else to put this)

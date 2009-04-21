@@ -58,6 +58,7 @@ import org.eclipse.persistence.tools.workbench.utility.iterators.CompositeIterat
 import org.eclipse.persistence.tools.workbench.utility.iterators.FilteringIterator;
 import org.eclipse.persistence.tools.workbench.utility.iterators.TransformationIterator;
 import org.eclipse.persistence.tools.workbench.utility.node.Node;
+import org.eclipse.persistence.tools.workbench.utility.string.StringTools;
 import org.w3c.dom.NamedNodeMap;
 
 public final class MWXmlSchema extends MWModel
@@ -661,6 +662,17 @@ public final class MWXmlSchema extends MWModel
 		super.addProblemsTo(currentProblems);
 		this.checkRequiredNamespacePrefix(currentProblems);
 		this.checkDuplicateNamespacePrefix(currentProblems);
+		this.checkSpacesinNamespacePrefix(currentProblems);
+	}
+	
+	private void checkSpacesinNamespacePrefix(List currentProblems) {
+		for (Iterator stream = this.namespaces(); stream.hasNext();) {
+			MWNamespace namespace = (MWNamespace) stream.next();
+			
+			if (! "".equals(namespace.getNamespaceUrl()) && StringTools.contains(namespace.getNamespacePrefix(), " ", '\0')) {
+				currentProblems.add(this.buildProblem(ProblemConstants.SCHEMA_NAMESPACE_PREFIX_CONTAINS_SPACE, namespace.getNamespaceUrlForDisplay()));
+			}
+		}
 	}
 	
 	private void checkRequiredNamespacePrefix(List currentProblems) {
