@@ -154,7 +154,7 @@ final public class QuerySelectionCriteriaPanel extends AbstractPanel
 		constraints.weighty    = 1;
 		constraints.fill       = GridBagConstraints.BOTH;
 		constraints.anchor     = GridBagConstraints.PAGE_START;
-		constraints.insets     = new Insets(0, 0, 0, 0);
+		constraints.insets     = new Insets(5, 5, 5, 5);
 
 		add(switcherPane, constraints);
 	}
