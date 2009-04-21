@@ -300,6 +300,7 @@
                 <include name="${license-files}"/>
             </zipfileset>
             <zipfileset dir="${eclipselink.jpa.plugins}/" includes="javax.persistence*.jar"/>
+            <zipfileset dir="${eclipselink.sdo.plugins}/" includes="commonj.sdo*2.1.1*.jar"/>
         </zip>
     </target>
 

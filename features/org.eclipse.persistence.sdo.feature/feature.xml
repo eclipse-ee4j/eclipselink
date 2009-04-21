@@ -25,6 +25,13 @@
          unpack="false"/>
 
    <plugin
+         id="javax.activation"
+         download-size="52"
+         install-size="52"
+         version="1.1.0"
+         unpack="false"/>
+
+   <plugin
          id="javax.jms"
          download-size="25"
          install-size="25"
@@ -60,10 +67,11 @@
          unpack="false"/>
 
    <plugin
-         id="javax.xml.rpc"
-         download-size="31"
-         install-size="0"
-         version="1.1.0"/>
+         id="javax.xml.bind"
+         download-size="72"
+         install-size="72"
+         version="2.0.0"
+         unpack="false"/>
 
    <plugin
          id="javax.xml.soap"
@@ -77,6 +85,13 @@
          download-size="38"
          install-size="38"
          version="1.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="javax.xml.ws"
+         download-size="37"
+         install-size="37"
+         version="2.0.0"
          unpack="false"/>
 
    <plugin

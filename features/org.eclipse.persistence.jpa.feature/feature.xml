@@ -22,6 +22,13 @@
    </requires>
 
    <plugin
+         id="javax.activation"
+         download-size="52"
+         install-size="52"
+         version="1.1.0"
+         unpack="false"/>
+
+   <plugin
          id="javax.jms"
          download-size="25"
          install-size="25"
@@ -55,12 +62,6 @@
          install-size="10"
          version="1.1.0"
          unpack="false"/>
-
-   <plugin
-         id="javax.xml.rpc"
-         download-size="31"
-         install-size="0"
-         version="1.1.0"/>
 
    <plugin
          id="javax.xml.soap"
