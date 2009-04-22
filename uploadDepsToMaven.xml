@@ -42,6 +42,7 @@
     <target name = "upload-maven-init">
         <tstamp>
             <format property="build.date" pattern="yyyyMMdd"/>
+            <format property="build.time" pattern="HHmm"/>
         </tstamp>
 
         <!--  Get the subversion version for current working copy. A freshly       -->

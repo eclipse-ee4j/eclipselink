@@ -56,10 +56,11 @@
     <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
     <tstamp>
        <format property="build.date" pattern="yyyyMMdd"/>
+       <format property="build.time" pattern="HHmm"/>
     </tstamp>
     <property name="build.type" value="SNAPSHOT"/>
     <property name="svn.revision" value="NA"/>
-    <property name="version.string" value="${release.version}.${build.date}-${build.type}"/>
+    <property name="version.string" value="${release.version}.qualifier"/>
     <property name="release.designation"  value="EclipseLink DeveloperBuild"/>
 
      <!-- Needed because this package is only included in JDK6 and beyond -->

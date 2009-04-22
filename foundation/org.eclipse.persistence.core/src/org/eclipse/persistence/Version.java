@@ -28,9 +28,17 @@ public class Version {
     // The current version of EclipseLink.
     // This will be used by all product components and included in exceptions.
     private static String product = "Eclipse Persistence Services";
+    // A three part version number (major.minor.service)
     private static final String version = "@VERSION@";
+    // A string that describes this build i.e.( vYYYYMMDD-HHMM, etc.)
+    private static final String qualifier = "@QUALIFIER@";
+    // Should be in the format YYYYMMDD
     private static final String buildDate = "@BUILD_DATE@";
+    // Should be in the format HHMM
+    private static final String buildTime = "@BUILD_TIME@";
+    // revision of source from the repository
     private static final String buildRevision = "@BUILD_REVISION@";
+    // Typically SNAPSHOT, Milestone name (M1,M2,etc), or RELEASE
     private static final String buildType = "@BUILD_TYPE@";
  
     /** Keep track of JDK version in order to make some decisions about data structures. **/
@@ -40,15 +48,8 @@ public class Version {
 
     public static String getVersionString ( ) {
         String verString;
-        if( getBuildType()=="RELEASE" ) {
-            verString = getVersion() + ".r" + getBuildRevision();
-        }else {
-            if( getBuildRevision()=="NA" ) {
-                verString = getVersion() + "." + getBuildDate() + "-" + getBuildType();
-            }else {
-                verString = getVersion() + ".r" + getBuildRevision() + "-" + getBuildType();
-            }
-        }
+
+        verString = getVersion() + "." + getQualifier();
         return( verString );
     }
 
@@ -64,12 +65,20 @@ public class Version {
         return version;
     }
 
+    public static String getQualifier() {
+        return qualifier;
+    }
+
     public static String getBuildNumber() {
         return getBuildDate();
     }
     
     public static String getBuildDate() {
         return buildDate;
+    }
+
+    public static String getBuildTime() {
+        return buildTime;
     }
 
     public static String getBuildRevision() {
@@ -105,20 +114,13 @@ public class Version {
     }
 
     public static void main ( String[] args ) {
-        if( getBuildType()=="RELEASE" ) {
-            System.out.println( 
-                "\n" + getProduct() + " (EclipseLink)"
-                + "\n   Release Version: " + getVersionString() 
-                + "\n   Build Date:      " + getBuildDate()
-                + "\n   SVN Revision:    " + getBuildRevision()
-            );
-        }else {
-            System.out.println(
-                "\n" + getProduct() + " (EclipseLink)"
-                + "\n   Build Version: " + getVersionString()
-                + "\n   Build Date:    " + getBuildDate()
-                + "\n   SVN Revision:  " + getBuildRevision()
-           );
-        }        
+        System.out.println(
+             "\n" + getProduct() + " (EclipseLink)"
+             + "\n   Build Version:   " + getVersionString()
+             + "\n   Build Qualifier: " + getQualifier()
+             + "\n   Build Date:      " + getBuildDate()
+             + "\n   Build Time:      " + getBuildTime()
+             + "\n   SVN Revision:    " + getBuildRevision()
+        );
     }
 }

@@ -55,10 +55,12 @@
     <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
     <tstamp>
        <format property="build.date" pattern="yyyyMMdd"/>
+       <format property="build.time" pattern="HHmm"/>
     </tstamp>
     <property name="build.type" value="SNAPSHOT"/>
     <property name="svn.revision" value="NA"/>
-    <property name="version.string" value="${release.version}.${build.date}-${build.type}"/>
+    <property name="version.qualifier" value="qualifier"/>
+    <property name="version.string" value="${release.version}.${version.qualifier}"/>
     <property name="release.designation"  value="EclipseLink DeveloperBuild"/>
 
     <!-- Set Compile Path-->
@@ -85,7 +87,7 @@
     <target name="clean" description="Clean all generated content">
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${classes.dir}"/>
-            <fileset dir="${oracle.2.common.plugins.dir}" includes="${eclipselink.extension.oracle.bndl.prefix}*.jar"/>
+            <fileset dir="${oracle.2.common.plugins.dir}" includes="${ant.project.name}_*.jar, ${ant.project.name}.source_*.jar"/>
         </delete>
     </target>
 
@@ -111,7 +113,7 @@
     </target>
 
     <target name="package" description="jar OSGI bundles">
-        <jar jarfile="${oracle.plugins.dir}/${eclipselink.extension.oracle.bndl.prefix}.jar" manifest="META-INF/MANIFEST.MF">
+        <jar jarfile="${oracle.plugins.dir}/${ant.project.name}.jar" manifest="${classes.dir}/MANIFEST.MF">
             <fileset dir="${oracle.2.base.dir}">
                 <include name="about.html"/>
                 <include name="readme.html"/>
@@ -121,13 +123,18 @@
                 <include name="org/eclipse/persistence/**/*.class"/>
             </fileset>
         </jar>
-        <jar jarfile="${oracle.plugins.dir}/${eclipselink.extension.oracle.bndl.prefix}.source.jar">
+        <jar jarfile="${oracle.plugins.dir}/${ant.project.name}.source.jar">
              <manifest>
+                <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
+                <attribute name="Specification-Version"  value="${release.version}"/>
+                <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
+                <attribute name="Implementation-Version" value="${version.string}"/>
                 <attribute name="Bundle-ManifestVersion" value="2"/>
                 <attribute name="Bundle-Name"            value="EclipseLink Oracle Extensions Source"/>
-                <attribute name="Bundle-SymbolicName"    value="${ant.project.name}"/>
-                <attribute name="Bundle-Version"         value="${release.version}"/>
-                <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${release.version}&quot;"/>
+                <attribute name="Bundle-SymbolicName"    value="${ant.project.name}.source"/>
+                <attribute name="Bundle-Vendor"          value="${implementation.vendor}"/>
+                <attribute name="Bundle-Version"         value="${version.string}"/>
+                <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${version.string}&quot;"/>
             </manifest>
             <fileset dir="${oracle.2.base.dir}">
                 <include name="about.html"/>
@@ -141,49 +148,55 @@
     </target>
 
     <target name="generate-manifest" description="Generate the OSGi bundle manifest before jarring">
-        <delete file="META-INF/MANIFEST.MF" quiet="true"/>
-        <echo message="Manifest-Version: 1.0${line.separator}"                                                      file="META-INF/MANIFEST.MF" append="false"/>
-        <echo message="Bundle-ManifestVersion: 2${line.separator}"                                                  file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-Name: EclipseLink Oracle Extensions${line.separator}"                                 file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-SymbolicName: ${ant.project.name}${line.separator}"                                   file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-Version: ${release.version}${line.separator}"                                         file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message="Fragment-Host: org.eclipse.persistence.core;bundle-version=&quot;${release.version}&quot;{line.separator}"       file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message="Export-Package: org.eclipse.persistence.eis.adapters.aq;version=&quot;${release.version}&quot;,${line.separator}"        file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.eis.adapters.aq;version=&quot;${release.version}&quot;,${line.separator}"              file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.platform.database.oracle;version=&quot;${release.version}&quot;,${line.separator}"     file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.platform.database.oracle.xdb;version=&quot;${release.version}&quot;,${line.separator}" file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.platform.database.oracle;version=&quot;${release.version}&quot;,${line.separator}"              file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.platform.database.oracle.converters;version=&quot;${release.version}&quot;,${line.separator}"   file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.platform.xml.xdk;version=&quot;${release.version}&quot;${line.separator}"                       file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-ClassPath: .${line.separator}"                                                                  file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message="Import-Package: javax.resource;version=&quot;1.5.0&quot;;resolution:=optional,${line.separator}"       file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message=" javax.naming;resolution:=optional,${line.separator}"                                                                  file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message=" javax.resource.cci;version=&quot;1.5.0&quot;;resolution:=optional,${line.separator}"                                             file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message=" javax.sql;resolution:=optional,${line.separator}"                                             file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message=" javax.xml.parsers;resolution:=optional,${line.separator}"                                             file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message=" javax.xml.transform;resolution:=optional,${line.separator}"                                             file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message=" javax.xml.transform.dom;resolution:=optional,${line.separator}"                                             file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message=" javax.xml.transform.sax;resolution:=optional,${line.separator}"                                             file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message=" javax.xml.transform.stream;resolution:=optional,${line.separator}"                                             file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message=" javax.xml.validation;resolution:=optional,${line.separator}"                                             file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message=" oracle.AQ;resolution:=optional,${line.separator}"                                             file="META-INF/MANIFEST.MF" append="true"/>
+        <delete file="${classes.dir}/MANIFEST.MF" quiet="true"/>
+        <echo message="Manifest-Version: 1.0${line.separator}"                                                                                          file="${classes.dir}/MANIFEST.MF" append="false"/>
+        <echo message="Specification-Vendor: ${specification.vendor}${line.separator}"                                                                  file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Specification-Version: ${release.version}${line.separator}"                                                                      file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Implementation-Vendor: ${implementation.vendor}${line.separator}"                                                                file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Implementation-Version: ${version.string}${line.separator}"                                                                      file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-ManifestVersion: 2${line.separator}"                                                                                      file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-Name: EclipseLink Oracle Extensions${line.separator}"                                                                     file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-SymbolicName: ${ant.project.name}${line.separator}"                                                                       file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-Vendor: ${implementation.vendor}${line.separator}"                                                                        file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-Version: ${version.string}${line.separator}"                                                                              file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-RequiredExecutionEnvironment: J2SE-1.5${line.separator}"                                                                  file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Fragment-Host: org.eclipse.persistence.core;bundle-version=&quot;${version.string}&quot;${line.separator}"                       file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Export-Package: org.eclipse.persistence.eis.adapters.aq;version=&quot;${version.string}&quot;,${line.separator}"                 file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.eis.adapters.aq;version=&quot;${version.string}&quot;,${line.separator}"                       file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.platform.database.oracle;version=&quot;${version.string}&quot;,${line.separator}"              file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.platform.database.oracle.xdb;version=&quot;${version.string}&quot;,${line.separator}"          file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.platform.database.oracle;version=&quot;${version.string}&quot;,${line.separator}"                       file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.platform.database.oracle.converters;version=&quot;${version.string}&quot;,${line.separator}"            file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.platform.xml.xdk;version=&quot;${version.string}&quot;${line.separator}"                                file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-ClassPath: .${line.separator}"                                                                                            file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Import-Package: javax.resource;version=&quot;1.5.0&quot;;resolution:=optional,${line.separator}"                                 file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" javax.naming;resolution:=optional,${line.separator}"                                                                  file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" javax.resource.cci;version=&quot;1.5.0&quot;;resolution:=optional,${line.separator}"                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" javax.sql;resolution:=optional,${line.separator}"                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" javax.xml.parsers;resolution:=optional,${line.separator}"                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" javax.xml.transform;resolution:=optional,${line.separator}"                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" javax.xml.transform.dom;resolution:=optional,${line.separator}"                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" javax.xml.transform.sax;resolution:=optional,${line.separator}"                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" javax.xml.transform.stream;resolution:=optional,${line.separator}"                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" javax.xml.validation;resolution:=optional,${line.separator}"                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" oracle.AQ;resolution:=optional,${line.separator}"                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" oracle.jdbc,${line.separator}"
-        file="META-INF/MANIFEST.MF" append="true"/>
+        file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" oracle.jdbc.internal,${line.separator}"
-        file="META-INF/MANIFEST.MF" append="true"/>
+        file="${classes.dir}/MANIFEST.MF" append="true"/>
          <echo message=" oracle.jdbc.pool,${line.separator}"
-        file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message=" oracle.spatial.geometry;resolution:=optional,${line.separator}"                                             file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message=" oracle.sql;resolution:=optional,${line.separator}"                                             file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message=" oracle.xdb;resolution:=optional,${line.separator}"                                             file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message=" oracle.xdb.dom;resolution:=optional,${line.separator}"                                             file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message=" oracle.xml.jaxp;resolution:=optional,${line.separator}"                                             file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message=" oracle.xml.parser.schema;resolution:=optional,${line.separator}"                                             file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message=" oracle.xml.parser.v2;resolution:=optional,${line.separator}"                                             file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message=" oracle.xml.util;resolution:=optional,${line.separator}"                                             file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message=" org.w3c.dom;resolution:=optional,${line.separator}"                                             file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message=" org.xml.sax;resolution:=optional${line.separator}"                                             file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message="HK2-Bundle-Name: org.eclipse.persistence:${ant.project.name}${line.separator}"              file="META-INF/MANIFEST.MF" append="true"/>
+        file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" oracle.spatial.geometry;resolution:=optional,${line.separator}"                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" oracle.sql;resolution:=optional,${line.separator}"                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" oracle.xdb;resolution:=optional,${line.separator}"                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" oracle.xdb.dom;resolution:=optional,${line.separator}"                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" oracle.xml.jaxp;resolution:=optional,${line.separator}"                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" oracle.xml.parser.schema;resolution:=optional,${line.separator}"                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" oracle.xml.parser.v2;resolution:=optional,${line.separator}"                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" oracle.xml.util;resolution:=optional,${line.separator}"                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.w3c.dom;resolution:=optional,${line.separator}"                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.xml.sax;resolution:=optional${line.separator}"                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="HK2-Bundle-Name: org.eclipse.persistence:${ant.project.name}${line.separator}"                                                   file="${classes.dir}/MANIFEST.MF" append="true"/>
     </target>
 
 </project>

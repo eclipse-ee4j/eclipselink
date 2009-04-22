@@ -109,10 +109,14 @@
     <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
     <tstamp>
        <format property="build.date" pattern="yyyyMMdd"/>
+       <format property="build.time" pattern="HHmm"/>
     </tstamp>
     <property name="build.type" value="SNAPSHOT"/>
     <property name="svn.revision" value="NA"/>
-    <property name="version.string" value="${release.version}.${build.date}-${build.type}"/>
+    <condition property="version.string" value="${release.version}.qualifier" 
+                                          else="${release.version}.v${build.date}-r${svn.revision}">
+        <equals arg1="${svn.revision}" arg2="NA"/>
+    </condition>
     <property name="release.designation"  value="EclipseLink DeveloperBuild"/>
 
     <path id="javadoc.path">
@@ -163,6 +167,8 @@
         <ant antfile="build.xml" dir="${eclipselink.extension.oracle}" target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.dbws}"             target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.jpa}"              target="clean"/>
+        <ant antfile="build.xml" dir="${eclipselink.weaving}"          target="clean"/>
+        <ant antfile="build.xml" dir="${eclipselink.equinox}"          target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.moxy}"             target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.sdo}"              target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.util.dbws}"        target="clean"/>
@@ -179,19 +185,22 @@
         <delete file="${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}"/>
         <delete file="${eclipselink.javadoc.install.prefix}${eclipselink.zip.suffix}"/>
         <delete file="${eclipselink.install.prefix}${eclipselink.zip.suffix}"/>
-        <delete file="${eclipselink.plugins}/${eclipselink.extension.oracle.bndl.prefix}*.jar"/>
+        <delete file="${eclipselink.plugins}/${eclipselink.extension.oracle.bndl.prefix}_*.jar"/>
+        <delete file="${eclipselink.plugins}/${eclipselink.extension.oracle.bndl.prefix}.source_*.jar"/>
     </target>
 
     <!-- Compiles all runtime components (excluding Tests, Oracle extensions). -->
     <target name="build-core">
-        <ant antfile="build.xml" dir="${jpa.prototype}"     target="build"/>
-        <ant antfile="build.xml" dir="${eclipselink.asm}"   target="build"/>
-        <ant antfile="build.xml" dir="${eclipselink.antlr}" target="build"/>
-        <ant antfile="build.xml" dir="${eclipselink.core}"  target="build"/>
-        <ant antfile="build.xml" dir="${eclipselink.jpa}"   target="build"/>
-        <ant antfile="build.xml" dir="${eclipselink.moxy}"  target="build"/>
-        <ant antfile="build.xml" dir="${eclipselink.sdo}"   target="build"/>
-        <ant antfile="build.xml" dir="${eclipselink.dbws}"  target="build"/>
+        <ant antfile="build.xml" dir="${jpa.prototype}"       target="build"/>
+        <ant antfile="build.xml" dir="${eclipselink.asm}"     target="build"/>
+        <ant antfile="build.xml" dir="${eclipselink.antlr}"   target="build"/>
+        <ant antfile="build.xml" dir="${eclipselink.core}"    target="build"/>
+        <ant antfile="build.xml" dir="${eclipselink.jpa}"     target="build"/>
+        <ant antfile="build.xml" dir="${eclipselink.weaving}" target="build"/>
+        <ant antfile="build.xml" dir="${eclipselink.equinox}" target="build"/>
+        <ant antfile="build.xml" dir="${eclipselink.moxy}"    target="build"/>
+        <ant antfile="build.xml" dir="${eclipselink.sdo}"     target="build"/>
+        <ant antfile="build.xml" dir="${eclipselink.dbws}"    target="build"/>
     </target>
 
     <!-- Compiles all utils components. -->
@@ -258,6 +267,7 @@
                 <include name="${antlr}_${version.string}.jar"/>
                 <include name="org.eclipse.persistence*.jar"/>
                 <exclude name="*source*.jar"/>
+                <exclude name="*equinox*.jar"/>
             </zipgroupfileset>
             <zipgroupfileset dir="${eclipselink.extension.oracle.dir}">
                 <include name="${eclipselink.extension.oracle.bndl.prefix}.jar"/>
@@ -279,8 +289,8 @@
                     javax/persistence/MapKey.class,
                     javax/persistence/MapKeyClass.class,
                     javax/persistence/MapKeyColumn.class,
-					javax/persistence/MapKeyEnumerated.class,
-					javax/persistence/MapKeyTemporal.class,
+                    javax/persistence/MapKeyEnumerated.class,
+                    javax/persistence/MapKeyTemporal.class,
                     javax/persistence/OrderColumn.class,
                     javax/persistence/CaseExpression.class,
                     javax/persistence/Aggregate.class,
@@ -317,6 +327,7 @@
         <zip destfile="${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}">
             <zipfileset dir="${eclipselink.plugins}">
                 <include name="**.jar"/>
+                <exclude name="javax.persistence_1.0.0.jar"/>
                 <exclude name="osgi.cmpn_4.1.0.jar"/>
                 <exclude name="javax.ejb_3.0.0.jar"/>
                 <exclude name="org.apache.ant_1.7.0.v20080627-1145.zip"/>
@@ -327,6 +338,7 @@
                 <include name="${license-files}"/>
             </zipfileset>
             <zipfileset dir="${eclipselink.jpa.plugins}/" includes="javax.persistence*.jar"/>
+            <zipfileset dir="${eclipselink.sdo.plugins}/" includes="commonj.sdo*2.1.1*.jar"/>
         </zip>
     </target>
 
@@ -517,6 +529,8 @@
             <zipfileset dir="./${eclipselink.core.xsds}" includes="*.xsd" prefix="eclipselink/xsds"/>
             <!-- jpa XSD files -->
             <zipfileset dir="./${eclipselink.jpa.xsds}" includes="*.xsd" prefix="eclipselink/xsds"/>
+            <!-- dbws XSD files -->
+            <zipfileset dir="./${eclipselink.dbws.xsds}" includes="*.xsd" prefix="eclipselink/xsds"/>
             <!-- core jar's and zips -->
             <zipfileset dir="." prefix="eclipselink/jlib">
                 <include name="${eclipselink.jar.name}"/>
@@ -548,7 +562,7 @@
             <zipfileset dir="${eclipselink.sdo.base}/${plugins.dir}/" includes="${commonj.sdo.lib}" prefix="eclipselink/jlib/sdo"/>
             <!-- grab the dbws util stuff -->
             <zipfileset dir="${eclipselink.util.dbws}"    includes="${dbws-util.jar.name}, setenv.*, dbwsbuilder.*" prefix="eclipselink/utils/dbws"/>
-            <zipfileset dir="${eclipselink.util.plugins}" includes="javax.wsdl_1.6.2.jar" prefix="eclipselink/utils/dbws"/>
+            <zipfileset dir="${eclipselink.util.plugins}" includes="${wsdl.lib}" prefix="eclipselink/utils/dbws"/>
             <!-- workbench jars -->
             <zipfileset dir="${eclipselink.util.workbench.lib}/mw/"  includes="elmwcore.jar, eclipselinkmw.jar" prefix="eclipselink/utils/workbench/jlib"/>
             <zipfileset dir="${eclipselink.util.workbench.lib}/compile/" includes="xercesImpl.jar" prefix="eclipselink/utils/workbench/jlib"/>
