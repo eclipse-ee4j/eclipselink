@@ -113,10 +113,11 @@
     </tstamp>
     <property name="build.type" value="SNAPSHOT"/>
     <property name="svn.revision" value="NA"/>
-    <condition property="version.string" value="${release.version}.qualifier" 
-                                          else="${release.version}.v${build.date}-r${svn.revision}">
+    <condition property name="version.qualifier" value="qualifier" 
+                                                 else="v${build.date}-r${svn.revision}">
         <equals arg1="${svn.revision}" arg2="NA"/>
     </condition>
+    <property name="version.string" value="${release.version}.${version.qualifier}"/>
     <property name="release.designation"  value="EclipseLink DeveloperBuild"/>
 
     <path id="javadoc.path">

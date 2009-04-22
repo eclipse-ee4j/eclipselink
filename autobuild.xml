@@ -122,10 +122,11 @@
         <!-- Set version.string appropriately depending upon build.type and if svn -->
         <!--    is present. variable should only be used for uploaded filenames    -->
         <!--    or manifest entries.                                               -->
-        <condition property="version.string" value="${release.version}.qualifier" 
-                                              else="${release.version}.v${build.date}-r${svn.revision}">
+        <condition property name="version.qualifier" value="qualifier" 
+                                                     else="v${build.date}-r${svn.revision}">
             <equals arg1="${svn.revision}" arg2="NA"/>
         </condition>
+        <property name="version.string" value="${release.version}.${version.qualifier}"/>
 
         <!-- Set download.path appropriately depending upon build target          -->
         <condition property="download.path" value="${eclipselink.download.path}/nightly/${release.version}/${build.date}">
