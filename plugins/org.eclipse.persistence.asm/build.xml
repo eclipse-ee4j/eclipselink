@@ -50,7 +50,7 @@
     <property name="eclipselink.asm.bndl.prefix" value="${ant.project.name}"/>
     <property name="src.dir"                     value="src"/>
     <property name="asm.classes.dir"             value="."/>
-    <property name="temp.dir"                 value="${asm.classes.dir}/tmp"/>
+    <property name="temp.dir"                    value="${asm.classes.dir}/tmp"/>
 
     <!-- build -->
     <target name="build" depends="clean, generate-manifest, package" description="build asm"/>
@@ -77,10 +77,15 @@
         </jar>
         <jar jarfile="${asm.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar">
              <manifest>
+                <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
+                <attribute name="Specification-Version"  value="${release.version}"/>
+                <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
+                <attribute name="Implementation-Version" value="${version.string}"/>
                 <attribute name="Bundle-ManifestVersion" value="2"/>
                 <attribute name="Bundle-Name"            value="EclipseLink ASM Source"/>
                 <attribute name="Bundle-SymbolicName"    value="${ant.project.name}.source"/>
-                <attribute name="Bundle-Version"         value="${release.version}"/>
+                <attribute name="Bundle-Vendor"          value="${implementation.vendor}"/>
+                <attribute name="Bundle-Version"         value="${version.string}"/>
                 <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${version.string}&quot;"/>
             </manifest>
             <fileset dir="${asm.2.base.dir}">

@@ -143,7 +143,7 @@
         <echo message="Implementation-Vendor: ${implementation.vendor}${line.separator}"                            file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="Implementation-Version: 1.99${line.separator}"                                               file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="Bundle-ManifestVersion: 2${line.separator}"                                                  file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-Name: JPA 1.0 - Extended for OSGi (1.99)${line.separator}"                                  file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-Name: JPA 1.0 - Extended for OSGi (1.99)${line.separator}"                            file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="Bundle-SymbolicName: ${ant.project.name}${line.separator}"                                   file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="Bundle-Vendor: ${implementation.vendor}${line.separator}"                                    file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="Bundle-Version: ${jpaproto.version}${line.separator}"                                        file="${classes.dir}/MANIFEST.MF" append="true"/>

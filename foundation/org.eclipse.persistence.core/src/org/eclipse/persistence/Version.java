@@ -122,6 +122,5 @@ public class Version {
              + "\n   Build Time:      " + getBuildTime()
              + "\n   SVN Revision:    " + getBuildRevision()
         );
-              
     }
 }

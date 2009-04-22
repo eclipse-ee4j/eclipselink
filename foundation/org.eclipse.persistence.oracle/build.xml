@@ -131,7 +131,7 @@
                 <attribute name="Implementation-Version" value="${version.string}"/>
                 <attribute name="Bundle-ManifestVersion" value="2"/>
                 <attribute name="Bundle-Name"            value="EclipseLink Oracle Extensions Source"/>
-                <attribute name="Bundle-SymbolicName"    value="${ant.project.name}"/>
+                <attribute name="Bundle-SymbolicName"    value="${ant.project.name}.source"/>
                 <attribute name="Bundle-Vendor"          value="${implementation.vendor}"/>
                 <attribute name="Bundle-Version"         value="${version.string}"/>
                 <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${version.string}&quot;"/>
@@ -160,7 +160,7 @@
         <echo message="Bundle-Vendor: ${implementation.vendor}${line.separator}"                                                                        file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="Bundle-Version: ${version.string}${line.separator}"                                                                              file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="Bundle-RequiredExecutionEnvironment: J2SE-1.5${line.separator}"                                                                  file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Fragment-Host: org.eclipse.persistence.core;bundle-version=&quot;${version.string}&quot;${line.separator}" file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Fragment-Host: org.eclipse.persistence.core;bundle-version=&quot;${version.string}&quot;${line.separator}"                       file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="Export-Package: org.eclipse.persistence.eis.adapters.aq;version=&quot;${version.string}&quot;,${line.separator}"                 file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.internal.eis.adapters.aq;version=&quot;${version.string}&quot;,${line.separator}"                       file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.internal.platform.database.oracle;version=&quot;${version.string}&quot;,${line.separator}"              file="${classes.dir}/MANIFEST.MF" append="true"/>

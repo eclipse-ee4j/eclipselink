@@ -171,7 +171,6 @@
         <echo message="Import-Package: commonj.sdo;version=&quot;2.1.1&quot;,${line.separator}"                                      file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" commonj.sdo.helper;version=&quot;2.1.1&quot;,${line.separator}"                                              file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" commonj.sdo.impl;version=&quot;2.1.1&quot;,${line.separator}"                                                 file="${classes.dir}/MANIFEST.MF" append="true"/>
-
         <echo message=" javax.xml.bind;version=&quot;2.0.0&quot;;resolution:=optional,${line.separator}"                                                 file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" javax.xml.bind.annotation;version=&quot;2.0.0&quot;;resolution:=optional,${line.separator}"                                                 file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" javax.xml.bind.annotation.adapters;version=&quot;2.0.0&quot;;resolution:=optional,${line.separator}"                                                 file="${classes.dir}/MANIFEST.MF" append="true"/>
@@ -210,7 +209,7 @@
                 <attribute name="Manifest-Version"                    value="1.0"/>
                 <attribute name="Bundle-ManifestVersion"              value="2"/>
                 <attribute name="Bundle-Name"                         value="SDO"/>
-                <attribute name="Bundle-Vendor"                       value="EclipseLink Project"/>
+                <attribute name="Bundle-Vendor"                       value="commonj.sdo Project"/>
                 <attribute name="Bundle-SymbolicName"                 value="commonj.sdo"/>
                 <attribute name="Bundle-RequiredExecutionEnvironment" value="J2SE-1.5"/>
                 <attribute name="Bundle-Version"                      value="2.1.1"/>

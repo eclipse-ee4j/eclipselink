@@ -22,8 +22,7 @@
 *   - Ant properties are lower case.
 *
 * Contributors:
-*     tware - initial API and implementation
-*     egwin - update to adopt calling standards
+*     egwin - initial API and implementation
 #******************************************************************************/-->
 <project name="org.eclipse.persistence.jpa.equinox" default="build" basedir=".">
     <available file="../${ant.project.name}" type="dir" property="equinox.is.local"/>
