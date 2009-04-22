@@ -75,6 +75,7 @@
         <replace file="${jboss.server}/deploy/${db.name}-ds.xml" token="@username@" value="${db.user}"/>
         <replace file="${jboss.server}/deploy/${db.name}-ds.xml" token="@password@" value="${db.pwd}"/>
         <replace file="${jboss.server}/deploy/${db.name}-ds.xml" token="@url@" value="${db.url}"/>
+        <replace file="${jboss.server}/deploy/${db.name}-ds.xml" token="@oci-url@" value="${db.oci.url}"/>
         <replace file="${jboss.server}/deploy/${db.name}-ds.xml" token="@driverclass@" value="${db.driver}"/>
     </target>
 
@@ -105,10 +106,16 @@
                 </fileset>
                 <pathelement location="${jboss.home}/bin/run.jar"/>
                 <pathelement location="${jboss.home}/server/all/lib/jboss-j2ee.jar"/>
+                <pathelement location="${jboss.home}/common/lib/servlet-api.jar"/>
+                <pathelement location="${jboss.home}/client/jboss-javaee.jar"/>
+                <pathelement location="${jboss.home}/common/lib/jboss-bindingservice.jar"/>
                 <pathelement location="${eclipselink.jar.name}"/>
                 <pathelement location="${junit.lib}"/>
                 <pathelement location="${jdbc.driver.jar}"/>
                 <pathelement location="${persistence.jar}"/>
+                <pathelement location="${oracle.extensions.depend.dir}/${oracle.xdb.lib}"/>
+                <pathelement location="${oracle.extensions.depend.dir}/${oracle.xmlparserv2.lib}"/>
+                <pathelement location="${oracle.extensions.depend.dir}/${oracle.spatial.lib}"/>
             </classpath>           
         </java>
     </target>
