@@ -65,7 +65,7 @@
         <fileset
             dir="${equinox.2.jpa.plugins.dir}"
             includes="org.eclipse.osgi_3.5.0.v20090311-1300.jar,
-                      javax.persistence_1.99.0.jar
+                      javax.persistence_2.0_preview.jar
             "/>
     </path>
     <available file="${equinox.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar" property="core.bundle.exist"/>
