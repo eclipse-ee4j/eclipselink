@@ -110,6 +110,7 @@
             </or>
         </and>
     </condition>
+
     <target name="set-app-name">
         <condition property="APP_NAME" value="">
             <contains string="${server.name}" substring="websphere"/>
@@ -1094,6 +1095,9 @@
             </fileset>
         </copy>
 
+        <replace dir="${eclipselink.jpa.test}/stage/META-INF" token='%%server-platform-class%%' value="${server.platform.class}">
+            <include name="*.xml"/>
+        </replace>
         <replace dir="${eclipselink.jpa.test}/stage/META-INF" token='%%server-platform%%' value="${server.platform}">
             <include name="*.xml"/>
         </replace>
@@ -1200,6 +1204,7 @@
         <antcall target="server-test-jpaadvancedproperties" inheritRefs="true"/>
         <antcall target="server-test-jpql" inheritRefs="true"/>
         <antcall target="server-test-lob" inheritRefs="true"/>
+        <antcall target="server-test-nativeapitest" inheritRefs="true"/>
         <antcall target="server-test-relationships" inheritRefs="true"/>
         <antcall target="server-test-sessionbean" inheritRefs="true"/>
         <antcall target="server-test-validation" inheritRefs="true"/>
@@ -1213,7 +1218,7 @@
 
     <target name="server-test-oracle-proxy" depends="clean-test">
         <antcall target="server-test-proxy-authentication" inheritRefs="true"/>
-        <antcall target="generate-report" inheritRefs="true"/>
+        <antcall target="generate-servertest-report" inheritRefs="true"/>
     </target>
 
     <target name="server-test-advanced">
@@ -1369,6 +1374,18 @@
             <param name="TEST_NAME" value="eclipselink-lob-model"/>
             <param name="EAR_NAME" value="eclipselink-lob-model"/>
             <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.lob.LobJUnitTestCase"/>
+            <param name="eclipselink.jpa.test.dir" value="."/>
+        </antcall>
+    </target>
+
+    <target name="server-test-nativeapitest">
+        <antcall target="server-run-all" inheritRefs="true">
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/nativeapitest"/>
+            <param name="MODEL_NAME" value="eclipselink-nativeapitest-model"/>
+            <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/nativeapitest"/>
+            <param name="TEST_NAME" value="eclipselink-nativeapitest-model"/>
+            <param name="EAR_NAME" value="eclipselink-nativeapitest-model"/>
+            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.nativeapitest.NativeAPITests"/>
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
     </target>
