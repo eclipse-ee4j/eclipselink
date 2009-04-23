@@ -300,8 +300,8 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                     boolean cascade = isCascadePersist();
                     while (iterator.hasNext()) {
                         Object nextObject = iterator.next();
-                        // remove private owned object from uow list if uow has private owned objects
-                        if (uow.hasPrivateOwnedObjects()){
+                        // remove private owned object from uow list
+                        if (isCandidateForPrivateOwnedRemoval()){
                             uow.removePrivateOwnedObject(this, nextObject);
                         }
                         uow.discoverAndPersistUnregisteredNewObjects(nextObject, cascade, newObjects, unregisteredExistingObjects, visitedObjects);
@@ -317,8 +317,8 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         boolean cascade = isCascadePersist();
         while (containerPolicy.hasNext(iterator)) {
             Object nextObject = containerPolicy.next(iterator, uow);
-            // remove private owned object from uow list if uow has private owned objects
-            if (uow.hasPrivateOwnedObjects()) {
+            // remove private owned object from uow list
+            if (isCandidateForPrivateOwnedRemoval()) {
                 uow.removePrivateOwnedObject(this, nextObject);
             }
             uow.discoverAndPersistUnregisteredNewObjects(nextObject, cascade, newObjects, unregisteredExistingObjects, visitedObjects);
@@ -340,10 +340,11 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         Object cloneObjectCollection = null;
         cloneObjectCollection = getRealCollectionAttributeValueFromObject(object, uow);
         Object cloneIter = cp.iteratorFor(cloneObjectCollection);
+        // add private owned objects to uow list if mapping is a candidate and uow should discover new objects and the source object is new.
+        boolean shouldAddPrivateOwnedObject = isCandidateForPrivateOwnedRemoval() && uow.shouldDiscoverNewObjects() && uow.isObjectNew(object); 
         while (cp.hasNext(cloneIter)) {
             Object nextObject = cp.next(cloneIter, uow);
-            // add private owned object to uow list if mapping is a candidate and uow should discover new objects
-            if (isCandidateForPrivateOwnedRemoval() && uow.shouldDiscoverNewObjects()) {
+            if (shouldAddPrivateOwnedObject && nextObject != null) {
                 uow.addPrivateOwnedObject(this, nextObject);
             }
             uow.registerNewObjectForPersist(nextObject, visitedObjects);

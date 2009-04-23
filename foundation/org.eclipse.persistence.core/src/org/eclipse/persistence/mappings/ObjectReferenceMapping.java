@@ -736,8 +736,8 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
         Object attributeValue = getAttributeValueFromObject(object);
         if (attributeValue != null && getIndirectionPolicy().objectIsInstantiated(attributeValue)) {
             Object reference = getIndirectionPolicy().getRealAttributeValueFromObject(object, attributeValue);
-            // remove private owned object from uow list if uow has private owned objects
-            if (uow.hasPrivateOwnedObjects()) {
+            // remove private owned object from uow list
+            if (isCandidateForPrivateOwnedRemoval()) {
                 uow.removePrivateOwnedObject(this, reference);
             }
             uow.discoverAndPersistUnregisteredNewObjects(reference, isCascadePersist(), newObjects, unregisteredExistingObjects, visitedObjects);
@@ -753,8 +753,9 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
         if (attributeValue != null && this.isCascadePersist() && getIndirectionPolicy().objectIsInstantiated(attributeValue)){
             Object reference = getIndirectionPolicy().getRealAttributeValueFromObject(object, attributeValue);
             uow.registerNewObjectForPersist(reference, visitedObjects);
-            // add private owned object to uow list if mapping is a candidate and uow should discover new objects
-            if (isCandidateForPrivateOwnedRemoval() && uow.shouldDiscoverNewObjects()) {
+            // add private owned object to uow list if mapping is a candidate and uow should discover new objects and the source object is new.
+            boolean shouldAddPrivateOwnedObject = isCandidateForPrivateOwnedRemoval() && uow.shouldDiscoverNewObjects() && uow.isObjectNew(object); 
+            if (isCandidateForPrivateOwnedRemoval() && uow.shouldDiscoverNewObjects() && reference != null && uow.isObjectNew(object)) {
                 uow.addPrivateOwnedObject(this, reference);
             }
         }

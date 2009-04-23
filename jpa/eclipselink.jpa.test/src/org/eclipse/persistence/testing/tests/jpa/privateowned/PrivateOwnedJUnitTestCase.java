@@ -46,6 +46,7 @@ public class PrivateOwnedJUnitTestCase extends JUnitTestCase {
         suite.addTest(new PrivateOwnedJUnitTestCase("testEmbeddedWithCascadeFromPO"));
         suite.addTest(new PrivateOwnedJUnitTestCase("testOneToOnePrivateOwnedFromExistingObject"));
         suite.addTest(new PrivateOwnedJUnitTestCase("testOneToManyPrivateOwnedExistingObjectModification"));
+        suite.addTest(new PrivateOwnedJUnitTestCase("testPrivateOwnedOneToOneChangeFromExistingObject"));
         
         // Classic testing:
         suite.addTest(new PrivateOwnedJUnitTestCase("testOneToOnePrivateOwnedRemovalWithCascadeUsingClassic"));
@@ -874,6 +875,65 @@ public class PrivateOwnedJUnitTestCase extends JUnitTestCase {
         uow.deleteObject(chassis2Read);
         
         uow.commit();        
+    }
+    
+
+    /**
+     * use case: 
+     * A ---> B : the relationship between A and B is privately owned and cascade persist 
+     * Create an instance of A and B. Persist A 
+     * Load A and update an attribute of B. Persist A 
+     * => the attribute is not changed in DB.
+     */
+    public void testPrivateOwnedOneToOneChangeFromExistingObject() {
+        // Step 1 - Create an object and a related object (p-o)
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+    
+        Vehicle vehicle = new Vehicle("GT-X7");
+        Chassis chassis = new Chassis(1234567l);
+        vehicle.setChassis(chassis);
+    
+        em.persist(vehicle);
+            
+        commitTransaction(em);
+        closeEntityManager(em);
+            
+        // Step 2 - change the related object's attribute
+        em = createEntityManager();
+        beginTransaction(em);
+            
+        Vehicle vehicleRead = em.find(Vehicle.class, vehicle.getId());
+           
+        long newSerialNumber = 7654321l;
+        vehicleRead.getChassis().setSerialNumber(newSerialNumber);
+            
+        em.persist(vehicleRead);
+            
+        commitTransaction(em);
+        closeEntityManager(em);
+            
+        // Step 3 - verify results
+        clearCache();
+        em = createEntityManager();
+            
+        Vehicle vehicleReadAgain = em.find(Vehicle.class, vehicle.getId());
+        try {
+            assertNotNull("Vehicle should have been inserted", vehicleReadAgain);
+                
+            long serialNumberFromDatabase = vehicleReadAgain.getChassis().getSerialNumber();
+            assertEquals("Chassis serial number should have been changed on the DB", newSerialNumber, serialNumberFromDatabase); // fails
+        } finally {            
+            // Step 4 - clean up database
+            beginTransaction(em);
+             
+            em.remove(vehicleReadAgain.getChassis());
+            em.remove(vehicleReadAgain);
+                
+            commitTransaction(em);
+                
+            closeEntityManager(em);
+        }
     }
     
 }
