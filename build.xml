@@ -113,8 +113,8 @@
     </tstamp>
     <property name="build.type" value="SNAPSHOT"/>
     <property name="svn.revision" value="NA"/>
-    <condition property name="version.qualifier" value="qualifier" 
-                                                 else="v${build.date}-r${svn.revision}">
+    <condition property="version.qualifier" value="qualifier" 
+                                            else="v${build.date}-r${svn.revision}">
         <equals arg1="${svn.revision}" arg2="NA"/>
     </condition>
     <property name="version.string" value="${release.version}.${version.qualifier}"/>
@@ -308,36 +308,26 @@
     <!-- Packages the eclipselink source jar. -->
     <target name="package-src-jar" description="build EclipseLink source jar">
         <delete file="${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"/>
-        <zip zipfile="${eclipselink.src.install.prefix}${eclipselink.zip.suffix}">
-            <fileset dir="${eclipselink.core}/${src.dir}">
-                <include name="org/eclipse/persistence/**/*.java"/>
-            </fileset>
-            <fileset dir="${eclipselink.jpa}/${src.dir}">
-                <include name="org/eclipse/persistence/**/*.java"/>
-            </fileset>
-            <fileset dir="${eclipselink.plugins}/${asm}/${src.dir}">
-                <include name="org/eclipse/persistence/internal/libraries/asm/**/*.java"/>
-            </fileset>
-             <fileset dir="${eclipselink.plugins}/${antlr}/${src.dir}">
-                <include name="org/eclipse/persistence/internal/libraries/antlr/**/*.java"/>
-            </fileset>
-            <fileset dir="${eclipselink.moxy}/${src.dir}">
-                <include name="org/eclipse/persistence/**/*.java"/>
-            </fileset>
-            <fileset dir="${eclipselink.sdo}/${src.dir}">
-                <include name="org/eclipse/persistence/**/*.java"/>
-                <include name="commonj/sdo/impl/HelperProviderImpl.java"/>
-            </fileset>
-            <fileset dir="${eclipselink.extension.oracle}/${src.dir}">
-                <include name="org/eclipse/persistence/**/*.java"/>
-            </fileset>
-            <fileset dir=".">
-                <include name="${about-file}"/>
-                <include name="${readme-file}"/>
-                <include name="${license-files}"/>
-            </fileset>
-
-        </zip>
+        <jar jarfile="${eclipselink.src.install.prefix}${eclipselink.zip.suffix}" duplicate="preserve">
+             <manifest>
+                <attribute name="Specification-Title"    value="${eclipselink.specification.title} Source"/>
+                <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
+                <attribute name="Specification-Version"  value="${release.version}"/>
+                <attribute name="Implementation-Title"   value="${eclipselink.implementation.title}"/>
+                <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
+                <attribute name="Implementation-Version" value="${version.string}"/>
+                <attribute name="Release-Designation"    value="${release.designation}"/>
+            </manifest>
+            <zipgroupfileset dir="${eclipselink.plugins}">
+                <include name="${asm}.source_${version.string}.jar"/>
+                <include name="${antlr}.source_${version.string}.jar"/>
+                <include name="org.eclipse.persistence*.source*.jar"/>
+                <exclude name="*equinox*.jar"/>
+            </zipgroupfileset>
+            <zipgroupfileset dir="${eclipselink.extension.oracle.dir}">
+                <include name="${eclipselink.extension.oracle.bndl.prefix}.source.jar"/>
+            </zipgroupfileset>
+        </jar>
     </target>
 
     <!-- Packages the eclipselink JPA testing source jar. -->

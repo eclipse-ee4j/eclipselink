@@ -122,8 +122,8 @@
         <!-- Set version.string appropriately depending upon build.type and if svn -->
         <!--    is present. variable should only be used for uploaded filenames    -->
         <!--    or manifest entries.                                               -->
-        <condition property name="version.qualifier" value="qualifier" 
-                                                     else="v${build.date}-r${svn.revision}">
+        <condition property="version.qualifier" value="qualifier" 
+                                                else="v${build.date}-r${svn.revision}">
             <equals arg1="${svn.revision}" arg2="NA"/>
         </condition>
         <property name="version.string" value="${release.version}.${version.qualifier}"/>
