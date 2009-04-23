@@ -1258,7 +1258,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
                                     return executeQuery(query, row, retryCount);
                                 } catch (DatabaseException ex){
                                     //replace original exception with last exception thrown
-                                    //this exception could be a data based exception as apposed
+                                    //this exception could be a data based exception as opposed
                                     //to a connection exception that needs to go back to the customer.
                                     exception = ex;
                                 }
