@@ -281,8 +281,10 @@ public class NodeRecord extends MarshalRecord {
      * INTERNAL:
      */
     public void characters(String value) {
-        Text text = getDocument().createTextNode(value);
-        getNode().appendChild(text);
+        if (value.length() > 0) {
+            Text text = getDocument().createTextNode(value);
+            getNode().appendChild(text);
+        }
     }
     
     public void cdata(String value) {

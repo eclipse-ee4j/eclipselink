@@ -101,6 +101,10 @@ public class Base64 {
         if (data == null) {
             return null;
         }
+        
+        if (data.length == 0) {
+            return new byte[0];
+        }
 
         int tail = data.length;
         while (data[tail - 1] == '=') {

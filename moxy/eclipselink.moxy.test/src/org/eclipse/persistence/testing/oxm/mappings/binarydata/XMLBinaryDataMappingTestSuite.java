@@ -28,6 +28,7 @@ public class XMLBinaryDataMappingTestSuite extends TestCase {
         // expect: Exception Description: A namespace for the prefix ns0:Include was not found in the namespace resolver.
         suite.addTestSuite(BinaryDataIdentifiedByNameEmptyNSRTestCases.class);
         suite.addTestSuite(BinaryDataIdentifiedByNameNullTestCases.class);
+        suite.addTestSuite(BinaryDataEmptyElementTestCases.class);
         return suite;
     }
 

@@ -343,7 +343,11 @@ public class XMLBinaryDataMapping extends XMLDirectMapping {
             } else {
                 fieldValue = record.get("text()");
                 //should be a base64 string
-                fieldValue = ((XMLConversionManager) executionSession.getDatasourcePlatform().getConversionManager()).convertSchemaBase64ToByteArray(fieldValue);
+                if (fieldValue != null) {
+                    fieldValue = ((XMLConversionManager) executionSession.getDatasourcePlatform().getConversionManager()).convertSchemaBase64ToByteArray(fieldValue);
+                } else {
+                    fieldValue = new byte[0];
+                }
             }
         }
         Object attributeValue = fieldValue;
