@@ -307,7 +307,8 @@ public class TraceLocalizationResource extends ListResourceBundle {
                                             { "unregistering_mbean", "Unregistering MBean: {0}" },
                                             { "mbean_get_application_name", "The applicationName for the MBean attached to session [{0}] is [{1}]" },
                                             { "mbean_get_module_name", "The moduleName for the MBean attached to session [{0}] is [{1}]" },
-                                            { "active_thread_is_different_from_current_thread", "Forcing the activeThread \"{0}\" on the mergeManager \"{1}\" to be the currentThread \"{2}\" because they are different." }                                            
+                                            { "active_thread_is_different_from_current_thread", "Forcing the activeThread \"{0}\" on the mergeManager \"{1}\" to be the currentThread \"{2}\" because they are different." },
+                                            { "dead_lock_encountered_on_write_no_cachekey", "Potential deadlock encountered while thread: {2} attempted to lock object of class: {0} with id: {1}, entering deadlock avoidance algorithm.  This is a notice only."},                                            
     };
 
     /**
