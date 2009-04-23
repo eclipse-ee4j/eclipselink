@@ -603,6 +603,21 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
        return super.convertObjectToBigDecimal(sourceObject);	    
     }
    
+   /**
+    * Build a valid instance of Byte from the provided sourceObject
+    * @param sourceObject    Valid instance of String or any Number
+    * @caught exception        The Byte(String) constructor throws a
+    *     NumberFormatException if the String does not contain a
+    *        parsable byte.
+    *
+    */
+    protected Byte convertObjectToByte(Object sourceObject) throws ConversionException {
+        if(sourceObject instanceof String && ((String) sourceObject).startsWith(PLUS)){
+            return super.convertObjectToByte(((String)sourceObject).substring(1));
+        }       
+        return super.convertObjectToByte(sourceObject);	
+    }
+   
     public XMLGregorianCalendar convertStringToXMLGregorianCalendar(String sourceString, QName schemaTypeQName) {
         XMLGregorianCalendar xmlGregorianCalender = null; 
         try {
