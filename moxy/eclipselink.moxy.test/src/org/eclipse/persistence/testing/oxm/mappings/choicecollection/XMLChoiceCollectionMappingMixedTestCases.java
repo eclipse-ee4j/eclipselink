@@ -17,6 +17,7 @@ import java.io.FileReader;
 import java.io.InputStream;
 
 import org.eclipse.persistence.oxm.XMLContext;
+import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.platform.SAXPlatform;
 import org.eclipse.persistence.sessions.Project;
@@ -35,6 +36,27 @@ public class XMLChoiceCollectionMappingMixedTestCases extends XMLMappingTestCase
     setProject(new EmployeeProject());
   }
 
+  
+  public Object getReadControlObject() {
+	  	Employee employee = new Employee();
+	    employee.name = "Jane Doe";
+	    
+	    employee.choice = new java.util.Vector<Object>();
+	    employee.choice.add("123 Fake Street");
+	    employee.choice.add(new Integer(12));
+	    Address addr = new Address();
+	    addr.city = "Ottawa";
+	    addr.street = "45 O'Connor";
+	    employee.choice.add(addr);
+	    employee.choice.add(new Integer(14));
+	    	   	   
+	    employee.choice.add("addressString");
+	    
+	    employee.phone = "123-4567"; 
+	    
+	    return employee;
+  }
+  
   protected Object getControlObject() {
     Employee employee = new Employee();
     employee.name = "Jane Doe";
@@ -47,6 +69,11 @@ public class XMLChoiceCollectionMappingMixedTestCases extends XMLMappingTestCase
     addr.street = "45 O'Connor";
     employee.choice.add(addr);
     employee.choice.add(new Integer(14));
+    
+    XMLRoot xmlRoot = new XMLRoot();
+    xmlRoot.setLocalName("simpleAddress");
+    xmlRoot.setObject("addressString");
+    employee.choice.add(xmlRoot);
     
     employee.phone = "123-4567"; 
     

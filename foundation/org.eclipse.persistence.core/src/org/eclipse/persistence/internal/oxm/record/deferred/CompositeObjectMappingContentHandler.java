@@ -85,7 +85,7 @@ public class CompositeObjectMappingContentHandler extends	DeferredContentHandler
                 getParent().setLeafElementType(xmlFld.getLastXPathFragment().getLeafElementType());
             }
             // Create a childRecord on the parent UnmarshalRecord
-            nodeValue.processChild(xPathFragment, getParent(), attributes, xmlDescriptor);
+            nodeValue.processChild(xPathFragment, getParent(), attributes, xmlDescriptor, mapping);
     	} catch (SAXException e) {
     		throw XMLMarshalException.unmarshalException(e);
     	}

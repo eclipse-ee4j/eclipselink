@@ -45,7 +45,7 @@ import org.eclipse.persistence.oxm.record.UnmarshalRecord;
  * @see org.eclipse.persistence.oxm.mappings.XMLObjectReferenceMapping
  */
 
-public class XMLObjectReferenceMappingNodeValue extends XMLSimpleMappingNodeValue {
+public class XMLObjectReferenceMappingNodeValue extends MappingNodeValue {
     private XMLObjectReferenceMapping xmlObjectReferenceMapping;
     private XMLField xmlField;
 

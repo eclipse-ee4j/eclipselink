@@ -12,7 +12,20 @@
 ******************************************************************************/
 package org.eclipse.persistence.internal.oxm;
 
+import java.util.ArrayList;
+
+import javax.xml.namespace.QName;
+
+import org.eclipse.persistence.exceptions.ConversionException;
+import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.XMLUnionField;
+import org.eclipse.persistence.oxm.record.MarshalRecord;
 
 /**
  * A node value corresponding to mapping. 
@@ -26,6 +39,98 @@ public abstract class MappingNodeValue extends NodeValue {
     
     public boolean isMappingNodeValue() {
         return true;
+    }
+    protected String getValueToWrite(QName schemaType, Object value, XMLConversionManager xmlConversionManager, NamespaceResolver namespaceResolver) {
+        if(schemaType != null && XMLConstants.QNAME_QNAME.equals(schemaType)){
+            return getStringForQName((QName)value, namespaceResolver);
+        }
+        return (String) xmlConversionManager.convertObject(value, ClassConstants.STRING, schemaType);
+    }
+
+    protected QName getSchemaType(XMLField xmlField, Object value, AbstractSession session) {
+        QName schemaType = null;
+        if(xmlField.getLeafElementType() != null){
+            schemaType = xmlField.getLeafElementType();
+        }else if (xmlField.isTypedTextField()) {
+            schemaType = xmlField.getXMLType(value.getClass());
+        } else if (xmlField.isUnionField()) {
+            return getSingleValueToWriteForUnion((XMLUnionField) xmlField, value, session);
+        } else if (xmlField.getSchemaType() != null) {
+            schemaType = xmlField.getSchemaType();
+        }
+        return schemaType;
+    }
+
+    protected QName getSingleValueToWriteForUnion(XMLUnionField xmlField, Object value, AbstractSession session) {
+        ArrayList schemaTypes = xmlField.getSchemaTypes();
+        QName schemaType = null;
+        QName nextQName;
+        Class javaClass;
+        for (int i = 0; i < schemaTypes.size(); i++) {
+            nextQName = (QName) (xmlField).getSchemaTypes().get(i);
+            try {
+                if (nextQName != null) {
+                    javaClass = xmlField.getJavaClass(nextQName);
+                    value = ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, javaClass, nextQName);
+                    schemaType = nextQName;
+                    break;
+                }
+            } catch (ConversionException ce) {
+                if (i == (schemaTypes.size() - 1)) {
+                    schemaType = nextQName;
+                }
+            }
+        }
+        return schemaType;
+    }
+    protected String getStringForQName(QName qName, NamespaceResolver namespaceResolver){
+        if(null == qName) {
+            return null;
+        }
+            
+        if(null == qName.getNamespaceURI()) {
+            return qName.getLocalPart();
+        } else {        
+            String namespaceURI = qName.getNamespaceURI();
+            if(namespaceResolver == null){
+                throw XMLMarshalException.namespaceResolverNotSpecified(namespaceURI);
+            }
+            String prefix = namespaceResolver.resolveNamespaceURI(namespaceURI);
+            if(null == prefix) {
+                return qName.getLocalPart();
+            } else {
+                return prefix + COLON + qName.getLocalPart();
+            }
+        }
+
+    }
+    
+    protected void updateNamespaces(QName qname, MarshalRecord marshalRecord){
+        if (qname != null && !qname.equals(XMLConstants.STRING_QNAME)) {
+            String prefix = marshalRecord.getNamespaceResolver().resolveNamespaceURI(qname.getNamespaceURI());
+            if ((prefix == null) || prefix.equals("")) {
+                prefix = marshalRecord.getNamespaceResolver().generatePrefix();
+                marshalRecord.attribute(XMLConstants.XMLNS_URL, XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + prefix, qname.getNamespaceURI());
+            }
+            String typeValue = prefix + ":" + qname.getLocalPart();
+    
+            addTypeAttribute(marshalRecord, typeValue);
+        }
+    }
+    
+    protected void addTypeAttribute(MarshalRecord marshalRecord, String typeValue) {        
+        String xsiPrefix = null;
+        if (marshalRecord.getNamespaceResolver() != null) {
+            xsiPrefix = marshalRecord.getNamespaceResolver().resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
+        } else {
+            xsiPrefix = XMLConstants.SCHEMA_INSTANCE_PREFIX;
+            marshalRecord.attribute(XMLConstants.XMLNS_URL, XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
+        }
+        if (xsiPrefix == null) {
+            xsiPrefix = marshalRecord.getNamespaceResolver().generatePrefix(XMLConstants.SCHEMA_INSTANCE_PREFIX);
+            marshalRecord.attribute(XMLConstants.XMLNS_URL, XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
+        }
+        marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE, xsiPrefix + ":" + XMLConstants.SCHEMA_TYPE_ATTRIBUTE, typeValue);
     }
     
 }

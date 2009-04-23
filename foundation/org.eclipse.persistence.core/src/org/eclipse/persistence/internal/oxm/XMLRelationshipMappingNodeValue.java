@@ -18,12 +18,14 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.descriptors.Namespace;
+import org.eclipse.persistence.internal.oxm.record.deferred.DescriptorNotFoundContentHandler;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
-import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
 import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
@@ -35,8 +37,22 @@ import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
 
 public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
-	// Protected to public
-    public void processChild(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts, XMLDescriptor xmlDescriptor) throws SAXException {
+    
+    // Protected to public
+    public void processChild(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts, XMLDescriptor xmlDescriptor, DatabaseMapping mapping) throws SAXException {
+        if(xmlDescriptor == null){
+            //Use the DescriptorNotFoundContentHandler to "look ahead" and determine if this is a simple or complex element
+            //if it is complex the exception should be thrown
+            DescriptorNotFoundContentHandler handler = new DescriptorNotFoundContentHandler(unmarshalRecord, mapping);
+            String qnameString = xPathFragment.getLocalName();
+            if(xPathFragment.getPrefix() != null) {
+                qnameString = xPathFragment.getPrefix()  +":" + qnameString;
+            }
+            handler.startElement(xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), qnameString, atts);                          
+            unmarshalRecord.getXMLReader().setContentHandler(handler);
+            return;
+        }
+        
         if (xmlDescriptor.hasInheritance()) {
             unmarshalRecord.setAttributes(atts);
             Class classValue = xmlDescriptor.getInheritancePolicy().classFromRow(unmarshalRecord, unmarshalRecord.getSession());
@@ -83,7 +99,7 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
         unmarshalRecord.getChildRecord().setXMLReader(unmarshalRecord.getXMLReader());
     }
 
-    protected XMLDescriptor findReferenceDescriptor(UnmarshalRecord unmarshalRecord, Attributes atts, DatabaseMapping mapping) {
+    protected XMLDescriptor findReferenceDescriptor(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts, DatabaseMapping mapping, UnmarshalKeepAsElementPolicy policy) {
         XMLDescriptor returnDescriptor = null;
         XMLContext xmlContext = unmarshalRecord.getUnmarshaller().getXMLContext();
 
@@ -93,34 +109,26 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
             XPathFragment frag = new XPathFragment();
             frag.setXPath(schemaType);
 
+            QName qname = null;
             if (frag.hasNamespace()) {
                 String prefix = frag.getPrefix();
                 String url = unmarshalRecord.resolveNamespacePrefix(prefix);
                 frag.setNamespaceURI(url);
+                
+                qname = new QName(url, frag.getLocalName());
+                unmarshalRecord.setTypeQName(qname);
             }
             returnDescriptor = xmlContext.getDescriptorByGlobalType(frag);
-        } else {
-            //try leaf element type
-            QName leafType = ((XMLField)mapping.getField()).getLastXPathFragment().getLeafElementType();
-            if (leafType != null) {
-                XPathFragment frag = new XPathFragment();
-                String xpath = leafType.getLocalPart();
-                String uri = leafType.getNamespaceURI();
-                if ((uri != null) && !uri.equals("")) {
-                    frag.setNamespaceURI(uri);
-                    String prefix = ((XMLDescriptor)mapping.getDescriptor()).getNonNullNamespaceResolver().resolveNamespaceURI(uri);
-                    if ((prefix != null) && !prefix.equals("")) {
-                        xpath = prefix + ":" + xpath;
-                    }
+            if(returnDescriptor == null){
+                if(policy ==null || (policy != null && policy != UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT && policy != UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)){
+                    Class theClass = (Class)((XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager()).getDefaultXMLTypes().get(qname);
+                    if(theClass == null){
+                        throw XMLMarshalException.noDescriptorFound(mapping);
+                    }                   
                 }
-                frag.setXPath(xpath);
-
-                returnDescriptor = xmlContext.getDescriptorByGlobalType(frag);
-            }
-        }
-        if (returnDescriptor == null) {
-            throw XMLMarshalException.noDescriptorFound(mapping);
-        }
+           }
+        } 
+        
         return returnDescriptor;
     }
 
@@ -140,22 +148,7 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
         }
         marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE, xsiPrefix + ":" + XMLConstants.SCHEMA_TYPE_ATTRIBUTE, typeValue);
     }
-    
-    protected void addTypeAttribute(MarshalRecord marshalRecord, String typeValue) {        
-        String xsiPrefix = null;
-        if (marshalRecord.getNamespaceResolver() != null) {
-            xsiPrefix = marshalRecord.getNamespaceResolver().resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
-        } else {
-            xsiPrefix = XMLConstants.SCHEMA_INSTANCE_PREFIX;
-            marshalRecord.attribute(XMLConstants.XMLNS_URL, XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
-        }
-        if (xsiPrefix == null) {
-            xsiPrefix = marshalRecord.getNamespaceResolver().generatePrefix(XMLConstants.SCHEMA_INSTANCE_PREFIX);
-            marshalRecord.attribute(XMLConstants.XMLNS_URL, XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
-        }
-        marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE, xsiPrefix + ":" + XMLConstants.SCHEMA_TYPE_ATTRIBUTE, typeValue);
-    }
-    
+
     protected void writeExtraNamespaces(List extraNamespaces, XMLRecord xmlRecord, AbstractSession session) {
         if (extraNamespaces == null) {
             return;
@@ -186,7 +179,7 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
         }   
     }
  
-    protected void setOrAddAttributeValueForKeepAsElement(SAXFragmentBuilder builder, XMLMapping mapping, XMLConverter converter, UnmarshalRecord unmarshalRecord, boolean isCollection) {
+    protected void setOrAddAttributeValueForKeepAsElement(SAXFragmentBuilder builder, XMLMapping mapping, XMLConverter converter, UnmarshalRecord unmarshalRecord, boolean isCollection, Object collection) {
         Object node = builder.getNodes().pop();
         
         if (converter != null) {
@@ -194,10 +187,37 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
         }
         
         if (isCollection) {
-            unmarshalRecord.addAttributeValue((ContainerValue) this, node);
+        	if(collection != null){
+        		unmarshalRecord.addAttributeValue((ContainerValue) this, node, collection);
+        	}else{
+        		unmarshalRecord.addAttributeValue((ContainerValue) this, node);
+        	}
         } else {
             unmarshalRecord.setAttributeValue(node, (DatabaseMapping) mapping);
         }
     }
-    
+  
+    protected void endElementProcessText(UnmarshalRecord unmarshalRecord, Converter converter, XPathFragment xPathFragment, Object collection) {
+        Object value = unmarshalRecord.getStringBuffer().toString().trim();
+        if(converter != null) {
+            if(converter instanceof XMLConverter){
+                value = ((XMLConverter)converter).convertDataValueToObjectValue(value, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller());
+            }else{
+                value = converter.convertDataValueToObjectValue(value, unmarshalRecord.getSession());
+            }
+        }
+        unmarshalRecord.resetStringBuffer();
+        if (!EMPTY_STRING.equals(value)) {
+            QName qname = unmarshalRecord.getTypeQName();
+            if (qname != null) {
+                Class theClass = (Class) XMLConversionManager.getDefaultXMLTypes().get(qname);
+                if (theClass != null) {
+                    value = ((XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager()).convertObject(value, theClass, qname);
+                }
+            }            
+            setOrAddAttributeValue(unmarshalRecord, value, xPathFragment, collection);            
+        }
+    }
+        
+    protected abstract void setOrAddAttributeValue(UnmarshalRecord unmarshalRecord, Object value, XPathFragment xPathFragment, Object collection);
 }

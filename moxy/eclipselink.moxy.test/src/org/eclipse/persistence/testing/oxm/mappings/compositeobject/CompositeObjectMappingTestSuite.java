@@ -20,6 +20,7 @@ import org.eclipse.persistence.testing.oxm.OXTestCase;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.errortests.CompositeObjectErrorTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.identifiedbyname.CompositeObjectIdentifiedByNameNoRefClassTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.identifiedbyname.CompositeObjectIdentifiedByNameTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.compositeobject.identifiedbyname.CompositeObjectIdentifiedByNameTextChildTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.identifiedbynamespace.CompositeObjectIdentifiedByNamespaceTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.identifiedbynamespace.CompositeObjectNoReferenceClassTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.identifiedbyposition.CompositeObjectIdentifiedByPositionTestCases;
@@ -62,6 +63,7 @@ public class CompositeObjectMappingTestSuite extends TestCase {
 
         suite.addTestSuite(CompositeObjectIdentifiedByNameTestCases.class);
         suite.addTestSuite(CompositeObjectIdentifiedByNameNoRefClassTestCases.class);
+        suite.addTestSuite(CompositeObjectIdentifiedByNameTextChildTestCases.class);
         suite.addTestSuite(CompositeObjectIdentifiedByNamespaceTestCases.class);
         suite.addTestSuite(CompositeObjectNoReferenceClassTestCases.class);
         suite.addTestSuite(CompositeObjectIdentifiedByPositionTestCases.class);

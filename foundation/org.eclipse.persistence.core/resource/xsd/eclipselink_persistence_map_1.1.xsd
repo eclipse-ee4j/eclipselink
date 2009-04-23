@@ -3448,6 +3448,7 @@
 	  <xsd:element name="container-attribute" minOccurs="0"/>
 	  <xsd:element name="container-get-method" minOccurs="0"/>
 	  <xsd:element name="container-set-method" minOccurs="0"/>
+          <xsd:element name="keep-as-element-policy" type="xsd:string" minOccurs="0"/>
 	</xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>

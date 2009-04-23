@@ -38,8 +38,9 @@ public class EmployeeProject extends Project {
     XMLChoiceCollectionMapping choiceMapping = new XMLChoiceCollectionMapping();
     choiceMapping.setAttributeName("choice");
     choiceMapping.addChoiceElement("street/text()", String.class);
-    choiceMapping.addChoiceElement("address", Address.class);
+    choiceMapping.addChoiceElement("address", Address.class);    
     choiceMapping.addChoiceElement("integer/text()", Integer.class);
+    choiceMapping.addChoiceElement("simpleAddress", Object.class);
     descriptor.addMapping(choiceMapping);
     
     XMLDirectMapping phoneMapping = new XMLDirectMapping();

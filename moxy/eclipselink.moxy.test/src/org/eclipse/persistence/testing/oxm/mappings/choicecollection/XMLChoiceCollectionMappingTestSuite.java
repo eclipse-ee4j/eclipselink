@@ -26,7 +26,7 @@ public class XMLChoiceCollectionMappingTestSuite extends TestCase {
     }
 
     public static void main(String[] args) {
-        String[] arguments = { "-c", "org.eclipse.persistence.testing.oxm.mappings.binarydata.XMLChoiceMappingTestSuite" };
+        String[] arguments = { "-c", "org.eclipse.persistence.testing.oxm.mappings.choicecollection.XMLChoiceCollectionMappingTestSuite" };
         junit.textui.TestRunner.main(arguments);
     }
 }

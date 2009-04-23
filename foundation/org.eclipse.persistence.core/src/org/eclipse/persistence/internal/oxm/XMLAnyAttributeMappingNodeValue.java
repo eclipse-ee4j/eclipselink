@@ -32,7 +32,7 @@ import org.eclipse.persistence.oxm.record.UnmarshalRecord;
  * used with the TreeObjectBuilder.</p>
  */
 
-public class XMLAnyAttributeMappingNodeValue extends XMLSimpleMappingNodeValue implements ContainerValue {
+public class XMLAnyAttributeMappingNodeValue extends MappingNodeValue implements ContainerValue {
     private XMLAnyAttributeMapping xmlAnyAttributeMapping;
 
     public XMLAnyAttributeMappingNodeValue(XMLAnyAttributeMapping xmlAnyAttributeMapping) {
@@ -97,9 +97,9 @@ public class XMLAnyAttributeMappingNodeValue extends XMLSimpleMappingNodeValue i
             
         boolean includeAttribute = true;
         if(!xmlAnyAttributeMapping.isNamespaceDeclarationIncluded() && XMLConstants.XMLNS_URL.equals(namespaceURI)){
-            includeAttribute = false;            	
+            includeAttribute = false;               
         }else if(!xmlAnyAttributeMapping.isSchemaInstanceIncluded() && XMLConstants.SCHEMA_INSTANCE_URL.equals(namespaceURI)){
-            includeAttribute = false;            	
+            includeAttribute = false;               
         }
                     
         if(includeAttribute){

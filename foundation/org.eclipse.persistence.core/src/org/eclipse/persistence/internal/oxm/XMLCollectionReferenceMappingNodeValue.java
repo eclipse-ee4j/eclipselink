@@ -50,7 +50,7 @@ import org.eclipse.persistence.oxm.record.UnmarshalRecord;
  * @see org.eclipse.persistence.oxm.mappings.XMLObjectReferenceMapping
  */
 
-public class XMLCollectionReferenceMappingNodeValue extends XMLSimpleMappingNodeValue implements ContainerValue {
+public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue implements ContainerValue {
     private XMLCollectionReferenceMapping xmlCollectionReferenceMapping;
     private XMLField xmlField;
     private static final String SPACE = " ";

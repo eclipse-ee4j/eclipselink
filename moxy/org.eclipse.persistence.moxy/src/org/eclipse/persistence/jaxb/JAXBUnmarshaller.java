@@ -206,8 +206,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
         	qname = new QName(rootName);
         } else {
         	qname = new QName(rootNamespaceUri, rootName);
-        }        
-        Object jaxbElement = createJAXBElementIfRequired(obj);
+        }                
         return createJAXBElement(qname, obj.getClass(), obj);                    		
     }
 
@@ -423,7 +422,6 @@ public class JAXBUnmarshaller implements Unmarshaller {
     	if(theClass == null){
     		return new JAXBElement(qname, Object.class, value);
     	}
-    	org.eclipse.persistence.sessions.Session sess = (org.eclipse.persistence.sessions.Session)xmlUnmarshaller.getXMLContext().getSessions().get(0);    
     	
         if(ClassConstants.XML_GREGORIAN_CALENDAR.isAssignableFrom(theClass)){
             theClass = ClassConstants.XML_GREGORIAN_CALENDAR;

@@ -424,7 +424,9 @@ public class MappingsGenerator {
         Map<QName, Class> qNamesToScopeClass = new HashMap<QName, Class>();
         for(ElementDeclaration element:referencedElements) {
             QName elementName = element.getElementName();
-            XMLField xmlField = this.getXPathForElement("", elementName, namespaceInfo, !(this.typeInfo.containsKey(element.getJavaTypeName())));
+            boolean isText = !(this.typeInfo.containsKey(element.getJavaTypeName())) && !(element.getJavaTypeName().equals("java.lang.Object"));
+            
+            XMLField xmlField = this.getXPathForElement("", elementName, namespaceInfo, isText);
             mapping.addChoiceElement(xmlField, element.getJavaTypeName());
             if(!element.isXmlRootElement()) {
                 XMLRootConverter converter = new XMLRootConverter(xmlField);
@@ -589,6 +591,9 @@ public class MappingsGenerator {
                     generateCompositeCollectionMapping(property, descriptor, namespaceInfo, javaClass.getQualifiedName());
                 }
             }
+        } else if(!property.isAttribute() && javaClass != null && javaClass.getQualifiedName().equals("java.lang.Object")){        	
+        	XMLCompositeCollectionMapping ccMapping = generateCompositeCollectionMapping(property, descriptor, namespaceInfo, null);
+        	ccMapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
         } else {
             generateDirectCollectionMapping(property, descriptor, namespaceInfo);
         }

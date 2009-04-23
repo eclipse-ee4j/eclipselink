@@ -32,7 +32,7 @@ import org.eclipse.persistence.sessions.Session;
  * when used with the TreeObjectBuilder.</p>
  * @author  mmacivor
  */
-public class XMLFragmentMappingNodeValue extends XMLSimpleMappingNodeValue implements NullCapableValue {
+public class XMLFragmentMappingNodeValue extends MappingNodeValue implements NullCapableValue {
     private XMLFragmentMapping xmlFragmentMapping;
 
     public XMLFragmentMappingNodeValue(XMLFragmentMapping xmlFragmentMapping) {
@@ -54,7 +54,7 @@ public class XMLFragmentMappingNodeValue extends XMLSimpleMappingNodeValue imple
     }
     
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver) {
-        return marshal(xPathFragment, marshalRecord, object, session, namespaceResolver, ObjectMarshalContext.getInstance());	
+        return marshal(xPathFragment, marshalRecord, object, session, namespaceResolver, ObjectMarshalContext.getInstance());   
     }
 
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
@@ -112,7 +112,7 @@ public class XMLFragmentMappingNodeValue extends XMLSimpleMappingNodeValue imple
         }
         SAXFragmentBuilder builder = unmarshalRecord.getFragmentBuilder();
         Object attributeValue = builder.buildAttributeNode(namespaceURI, localName, value);
-        xmlFragmentMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), attributeValue);    	
+        xmlFragmentMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), attributeValue);       
     }
 
     public XMLFragmentMapping getMapping() {

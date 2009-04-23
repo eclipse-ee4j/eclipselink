@@ -259,7 +259,7 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements XM
             setField(getDescriptor().buildField(getField()));
         }
         if(valueConverter != null) {
-        	valueConverter.initialize(this, session);
+            valueConverter.initialize(this, session);
         }
     }
 
@@ -329,14 +329,14 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements XM
             next = record.getDOM().getFirstChild();
         }
         while(next != null) {
-        	Object objectValue = null;
+            Object objectValue = null;
             if (isUnmappedContent(next)) {
                 if ((next.getNodeType() == Node.TEXT_NODE) && this.isMixedContent()) {
                     if (next.getNodeValue().trim().length() > 0) {
-                    	objectValue = next.getNodeValue();
+                        objectValue = next.getNodeValue();
                         if(getConverter() != null) {
-                        	objectValue = getConverter().convertDataValueToObjectValue(objectValue, session, record.getUnmarshaller());
-                        }                    	
+                            objectValue = getConverter().convertDataValueToObjectValue(objectValue, session, record.getUnmarshaller());
+                        }                       
                         cp.addInto(objectValue, container, session);
                     }
                 } else if (next.getNodeType() == Node.ELEMENT_NODE) {
@@ -375,7 +375,7 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements XM
                             // Check if descriptor is for a wrapper, if it is null it out and let continue
                             XMLDescriptor xmlReferenceDescriptor = (XMLDescriptor) referenceDescriptor;
                             if (referenceDescriptor != null && xmlReferenceDescriptor.isWrapper()) {
-                            	referenceDescriptor = null;
+                                referenceDescriptor = null;
                             }
                         }
                         if ((referenceDescriptor != null) && (getKeepAsElementPolicy() != UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)) {
@@ -396,8 +396,8 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements XM
                                     }
                                 }
                                 if(getConverter() != null) {
-                                	value = getConverter().convertDataValueToObjectValue(value, session, record.getUnmarshaller());
-                                }                    	
+                                    value = getConverter().convertDataValueToObjectValue(value, session, record.getUnmarshaller());
+                                }                       
 
                                 XMLRoot rootValue = new XMLRoot();
                                 rootValue.setLocalName(next.getLocalName());
@@ -445,7 +445,7 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements XM
         while (cp.hasNext(iter) && (childNodeCount < childNodes.size())) {
             Object element = cp.next(iter, session);
             if(this.getConverter() != null) {
-            	element = getConverter().convertObjectValueToDataValue(element, session, record.getMarshaller());
+                element = getConverter().convertObjectValueToDataValue(element, session, record.getMarshaller());
             }
             Object originalObject = element;
             Node nextChild = null;
@@ -608,22 +608,14 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements XM
         if (xmlRootField != null) {
             xmlRootField.setNamespaceResolver(record.getNamespaceResolver());
             QName qname = ((XMLRoot) originalObject).getSchemaType();
-
-            Node newNode = XPathEngine.getInstance().create(xmlRootField, root, element, session);
-
-            if (qname != null) {
-                String typeValue = qname.getLocalPart();
-
-                String prefix = record.getNamespaceResolver().resolveNamespaceURI(qname.getNamespaceURI());
-                if ((prefix == null) || (prefix.equals(""))) {
-                    typeValue = qname.getLocalPart();
-                    prefix = record.getNamespaceResolver().generatePrefix();
-                    ((Element) newNode).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + prefix, qname.getNamespaceURI());
+            if(qname != null){
+                if(!qname.equals(XMLConstants.STRING_QNAME)){                   
+                    xmlRootField.setSchemaType(qname);
+                    xmlRootField.setIsTypedTextField(true);
+                    xmlRootField.addJavaConversion(((XMLRoot) originalObject).getObject().getClass(), qname);
                 }
-                typeValue = prefix + ":" + qname.getLocalPart();
-
-                writeXsiTypeAttribute(record, newNode, typeValue, session);
             }
+           Node newNode = XPathEngine.getInstance().create(xmlRootField, root, element, session);            
         } else {
             Text textNode = doc.createTextNode((String) element);
             root.appendChild(textNode);
@@ -772,40 +764,16 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements XM
         }
         return unmappedNodes;
     }
-
-    private void writeXsiTypeAttribute(DOMRecord row, Node theNode, String typeValue, AbstractSession session) {
-        String xsiPrefix = null;
-        boolean generated = false;
-
-        xsiPrefix = row.getNamespaceResolver().resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
-        if (xsiPrefix == null) {
-            xsiPrefix = ((XMLDescriptor) descriptor).getNonNullNamespaceResolver().generatePrefix(XMLConstants.SCHEMA_INSTANCE_PREFIX);
-            generated = true;
-            writeXsiNamespace(theNode, xsiPrefix);
-        }
-        XMLField xmlField = (XMLField) descriptor.buildField("@" + xsiPrefix + ":" + XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
-        if (generated) {
-            xmlField.getLastXPathFragment().setGeneratedPrefix(true);
-        }
-        xmlField.getLastXPathFragment().setNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
-        XPathEngine.getInstance().create(xmlField, theNode, typeValue, session);
-    }
-
-    private void writeXsiNamespace(Node theNode, String xsiPrefix) {
-        if (theNode.getNodeType() == Node.ELEMENT_NODE) {
-            ((Element) theNode).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
-        }
-    }
-
+   
     public boolean isCollectionMapping() {
         return true;
     }
     
     public void setConverter(XMLConverter conv) {
-    	this.valueConverter = conv;
+        this.valueConverter = conv;
     }
     
     public XMLConverter getConverter() {
-    	return this.valueConverter;
+        return this.valueConverter;
     }
 }

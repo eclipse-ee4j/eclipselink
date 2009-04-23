@@ -33,7 +33,7 @@ import org.xml.sax.Attributes;
  * handled when used with the TreeObjectBuilder.</p>
  */
 
-public class XMLCompositeDirectCollectionMappingNodeValue extends XMLSimpleMappingNodeValue implements ContainerValue {
+public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeValue implements ContainerValue {
     private static final String SPACE = " ";
     private XMLCompositeDirectCollectionMapping xmlCompositeDirectCollectionMapping;
 
@@ -244,9 +244,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends XMLSimpleMappi
                 marshalRecord.closeStartElement();
             } else {
                 if (xmlField.isTypedTextField()) {
-                    String typeQName = namespaceResolver.resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL) + ":type";
-                    String schemaTypePrefix = namespaceResolver.resolveNamespaceURI(schemaType.getNamespaceURI());
-                    marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, schemaType.getLocalPart(), typeQName, schemaTypePrefix + ':' + schemaType.getLocalPart());
+                    updateNamespaces(schemaType, marshalRecord);
                 }
                 marshalRecord.closeStartElement();
                 if (xmlCompositeDirectCollectionMapping.isCDATA()) {

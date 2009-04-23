@@ -7,5 +7,6 @@
 	<city>Ottawa</city>
   </address>
   <integer>14</integer>
+  <simpleAddress>addressString</simpleAddress>
   <phone>123-4567</phone>
 </employee>

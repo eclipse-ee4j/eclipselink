@@ -18,6 +18,9 @@ import java.util.Vector;
 import javax.xml.namespace.QName;
 
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Text;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -25,8 +28,11 @@ import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.descriptors.InstanceVariableAttributeAccessor;
 import org.eclipse.persistence.internal.descriptors.MethodAttributeAccessor;
+import org.eclipse.persistence.internal.oxm.XMLConversionManager;
+import org.eclipse.persistence.internal.oxm.XPathEngine;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.internal.oxm.XMLObjectBuilder;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
@@ -43,6 +49,7 @@ import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
 import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
+import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 
 /**
@@ -144,7 +151,8 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
 public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMapping implements XMLMapping, XMLNillableMapping {
     AbstractNullPolicy nullPolicy;
     private AttributeAccessor containerAccessor;
-
+    private UnmarshalKeepAsElementPolicy keepAsElementPolicy;
+    
     public XMLCompositeCollectionMapping() {
         super();
         // The default policy is NullPolicy
@@ -178,22 +186,22 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
      * @param attributeName - the name of the backpointer attribute to be populated
      */    
     public void setContainerAttributeName(String attributeName) {
-    	if(attributeName != null) {
-    		if(this.getContainerAccessor() == null) {
-    			this.containerAccessor = new InstanceVariableAttributeAccessor();
-    		}
-    		this.getContainerAccessor().setAttributeName(attributeName);
-    	}
+        if(attributeName != null) {
+            if(this.getContainerAccessor() == null) {
+                this.containerAccessor = new InstanceVariableAttributeAccessor();
+            }
+            this.getContainerAccessor().setAttributeName(attributeName);
+        }
     }
     
     /**
      * Gets the name of the backpointer attribute on the target object. 
      */        
     public String getContainerAttributeName() {
-    	if(this.getContainerAccessor() == null) {
-    		return null;
-    	}
-    	return this.getContainerAccessor().getAttributeName();
+        if(this.getContainerAccessor() == null) {
+            return null;
+        }
+        return this.getContainerAccessor().getAttributeName();
     }
 
     /**
@@ -210,16 +218,16 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
         }
 
         if(getContainerAccessor() == null) {
-        	this.containerAccessor = new MethodAttributeAccessor();
+            this.containerAccessor = new MethodAttributeAccessor();
         }
-        // This is done because setting attribute name by defaults create InstanceVariableAttributeAccessor	
+        // This is done because setting attribute name by defaults create InstanceVariableAttributeAccessor 
         if (!getContainerAccessor().isMethodAttributeAccessor()) {
             String attributeName = this.containerAccessor.getAttributeName();
             setContainerAccessor(new MethodAttributeAccessor());
             getContainerAccessor().setAttributeName(attributeName);
         }
 
-        ((MethodAttributeAccessor)getContainerAccessor()).setGetMethodName(methodName);    	
+        ((MethodAttributeAccessor)getContainerAccessor()).setGetMethodName(methodName);     
     }
  
     /**
@@ -258,9 +266,9 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
         }
 
         if(getContainerAccessor() == null) {
-        	this.containerAccessor = new MethodAttributeAccessor();
+            this.containerAccessor = new MethodAttributeAccessor();
         }
-        // This is done because setting attribute name by defaults create InstanceVariableAttributeAccessor		
+        // This is done because setting attribute name by defaults create InstanceVariableAttributeAccessor     
         if (!getContainerAccessor().isMethodAttributeAccessor()) {
             String attributeName = this.containerAccessor.getAttributeName();
             setContainerAccessor(new MethodAttributeAccessor());
@@ -339,19 +347,36 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
     }
 
     protected AbstractRecord buildCompositeRow(Object attributeValue, AbstractSession session, AbstractRecord parentRow) {
-        ClassDescriptor classDesc = getReferenceDescriptor(attributeValue, session);
-        XMLObjectBuilder objectBuilder = (XMLObjectBuilder) classDesc.getObjectBuilder();
+        ClassDescriptor classDesc = null;
+        try{
+            classDesc = getReferenceDescriptor(attributeValue, session);
+        }catch(Exception e){
+            //do nothing
+        }
         XMLField xmlFld = (XMLField) getField();
         if (xmlFld.hasLastXPathFragment() && xmlFld.getLastXPathFragment().hasLeafElementType()) {
             XMLRecord xmlRec = (XMLRecord) parentRow;
             xmlRec.setLeafElementType(xmlFld.getLastXPathFragment().getLeafElementType());
         }
         XMLRecord parent = (XMLRecord) parentRow;
-        boolean addXsiType = shouldAddXsiType((XMLRecord) parentRow, classDesc);
-        XMLRecord child = (XMLRecord) objectBuilder.createRecordFor(attributeValue, (XMLField) getField(), parent, this);
-        child.setNamespaceResolver(parent.getNamespaceResolver());
-        objectBuilder.buildIntoNestedRow(child, attributeValue, session, addXsiType);
-        return child;
+        
+        if (classDesc != null) {
+            XMLObjectBuilder objectBuilder = (XMLObjectBuilder) classDesc.getObjectBuilder();
+                    
+            boolean addXsiType = shouldAddXsiType((XMLRecord) parentRow, classDesc);
+            XMLRecord child = (XMLRecord) objectBuilder.createRecordFor(attributeValue, (XMLField) getField(), parent, this);
+            child.setNamespaceResolver(parent.getNamespaceResolver());
+            objectBuilder.buildIntoNestedRow(child, attributeValue, session, addXsiType);
+            return child;
+        } else {
+            if (attributeValue instanceof Element && getKeepAsElementPolicy() == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) {
+                return new DOMRecord((Element) attributeValue);
+            }else{
+                Node newNode = XPathEngine.getInstance().create((XMLField)getField(), parent.getDOM(), attributeValue, session);
+                DOMRecord newRow = new DOMRecord(newNode);
+                return newRow;       
+            }                                          
+        }
     }
 
     /**
@@ -409,45 +434,92 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
         Object result = cp.containerInstance(nestedRows.size());
         for (Enumeration stream = nestedRows.elements(); stream.hasMoreElements();) {
             AbstractRecord nestedRow = (AbstractRecord) stream.nextElement();
-
+            Object objectToAdd = null;
             ClassDescriptor aDescriptor = getReferenceDescriptor((DOMRecord) nestedRow);
-            if (aDescriptor.hasInheritance()) {
-                Class newElementClass = aDescriptor.getInheritancePolicy().classFromRow(nestedRow, executionSession);
-                if (newElementClass == null) {
-                    // no xsi:type attribute - look for type indicator on the field
-                    QName leafElementType = ((XMLField) getField()).getLeafElementType();
-                    if (leafElementType != null) {
-                        Object indicator = aDescriptor.getInheritancePolicy().getClassIndicatorMapping().get(leafElementType);
-                        // if the inheritance policy does not contain the user-set type, throw an exception
-                        if (indicator == null) {
-                            throw DescriptorException.missingClassForIndicatorFieldValue(leafElementType, aDescriptor.getInheritancePolicy().getDescriptor());
+            
+            if(aDescriptor == null){    
+                if ((getKeepAsElementPolicy() == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) || (getKeepAsElementPolicy() == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)) {
+                    XMLPlatformFactory.getInstance().getXMLPlatform().namespaceQualifyFragment((Element) ((DOMRecord)nestedRow).getDOM());
+                    objectToAdd = ((DOMRecord)nestedRow).getDOM();
+                    if (getConverter() != null) {     
+                        if (getConverter() instanceof XMLConverter) {
+                            objectToAdd = ((XMLConverter) getConverter()).convertDataValueToObjectValue(objectToAdd, executionSession, ((XMLRecord) nestedRow).getUnmarshaller());
+                        } else {
+                            objectToAdd = getConverter().convertDataValueToObjectValue(objectToAdd, executionSession);
                         }
-                        newElementClass = (Class) indicator;
+                    }                   
+                } else {
+                    NodeList children =((Element) ((DOMRecord)nestedRow).getDOM()).getChildNodes();
+                    for(int i=0; i< children.getLength(); i++){
+                        Node nextNode = children.item(i);
+                        if(nextNode.getNodeType() == nextNode.ELEMENT_NODE){
+                            //complex child
+                            throw XMLMarshalException.noDescriptorFound(this);                              
+                        }
+                    }
+                     //simple case      
+                     Element theElement = ((Element) ((DOMRecord)nestedRow).getDOM());
+                     Node textchild = theElement.getFirstChild();
+                     if ((textchild != null) && (textchild.getNodeType() == Node.TEXT_NODE)) {
+                         objectToAdd = ((Text) textchild).getNodeValue();
+                     }
+                     if ((objectToAdd != null) && !objectToAdd.equals("")) {                         
+                         String type = theElement.getAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
+                         
+                         if ((null != type) && !type.equals("")) {
+                             XPathFragment typeFragment = new XPathFragment(type);
+                             String namespaceURI = ((DOMRecord)nestedRow).resolveNamespacePrefix(typeFragment.getPrefix());
+                             typeFragment.setNamespaceURI(namespaceURI);                         
+                             QName schemaTypeQName = new QName(namespaceURI, typeFragment.getLocalName());
+                             Class theClass = (Class) XMLConversionManager.getDefaultXMLTypes().get(schemaTypeQName);
+                             if (theClass != null) {
+                                 objectToAdd = ((XMLConversionManager) executionSession.getDatasourcePlatform().getConversionManager()).convertObject(objectToAdd, theClass, schemaTypeQName);
+                             }
+                         }                                                                                                    
+                     }
+                }
+            }
+            else{
+                if (aDescriptor.hasInheritance()) {
+                    Class newElementClass = aDescriptor.getInheritancePolicy().classFromRow(nestedRow, executionSession);
+                    if (newElementClass == null) {
+                        // no xsi:type attribute - look for type indicator on the field
+                        QName leafElementType = ((XMLField) getField()).getLeafElementType();
+                        if (leafElementType != null) {
+                            Object indicator = aDescriptor.getInheritancePolicy().getClassIndicatorMapping().get(leafElementType);
+                            // if the inheritance policy does not contain the user-set type, throw an exception
+                            if (indicator == null) {
+                                throw DescriptorException.missingClassForIndicatorFieldValue(leafElementType, aDescriptor.getInheritancePolicy().getDescriptor());
+                            }
+                            newElementClass = (Class) indicator;
+                        }
+                    }
+                    if (newElementClass != null) {
+                        aDescriptor = this.getReferenceDescriptor(newElementClass, executionSession);
+                    } else {
+                        // since there is no xsi:type attribute or leaf element type set, 
+                        // use the reference descriptor -  make sure it is non-abstract
+                        if (Modifier.isAbstract(aDescriptor.getJavaClass().getModifiers())) {
+                            // throw an exception
+                            throw DescriptorException.missingClassIndicatorField(nestedRow, aDescriptor.getInheritancePolicy().getDescriptor());
+                        }
                     }
                 }
-                if (newElementClass != null) {
-                    aDescriptor = this.getReferenceDescriptor(newElementClass, executionSession);
-                } else {
-                    // since there is no xsi:type attribute or leaf element type set, 
-                    // use the reference descriptor -  make sure it is non-abstract
-                    if (Modifier.isAbstract(aDescriptor.getJavaClass().getModifiers())) {
-                        // throw an exception
-                        throw DescriptorException.missingClassIndicatorField(nestedRow, aDescriptor.getInheritancePolicy().getDescriptor());
+    
+                //Object element 
+                objectToAdd = buildCompositeObject(aDescriptor, nestedRow, sourceQuery, joinManager);
+                if (hasConverter()) {
+                    if (getConverter() instanceof XMLConverter) {
+                        objectToAdd = ((XMLConverter) getConverter()).convertDataValueToObjectValue(objectToAdd, executionSession, ((XMLRecord) nestedRow).getUnmarshaller());
+                    } else {
+                        objectToAdd = getConverter().convertDataValueToObjectValue(objectToAdd, executionSession);
                     }
                 }
             }
-
-            Object element = buildCompositeObject(aDescriptor, nestedRow, sourceQuery, joinManager);
-            if (hasConverter()) {
-                if (getConverter() instanceof XMLConverter) {
-                    element = ((XMLConverter) getConverter()).convertDataValueToObjectValue(element, executionSession, ((XMLRecord) nestedRow).getUnmarshaller());
-                } else {
-                    element = getConverter().convertDataValueToObjectValue(element, executionSession);
-                }
-            }
-            cp.addInto(element, result, sourceQuery.getSession());
+            
+            cp.addInto(objectToAdd, result, sourceQuery.getSession());
             if(null != containerAccessor) {
-                containerAccessor.setAttributeValueInObject(element, ((DOMRecord)nestedRow).getOwningObject());
+                containerAccessor.setAttributeValueInObject(objectToAdd, ((DOMRecord)nestedRow).getOwningObject());
             }
         }
         return result;
@@ -487,9 +559,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
                 }
             }
         }
-        if (returnDescriptor == null) {
-            throw XMLMarshalException.noDescriptorFound(this);
-        }
+       
         return returnDescriptor;
 
     }
@@ -500,7 +570,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
         }
 
         ClassDescriptor subDescriptor = session.getDescriptor(theClass);
-        if (subDescriptor == null) {
+        if (subDescriptor == null && getKeepAsElementPolicy() != UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) {
             throw DescriptorException.noSubClassMatch(theClass, this);
         } else {
             return subDescriptor;
@@ -565,5 +635,27 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
      */
     public AbstractNullPolicy getNullPolicy() {
         return nullPolicy;
+    }
+    
+    public UnmarshalKeepAsElementPolicy getKeepAsElementPolicy() {
+        return keepAsElementPolicy;
+    }
+
+    public void setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy keepAsElementPolicy) {
+        this.keepAsElementPolicy = keepAsElementPolicy;
+    }
+    
+    protected XMLDescriptor getDescriptor(XMLRecord xmlRecord, AbstractSession session, QName rootQName) throws XMLMarshalException {
+        if (rootQName == null) {
+            rootQName = new QName(xmlRecord.getNamespaceURI(), xmlRecord.getLocalName());
+        }
+        XMLContext xmlContext = xmlRecord.getUnmarshaller().getXMLContext();
+        XMLDescriptor xmlDescriptor = xmlContext.getDescriptor(rootQName);
+        if (null == xmlDescriptor) {
+            if (!((getKeepAsElementPolicy() == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) || (getKeepAsElementPolicy() == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT))) {
+                throw XMLMarshalException.noDescriptorWithMatchingRootElement(xmlRecord.getLocalName());
+            }
+        }
+        return xmlDescriptor;
     }
 }

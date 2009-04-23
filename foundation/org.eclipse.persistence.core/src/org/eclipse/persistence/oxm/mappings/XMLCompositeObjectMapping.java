@@ -13,26 +13,25 @@
 package org.eclipse.persistence.oxm.mappings;
 
 import java.lang.reflect.Modifier;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-
 import javax.xml.namespace.QName;
 
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Text;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
-import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.descriptors.InstanceVariableAttributeAccessor;
 import org.eclipse.persistence.internal.descriptors.MethodAttributeAccessor;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
+import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XMLObjectBuilder;
+import org.eclipse.persistence.internal.oxm.XPathEngine;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.AttributeAccessor;
@@ -236,12 +235,12 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
      * @param attributeName - the name of the backpointer attribute to be populated
      */
     public void setContainerAttributeName(String attributeName) {
-    	if(attributeName != null) {
-    		if(this.containerAccessor == null) {
-    			this.containerAccessor = new InstanceVariableAttributeAccessor();
-    		}
-    		this.getContainerAccessor().setAttributeName(attributeName);
-    	}
+        if(attributeName != null) {
+            if(this.containerAccessor == null) {
+                this.containerAccessor = new InstanceVariableAttributeAccessor();
+            }
+            this.getContainerAccessor().setAttributeName(attributeName);
+        }
     }
     
     /**
@@ -249,10 +248,10 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
      * populate the backpointer.
      */    
     public String getContainerAttributeName() {
-    	if(this.containerAccessor == null) {
-    		return null;
-    	}
-    	return this.getContainerAccessor().getAttributeName();
+        if(this.containerAccessor == null) {
+            return null;
+        }
+        return this.getContainerAccessor().getAttributeName();
     }
     
     /**
@@ -269,17 +268,17 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
         }
         
         if(this.containerAccessor == null) {
-        	containerAccessor = new MethodAttributeAccessor();
+            containerAccessor = new MethodAttributeAccessor();
         }
 
-        // This is done because setting attribute name by defaults create InstanceVariableAttributeAccessor	
+        // This is done because setting attribute name by defaults create InstanceVariableAttributeAccessor 
         if (!getContainerAccessor().isMethodAttributeAccessor()) {
             String attributeName = this.containerAccessor.getAttributeName();
             setContainerAccessor(new MethodAttributeAccessor());
             getContainerAccessor().setAttributeName(attributeName);
         }
 
-        ((MethodAttributeAccessor)getContainerAccessor()).setGetMethodName(methodName);    	
+        ((MethodAttributeAccessor)getContainerAccessor()).setGetMethodName(methodName);     
     }
     
     /**
@@ -296,9 +295,9 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
         }
 
         if(this.containerAccessor == null) {
-        	this.containerAccessor = new MethodAttributeAccessor();
+            this.containerAccessor = new MethodAttributeAccessor();
         }
-        // This is done because setting attribute name by defaults create InstanceVariableAttributeAccessor		
+        // This is done because setting attribute name by defaults create InstanceVariableAttributeAccessor     
         if (!getContainerAccessor().isMethodAttributeAccessor()) {
             String attributeName = this.containerAccessor.getAttributeName();
             setContainerAccessor(new MethodAttributeAccessor());
@@ -404,21 +403,23 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
     }
 
     protected Object buildCompositeRow(Object attributeValue, AbstractSession session, AbstractRecord databaseRow) {
-        XMLDescriptor xmlReferenceDescriptor = (XMLDescriptor) getReferenceDescriptor(attributeValue, session);
-        
-        if (xmlReferenceDescriptor == null) {
-            xmlReferenceDescriptor = (XMLDescriptor) session.getDescriptor(attributeValue.getClass());
+        XMLDescriptor xmlReferenceDescriptor = null;
+        try{
+            xmlReferenceDescriptor = (XMLDescriptor) getReferenceDescriptor(attributeValue, session);
+        }catch(Exception e){
+            //do nothing
         }
-            
+        
+        XMLField xmlFld = (XMLField) getField();
+        if (xmlFld.hasLastXPathFragment() && xmlFld.getLastXPathFragment().hasLeafElementType()) {
+            XMLRecord xmlRec = (XMLRecord) databaseRow;
+            xmlRec.setLeafElementType(xmlFld.getLastXPathFragment().getLeafElementType());
+        }
+        XMLRecord parent = (XMLRecord) databaseRow;
+        
         if (xmlReferenceDescriptor != null) {            
             XMLObjectBuilder objectBuilder = (XMLObjectBuilder) xmlReferenceDescriptor.getObjectBuilder();
-
-            XMLField xmlFld = (XMLField) getField();
-            if (xmlFld.hasLastXPathFragment() && xmlFld.getLastXPathFragment().hasLeafElementType()) {
-                XMLRecord xmlRec = (XMLRecord) databaseRow;
-                xmlRec.setLeafElementType(xmlFld.getLastXPathFragment().getLeafElementType());
-            }
-            XMLRecord parent = (XMLRecord) databaseRow;
+                       
             boolean addXsiType = shouldAddXsiType((XMLRecord) databaseRow, xmlReferenceDescriptor);
             XMLRecord child = (XMLRecord) objectBuilder.createRecordFor(attributeValue, (XMLField) getField(), parent, this);
             child.setNamespaceResolver(parent.getNamespaceResolver());
@@ -427,10 +428,12 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
         } else {
             if (attributeValue instanceof Element && getKeepAsElementPolicy() == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) {
                 return new DOMRecord((Element) attributeValue);
-            }
-        }
-        
-        return null;
+            }else{
+                Node newNode = XPathEngine.getInstance().create((XMLField)getField(), parent.getDOM(), attributeValue, session);
+                DOMRecord newRow = new DOMRecord(newNode);
+                return newRow;            
+            }            
+        }        
     }
 
     protected Object buildCompositeObject(ObjectBuilder objectBuilder, AbstractRecord nestedRow, ObjectBuildingQuery query, JoinedAttributeManager joinManager) {
@@ -440,9 +443,9 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
     public Object readFromRowIntoObject(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object targetObject, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
         Object fieldValue = databaseRow.getIndicatingNoEntry(getField());
         // 20071002: noEntry ineffective as a check for an absent node, empty nodes are DOMRecords, absent nodes are null)
-        //        if(fieldValue == AbstractRecord.noEntry && !getNullPolicy().getIsSetPerformedForAbsentNode()) {         	
+        //        if(fieldValue == AbstractRecord.noEntry && !getNullPolicy().getIsSetPerformedForAbsentNode()) {           
         // Do not perform a set for an absent node
-        //        	return null;
+        //          return null;
         //        } else {
         // Check for absent nodes based on policy flag
         if ((null == fieldValue) || fieldValue instanceof String) {
@@ -472,56 +475,86 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
 
     public Object valueFromRow(Object fieldValue, XMLRecord nestedRow, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
         // pretty sure we can ignore inheritance here:                
-        Object toReturn;
-        // Use local descriptor - not the instance variable on DatabaseMapping
-        
-        ClassDescriptor aDescriptor = null;
-        try {
-            aDescriptor = getReferenceDescriptor((DOMRecord) nestedRow);
-        } catch (XMLMarshalException e) {
+        Object toReturn = null;
+        // Use local descriptor - not the instance variable on DatabaseMapping       
+        ClassDescriptor aDescriptor =  getReferenceDescriptor((DOMRecord) nestedRow);
+
+        if (aDescriptor == null) {  
             if ((getKeepAsElementPolicy() == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) || (getKeepAsElementPolicy() == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)) {
                 XMLPlatformFactory.getInstance().getXMLPlatform().namespaceQualifyFragment((Element) nestedRow.getDOM());
-                toReturn = nestedRow.getDOM();
-                if (getConverter() != null) {
-                    toReturn = ((XMLConverter) getConverter()).convertDataValueToObjectValue(toReturn, executionSession, nestedRow.getUnmarshaller());
+                toReturn = nestedRow.getDOM();                
+                if (getConverter() != null) {                    
+                    if (getConverter() instanceof XMLConverter) {
+                        toReturn = ((XMLConverter) getConverter()).convertDataValueToObjectValue(toReturn, executionSession, nestedRow.getUnmarshaller());
+                    } else {
+                        toReturn = getConverter().convertDataValueToObjectValue(toReturn, executionSession);
+                    }
                 }
+                
                 return toReturn;
-            } else {
-                throw e;
+            } else {   
+                NodeList children =((Element) nestedRow.getDOM()).getChildNodes();
+                for(int i=0; i< children.getLength(); i++){
+                    Node nextNode = children.item(i);
+                    if(nextNode.getNodeType() == nextNode.ELEMENT_NODE){
+                        //complex child
+                        throw XMLMarshalException.noDescriptorFound(this);
+                    }
+                }
+                
+                //simple case           
+                Node textchild = ((Element) nestedRow.getDOM()).getFirstChild();
+                
+                if ((textchild != null) && (textchild.getNodeType() == Node.TEXT_NODE)) {
+                    toReturn = ((Text) textchild).getNodeValue();
+                }
+                if ((toReturn != null) && !toReturn.equals("")) {
+                     String type = ((Element) nestedRow.getDOM()).getAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
+                     if ((null != type) && !type.equals(EMPTY_STRING)) {
+                        XPathFragment typeFragment = new XPathFragment(type);
+                        String namespaceURI = nestedRow.resolveNamespacePrefix(typeFragment.getPrefix());
+                         
+                        QName schemaTypeQName = new QName(namespaceURI, typeFragment.getLocalName());                       
+                        Class theClass = (Class) XMLConversionManager.getDefaultXMLTypes().get(schemaTypeQName);
+                        if (theClass != null) {
+                           toReturn = ((XMLConversionManager) executionSession.getDatasourcePlatform().getConversionManager()).convertObject(toReturn, theClass, schemaTypeQName);
+                        }                           
+                     }
+                }
             }
+        } else {
+            if (aDescriptor.hasInheritance()) {
+                Class classValue = aDescriptor.getInheritancePolicy().classFromRow(nestedRow, executionSession);
+                if (classValue == null) {
+                    // no xsi:type attribute - look for type indicator on the field
+                    QName leafElementType = ((XMLField) getField()).getLeafElementType();
+                    if (leafElementType != null) {
+                        Object indicator = aDescriptor.getInheritancePolicy().getClassIndicatorMapping().get(leafElementType);
+                        // if the inheritance policy does not contain the user-set type, throw an exception
+                        if (indicator == null) {
+                            throw DescriptorException.missingClassForIndicatorFieldValue(leafElementType, aDescriptor.getInheritancePolicy().getDescriptor());
+                        }
+                        classValue = (Class) indicator;
+                    }
+                }
+                if (classValue != null) {
+                    aDescriptor = this.getReferenceDescriptor(classValue, executionSession);
+                } else {
+                    // since there is no xsi:type attribute or leaf element type set, 
+                    // use the reference descriptor -  make sure it is non-abstract
+                    if (Modifier.isAbstract(aDescriptor.getJavaClass().getModifiers())) {
+                        // throw an exception
+                        throw DescriptorException.missingClassIndicatorField(nestedRow, aDescriptor.getInheritancePolicy().getDescriptor());
+                    }
+                }
+            }
+            ObjectBuilder objectBuilder = aDescriptor.getObjectBuilder();
+            toReturn = buildCompositeObject(objectBuilder, nestedRow, sourceQuery, joinManager);
         }
         
-        if (aDescriptor.hasInheritance()) {
-            Class classValue = aDescriptor.getInheritancePolicy().classFromRow(nestedRow, executionSession);
-            if (classValue == null) {
-                // no xsi:type attribute - look for type indicator on the field
-                QName leafElementType = ((XMLField) getField()).getLeafElementType();
-                if (leafElementType != null) {
-                    Object indicator = aDescriptor.getInheritancePolicy().getClassIndicatorMapping().get(leafElementType);
-                    // if the inheritance policy does not contain the user-set type, throw an exception
-                    if (indicator == null) {
-                        throw DescriptorException.missingClassForIndicatorFieldValue(leafElementType, aDescriptor.getInheritancePolicy().getDescriptor());
-                    }
-                    classValue = (Class) indicator;
-                }
-            }
-            if (classValue != null) {
-                aDescriptor = this.getReferenceDescriptor(classValue, executionSession);
-            } else {
-                // since there is no xsi:type attribute or leaf element type set, 
-                // use the reference descriptor -  make sure it is non-abstract
-                if (Modifier.isAbstract(aDescriptor.getJavaClass().getModifiers())) {
-                    // throw an exception
-                    throw DescriptorException.missingClassIndicatorField(nestedRow, aDescriptor.getInheritancePolicy().getDescriptor());
-                }
-            }
-        }
-        ObjectBuilder objectBuilder = aDescriptor.getObjectBuilder();
-        toReturn = buildCompositeObject(objectBuilder, nestedRow, sourceQuery, joinManager);
-
         if (getConverter() != null) {
             if (getConverter() instanceof XMLConverter) {
-                toReturn = ((XMLConverter) getConverter()).convertDataValueToObjectValue(toReturn, executionSession, (nestedRow).getUnmarshaller());
+                toReturn = ((XMLConverter) getConverter()).convertDataValueToObjectValue(toReturn, executionSession, nestedRow.getUnmarshaller());
             } else {
                 toReturn = getConverter().convertDataValueToObjectValue(toReturn, executionSession);
             }
@@ -570,7 +603,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
             objectBuilder.buildIntoNestedRow(record, attributeValue, session);
         } else {
             Object fieldValue = null;
-            if (attributeValue != null) {
+            if (attributeValue != null) {                               
                 fieldValue = buildCompositeRow(attributeValue, session, record);
             } else if (getNullPolicy().compositeObjectMarshal(record, parent, (XMLField) getField(), session)) {
                 // If the null policy marshal method returns true (i.e. marshalled something)
@@ -623,10 +656,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
                     returnDescriptor = xmlRecord.getUnmarshaller().getXMLContext().getDescriptorByGlobalType(frag);
                 }
             }
-        }
-        if (returnDescriptor == null) {
-            throw XMLMarshalException.noDescriptorFound(this);
-        }
+        }        
         return returnDescriptor;
 
     }
@@ -692,33 +722,6 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
             }
         }
         return xmlDescriptor;
-    }
-
-    /**
-     * INTERNAL:
-     * Convert all the class-name-based settings in this mapping to actual class-based
-     * settings. This method is used when converting a project that has been built
-     * with class names to a project with classes.
-     * @param classLoader 
-     */
-    public void convertClassNamesToClasses(ClassLoader classLoader){
-        Class referenceClass = null;
-        try{
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try {
-                    referenceClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(getReferenceClassName(), true, classLoader));
-                } catch (PrivilegedActionException exception) {
-                    throw ValidationException.classNotFoundWhileConvertingClassNames(getReferenceClassName(), exception.getException());
-                }
-            } else {
-                if (getReferenceClassName() != null) {
-                    referenceClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(getReferenceClassName(), true, classLoader);
-                }
-            }
-        } catch (ClassNotFoundException exc){
-            throw ValidationException.classNotFoundWhileConvertingClassNames(getReferenceClassName(), exc);
-        }
-        setReferenceClass(referenceClass);
     }
     
 }

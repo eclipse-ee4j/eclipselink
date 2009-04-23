@@ -19,6 +19,7 @@ import org.eclipse.persistence.testing.oxm.mappings.compositecollection.errortes
 import org.eclipse.persistence.testing.oxm.mappings.compositecollection.identifiedbyname.IdentifiedByNameTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositecollection.identifiedbynamespace.IdentifiedByNamespaceTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositecollection.identifiedbyposition.IdentifiedByPositionTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.compositecollection.keepaselement.CompositeCollectionKeepUnknownAsElementTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositecollection.map.CompositeCollectionMapNullChildTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositecollection.map.CompositeCollectionMapTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositecollection.mappingxpathcollision.MappingXpathCollisionTestCases;
@@ -37,6 +38,8 @@ public class CompositeCollectionMappingTestSuite extends TestCase {
         suite.addTestSuite(CompositeCollectionErrorTestCases.class);
         suite.addTestSuite(SetMethodTestCases.class);
         suite.addTestSuite(MappingXpathCollisionTestCases.class);
+        suite.addTestSuite(CompositeCollectionKeepUnknownAsElementTestCases.class);
+
         return suite;
     }
 

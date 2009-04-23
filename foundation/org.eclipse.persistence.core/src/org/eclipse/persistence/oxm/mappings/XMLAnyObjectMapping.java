@@ -305,10 +305,10 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
             org.w3c.dom.Node next = (Node) iter.next();
             if (next.getNodeType() == Node.TEXT_NODE) {
                 if ((i == (length - 1)) || (next.getNodeValue().trim().length() > 0)) {
-                	objectValue = next.getNodeValue();
-                	if(getConverter() != null) {
-                		objectValue = getConverter().convertDataValueToObjectValue(objectValue, session, record.getUnmarshaller());
-                	}
+                    objectValue = next.getNodeValue();
+                    if(getConverter() != null) {
+                        objectValue = getConverter().convertDataValueToObjectValue(objectValue, session, record.getUnmarshaller());
+                    }
                     return objectValue;
                 }
             } else if (next.getNodeType() == Node.ELEMENT_NODE) {
@@ -351,9 +351,9 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
                         ObjectBuilder builder = referenceDescriptor.getObjectBuilder();
                         objectValue = builder.buildObject(query, nestedRecord, joinManager);
                         Object updated = ((XMLDescriptor) referenceDescriptor).wrapObjectInXMLRoot(objectValue, next.getNamespaceURI(), next.getLocalName(), next.getPrefix(), false);
-                    	if(getConverter() != null) {
-                    		updated = getConverter().convertDataValueToObjectValue(objectValue, session, record.getUnmarshaller());
-                    	}
+                        if(getConverter() != null) {
+                            updated = getConverter().convertDataValueToObjectValue(objectValue, session, record.getUnmarshaller());
+                        }
                         return updated;
                     } else if ((referenceDescriptor != null) && (getKeepAsElementPolicy() != UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)) {
                         return buildObjectAndWrapInXMLRoot(referenceDescriptor, getConverter(), query, record, nestedRecord, joinManager, session, next, null, null);
@@ -370,9 +370,9 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
                                     value = ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, theClass, schemaTypeQName);
                                 }
                             }
-                        	if(getConverter() != null) {
-                        		value = getConverter().convertDataValueToObjectValue(value, session, record.getUnmarshaller());
-                        	}
+                            if(getConverter() != null) {
+                                value = getConverter().convertDataValueToObjectValue(value, session, record.getUnmarshaller());
+                            }
 
                             XMLRoot rootValue = new XMLRoot();
                             rootValue.setLocalName(next.getLocalName());
@@ -405,7 +405,7 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
         Node root = record.getDOM();
         Object objectValue = value;
         if(this.getConverter() != null) {
-        	objectValue = getConverter().convertObjectValueToDataValue(objectValue, session, row.getMarshaller());
+            objectValue = getConverter().convertObjectValueToDataValue(objectValue, session, row.getMarshaller());
         }
         if (field != null) {
             root = XPathEngine.getInstance().create((XMLField) getField(), root, session);
@@ -631,52 +631,21 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
             }
         } else {
             QName qname = ((XMLRoot) originalObject).getSchemaType();
-            Node newNode = XPathEngine.getInstance().create(xmlRootField, root, value, session);
-            if (qname != null) {
-                String typeValue = qname.getLocalPart();
-
-                String prefix = row.getNamespaceResolver().resolveNamespaceURI(qname.getNamespaceURI());
-                if ((prefix == null) || (prefix.equals(""))) {
-                    typeValue = qname.getLocalPart();
-                    prefix = row.getNamespaceResolver().generatePrefix();
-                    ((Element) newNode).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + prefix, qname.getNamespaceURI());
-                }
-                typeValue = prefix + ":" + qname.getLocalPart();
-                writeXsiTypeAttribute(row, newNode, typeValue, session);
+            if(qname != null && !qname.equals(XMLConstants.STRING_QNAME)){
+                xmlRootField.setSchemaType(qname);
+                xmlRootField.setIsTypedTextField(true);
+                xmlRootField.addJavaConversion(value.getClass(), qname);
             }
+            Node newNode = XPathEngine.getInstance().create(xmlRootField, root, value, session);   
         }
-    }
-
-    private void writeXsiTypeAttribute(DOMRecord row, Node theNode, String typeValue, AbstractSession session) {
-        String xsiPrefix = null;
-        boolean generated = false;
-
-        xsiPrefix = row.getNamespaceResolver().resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
-        if (xsiPrefix == null) {
-            xsiPrefix = ((XMLDescriptor) descriptor).getNonNullNamespaceResolver().generatePrefix(XMLConstants.SCHEMA_INSTANCE_PREFIX);
-            generated = true;
-            writeXsiNamespace(theNode, xsiPrefix);
-        }
-        XMLField xmlField = (XMLField) descriptor.buildField("@" + xsiPrefix + ":" + XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
-        if (generated) {
-            xmlField.getLastXPathFragment().setGeneratedPrefix(true);
-        }
-        xmlField.getLastXPathFragment().setNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
-        XPathEngine.getInstance().create(xmlField, theNode, typeValue, session);
-    }
-
-    private void writeXsiNamespace(Node theNode, String xsiPrefix) {
-        if (theNode.getNodeType() == Node.ELEMENT_NODE) {
-            ((Element) theNode).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
-        }
-    }
+    }   
     
     public XMLConverter getConverter() {
-    	return converter;
+        return converter;
     }
     
     public void setConverter(XMLConverter converter) {
-    	this.converter = converter;
+        this.converter = converter;
     }
 
 }

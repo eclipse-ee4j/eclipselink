@@ -18,16 +18,12 @@ import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 
 // EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
-import org.eclipse.persistence.internal.queries.ContainerPolicy;
-import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.mappings.converters.EnumTypeConverter;
 import org.eclipse.persistence.mappings.transformers.ConstantTransformer;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy;
-import org.eclipse.persistence.oxm.mappings.XMLAnyAttributeMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
@@ -162,6 +158,7 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends ObjectPersist
         
         return descriptor;
     }
+        
     
     @Override
     protected ClassDescriptor buildXMLCompositeCollectionMappingDescriptor() {
@@ -192,13 +189,22 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends ObjectPersist
         ((NullPolicy)containerSetMethodMapping.getNullPolicy()).setSetPerformedForAbsentNode(false);
         descriptor.addMapping(containerSetMethodMapping);
         
+        XMLDirectMapping keepAsElementMapping = new XMLDirectMapping();
+        keepAsElementMapping.setAttributeName("keepAsElementPolicy");
+        keepAsElementMapping.setGetMethodName("getKeepAsElementPolicy");
+        keepAsElementMapping.setSetMethodName("setKeepAsElementPolicy");
+        keepAsElementMapping.setXPath(getPrimaryNamespaceXPath() + "keep-as-element-policy");
+        EnumTypeConverter converter = new EnumTypeConverter(keepAsElementMapping, UnmarshalKeepAsElementPolicy.class, false);
+        keepAsElementMapping.setConverter(converter);
+        descriptor.addMapping(keepAsElementMapping);
+        
         return descriptor;
     }   
     
     protected ClassDescriptor buildXMLAnyAttributeMappingDescriptor() {
-    	ClassDescriptor descriptor = super.buildXMLAnyAttributeMappingDescriptor();
+        ClassDescriptor descriptor = super.buildXMLAnyAttributeMappingDescriptor();
         
-    	XMLDirectMapping includeNamespaceDeclarationMapping = new XMLDirectMapping();
+        XMLDirectMapping includeNamespaceDeclarationMapping = new XMLDirectMapping();
         includeNamespaceDeclarationMapping.setAttributeName("isNamespaceDeclarationIncluded");        
         includeNamespaceDeclarationMapping.setGetMethodName("isNamespaceDeclarationIncluded");
         includeNamespaceDeclarationMapping.setSetMethodName("setNamespaceDeclarationIncluded");

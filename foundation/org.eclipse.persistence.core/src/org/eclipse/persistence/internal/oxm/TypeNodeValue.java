@@ -39,7 +39,7 @@ public class TypeNodeValue extends NodeValue {
         }
         XMLField xmlField = (XMLField) directMapping.getField();
         QName schemaType = getSchemaType(xmlField, fieldValue, session);
-        if (null == schemaType) {
+        if (null == schemaType || schemaType == XMLConstants.STRING_QNAME) {
             return false;
         }
         XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);

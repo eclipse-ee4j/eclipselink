@@ -25,6 +25,7 @@ import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
+import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
@@ -267,7 +268,10 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
                 XMLCompositeCollectionMapping xmlMapping = new XMLCompositeCollectionMapping();
                 xmlMapping.setAttributeName(this.getAttributeName());
                 xmlMapping.setAttributeAccessor(this.getAttributeAccessor());
-                xmlMapping.setReferenceClass(getFieldToClassMappings().get(next));
+                Class refClass = getFieldToClassMappings().get(next);
+                if(!refClass.equals(ClassConstants.OBJECT)){
+                	xmlMapping.setReferenceClass(refClass);
+                }
                 xmlMapping.setField(next);
                 xmlMapping.setDescriptor(this.getDescriptor());
                 xmlMapping.setContainerPolicy(getContainerPolicy());
