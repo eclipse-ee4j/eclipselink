@@ -6176,12 +6176,14 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         Employee employee2 = new Employee();
         employee2.setId(44);
         employee2.setVersion(0);
-        employee2.setFirstName("Phillip");        
+        employee2.setFirstName("Phillip");
         
+        Employee result = null;
         try {
             beginTransaction(em);
-            em.merge(employee);
-            em.merge(employee2);
+            result = em.merge(employee);
+            result = em.merge(employee2);
+            assertTrue("The firstName was not merged properly", result.getFirstName().equals(employee2.getFirstName()));
             em.flush();
         } catch (PersistenceException e){
             fail("A double merge of an object with the same key, caused two inserts instead of one.");
@@ -7302,4 +7304,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             fail(errorMsg);
         }
     }
+    
+
 }
