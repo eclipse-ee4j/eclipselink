@@ -73,6 +73,8 @@ public class Helper {
     public final static String LONG = "java.lang.Long";
     public final static String SHORT = "java.lang.Short";
     public final static String UTIL_DATE = "java.util.Date";
+    public final static String DURATION = "javax.xml.datatype.Duration";
+    public final static String XMLGREGORIANCALENDAR = "javax.xml.datatype.XMLGregorianCalendar";
 
     /**
      * INTERNAL:
@@ -120,7 +122,9 @@ public class Helper {
         javaTypes.put(INTEGER, XMLConstants.INT_QNAME);
         javaTypes.put(LONG, XMLConstants.LONG_QNAME);
         javaTypes.put(SHORT, XMLConstants.SHORT_QNAME);
-        javaTypes.put(UTIL_DATE, XMLConstants.DATE_QNAME);
+        javaTypes.put(UTIL_DATE, XMLConstants.DATE_TIME_QNAME);
+        javaTypes.put(XMLGREGORIANCALENDAR, XMLConstants.ANY_SIMPLE_TYPE_QNAME);
+        javaTypes.put(DURATION, XMLConstants.DURATION_QNAME);
         return javaTypes;
     }
     
@@ -255,7 +259,7 @@ public class Helper {
      * @return
      */
     public boolean isBuiltInJavaType(JavaClass jClass) {
-        return getXMLToJavaTypeMap().containsKey(jClass.getRawName());
+    	return getXMLToJavaTypeMap().containsKey(jClass.getRawName()) || jClass.getRawName().startsWith("java.") || jClass.getRawName().startsWith("javax.");
     }
 
     public void setClassLoader(ClassLoader loader) {
