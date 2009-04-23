@@ -37,7 +37,8 @@ public class DatabaseExceptionResource extends ListResourceBundle {
                                            { "4018", "The TransactionManager has not been set for the JTS driver." },
                                            { "4019", "Error while obtaining information about the database. Please look at the nested exception for more details." },
                                            { "4020", "Could not find the matched database field for the specified optimistic locking field[{0}]. Note, the matching is case sensitive,therefore,if you allowed the column name to default on the getter method,the name will be uppercased." },
-                                           { "4021", "Unable to acquire a connection from driver [{0}], user [{1}] and URL [{2}].  Verify that you have set the expected driver class and URL.  Check your login, persistence.xml or sessions.xml resource.  The jdbc.driver property should be set to a class that is compatible with your database platform" }
+                                           { "4021", "Unable to acquire a connection from driver [{0}], user [{1}] and URL [{2}].  Verify that you have set the expected driver class and URL.  Check your login, persistence.xml or sessions.xml resource.  The jdbc.driver property should be set to a class that is compatible with your database platform" },
+                                           { "4022", "DatabaseAccessor's connection has been set to null.  This can occur if the ClientSession or UnitOfWork was released in a seperate thread, for instance if a Timeout occurred." }
     };
 
     /**

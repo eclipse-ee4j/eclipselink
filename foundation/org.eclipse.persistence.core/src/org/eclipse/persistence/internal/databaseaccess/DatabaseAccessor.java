@@ -1325,6 +1325,10 @@ public class DatabaseAccessor extends DatasourceAccessor {
 
         if (statement == null) {
             Connection nativeConnection = getConnection();
+            if (nativeConnection==null){
+                throw DatabaseException.databaseAccessorConnectionIsNull(this);
+            }
+
             // Unwrap the connection if required.
             // This needs to be done in some cases before the statement is created to ensure the statement
             // and result set are not wrapped.

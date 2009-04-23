@@ -48,7 +48,8 @@ public class DatabaseException extends EclipseLinkException {
     public static final int TRANSACTION_MANAGER_NOT_SET_FOR_JTS_DRIVER = 4018;
     public static final int ERROR_RETRIEVE_DB_METADATA_THROUGH_JDBC_CONNECTION = 4019;
     public static final int COULD_NOT_FIND_MATCHED_DATABASE_FIELD_FOR_SPECIFIED_OPTOMISTICLOCKING_FIELDS = 4020;
-    public static final int UNABLE_TO_ACQUIRE_CONNECTION_FROM_DRIVER = 4021;    
+    public static final int UNABLE_TO_ACQUIRE_CONNECTION_FROM_DRIVER = 4021;
+    public static final int DATABASE_ACCESSOR_CONNECTION_IS_NULL = 4022;
 
     /**
      * INTERNAL:
@@ -122,6 +123,15 @@ public class DatabaseException extends EclipseLinkException {
 
         DatabaseException databaseException = new DatabaseException(ExceptionMessageGenerator.buildMessage(DatabaseException.class, DATABASE_ACCESSOR_NOT_CONNECTED, args));
         databaseException.setErrorCode(DATABASE_ACCESSOR_NOT_CONNECTED);
+        databaseException.setAccessor(databaseAccessor);
+        return databaseException;
+    }
+    
+    public static DatabaseException databaseAccessorConnectionIsNull(DatabaseAccessor databaseAccessor) {
+        Object[] args = {  };
+
+        DatabaseException databaseException = new DatabaseException(ExceptionMessageGenerator.buildMessage(DatabaseException.class, DATABASE_ACCESSOR_CONNECTION_IS_NULL, args));
+        databaseException.setErrorCode(DATABASE_ACCESSOR_CONNECTION_IS_NULL);
         databaseException.setAccessor(databaseAccessor);
         return databaseException;
     }

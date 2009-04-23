@@ -15,6 +15,7 @@ package org.eclipse.persistence.testing.tests.validation;
 /**
  * This testsuite was added to allow test to be run to validate that the appropriate
  * DatabaseAccessorNotConnectedException is thrown
+ * Expanded to also test databaseAccessorConnectionIsNull is thrown
  */
 public class DatabaseAccessorNotConnectedTestSuite extends org.eclipse.persistence.testing.framework.TestSuite {
     public DatabaseAccessorNotConnectedTestSuite() {
@@ -28,5 +29,6 @@ public class DatabaseAccessorNotConnectedTestSuite extends org.eclipse.persisten
         addTest(new NotConnectedReadObjectTest());
         addTest(new NotConnectedUpdateObjectQueryTest());
         addTest(new NotConnectedWriteObjectTest());
+        addTest(new ConnectionIsNullAccessorTest());
     }
 }
