@@ -799,13 +799,6 @@ public class MergeManager {
             objectFromCache = unitOfWork.checkIfAlreadyRegistered(clone, descriptor);
         }
         if (objectFromCache != null) {
-            // Bug 252705
-            // If it is already registered, check to see if it was a new object
-            // and add it to our merged new objects map to ensure we cascade correctly.
-            if (unitOfWork.getNewObjectsCloneToOriginal().containsKey(objectFromCache)) {
-                mergedNewObjects.put(objectFromCache, objectFromCache);
-            }
-            
             // gf830 - merging a removed entity should throw exception.
             if (unitOfWork.isObjectDeleted(objectFromCache)) {
                 if (shouldMergeCloneIntoWorkingCopy() || shouldMergeCloneWithReferencesIntoWorkingCopy()) {

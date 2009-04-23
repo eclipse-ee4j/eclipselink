@@ -2608,9 +2608,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                     || (cascadeOnly && mapping.isForeignReferenceMapping())
                     || (isTargetCloneOfOriginal && mapping.isCloningRequired())) {
                 mapping.mergeIntoObject(target, isUnInitialized, source, mergeManager);
-            } else if (isTargetCloneOfOriginal && mapping.isCloningRequired()) {
-                mapping.mergeIntoObject(target, isUnInitialized, source, mergeManager);                
-            } 
+            }
         }
 
         // PERF: Avoid events if no listeners.

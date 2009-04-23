@@ -271,6 +271,9 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     /** Stores all of the private owned objects that have been removed and may need to cascade deletion */
     protected Map<DatabaseMapping, List<Object>> deletedPrivateOwnedObjects;
 
+    /** temporarily holds a reference to a merge manager that is calling this UnitOfWork during merge **/
+    protected MergeManager mergeManagerForActiveMerge = null;
+
     /**
      * INTERNAL:
      * Create and return a new unit of work with the session as its parent.
@@ -2860,6 +2863,11 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 registeredObject = cloneAndRegisterNewObject(object);
             }
         }
+        
+        if (registeredObject != null && mergeManagerForActiveMerge != null){
+            mergeManagerForActiveMerge.getMergedNewObjects().put(registeredObject, registeredObject);
+        }
+
         return registeredObject;
     }
 
@@ -3391,12 +3399,18 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * @see #deepMergeClone(Object)
      */
     public Object mergeCloneWithReferences(Object rmiClone, int cascadePolicy, boolean forceCascade) {
-        MergeManager manager = new MergeManager(this);
-        manager.mergeCloneWithReferencesIntoWorkingCopy();
-        manager.setCascadePolicy(cascadePolicy);
-        manager.setForceCascade(forceCascade);
-        
-        return mergeCloneWithReferences(rmiClone, manager);
+        Object returnValue = null;
+        try{
+            MergeManager manager = new MergeManager(this);
+            manager.mergeCloneWithReferencesIntoWorkingCopy();
+            manager.setCascadePolicy(cascadePolicy);
+            manager.setForceCascade(forceCascade);
+            mergeManagerForActiveMerge = manager;
+            returnValue= mergeCloneWithReferences(rmiClone, manager);
+        } finally {
+            mergeManagerForActiveMerge = null;
+        }
+        return returnValue;
     }
     
     /**
