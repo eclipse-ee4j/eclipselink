@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     04/24/2009-2.0 Guy Pelletier 
+ *       - 270011: JPA 2.0 MappedById support
  ******************************************************************************/  
 
 package org.eclipse.persistence.testing.models.jpa.advanced.compositepk;
@@ -26,6 +28,45 @@ public class CompositePKTableCreator extends TableCreator {
         addTableDefinition(buildDEPARTMENTTable());
         addTableDefinition(buildDEPT_ADMINTable());
         addTableDefinition(buildCUBICLETable());
+        addTableDefinition(buildSARGEANTTable());
+        addTableDefinition(buildMASTERCORPORALTable());
+        addTableDefinition(buildMAJORTable());
+        addTableDefinition(buildMAJORGENERALTable());
+        addTableDefinition(buildCAPTAINTable());
+        addTableDefinition(buildBRIGADIERGENERALTable());
+        addTableDefinition(buildCORPORALTable());
+        addTableDefinition(buildPRIVATETable());
+        addTableDefinition(buildGENERALTable());
+        addTableDefinition(buildLIEUTENANTGENERALTable());
+        addTableDefinition(buildLIEUTENANTTable());
+        addTableDefinition(buildSECONDLIEUTENANTTable());
+    }
+    
+    public static TableDefinition buildADMIN_CONTRACTTable(){
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_ADMIN_CONTRACT");
+        
+        FieldDefinition field = new FieldDefinition();
+        field.setName("EMPLOYEE_EMP_ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(false);
+        field.setIsPrimaryKey(true);
+        field.setUnique(false);
+        field.setIsIdentity(true);
+        table.addField(field);
+    
+        FieldDefinition field4 = new FieldDefinition();
+        field4.setName("END_DATE");
+        field4.setTypeName("DATE");
+        field4.setSize(23);
+        field4.setShouldAllowNull(true);
+        field4.setIsPrimaryKey(false);
+        field4.setUnique(false);
+        field4.setIsIdentity(false);
+        table.addField(field4);
+
+        return table;
     }
     
     public static TableDefinition buildADMINTable() {
@@ -64,34 +105,422 @@ public class CompositePKTableCreator extends TableCreator {
 
         return table;
     }
-    
-    public static TableDefinition buildADMIN_CONTRACTTable(){
+
+    public static TableDefinition buildBRIGADIERGENERALTable() {
         TableDefinition table = new TableDefinition();
-        table.setName("CMP3_ADMIN_CONTRACT");
+        table.setName("JPA_BRIGADIER_GENERAL");
         
-        FieldDefinition field = new FieldDefinition();
-        field.setName("EMPLOYEE_EMP_ID");
-        field.setTypeName("NUMERIC");
-        field.setSize(15);
-        field.setShouldAllowNull(false);
-        field.setIsPrimaryKey(true);
-        field.setUnique(false);
-        field.setIsIdentity(true);
-        table.addField(field);
+        FieldDefinition fieldF_NAME = new FieldDefinition();
+        fieldF_NAME.setName("FIRSTNAME");
+        fieldF_NAME.setTypeName("VARCHAR");
+        fieldF_NAME.setSize(40);
+        fieldF_NAME.setShouldAllowNull(false);
+        fieldF_NAME.setIsPrimaryKey(true);
+        fieldF_NAME.setUnique(false);
+        fieldF_NAME.setIsIdentity(false);
+        table.addField(fieldF_NAME);
+        
+        FieldDefinition fieldL_NAME = new FieldDefinition();
+        fieldL_NAME.setName("LASTNAME");
+        fieldL_NAME.setTypeName("VARCHAR");
+        fieldL_NAME.setSize(40);
+        fieldL_NAME.setShouldAllowNull(false);
+        fieldL_NAME.setIsPrimaryKey(true);
+        fieldL_NAME.setUnique(false);
+        fieldL_NAME.setIsIdentity(false);
+        table.addField(fieldL_NAME);
+        
+        return table;
+    }
     
-        FieldDefinition field4 = new FieldDefinition();
-        field4.setName("END_DATE");
-        field4.setTypeName("DATE");
-        field4.setSize(23);
-        field4.setShouldAllowNull(true);
-        field4.setIsPrimaryKey(false);
-        field4.setUnique(false);
-        field4.setIsIdentity(false);
-        table.addField(field4);
+    public static TableDefinition buildCAPTAINTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_CAPTAIN");
+        
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("NAME");
+        fieldNAME.setTypeName("VARCHAR");
+        fieldNAME.setSize(40);
+        fieldNAME.setShouldAllowNull(false);
+        fieldNAME.setIsPrimaryKey(true);
+        fieldNAME.setUnique(false);
+        fieldNAME.setIsIdentity(false);
+        table.addField(fieldNAME);
+        
+        FieldDefinition fieldF_NAME = new FieldDefinition();
+        fieldF_NAME.setName("FIRSTNAME");
+        fieldF_NAME.setTypeName("VARCHAR");
+        fieldF_NAME.setSize(40);
+        fieldF_NAME.setShouldAllowNull(false);
+        fieldF_NAME.setIsPrimaryKey(true);
+        fieldF_NAME.setUnique(false);
+        fieldF_NAME.setIsIdentity(false);
+        table.addField(fieldF_NAME);
+        
+        FieldDefinition fieldL_NAME = new FieldDefinition();
+        fieldL_NAME.setName("LASTNAME");
+        fieldL_NAME.setTypeName("VARCHAR");
+        fieldL_NAME.setSize(40);
+        fieldL_NAME.setShouldAllowNull(false);
+        fieldL_NAME.setIsPrimaryKey(true);
+        fieldL_NAME.setUnique(false);
+        fieldL_NAME.setIsIdentity(false);
+        table.addField(fieldL_NAME);
+        
+        return table;
+    }
+    
+    public static TableDefinition buildCORPORALTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_CORPORAL");
+        
+        FieldDefinition fieldF_NAME = new FieldDefinition();
+        fieldF_NAME.setName("F_NAME");
+        fieldF_NAME.setTypeName("VARCHAR");
+        fieldF_NAME.setSize(40);
+        fieldF_NAME.setShouldAllowNull(false);
+        fieldF_NAME.setIsPrimaryKey(true);
+        fieldF_NAME.setUnique(false);
+        fieldF_NAME.setIsIdentity(false);
+        table.addField(fieldF_NAME);
+        
+        FieldDefinition fieldL_NAME = new FieldDefinition();
+        fieldL_NAME.setName("L_NAME");
+        fieldL_NAME.setTypeName("VARCHAR");
+        fieldL_NAME.setSize(40);
+        fieldL_NAME.setShouldAllowNull(false);
+        fieldL_NAME.setIsPrimaryKey(true);
+        fieldL_NAME.setUnique(false);
+        fieldL_NAME.setIsIdentity(false);
+        table.addField(fieldL_NAME);
+        
+        return table;
+    }
+    
+    public static TableDefinition buildCUBICLETable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_CUBICLE");
+
+        FieldDefinition ID_field = new FieldDefinition();
+        ID_field.setName("ID");
+        ID_field.setTypeName("NUMERIC");
+        ID_field.setSize(15);
+        ID_field.setShouldAllowNull(false);
+        ID_field.setIsPrimaryKey(true);
+        ID_field.setUnique(false);
+        ID_field.setIsIdentity(true);
+        table.addField(ID_field);
+    
+        FieldDefinition CODE_field = new FieldDefinition();
+        CODE_field.setName("CODE");
+        CODE_field.setTypeName("VARCHAR");
+        CODE_field.setSize(1);
+        CODE_field.setShouldAllowNull(false);
+        CODE_field.setIsPrimaryKey(true);
+        CODE_field.setUnique(false);
+        CODE_field.setIsIdentity(true);
+        table.addField(CODE_field);
+    
+        return table;
+    }
+    
+    public static TableDefinition buildDEPARTMENTTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_DEPARTMENT");
+
+        FieldDefinition NAME_field = new FieldDefinition();
+        NAME_field.setName("NAME");
+        NAME_field.setTypeName("VARCHAR");
+        NAME_field.setSize(40);
+        NAME_field.setShouldAllowNull(false);
+        NAME_field.setIsPrimaryKey(true);
+        NAME_field.setUnique(false);
+        NAME_field.setIsIdentity(true);
+        table.addField(NAME_field);
+    
+        FieldDefinition ROLE_field = new FieldDefinition();
+        ROLE_field.setName("ROLE");
+        ROLE_field.setTypeName("VARCHAR");
+        ROLE_field.setSize(40);
+        ROLE_field.setShouldAllowNull(false);
+        ROLE_field.setIsPrimaryKey(true);
+        ROLE_field.setUnique(false);
+        ROLE_field.setIsIdentity(true);
+        table.addField(ROLE_field);
+    
+        FieldDefinition LOCATION_field = new FieldDefinition();
+        LOCATION_field.setName("LOCATION");
+        LOCATION_field.setTypeName("VARCHAR");
+        LOCATION_field.setSize(40);
+        LOCATION_field.setShouldAllowNull(false);
+        LOCATION_field.setIsPrimaryKey(true);
+        LOCATION_field.setUnique(false);
+        LOCATION_field.setIsIdentity(true);
+        table.addField(LOCATION_field);
 
         return table;
     }
+    
+    public static TableDefinition buildDEPT_ADMINTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_DEPT_ADMIN");
 
+        // SECTION: FIELD
+        FieldDefinition fieldName = new FieldDefinition();
+        fieldName.setName("DEPT_NAME");
+        fieldName.setTypeName("VARCHAR");
+        fieldName.setSize(40);
+        fieldName.setShouldAllowNull(false);
+        fieldName.setIsPrimaryKey(true);
+        fieldName.setUnique(false);
+        fieldName.setIsIdentity(false);
+        //fieldName.setForeignKeyFieldName("CMP3_DEPARTMENT.NAME");
+        table.addField(fieldName);
+    
+        FieldDefinition ROLE_field = new FieldDefinition();
+        ROLE_field.setName("DEPT_ROLE");
+        ROLE_field.setTypeName("VARCHAR");
+        ROLE_field.setSize(40);
+        ROLE_field.setShouldAllowNull(false);
+        ROLE_field.setIsPrimaryKey(true);
+        ROLE_field.setUnique(false);
+        ROLE_field.setIsIdentity(false);
+        //ROLE_field.setForeignKeyFieldName("CMP3_DEPARTMENT.ROLE");
+        table.addField(ROLE_field);
+    
+        FieldDefinition LOCATION_field = new FieldDefinition();
+        LOCATION_field.setName("DEPT_LOCATION");
+        LOCATION_field.setTypeName("VARCHAR");
+        LOCATION_field.setSize(40);
+        LOCATION_field.setShouldAllowNull(false);
+        LOCATION_field.setIsPrimaryKey(true);
+        LOCATION_field.setUnique(false);
+        LOCATION_field.setIsIdentity(false);
+        //LOCATION_field.setForeignKeyFieldName("CMP3_DEPARTMENT.LOCATION");
+        table.addField(LOCATION_field);
+        
+        // SECTION: FIELD
+        FieldDefinition fieldEMP = new FieldDefinition();
+        fieldEMP.setName("ADMIN_EMPLOYEE_EMP_ID");
+        fieldEMP.setTypeName("NUMERIC");
+        fieldEMP.setSize(15);
+        fieldEMP.setShouldAllowNull(true);
+        fieldEMP.setIsPrimaryKey(true);
+        fieldEMP.setUnique(false);
+        fieldEMP.setIsIdentity(false);
+        //fieldEMP.setForeignKeyFieldName("CMP3_EMPLOYEE.EMP_ID");
+        table.addField(fieldEMP);
+
+        return table;   
+    }
+    
+    public static TableDefinition buildGENERALTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_GENERAL");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("GENERAL_ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setUnique(false);
+        fieldID.setIsIdentity(true);
+        table.addField(fieldID);
+        
+        return table;
+    }
+    
+    public static TableDefinition buildLIEUTENANTTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_LIEUTENANT");
+        
+        FieldDefinition fieldF_NAME = new FieldDefinition();
+        fieldF_NAME.setName("F_NAME");
+        fieldF_NAME.setTypeName("VARCHAR");
+        fieldF_NAME.setSize(40);
+        fieldF_NAME.setShouldAllowNull(false);
+        fieldF_NAME.setIsPrimaryKey(true);
+        fieldF_NAME.setUnique(false);
+        fieldF_NAME.setIsIdentity(false);
+        table.addField(fieldF_NAME);
+        
+        FieldDefinition fieldL_NAME = new FieldDefinition();
+        fieldL_NAME.setName("L_NAME");
+        fieldL_NAME.setTypeName("VARCHAR");
+        fieldL_NAME.setSize(40);
+        fieldL_NAME.setShouldAllowNull(false);
+        fieldL_NAME.setIsPrimaryKey(true);
+        fieldL_NAME.setUnique(false);
+        fieldL_NAME.setIsIdentity(false);
+        table.addField(fieldL_NAME);
+        
+        return table;
+    }
+    
+    public static TableDefinition buildLIEUTENANTGENERALTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_LIEUTENANT_GENERAL");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setUnique(false);
+        fieldID.setIsIdentity(true);
+        fieldID.setForeignKeyFieldName("JPA_GENERAL.GENERAL_ID");
+        table.addField(fieldID);
+        
+        return table;
+    }
+    
+    public static TableDefinition buildMAJORTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_MAJOR");
+        
+        FieldDefinition fieldF_NAME = new FieldDefinition();
+        fieldF_NAME.setName("F_NAME");
+        fieldF_NAME.setTypeName("VARCHAR");
+        fieldF_NAME.setSize(40);
+        fieldF_NAME.setShouldAllowNull(false);
+        fieldF_NAME.setIsPrimaryKey(true);
+        fieldF_NAME.setUnique(false);
+        fieldF_NAME.setIsIdentity(false);
+        table.addField(fieldF_NAME);
+        
+        FieldDefinition fieldL_NAME = new FieldDefinition();
+        fieldL_NAME.setName("L_NAME");
+        fieldL_NAME.setTypeName("VARCHAR");
+        fieldL_NAME.setSize(40);
+        fieldL_NAME.setShouldAllowNull(false);
+        fieldL_NAME.setIsPrimaryKey(true);
+        fieldL_NAME.setUnique(false);
+        fieldL_NAME.setIsIdentity(false);
+        table.addField(fieldL_NAME);
+        
+        return table;
+    }
+    
+    public static TableDefinition buildMAJORGENERALTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_MAJOR_GENERAL");
+        
+        FieldDefinition fieldF_NAME = new FieldDefinition();
+        fieldF_NAME.setName("F_NAME");
+        fieldF_NAME.setTypeName("VARCHAR");
+        fieldF_NAME.setSize(40);
+        fieldF_NAME.setShouldAllowNull(false);
+        fieldF_NAME.setIsPrimaryKey(true);
+        fieldF_NAME.setUnique(false);
+        fieldF_NAME.setIsIdentity(false);
+        table.addField(fieldF_NAME);
+        
+        FieldDefinition fieldL_NAME = new FieldDefinition();
+        fieldL_NAME.setName("L_NAME");
+        fieldL_NAME.setTypeName("VARCHAR");
+        fieldL_NAME.setSize(40);
+        fieldL_NAME.setShouldAllowNull(false);
+        fieldL_NAME.setIsPrimaryKey(true);
+        fieldL_NAME.setUnique(false);
+        fieldL_NAME.setIsIdentity(false);
+        table.addField(fieldL_NAME);
+        
+        return table;
+    }
+    
+    public static TableDefinition buildMASTERCORPORALTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_MASTER_CORPORAL");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("SARGEANTPK");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setUnique(false);
+        fieldID.setIsIdentity(true);
+        table.addField(fieldID);
+        
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("NAME");
+        fieldNAME.setTypeName("VARCHAR");
+        fieldNAME.setSize(40);
+        fieldNAME.setShouldAllowNull(false);
+        fieldNAME.setIsPrimaryKey(true);
+        fieldNAME.setUnique(false);
+        fieldNAME.setIsIdentity(false);
+        table.addField(fieldNAME);
+        
+        return table;
+    }
+    
+    public static TableDefinition buildPRIVATETable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_PRIVATE");
+        
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("NAME");
+        fieldNAME.setTypeName("VARCHAR");
+        fieldNAME.setSize(40);
+        fieldNAME.setShouldAllowNull(false);
+        fieldNAME.setIsPrimaryKey(true);
+        fieldNAME.setUnique(false);
+        fieldNAME.setIsIdentity(false);
+        table.addField(fieldNAME);
+        
+        FieldDefinition fieldF_NAME = new FieldDefinition();
+        fieldF_NAME.setName("FIRSTNAME");
+        fieldF_NAME.setTypeName("VARCHAR");
+        fieldF_NAME.setSize(40);
+        fieldF_NAME.setShouldAllowNull(false);
+        fieldF_NAME.setIsPrimaryKey(true);
+        fieldF_NAME.setUnique(false);
+        fieldF_NAME.setIsIdentity(false);
+        table.addField(fieldF_NAME);
+        
+        FieldDefinition fieldL_NAME = new FieldDefinition();
+        fieldL_NAME.setName("LASTNAME");
+        fieldL_NAME.setTypeName("VARCHAR");
+        fieldL_NAME.setSize(40);
+        fieldL_NAME.setShouldAllowNull(false);
+        fieldL_NAME.setIsPrimaryKey(true);
+        fieldL_NAME.setUnique(false);
+        fieldL_NAME.setIsIdentity(false);
+        table.addField(fieldL_NAME);
+        
+        return table;
+    }
+    
+    public static TableDefinition buildSARGEANTTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_SARGEANT");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setUnique(false);
+        fieldID.setIsIdentity(true);
+        table.addField(fieldID);
+        
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("NAME");
+        fieldNAME.setTypeName("VARCHAR");
+        fieldNAME.setSize(40);
+        fieldNAME.setShouldAllowNull(true);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setIsIdentity(false);
+        table.addField(fieldNAME);
+        
+        return table;
+    }
+    
     public static TableDefinition buildSCIENTISTTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_SCIENTIST");
@@ -210,120 +639,30 @@ public class CompositePKTableCreator extends TableCreator {
         return table;
     }
     
-    public static TableDefinition buildDEPT_ADMINTable() {
+    public static TableDefinition buildSECONDLIEUTENANTTable() {
         TableDefinition table = new TableDefinition();
-        table.setName("CMP3_DEPT_ADMIN");
-
-        // SECTION: FIELD
-        FieldDefinition fieldName = new FieldDefinition();
-        fieldName.setName("DEPT_NAME");
-        fieldName.setTypeName("VARCHAR");
-        fieldName.setSize(40);
-        fieldName.setShouldAllowNull(false);
-        fieldName.setIsPrimaryKey(true);
-        fieldName.setUnique(false);
-        fieldName.setIsIdentity(false);
-        //fieldName.setForeignKeyFieldName("CMP3_DEPARTMENT.NAME");
-        table.addField(fieldName);
-    
-        FieldDefinition ROLE_field = new FieldDefinition();
-        ROLE_field.setName("DEPT_ROLE");
-        ROLE_field.setTypeName("VARCHAR");
-        ROLE_field.setSize(40);
-        ROLE_field.setShouldAllowNull(false);
-        ROLE_field.setIsPrimaryKey(true);
-        ROLE_field.setUnique(false);
-        ROLE_field.setIsIdentity(false);
-        //ROLE_field.setForeignKeyFieldName("CMP3_DEPARTMENT.ROLE");
-        table.addField(ROLE_field);
-    
-        FieldDefinition LOCATION_field = new FieldDefinition();
-        LOCATION_field.setName("DEPT_LOCATION");
-        LOCATION_field.setTypeName("VARCHAR");
-        LOCATION_field.setSize(40);
-        LOCATION_field.setShouldAllowNull(false);
-        LOCATION_field.setIsPrimaryKey(true);
-        LOCATION_field.setUnique(false);
-        LOCATION_field.setIsIdentity(false);
-        //LOCATION_field.setForeignKeyFieldName("CMP3_DEPARTMENT.LOCATION");
-        table.addField(LOCATION_field);
+        table.setName("JPA_SECOND_LIEUTENANT");
         
-        // SECTION: FIELD
-        FieldDefinition fieldEMP = new FieldDefinition();
-        fieldEMP.setName("ADMIN_EMPLOYEE_EMP_ID");
-        fieldEMP.setTypeName("NUMERIC");
-        fieldEMP.setSize(15);
-        fieldEMP.setShouldAllowNull(true);
-        fieldEMP.setIsPrimaryKey(true);
-        fieldEMP.setUnique(false);
-        fieldEMP.setIsIdentity(false);
-        //fieldEMP.setForeignKeyFieldName("CMP3_EMPLOYEE.EMP_ID");
-        table.addField(fieldEMP);
-
-        return table;   
-    }
-    
-    public static TableDefinition buildDEPARTMENTTable() {
-        TableDefinition table = new TableDefinition();
-        table.setName("CMP3_DEPARTMENT");
-
-        FieldDefinition NAME_field = new FieldDefinition();
-        NAME_field.setName("NAME");
-        NAME_field.setTypeName("VARCHAR");
-        NAME_field.setSize(40);
-        NAME_field.setShouldAllowNull(false);
-        NAME_field.setIsPrimaryKey(true);
-        NAME_field.setUnique(false);
-        NAME_field.setIsIdentity(true);
-        table.addField(NAME_field);
-    
-        FieldDefinition ROLE_field = new FieldDefinition();
-        ROLE_field.setName("ROLE");
-        ROLE_field.setTypeName("VARCHAR");
-        ROLE_field.setSize(40);
-        ROLE_field.setShouldAllowNull(false);
-        ROLE_field.setIsPrimaryKey(true);
-        ROLE_field.setUnique(false);
-        ROLE_field.setIsIdentity(true);
-        table.addField(ROLE_field);
-    
-        FieldDefinition LOCATION_field = new FieldDefinition();
-        LOCATION_field.setName("LOCATION");
-        LOCATION_field.setTypeName("VARCHAR");
-        LOCATION_field.setSize(40);
-        LOCATION_field.setShouldAllowNull(false);
-        LOCATION_field.setIsPrimaryKey(true);
-        LOCATION_field.setUnique(false);
-        LOCATION_field.setIsIdentity(true);
-        table.addField(LOCATION_field);
-
-        return table;
-    }
-
-    public static TableDefinition buildCUBICLETable() {
-        TableDefinition table = new TableDefinition();
-        table.setName("CMP3_CUBICLE");
-
-        FieldDefinition ID_field = new FieldDefinition();
-        ID_field.setName("ID");
-        ID_field.setTypeName("NUMERIC");
-        ID_field.setSize(15);
-        ID_field.setShouldAllowNull(false);
-        ID_field.setIsPrimaryKey(true);
-        ID_field.setUnique(false);
-        ID_field.setIsIdentity(true);
-        table.addField(ID_field);
-    
-        FieldDefinition CODE_field = new FieldDefinition();
-        CODE_field.setName("CODE");
-        CODE_field.setTypeName("VARCHAR");
-        CODE_field.setSize(1);
-        CODE_field.setShouldAllowNull(false);
-        CODE_field.setIsPrimaryKey(true);
-        CODE_field.setUnique(false);
-        CODE_field.setIsIdentity(true);
-        table.addField(CODE_field);
-    
+        FieldDefinition fieldF_NAME = new FieldDefinition();
+        fieldF_NAME.setName("FIRST_NAME");
+        fieldF_NAME.setTypeName("VARCHAR");
+        fieldF_NAME.setSize(40);
+        fieldF_NAME.setShouldAllowNull(false);
+        fieldF_NAME.setIsPrimaryKey(true);
+        fieldF_NAME.setUnique(false);
+        fieldF_NAME.setIsIdentity(false);
+        table.addField(fieldF_NAME);
+        
+        FieldDefinition fieldL_NAME = new FieldDefinition();
+        fieldL_NAME.setName("LAST_NAME");
+        fieldL_NAME.setTypeName("VARCHAR");
+        fieldL_NAME.setSize(40);
+        fieldL_NAME.setShouldAllowNull(false);
+        fieldL_NAME.setIsPrimaryKey(true);
+        fieldL_NAME.setUnique(false);
+        fieldL_NAME.setIsIdentity(false);
+        table.addField(fieldL_NAME);
+        
         return table;
     }
     

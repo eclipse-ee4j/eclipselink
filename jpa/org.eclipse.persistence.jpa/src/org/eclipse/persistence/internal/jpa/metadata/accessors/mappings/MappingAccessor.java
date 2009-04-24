@@ -26,6 +26,8 @@
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  *     04/03/2009-2.0 Guy Pelletier
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+ *     04/24/2009-2.0 Guy Pelletier 
+ *       - 270011: JPA 2.0 MappedById support
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -503,6 +505,14 @@ public abstract class MappingAccessor extends MetadataAccessor {
     }
     
     /**
+     * INTERNAL:
+     * Return the mapping accessors associated with the reference descriptor.
+     */
+    public Collection<MappingAccessor> getReferenceAccessors() {
+        return getReferenceDescriptor().getAccessors();
+    }
+    
+    /**
      * INTERNAL: 
      * Return the reference class for this accessor. By default the reference
      * class is the raw class. Some accessors may need to override this
@@ -532,6 +542,18 @@ public abstract class MappingAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
+     * Return the reference descriptors table. By default it is the primary
+     * key table off the reference descriptor. Subclasses that care to return
+     * a different class should override this method.
+     * @see DirectCollectionAccessor
+     * @see ManyToManyAccessor
+     */
+    protected DatabaseTable getReferenceDatabaseTable() {
+        return getReferenceDescriptor().getPrimaryKeyTable();
+    }
+    
+    /**
+     * INTERNAL:
      * Return the reference metadata descriptor for this accessor.
      */
     public MetadataDescriptor getReferenceDescriptor() {
@@ -542,18 +564,6 @@ public abstract class MappingAccessor extends MetadataAccessor {
         }
         
         return accessor.getDescriptor();
-    }
-    
-    /**
-     * INTERNAL:
-     * Return the reference descriptors table. By default it is the primary
-     * key table off the reference descriptor. Subclasses that care to return
-     * a different class should override this method.
-     * @see DirectCollectionAccessor
-     * @see ManyToManyAccessor
-     */
-    protected DatabaseTable getReferenceDatabaseTable() {
-        return getReferenceDescriptor().getPrimaryKeyTable();
     }
     
     /**
@@ -688,6 +698,14 @@ public abstract class MappingAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
+     * Return true if this accessor represents a basic mapping.
+     */
+    public boolean isBasic() {
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
      * Return true if this accessor represents a basic collection mapping.
      */
     public boolean isBasicCollection() {
@@ -708,6 +726,14 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * @see ObjectAccessor
      */
     public boolean isDerivedId() {
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor is a derived id class accessor.
+     */
+    public boolean isDerivedIdClass(){
         return false;
     }
     
@@ -1569,6 +1595,14 @@ public abstract class MappingAccessor extends MetadataAccessor {
         
         // Keep a reference back to this mapping for quick look up.
         m_mapping = mapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public String toString() {
+        return getAnnotatedElementName();
     }
     
     /**

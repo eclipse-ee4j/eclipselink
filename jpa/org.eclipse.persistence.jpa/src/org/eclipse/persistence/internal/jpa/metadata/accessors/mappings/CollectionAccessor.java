@@ -23,6 +23,8 @@
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  *     04/03/2009-2.0 Guy Pelletier
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+ *     04/24/2009-2.0 Guy Pelletier 
+ *       - 270011: JPA 2.0 MappedById support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -516,7 +518,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
                 // Default to the primary key field name(s).
                 List<String> orderByAttributes = referenceDescriptor.getIdOrderByAttributeNames();
             
-                if (referenceDescriptor.hasEmbeddedIdAttribute()) {
+                if (referenceDescriptor.hasEmbeddedId()) {
                     String embeddedIdAttributeName = referenceDescriptor.getEmbeddedIdAttributeName();
                 
                     for (String orderByAttribute : orderByAttributes) {

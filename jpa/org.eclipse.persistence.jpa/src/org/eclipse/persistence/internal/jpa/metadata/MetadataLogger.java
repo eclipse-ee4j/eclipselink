@@ -19,6 +19,8 @@
  *       - 248293: JPA 2.0 Element Collections (part 1)   
  *     02/06/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 2)    
+ *     04/24/2009-2.0 Guy Pelletier 
+ *       - 270011: JPA 2.0 MappedById support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -84,6 +86,7 @@ public class MetadataLogger {
     public static final String IGNORE_MAPPED_SUPERCLASS_DEFAULT_REDIRECTORS = "metadata_warning_ignore_mapped_superclass_default_redirectors";
     public static final String IGNORE_MAPPED_SUPERCLASS_CHANGE_TRACKING = "metadata_warning_ignore_mapped_superclass_change_tracking";
     public static final String IGNORE_MAPPED_SUPERCLASS_CUSTOMIZER = "metadata_warning_ignore_mapped_superclass_customizer";
+    public static final String IGNORE_MAPPED_SUPERCLASS_ID_CLASS = "metadata_warning_ignore_mapped_superclass_id_class";
     public static final String IGNORE_MAPPED_SUPERCLASS_EXISTENCE_CHECKING = "metadata_warning_ignore_mapped_superclass_existence_checking";
     public static final String IGNORE_MAPPED_SUPERCLASS_OPTIMISTIC_LOCKING = "metadata_warning_ignore_mapped_superclass_optimistic_locking";
     public static final String IGNORE_MAPPED_SUPERCLASS_READ_ONLY = "metadata_warning_ignore_mapped_superclass_read_only";
@@ -204,6 +207,7 @@ public class MetadataLogger {
         m_ctxStrings.put(IGNORE_MAPPED_SUPERCLASS_DEFAULT_REDIRECTORS, IGNORE_MAPPED_SUPERCLASS_DEFAULT_REDIRECTORS);
         m_ctxStrings.put(IGNORE_MAPPED_SUPERCLASS_CHANGE_TRACKING, IGNORE_MAPPED_SUPERCLASS_CHANGE_TRACKING);
         m_ctxStrings.put(IGNORE_MAPPED_SUPERCLASS_CUSTOMIZER, IGNORE_MAPPED_SUPERCLASS_CUSTOMIZER);
+        m_ctxStrings.put(IGNORE_MAPPED_SUPERCLASS_ID_CLASS, IGNORE_MAPPED_SUPERCLASS_ID_CLASS);
         m_ctxStrings.put(IGNORE_MAPPED_SUPERCLASS_READ_ONLY, IGNORE_MAPPED_SUPERCLASS_READ_ONLY);
         m_ctxStrings.put(IGNORE_MAPPED_SUPERCLASS_EXISTENCE_CHECKING, IGNORE_MAPPED_SUPERCLASS_EXISTENCE_CHECKING);
         

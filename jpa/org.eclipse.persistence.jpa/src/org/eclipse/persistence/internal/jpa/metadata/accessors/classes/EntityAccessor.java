@@ -33,6 +33,8 @@
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  *     04/03/2009-2.0 Guy Pelletier
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+ *     04/24/2009-2.0 Guy Pelletier 
+ *       - 270011: JPA 2.0 MappedById support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -565,6 +567,9 @@ public class EntityAccessor extends MappedSuperclassAccessor {
             }
         }
         
+        // Add any id class definition to the project.
+        initIdClass();
+        
         // Process the entity specifics now, like access, metadata complete etc. 
         // which we need before proceeding any further.
         processEntity();
@@ -665,6 +670,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     public void processDerivedIDs(HashSet<ClassAccessor> processing, HashSet<ClassAccessor> processed) {
         if (hasDerivedId() && !processed.contains(this)){
             super.processDerivedIDs(processing, processed);
+            
             // Validate we found a primary key.
             validatePrimaryKey();
                 
@@ -765,7 +771,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         if (defaultAccessType == null) {
             for (MappedSuperclassAccessor mappedSuperclass : m_mappedSuperclasses) {
                 if (! mappedSuperclass.hasAccess()) {
-                    if (havePersistenceAnnotationsDefined(MetadataHelper.getFields(mappedSuperclass.getJavaClass()))) {
+                    if (havePersistenceAnnotationsDefined(MetadataHelper.getDeclaredFields(mappedSuperclass.getJavaClass()))) {
                         defaultAccessType = MetadataConstants.FIELD;
                     } else if (havePersistenceAnnotationsDefined(MetadataHelper.getDeclaredMethods(mappedSuperclass.getJavaClass()))) {
                         defaultAccessType = MetadataConstants.PROPERTY;
@@ -779,7 +785,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
             // without an explicit access type. Check where the annotations are 
             // defined on this entity class. 
             if (defaultAccessType == null) {    
-                if (havePersistenceAnnotationsDefined(MetadataHelper.getFields(getJavaClass()))) {
+                if (havePersistenceAnnotationsDefined(MetadataHelper.getDeclaredFields(getJavaClass()))) {
                     defaultAccessType = MetadataConstants.FIELD;
                 } else if (havePersistenceAnnotationsDefined(MetadataHelper.getDeclaredMethods(getJavaClass()))) {
                     defaultAccessType = MetadataConstants.PROPERTY;

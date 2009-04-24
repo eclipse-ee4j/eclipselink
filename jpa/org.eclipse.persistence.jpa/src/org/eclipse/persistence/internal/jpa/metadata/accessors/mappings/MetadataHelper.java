@@ -12,6 +12,8 @@
  *        - New file introduced for bug 221658.
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
+ *     04/24/2009-2.0 Guy Pelletier 
+ *       - 270011: JPA 2.0 MappedById support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -29,6 +31,7 @@ import org.eclipse.persistence.exceptions.EntityManagerSetupException;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredFields;
+import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredMethods;
 import org.eclipse.persistence.internal.security.PrivilegedGetMethods;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 
@@ -48,7 +51,7 @@ public class MetadataHelper {
      * Get the declared fields from a class using the doPriveleged security
      * access.
      */
-    static Field[] getFields(Class cls) {
+    static Field[] getDeclaredFields(Class cls) {
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
             try {
                 return (Field[])AccessController.doPrivileged(new PrivilegedGetDeclaredFields(cls));
@@ -60,6 +63,25 @@ public class MetadataHelper {
             return PrivilegedAccessHelper.getDeclaredFields(cls);
         }
     }  
+    
+    /**
+     * INTERNAL:
+     * Get the declared methods from a class using the doPriveleged security
+     * access. This call returns all methods (private, protected, package and
+     * public) on the given class ONLY. It does not traverse the superclasses.
+     */
+    static Method[] getDeclaredMethods(Class cls) {
+        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+            try {
+                return (Method[])AccessController.doPrivileged(new PrivilegedGetDeclaredMethods(cls));
+            } catch (PrivilegedActionException exception) {
+                // we will not get here, there are no checked exceptions in this call
+                return null;
+            }
+        } else {
+            return org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getDeclaredMethods(cls);
+        }
+    }
     
     /**
      * INTERNAL:

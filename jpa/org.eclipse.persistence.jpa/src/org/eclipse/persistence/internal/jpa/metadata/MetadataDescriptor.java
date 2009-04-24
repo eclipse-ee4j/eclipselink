@@ -33,6 +33,8 @@
  *       - 265359: JPA 2.0 Element Collections - Metadata processing portions
  *     03/27/2009-2.0 Guy Pelletier 
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+ *     04/24/2009-2.0 Guy Pelletier 
+ *       - 270011: JPA 2.0 MappedById support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -60,8 +62,8 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAcce
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EmbeddableAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.CollectionAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.EmbeddedIdAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ManyToManyAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappedKeyMapAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ObjectAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.OneToOneAccessor;
@@ -95,6 +97,9 @@ public class MetadataDescriptor {
     private DatabaseTable m_primaryTable;
     private Enum m_existenceChecking;
     
+    // The embedded id accessor for this descritor if one exists.
+    private EmbeddedIdAccessor m_embeddedIdAccessor;
+    
     // This is the root descriptor of the inheritance hierarchy. That is, for 
     // the entity that defines the inheritance strategy.
     private MetadataDescriptor m_inheritanceRootDescriptor;
@@ -120,7 +125,6 @@ public class MetadataDescriptor {
     private String m_defaultAccess; 
     private String m_defaultSchema;
     private String m_defaultCatalog;
-    private String m_embeddedIdAttributeName;
     
     private List<String> m_idAttributeNames;
     private List<String> m_orderByAttributeNames;
@@ -164,6 +168,7 @@ public class MetadataDescriptor {
         m_orderByAttributeNames = new ArrayList<String>();
         m_idOrderByAttributeNames = new ArrayList<String>();
         m_embeddableDescriptors = new ArrayList<MetadataDescriptor>();
+        m_derivedIDAccessors = new ArrayList<ObjectAccessor>();
         
         m_pkClassIDs = new HashMap<String, Type>();
         m_genericTypes = new HashMap<String, Type>();
@@ -180,8 +185,6 @@ public class MetadataDescriptor {
         // This is the default, set it in case no existence-checking is set.
         m_descriptor.getQueryManager().checkDatabaseForDoesExist();
         
-        m_derivedIDAccessors = new ArrayList<ObjectAccessor>();
-                
         setJavaClass(javaClass);
     }
     
@@ -198,47 +201,8 @@ public class MetadataDescriptor {
      * We must check for null since buildAccessor from ClassAccessor may return
      * a null if ignore default mappings is set to true.
      */
-    public void addAccessor(MappingAccessor accessor, MetadataDescriptor owningDescriptor) {
-        if (accessor != null) {
-            m_accessors.put(accessor.getAttributeName(), accessor);
-            
-            // The actual owning descriptor for this class accessor. In most
-            // cases this is the same as our descriptor. However in an
-            // embeddable class accessor, it will be the owning entities
-            // descriptor. This was introduced to support nesting 
-            // embeddables to the nth level.
-            accessor.setOwningDescriptor(owningDescriptor);
-            
-            // Add any converters on this mapping accessor.
-            accessor.addConverters();
-
-            // Tell an embeddable accessor to pre-process if it hasn't already.
-            preProcessEmbeddableAccessor(accessor.getReferenceClass(), owningDescriptor);
-            
-            // Tell an embeddable accessor that is a map key to a collection
-            // to pre-process itself.
-            if (accessor.isMappedKeyMapAccessor()) {
-                MappedKeyMapAccessor mapAccessor = (MappedKeyMapAccessor) accessor;
-                Class mapKeyClass = mapAccessor.getMapKeyClass();
-                
-                // If the map key class is not specified, we need to look it 
-                // up from the accessor type.
-                if (mapKeyClass == null || mapKeyClass.equals(void.class)) {
-                    mapKeyClass = accessor.getAccessibleObject().getMapKeyClass(this);
-                    
-                    if (mapKeyClass == null && mapAccessor.getMapKey() == null) {
-                        // We don't have a map key class or map key, throw an exception.
-                        throw ValidationException.unableToDetermineMapKeyClass(accessor.getAttributeName(), accessor.getJavaClass());
-                    } else {
-                        // Set the map key class (note, may still be null)
-                        mapAccessor.setMapKeyClass(mapKeyClass);
-                    }
-                }
-                
-                // Now pre-process our map key class if it is an embeddable.
-                preProcessEmbeddableAccessor(mapKeyClass, owningDescriptor);
-            }
-        }
+    public void addAccessor(MappingAccessor accessor) {
+        m_accessors.put(accessor.getAttributeName(), accessor);
     }
     
     /**
@@ -554,9 +518,17 @@ public class MetadataDescriptor {
     
     /**
      * INTERNAL:
+     * Return the embedded id accessor for this descriptor if one exists.
+     */
+    public EmbeddedIdAccessor getEmbeddedIdAccessor() {
+        return m_embeddedIdAccessor;
+    }
+    
+    /**
+     * INTERNAL:
      */
     public String getEmbeddedIdAttributeName() {
-        return m_embeddedIdAttributeName;
+        return m_embeddedIdAccessor.getAttributeName();
     }
     
     /**
@@ -786,11 +758,20 @@ public class MetadataDescriptor {
     
     /**
      * INTERNAL:
+     * Method to return the primary key field name this descriptor metadata. 
+     * It assumes there is one.
+     */
+    public DatabaseField getPrimaryKeyField() {
+        return getPrimaryKeyFields().iterator().next();
+    }
+    
+    /**
+     * INTERNAL:
      * Method to return the primary key field name for the given descriptor
      * metadata. Assumes there is one.
      */
     public String getPrimaryKeyFieldName() {
-        return (getPrimaryKeyFields().iterator().next()).getName();
+        return getPrimaryKeyField().getName();
     }
     
     /**
@@ -939,8 +920,8 @@ public class MetadataDescriptor {
     /**
      * INTERNAL:
      */
-    public boolean hasEmbeddedIdAttribute() {
-        return m_embeddedIdAttributeName != null;
+    public boolean hasEmbeddedId() {
+        return m_embeddedIdAccessor != null;
     }
     
     /**
@@ -1033,6 +1014,13 @@ public class MetadataDescriptor {
     
     /**
      * INTERNAL:
+     */
+    public boolean hasPKClass() {
+        return m_pkClass != null;
+    }
+    
+    /**
+     * INTERNAL:
      * Return true is the descriptor has primary key fields set.
      */
     public boolean hasPrimaryKeyFields() {
@@ -1119,21 +1107,6 @@ public class MetadataDescriptor {
     }
     
     /**
-     * INTERNAL
-     * Pre-process the potential embeddable class if it is indeed an embeddable.
-     */
-    protected void preProcessEmbeddableAccessor(Class potentialEmbeddableClass, MetadataDescriptor owningDescriptor) {
-        if (potentialEmbeddableClass != null) {
-            EmbeddableAccessor embeddableAccessor = getProject().getEmbeddableAccessor(potentialEmbeddableClass);
-        
-            if (embeddableAccessor != null && ! embeddableAccessor.isPreProcessed()) {
-                embeddableAccessor.setOwningDescriptor(owningDescriptor);
-                embeddableAccessor.preProcess();
-            }
-        }
-    }
-    
-    /**
      * INTERNAL:
      * Process this descriptors accessors. Some accessors will not be processed
      * right away, instead stored on the project for processing in a later 
@@ -1148,7 +1121,7 @@ public class MetadataDescriptor {
                 }
                 
                 // We need to defer the processing of some mappings to stage
-                // 2 processing. Accessors are added to different lists since
+                // 3 processing. Accessors are added to different lists since
                 // the order or processing of those accessors is important.
                 // See MetadataProject.processStage2() for more details.
                 // Care must be taken in the order of checking here.
@@ -1170,14 +1143,11 @@ public class MetadataDescriptor {
                         // later on to look up a mappedBy attribute etc.
                         addEmbeddableDescriptor(embeddableAccessor.getDescriptor());
                     
-                        // Since association overrides are not allowed on embeddedid
-                        // cases (since only direct to field mappings are allowed)
-                        // we can process the emebeddedid right now. This will
-                        // likely have to change in the future as I could see 
-                        // embedded id's allowing foreign key references to be part
-                        // of the primary key.
-                        if (accessor.isEmbeddedId()) {
-                            // Process it right now ...
+                        // Since association overrides are not allowed on 
+                        // embeddedid's we can and must process it right now,
+                        // instead of deferring it till after the relationship
+                        // accessors have processed.
+                        if (accessor.isEmbeddedId() || accessor.isDerivedIdClass()) {
                             accessor.process();
                         } else {
                             // Otherwise defer it because of association overrides.
@@ -1253,8 +1223,8 @@ public class MetadataDescriptor {
     /**
      * INTERNAL:
      */
-    public void setEmbeddedIdAttributeName(String embeddedIdAttributeName) {
-        m_embeddedIdAttributeName = embeddedIdAttributeName;
+    public void setEmbeddedIdAccessor(EmbeddedIdAccessor embeddedIdAccessor) {
+        m_embeddedIdAccessor = embeddedIdAccessor;
     }
     
     /** 
@@ -1466,6 +1436,14 @@ public class MetadataDescriptor {
      */
     public void setUsesCascadedOptimisticLocking(Boolean usesCascadedOptimisticLocking) {
         m_usesCascadedOptimisticLocking = usesCascadedOptimisticLocking;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public String toString() {
+        return getJavaClassName();
     }
     
     /**

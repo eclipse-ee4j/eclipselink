@@ -19,6 +19,8 @@
  *       - 265359: JPA 2.0 Element Collections - Metadata processing portions
  *     03/27/2009-2.0 Guy Pelletier 
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+ *     04/24/2009-2.0 Guy Pelletier 
+ *       - 270011: JPA 2.0 MappedById support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -62,7 +64,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
     private Boolean m_id;
     private Boolean m_isOptional;
     private List<PrimaryKeyJoinColumnMetadata> m_primaryKeyJoinColumns = new ArrayList<PrimaryKeyJoinColumnMetadata>();
-    private String m_mappedById; // TODO: mapped but not processed. Supported on 1-1 and M-1
+    private String m_mappedById;
     
     /**
      * INTERNAL:
@@ -95,7 +97,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
         
         // Set the mapped by id if one is present.
         if (isAnnotationPresent(MappedById.class)) {
-            m_mappedById = (String) MetadataHelper.invokeMethod("value", annotation);
+            m_mappedById = (String) MetadataHelper.invokeMethod("value", getAnnotation(MappedById.class));
         }
         
         // Set the derived id if one is specified.
@@ -182,6 +184,13 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
     
     /**
      * INTERNAL:
+     */
+    protected boolean hasMappedById() {
+        return m_mappedById != null;
+    }
+    
+    /**
+     * INTERNAL:
      * Initialize a OneToOneMapping.
      */
     protected OneToOneMapping initOneToOneMapping() {
@@ -192,7 +201,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
         mapping.setIsOptional(isOptional());
         mapping.setAttributeName(getAttributeName());
         mapping.setReferenceClassName(getReferenceClassName());
-        mapping.setIsIDMapping(isDerivedId());
+        mapping.setIsDerivedIdMapping(isDerivedId());
         
         // Process the indirection.
         processIndirection(mapping);
@@ -321,6 +330,49 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
         for (DatabaseField pkField : mapping.getForeignKeyFields()){
             getOwningDescriptor().addPrimaryKeyField(pkField);
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * Process the mapping keys from the mapped by id field.
+     */
+    protected void processMappedByIdKeys(OneToOneMapping mapping) {
+        if (m_mappedById.equals("")) {
+            if (getReferenceDescriptor().hasCompositePrimaryKey()) {
+                // We must have an embeddedid mapping that maps to the parents 
+                // idclass or embedded id class directly.
+                // Case 5: parent uses id class but dependant uses embeddedid
+                // Case 6: both use embeddedid
+                getDescriptor().getEmbeddedIdAccessor().processDerivedIdFields(mapping, getReferenceDescriptor());
+            } else {
+                // case 4
+                DatabaseField dependentField = getDescriptor().getPrimaryKeyField();
+                DatabaseField parentField = getReferenceDescriptor().getPrimaryKeyField();
+                mapping.addForeignKeyField(dependentField, parentField);
+            }
+        } else {
+            MappingAccessor mappingAccessor = getDescriptor().getAccessorFor(m_mappedById);
+        
+            if (mappingAccessor == null) {
+                throw ValidationException.invalidMappedByIdValue(m_mappedById, getAnnotatedElementName(), getDescriptor().getEmbeddedIdAccessor().getReferenceClass());
+            } else if (mappingAccessor.isBasic()) {
+                // Case 1: basic mapping from embedded id to parent entity
+                // Must validate the types first, then use fields from
+                // mappings.
+                DatabaseField dependentField = mappingAccessor.getMapping().getField();
+                DatabaseField parentField = getReferenceDescriptor().getPrimaryKeyField();
+                mapping.addForeignKeyField(dependentField, parentField);
+            } else if (mappingAccessor.isDerivedIdClass()) {
+                // Case 2 and case 3 (@IdClass or @EmbeddedId used as the derived id)
+                ((DerivedIdClassAccessor) mappingAccessor).processDerivedIdFields(mapping, getReferenceDescriptor());
+            }
+            
+            // This will also set the isDerivedIdMapping flag to true.
+            mapping.setMappedByIdValue(m_mappedById);
+        }
+        
+        
+        mapping.setIsReadOnly(true);
     }
     
     /**

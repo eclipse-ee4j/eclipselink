@@ -180,8 +180,8 @@ public class ClassDescriptor implements Cloneable, Serializable {
     /** Allow zero primary key validation to be configured. */
     protected IdValidation idValidation;
     
-    //bug241765: JPA 2.0 Derived identities - check if any mappings are marked as an ID
-    protected boolean isIDSpecified;
+    //bug241765: JPA 2.0 Derived identities - check if any mappings are marked as a derived id
+    protected boolean hasDerivedId;
     
     //Added for interceptor support.
     protected Class cacheInterceptorClass;
@@ -252,7 +252,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
         this.shouldAlwaysConformResultsInUnitOfWork = false;
         this.shouldAcquireCascadedLocks = false;
         this.hasSimplePrimaryKey = false;
-        this.isIDSpecified = false;
+        this.hasDerivedId = false;
 
         // Policies
         this.objectBuilder = new ObjectBuilder(this);
@@ -2463,6 +2463,15 @@ public class ClassDescriptor implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
+     * returns true if users have designated one or more mappings as IDs.  Used for CMP3Policy 
+     * primary key class processing. 
+     */
+    public boolean hasDerivedId() {
+        return this.hasDerivedId;
+    }
+    
+    /**
+     * INTERNAL:
      * Return if this descriptor is involved in inheritance, (is child or parent).
      * Note: If this class is part of table per class inheritance strategy this
      * method will return false. 
@@ -2610,8 +2619,8 @@ public class ClassDescriptor implements Cloneable, Serializable {
             }
 
             //bug241765: JPA 2.0 Derived identities - check if any mappings are marked as an ID
-            if (mapping.isIDMapping()){
-                setIsIDSpecified(true);
+            if (mapping.isDerivedIdMapping()){
+                hasDerivedId = true;
             }
             
             // Add all the fields in the mapping to myself.
@@ -2650,8 +2659,8 @@ public class ClassDescriptor implements Cloneable, Serializable {
                         getLockableMappings().add(mapping);// add those mappings from the parent.
                     }
                     //bug241765: JPA 2.0 Derived identities - check if any mappings are marked as an ID
-                    if (mapping.isIDMapping()){
-                        setIsIDSpecified(true);
+                    if (mapping.isDerivedIdMapping()) {
+                        hasDerivedId = true;
                     }
                 }
             }
@@ -3014,15 +3023,6 @@ public class ClassDescriptor implements Cloneable, Serializable {
      */
     public boolean isFullyInitialized() {
         return this.initializationStage == POST_INITIALIZED;
-    }
-    
-    /**
-     * INTERNAL:
-     * returns true if users have designated one or more mappings as IDs.  Used for CMP3Policy 
-     * primary key class processing. 
-     */
-    public boolean isIDSpecified() {
-        return this.isIDSpecified;
     }
 
     /**
@@ -3921,15 +3921,6 @@ public class ClassDescriptor implements Cloneable, Serializable {
         if (getDefaultTable() == null) {
             setDefaultTable(defaultTable);
         }
-    }
-
-    /**
-     * INTERNAL:
-     * Set that users have designated mappings as ID.  Used for CMP3Policy 
-     * primary key class processing.  
-     */
-    public void setIsIDSpecified(boolean isIDSpecified){
-        this.isIDSpecified = isIDSpecified;
     }
 
     /**

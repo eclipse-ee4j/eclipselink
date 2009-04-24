@@ -21,6 +21,8 @@
  *       - 248293: JPA 2.0 Element Collections (part 2)
  *     03/27/2009-2.0 Guy Pelletier 
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+ *     04/24/2009-2.0 Guy Pelletier 
+ *       - 270011: JPA 2.0 MappedById support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -147,6 +149,10 @@ public class MetadataProject {
     // Metadata converters, that is, EclipseLink converters.
     private HashMap<String, AbstractConverterMetadata> m_converters;
     
+    // All id classes (IdClass and EmbeddedId classes) used through-out the 
+    // persistence unit. We need this list to determine derived id accessors.
+    private HashSet<String> m_idClasses;
+    
     // Default listeners that need to be applied to each entity in the
     // persistence unit (unless they exclude them).
     private HashSet< EntityListenerMetadata> m_defaultListeners;
@@ -165,6 +171,11 @@ public class MetadataProject {
     
     // All relationship accessors.
     private HashSet<RelationshipAccessor> m_relationshipAccessors;
+    
+    // Root level embeddables accessors. When we pre-process embeddable
+    // accessors we need to process them from the root down so as to set
+    // the correct owning descriptor.
+    private HashSet<EmbeddableAccessor> m_rootEmbeddableAccessors;
     
     /**
      * INTERNAL:
@@ -193,9 +204,11 @@ public class MetadataProject {
         m_entityAccessors = new HashMap<String, EntityAccessor>();
         m_embeddableAccessors = new HashMap<String, EmbeddableAccessor>();
         m_interfaceAccessors = new HashMap<String, InterfaceAccessor>();
-        
+
+        m_idClasses = new HashSet<String>();
         m_accessorsWithCustomizer = new HashSet<ClassAccessor>();
         m_relationshipAccessors = new HashSet<RelationshipAccessor>();
+        m_rootEmbeddableAccessors = new HashSet<EmbeddableAccessor>();
         m_embeddableMappingAccessors = new HashSet<MappingAccessor>();
         m_directCollectionAccessors = new HashSet<DirectCollectionAccessor>();
 
@@ -347,6 +360,13 @@ public class MetadataProject {
     
     /**
      * INTERNAL:
+     */
+    public void addIdClass(String idClassName) {
+        m_idClasses.add(idClassName);
+    }
+    
+    /**
+     * INTERNAL:
      * Add a InterfaceAccessor to this project.
      */
     public void addInterfaceAccessor(InterfaceAccessor accessor) {
@@ -389,6 +409,14 @@ public class MetadataProject {
      */
     public void addRelationshipAccessor(MappingAccessor accessor) {
         m_relationshipAccessors.add((RelationshipAccessor) accessor);
+    }
+    
+    /**
+     * INTERNAL:
+     * Add a root level embeddable accessor.
+     */
+    public void addRootEmbeddableAccessor(EmbeddableAccessor accessor) {
+        m_rootEmbeddableAccessors.add(accessor);
     }
     
     /**
@@ -527,26 +555,43 @@ public class MetadataProject {
      * This method will attempt to look up the embeddable accessor for the
      * reference class provided. If no accessor is found, null is returned.
      */
-    public EmbeddableAccessor getEmbeddableAccessor(Class cls) {
+    public EmbeddableAccessor getEmbeddableAccessor(Class cls, boolean checkIsIdClass) {
         EmbeddableAccessor accessor = m_embeddableAccessors.get(cls.getName());
 
         if (accessor == null) {
-          // Before return null we must make one final check for an Embeddable 
-          // annotation on the class itself. At this point we know the class was 
-          // not tagged as an embeddable in a mapping file and was not included 
-          // in the list of classes for this persistence unit. Its inclusion 
-          // therefore in the persistence unit is through the use of an Embedded 
-          // annotation or an embedded element within a known entity. The
-          // callers to this method will have to handle the null case if they
-          // so desire.
-          MetadataClass metadataClass = new MetadataClass(cls);
-          if (metadataClass.isAnnotationPresent(Embeddable.class)) {
-              accessor = new EmbeddableAccessor(metadataClass.getAnnotation(Embeddable.class), cls, this);
-              addEmbeddableAccessor(accessor);
-          }
+            // Before we return null we must make a couple final checks:
+            // 
+            // 1 - Check for an Embeddable annotation on the class itself. At 
+            // this point we know the class was not tagged as an embeddable in 
+            // a mapping file and was not included in the list of classes for 
+            // this persistence unit. Its inclusion therefore in the persistence 
+            // unit is through the use of an Embedded annotation or an embedded 
+            // element within a known entity. 
+            // 2 - If checkIsIdClass is true, JPA 2.0 introduced support for
+            // 
+            // derived id's where a parent entity's id class may be used within 
+            // a dependants embedded id class. We will treat the id class as
+            // and embeddable accessor at this point.
+            //
+            // Callers to this method will have to handle the null case if they
+            // so desire.
+            MetadataClass metadataClass = new MetadataClass(cls);
+            if (metadataClass.isAnnotationPresent(Embeddable.class) || (checkIsIdClass && isIdClass(cls))) {
+                accessor = new EmbeddableAccessor(metadataClass.getAnnotation(Embeddable.class), cls, this);
+                addEmbeddableAccessor(accessor);
+            }
        } 
         
        return accessor;
+    }
+    
+    /**
+     * INTERNAL:
+     * This method will attempt to look up the embeddable accessor for the
+     * reference class provided. If no accessor is found, null is returned.
+     */
+    public EmbeddableAccessor getEmbeddableAccessor(Class cls) {
+        return getEmbeddableAccessor(cls, false);
     }
     
     /**
@@ -607,7 +652,17 @@ public class MetadataProject {
     public XMLPersistenceUnitMetadata getPersistenceUnitMetadata() {
         return m_persistenceUnitMetadata;
     }
-        
+    
+    /**
+     * INTERNAL:
+     * Add a root level embeddable accessor. Nested embeddables will be
+     * pre-processed from their roots down.
+     * @see processStage1()
+     */
+    public Set<EmbeddableAccessor> getRootEmbeddableAccessors() {
+        return m_rootEmbeddableAccessors;
+    }
+    
     /**
      * INTERNAL:
      */
@@ -669,6 +724,13 @@ public class MetadataProject {
     
     /**
      * INTERNAL:
+     */
+    public boolean isIdClass(Class idClass) {
+        return m_idClasses.contains(idClass.getName());
+    }
+    
+    /**
+     * INTERNAL:
      * This flag represents dynamic weaving state for 1-1, many-1, fetch groups 
      * and change tracking.
      */
@@ -690,9 +752,12 @@ public class MetadataProject {
     
     /**
      * INTERNAL:
-     * Process descriptors with IDs derived from relationships.  This will also 
-     * complete unfinished validation as well as secondary table and basic 
-     * collection processing
+     * Process descriptors with IDs derived from relationships. This will also 
+     * complete unfinished validation as well as secondary table processing
+     * on entity accessors. This method will fast track some relationship
+     * mappings which is ok since simple primary keys will already have been
+     * discovered and processed whereas any derived id's and their fast tracking
+     * to be processed will be handled now.
      */
     protected void processAccessorsWithDerivedIDs() {
         HashSet<ClassAccessor> processed = new HashSet();
@@ -949,11 +1014,25 @@ public class MetadataProject {
      * @see processStage2
      */
     public void processStage1() {
-        // Mapped superclasses and embeddables are pre-processed through the 
-        // entity pre-processing.
+        // 1 - Pre-process the entities first. This will also pre-process
+        // the mapped superclasses and build/add/complete our list of 
+        // embeddables that will be pre-processed in step 2 below. This is 
+        // necessary so that we may gather our list of id classes which may be 
+        // referenced in embeddable classes as part of a mapped by id accessor. 
+        // This will avoid more complicated processing and ease in building the 
+        // correct accessor at buildAccessor time.
         for (EntityAccessor entity : getEntityAccessors()) {
             if (! entity.isPreProcessed()) {
                 entity.preProcess();
+            }
+        }
+        
+        // 2 - Pre-process the embeddables. This will also pre-process any and
+        // all nested embeddables as well. Embeddables must be processed from
+        // the root down.
+        for (EmbeddableAccessor embeddable : getRootEmbeddableAccessors()) {
+            if (! embeddable.isPreProcessed()) {
+                embeddable.preProcess();
             }
         }
     }
@@ -992,7 +1071,9 @@ public class MetadataProject {
     public void processStage3() {
         // 1 - Process accessors with IDs derived from relationships. This will 
         // finish up any stage2 processing that relied on the PK processing 
-        // being complete as well.
+        // being complete as well. Note some relationships mappings may be 
+        // processed in this stage. This is ok since it is to determine and
+        // validate the primary key.
         processAccessorsWithDerivedIDs();
 
         // 2 - Process all the direct collection accessors we found. This list

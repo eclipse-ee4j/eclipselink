@@ -17,6 +17,8 @@
  *       - 248293: JPA 2.0 Element Collections (part 2)
  *     03/27/2009-2.0 Guy Pelletier 
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+ *     04/24/2009-2.0 Guy Pelletier 
+ *       - 270011: JPA 2.0 MappedById support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -139,6 +141,9 @@ public class OneToOneAccessor extends ObjectAccessor {
             
             mapping.setSourceToTargetKeyFields(targetToSourceKeyFields);
             mapping.setTargetToSourceKeyFields(sourceToTargetKeyFields);    
+        } else if (hasMappedById()) {
+            // Mapping is mapped by id.
+            processMappedByIdKeys(mapping);
         } else {
             // Owning side, look for JoinColumns or PrimaryKeyJoinColumns.
             processOwningMappingKeys(mapping);

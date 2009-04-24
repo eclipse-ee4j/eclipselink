@@ -21,6 +21,8 @@
  *       - 248293: JPA 2.0 Element Collections (part 2)
  *     04/03/2009-2.0 Guy Pelletier
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+ *     04/24/2009-2.0 Guy Pelletier 
+ *       - 270011: JPA 2.0 MappedById support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -82,6 +84,17 @@ public class EmbeddedIdAccessor extends EmbeddedAccessor {
     /**
      * INTERNAL:
      */
+    protected void addIdFieldFromMapping(DatabaseMapping mapping) {
+        if (! m_idFields.containsKey(mapping.getAttributeName())) {
+            // It may be in our id fields map already if an attribute
+            // override was specified on the embedded mapping.
+            m_idFields.put(mapping.getAttributeName(), mapping.getField());
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     */
     @Override
     public boolean isEmbeddedId() {
         return true;
@@ -94,7 +107,7 @@ public class EmbeddedIdAccessor extends EmbeddedAccessor {
     @Override
     public void process() {
         // Check if we already processed an EmbeddedId for this entity.
-        if (getOwningDescriptor().hasEmbeddedIdAttribute()) {
+        if (getOwningDescriptor().hasEmbeddedId()) {
             throw ValidationException.multipleEmbeddedIdAnnotationsFound(getJavaClass(), getAttributeName(), getOwningDescriptor().getEmbeddedIdAttributeName());
         } 
         
@@ -111,29 +124,29 @@ public class EmbeddedIdAccessor extends EmbeddedAccessor {
         getOwningDescriptor().setPKClass(getReferenceClass());
             
         // Store the embeddedId attribute name.
-        getOwningDescriptor().setEmbeddedIdAttributeName(getAttributeName());
+        getOwningDescriptor().setEmbeddedIdAccessor(this);
         
         // After processing the embeddable class, we need to gather our 
         // primary keys fields that we will eventually set on the owning 
         // descriptor metadata.
-        if (getReferenceDescriptor().getMappings().isEmpty()) {
+        if (getReferenceDescriptor().getAccessors().isEmpty()) {
             throw ValidationException.embeddedIdHasNoAttributes(getDescriptor().getJavaClass(), getReferenceDescriptor().getJavaClass(), getReferenceDescriptor().getClassAccessor().getAccessType());
         } else {
             // Go through all our mappings, the fields from those mappings will
             // make up the composite primary key.
-            for (DatabaseMapping mapping : getReferenceDescriptor().getMappings()) {
-                if (mapping.isDirectToFieldMapping()) {
-                    mapping.setIsIDMapping(true);
-                    if (! m_idFields.containsKey(mapping.getAttributeName())) {
-                        // It may be in our id fields map already if an attribute
-                        // override was specified on the embedded mapping.
-                        m_idFields.put(mapping.getAttributeName(), mapping.getField());
+            for (MappingAccessor accessor : getReferenceAccessors()) {
+                if (accessor.isBasic()) {
+                    accessor.getMapping().setIsDerivedIdMapping(true);
+                    addIdFieldFromMapping(accessor.getMapping());
+                } else if (accessor.isDerivedIdClass()) {
+                    for (MappingAccessor embeddedAccessor : accessor.getReferenceAccessors()) {
+                        addIdFieldFromMapping(embeddedAccessor.getMapping());
                     }
                 } else {
-                    // EmbeddedId is solely a JPA feature, so we will not
-                    // allow the expansion of attributes for those types of
-                    // Embeddable classes beyond basics as defined in the spec.
-                    throw ValidationException.invalidMappingForEmbeddedId(getAttributeName(), getJavaClass(), mapping.getAttributeName(), getReferenceDescriptor().getJavaClass());
+                    // EmbeddedId is solely a JPA feature, so we will not allow 
+                    // the expansion of attributes for those types of Embeddable 
+                    // classes beyond basics or derived ids as defined in the spec.
+                    throw ValidationException.invalidMappingForEmbeddedId(getAttributeName(), getJavaClass(), accessor.getAttributeName(), getReferenceDescriptor().getJavaClass());
                 }
             }
         

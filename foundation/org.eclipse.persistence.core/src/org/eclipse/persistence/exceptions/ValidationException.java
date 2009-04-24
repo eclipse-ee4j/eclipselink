@@ -381,6 +381,7 @@ public class ValidationException extends EclipseLinkException {
     public static final int EMBEDDABLE_ASSOCIATION_OVERRIDE_NOT_FOUND = 7313;
     public static final int MAP_KEY_CANNOT_USE_INDIRECTION = 7314;
     public static final int UNABLE_TO_DETERMINE_MAP_KEY_CLASS = 7315;
+    public static final int INVALID_MAPPED_BY_ID_VALUE = 7316;
     
     /**
      * INTERNAL:
@@ -1176,6 +1177,13 @@ public class ValidationException extends EclipseLinkException {
         ValidationException exception = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INVALID_FILE_TYPE, args));
         exception.setErrorCode(INVALID_FILE_TYPE);
         return exception;
+    }
+    
+    public static ValidationException invalidMappedByIdValue(String mappedByIdValue, String attribute, Class idClass) {
+        Object[] args = { mappedByIdValue, attribute, idClass };
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INVALID_MAPPED_BY_ID_VALUE, args));
+        validationException.setErrorCode(INVALID_MAPPED_BY_ID_VALUE);
+        return validationException;
     }
     
     public static ValidationException invalidMapping(Class entityClass, Class targetClass) {

@@ -23,6 +23,8 @@
  *       - 248293: JPA 2.0 Element Collections (part 2)
  *     03/27/2009-2.0 Guy Pelletier 
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+ *     04/24/2009-2.0 Guy Pelletier 
+ *       - 270011: JPA 2.0 MappedById support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
@@ -92,6 +94,19 @@ public abstract class MetadataAccessor extends ORMetadata {
     
     /**
      * INTERNAL:
+     */
+    public MetadataAccessor(Annotation annotation, MetadataAccessibleObject accessibleObject, MetadataDescriptor descriptor, MetadataProject project) {
+        super(annotation, accessibleObject);
+        
+        m_project = project;
+        m_descriptor = descriptor;
+        
+        // Look for an explicit access type specification.
+        initAccess();
+    }
+    
+    /**
+     * INTERNAL:
      * Process and add the globally defined converters to the project.
      */
     public void addConverters() {
@@ -106,19 +121,6 @@ public abstract class MetadataAccessor extends ORMetadata {
         
         // Process the struct converters if defined
         processStructConverter();
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public MetadataAccessor(Annotation annotation, MetadataAccessibleObject accessibleObject, MetadataDescriptor descriptor, MetadataProject project) {
-        super(annotation, accessibleObject);
-        
-        m_project = project;
-        m_descriptor = descriptor;
-        
-        // Look for an explicit access type specification.
-        initAccess();
     }
     
     /**

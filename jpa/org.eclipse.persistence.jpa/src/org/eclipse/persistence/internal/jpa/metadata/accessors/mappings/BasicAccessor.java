@@ -23,6 +23,8 @@
  *       - 248293: JPA 2.0 Element Collections (part 2)
  *     03/27/2009-2.0 Guy Pelletier 
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+ *     04/24/2009-2.0 Guy Pelletier 
+ *       - 270011: JPA 2.0 MappedById support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -229,6 +231,15 @@ public class BasicAccessor extends DirectAccessor {
     
     /**
      * INTERNAL:
+     * Return true if this accessor represents a basic mapping.
+     */
+    @Override
+    public boolean isBasic() {
+        return true;
+    }
+    
+    /**
+     * INTERNAL:
      * Method to return whether a class is a collection or not. 
      */
     protected boolean isCollectionClass(Class cls) {
@@ -272,8 +283,8 @@ public class BasicAccessor extends DirectAccessor {
         mapping.setIsOptional(isOptional());
         mapping.setIsLazy(usesIndirection());
         
-        // Derived ID: set if this mapping has been marked as an ID 
-        mapping.setIsIDMapping(isId());
+        // Derived ID: set if this mapping has been marked as an ID.
+        mapping.setIsDerivedIdMapping(isId());
 
         // Will check for PROPERTY access.
         setAccessorMethods(mapping);

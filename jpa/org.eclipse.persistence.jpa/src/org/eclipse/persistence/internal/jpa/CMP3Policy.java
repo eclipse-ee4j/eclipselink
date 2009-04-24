@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     02/02/2009-2.0 Chris delahunt 
  *       - 241765: JPA 2.0 Derived identities
+  *     04/24/2009-2.0 Guy Pelletier 
+ *       - 270011: JPA 2.0 MappedById support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
@@ -28,7 +30,6 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetField;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
@@ -62,6 +63,39 @@ public class CMP3Policy extends CMPPolicy {
 
     public CMP3Policy() {
         super();
+    }
+    
+    /**
+     * INTERNAL: 
+     * Add the read only mappings for the given field to the allMappings list.
+     * @param descriptor
+     * @param field
+     * @param allMappings
+     */
+    protected void addWritableMapping(ClassDescriptor descriptor, DatabaseField field, List allMappings) {
+        DatabaseMapping writableMapping = descriptor.getObjectBuilder().getMappingForField(field);
+        
+        if (writableMapping != null) {
+            // Since it may be another aggregate mapping, add it to 
+            // the allMappings list so we can drill down on it as 
+            // well.
+            allMappings.add(writableMapping);
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Add the writable mapping for the given field to the allMappings list.
+     * @param descriptor
+     * @param field
+     * @param allMappings
+     */
+    protected void addReadOnlyMappings(ClassDescriptor descriptor, DatabaseField field, List allMappings) {
+        List readOnlyMappings = descriptor.getObjectBuilder().getReadOnlyMappingsForField(field);
+        
+        if (readOnlyMappings != null) {
+            allMappings.addAll(readOnlyMappings);
+        }
     }
     
     /**
@@ -183,6 +217,28 @@ public class CMP3Policy extends CMPPolicy {
         }
         return pkVector;
     }
+    
+    /**
+     * INTERNAL:
+     * @param cls
+     * @param fieldName
+     * @return the field from the class with name equal to fieldName.
+     * @throws NoSuchFieldException
+     */
+    protected Field getField(Class cls, String fieldName) throws NoSuchFieldException {
+        Field keyField = null;
+        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+            try {
+                keyField = (Field)AccessController.doPrivileged(new PrivilegedGetField(cls, fieldName, true));
+            } catch (PrivilegedActionException exception) {
+                throw (NoSuchFieldException) exception.getException();
+            }
+        } else {
+            keyField = PrivilegedAccessHelper.getField(cls, fieldName, true);
+        }
+        
+        return keyField;
+    }
 
     /**
      * INTERNAL:
@@ -230,7 +286,7 @@ public class CMP3Policy extends CMPPolicy {
             throw DescriptorException.errorUsingPrimaryKey(key, this.getDescriptor(), e);
         }
     }
-
+    
     /**
      * INTERNAL:
      * Cache the bean's primary key fields so speed up creating of primary key
@@ -247,135 +303,112 @@ public class CMP3Policy extends CMPPolicy {
         fieldToAccessorMap = new HashMap<DatabaseField,KeyElementAccessor>();
         int numberOfIDFields = descriptor.getPrimaryKeyFields().size();
         pkAttributes = new KeyElementAccessor[numberOfIDFields];
-        
         Iterator attributesIter = descriptor.getPrimaryKeyFields().iterator();
+        
         // Used fields in case it is an embedded class
         for (int i = 0; attributesIter.hasNext(); i++) {
             DatabaseField field = (DatabaseField)attributesIter.next();
             
-            // This next section looks strange but we need to check all mappings
-            // for this field, not just the writable one and instead of having 
-            // multiple sections of duplicate code I will just add the writable 
-            // mapping to the list.
-            List allMappings = descriptor.getObjectBuilder().getReadOnlyMappingsForField(field);
-            if (allMappings == null) {
-                allMappings = new Vector(1);
-            } 
-            allMappings.add(descriptor.getObjectBuilder().getMappingForField(field));
+            // We need to check all mappings for this field, not just the writable one and instead of 
+            // having multiple sections of duplicate code we'll just add the writable mapping directly 
+            // to the list.
+            List allMappings = new ArrayList(1);
+            addReadOnlyMappings(descriptor, field, allMappings);
+            addWritableMapping(descriptor, field, allMappings);
             
-            DatabaseMapping mapping = null;
-            Exception elementIsFound = null; // use exception existence to determine if element was found, so we can throw exception later
-            for (int index = (allMappings.size() - 1); index >= 0; --index) { // start with the writable first
-                mapping = (DatabaseMapping) allMappings.get(index);
-                if (descriptor.isIDSpecified()&& !mapping.isIDMapping()) {
-                    //if ID is specified, the mapping we want is marked as an ID mapping
-                    continue;
+            // This exception will be used to determine if the element (field or method) from 
+            // the mapping was found on the key class was found or not and throw an exception otherwise.
+            Exception noSuchElementException = null;
+            
+            // We always start by looking at the writable mappings first. Our preference is to use the 
+            // writable mappings unless a derived id mapping is specified in which case we'll want to use 
+            // that mapping instead when we find it.
+            for (int index = (allMappings.size() - 1); index >= 0; --index) {
+                DatabaseMapping mapping = (DatabaseMapping) allMappings.get(index);
+                
+                // So here is the ugly check to see if we want to further look at this mapping as part of 
+                // the id or not.
+                if (descriptor.hasDerivedId() && ! mapping.isDerivedIdMapping()) {
+                    // If the mapping is not a derived id, then we need to keep looking for the mapping that 
+                    // is marked as the derived id mapping. However, in a mapped by id case, we may have 
+                    // 'extra' non-derived id fields within the embeddable class (and the writable mapping 
+                    // that we care about at this point will be defined on the embeddable descritor). Therefore, 
+                    // we can't bail at this point and must drill down further into the embeddable to make sure
+                    // we initialize this portion of the composite id.
+                    if (mapping.isAggregateMapping() && allMappings.size() > 1) {
+                        // Bail ... more mappings to check.
+                        continue;
+                    }
                 } else if (mapping.isForeignReferenceMapping() && !mapping.isOneToOneMapping()) {
-                 // JPA 2.0 allows DerrivedIds, so Id fields are either OneToOne or DirectToField mappings
+                    // JPA 2.0 allows DerrivedIds, so Id fields are either OneToOne or DirectToField mappings
                     continue;
-                } else if (mapping.isAggregateMapping()) { 
-                    // either this aggregate is the key class, or we need to drill down.
-                    ObjectBuilder builder = mapping.getReferenceDescriptor().getObjectBuilder();
-                    List aggregateMappings = builder.getReadOnlyMappingsForField(field);
-                    if ((aggregateMappings != null) && (!aggregateMappings.isEmpty())) {
-                        // Add all the mappings from the aggregate to be
-                        // processed.
-                        allMappings.addAll(aggregateMappings);
-                    }
-
-                    DatabaseMapping writableMapping = builder.getMappingForField(field);
+                }
+                
+                if (mapping.isAggregateMapping()) { 
+                    // Either this aggregate is the key class, or we need to drill down further. Add the read 
+                    // only and writable mappings from the aggregate.
+                    addReadOnlyMappings(mapping.getReferenceDescriptor(), field, allMappings);
+                    addWritableMapping(mapping.getReferenceDescriptor(), field, allMappings);
                     
-                    if (writableMapping != null) {
-                        // Since it may be another aggregate mapping, add it to 
-                        // the allMappings list so we can drill down on it as 
-                        // well.
-                        allMappings.add(writableMapping);
-                    }
-                    
-                    // Since we added the mappings from this aggregate mapping, 
-                    // we should remove this aggregate mapping from the
-                    // allMappings list. Otherwise, if the mapping for the 
-                    // primary key field is not found in the aggregate (or 
-                    // nested aggregate) then we will hit an infinite loop when
-                    // searching the aggregate and its mappings.
-                    // Note: This is cautionary, since in reality, this 'should'
-                    // never happen, but if it does we certainly would rather
-                    // throw an exception instead of causing an infinite loop.
+                    // Since we added the mappings from this aggregate mapping, we should remove this aggregate 
+                    // mapping from the allMappings list. Otherwise, if the mapping for the primary key field is 
+                    // not found in the aggregate (or nested aggregate) then we will hit an infinite loop when
+                    // searching the aggregate and its mappings. Note: This is cautionary, since in reality, this 
+                    // 'should' never happen, but if it does we certainly would rather throw an exception instead 
+                    // of causing an infinite loop.
                     allMappings.remove(mapping);
                     
-                    // Update the index to parse the next mapping.
-                    index = allMappings.size();
-                        
-                    // We modified the allMappings list, start over!
-                    continue; // for loop.
-                } 
-                
-     
-                String fieldName = mapping.getAttributeName();
-                if (keyClass == null){
-                    // must be a primitive since key class was not set
-                    pkAttributes[i] = new KeyIsElementAccessor(fieldName, field, mapping);
-                    if (mapping.isDirectToFieldMapping()){
-                        setPKClass(ConversionManager.getObjectClass(mapping.getAttributeClassification()));
-                    } else if (mapping.isOneToOneMapping()) {
-                        ClassDescriptor refDescriptor = mapping.getReferenceDescriptor();
-                        //ensure the referenced descriptor was initialized
-                        refDescriptor.initialize(session);
-                        CMPPolicy refPolicy = refDescriptor.getCMPPolicy();
-                        setPKClass(refPolicy.getPKClass());
-                    } 
-                    fieldToAccessorMap.put(field, pkAttributes[i]);
-                    elementIsFound = null;
+                    // Update the index to parse the next mapping correctly.
+                    index = allMappings.size();                        
                 } else {
-                    try {
-                        Field keyField = null;
-                        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                            try {
-                                keyField = (Field)AccessController.doPrivileged(new PrivilegedGetField(keyClass, fieldName, true));
-                            } catch (PrivilegedActionException exception) {
-                                throw (NoSuchFieldException)exception.getException();
-                            }
-                        } else {
-                            keyField = PrivilegedAccessHelper.getField(keyClass, fieldName, true);
-                        }
-                        pkAttributes[i] = new FieldAccessor(keyField, fieldName, field, mapping);
+                    String fieldName = (mapping.hasMappedByIdValue()) ? mapping.getMappedByIdValue() : mapping.getAttributeName();
+                
+                    if (keyClass == null){
+                        // must be a primitive since key class was not set
+                        pkAttributes[i] = new KeyIsElementAccessor(fieldName, field, mapping);
+                        if (mapping.isDirectToFieldMapping()){
+                            setPKClass(ConversionManager.getObjectClass(mapping.getAttributeClassification()));
+                        } else if (mapping.isOneToOneMapping()) {
+                            ClassDescriptor refDescriptor = mapping.getReferenceDescriptor();
+                            // ensure the referenced descriptor was initialized
+                            refDescriptor.initialize(session);
+                            CMPPolicy refPolicy = refDescriptor.getCMPPolicy();
+                            setPKClass(refPolicy.getPKClass());
+                        } 
                         fieldToAccessorMap.put(field, pkAttributes[i]);
-                        elementIsFound = null;
-                    } catch (NoSuchFieldException ex) {
-                        //must be a property
-                        StringBuffer buffer = new StringBuffer();
-                        buffer.append("get");
-                        buffer.append(fieldName.substring(0, 1).toUpperCase());
-                        buffer.append(fieldName.substring(1));
+                        noSuchElementException = null;
+                    } else {
                         try {
-                            Method method = null;
-                            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                                try {
-                                    method = AccessController.doPrivileged(new PrivilegedGetMethod(keyClass, buffer.toString(), new Class[] {  }, true));
-                                } catch (PrivilegedActionException exception) {
-                                    throw (NoSuchMethodException)exception.getException();
-                                }
-                            } else {
-                                method = PrivilegedAccessHelper.getMethod(keyClass, buffer.toString(), new Class[] {  }, true);
-                            }
-                            pkAttributes[i] = new PropertyAccessor(method, fieldName, field, mapping);
+                            pkAttributes[i] = new FieldAccessor(getField(keyClass, fieldName), fieldName, field, mapping);
                             fieldToAccessorMap.put(field, pkAttributes[i]);
-                            elementIsFound = null;
-                        } catch (NoSuchMethodException exs) {
-                            // not a field not a method, but a pk class is defined.  Check for other mappings
-                            elementIsFound = exs;
+                            noSuchElementException = null;
+                        } catch (NoSuchFieldException ex) {
+                            // Try a property instead.
+                            try {
+                                pkAttributes[i] = new PropertyAccessor(getMethodFromFieldName(keyClass, fieldName), fieldName, field, mapping);
+                                fieldToAccessorMap.put(field, pkAttributes[i]);
+                                noSuchElementException = null;
+                            } catch (NoSuchMethodException exs) {
+                                // Not a field not a method, but a pk class is 
+                                // defined. Check for other mappings
+                                noSuchElementException = exs;
+                            }
                         }
                     }
+                 
+                    if (mapping.isDerivedIdMapping() || noSuchElementException == null) {
+                        // Break out of the loop as we do not need to look for
+                        // any more mappings
+                        break;
+                    }
                 }
-                
-                if ( mapping.isIDMapping() || (elementIsFound == null) ) {
-                    break;// break out of the loop we do not need to look for any more
-                }
-            }//end for loop
-            if (elementIsFound != null) {
-                throw DescriptorException.errorUsingPrimaryKey(keyClass, getDescriptor(), elementIsFound);
+            } // end for loop
+            
+            if (noSuchElementException != null) {
+                throw DescriptorException.errorUsingPrimaryKey(keyClass, getDescriptor(), noSuchElementException);
             }
-        }//end first for loop
+        } // end first for loop
+        
         return pkAttributes;
     }
 
@@ -387,6 +420,44 @@ public class CMP3Policy extends CMPPolicy {
         return this.keyClassFields;
     }
 
+    /**
+     * INTERNAL:
+     * @param cls
+     * @param methodName
+     * @return the method from the class with name equal to methodName.
+     * @throws NoSuchMethodException
+     */
+    protected Method getMethod(Class cls, String methodName) throws NoSuchMethodException {
+        Method method = null;
+        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+            try {
+                method = AccessController.doPrivileged(new PrivilegedGetMethod(cls, methodName, new Class[] {}, true));
+            } catch (PrivilegedActionException exception) {
+                throw (NoSuchMethodException)exception.getException();
+            }
+        } else {
+            method = PrivilegedAccessHelper.getMethod(cls, methodName, new Class[] {}, true);
+        }
+        
+        return method;
+    }
+
+    /**
+     * INTERNAL:
+     * @param cls
+     * @param fieldName
+     * @return Returns the getMethod for the given fieldName.
+     * @throws NoSuchMethodException
+     */
+    protected Method getMethodFromFieldName(Class cls, String fieldName) throws NoSuchMethodException {
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("get");
+        buffer.append(fieldName.substring(0, 1).toUpperCase());
+        buffer.append(fieldName.substring(1));
+        
+        return getMethod(cls, buffer.toString());
+    }
+    
     /**
      * INTERNAL:
      * This class is used when the key class element is a property

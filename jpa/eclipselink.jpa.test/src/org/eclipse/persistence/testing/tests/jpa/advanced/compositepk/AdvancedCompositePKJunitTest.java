@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     04/24/2009-2.0 Guy Pelletier 
+ *       - 270011: JPA 2.0 MappedById support
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.advanced.compositepk;
 
@@ -28,13 +30,30 @@ import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Scientist
 import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Department;
 import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.DepartmentPK;
 import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.CompositePKTableCreator;
+import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.BrigadierGeneral;
+import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.Captain;
+import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.CaptainId;
+import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.Corporal;
+import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.CorporalId;
 import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.DepartmentAdminRole;
 import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.DepartmentAdminRolePK;
 import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.Administrator;
+import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.General;
+import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.Lieutenant;
+import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.LieutenantGeneral;
+import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.LieutenantId;
+import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.Major;
+import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.MajorGeneral;
+import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.MajorId;
+import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.MasterCorporal;
+import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.MasterCorporalId;
+import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.Private;
+import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.PrivateId;
+import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.Sargeant;
+import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.SecondLieutenant;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 
- 
 public class AdvancedCompositePKJunitTest extends JUnitTestCase {
     private static DepartmentPK m_departmentPK;
     private static ScientistPK m_scientist1PK, m_scientist2PK, m_scientist3PK, m_jScientistPK; 
@@ -58,6 +77,14 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedCompositePKJunitTest("testReadJuniorScientist"));
         suite.addTest(new AdvancedCompositePKJunitTest("testAnyAndAll"));
         suite.addTest(new AdvancedCompositePKJunitTest("testDepartmentAdmin")); 
+      
+        // MappedById tests (see spec page 30 for more info)
+        suite.addTest(new AdvancedCompositePKJunitTest("testMappedByIdExample1"));
+        suite.addTest(new AdvancedCompositePKJunitTest("testMappedByIdExample2"));
+        suite.addTest(new AdvancedCompositePKJunitTest("testMappedByIdExample3"));
+        suite.addTest(new AdvancedCompositePKJunitTest("testMappedByIdExample4"));
+        suite.addTest(new AdvancedCompositePKJunitTest("testMappedByIdExample5"));
+        suite.addTest(new AdvancedCompositePKJunitTest("testMappedByIdExample6"));
         
         return suite;
     }
@@ -284,5 +311,227 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
                 fail(testName + ": " + s + "contained in results but not in controlResults");
             }
         }
+    }
+    
+    public void testMappedByIdExample1() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        Sargeant sargeant = new Sargeant();
+        MasterCorporal masterCorporal = new MasterCorporal();
+        MasterCorporalId masterCorporalId = new MasterCorporalId();
+        
+        try {    
+            sargeant.setName("Sarge");
+            em.persist(sargeant);
+            
+            masterCorporalId.setName("Corpie");
+            masterCorporal.setId(masterCorporalId);
+            masterCorporal.setSargeant(sargeant);
+            em.persist(masterCorporal);
+            
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            closeEntityManager(em);
+            throw e;
+        }
+        
+        clearCache();
+        em = createEntityManager();
+        
+        Sargeant refreshedSargeant = em.find(Sargeant.class, sargeant.getSargeantId());       
+        assertTrue("The sargeant read back did not match the original", getServerSession().compareObjects(sargeant, refreshedSargeant));
+
+        MasterCorporal refreshedMasterCorporal = em.find(MasterCorporal.class, masterCorporalId);
+        assertTrue("The master corporal read back did not match the original", getServerSession().compareObjects(masterCorporal, refreshedMasterCorporal));  
+    }
+    
+    public void testMappedByIdExample2() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        Major major = new Major();
+        MajorId majorId;
+        Captain captain = new Captain();
+        CaptainId captainId = new CaptainId();
+        
+        try {    
+            major.setFirstName("Mr.");
+            major.setLastName("Major");
+            majorId = major.getPK();
+            em.persist(major);
+            
+            captainId.setName("Captain Sparrow");
+            captain.setId(captainId);
+            captain.setMajor(major);
+            em.persist(captain);
+            
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            closeEntityManager(em);
+            throw e;
+        }
+        
+        clearCache();
+        em = createEntityManager();
+        
+        Major refreshedMajor = em.find(Major.class, majorId);       
+        assertTrue("The major read back did not match the original", getServerSession().compareObjects(major, refreshedMajor));
+
+        Captain refreshedCaptain = em.find(Captain.class, captainId);
+        assertTrue("The captain read back did not match the original", getServerSession().compareObjects(captain, refreshedCaptain));  
+    }
+    
+    public void testMappedByIdExample3() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        Corporal corporal = new Corporal();
+        CorporalId corporalId = new CorporalId();
+        Private aPrivate = new Private();
+        PrivateId privateId = new PrivateId();
+        
+        try {
+            corporalId.setFirstName("Corporal");
+            corporalId.setLastName("Kenny");
+            corporal.setCorporalId(corporalId);
+            em.persist(corporal);
+            
+            privateId.setName("Private Ryan");
+            aPrivate.setId(privateId);
+            aPrivate.setCorporal(corporal);
+            em.persist(aPrivate);
+            
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            closeEntityManager(em);
+            throw e;
+        }
+        
+        clearCache();
+        em = createEntityManager();        
+        
+        Corporal refreshedCorporal = em.find(Corporal.class, corporalId);       
+        assertTrue("The corporal read back did not match the original", getServerSession().compareObjects(corporal, refreshedCorporal));
+
+        Private refreshedPrivate = em.find(Private.class, privateId);
+        assertTrue("The private read back did not match the original", getServerSession().compareObjects(aPrivate, refreshedPrivate));  
+    }
+    
+    public void testMappedByIdExample4() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        General general = new General();
+        LieutenantGeneral lieutenantGeneral = new LieutenantGeneral();
+        
+        try {
+            em.persist(general);
+            
+            lieutenantGeneral.setGeneral(general);
+            em.persist(lieutenantGeneral);
+            
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            closeEntityManager(em);
+            throw e;
+        }
+        
+        clearCache();
+        em = createEntityManager();        
+        
+        General refreshedGeneral = em.find(General.class, general.getGeneralId());
+        assertTrue("The general read back did not match the original", getServerSession().compareObjects(general, refreshedGeneral));
+
+        LieutenantGeneral refreshedLieutenantGeneral = em.find(LieutenantGeneral.class, lieutenantGeneral.getId());
+        assertTrue("The lieutenant general read back did not match the original", getServerSession().compareObjects(lieutenantGeneral, refreshedLieutenantGeneral));  
+    }
+
+    public void testMappedByIdExample5() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        MajorGeneral majorGeneral = new MajorGeneral();
+        BrigadierGeneral brigadierGeneral = new BrigadierGeneral();
+        
+        try {
+            majorGeneral.setFirstName("Major");
+            majorGeneral.setLastName("Bilko");
+            
+            // Test the cascade persist on this mapping.
+            brigadierGeneral.setMajorGeneral(majorGeneral);
+            em.persist(brigadierGeneral);
+            
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            closeEntityManager(em);
+            throw e;
+        }
+        
+        clearCache();
+        em = createEntityManager();        
+        
+        MajorGeneral refreshedMajorGeneral = em.find(MajorGeneral.class, majorGeneral.getPK());
+        assertTrue("The major general read back did not match the original", getServerSession().compareObjects(majorGeneral, refreshedMajorGeneral));
+
+        BrigadierGeneral refreshedBrigadierGeneral = em.find(BrigadierGeneral.class, brigadierGeneral.getId());
+        assertTrue("The brigadier general read back did not match the original", getServerSession().compareObjects(brigadierGeneral, refreshedBrigadierGeneral));  
+    }
+    
+    public void testMappedByIdExample6() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        Lieutenant lieutenant = new Lieutenant();
+        LieutenantId lieutenantId = new LieutenantId();
+        SecondLieutenant secondLieutenant = new SecondLieutenant();
+        
+        try {
+            lieutenantId.setFirstName("Lieutenant");
+            lieutenantId.setLastName("Dan");
+            lieutenant.setId(lieutenantId);
+            em.persist(lieutenant);
+            
+            secondLieutenant.setLieutenant(lieutenant);
+            em.persist(secondLieutenant);
+            
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            closeEntityManager(em);
+            throw e;
+        }
+        
+        clearCache();
+        em = createEntityManager();        
+        
+        Lieutenant refreshedLieutenant = em.find(Lieutenant.class, lieutenant.getId());
+        assertTrue("The lieutenant read back did not match the original", getServerSession().compareObjects(lieutenant, refreshedLieutenant));
+
+        SecondLieutenant refreshedSecondLieutenant = em.find(SecondLieutenant.class, secondLieutenant.getId());
+        assertTrue("The second lieutenant read back did not match the original", getServerSession().compareObjects(secondLieutenant, refreshedSecondLieutenant));  
     }
 }

@@ -22,6 +22,8 @@
  *       - 248293: JPA 2.0 Element Collections (part 2)
  *     03/27/2009-2.0 Guy Pelletier 
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+ *     04/24/2009-2.0 Guy Pelletier 
+ *       - 270011: JPA 2.0 MappedById support
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
@@ -430,6 +432,14 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      */
     public boolean isId(MetadataDescriptor descriptor) {
         return isAnnotationPresent(Id.class, descriptor);
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor represents an id mapping.
+     */
+    public boolean isDerivedIdClass(MetadataDescriptor descriptor) {
+        return descriptor.isEmbeddable() && descriptor.getProject().isIdClass(getRawClass(descriptor));
     }
     
     /**

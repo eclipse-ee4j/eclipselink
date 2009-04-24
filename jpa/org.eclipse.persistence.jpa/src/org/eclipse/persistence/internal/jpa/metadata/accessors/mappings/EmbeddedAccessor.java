@@ -19,6 +19,8 @@
  *       - 248293: JPA 2.0 Element Collections (part 2)
  *     03/27/2009-2.0 Guy Pelletier 
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+ *     04/24/2009-2.0 Guy Pelletier 
+ *       - 270011: JPA 2.0 MappedById support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -31,6 +33,8 @@ import javax.persistence.AssociationOverrides;
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 
@@ -38,6 +42,7 @@ import org.eclipse.persistence.internal.jpa.metadata.columns.AssociationOverride
 import org.eclipse.persistence.internal.jpa.metadata.columns.AttributeOverrideMetadata;
 
 import org.eclipse.persistence.mappings.AggregateObjectMapping;
+import org.eclipse.persistence.mappings.OneToOneMapping;
 
 /**
  * An embedded relationship accessor. It may define all the same attributes
@@ -120,6 +125,23 @@ public class EmbeddedAccessor extends MappingAccessor {
     
     /**
      * INTERNAL:
+     * This method should only be called once processing has been completed.
+     * It assumes the aggregate object mapping is available and fully processed.
+     * This will method will check for an attribute override field that was
+     * used, otherwise returns the field name provided.
+     */
+    public DatabaseField getField(String fieldName) {
+        AggregateObjectMapping mapping = (AggregateObjectMapping) getMapping();
+        
+        if (mapping.getAggregateToSourceFieldNames().containsKey(fieldName)) {
+            return new DatabaseField(mapping.getAggregateToSourceFieldNames().get(fieldName));
+        } else {
+            return new DatabaseField(fieldName);
+        }
+    }
+    
+    /**
+     * INTERNAL:
      */
     @Override
     public void initXMLObject(MetadataAccessibleObject accessibleObject) {
@@ -163,6 +185,38 @@ public class EmbeddedAccessor extends MappingAccessor {
         
         // Process a @ReturnInsert and @ReturnUpdate (to log a warning message)
         processReturnInsertAndUpdate();
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void processDerivedIdFields(OneToOneMapping mapping, MetadataDescriptor referenceDescriptor) {
+        if (referenceDescriptor.hasEmbeddedId()) {
+           // Case 3: embedded class from embedded id to parent entity.
+           // No validation needed, just use the columns from the mappings
+           // from the mappingAccessor (taking attribute overrides into
+           // consideration)
+           for (MappingAccessor basicAccessor : getReferenceAccessors()) {
+               // Should only be basic attributes
+               String defaultFieldName = basicAccessor.getMapping().getField().getName();
+               DatabaseField dependentField = getField(defaultFieldName);
+
+               EmbeddedIdAccessor embeddedIdAccessor = referenceDescriptor.getEmbeddedIdAccessor();
+               DatabaseField parentField = embeddedIdAccessor.getField(defaultFieldName);
+
+               mapping.addForeignKeyField(dependentField, parentField);
+           }
+       } else {
+           // Case 2: id class mapping from embedded id to parent entity.
+           // No validation needed, just use the columns from the mappings
+           // from the mappingAccessor.
+           for (MappingAccessor basicAccessor : getReferenceAccessors()) {
+               DatabaseField dependentField = ((BasicAccessor) basicAccessor).getField();
+               DatabaseField parentField = referenceDescriptor.getAccessorFor(basicAccessor.getAttributeName()).getMapping().getField();
+               
+               mapping.addForeignKeyField(dependentField, parentField);
+           }
+       }
     }
     
     /**

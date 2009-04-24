@@ -13,6 +13,8 @@
  *       - 218084: Implement metadata merging functionality between mapping files
  *     08/27/2008-1.1 Guy Pelletier 
  *       - 211329: Add sequencing on non-id attribute(s) support to the EclipseLink-ORM.XML Schema
+ *     04/24/2009-2.0 Guy Pelletier 
+ *       - 270011: JPA 2.0 MappedById support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -64,7 +66,7 @@ public class IdAccessor extends BasicAccessor {
         
         String attributeName = getAttributeName();
 
-        if (getOwningDescriptor().hasEmbeddedIdAttribute()) {
+        if (getOwningDescriptor().hasEmbeddedId()) {
             // We found both an Id and an EmbeddedId, throw an exception.
             throw ValidationException.embeddedIdAndIdAnnotationFound(getJavaClass(), getOwningDescriptor().getEmbeddedIdAttributeName(), attributeName);
         }

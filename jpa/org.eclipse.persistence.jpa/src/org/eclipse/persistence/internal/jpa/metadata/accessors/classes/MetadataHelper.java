@@ -14,6 +14,8 @@
  *       - 218084: Implement metadata merging functionality between mapping files
  *     12/12/2008-1.1 Guy Pelletier 
  *       - 249860: Implement table per class inheritance support.  
+ *     04/24/2009-2.0 Guy Pelletier 
+ *       - 270011: JPA 2.0 MappedById support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -43,6 +45,24 @@ import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
  */
 public class MetadataHelper {
     public static final String PERSISTENCE_PACKAGE_PREFIX = "javax.persistence";
+    
+    /**
+     * INTERNAL:
+     * Get the declared fields from a class using the doPriveleged security
+     * access.
+     */
+    static Field[] getDeclaredFields(Class cls) {
+        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+            try {
+                return (Field[])AccessController.doPrivileged(new PrivilegedGetDeclaredFields(cls));
+            } catch (PrivilegedActionException exception) {
+                // no checked exceptions are thrown, so we should not get here
+                return null;
+            }
+        } else {
+            return PrivilegedAccessHelper.getDeclaredFields(cls);
+        }
+    } 
     
     /**
      * INTERNAL:
@@ -85,25 +105,7 @@ public class MetadataHelper {
         }
         
         return field;
-    }
-    
-    /**
-     * INTERNAL:
-     * Get the declared fields from a class using the doPriveleged security
-     * access.
-     */
-    static Field[] getFields(Class cls) {
-        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-            try {
-                return (Field[])AccessController.doPrivileged(new PrivilegedGetDeclaredFields(cls));
-            } catch (PrivilegedActionException exception) {
-                // no checked exceptions are thrown, so we should not get here
-                return null;
-            }
-        } else {
-            return PrivilegedAccessHelper.getDeclaredFields(cls);
-        }
-    }  
+    } 
     
     /**
      * INTERNAL:

@@ -23,6 +23,8 @@
  *       - 248293: JPA 2.0 Element Collections (part 2)
  *     03/27/2009-2.0 Guy Pelletier 
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+ *     04/24/2009-2.0 Guy Pelletier 
+ *       - 270011: JPA 2.0 MappedById support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -228,6 +230,10 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         return m_optimisticLocking;
     }
 
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public PrimaryKeyMetadata getPrimaryKey() {
         return m_primaryKey;
     }
@@ -294,6 +300,32 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      */
     public Boolean getReadOnly() {
         return m_readOnly;
+    }
+    
+    /**
+     * INTERNAL:
+     * This method is called in the pre-processing stage since we want to
+     * gather a list of id classes used trough-out the persistence unit. This
+     * will help us build accessors, namely, mappedById accessors that can
+     * reference an id class type.
+     */
+    protected void initIdClass() {
+        if (m_idClass == null || m_idClass.equals(void.class)) {
+            // Check for an IdClass annotation.
+            if (isAnnotationPresent(IdClass.class)) {
+                m_idClass = (Class) MetadataHelper.invokeMethod("value", getAnnotation(IdClass.class));
+            }
+        } else {
+            // We have an XML specification. Log a message if an annotation has also been defined.
+            if (isAnnotationPresent(IdClass.class)) {
+                getLogger().logWarningMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, getAnnotation(IdClass.class), getJavaClassName(), getLocation());
+            }
+        }
+        
+        // Add the id class to the known list of id classes for this project.
+        if (m_idClass != null && ! m_idClass.equals(void.class)) {
+            getProject().addIdClass(m_idClass.getName());
+        }
     }
     
     /**
@@ -365,6 +397,9 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     @Override
     public void preProcess() {
         setIsPreProcessed();
+        
+        // Add any id class definition to the project.
+        initIdClass();
         
         // Add the accessors and converters from this mapped superclass.
         addAccessors();
@@ -696,43 +731,29 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * type of the entity for which it is the primary key.
      */
     protected void processIdClass() {
-        Annotation idClass = getAnnotation(IdClass.class);
-        
-        if (m_idClass == null || m_idClass.equals(void.class)) {
-            // Check for an IdClass annotation.
-            if (idClass == null) {
-                return;
+        if (m_idClass != null && ! m_idClass.equals(void.class)) {
+            getDescriptor().setPKClass(m_idClass);
+            
+            if (getDescriptor().usesDefaultPropertyAccess()) {
+                for (Method method : MetadataHelper.getDeclaredMethods(m_idClass)) {
+                    MetadataMethod metadataMethod = new MetadataMethod(method, getLogger());
+                
+                    // The is valid check will throw an exception if needed.
+                    if (metadataMethod.isValidPersistenceMethod(false, getDescriptor())) {
+                        getDescriptor().addPKClassId(metadataMethod.getAttributeName(), metadataMethod.getRelationType());
+                    }
+                }    
             } else {
-                m_idClass = (Class) MetadataHelper.invokeMethod("value", idClass); 
-            }
-        } else {
-            // We have an XML specification. Log a message if necessary.
-            if (idClass != null) {
-                getLogger().logWarningMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, idClass, getJavaClassName(), getLocation());
+                for (Field field : MetadataHelper.getDeclaredFields(m_idClass)) {
+                    MetadataField metadataField = new MetadataField(field, getLogger());
+                
+                    // The is valid check will throw an exception if needed.
+                    if (metadataField.isValidPersistenceField(false, getDescriptor())) {
+                        getDescriptor().addPKClassId(field.getName(), field.getGenericType());
+                    }
+                }
             }
         }
-            
-        getDescriptor().setPKClass(m_idClass);
-            
-        if (getDescriptor().usesDefaultPropertyAccess()) {
-            for (Method method : MetadataHelper.getDeclaredMethods(m_idClass)) {
-                MetadataMethod metadataMethod = new MetadataMethod(method, getLogger());
-                
-                // The is valid check will throw an exception if needed.
-                if (metadataMethod.isValidPersistenceMethod(false, getDescriptor())) {
-                    getDescriptor().addPKClassId(metadataMethod.getAttributeName(), metadataMethod.getRelationType());
-                }
-            }    
-        } else {
-            for (Field field : MetadataHelper.getFields(m_idClass)) {
-                MetadataField metadataField = new MetadataField(field, getLogger());
-                
-                // The is valid check will throw an exception if needed.
-                if (metadataField.isValidPersistenceField(false, getDescriptor())) {
-                    getDescriptor().addPKClassId(field.getName(), field.getGenericType());
-                }
-            }
-        } 
     }
     
     /**

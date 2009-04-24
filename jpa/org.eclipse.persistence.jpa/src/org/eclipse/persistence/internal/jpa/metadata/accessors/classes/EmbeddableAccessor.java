@@ -29,6 +29,8 @@
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  *     04/03/2009-2.0 Guy Pelletier
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+ *     04/24/2009-2.0 Guy Pelletier 
+ *       - 270011: JPA 2.0 MappedById support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -60,6 +62,28 @@ public class EmbeddableAccessor extends ClassAccessor {
      */
     public EmbeddableAccessor(Annotation annotation, Class cls, MetadataProject project) {
         super(annotation, cls, project);
+    }
+    
+    /**
+     * INTERNAL
+     * Ensure any embeddable classes that are discovered during pre-process
+     * are added to the project. The newly discovered embeddable accesors will
+     * also be pre-processed now as well.
+     */
+    @Override
+    protected void addPotentialEmbeddableAccessor(Class potentialEmbeddableClass) {
+        if (potentialEmbeddableClass != null) {
+            // Get embeddable accessor will add the embeddable to the 
+            // project if it is a valid embeddable. That is, if one the class
+            // has an Embeddable annotation of the class is used as an IdClass
+            // for another entity within the persistence unit.
+            EmbeddableAccessor embeddableAccessor = getProject().getEmbeddableAccessor(potentialEmbeddableClass, true);
+        
+            if (embeddableAccessor != null && ! embeddableAccessor.isPreProcessed()) {
+                embeddableAccessor.setOwningDescriptor(getOwningDescriptor());
+                embeddableAccessor.preProcess();
+            }
+        }
     }
     
     /** 

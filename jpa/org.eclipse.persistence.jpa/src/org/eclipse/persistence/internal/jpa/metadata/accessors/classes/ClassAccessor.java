@@ -32,7 +32,9 @@
  *     03/27/2009-2.0 Guy Pelletier 
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  *     04/03/2009-2.0 Guy Pelletier
- *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes  
+ *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+ *     04/24/2009-2.0 Guy Pelletier 
+ *       - 270011: JPA 2.0 MappedById support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -71,6 +73,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.PropertyMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ElementCollectionAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.EmbeddedIdAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.DerivedIdClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ManyToManyAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ManyToOneAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.BasicAccessor;
@@ -78,6 +81,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.BasicCol
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.BasicMapAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.EmbeddedAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.IdAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappedKeyMapAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.OneToManyAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.OneToOneAccessor;
@@ -167,8 +171,58 @@ public abstract class ClassAccessor extends MetadataAccessor {
      * INTERNAL:
      * Add the accessor to the descriptor
      */
-    protected void addAccessor(MappingAccessor mappingAccessor) {
-        getDescriptor().addAccessor(mappingAccessor, getOwningDescriptor());
+    protected void addAccessor(MappingAccessor accessor) {
+        if (accessor != null) {
+            // The actual owning descriptor for this class accessor. In most
+            // cases this is the same as our descriptor. However in an
+            // embeddable class accessor, it will be the owning entities
+            // descriptor. This was introduced to support nesting 
+            // embeddables to the nth level.
+            accessor.setOwningDescriptor(getOwningDescriptor());
+            
+            // Add any converters on this mapping accessor.
+            accessor.addConverters();
+            
+            // Add any embeddedid references to the list of id 'used' classes.
+            // That is @IdClass and @EmbeddedId reference classes.
+            if (accessor.isEmbeddedId()) {
+                getProject().addIdClass(accessor.getReferenceClassName());
+            }
+
+            // Add the embeddable accessor to the project. In the case of
+            // pre-processing, if we are an embeddable accessor the nested 
+            // embeddable will be pre-processed now.
+            addPotentialEmbeddableAccessor(accessor.getReferenceClass());
+            
+            // Tell an embeddable accessor that is a map key to a collection
+            // to pre-process itself.
+            if (accessor.isMappedKeyMapAccessor()) {
+                MappedKeyMapAccessor mapAccessor = (MappedKeyMapAccessor) accessor;
+                Class mapKeyClass = mapAccessor.getMapKeyClass();
+                
+                // If the map key class is not specified, we need to look it 
+                // up from the accessor type.
+                if (mapKeyClass == null || mapKeyClass.equals(void.class)) {
+                    mapKeyClass = accessor.getAccessibleObject().getMapKeyClass(getDescriptor());
+                    
+                    if (mapKeyClass == null && mapAccessor.getMapKey() == null) {
+                        // We don't have a map key class or map key, throw an exception.
+                        throw ValidationException.unableToDetermineMapKeyClass(accessor.getAttributeName(), accessor.getJavaClass());
+                    } else {
+                        // Set the map key class (note, may still be null)
+                        mapAccessor.setMapKeyClass(mapKeyClass);
+                    }
+                }
+                
+                // Add the embeddable accessor to the project. In the case of
+                // pre-processing, if we are an embeddable accessor the nested 
+                // embeddable will be pre-processed now.
+                addPotentialEmbeddableAccessor(mapKeyClass);
+            }
+         
+            // Add the accessor to the descriptor.
+            getDescriptor().addAccessor(accessor);
+        }
     }
     
     /**
@@ -260,9 +314,103 @@ public abstract class ClassAccessor extends MetadataAccessor {
         
         // Process the fields or methods on the class for annotations.
         if (usesPropertyAccess()) {
-            processAccessorMethods(false);
+            addAccessorMethods(false);
         } else {
-            processAccessorFields(false);
+            addAccessorFields(false);
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Create mappings from the fields directly. If the mustBeExplicit flag
+     * is true, then we are processing the inverse of an explicit access
+     * setting and for a field to be processed it must have a Access(FIELD) 
+     * setting.
+     */
+    protected void addAccessorFields(boolean processingInverse) {
+        for (Field field : MetadataHelper.getDeclaredFields(getJavaClass())) {
+            MetadataField metadataField = new MetadataField(field, getLogger());
+            if (metadataField.isAnnotationPresent(Transient.class)) {
+                if (metadataField.hasMoreThanOneDeclaredAnnotation(getDescriptor())) {
+                    throw ValidationException.mappingAnnotationsAppliedToTransientAttribute(field);
+                }
+            } else {
+                // The is valid check will throw an exception if needed.
+                if (metadataField.isValidPersistenceField(processingInverse, getDescriptor())) {
+                    // If the accessor already exists, it may have come from XML 
+                    // or because of an explicit access type setting. E.G. 
+                    // Access type is property and we processed the access 
+                    // methods for this field, however the field has been tagged 
+                    // as access field. We must therefore overwrite the previous 
+                    // accessor with this explicit one.
+                    if (! getDescriptor().hasAccessorFor(metadataField.getAttributeName()) || (getDescriptor().hasAccessorFor(metadataField.getAttributeName()) && processingInverse)) {
+                        addAccessor(buildAccessor(metadataField));
+                    }
+                }
+            }
+        }
+        
+        // If we have an explicit access setting we must process the inverse
+        // for those accessors that have an Access(PROPERTY) setting.
+        if (hasAccess() && ! processingInverse) {
+            addAccessorMethods(true);
+        }  
+    }
+    
+    /**
+     * INTERNAL:
+     * Create mappings via the class properties. If the mustBeExplicit flag
+     * is true, then we are processing the inverse of an explicit access
+     * setting and for a field to be processed it must have a Access(PROPERTY) 
+     * setting.
+     */
+    protected void addAccessorMethods(boolean processingInverse) {
+        for (Method method : MetadataHelper.getDeclaredMethods(getJavaClass())) {
+            MetadataMethod metadataMethod = new MetadataMethod(method, getLogger());
+            
+            if (metadataMethod.isAnnotationPresent(Transient.class)) {    
+                if (metadataMethod.hasMoreThanOneDeclaredAnnotation(getDescriptor())) {
+                    throw ValidationException.mappingAnnotationsAppliedToTransientAttribute(method);
+                }
+            } else {
+                // The is valid check will throw an exception if needed.
+                if (metadataMethod.isValidPersistenceMethod(processingInverse, getDescriptor())) {
+                    // If the accessor already exists, it may have come from XML 
+                    // or because of an explicit access type setting. E.G. 
+                    // Access type is field however the user indicated the we 
+                    // should use its access methods. We must therefore 
+                    // overwrite the previous accessor with this explicit one.
+                    if (! getDescriptor().hasAccessorFor(metadataMethod.getAttributeName()) || (getDescriptor().hasAccessorFor(metadataMethod.getAttributeName()) && processingInverse)) {
+                        addAccessor(buildAccessor(metadataMethod));
+                    }
+                }
+            }
+        }
+        
+        // If we have an explicit access setting we must process the inverse
+        // for those accessors that have an Access(FIELD)setting. 
+        if (hasAccess() && ! processingInverse) {
+            addAccessorFields(true);
+        }  
+    }
+    
+    /**
+     * INTERNAL
+     * Add an embeddable class to the embeddable accessor list if it is
+     * indeed an embeddable. This method is overridden in EmbeddableAccessor
+     * and is called during pre-process. At the entity level all we want to do
+     * is set the owning descriptor. Any nested embeddables will be discovered
+     * and pre-processed when pre-processing the known list of embeddables.
+     * @see MetadataProject processStage1()
+     */
+    protected void addPotentialEmbeddableAccessor(Class potentialEmbeddableClass) {
+        if (potentialEmbeddableClass != null) {
+            EmbeddableAccessor embeddableAccessor = getProject().getEmbeddableAccessor(potentialEmbeddableClass);
+        
+            if (embeddableAccessor != null) {
+                embeddableAccessor.setOwningDescriptor(getOwningDescriptor());
+                getProject().addRootEmbeddableAccessor(embeddableAccessor);
+            }
         }
     }
     
@@ -284,6 +432,8 @@ public abstract class ClassAccessor extends MetadataAccessor {
             return new VersionAccessor(accessibleObject.getAnnotation(Version.class), accessibleObject, this);
         } else if (accessibleObject.isId(getDescriptor()) && ! accessibleObject.isDerivedId(getDescriptor())) {
             return new IdAccessor(accessibleObject.getAnnotation(Id.class), accessibleObject, this);
+        } else if (accessibleObject.isDerivedIdClass(getDescriptor())) {
+            return new DerivedIdClassAccessor(accessibleObject, this);
         } else if (accessibleObject.isBasic(getDescriptor())) {
             return new BasicAccessor(accessibleObject.getAnnotation(Basic.class), accessibleObject, this);
         } else if (accessibleObject.isEmbedded(getDescriptor())) {
@@ -305,7 +455,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
         } else if (accessibleObject.isVariableOneToOne(getDescriptor())) {
             // A VariableOneToOne can default and doesn't require an annotation to be present.
             return new VariableOneToOneAccessor(accessibleObject.getAnnotation(VariableOneToOne.class), accessibleObject, this);
-        } else if (getDescriptor().ignoreDefaultMappings() ) {
+        } else if (getDescriptor().ignoreDefaultMappings()) {
             return null;
         } else {
             // Default case (everything else falls into a Basic)
@@ -626,80 +776,6 @@ public abstract class ClassAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
-     * Create mappings from the fields directly. If the mustBeExplicit flag
-     * is true, then we are processing the inverse of an explicit access
-     * setting and for a field to be processed it must have a Access(FIELD) 
-     * setting.
-     */
-    protected void processAccessorFields(boolean processingInverse) {
-        for (Field field : MetadataHelper.getFields(getJavaClass())) {
-            MetadataField metadataField = new MetadataField(field, getLogger());
-            if (metadataField.isAnnotationPresent(Transient.class)) {
-                if (metadataField.hasMoreThanOneDeclaredAnnotation(getDescriptor())) {
-                    throw ValidationException.mappingAnnotationsAppliedToTransientAttribute(field);
-                }
-            } else {
-                // The is valid check will throw an exception if needed.
-                if (metadataField.isValidPersistenceField(processingInverse, getDescriptor())) {
-                    // If the accessor already exists, it may have come from XML 
-                    // or because of an explicit access type setting. E.G. 
-                    // Access type is property and we processed the access 
-                    // methods for this field, however the field has been tagged 
-                    // as access field. We must therefore overwrite the previous 
-                    // accessor with this explicit one.
-                    if (! getDescriptor().hasAccessorFor(metadataField.getAttributeName()) || (getDescriptor().hasAccessorFor(metadataField.getAttributeName()) && processingInverse)) {
-                        addAccessor(buildAccessor(metadataField));
-                    }
-                }
-            }
-        }
-        
-        // If we have an explicit access setting we must process the inverse
-        // for those accessors that have an Access(PROPERTY) setting.
-        if (hasAccess() && ! processingInverse) {
-            processAccessorMethods(true);
-        }  
-    }
-    
-    /**
-     * INTERNAL:
-     * Create mappings via the class properties. If the mustBeExplicit flag
-     * is true, then we are processing the inverse of an explicit access
-     * setting and for a field to be processed it must have a Access(PROPERTY) 
-     * setting.
-     */
-    protected void processAccessorMethods(boolean processingInverse) {
-        for (Method method : MetadataHelper.getDeclaredMethods(getJavaClass())) {
-            MetadataMethod metadataMethod = new MetadataMethod(method, getLogger());
-            
-            if (metadataMethod.isAnnotationPresent(Transient.class)) {    
-                if (metadataMethod.hasMoreThanOneDeclaredAnnotation(getDescriptor())) {
-                    throw ValidationException.mappingAnnotationsAppliedToTransientAttribute(method);
-                }
-            } else {
-                // The is valid check will throw an exception if needed.
-                if (metadataMethod.isValidPersistenceMethod(processingInverse, getDescriptor())) {
-                    // If the accessor already exists, it may have come from XML 
-                    // or because of an explicit access type setting. E.G. 
-                    // Access type is field however the user indicated the we 
-                    // should use its access methods. We must therefore 
-                    // overwrite the previous accessor with this explicit one.
-                    if (! getDescriptor().hasAccessorFor(metadataMethod.getAttributeName()) || (getDescriptor().hasAccessorFor(metadataMethod.getAttributeName()) && processingInverse)) {
-                        addAccessor(buildAccessor(metadataMethod));
-                    }
-                }
-            }
-        }
-        
-        // If we have an explicit access setting we must process the inverse
-        // for those accessors that have an Access(FIELD)setting. 
-        if (hasAccess() && ! processingInverse) {
-            processAccessorFields(true);
-        }  
-    }
-    
-    /**
-     * INTERNAL:
      * Process the accessors for the given class.
      */
     public void processAccessors() {
@@ -825,7 +901,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
      * processed 
      */
     public void processDerivedIDs(HashSet<ClassAccessor> processing, HashSet<ClassAccessor> processed) {
-        if (hasDerivedId() && !processed.contains(this)) {
+        if (hasDerivedId() && ! processed.contains(this)) {
             if (processing.contains(this)){
                 //we have a circular pk reference problem
                 throw ValidationException.idRelationshipCircularReference(processing);
@@ -968,6 +1044,14 @@ public abstract class ClassAccessor extends MetadataAccessor {
      */
     public void setMetadataComplete(Boolean metadataComplete) {
         m_metadataComplete = metadataComplete;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public String toString() {
+        return getJavaClassName();
     }
     
     /**
