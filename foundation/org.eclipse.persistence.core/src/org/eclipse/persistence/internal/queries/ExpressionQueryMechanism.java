@@ -1409,7 +1409,9 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         reportQuery.setSelectionCriteria(whereClause);
         reportQuery.setSession(getSession());
         
-        return ((ExpressionQueryMechanism)reportQuery.getQueryMechanism()).buildReportQuerySelectStatement(false, useCustomaryInheritanceExpression, inheritanceExpression);
+        SQLSelectStatement selectStatement = ((ExpressionQueryMechanism)reportQuery.getQueryMechanism()).buildReportQuerySelectStatement(false, useCustomaryInheritanceExpression, inheritanceExpression);
+        reportQuery.setSession(null);
+        return selectStatement;
     }
         
     
@@ -1422,7 +1424,9 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         reportQuery.setSession(getSession());
         reportQuery.addAttribute("", value);
         
-        return ((ExpressionQueryMechanism)reportQuery.getQueryMechanism()).buildReportQuerySelectStatement(false);
+        SQLSelectStatement selectStatement = ((ExpressionQueryMechanism)reportQuery.getQueryMechanism()).buildReportQuerySelectStatement(false);
+        reportQuery.setSession(null);
+        return selectStatement;
     }
     
     
@@ -2101,7 +2105,9 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             }
         }
 
-        return ((ExpressionQueryMechanism)reportQuery.getQueryMechanism()).buildReportQuerySelectStatement(false);
+        SQLSelectStatement selectStatement = ((ExpressionQueryMechanism)reportQuery.getQueryMechanism()).buildReportQuerySelectStatement(false);
+        reportQuery.setSession(null);
+        return selectStatement;
     }
         
     protected SQLSelectStatement createSQLSelectStatementForModifyAllForTempTable(HashMap databaseFieldsToValues)
@@ -2122,7 +2128,9 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             }
         }
 
-        return ((ExpressionQueryMechanism)reportQuery.getQueryMechanism()).buildReportQuerySelectStatement(false);
+        SQLSelectStatement selectStatement = ((ExpressionQueryMechanism)reportQuery.getQueryMechanism()).buildReportQuerySelectStatement(false);
+        reportQuery.setSession(null);
+        return selectStatement;
     }
         
     protected SQLModifyStatement buildUpdateAllStatementForOracleAnonymousBlock(HashMap tables_databaseFieldsToValues, HashMap tablesToPrimaryKeyFields) {
