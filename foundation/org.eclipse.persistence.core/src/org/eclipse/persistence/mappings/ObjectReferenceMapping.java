@@ -821,7 +821,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
             }
             uow.registerNewObjectForPersist(attributeValue, visitedObjects);
             // add private owned object to uow list if mapping is a candidate and uow should discover new objects and the source object is new.
-            if (isCandidateForPrivateOwnedRemoval() && uow.shouldDiscoverNewObjects() && reference != null && uow.isObjectNew(object)) {
+            if (isCandidateForPrivateOwnedRemoval() && uow.shouldDiscoverNewObjects() && attributeValue != null && uow.isObjectNew(object)) {
                 uow.addPrivateOwnedObject(this, attributeValue);
             }
         }
