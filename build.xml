@@ -146,16 +146,16 @@
     <target name="build-eclipselink-jar" depends="build-core, package-eclipselink-jar" description="build all EclipseLink distribution files except docs and tests"/>
 
     <!-- Default ant target, compiles all components and tests, builds eclipselink.jar. -->
-    <target name="build" depends="build-eclipselink-jar, build-core-test" description="build all EclipseLink distribution files except docs"/>
+    <target name="build" depends="build-eclipselink-jar, build-core-test, build-util, build-util-test" description="build all EclipseLink distribution files except docs"/>
 
     <!-- Compiles all components and tests (excluding extensions). -->
-    <target name="build-all-but-ext" depends="build, build-util, build-util-test"/>
+    <target name="build-all-but-ext" depends="build"/> <!-- could remove now, but not certain if other processes use this target -->
 
     <!-- Compiles core components, tests and extensions (excluding utilities). -->
     <target name="build-extensions" depends="build-core, build-core-test, build-oracle-extension"/>
 
     <!-- Builds and packages all jars, javadoc, and builds installer. -->
-    <target name="build-distribution" depends="build-all-but-ext, package-all"/>
+    <target name="build-distribution" depends="build, package-all"/>
 
 <!-- ================================================================================= -->
 
@@ -566,7 +566,7 @@
 
     <!-- Testing -->
     <target name="test-srg" description="run all the SRG test suites"
-            depends="test-core-srg, test-jpa-srg, test-sdo-srg, test-moxy-srg"
+            depends="test-core-srg, test-jpa-srg, test-moxy-srg, test-sdo-srg, test-dbws-srg, test-dbws-utils-srg"
             />
     <target name="test-lrg" description="run all the LRG test suites"
             depends="test-core, test-jpa, test-moxy, test-sdo, test-dbws, test-dbws-utils"
@@ -617,7 +617,13 @@
     <target name="test-dbws" description="run the DBWS core tests"  unless="java_is_v5">
         <ant antfile="build.xml" dir="${eclipselink.dbws.test}" target="test"/>
     </target>
+    <target name="test-dbws-srg" description="run the DBWS srg tests"  unless="java_is_v5">
+        <ant antfile="build.xml" dir="${eclipselink.dbws.test}" target="test"/>
+    </target>
     <target name="test-dbws-utils" description="run the DBWS utils tests"  unless="java_is_v5">
+        <ant antfile="build.xml" dir="${eclipselink.util.dbws.test}" target="test"/>
+    </target>
+    <target name="test-dbws-utils-srg" description="run the DBWS utils srg tests"  unless="java_is_v5">
         <ant antfile="build.xml" dir="${eclipselink.util.dbws.test}" target="test"/>
     </target>
 
