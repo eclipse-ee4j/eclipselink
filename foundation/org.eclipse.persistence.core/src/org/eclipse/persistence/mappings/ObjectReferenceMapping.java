@@ -754,7 +754,6 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
             Object reference = getIndirectionPolicy().getRealAttributeValueFromObject(object, attributeValue);
             uow.registerNewObjectForPersist(reference, visitedObjects);
             // add private owned object to uow list if mapping is a candidate and uow should discover new objects and the source object is new.
-            boolean shouldAddPrivateOwnedObject = isCandidateForPrivateOwnedRemoval() && uow.shouldDiscoverNewObjects() && uow.isObjectNew(object); 
             if (isCandidateForPrivateOwnedRemoval() && uow.shouldDiscoverNewObjects() && reference != null && uow.isObjectNew(object)) {
                 uow.addPrivateOwnedObject(this, reference);
             }
