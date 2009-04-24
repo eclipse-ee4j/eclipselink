@@ -108,7 +108,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     protected Map newObjectsInParentOriginalToClone;
     
     /** Cache references of private owned objects for the removal of private owned orphans */
-    protected Map privateOwnedObjects;
+    protected Map<DatabaseMapping, Set> privateOwnedObjects;
 
     /** used to store a list of the new objects in the parent */
 
@@ -698,6 +698,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                     performRemovePrivateOwnedObjectFromChangeSet(objectToRemove, visitedObjects);
                 }
             }
+            this.privateOwnedObjects.clear();
         }
         
         this.eventManager.postCalculateUnitOfWorkChangeSet(changeSet);
@@ -1705,7 +1706,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             
             public void iterateReferenceObjectForMapping(Object referenceObject, DatabaseMapping mapping) {
                 super.iterateReferenceObjectForMapping(referenceObject, mapping);
-                if (hasPrivateOwnedObjects()) {
+                if (mapping.isCandidateForPrivateOwnedRemoval()) {
                     removePrivateOwnedObject(mapping, referenceObject);
                 }
             }
@@ -4396,12 +4397,12 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * it is no longer considered for removal from ChangeSets and the UnitOfWork identitymap.
      */
     public void removePrivateOwnedObject(DatabaseMapping mapping, Object privateOwnedObject) {
-        if (privateOwnedObject != null) {
-            Set privateOwnedObjects = getPrivateOwnedObjects().get(mapping);
-            if (privateOwnedObjects != null){
-                privateOwnedObjects.remove(privateOwnedObject);
-                if (privateOwnedObjects.isEmpty()) {
-                    privateOwnedObjects.remove(mapping);
+        if (this.privateOwnedObjects != null) {
+            Set objectsForMapping = this.privateOwnedObjects.get(mapping);
+            if (objectsForMapping != null){
+                objectsForMapping.remove(privateOwnedObject);
+                if (objectsForMapping.isEmpty()) {
+                    this.privateOwnedObjects.remove(mapping);
                 }
             }
         }
