@@ -190,6 +190,7 @@
         <echo message="Bundle-Activator: org.eclipse.persistence.jpa.osgi.Activator${line.separator}"                                                    file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="Import-Package: javax.persistence;version=&quot;1.99.4&quot;,${line.separator}"                                           file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" javax.persistence.metamodel;version=&quot;1.99.4&quot;,${line.separator}"                                                      file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" javax.persistence.criteria;version=&quot;1.99.4&quot;,${line.separator}"                                                       file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" javax.persistence.spi;version=&quot;1.99.4&quot;,${line.separator}"                                                            file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" javax.transaction;version=&quot;1.1.0&quot;;resolution:=optional,${line.separator}"                                              file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" org.apache.tools.ant;resolution:=optional,${line.separator}"                                           file="${classes.dir}/MANIFEST.MF" append="true"/>
