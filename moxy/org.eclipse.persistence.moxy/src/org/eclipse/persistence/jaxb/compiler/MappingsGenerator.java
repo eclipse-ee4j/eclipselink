@@ -424,8 +424,8 @@ public class MappingsGenerator {
         Map<QName, Class> qNamesToScopeClass = new HashMap<QName, Class>();
         for(ElementDeclaration element:referencedElements) {
             QName elementName = element.getElementName();
-            boolean isText = !(this.typeInfo.containsKey(element.getJavaTypeName())) && !(element.getJavaTypeName().equals("java.lang.Object"));
-            
+            //boolean isText = !(this.typeInfo.containsKey(element.getJavaTypeName())) && !(element.getJavaTypeName().equals("java.lang.Object"));
+            boolean isText = !(this.typeInfo.containsKey(element.getJavaTypeName()));
             XMLField xmlField = this.getXPathForElement("", elementName, namespaceInfo, isText);
             mapping.addChoiceElement(xmlField, element.getJavaTypeName());
             if(!element.isXmlRootElement()) {
