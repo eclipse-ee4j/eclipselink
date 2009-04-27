@@ -189,34 +189,39 @@ public class EmbeddedAccessor extends MappingAccessor {
     
     /**
      * INTERNAL:
+     * The reference descriptor in this case is the descriptor for the one to
+     * one mapping's reference class. This method is called when processing a 
+     * derived mapped by id case. This embedded accessor (aka the derived id
+     * class accessor) is either directly on the dependent entity or nested 
+     * within the dependent's embedded id. In either case it does not affect 
+     * processing details of the dependent field and we must always take an 
+     * attribute override setting into consideration.
      */
     public void processDerivedIdFields(OneToOneMapping mapping, MetadataDescriptor referenceDescriptor) {
-        if (referenceDescriptor.hasEmbeddedId()) {
-           // Case 3: embedded class from embedded id to parent entity.
-           // No validation needed, just use the columns from the mappings
-           // from the mappingAccessor (taking attribute overrides into
-           // consideration)
-           for (MappingAccessor basicAccessor : getReferenceAccessors()) {
-               // Should only be basic attributes
-               String defaultFieldName = basicAccessor.getMapping().getField().getName();
-               DatabaseField dependentField = getField(defaultFieldName);
-
-               EmbeddedIdAccessor embeddedIdAccessor = referenceDescriptor.getEmbeddedIdAccessor();
-               DatabaseField parentField = embeddedIdAccessor.getField(defaultFieldName);
-
-               mapping.addForeignKeyField(dependentField, parentField);
-           }
-       } else {
-           // Case 2: id class mapping from embedded id to parent entity.
-           // No validation needed, just use the columns from the mappings
-           // from the mappingAccessor.
-           for (MappingAccessor basicAccessor : getReferenceAccessors()) {
-               DatabaseField dependentField = ((BasicAccessor) basicAccessor).getField();
-               DatabaseField parentField = referenceDescriptor.getAccessorFor(basicAccessor.getAttributeName()).getMapping().getField();
-               
-               mapping.addForeignKeyField(dependentField, parentField);
-           }
-       }
+        EmbeddedIdAccessor referenceEmbeddedIdAccessor = referenceDescriptor.getEmbeddedIdAccessor();
+        
+        for (MappingAccessor basicAccessor : getReferenceAccessors()) {
+            String defaultFieldName = ((BasicAccessor) basicAccessor).getField().getName();
+            // Get field will look for an attribute override setting.
+            DatabaseField dependentField = getField(defaultFieldName);
+            
+            DatabaseField parentField;
+            if (referenceEmbeddedIdAccessor == null) {
+                // The reference descriptor does not use an embedded id but an 
+                // id class so we use the field directly without worrying about 
+                // an attribute override since it would already be taken care of 
+                // at this point. The field on the reference descriptor's 
+                // accessor is the field we want.
+                parentField = referenceDescriptor.getAccessorFor(basicAccessor.getAttributeName()).getMapping().getField();
+            } else {
+                // The reference descriptor uses an embedded id therefore we 
+                // need to gather the parent field taking into consideration an 
+                // attribute override.
+                parentField = referenceEmbeddedIdAccessor.getField(defaultFieldName);
+            }
+            
+            mapping.addForeignKeyField(dependentField, parentField);
+        }
     }
     
     /**
