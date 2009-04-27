@@ -709,6 +709,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
           String argumentName;
           String argumentFieldName;
           Class argumentType;
+          String argumentTypeName;
           int argumentSQLType = NULL_SQL_TYPE;
           String argumentSqlTypeName;
           Object argumentValue;
@@ -725,6 +726,12 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
           DatabaseField getDatabaseField() {
               DatabaseField dbfield = new DatabaseField(argumentFieldName == null ? "" : argumentFieldName);
               dbfield.type = argumentType;
+              if (argumentType != null) {
+                  dbfield.typeName = argumentType.getName();
+              }
+              else {
+                  dbfield.typeName = argumentTypeName;
+              }
               dbfield.sqlType = argumentSQLType;
               if ((argumentSqlTypeName != null) &&
                   (!argumentSqlTypeName.equals(""))) {
@@ -744,6 +751,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
                  argumentFieldName = fieldName;
               }
               argumentType = dbField.type;
+              argumentTypeName = dbField.typeName;
               argumentSQLType = dbField.sqlType;
               if (dbField.isObjectRelationalDatabaseField()) {
                   ObjectRelationalDatabaseField ordField =
@@ -756,6 +764,12 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
                   }
               }
           }
+        public String getArgumentTypeName() {
+            return argumentTypeName;
+        }
+        public void setArgumentTypeName(String argumentTypeName) {
+            this.argumentTypeName = argumentTypeName;
+        }
     }
 
     class StoredProcedureInOutArgument extends StoredProcedureArgument {

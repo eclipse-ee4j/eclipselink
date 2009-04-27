@@ -268,5 +268,17 @@ public class ObjectPersistenceWorkbenchXMLProject extends EclipseLinkObjectPersi
         
         return descriptor;
     }
-    
+
+    @Override
+    protected ClassDescriptor buildStoredProcedureArgumentDescriptor() {
+        
+        ClassDescriptor descriptor = super.buildStoredProcedureArgumentDescriptor();
+
+        XMLDirectMapping argumentTypeMapping = 
+            (XMLDirectMapping)descriptor.getMappingForAttributeName("argumentType");
+        argumentTypeMapping.setGetMethodName("getArgumentTypeName");
+        argumentTypeMapping.setSetMethodName("setArgumentTypeName");
+        
+        return descriptor;
+    }
 }

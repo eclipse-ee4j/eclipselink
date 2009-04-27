@@ -49,6 +49,7 @@ public class DatabaseField implements Cloneable, Serializable {
      * PERF: Allow direct variable access from getObject.
      */
     public transient Class type;
+    public String typeName; // shadow variable - string name of above Class type variable
     
     /**
      * Respective JDBC type of the field's value.
@@ -252,6 +253,13 @@ public class DatabaseField implements Cloneable, Serializable {
         return type;
     }
     
+    public String getTypeName() {             
+        return typeName;                      
+    }                                         
+    public void setTypeName(String typeName) {
+        this.typeName = typeName;             
+    }                                         
+
     /**
      * Return the JDBC type that corresponds to the field.
      * The JDBC type is normally determined from the class type,
@@ -429,6 +437,9 @@ public class DatabaseField implements Cloneable, Serializable {
      */
     public void setType(Class type) {
         this.type = type;
+        if (this.type != null && typeName == null) {
+            typeName = this.type.getName();
+        }
     }
     
     /**
