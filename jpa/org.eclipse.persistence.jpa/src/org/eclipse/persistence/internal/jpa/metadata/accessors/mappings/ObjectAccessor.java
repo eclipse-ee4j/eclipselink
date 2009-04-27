@@ -345,7 +345,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
                 // Case 6: both use embeddedid
                 getDescriptor().getEmbeddedIdAccessor().processDerivedIdFields(mapping, getReferenceDescriptor());
             } else {
-                // case 4
+                // case 4: simple id association.
                 DatabaseField dependentField = getDescriptor().getPrimaryKeyField();
                 DatabaseField parentField = getReferenceDescriptor().getPrimaryKeyField();
                 mapping.addForeignKeyField(dependentField, parentField);
@@ -356,9 +356,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
             if (mappingAccessor == null) {
                 throw ValidationException.invalidMappedByIdValue(m_mappedById, getAnnotatedElementName(), getDescriptor().getEmbeddedIdAccessor().getReferenceClass());
             } else if (mappingAccessor.isBasic()) {
-                // Case 1: basic mapping from embedded id to parent entity
-                // Must validate the types first, then use fields from
-                // mappings.
+                // Case 1: basic mapping from embedded id to parent entity.
                 DatabaseField dependentField = mappingAccessor.getMapping().getField();
                 DatabaseField parentField = getReferenceDescriptor().getPrimaryKeyField();
                 mapping.addForeignKeyField(dependentField, parentField);
