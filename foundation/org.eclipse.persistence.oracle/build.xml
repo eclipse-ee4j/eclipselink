@@ -148,6 +148,7 @@
     </target>
 
     <target name="generate-manifest" description="Generate the OSGi bundle manifest before jarring">
+        <mkdir dir="${classes.dir}"/>
         <delete file="${classes.dir}/MANIFEST.MF" quiet="true"/>
         <echo message="Manifest-Version: 1.0${line.separator}"                                                                                          file="${classes.dir}/MANIFEST.MF" append="false"/>
         <echo message="Specification-Vendor: ${specification.vendor}${line.separator}"                                                                  file="${classes.dir}/MANIFEST.MF" append="true"/>
@@ -170,33 +171,65 @@
         <echo message=" org.eclipse.persistence.platform.xml.xdk;version=&quot;${version.string}&quot;${line.separator}"                                file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="Bundle-ClassPath: .${line.separator}"                                                                                            file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="Import-Package: javax.resource;version=&quot;1.5.0&quot;;resolution:=optional,${line.separator}"                                 file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.naming;resolution:=optional,${line.separator}"                                                                  file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.resource.cci;version=&quot;1.5.0&quot;;resolution:=optional,${line.separator}"                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.sql;resolution:=optional,${line.separator}"                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.xml.parsers;resolution:=optional,${line.separator}"                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.xml.transform;resolution:=optional,${line.separator}"                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.xml.transform.dom;resolution:=optional,${line.separator}"                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.xml.transform.sax;resolution:=optional,${line.separator}"                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.xml.transform.stream;resolution:=optional,${line.separator}"                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.xml.validation;resolution:=optional,${line.separator}"                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" oracle.AQ;resolution:=optional,${line.separator}"                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" oracle.jdbc,${line.separator}"
-        file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" oracle.jdbc.internal,${line.separator}"
-        file="${classes.dir}/MANIFEST.MF" append="true"/>
-         <echo message=" oracle.jdbc.pool,${line.separator}"
-        file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" oracle.spatial.geometry;resolution:=optional,${line.separator}"                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" oracle.sql;resolution:=optional,${line.separator}"                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" oracle.xdb;resolution:=optional,${line.separator}"                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" oracle.xdb.dom;resolution:=optional,${line.separator}"                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" oracle.xml.jaxp;resolution:=optional,${line.separator}"                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" oracle.xml.parser.schema;resolution:=optional,${line.separator}"                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" oracle.xml.parser.v2;resolution:=optional,${line.separator}"                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" oracle.xml.util;resolution:=optional,${line.separator}"                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.w3c.dom;resolution:=optional,${line.separator}"                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.xml.sax;resolution:=optional${line.separator}"                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" javax.naming;resolution:=optional,${line.separator}"                                                                            file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" javax.resource.cci;version=&quot;1.5.0&quot;;resolution:=optional,${line.separator}"                                            file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" javax.sql;resolution:=optional,${line.separator}"                                                                               file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" javax.xml.parsers;resolution:=optional,${line.separator}"                                                                       file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" javax.xml.transform;resolution:=optional,${line.separator}"                                                                     file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" javax.xml.transform.dom;resolution:=optional,${line.separator}"                                                                 file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" javax.xml.transform.sax;resolution:=optional,${line.separator}"                                                                 file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" javax.xml.transform.stream;resolution:=optional,${line.separator}"                                                              file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" javax.xml.validation;resolution:=optional,${line.separator}"                                                                    file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" oracle.AQ;resolution:=optional,${line.separator}"                                                                               file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" oracle.jdbc,${line.separator}"                                                                                                  file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" oracle.jdbc.internal,${line.separator}"                                                                                         file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" oracle.jdbc.pool,${line.separator}"                                                                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" oracle.spatial.geometry;resolution:=optional,${line.separator}"                                                                 file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" oracle.sql;resolution:=optional,${line.separator}"                                                                              file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" oracle.xdb;resolution:=optional,${line.separator}"                                                                              file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" oracle.xdb.dom;resolution:=optional,${line.separator}"                                                                          file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" oracle.xml.jaxp;resolution:=optional,${line.separator}"                                                                         file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" oracle.xml.parser.schema;resolution:=optional,${line.separator}"                                                                file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" oracle.xml.parser.v2;resolution:=optional,${line.separator}"                                                                    file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" oracle.xml.util;resolution:=optional,${line.separator}"                                                                         file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.w3c.dom;resolution:=optional,${line.separator}"                                                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.xml.sax;resolution:=optional${line.separator}"                                                                              file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="HK2-Bundle-Name: org.eclipse.persistence:${ant.project.name}${line.separator}"                                                   file="${classes.dir}/MANIFEST.MF" append="true"/>
+    </target>
+    
+    <target name="repackage" depends="clean, generate-manifest" description="take existing source and classes from checked in bundles, and repackage with new manifest">
+        <jar jarfile="${oracle.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" manifest="${classes.dir}/MANIFEST.MF" duplicate="preserve">
+            <fileset dir="${oracle.2.base.dir}">
+                <include name="about.html"/>
+                <include name="readme.html"/>
+                <include name="license.*"/>
+            </fileset>
+            <zipgroupfileset dir="${oracle.plugins.dir}">
+                <include name="${ant.project.name}.jar"/>
+            </zipgroupfileset>
+        </jar>
+        <jar jarfile="${oracle.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar" duplicate="preserve">
+             <manifest>
+                <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
+                <attribute name="Specification-Version"  value="${release.version}"/>
+                <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
+                <attribute name="Implementation-Version" value="${version.string}"/>
+                <attribute name="Bundle-ManifestVersion" value="2"/>
+                <attribute name="Bundle-Name"            value="EclipseLink Oracle Extensions Source"/>
+                <attribute name="Bundle-SymbolicName"    value="${ant.project.name}.source"/>
+                <attribute name="Bundle-Vendor"          value="${implementation.vendor}"/>
+                <attribute name="Bundle-Version"         value="${version.string}"/>
+                <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${version.string}&quot;"/>
+            </manifest>
+            <fileset dir="${oracle.2.base.dir}">
+                <include name="about.html"/>
+                <include name="readme.html"/>
+                <include name="license.*"/>
+            </fileset>
+            <zipgroupfileset dir="${oracle.plugins.dir}">
+                <include name="${ant.project.name}.source.jar"/>
+            </zipgroupfileset>
+        </jar>
     </target>
 
 </project>

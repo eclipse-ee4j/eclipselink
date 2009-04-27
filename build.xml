@@ -186,8 +186,6 @@
         <delete file="${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}"/>
         <delete file="${eclipselink.javadoc.install.prefix}${eclipselink.zip.suffix}"/>
         <delete file="${eclipselink.install.prefix}${eclipselink.zip.suffix}"/>
-        <delete file="${eclipselink.plugins}/${eclipselink.extension.oracle.bndl.prefix}_*.jar"/>
-        <delete file="${eclipselink.plugins}/${eclipselink.extension.oracle.bndl.prefix}.source_*.jar"/>
     </target>
 
     <!-- Compiles all runtime components (excluding Tests, Oracle extensions). -->
@@ -196,6 +194,7 @@
         <ant antfile="build.xml" dir="${eclipselink.asm}"     target="build"/>
         <ant antfile="build.xml" dir="${eclipselink.antlr}"   target="build"/>
         <ant antfile="build.xml" dir="${eclipselink.core}"    target="build"/>
+        <ant antfile="build.xml" dir="${eclipselink.extension.oracle}"  target="repackage"/>
         <ant antfile="build.xml" dir="${eclipselink.jpa}"     target="build"/>
         <ant antfile="build.xml" dir="${eclipselink.weaving}" target="build"/>
         <ant antfile="build.xml" dir="${eclipselink.equinox}" target="build"/>
@@ -270,10 +269,6 @@
                 <exclude name="*source*.jar"/>
                 <exclude name="*equinox*.jar"/>
             </zipgroupfileset>
-            <zipgroupfileset dir="${eclipselink.extension.oracle.dir}">
-                <include name="${eclipselink.extension.oracle.bndl.prefix}.jar"/>
-                <exclude name="*source*.jar"/>
-            </zipgroupfileset>
             <!-- JPA 1.1/2.0 concurrent dev solution: New classes from javax.persistence 2.0 -->
             <fileset
                 dir="${eclipselink.jpa.plugins}/javax.persistence/${classes.dir}"
@@ -317,14 +312,6 @@
 
     <target name="package-eclipselink-bundles">
         <delete file="${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}"/>
-        <copy file="${eclipselink.extension.oracle.dir}/${eclipselink.extension.oracle.bndl.prefix}.jar"
-            tofile="${eclipselink.plugins}/${eclipselink.extension.oracle.bndl.prefix}_${version.string}.jar"
-            failonerror="false"
-        />
-        <copy file="${eclipselink.extension.oracle.dir}/${eclipselink.extension.oracle.bndl.prefix}.source.jar"
-            tofile="${eclipselink.plugins}/${eclipselink.extension.oracle.bndl.prefix}.source_${version.string}.jar"
-            failonerror="false"
-        />
         <zip destfile="${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}">
             <zipfileset dir="${eclipselink.plugins}">
                 <include name="**.jar"/>
@@ -361,9 +348,6 @@
                 <include name="${antlr}.source_${version.string}.jar"/>
                 <include name="org.eclipse.persistence*.source*.jar"/>
                 <exclude name="*equinox*.jar"/>
-            </zipgroupfileset>
-            <zipgroupfileset dir="${eclipselink.extension.oracle.dir}">
-                <include name="${eclipselink.extension.oracle.bndl.prefix}.source.jar"/>
             </zipgroupfileset>
         </jar>
     </target>
