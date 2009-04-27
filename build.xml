@@ -311,9 +311,6 @@
                 <include name="org.eclipse.persistence*.source*.jar"/>
                 <exclude name="*equinox*.jar"/>
             </zipgroupfileset>
-            <zipgroupfileset dir="${eclipselink.extension.oracle.dir}">
-                <include name="${eclipselink.extension.oracle.bndl.prefix}.source.jar"/>
-            </zipgroupfileset>
         </jar>
     </target>
 
