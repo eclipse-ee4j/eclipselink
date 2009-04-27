@@ -12,10 +12,15 @@
  ******************************************************************************/  
 package org.eclipse.persistence.queries;
 
+//javase imports
 import java.util.Vector;
-import org.eclipse.persistence.internal.helper.*;
+
+//EclipseLink imports
+import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
+import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
 
 /**
@@ -104,10 +109,49 @@ public class StoredProcedureCall extends DatabaseCall {
      * The type is the JDBC type code, this is dependent on the type required by the procedure.
      * The typeName is the JDBC type name, this may be required for ARRAY or STRUCT types.
      */
-    public void addNamedArgument(String procedureParameterName, String argumentFieldName, int type, String typeName) {
+    public void addNamedArgument(String procedureParameterName, String argumentFieldName, int type,
+        String typeName) {
+        addNamedArgument(procedureParameterName, argumentFieldName, type, typeName, (Class)null);
+    }
+    
+    /**
+     * PUBLIC:
+     * Define the output argument to the stored procedure and the field/argument name to be substitute for it.
+     * The procedureParameterName is the name of the procedure argument expected.
+     * The argumentFieldName is the field or argument name to be used to pass to the procedure.
+     * If these names are the same (as they normally are) this method can be called with a single argument.
+     * The type is the JDBC type code, this is dependent on the type required by the procedure.
+     * The typeName is the JDBC type name, this may be required for ARRAY or STRUCT types.
+     * The javaType is the mapped Class that has an ObjectRelationalDataTypeDescriptor for the ARRAY
+     * or STRUCT type typeName
+     */
+    public void addNamedArgument(String procedureParameterName, String argumentFieldName, int type,
+        String typeName, Class javaType) {
         getProcedureArgumentNames().add(procedureParameterName);
         ObjectRelationalDatabaseField field = new ObjectRelationalDatabaseField(argumentFieldName);
         field.setSqlType(type);
+        field.setType(javaType);
+        field.setSqlTypeName(typeName);
+        appendIn(field);
+    }
+    
+    /**
+     * PUBLIC:
+     * Define the output argument to the stored procedure and the field/argument name to be substitute for it.
+     * The procedureParameterName is the name of the procedure argument expected.
+     * The argumentFieldName is the field or argument name to be used to pass to the procedure.
+     * If these names are the same (as they normally are) this method can be called with a single argument.
+     * The type is the JDBC type code, this is dependent on the type required by the procedure.
+     * The typeName is the JDBC type name, this may be required for ARRAY or STRUCT types.
+     * The javaType is the name of the mapped Class that has an ObjectRelationalDataTypeDescriptor
+     * for the ARRAY or STRUCT type typeName
+     */
+    public void addNamedArgument(String procedureParameterName, String argumentFieldName, int type,
+        String typeName, String javaTypeName) {
+        getProcedureArgumentNames().add(procedureParameterName);
+        ObjectRelationalDatabaseField field = new ObjectRelationalDatabaseField(argumentFieldName);
+        field.setSqlType(type);
+        field.setTypeName(javaTypeName);
         field.setSqlTypeName(typeName);
         appendIn(field);
     }

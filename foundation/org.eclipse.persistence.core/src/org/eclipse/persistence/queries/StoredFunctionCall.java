@@ -15,6 +15,7 @@ package org.eclipse.persistence.queries;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
+import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
 import org.eclipse.persistence.exceptions.ValidationException;
 
 /**
@@ -24,9 +25,21 @@ import org.eclipse.persistence.exceptions.ValidationException;
  * Functions can also be called through custom SQL.
  */
 public class StoredFunctionCall extends StoredProcedureCall {
+    
     public StoredFunctionCall() {
         super();
         addUnamedOutputArgument("");
+    }
+    
+    public StoredFunctionCall(int sqlType, String sqlTypeName, Class javaType) {
+        super();
+        addUnamedOutputArgument("", sqlType, sqlTypeName, javaType);
+    }
+    
+    public StoredFunctionCall(int sqlType, String sqlTypeName, String javaTypeClassName) {
+        this(sqlType, sqlTypeName, (Class)null);
+        ObjectRelationalDatabaseField ordf = (ObjectRelationalDatabaseField)parameters.get(0);
+        ordf.setTypeName(javaTypeClassName);
     }
 
     /**
