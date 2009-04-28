@@ -104,18 +104,29 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
         suite.addTest(new JoinedAttributeAdvancedJunitTest("testSetup"));
         suite.addTest(new JoinedAttributeAdvancedJunitTest("testProjectJoinTeamMembers"));
         suite.addTest(new JoinedAttributeAdvancedJunitTest("testProjectJoinTeamLeaderJoinAddressWhereTeamLeaderNotNull"));
+        suite.addTest(new JoinedAttributeAdvancedJunitTest("testProjectJoinTeamLeaderJoinAddressWhereTeamLeaderNotNull_NoBase"));
         suite.addTest(new JoinedAttributeAdvancedJunitTest("testProjectJoinTeamMembersJoinAddress"));
+        suite.addTest(new JoinedAttributeAdvancedJunitTest("testProjectJoinTeamMembersJoinAddress_NoBase"));
         suite.addTest(new JoinedAttributeAdvancedJunitTest("testProjectOuterJoinTeamMembersJoinAddress"));
+        suite.addTest(new JoinedAttributeAdvancedJunitTest("testProjectOuterJoinTeamMembersJoinAddress_NoBase"));
         suite.addTest(new JoinedAttributeAdvancedJunitTest("testProjectOuterJoinTeamMembersOuterJoinAddress"));
+        suite.addTest(new JoinedAttributeAdvancedJunitTest("testProjectOuterJoinTeamMembersOuterJoinAddress_NoBase"));
         suite.addTest(new JoinedAttributeAdvancedJunitTest("testProjectJoinTeamMembersOuterJoinAddress"));
+        suite.addTest(new JoinedAttributeAdvancedJunitTest("testProjectJoinTeamMembersOuterJoinAddress_NoBase"));
         suite.addTest(new JoinedAttributeAdvancedJunitTest("testProblemReporterProjectJoinTeamMembersJoinAddress"));
+        suite.addTest(new JoinedAttributeAdvancedJunitTest("testProblemReporterProjectJoinTeamMembersJoinAddress_NoBase"));
         suite.addTest(new JoinedAttributeAdvancedJunitTest("testEmployeeJoinProjects"));
         suite.addTest(new JoinedAttributeAdvancedJunitTest("testEmployeeJoinProjectsOnUOW"));
         suite.addTest(new JoinedAttributeAdvancedJunitTest("testEmployeeJoinProjectsJoinTeamLeaderJoinAddressWhereManagerIsNull"));
+        suite.addTest(new JoinedAttributeAdvancedJunitTest("testEmployeeJoinProjectsJoinTeamLeaderJoinAddressWhereManagerIsNull_NoBase"));
         suite.addTest(new JoinedAttributeAdvancedJunitTest("testProjectOuterJoinTeamLeaderAddressTeamMembersAddressPhonesWhereProjectName"));
+        suite.addTest(new JoinedAttributeAdvancedJunitTest("testProjectOuterJoinTeamLeaderAddressTeamMembersAddressPhonesWhereProjectName_NoBase"));
         suite.addTest(new JoinedAttributeAdvancedJunitTest("testEmployeeOuterJoinAddressPhoneProjectsTeamLeaderAddressTeamMembersPhones"));
+        suite.addTest(new JoinedAttributeAdvancedJunitTest("testEmployeeOuterJoinAddressPhoneProjectsTeamLeaderAddressTeamMembersPhones_NoBase"));
         suite.addTest(new JoinedAttributeAdvancedJunitTest("testEmployeeOuterJoinAddressPhoneProjectsTeamLeaderAddressTeamMembersPhonesOnUOW"));
+        suite.addTest(new JoinedAttributeAdvancedJunitTest("testEmployeeOuterJoinAddressPhoneProjectsTeamLeaderAddressTeamMembersPhonesOnUOW_NoBase"));
         suite.addTest(new JoinedAttributeAdvancedJunitTest("testEmployeeJoinManagerAddressOuterJoinManagerAddress"));
+        suite.addTest(new JoinedAttributeAdvancedJunitTest("testEmployeeJoinManagerAddressOuterJoinManagerAddress_NoBase"));
         suite.addTest(new JoinedAttributeAdvancedJunitTest("testTwoUnrelatedResultWithOneToManyJoins"));
         suite.addTest(new JoinedAttributeAdvancedJunitTest("testMultipleUnrelatedResultWithOneToManyJoins"));
         suite.addTest(new JoinedAttributeAdvancedJunitTest("testTwoUnrelatedResultWithOneToOneJoins"));
@@ -155,6 +166,12 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
     }
     
     public void testProjectJoinTeamLeaderJoinAddressWhereTeamLeaderNotNull() {
+        internalProjectJoinTeamLeaderJoinAddressWhereTeamLeaderNotNull(false);
+    }
+    public void testProjectJoinTeamLeaderJoinAddressWhereTeamLeaderNotNull_NoBase() {
+        internalProjectJoinTeamLeaderJoinAddressWhereTeamLeaderNotNull(true);
+    }
+    protected void internalProjectJoinTeamLeaderJoinAddressWhereTeamLeaderNotNull(boolean noBase) {
         ReadAllQuery query = new ReadAllQuery();
         query.setReferenceClass(Project.class);
         Expression teamLeader = query.getExpressionBuilder().get("teamLeader");
@@ -162,7 +179,9 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
         
         ReadAllQuery controlQuery = (ReadAllQuery)query.clone();
         
-        query.addJoinedAttribute(teamLeader);
+        if(!noBase) {
+            query.addJoinedAttribute(teamLeader);
+        }
         Expression teamLeaderAddress = teamLeader.get("address");
         query.addJoinedAttribute(teamLeaderAddress);
 
@@ -173,13 +192,21 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
     }
     
     public void testProjectJoinTeamMembersJoinAddress() {
+        internalProjectJoinTeamMembersJoinAddress(false);
+    }
+    public void testProjectJoinTeamMembersJoinAddress_NoBase() {
+        internalProjectJoinTeamMembersJoinAddress(true);
+    }
+    protected void internalProjectJoinTeamMembersJoinAddress(boolean noBase) {
         ReadAllQuery query = new ReadAllQuery();
         query.setReferenceClass(Project.class);
         
         ReadAllQuery controlQuery = (ReadAllQuery)query.clone();
         
         Expression teamMembers = query.getExpressionBuilder().anyOf("teamMembers");
-        query.addJoinedAttribute(teamMembers);
+        if(!noBase) {
+            query.addJoinedAttribute(teamMembers);
+        }
         Expression teamMembersAddress = teamMembers.get("address");
         query.addJoinedAttribute(teamMembersAddress);
 
@@ -190,13 +217,21 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
     }
     
     public void testProjectOuterJoinTeamMembersJoinAddress() {
+        internalProjectOuterJoinTeamMembersJoinAddress(false);
+    }    
+    public void testProjectOuterJoinTeamMembersJoinAddress_NoBase() {
+        internalProjectOuterJoinTeamMembersJoinAddress(true);
+    }
+    protected void internalProjectOuterJoinTeamMembersJoinAddress(boolean noBase) {
         ReadAllQuery query = new ReadAllQuery();
         query.setReferenceClass(Project.class);
         
         ReadAllQuery controlQuery = (ReadAllQuery)query.clone();
         
         Expression teamMembers = query.getExpressionBuilder().anyOfAllowingNone("teamMembers");
-        query.addJoinedAttribute(teamMembers);
+        if(!noBase) {
+            query.addJoinedAttribute(teamMembers);
+        }
         Expression teamMembersAddress = teamMembers.get("address");
         query.addJoinedAttribute(teamMembersAddress);
 
@@ -207,13 +242,21 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
     }
     
     public void testProjectOuterJoinTeamMembersOuterJoinAddress() {
+        internalProjectOuterJoinTeamMembersOuterJoinAddress(false);
+    }    
+    public void testProjectOuterJoinTeamMembersOuterJoinAddress_NoBase() {
+        internalProjectOuterJoinTeamMembersOuterJoinAddress(true);
+    }
+    protected void internalProjectOuterJoinTeamMembersOuterJoinAddress(boolean noBase) {
         ReadAllQuery query = new ReadAllQuery();
         query.setReferenceClass(Project.class);
         
         ReadAllQuery controlQuery = (ReadAllQuery)query.clone();
         
         Expression teamMembers = query.getExpressionBuilder().anyOfAllowingNone("teamMembers");
-        query.addJoinedAttribute(teamMembers);
+        if(!noBase) {
+            query.addJoinedAttribute(teamMembers);
+        }
         Expression teamMembersAddress = teamMembers.getAllowingNull("address");
         query.addJoinedAttribute(teamMembersAddress);
 
@@ -224,13 +267,21 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
     }
     
     public void testProjectJoinTeamMembersOuterJoinAddress() {
+        internalProjectJoinTeamMembersOuterJoinAddress(false);
+    }
+    public void testProjectJoinTeamMembersOuterJoinAddress_NoBase() {
+        internalProjectJoinTeamMembersOuterJoinAddress(true);
+    }
+    protected void internalProjectJoinTeamMembersOuterJoinAddress(boolean noBase) {
         ReadAllQuery query = new ReadAllQuery();
         query.setReferenceClass(Project.class);
         
         ReadAllQuery controlQuery = (ReadAllQuery)query.clone();
         
         Expression teamMembers = query.getExpressionBuilder().anyOf("teamMembers");
-        query.addJoinedAttribute(teamMembers);
+        if(!noBase) {
+            query.addJoinedAttribute(teamMembers);
+        }
         Expression teamMembersAddress = teamMembers.getAllowingNull("address");
         query.addJoinedAttribute(teamMembersAddress);
 
@@ -241,6 +292,12 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
     }
     
     public void testProblemReporterProjectJoinTeamMembersJoinAddress() {
+        internalProblemReporterProjectJoinTeamMembersJoinAddress(false);
+    }    
+    public void testProblemReporterProjectJoinTeamMembersJoinAddress_NoBase() {
+        internalProblemReporterProjectJoinTeamMembersJoinAddress(true);
+    }
+    protected void internalProblemReporterProjectJoinTeamMembersJoinAddress(boolean noBase) {
         ReadAllQuery query = new ReadAllQuery();
         query.setReferenceClass(Project.class);
         query.setSelectionCriteria(query.getExpressionBuilder().get("name").equal("Problem Reporter"));
@@ -248,7 +305,9 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
         ReadAllQuery controlQuery = (ReadAllQuery)query.clone();
         
         Expression teamMembers = query.getExpressionBuilder().anyOf("teamMembers");
-        query.addJoinedAttribute(teamMembers);
+        if(!noBase) {
+            query.addJoinedAttribute(teamMembers);
+        }
         Expression teamMembersAddress = teamMembers.get("address");
         query.addJoinedAttribute(teamMembersAddress);
 
@@ -294,15 +353,26 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
     }
     
     public void testEmployeeJoinProjectsJoinTeamLeaderJoinAddressWhereManagerIsNull() {
+        internalEmployeeJoinProjectsJoinTeamLeaderJoinAddressWhereManagerIsNull(false);
+    }
+    
+    public void testEmployeeJoinProjectsJoinTeamLeaderJoinAddressWhereManagerIsNull_NoBase() {
+        internalEmployeeJoinProjectsJoinTeamLeaderJoinAddressWhereManagerIsNull(true);
+    }
+    protected void internalEmployeeJoinProjectsJoinTeamLeaderJoinAddressWhereManagerIsNull(boolean noBase) {
         ReadAllQuery query = new ReadAllQuery();
         query.setReferenceClass(Employee.class);
         query.setSelectionCriteria(query.getExpressionBuilder().get("manager").isNull());
         
         ReadAllQuery controlQuery = (ReadAllQuery)query.clone();
         Expression projects = query.getExpressionBuilder().anyOf("projects");
-        query.addJoinedAttribute(projects);
+        if(!noBase) {
+            query.addJoinedAttribute(projects);
+        }
         Expression teamLeader = projects.get("teamLeader");
-        query.addJoinedAttribute(teamLeader);
+        if(!noBase) {
+            query.addJoinedAttribute(teamLeader);
+        }
         Expression teamLeaderAddress = teamLeader.get("address");
         query.addJoinedAttribute(teamLeaderAddress);
 
@@ -313,6 +383,12 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
     }
     
     public void testProjectOuterJoinTeamLeaderAddressTeamMembersAddressPhonesWhereProjectName() {
+        internalProjectOuterJoinTeamLeaderAddressTeamMembersAddressPhonesWhereProjectName(false);
+    }    
+    public void testProjectOuterJoinTeamLeaderAddressTeamMembersAddressPhonesWhereProjectName_NoBase() {
+        internalProjectOuterJoinTeamLeaderAddressTeamMembersAddressPhonesWhereProjectName(true);
+    }
+    protected void internalProjectOuterJoinTeamLeaderAddressTeamMembersAddressPhonesWhereProjectName(boolean noBase) {
         ReadAllQuery query = new ReadAllQuery();
         query.setReferenceClass(Project.class);
         query.setSelectionCriteria(query.getExpressionBuilder().get("name").equal("Problem Reporting System").
@@ -321,11 +397,15 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
         ReadAllQuery controlQuery = (ReadAllQuery)query.clone();
         
         Expression teamLeader = query.getExpressionBuilder().getAllowingNull("teamLeader");
-        query.addJoinedAttribute(teamLeader);
+        if(!noBase) {
+            query.addJoinedAttribute(teamLeader);
+        }
         Expression teamLeaderAddress = teamLeader.getAllowingNull("address");
         query.addJoinedAttribute(teamLeaderAddress);
         Expression teamMembers = query.getExpressionBuilder().anyOfAllowingNone("teamMembers");
-        query.addJoinedAttribute(teamMembers);
+        if(!noBase) {
+            query.addJoinedAttribute(teamMembers);
+        }
         Expression teamMembersAddress = teamMembers.getAllowingNull("address");
         query.addJoinedAttribute(teamMembersAddress);
         Expression teamMembersPhones = teamMembers.anyOfAllowingNone("phoneNumbers");
@@ -338,6 +418,12 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
     }
     
     public void testEmployeeOuterJoinAddressPhoneProjectsTeamLeaderAddressTeamMembersPhones() {
+        internalEmployeeOuterJoinAddressPhoneProjectsTeamLeaderAddressTeamMembersPhones(false);
+    }
+    public void testEmployeeOuterJoinAddressPhoneProjectsTeamLeaderAddressTeamMembersPhones_NoBase() {
+        internalEmployeeOuterJoinAddressPhoneProjectsTeamLeaderAddressTeamMembersPhones(true);
+    }
+    protected void internalEmployeeOuterJoinAddressPhoneProjectsTeamLeaderAddressTeamMembersPhones(boolean noBase) {
         ReadAllQuery query = new ReadAllQuery();
         query.setReferenceClass(Employee.class);
         
@@ -353,13 +439,19 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
         query.addJoinedAttribute(query.getExpressionBuilder().anyOfAllowingNone("phoneNumbers"));
         
         Expression projects = query.getExpressionBuilder().anyOfAllowingNone("projects");
-        query.addJoinedAttribute(projects);
+        if(!noBase) {
+            query.addJoinedAttribute(projects);
+        }
         Expression teamLeader = projects.getAllowingNull("teamLeader");
-        query.addJoinedAttribute(teamLeader);
+        if(!noBase) {
+            query.addJoinedAttribute(teamLeader);
+        }
         Expression teamLeaderAddress = teamLeader.getAllowingNull("address");
         query.addJoinedAttribute(teamLeaderAddress);
         Expression teamMembers = projects.anyOfAllowingNone("teamMembers");
-        query.addJoinedAttribute(teamMembers);
+        if(!noBase) {
+            query.addJoinedAttribute(teamMembers);
+        }
         Expression teamMembersPhones = teamMembers.anyOfAllowingNone("phoneNumbers");
         query.addJoinedAttribute(teamMembersPhones);
 
@@ -371,6 +463,12 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
     
     //bug 6130550: test fetch join works in a uow as well as the session.
     public void testEmployeeOuterJoinAddressPhoneProjectsTeamLeaderAddressTeamMembersPhonesOnUOW() {
+        internalEmployeeOuterJoinAddressPhoneProjectsTeamLeaderAddressTeamMembersPhonesOnUOW(false);
+    }
+    public void testEmployeeOuterJoinAddressPhoneProjectsTeamLeaderAddressTeamMembersPhonesOnUOW_NoBase() {
+        internalEmployeeOuterJoinAddressPhoneProjectsTeamLeaderAddressTeamMembersPhonesOnUOW(true);
+    }
+    protected void internalEmployeeOuterJoinAddressPhoneProjectsTeamLeaderAddressTeamMembersPhonesOnUOW(boolean noBase) {
         ReadAllQuery controlQuery = new ReadAllQuery();
         controlQuery.setReferenceClass(Employee.class);
         
@@ -386,13 +484,19 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
         queryWithJoins.addJoinedAttribute(queryWithJoins.getExpressionBuilder().anyOfAllowingNone("phoneNumbers"));
         
         Expression projects = queryWithJoins.getExpressionBuilder().anyOfAllowingNone("projects");
-        queryWithJoins.addJoinedAttribute(projects);
+        if(!noBase) {
+            queryWithJoins.addJoinedAttribute(projects);
+        }
         Expression teamLeader = projects.getAllowingNull("teamLeader");
-        queryWithJoins.addJoinedAttribute(teamLeader);
+        if(!noBase) {
+            queryWithJoins.addJoinedAttribute(teamLeader);
+        }
         Expression teamLeaderAddress = teamLeader.getAllowingNull("address");
         queryWithJoins.addJoinedAttribute(teamLeaderAddress);
         Expression teamMembers = projects.anyOfAllowingNone("teamMembers");
-        queryWithJoins.addJoinedAttribute(teamMembers);
+        if(!noBase) {
+            queryWithJoins.addJoinedAttribute(teamMembers);
+        }
         Expression teamMembersPhones = teamMembers.anyOfAllowingNone("phoneNumbers");
         queryWithJoins.addJoinedAttribute(teamMembersPhones);
 
@@ -412,6 +516,12 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
     }
 
     public void testEmployeeJoinManagerAddressOuterJoinManagerAddress() {
+        internalEmployeeJoinManagerAddressOuterJoinManagerAddress(false);
+    }
+    public void testEmployeeJoinManagerAddressOuterJoinManagerAddress_NoBase() {
+        internalEmployeeJoinManagerAddressOuterJoinManagerAddress(true);
+    }
+    protected void internalEmployeeJoinManagerAddressOuterJoinManagerAddress(boolean noBase) {
         ReadAllQuery query = new ReadAllQuery();
         query.setReferenceClass(Employee.class);
         query.setSelectionCriteria(query.getExpressionBuilder().get("lastName").equal("Way").
@@ -419,11 +529,14 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
         
         ReadAllQuery controlQuery = (ReadAllQuery)query.clone();
         Expression manager = query.getExpressionBuilder().get("manager");
-        query.addJoinedAttribute(manager);
+        if(!noBase) {
+            query.addJoinedAttribute(manager);
+        }
         query.addJoinedAttribute(manager.get("address"));
         Expression managersManager = manager.getAllowingNull("manager");
-        query.addJoinedAttribute(managersManager);
-
+        if(!noBase) {
+            query.addJoinedAttribute(managersManager);
+        }
         query.addJoinedAttribute(managersManager.get("address"));
 
         String errorMsg = executeQueriesAndCompareResults(controlQuery, query);
