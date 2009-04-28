@@ -56,8 +56,10 @@ public class JoinedAttributeTestHelper {
      */
     public static String executeQueriesAndCompareResults(ObjectLevelReadQuery controlQuery, ObjectLevelReadQuery queryWithJoins, AbstractSession session) {
         
+        session.logMessage("JoinedAttributeTestHelper: getting control result:");
         Object controlResult = getControlResultsFromControlQuery(controlQuery, queryWithJoins, session);
         String errorMsg = "";
+        session.logMessage("JoinedAttributeTestHelper: executing queryWithJoins:");
         if (controlResult instanceof Collection) {
             Collection result = (Collection)session.executeQuery(queryWithJoins);
             errorMsg = compareCollections((Collection)controlResult, result, controlQuery.getDescriptor(), session);

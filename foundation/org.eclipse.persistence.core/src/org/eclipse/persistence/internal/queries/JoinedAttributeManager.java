@@ -22,6 +22,7 @@ import java.util.Vector;
 
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.internal.expressions.BaseExpression;
 import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
 import org.eclipse.persistence.internal.expressions.ObjectExpression;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -125,7 +126,15 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
     }
 
     public void addJoinedAttributeExpression(Expression attributeExpression) {
-        getJoinedAttributeExpressions().add(attributeExpression);
+        if(!getJoinedAttributeExpressions().contains(attributeExpression)) {
+            if((attributeExpression instanceof BaseExpression)) {
+                Expression baseExpression = ((BaseExpression)attributeExpression).getBaseExpression();
+                if(baseExpression != null && !baseExpression.isExpressionBuilder()) {
+                    addJoinedAttributeExpression(baseExpression);
+                }
+            }
+            getJoinedAttributeExpressions().add(attributeExpression);
+        }
     }
     
     /**
