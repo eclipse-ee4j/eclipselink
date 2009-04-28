@@ -157,6 +157,9 @@
                 <include name="**/*.jar"/>
             </patternset>
         </unzip>
+        <delete>
+            <fileset dir="${p2.bundle.dir}" includes="*dbws*.jar, *servlet*.jar, *soap*.jar, *xml.ws*.jar"/>
+        </delete>
         <copy todir="${p2.feature.dir}">
             <fileset dir="${feature.build.location}">
                 <include name="**/*.jar"/>

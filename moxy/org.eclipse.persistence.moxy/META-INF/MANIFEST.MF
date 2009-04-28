@@ -14,7 +14,7 @@ Export-Package: org.eclipse.persistence.internal.jaxb;version="1.1.1",
  org.eclipse.persistence.jaxb.javamodel;version="1.1.1",
  org.eclipse.persistence.jaxb.javamodel.reflection;version="1.1.1"
 Bundle-ClassPath: .
-Import-Package: javax.activation;vendor=sun,
+Import-Package: javax.activation;version="1.1.0";resolution:=optional;vendor=sun,
  javax.mail;resolution:=optional,
  javax.xml.bind;version="2.0.0",
  javax.xml.bind.annotation;version="2.0.0",
@@ -26,4 +26,4 @@ Import-Package: javax.activation;vendor=sun,
  javax.xml.stream.events;resolution:=optional,
  javax.xml.stream.util;resolution:=optional
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.moxy
-
+Import-Package: javax.activation;version="1.1.0";resolution:=optional,

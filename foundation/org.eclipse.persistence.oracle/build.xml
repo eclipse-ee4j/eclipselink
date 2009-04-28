@@ -181,9 +181,9 @@
         <echo message=" javax.xml.transform.stream;resolution:=optional,${line.separator}"                                                              file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" javax.xml.validation;resolution:=optional,${line.separator}"                                                                    file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" oracle.AQ;resolution:=optional,${line.separator}"                                                                               file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" oracle.jdbc,${line.separator}"                                                                                                  file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" oracle.jdbc.internal,${line.separator}"                                                                                         file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" oracle.jdbc.pool,${line.separator}"                                                                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" oracle.jdbc;resolution:=optional,${line.separator}"                                                                                                  file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" oracle.jdbc.internal;resolution:=optional,${line.separator}"                                                                                         file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" oracle.jdbc.pool;resolution:=optional,${line.separator}"                                                                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" oracle.spatial.geometry;resolution:=optional,${line.separator}"                                                                 file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" oracle.sql;resolution:=optional,${line.separator}"                                                                              file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" oracle.xdb;resolution:=optional,${line.separator}"                                                                              file="${classes.dir}/MANIFEST.MF" append="true"/>
