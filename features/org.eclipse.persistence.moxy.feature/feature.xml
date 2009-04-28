@@ -19,23 +19,23 @@
 
    <plugin
          id="javax.activation"
-         download-size="52"
-         install-size="52"
-         version="1.1.0"
+         download-size="0"
+         install-size="0"
+         version="1.1.0.v200806101325"
          unpack="false"/>
 
    <plugin
          id="javax.jms"
-         download-size="25"
-         install-size="25"
+         download-size="0"
+         install-size="0"
          version="1.1.0"
          unpack="false"/>
 
    <plugin
          id="javax.mail"
-         download-size="313"
-         install-size="313"
-         version="1.4.0"
+         download-size="0"
+         install-size="0"
+         version="1.4.0.v200804091730"
          unpack="false"/>
 
    <plugin
@@ -47,64 +47,50 @@
 
    <plugin
          id="javax.resource"
-         download-size="42"
-         install-size="42"
+         download-size="0"
+         install-size="0"
          version="1.5.0"
          unpack="false"/>
 
    <plugin
          id="javax.transaction"
-         download-size="10"
-         install-size="10"
+         download-size="0"
+         install-size="0"
          version="1.1.0"
          unpack="false"/>
 
    <plugin
          id="javax.xml.bind"
-         download-size="72"
-         install-size="72"
-         version="2.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="javax.xml.soap"
-         download-size="19"
-         install-size="19"
-         version="1.3.0"
+         download-size="0"
+         install-size="0"
+         version="2.0.0.v20080604-1500"
          unpack="false"/>
 
    <plugin
          id="javax.xml.stream"
-         download-size="38"
-         install-size="38"
-         version="1.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="javax.xml.ws"
-         download-size="37"
-         install-size="37"
-         version="2.0.0"
+         download-size="0"
+         install-size="0"
+         version="1.0.1.v200903100845"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.persistence.asm"
-         download-size="222"
-         install-size="222"
+         download-size="0"
+         install-size="0"
          version="1.1.1.@QUALIFIER@"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.persistence.core"
-         download-size="3003"
-         install-size="3003"
+         download-size="0"
+         install-size="0"
          version="1.1.1.@QUALIFIER@"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.persistence.moxy"
-         download-size="107"
-         install-size="107"
+         download-size="0"
+         install-size="0"
          version="1.1.1.@QUALIFIER@"
          unpack="false"/>
 
