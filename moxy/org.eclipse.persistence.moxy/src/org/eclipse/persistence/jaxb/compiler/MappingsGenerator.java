@@ -264,11 +264,7 @@ public class MappingsGenerator {
         	}
         	
         } else if(property.isReference()) {
-            if(this.isCollectionType(property)) {
-                generateCollectionMappingForReferenceProperty((ReferenceProperty)property, descriptor, namespaceInfo);
-            } else {
-                generateMappingForReferenceProperty((ReferenceProperty)property, descriptor, namespaceInfo);
-            }
+            generateMappingForReferenceProperty((ReferenceProperty)property, descriptor, namespaceInfo);            
         }else if (isMapType(property) && helper.isAnnotationPresent(property.getElement(), XmlAnyAttribute.class)) {
             generateAnyAttributeMapping(property, descriptor, namespaceInfo);
         } else if (isCollectionType(property)) {
@@ -323,6 +319,7 @@ public class MappingsGenerator {
         descriptor.addMapping(mapping);
         return mapping;
     }
+    
     public XMLChoiceCollectionMapping generateChoiceCollectionMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespace) {
         ChoiceProperty prop = (ChoiceProperty)property;
         XMLChoiceCollectionMapping mapping = new XMLChoiceCollectionMapping();
@@ -355,12 +352,13 @@ public class MappingsGenerator {
     }
     
     public XMLMapping generateMappingForReferenceProperty(ReferenceProperty property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
-        DatabaseMapping mapping;
+    	        
         boolean isCollection = isCollectionType(property);
+        DatabaseMapping mapping;
         if(isCollection) {
-            mapping = new XMLChoiceCollectionMapping();
+        	mapping = new XMLChoiceCollectionMapping();
         } else {
-            mapping = new XMLChoiceObjectMapping();
+        	mapping = new XMLChoiceObjectMapping();
         }
         mapping.setAttributeName(property.getPropertyName());
         if(property.isMethodProperty()) {
@@ -378,71 +376,50 @@ public class MappingsGenerator {
         Map<QName, Class> qNamesToScopeClass = new HashMap<QName, Class>();
         for(ElementDeclaration element:referencedElements) {
             QName elementName = element.getElementName();
-            XMLField xmlField = this.getXPathForElement("", elementName, namespaceInfo, !(this.typeInfo.containsKey(element.getJavaTypeName())));
-            if(isCollection) {
-                ((XMLChoiceCollectionMapping)mapping).addChoiceElement(xmlField, element.getJavaTypeName());
-            } else {
-                ((XMLChoiceObjectMapping)mapping).addChoiceElement(xmlField, element.getJavaTypeName());
+            boolean isText = !(this.typeInfo.containsKey(element.getJavaTypeName())) && !(element.getJavaTypeName().equals("java.lang.Object"));            
+            XMLField xmlField = this.getXPathForElement("", elementName, namespaceInfo, isText);
+            if(isCollection){
+            	((XMLChoiceCollectionMapping)mapping).addChoiceElement(xmlField, element.getJavaTypeName());
+            	XMLMapping nestedMapping = ((XMLChoiceCollectionMapping)mapping).getChoiceElementMappings().get(xmlField);
+            	if(((DatabaseMapping)nestedMapping).isAbstractCompositeCollectionMapping()){
+            		((XMLCompositeCollectionMapping)nestedMapping).setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
+            	}
+            }else{
+            	((XMLChoiceObjectMapping)mapping).addChoiceElement(xmlField, element.getJavaTypeName());
+            	XMLMapping nestedMapping = ((XMLChoiceObjectMapping)mapping).getChoiceElementMappings().get(xmlField);
+            	if(((DatabaseMapping)nestedMapping).isAbstractCompositeObjectMapping()){
+            		((XMLCompositeObjectMapping)nestedMapping).setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
+            	}
+ 
             }
+            
             if(!element.isXmlRootElement()) {
                 XMLRootConverter converter = new XMLRootConverter(xmlField);
-                if(isCollection) {
-                    ((XMLChoiceCollectionMapping)mapping).addConverter(xmlField, converter);
-                } else {
-                    ((XMLChoiceObjectMapping)mapping).addConverter(xmlField, converter);
+                if(isCollection){
+                	((XMLChoiceCollectionMapping)mapping).addConverter(xmlField, converter);
+                }else{
+                	((XMLChoiceObjectMapping)mapping).addConverter(xmlField, converter);
                 }
                 qNamesToScopeClass.put(elementName, element.getScopeClass());
             }
             hasJAXBElements = hasJAXBElements || !element.isXmlRootElement();           
         }
         if(hasJAXBElements) {
-        	JAXBElementAttributeAccessor accessor = new JAXBElementAttributeAccessor(mappingAccessor);
+        	JAXBElementAttributeAccessor accessor;
+        	if(isCollection){
+        		accessor = new JAXBElementAttributeAccessor(mappingAccessor, mapping.getContainerPolicy());
+        	}else{
+        		accessor = new JAXBElementAttributeAccessor(mappingAccessor);
+        	}
         	accessor.setQNamesToScopes(qNamesToScopeClass);
             mapping.setAttributeAccessor(accessor);
         }
         descriptor.addMapping(mapping);
         return (XMLMapping)mapping;
+
     }
     
-    public XMLMapping generateCollectionMappingForReferenceProperty(ReferenceProperty property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
-        XMLChoiceCollectionMapping mapping = new XMLChoiceCollectionMapping();
-        
-        mapping.setAttributeName(property.getPropertyName());
-        if(property.isMethodProperty()) {
-            if(property.getSetMethodName() != null) {
-                mapping.setSetMethodName(property.getSetMethodName());
-                mapping.setGetMethodName(property.getGetMethodName());
-            } else {
-                mapping.setGetMethodName(property.getGetMethodName());
-            }
-        }
-
-        List<ElementDeclaration> referencedElements = property.getReferencedElements();
-        boolean hasJAXBElements = false;
-        AttributeAccessor mappingAccessor = mapping.getAttributeAccessor();
-        
-        Map<QName, Class> qNamesToScopeClass = new HashMap<QName, Class>();
-        for(ElementDeclaration element:referencedElements) {
-            QName elementName = element.getElementName();
-            //boolean isText = !(this.typeInfo.containsKey(element.getJavaTypeName())) && !(element.getJavaTypeName().equals("java.lang.Object"));
-            boolean isText = !(this.typeInfo.containsKey(element.getJavaTypeName()));
-            XMLField xmlField = this.getXPathForElement("", elementName, namespaceInfo, isText);
-            mapping.addChoiceElement(xmlField, element.getJavaTypeName());
-            if(!element.isXmlRootElement()) {
-                XMLRootConverter converter = new XMLRootConverter(xmlField);
-                mapping.addConverter(xmlField, converter);
-                qNamesToScopeClass.put(elementName, element.getScopeClass());
-            }
-            hasJAXBElements = hasJAXBElements || !element.isXmlRootElement();
-        }
-        if(hasJAXBElements) {            
-        	JAXBElementAttributeAccessor accessor = new JAXBElementAttributeAccessor(mappingAccessor, mapping.getContainerPolicy());
-        	accessor.setQNamesToScopes(qNamesToScopeClass);
-            mapping.setAttributeAccessor(accessor);
-        }
-        descriptor.addMapping(mapping);
-        return mapping;
-    }
+    
     public XMLAnyCollectionMapping generateAnyCollectionMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
         AnyProperty prop = (AnyProperty)property;
         XMLAnyCollectionMapping  mapping = new XMLAnyCollectionMapping();
@@ -461,6 +438,7 @@ public class MappingsGenerator {
         descriptor.addMapping(mapping);
         return mapping;
     }
+    
     public XMLCompositeObjectMapping generateCompositeObjectMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo, String referenceClassName) {
         XMLCompositeObjectMapping mapping = new XMLCompositeObjectMapping();
         mapping.setReferenceClassName(referenceClassName);

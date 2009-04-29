@@ -41,6 +41,8 @@ import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.mappings.converters.Converter;
+import org.eclipse.persistence.mappings.foundation.AbstractCompositeCollectionMapping;
+import org.eclipse.persistence.mappings.foundation.AbstractCompositeDirectCollectionMapping;
 import org.eclipse.persistence.internal.oxm.XMLChoiceFieldToClassAssociation;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
@@ -207,23 +209,25 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
     }
     
     public void addChoiceElement(String xpath, String elementTypeName) {
-    	XMLField field = new XMLField(xpath);
-        this.fieldToClassNameMappings.put(field, elementTypeName);
+        XMLField field = new XMLField(xpath);
+        addChoiceElement(field, elementTypeName);
     }
 
     
     public void addChoiceElement(XMLField xmlField, Class elementType) {
-    	getFieldToClassMappings().put(xmlField, elementType);
-    	if(!(this.fieldToClassNameMappings.containsKey(xmlField))) {
-    	    this.fieldToClassNameMappings.put(xmlField, elementType.getName());
-    	}
+        getFieldToClassMappings().put(xmlField, elementType);
+        if(!(this.fieldToClassNameMappings.containsKey(xmlField))) {
+            this.fieldToClassNameMappings.put(xmlField, elementType.getName());
+        }
         if (classToFieldMappings.get(elementType) == null) {
             classToFieldMappings.put(elementType, xmlField);
         }
+        addChoiceElementMapping(xmlField, elementType);
     }
     
     public void addChoiceElement(XMLField field, String elementTypeName) {
-    	this.fieldToClassNameMappings.put(field, elementTypeName);
+        this.fieldToClassNameMappings.put(field, elementTypeName);
+        addChoiceElementMapping(field, elementTypeName);
     }
     
     
@@ -236,52 +240,37 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
         if (this.fieldToClassMappings.size() == 0) {
             this.convertClassNamesToClasses(((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).getLoader());
         }
-
-        //create mappings for each field.
-        Iterator<XMLField> fields = getFieldToClassMappings().keySet().iterator();
-        while (fields.hasNext()) {
-            XMLField next = fields.next();
+        
+        Iterator<XMLMapping> mappings = getChoiceElementMappings().values().iterator();
+        while(mappings.hasNext()){
+            DatabaseMapping nextMapping = (DatabaseMapping)mappings.next();
+            nextMapping.setDescriptor(getDescriptor());
+            nextMapping.setAttributeAccessor(this.getAttributeAccessor());
+            nextMapping.setAttributeName(this.getAttributeName());
             Converter converter = null;
             if(fieldsToConverters != null) {
-            	converter = fieldsToConverters.get(next);
+                converter = fieldsToConverters.get(nextMapping.getField());
             }
-            if (next.getLastXPathFragment().nameIsText()) {
-                //if it's a simple value, create a Direct Mapping
-                XMLCompositeDirectCollectionMapping xmlMapping = new XMLCompositeDirectCollectionMapping();
-                xmlMapping.setAttributeName(this.getAttributeName());
-                xmlMapping.setAttributeAccessor(this.getAttributeAccessor());
-                xmlMapping.setAttributeElementClass(getFieldToClassMappings().get(next));
-                XMLConversionManager xmlConversionManager = (XMLConversionManager) session.getDatasourcePlatform().getConversionManager();
-                QName schemaType = (QName)xmlConversionManager.getDefaultJavaTypes().get(xmlMapping.getAttributeElementClass());
+            if(nextMapping.isAbstractCompositeDirectCollectionMapping()){
+                XMLConversionManager xmlConversionManager = (XMLConversionManager) session.getDatasourcePlatform().getConversionManager();                   
+                QName schemaType = (QName)xmlConversionManager.getDefaultJavaTypes().get(((AbstractCompositeDirectCollectionMapping)nextMapping).getAttributeElementClass());
                 if(schemaType != null) {
-                	next.setSchemaType(schemaType);
+                 ((XMLField)nextMapping.getField()).setSchemaType(schemaType);
+                }   
+                
+                if(converter != null){
+                    ((AbstractCompositeDirectCollectionMapping)nextMapping).setValueConverter(converter);
                 }
-                xmlMapping.setField(next);
-                xmlMapping.setDescriptor(this.getDescriptor());
-                xmlMapping.setContainerPolicy(getContainerPolicy());
-                if(converter != null) {
-                	xmlMapping.setValueConverter(converter);
+                ((AbstractCompositeDirectCollectionMapping)nextMapping).setContainerPolicy(getContainerPolicy());                                               
+            }else{
+                if(converter != null){
+                    ((AbstractCompositeCollectionMapping)nextMapping).setConverter(converter);
                 }
-                this.choiceElementMappings.put(next, xmlMapping);
-                xmlMapping.initialize(session);
-            } else {
-                XMLCompositeCollectionMapping xmlMapping = new XMLCompositeCollectionMapping();
-                xmlMapping.setAttributeName(this.getAttributeName());
-                xmlMapping.setAttributeAccessor(this.getAttributeAccessor());
-                Class refClass = getFieldToClassMappings().get(next);
-                if(!refClass.equals(ClassConstants.OBJECT)){
-                	xmlMapping.setReferenceClass(refClass);
-                }
-                xmlMapping.setField(next);
-                xmlMapping.setDescriptor(this.getDescriptor());
-                xmlMapping.setContainerPolicy(getContainerPolicy());
-                if(converter != null) {
-                	xmlMapping.setConverter(converter);
-                }
-                this.choiceElementMappings.put(next, xmlMapping);
-                xmlMapping.initialize(session);
-            }
-        }
+                ((AbstractCompositeCollectionMapping)nextMapping).setContainerPolicy(getContainerPolicy());
+            }            
+            
+            nextMapping.initialize(session);
+        }        
     }
 
     public Map<Class, XMLField> getClassToFieldMappings() {
@@ -327,8 +316,10 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
             } catch (ClassNotFoundException exc) {
                 throw ValidationException.classNotFoundWhileConvertingClassNames(className, exc);
             }
-            addChoiceElement(xpath, elementType);
-        }
+            if (classToFieldMappings.get(elementType) == null) {
+                classToFieldMappings.put(elementType, xpath);
+            }
+        }        
     }
     
     public void addConverter(XMLField field, Converter converter) {
@@ -361,5 +352,39 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
                 }
             }
         }
-    }      
+    }    
+    
+    private void addChoiceElementMapping(XMLField xmlField, String className){              
+         if (xmlField.getLastXPathFragment().nameIsText()) {
+             XMLCompositeDirectCollectionMapping xmlMapping = new XMLCompositeDirectCollectionMapping();             
+             Class theClass = XMLConversionManager.getDefaultXMLManager().convertClassNameToClass(className);
+             xmlMapping.setAttributeElementClass(theClass);             
+             xmlMapping.setField(xmlField);             
+             this.choiceElementMappings.put(xmlField, xmlMapping);                
+         } else {
+             XMLCompositeCollectionMapping xmlMapping = new XMLCompositeCollectionMapping();             
+             if(!className.equals("java.lang.Object")){
+                xmlMapping.setReferenceClassName(className);
+             }      
+             xmlMapping.setField(xmlField);
+             this.choiceElementMappings.put(xmlField, xmlMapping);                
+         }        
+    }    
+    
+    private void addChoiceElementMapping(XMLField xmlField, Class theClass){
+    
+        if (xmlField.getLastXPathFragment().nameIsText()) {
+            XMLCompositeDirectCollectionMapping xmlMapping = new XMLCompositeDirectCollectionMapping();            
+            xmlMapping.setAttributeElementClass(theClass);
+            xmlMapping.setField(xmlField);
+            this.choiceElementMappings.put(xmlField, xmlMapping);                
+        } else {
+            XMLCompositeCollectionMapping xmlMapping = new XMLCompositeCollectionMapping();            
+            if(!theClass.equals(ClassConstants.OBJECT)){
+                xmlMapping.setReferenceClass(theClass);
+            }
+            xmlMapping.setField(xmlField);
+            this.choiceElementMappings.put(xmlField, xmlMapping);                
+        }        
+    }
 }
