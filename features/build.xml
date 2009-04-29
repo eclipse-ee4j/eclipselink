@@ -108,32 +108,32 @@
                 <exclude name="build.xml"/>
             </fileset>
         </copy>
-        <jar jarfile="${feature.build.location}/org.eclipse.persistence.jpa_${version.string}.jar" duplicate="preserve">
+        <jar jarfile="${feature.build.location}/org.eclipse.persistence.jpa.feature_${version.string}.jar" duplicate="preserve">
             <fileset dir="${classes.dir}/org.eclipse.persistence.jpa.feature">
                 <include name="*.xml"/>
             </fileset>
         </jar>
-        <jar jarfile="${feature.build.location}/org.eclipse.persistence.moxy_${version.string}.jar" duplicate="preserve">
+        <jar jarfile="${feature.build.location}/org.eclipse.persistence.moxy.feature_${version.string}.jar" duplicate="preserve">
             <fileset dir="${classes.dir}/org.eclipse.persistence.moxy.feature">
                 <include name="*.xml"/>
             </fileset>
         </jar>
-        <jar jarfile="${feature.build.location}/org.eclipse.persistence.sdo_${version.string}.jar" duplicate="preserve">
+        <jar jarfile="${feature.build.location}/org.eclipse.persistence.sdo.feature_${version.string}.jar" duplicate="preserve">
             <fileset dir="${classes.dir}/org.eclipse.persistence.sdo.feature">
                 <include name="*.xml"/>
             </fileset>
         </jar>
-        <jar jarfile="${feature.build.location}/org.eclipse.persistence.jpa.source_${version.string}.jar" duplicate="preserve">
+        <jar jarfile="${feature.build.location}/org.eclipse.persistence.jpa.source.feature_${version.string}.jar" duplicate="preserve">
             <fileset dir="${classes.dir}/org.eclipse.persistence.jpa.source.feature">
                 <include name="*.xml"/>
             </fileset>
         </jar>
-        <jar jarfile="${feature.build.location}/org.eclipse.persistence.moxy.source_${version.string}.jar" duplicate="preserve">
+        <jar jarfile="${feature.build.location}/org.eclipse.persistence.moxy.source.feature_${version.string}.jar" duplicate="preserve">
             <fileset dir="${classes.dir}/org.eclipse.persistence.moxy.source.feature">
                 <include name="*.xml"/>
             </fileset>
         </jar>
-        <jar jarfile="${feature.build.location}/org.eclipse.persistence.sdo.source_${version.string}.jar" duplicate="preserve">
+        <jar jarfile="${feature.build.location}/org.eclipse.persistence.sdo.source.feature_${version.string}.jar" duplicate="preserve">
             <fileset dir="${classes.dir}/org.eclipse.persistence.sdo.source.feature">
                 <include name="*.xml"/>
             </fileset>
