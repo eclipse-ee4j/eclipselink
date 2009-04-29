@@ -94,6 +94,11 @@ public class ConversionManager implements Serializable, Cloneable {
             return sourceObject;
         }
 
+        // Check if object is instance of the real class for the primitive class.
+        if (javaClass.isPrimitive() && (((sourceObject instanceof Boolean) && (javaClass == ClassConstants.PBOOLEAN)) || ((sourceObject instanceof Long) && (javaClass == ClassConstants.PLONG)) || ((sourceObject instanceof Integer) && (javaClass == ClassConstants.PINT)) || ((sourceObject instanceof Float) && (javaClass == ClassConstants.PFLOAT)) || ((sourceObject instanceof Double) && (javaClass == ClassConstants.PDOUBLE)) || ((sourceObject instanceof Byte) && (javaClass == ClassConstants.PBYTE)) || ((sourceObject instanceof Character) && (javaClass == ClassConstants.PCHAR)) || ((sourceObject instanceof Short) && (javaClass == ClassConstants.PSHORT)))) {
+            return sourceObject;
+        }
+
         try {
             if (javaClass == ClassConstants.STRING) {
                 return convertObjectToString(sourceObject);
@@ -144,19 +149,6 @@ public class ConversionManager implements Serializable, Cloneable {
             throw ce;
         } catch (Exception e) {
             throw ConversionException.couldNotBeConverted(sourceObject, javaClass, e);
-        }
-        
-        // Check if object is instance of the real class for the primitive class.
-        if (javaClass.isPrimitive() && 
-        	(((javaClass == ClassConstants.PBOOLEAN) && (sourceObject instanceof Boolean)  ) || 
-            ((javaClass == ClassConstants.PLONG) && (sourceObject instanceof Long) ) || 
-            ((javaClass == ClassConstants.PINT) && (sourceObject instanceof Integer)  ) || 
-            ((javaClass == ClassConstants.PFLOAT) && (sourceObject instanceof Float)) || 
-            ((javaClass == ClassConstants.PDOUBLE) &&  (sourceObject instanceof Double) ) || 
-            ((javaClass == ClassConstants.PBYTE) &&  (sourceObject instanceof Byte)) || 
-            ((javaClass == ClassConstants.PCHAR) &&  (sourceObject instanceof Character)) || 
-            ((javaClass == ClassConstants.PSHORT) &&  (sourceObject instanceof Short)))) {
-            return sourceObject;
         }
 
         // Delay this check as poor performance.
