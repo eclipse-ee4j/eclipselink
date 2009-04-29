@@ -1,20 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="org.eclipse.persistence.sdo.source.feature"
+      id="org.eclipse.persistence.sdo.source"
       label="EclipseLink SDO Source"
       version="1.1.1.@QUALIFIER@"
       provider-name="EclipseLink Project">
 
-   <description url="http://www.example.com/description">
-      [Enter Feature Description here.]
+   <description url="http://www.eclipse.org/eclipselink/project-info/description.html">
+      Source bundles for EclipseLink SDO.
    </description>
 
-   <copyright url="http://www.example.com/copyright">
-      [Enter Copyright Description here.]
+   <copyright url="http://www.eclipse.org/eclipselink/project-info/copyright.html">
+      Copyright (c) 1998, 2009, Oracle and others.  All rights reserved.
    </copyright>
 
-   <license url="http://www.example.com/license">
-      [Enter License Description here.]
+   <license url="http://www.eclipse.org/eclipselink/project-info/license.html">
+      EclipseLink License Agreement
+      
+      This program and the accompanying materials are made available under the
+      terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+      which accompanies this distribution.
+      The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+      and the Eclipse Distribution License is available at
+      http://www.eclipse.org/org/documents/edl-v10.php.
    </license>
 
    <plugin

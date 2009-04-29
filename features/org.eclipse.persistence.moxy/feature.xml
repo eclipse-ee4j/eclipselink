@@ -1,25 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="org.eclipse.persistence.jpa.feature"
-      label="EclipseLink JPA"
+      id="org.eclipse.persistence.moxy"
+      label="EclipseLink MOXy"
       version="1.1.1.@QUALIFIER@"
       provider-name="EclipseLink Project">
 
-   <description url="http://www.example.com/description">
-      [Enter Feature Description here.]
+   <description url="http://www.eclipse.org/eclipselink/project-info/description.html">
+      EclipseLink MOXy delivers a comprehensive open-source Java Object to XML binding solution.
    </description>
 
-   <copyright url="http://www.example.com/copyright">
-      [Enter Copyright Description here.]
+   <copyright url="http://www.eclipse.org/eclipselink/project-info/copyright.html">
+      Copyright (c) 1998, 2009, Oracle and others.  All rights reserved.
    </copyright>
 
-   <license url="http://www.example.com/license">
-      [Enter License Description here.]
+   <license url="http://www.eclipse.org/eclipselink/project-info/license.html">
+      EclipseLink License Agreement
+      
+      This program and the accompanying materials are made available under the
+      terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+      which accompanies this distribution.
+      The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+      and the Eclipse Distribution License is available at
+      http://www.eclipse.org/org/documents/edl-v10.php.
    </license>
-
-   <requires>
-      <import plugin="org.eclipse.osgi"/>
-   </requires>
 
    <plugin
          id="javax.activation"
@@ -64,17 +67,17 @@
          unpack="false"/>
 
    <plugin
+         id="javax.xml.bind"
+         download-size="0"
+         install-size="0"
+         version="2.0.0.v20080604-1500"
+         unpack="false"/>
+
+   <plugin
          id="javax.xml.stream"
          download-size="0"
          install-size="0"
          version="1.0.1.v200903100845"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.persistence.antlr"
-         download-size="0"
-         install-size="0"
-         version="1.1.1.@QUALIFIER@"
          unpack="false"/>
 
    <plugin
@@ -92,28 +95,7 @@
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.persistence.jpa"
-         download-size="0"
-         install-size="0"
-         version="1.1.1.@QUALIFIER@"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.persistence.jpa.equinox"
-         download-size="0"
-         install-size="0"
-         version="1.1.1.@QUALIFIER@"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.persistence.jpa.equinox.weaving"
-         download-size="0"
-         install-size="0"
-         version="1.1.1.@QUALIFIER@"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.persistence.oracle"
+         id="org.eclipse.persistence.moxy"
          download-size="0"
          install-size="0"
          version="1.1.1.@QUALIFIER@"

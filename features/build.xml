@@ -101,40 +101,71 @@
     <!-- build feature jars -->
     <target name="create-deployable-features">
         <mkdir dir="${classes.dir}"/>
-        <filter token="QUALIFIER"  value="${version.qualifier}"/>
+        <filter token="VERSION"   value="${release.version}"/>
+        <filter token="QUALIFIER" value="${version.qualifier}"/>
         <copy todir="${classes.dir}" filtering="true">
             <fileset dir="${feature.build.location}">
                 <include name="**/*.xml"/>
-                <exclude name="build.xml"/>
+                <exclude name="build*.xml"/>
             </fileset>
         </copy>
-        <jar jarfile="${feature.build.location}/org.eclipse.persistence.jpa.feature_${version.string}.jar" duplicate="preserve">
-            <fileset dir="${classes.dir}/org.eclipse.persistence.jpa.feature">
+        <jar jarfile="${feature.build.location}/org.eclipse.persistence.jpa_${version.string}.jar" duplicate="preserve">
+            <fileset dir="${feature.2.base.dir}">
+                <include name="about.html"/>
+                <include name="readme.html"/>
+                <include name="license.*"/>
+            </fileset>
+            <fileset dir="${classes.dir}/org.eclipse.persistence.jpa">
                 <include name="*.xml"/>
             </fileset>
         </jar>
-        <jar jarfile="${feature.build.location}/org.eclipse.persistence.moxy.feature_${version.string}.jar" duplicate="preserve">
-            <fileset dir="${classes.dir}/org.eclipse.persistence.moxy.feature">
+        <jar jarfile="${feature.build.location}/org.eclipse.persistence.moxy_${version.string}.jar" duplicate="preserve">
+            <fileset dir="${feature.2.base.dir}">
+                <include name="about.html"/>
+                <include name="readme.html"/>
+                <include name="license.*"/>
+            </fileset>
+            <fileset dir="${classes.dir}/org.eclipse.persistence.moxy">
                 <include name="*.xml"/>
             </fileset>
         </jar>
-        <jar jarfile="${feature.build.location}/org.eclipse.persistence.sdo.feature_${version.string}.jar" duplicate="preserve">
-            <fileset dir="${classes.dir}/org.eclipse.persistence.sdo.feature">
+        <jar jarfile="${feature.build.location}/org.eclipse.persistence.sdo_${version.string}.jar" duplicate="preserve">
+            <fileset dir="${feature.2.base.dir}">
+                <include name="about.html"/>
+                <include name="readme.html"/>
+                <include name="license.*"/>
+            </fileset>
+            <fileset dir="${classes.dir}/org.eclipse.persistence.sdo">
                 <include name="*.xml"/>
             </fileset>
         </jar>
-        <jar jarfile="${feature.build.location}/org.eclipse.persistence.jpa.source.feature_${version.string}.jar" duplicate="preserve">
-            <fileset dir="${classes.dir}/org.eclipse.persistence.jpa.source.feature">
+        <jar jarfile="${feature.build.location}/org.eclipse.persistence.jpa.source_${version.string}.jar" duplicate="preserve">
+            <fileset dir="${feature.2.base.dir}">
+                <include name="about.html"/>
+                <include name="readme.html"/>
+                <include name="license.*"/>
+            </fileset>
+            <fileset dir="${classes.dir}/org.eclipse.persistence.jpa.source">
                 <include name="*.xml"/>
             </fileset>
         </jar>
-        <jar jarfile="${feature.build.location}/org.eclipse.persistence.moxy.source.feature_${version.string}.jar" duplicate="preserve">
-            <fileset dir="${classes.dir}/org.eclipse.persistence.moxy.source.feature">
+        <jar jarfile="${feature.build.location}/org.eclipse.persistence.moxy.source_${version.string}.jar" duplicate="preserve">
+            <fileset dir="${feature.2.base.dir}">
+                <include name="about.html"/>
+                <include name="readme.html"/>
+                <include name="license.*"/>
+            </fileset>
+            <fileset dir="${classes.dir}/org.eclipse.persistence.moxy.source">
                 <include name="*.xml"/>
             </fileset>
         </jar>
-        <jar jarfile="${feature.build.location}/org.eclipse.persistence.sdo.source.feature_${version.string}.jar" duplicate="preserve">
-            <fileset dir="${classes.dir}/org.eclipse.persistence.sdo.source.feature">
+        <jar jarfile="${feature.build.location}/org.eclipse.persistence.sdo.source_${version.string}.jar" duplicate="preserve">
+            <fileset dir="${feature.2.base.dir}">
+                <include name="about.html"/>
+                <include name="readme.html"/>
+                <include name="license.*"/>
+            </fileset>
+            <fileset dir="${classes.dir}/org.eclipse.persistence.sdo.source">
                 <include name="*.xml"/>
             </fileset>
         </jar>
@@ -185,6 +216,7 @@
             </classpath>
             <arg line=" -application org.eclipse.equinox.p2.metadata.generator.EclipseGenerator" />
             <arg line=" -base ${p2.base.dir}" />
+            <arg line=" -site file:${classes.dir}/site.xml" />
             <arg line=" -features ${p2.feature.dir}" />
             <arg line=" -bundles ${p2.bundle.dir}" />
             <arg line=" -metadataRepository ${p2.repository.url}/ -metadataRepositoryName &quot;EclipseLink Repository&quot;" />
