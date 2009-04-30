@@ -121,8 +121,8 @@ public class Customizer implements SessionCustomizer, DescriptorCustomizer {
             projectsQueryKey.setReferenceClass(Project.class);
             builder = new ExpressionBuilder();
             projectsQueryKey.setJoinCriteria(
-                    (builder.getTable("CMP3_EMP_PROJ").getField("EMPLOYEES_EMP_ID").equal(
-                    builder.getParameter("CMP3_EMPLOYEE.EMP_ID")).and(
+                    (builder.getParameter("CMP3_EMPLOYEE.EMP_ID").equal(
+                    builder.getTable("CMP3_EMP_PROJ").getField("EMPLOYEES_EMP_ID")).and(
                     builder.getTable("CMP3_EMP_PROJ").getField("PROJECTS_PROJ_ID").equal(
                     builder.getField("CMP3_PROJECT.PROJ_ID")))));
             descriptor.addQueryKey(projectsQueryKey);
@@ -133,8 +133,8 @@ public class Customizer implements SessionCustomizer, DescriptorCustomizer {
             largeProjectsQueryKey.setReferenceClass(LargeProject.class);
             builder = new ExpressionBuilder();
             largeProjectsQueryKey.setJoinCriteria(
-                    (builder.getTable("CMP3_EMP_PROJ").getField("EMPLOYEES_EMP_ID").equal(
-                    builder.getParameter("CMP3_EMPLOYEE.EMP_ID")).and(
+                    (builder.getParameter("CMP3_EMPLOYEE.EMP_ID").equal(
+                    builder.getTable("CMP3_EMP_PROJ").getField("EMPLOYEES_EMP_ID")).and(
                     builder.getTable("CMP3_EMP_PROJ").getField("PROJECTS_PROJ_ID").equal(
                     builder.getField("CMP3_PROJECT.PROJ_ID")))));
             descriptor.addQueryKey(largeProjectsQueryKey);
@@ -167,8 +167,8 @@ public class Customizer implements SessionCustomizer, DescriptorCustomizer {
             employesQueryKey.setReferenceClass(Employee.class);
             builder = new ExpressionBuilder();
             employesQueryKey.setJoinCriteria(
-                    (builder.getTable("CMP3_EMP_PROJ").getField("PROJECTS_PROJ_ID").equal(
-                    builder.getParameter("CMP3_PROJECT.PROJ_ID")).and(
+                    (builder.getParameter("CMP3_PROJECT.PROJ_ID").equal(
+                    builder.getTable("CMP3_EMP_PROJ").getField("PROJECTS_PROJ_ID")).and(
                     builder.getTable("CMP3_EMP_PROJ").getField("EMPLOYEES_EMP_ID").equal(
                     builder.getField("CMP3_EMPLOYEE.EMP_ID")))));
             descriptor.addQueryKey(employesQueryKey);
