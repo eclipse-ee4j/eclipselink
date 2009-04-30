@@ -521,7 +521,7 @@ public class ExpressionOperator implements Serializable {
 
     /**
      * INTERNAL:
-     * Compare bewteen in memory.
+     * Compare between in memory.
      */
     public boolean conformBetween(Object left, Object right) {
         Object start = ((Vector)right).elementAt(0);
@@ -535,6 +535,8 @@ public class ExpressionOperator implements Serializable {
             return ((((String)left).compareTo(((String)start)) > 0) || (((String)left).compareTo(((String)start)) == 0)) && ((((String)left).compareTo(((String)end)) < 0) || (((String)left).compareTo(((String)end)) == 0));
         } else if ((left instanceof java.util.Date) && (start instanceof java.util.Date) && (end instanceof java.util.Date)) {
             return (((java.util.Date)left).after(((java.util.Date)start)) || ((java.util.Date)left).equals((start))) && (((java.util.Date)left).before(((java.util.Date)end)) || ((java.util.Date)left).equals((end)));
+        } else if ((left instanceof java.util.Calendar) && (start instanceof java.util.Calendar) && (end instanceof java.util.Calendar)) {
+            return (((java.util.Calendar)left).after(((java.util.Calendar)start)) || ((java.util.Calendar)left).equals((start))) && (((java.util.Calendar)left).before(((java.util.Calendar)end)) || ((java.util.Calendar)left).equals((end)));
         }
 
         throw QueryException.cannotConformExpression();
@@ -780,6 +782,8 @@ public class ExpressionOperator implements Serializable {
                 return ((String)left).compareTo(((String)right)) < 0;
             } else if ((left instanceof java.util.Date) && (right instanceof java.util.Date)) {
                 return ((java.util.Date)left).before(((java.util.Date)right));
+            } else if ((left instanceof java.util.Calendar) && (right instanceof java.util.Calendar)) {
+                return ((java.util.Calendar)left).before(((java.util.Calendar)right));
             }
         } else if (this.selector == LessThanEqual) {
             if ((left == null) && (right == null)) {
@@ -794,6 +798,8 @@ public class ExpressionOperator implements Serializable {
                 return (compareValue < 0) || (compareValue == 0);
             } else if ((left instanceof java.util.Date) && (right instanceof java.util.Date)) {
                 return ((java.util.Date)left).equals((right)) || ((java.util.Date)left).before(((java.util.Date)right));
+            } else if ((left instanceof java.util.Calendar) && (right instanceof java.util.Calendar)) {
+                return ((java.util.Calendar)left).equals((right)) || ((java.util.Calendar)left).before(((java.util.Calendar)right));
             }
         } else if (this.selector == GreaterThan) {
             if ((left == null) || (right == null)) {
@@ -806,6 +812,8 @@ public class ExpressionOperator implements Serializable {
                 return (compareValue > 0);
             } else if ((left instanceof java.util.Date) && (right instanceof java.util.Date)) {
                 return ((java.util.Date)left).after(((java.util.Date)right));
+            } else if ((left instanceof java.util.Calendar) && (right instanceof java.util.Calendar)) {
+                return ((java.util.Calendar)left).after(((java.util.Calendar)right));
             }
         } else if (this.selector == GreaterThanEqual) {
             if ((left == null) && (right == null)) {
@@ -820,6 +828,8 @@ public class ExpressionOperator implements Serializable {
                 return (compareValue > 0) || (compareValue == 0);
             } else if ((left instanceof java.util.Date) && (right instanceof java.util.Date)) {
                 return ((java.util.Date)left).equals((right)) || ((java.util.Date)left).after(((java.util.Date)right));
+            } else if ((left instanceof java.util.Calendar) && (right instanceof java.util.Calendar)) {
+                return ((java.util.Calendar)left).equals((right)) || ((java.util.Calendar)left).after(((java.util.Calendar)right));
             }
         }
         // Between
