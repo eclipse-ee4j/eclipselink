@@ -18,6 +18,11 @@ import java.util.Map;
 import org.eclipse.persistence.config.DescriptorCustomizer;
 import org.eclipse.persistence.config.SessionCustomizer;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.mappings.querykeys.DirectCollectionQueryKey;
+import org.eclipse.persistence.mappings.querykeys.ManyToManyQueryKey;
+import org.eclipse.persistence.mappings.querykeys.OneToManyQueryKey;
+import org.eclipse.persistence.mappings.querykeys.OneToOneQueryKey;
 import org.eclipse.persistence.sessions.Session;
 
 /**
@@ -45,6 +50,8 @@ public class Customizer implements SessionCustomizer, DescriptorCustomizer {
             num = numberOfCalls.intValue();
         }
         descriptorCalls.put(javaClassName, new Integer(num + 1));
+        
+        addCustomQueryKeys(descriptor);
     }
     
     public static Map getSessionCalls() {
@@ -70,6 +77,101 @@ public class Customizer implements SessionCustomizer, DescriptorCustomizer {
             return 0;
         } else {
             return numberOfCalls.intValue();
+        }
+    }
+    
+    protected void addCustomQueryKeys(ClassDescriptor descriptor) {
+        ExpressionBuilder builder;
+        
+        // add QueryKeys to Employee descriptor
+        if(descriptor.getJavaClass().equals(Employee.class)) {
+            // Employee's Address (same as address attribute).
+            OneToOneQueryKey queryKey = new OneToOneQueryKey();
+            queryKey.setName("addressQK");
+            queryKey.setReferenceClass(Address.class);
+            builder = new ExpressionBuilder();
+            queryKey.setJoinCriteria(
+                    builder.getField("CMP3_ADDRESS.ADDRESS_ID").equal(
+                    builder.getParameter("CMP3_EMPLOYEE.ADDR_ID")));
+            descriptor.addQueryKey(queryKey);
+            
+            // Projects led by Employee. 
+            OneToManyQueryKey managedProjectsQueryKey = new OneToManyQueryKey();
+            managedProjectsQueryKey.setName("managedProjects");
+            managedProjectsQueryKey.setReferenceClass(Project.class);
+            builder = new ExpressionBuilder();
+            managedProjectsQueryKey.setJoinCriteria(
+                    builder.getField("CMP3_PROJECT.LEADER_ID").equal(
+                    builder.getParameter("CMP3_EMPLOYEE.EMP_ID")));
+            descriptor.addQueryKey(managedProjectsQueryKey);
+    
+            // LargeProjects led by Employee. 
+            OneToManyQueryKey managedLargeProjectsQueryKey = new OneToManyQueryKey();
+            managedLargeProjectsQueryKey.setName("managedLargeProjects");
+            managedLargeProjectsQueryKey.setReferenceClass(LargeProject.class);
+            builder = new ExpressionBuilder();
+            managedLargeProjectsQueryKey.setJoinCriteria(
+                    builder.getField("CMP3_PROJECT.LEADER_ID").equal(
+                    builder.getParameter("CMP3_EMPLOYEE.EMP_ID")));
+            descriptor.addQueryKey(managedLargeProjectsQueryKey);
+    
+            // Employee's Projects (same as projects attribute).
+            ManyToManyQueryKey projectsQueryKey = new ManyToManyQueryKey();
+            projectsQueryKey.setName("projectsQK");
+            projectsQueryKey.setReferenceClass(Project.class);
+            builder = new ExpressionBuilder();
+            projectsQueryKey.setJoinCriteria(
+                    (builder.getTable("CMP3_EMP_PROJ").getField("EMPLOYEES_EMP_ID").equal(
+                    builder.getParameter("CMP3_EMPLOYEE.EMP_ID")).and(
+                    builder.getTable("CMP3_EMP_PROJ").getField("PROJECTS_PROJ_ID").equal(
+                    builder.getField("CMP3_PROJECT.PROJ_ID")))));
+            descriptor.addQueryKey(projectsQueryKey);
+    
+            // Employee's LargeProjects.
+            ManyToManyQueryKey largeProjectsQueryKey = new ManyToManyQueryKey();
+            largeProjectsQueryKey.setName("largeProjects");
+            largeProjectsQueryKey.setReferenceClass(LargeProject.class);
+            builder = new ExpressionBuilder();
+            largeProjectsQueryKey.setJoinCriteria(
+                    (builder.getTable("CMP3_EMP_PROJ").getField("EMPLOYEES_EMP_ID").equal(
+                    builder.getParameter("CMP3_EMPLOYEE.EMP_ID")).and(
+                    builder.getTable("CMP3_EMP_PROJ").getField("PROJECTS_PROJ_ID").equal(
+                    builder.getField("CMP3_PROJECT.PROJ_ID")))));
+            descriptor.addQueryKey(largeProjectsQueryKey);
+    
+            // Employee's responsibilities (same as responsibilities) - can't make this work so far.
+            DirectCollectionQueryKey responsibilitiesQueryKey = new DirectCollectionQueryKey();
+            responsibilitiesQueryKey.setName("responsibilitiesQK");
+            builder = new ExpressionBuilder();
+            responsibilitiesQueryKey.setJoinCriteria(
+                    builder.getField("CMP3_RESPONS.DESCRIPTION").equal(
+                    builder.getField("CMP3_RESPONS.EMP_ID").equal(
+                    builder.getParameter("CMP3_EMPLOYEE.EMP_ID"))));
+            descriptor.addQueryKey(responsibilitiesQueryKey);
+            
+        } else if(descriptor.getJavaClass().equals(Address.class)) {
+            // Employee that references Address
+            OneToOneQueryKey ownerQueryKey = new OneToOneQueryKey();
+            ownerQueryKey.setName("owner");
+            ownerQueryKey.setReferenceClass(Employee.class);
+            builder = new ExpressionBuilder();
+            ownerQueryKey.setJoinCriteria(
+                    builder.getField("CMP3_EMPLOYEE.ADDR_ID").equal(
+                    builder.getParameter("CMP3_ADDRESS.ADDRESS_ID")));
+            descriptor.addQueryKey(ownerQueryKey);
+            
+        } else  if(descriptor.getJavaClass().equals(Project.class)) {
+            // Project's employees.
+            ManyToManyQueryKey employesQueryKey = new ManyToManyQueryKey();
+            employesQueryKey.setName("employees");
+            employesQueryKey.setReferenceClass(Employee.class);
+            builder = new ExpressionBuilder();
+            employesQueryKey.setJoinCriteria(
+                    (builder.getTable("CMP3_EMP_PROJ").getField("PROJECTS_PROJ_ID").equal(
+                    builder.getParameter("CMP3_PROJECT.PROJ_ID")).and(
+                    builder.getTable("CMP3_EMP_PROJ").getField("EMPLOYEES_EMP_ID").equal(
+                    builder.getField("CMP3_EMPLOYEE.EMP_ID")))));
+            descriptor.addQueryKey(employesQueryKey);
         }
     }
 }

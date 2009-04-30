@@ -727,14 +727,16 @@ public class QueryKeyExpression extends ObjectExpression {
         if (queryKey != null) {
             qkIsToMany = queryKey.isManyToManyQueryKey() || queryKey.isOneToManyQueryKey();
         }
+        boolean isNestedMapping = false;
         if (mapping != null) {
             // Bug 2847621 - Add Aggregate Collection to the list of valid items for outer join.
             if (shouldUseOuterJoin && (!(mapping.isOneToOneMapping() || mapping.isOneToManyMapping() || mapping.isManyToManyMapping() || mapping.isAggregateCollectionMapping() || mapping.isDirectCollectionMapping()))) {
                 throw QueryException.outerJoinIsOnlyValidForOneToOneMappings(getMapping());
             }
             qkIsToMany = mapping.isCollectionMapping();
+            isNestedMapping = mapping.isNestedTableMapping();
         }
-        if ((!shouldQueryToManyRelationship()) && qkIsToMany && (!mapping.isNestedTableMapping())) {
+        if ((!shouldQueryToManyRelationship()) && qkIsToMany && (!isNestedMapping)) {
             throw QueryException.invalidUseOfToManyQueryKeyInExpression(theOneThatsNotNull);
         }
         if (shouldQueryToManyRelationship() && !qkIsToMany) {
@@ -915,5 +917,132 @@ public class QueryKeyExpression extends ObjectExpression {
             // that trigger adding to normalizer.getStatement().getOuterJoin...
             ((shouldUseOuterJoin() || isUsingOuterJoinForMultitableInheritance()) && !getSession().getPlatform().shouldPrintOuterJoinInWhereClause()) ||
             (shouldUseOuterJoin() && getSession().getPlatform().isInformixOuterJoin());
+    }
+    
+    /**
+     * INTERNAL:
+     * Indicates whether this expression corresponds to DirectCollection.
+     */
+    public boolean isDirectCollection() {
+        if(getMapping() != null) {
+            return getMapping().isDirectCollectionMapping();
+        } else {
+            if(getQueryKeyOrNull() != null) {
+                return this.queryKey.isDirectCollectionQueryKey();
+            } else {
+                return false;
+            }
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Indicates whether this expression corresponds to OneToOne.
+     */
+    public boolean isOneToOne() {
+        if(getMapping() != null) {
+            return getMapping().isOneToOneMapping();
+        } else {
+            if(getQueryKeyOrNull() != null) {
+                return this.queryKey.isOneToOneQueryKey();
+            } else {
+                return false;
+            }
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Indicates whether this expression corresponds to OneToMany.
+     */
+    public boolean isOneToMany() {
+        if(getMapping() != null) {
+            return getMapping().isOneToManyMapping();
+        } else {
+            if(getQueryKeyOrNull() != null) {
+                return this.queryKey.isOneToManyQueryKey();
+            } else {
+                return false;
+            }
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Indicates whether this expression corresponds to ManyToMany.
+     */
+    public boolean isManyToMany() {
+        if(getMapping() != null) {
+            return getMapping().isManyToManyMapping();
+        } else {
+            if(getQueryKeyOrNull() != null) {
+                return this.queryKey.isManyToManyQueryKey();
+            } else {
+                return false;
+            }
+        }
+    }
+    
+    /**
+     * Calculate the reference table for based on the various QueryKeyExpression
+     * usages (join query keys, custom defined query keys, or query keys for
+     * mappings).
+     * 
+     * Called from {@link SQLSelectStatement#appendFromClauseForOuterJoin}.
+     * 
+     * @return DatabaseTable
+     */    
+    public DatabaseTable getReferenceTable() {
+        if(getMapping() != null) {
+            if (getMapping().isDirectCollectionMapping()) {
+                return ((DirectCollectionMapping)getMapping()).getReferenceTable();
+            } else {
+                return getMapping().getReferenceDescriptor().getTables().firstElement();
+            }
+        } else {
+            return ((ForeignReferenceQueryKey)getQueryKeyOrNull()).getReferenceTable(getDescriptor());
+        }
+    }
+
+    /**
+     * Calculate the source table for based on the various QueryKeyExpression
+     * usages (join query keys, custom defined query keys, or query keys for
+     * mappings).
+     * 
+     * Called from {@link SQLSelectStatement#appendFromClauseForOuterJoin}.
+     * 
+     * @return DatabaseTable
+     */    
+    public DatabaseTable getSourceTable() {
+        if(getMapping() != null) {
+            // Grab the source table from the mapping not just the first table 
+            // from the descriptor. In an joined inheritance hierarchy, the
+            // fk used in the outer join may be from a subclasses's table.
+            if (getMapping().isObjectReferenceMapping() && ((ObjectReferenceMapping) getMapping()).isForeignKeyRelationship()) {
+                 return getMapping().getFields().firstElement().getTable();
+            } else {
+                return ((ObjectExpression)getBaseExpression()).getDescriptor().getTables().firstElement();    
+            }
+        } else {
+            return ((ForeignReferenceQueryKey)getQueryKeyOrNull()).getSourceTable();
+        }
+    }
+
+    /**
+     * Calculate the relation table for based on the various QueryKeyExpression
+     * usages (join query keys, custom defined query keys, or query keys for
+     * mappings).
+     * Should only be called in ManyToMany case (isManyToMany returns true).
+     * 
+     * Called from {@link SQLSelectStatement#appendFromClauseForOuterJoin}.
+     * 
+     * @return DatabaseTable
+     */    
+    public DatabaseTable getRelationTable() {
+        if(getMapping() != null) {
+            return ((ManyToManyMapping)getMapping()).getRelationTable();
+        } else {
+            return ((ManyToManyQueryKey)getQueryKeyOrNull()).getRelationTable(getDescriptor());
+        }
     }
 }

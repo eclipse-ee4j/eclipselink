@@ -3509,6 +3509,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             <property name="eclipselink.session.customizer" value="org.eclipse.persistence.testing.models.jpa.advanced.Customizer"/>
             <property name="eclipselink.descriptor.customizer.Employee" value="org.eclipse.persistence.testing.models.jpa.advanced.Customizer"/>
             <property name="eclipselink.descriptor.customizer.org.eclipse.persistence.testing.models.jpa.advanced.Address" value="org.eclipse.persistence.testing.models.jpa.advanced.Customizer"/>
+            <property name="eclipselink.descriptor.customizer.Project" value="org.eclipse.persistence.testing.models.jpa.advanced.Customizer"/>
         */
         
         String sessionName = ss.getName();
@@ -3564,8 +3565,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
         
         int numProjectCalls = Customizer.getNumberOfCallsForClass(Project.class.getName());
-        if(numProjectCalls > 0) {
-            fail("Project customizer has been called");
+        if(numProjectCalls == 0) {
+            fail("Project customizer hasn't been called");
         }
         
         int numEmployeeCalls = Customizer.getNumberOfCallsForClass(Employee.class.getName());

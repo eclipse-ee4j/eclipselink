@@ -157,6 +157,7 @@ public class QueryExceptionResource extends ListResourceBundle {
        { "6152", "An exception occurred while attempting to instantiate the class {0} passed through a JPA Query Hint {1}.  Please verify that the class has a default constructor."},
        { "6153", "CompatibleType must be set on complex type: {0}."},
        { "6154", "TypeName must be set on complex type: {0}."},
+       { "6155", "No relation table found in {0}. {2}joinCriteria Expression: [{1}]"},
     };
 
     /**
