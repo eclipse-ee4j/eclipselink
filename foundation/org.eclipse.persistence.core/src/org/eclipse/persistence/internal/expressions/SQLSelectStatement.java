@@ -292,7 +292,7 @@ public class SQLSelectStatement extends SQLStatement {
                                               sourceTable, targetAlias, sourceAlias));
         }
         
-        for (Iterator i = outerJoinExpressionHolders.linearize().iterator(); i.hasNext();) {
+        for (Iterator i = outerJoinExpressionHolders.linearize(this).iterator(); i.hasNext();) {
             OuterJoinExpressionHolder holder = (OuterJoinExpressionHolder)i.next();
             QueryKeyExpression outerExpression = holder.joinExpression;
             int index = holder.index;
@@ -1905,54 +1905,52 @@ public class SQLSelectStatement extends SQLStatement {
         /** 
          * Returns a list of OuterJoinExpressionHolder instances in the correct order.
          */
-        List linearize() {
-            // Handle nested joins:
-            // Iterate the lists of OuterJoinExpressionHolder instances stored as
-            // values in the map. For each OuterJoinExpressionHolder check whether
-            // the target alias has an entry in the map. If so, this is a
-            // nested join. Get the list of OuterJoinExpressionHolder instance from
-            // the map and store it as nested joins in the current
-            // OuterJoinExpressionHolder instance being processed.
-            List remove = new ArrayList();
-            for (Iterator i = sourceAlias2HoldersMap.values().iterator(); 
-                 i.hasNext(); ) {
-                List holders = (List)i.next();
-                for (Iterator j = holders.iterator(); j.hasNext();) {
-                    OuterJoinExpressionHolder holder = (OuterJoinExpressionHolder)j.next();
-                    Object key = holder.targetAlias.getName();
-                    List nested = (List)sourceAlias2HoldersMap.get(key);
-                    if (nested != null) {
-                        remove.add(key);
-                        holder.nested = nested;
+        List linearize(SQLSelectStatement statement) {
+            // Linearize the map:
+            // We will start with the expressions linked to the base of this query
+            // and do a depth first search for related expressions
+            List outerJoinExprHolders = new ArrayList();
+            
+            // Get the tables aliases that are related to outer join expressions
+            ArrayList keys = new ArrayList();
+            for (Iterator i = sourceAlias2HoldersMap.keySet().iterator(); i.hasNext();) {
+                keys.add(i.next());
+            }
+            
+            // Start with the keys for the ExpressionBuilder for this query and do a depth first search for 
+            // related expressions
+            DatabaseTable[] tables = statement.getBuilder().getTableAliases().keys();
+            for (int i = 0;i<tables.length;i++){
+                if (tables[i] != null){
+                    String alias = tables[i].getName();
+                    if (alias != null && !alias.equals("")){
+                        List holders = (List)sourceAlias2HoldersMap.get(alias);
+                        addHolders(outerJoinExprHolders, holders, keys);
                     }
                 }
             }
-
-            // Remove the entries from the map that are handled as nested joins.
-            for (Iterator r = remove.iterator(); r.hasNext();) {
-                sourceAlias2HoldersMap.remove(r.next());
-            }
-        
-            // Linearize the map:
-            // Iterate the remaining lists of OuterJoinExpressionHolder instances
-            // stored as values in the map. Add the OuterJoinExpressionHolder to the
-            // result list plus its nested joins in depth first order.
-            List outerJoinExprHolders = new ArrayList();
-            for (Iterator i = sourceAlias2HoldersMap.values().iterator(); 
-                 i.hasNext();) {
-                List holders = (List)i.next();
-                addHolders(outerJoinExprHolders, holders);
+            
+            // catch any additional expressions that were not related to the query builder
+            // and depth first search them to add them to the list
+            Iterator remaining = ((List)keys.clone()).iterator();
+            while (remaining.hasNext()){
+                String nextAlias = (String)remaining.next();
+                if (nextAlias != null && !nextAlias.equals("")){
+                    List holders = (List)sourceAlias2HoldersMap.get(nextAlias);
+                    addHolders(outerJoinExprHolders, holders, keys);
+                }
             }
             
             return outerJoinExprHolders;
         }
+
 
         /**
          * Add all elements from the specified holders list to the specified
          * result list. If a holder has nested join add them to the result
          * list before processing its sibling (depth first order). 
          */
-        void addHolders(List result, List holders) {
+        void addHolders(List result, List holders, List remainingTables) {
             if ((holders == null) || holders.isEmpty()) {
                 // nothing to be done
                 return;
@@ -1961,12 +1959,25 @@ public class SQLSelectStatement extends SQLStatement {
                 OuterJoinExpressionHolder holder = (OuterJoinExpressionHolder)i.next();
                 // add current holder
                 result.add(holder);
-                // add nested holders, if any
-                addHolders(result, holder.nested);
+                // keep track of the fact that we have dealt with this holder
+                remainingTables.remove(holder.sourceAlias.getName());
+                if (holder.joinExpression != null && holder.joinExpression.getTableAliases() != null){
+                    DatabaseTable[] tables = holder.joinExpression.getTableAliases().keys();
+                    for (int j = 0;j<tables.length;j++){
+                        if (tables[j] != null){
+                            String nextAlias = tables[j].getName();
+                            if (nextAlias != null && !nextAlias.equals("")){
+                                List nextHolders = (List)sourceAlias2HoldersMap.get(nextAlias);
+                                if (nextHolders != null){
+                                    addHolders(result, nextHolders, remainingTables);
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }
-    
 
     /**
      * Holder class storing a QueryKeyExpression representing an outer join
