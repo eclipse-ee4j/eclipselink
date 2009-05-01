@@ -18,6 +18,7 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.mappings.*;
+import org.eclipse.persistence.mappings.querykeys.ManyToManyQueryKey;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
 import org.eclipse.persistence.sessions.Record;
@@ -165,9 +166,10 @@ public class QueryException extends ValidationException {
     public final static int ERROR_INSTANTIATING_CLASS_FOR_QUERY_HINT = 6152;
     public final static int COMPATIBLE_TYPE_NOT_SET = 6153;
     public final static int TYPE_NAME_NOT_SET = 6154;
-    public final static int EXCEPTION_WHILE_READING_MAP_KEY = 6155;
-    public final static int CANNOT_ADD_ELEMENT_WITHOUT_KEY_TO_MAP = 6156;
-    public final static int CANNOT_UNWRAP_NON_MAP_MEMBERS = 6157;
+    public final static int NO_RELATION_TABLE_IN_MANY_TO_MANY_QUERY_KEY = 6155;
+    public final static int EXCEPTION_WHILE_READING_MAP_KEY = 6156;
+    public final static int CANNOT_ADD_ELEMENT_WITHOUT_KEY_TO_MAP = 6157;
+    public final static int CANNOT_UNWRAP_NON_MAP_MEMBERS = 6158;
 
     /**
      * INTERNAL:
@@ -1391,6 +1393,14 @@ public class QueryException extends ValidationException {
                 ERROR_INSTANTIATING_CLASS_FOR_QUERY_HINT, args), query);
         queryException.setErrorCode(ERROR_INSTANTIATING_CLASS_FOR_QUERY_HINT);
         queryException.setInternalException(exception);
+        return queryException;
+    }
+
+    public static QueryException noRelationTableInManyToManyQueryKey(ManyToManyQueryKey queryKey, Expression expression) {
+        Object[] args = { queryKey, expression, CR };
+
+        QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, NO_RELATION_TABLE_IN_MANY_TO_MANY_QUERY_KEY, args));
+        queryException.setErrorCode(NO_RELATION_TABLE_IN_MANY_TO_MANY_QUERY_KEY);
         return queryException;
     }
     

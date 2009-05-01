@@ -262,21 +262,8 @@ public class SQLSelectStatement extends SQLStatement {
             DatabaseTable sourceAlias = null;
             DatabaseTable targetAlias = null;
             if(outerExpression != null) {
-                if (outerExpression.getMapping().isDirectCollectionMapping()) {
-                    targetTable = ((DirectCollectionMapping)outerExpression.getMapping()).getReferenceTable();
-                } else {
-                    targetTable = outerExpression.getMapping().getReferenceDescriptor().getTables().firstElement();
-                }
-                
-                // Grab the source table from the mapping not just the first table 
-                // from the descriptor. In an joined inheritance hierarchy, the
-                // fk used in the outer join may be from a subclasses's table.
-                if (outerExpression.getMapping().isObjectReferenceMapping() && ((ObjectReferenceMapping) outerExpression.getMapping()).isForeignKeyRelationship()) {
-                    sourceTable = (outerExpression.getMapping().getFields().firstElement()).getTable();
-                } else {
-                    sourceTable = ((ObjectExpression)outerExpression.getBaseExpression()).getDescriptor().getTables().firstElement();    
-                }
-                
+                targetTable = outerExpression.getReferenceTable();
+                sourceTable = outerExpression.getSourceTable();
                 sourceAlias = outerExpression.getBaseExpression().aliasForTable(sourceTable);
                 targetAlias = outerExpression.aliasForTable(targetTable);
             } else {
@@ -325,7 +312,7 @@ public class SQLSelectStatement extends SQLStatement {
 
                 if(outerExpression == null) {
                     printAdditionalJoins(printer, outerJoinedAliases, (ClassDescriptor)getDescriptorsForMultitableInheritanceOnly().get(index), (Map)getOuterJoinedAdditionalJoinCriteria().elementAt(index));
-                } else if (outerExpression.getMapping().isDirectCollectionMapping()) {
+                } else if (outerExpression.isDirectCollection()) {
                     // Append the join clause,
                     // If this is a direct collection, join to direct table.
                     Expression onExpression = (Expression)getOuterJoinedMappingCriteria().elementAt(index);
@@ -345,12 +332,12 @@ public class SQLSelectStatement extends SQLStatement {
                     }
 
                     //Bug#4240751 Treat ManyToManyMapping separately for out join
-                } else if (outerExpression.getMapping().isManyToManyMapping()) {
+                } else if (outerExpression.isManyToMany()) {
                     // Must outer join each of the targets tables.
                     // The first table is joined with the mapping join criteria,
                     // the rest of the tables are joined with the additional join criteria.
                     // For example: EMPLOYEE t1 LEFT OUTER JOIN (PROJ_EMP t3 LEFT OUTER JOIN PROJECT t0 ON (t0.PROJ_ID = t3.PROJ_ID)) ON (t3.EMP_ID = t1.EMP_ID)
-                    DatabaseTable relationTable = ((ManyToManyMapping)outerExpression.getMapping()).getRelationTable();
+                    DatabaseTable relationTable = outerExpression.getRelationTable();
                     DatabaseTable relationAlias = ((Expression)getOuterJoinedMappingCriteria().elementAt(index)).aliasForTable(relationTable);
                     writer.write(" LEFT OUTER JOIN (");
                     writer.write(relationTable.getQualifiedName());
@@ -384,7 +371,7 @@ public class SQLSelectStatement extends SQLStatement {
                     
                     Map tablesJoinExpression = (Map)getOuterJoinedAdditionalJoinCriteria().elementAt(index);
                     if(tablesJoinExpression != null && !tablesJoinExpression.isEmpty()) {
-                        printAdditionalJoins(printer, outerJoinedAliases, outerExpression.getMapping().getReferenceDescriptor(), tablesJoinExpression);
+                        printAdditionalJoins(printer, outerJoinedAliases, outerExpression.getDescriptor(), tablesJoinExpression);
                     }
                     writer.write(") ON ");
                     if (session.getPlatform() instanceof DB2MainframePlatform) {
@@ -407,7 +394,7 @@ public class SQLSelectStatement extends SQLStatement {
                     outerJoinedAliases.addElement(targetAlias);
                     writer.write(targetAlias.getQualifiedName());
                     if(hasAdditionalJoinExpressions) {
-                        printAdditionalJoins(printer, outerJoinedAliases, outerExpression.getMapping().getReferenceDescriptor(), tablesJoinExpression);
+                        printAdditionalJoins(printer, outerJoinedAliases, outerExpression.getDescriptor(), tablesJoinExpression);
                         writer.write(")");
                     }
                     writer.write(" ON ");
@@ -1978,6 +1965,7 @@ public class SQLSelectStatement extends SQLStatement {
             }
         }
     }
+    
 
     /**
      * Holder class storing a QueryKeyExpression representing an outer join
@@ -1991,7 +1979,6 @@ public class SQLSelectStatement extends SQLStatement {
         final DatabaseTable sourceTable;
         final DatabaseTable targetAlias;
         final DatabaseTable sourceAlias;
-        List nested;
         
         public OuterJoinExpressionHolder(QueryKeyExpression joinExpression, 
                                          int index,

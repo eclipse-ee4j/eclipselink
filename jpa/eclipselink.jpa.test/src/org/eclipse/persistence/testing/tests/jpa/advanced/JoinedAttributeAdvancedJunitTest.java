@@ -131,7 +131,17 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
         suite.addTest(new JoinedAttributeAdvancedJunitTest("testMultipleUnrelatedResultWithOneToManyJoins"));
         suite.addTest(new JoinedAttributeAdvancedJunitTest("testTwoUnrelatedResultWithOneToOneJoins"));
         suite.addTest(new JoinedAttributeAdvancedJunitTest("testTwoUnrelatedResultWithOneToOneJoinsWithExtraItem"));
-        
+
+        // tests for Bug 274436: Custom QueryKeys fail to auto join.
+        suite.addTest(new JoinedAttributeAdvancedJunitTest("testAddressQK"));
+        suite.addTest(new JoinedAttributeAdvancedJunitTest("testManagedProjects"));
+        suite.addTest(new JoinedAttributeAdvancedJunitTest("testManagedLargeProjects"));
+        suite.addTest(new JoinedAttributeAdvancedJunitTest("testProjectsQK"));
+        suite.addTest(new JoinedAttributeAdvancedJunitTest("testLargeProjects"));
+//        suite.addTest(new JoinedAttributeAdvancedJunitTest("testResponsibilitiesQK"));
+        suite.addTest(new JoinedAttributeAdvancedJunitTest("testOwner"));
+        suite.addTest(new JoinedAttributeAdvancedJunitTest("testEmployees"));
+
         return suite;
     }
     
@@ -794,7 +804,155 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
             testSetup();
         }
     }
+    
+    public void testAddressQK() {
+        // control query - it's results should be the same as results of the tested query
+        ReadAllQuery controlQuery = new ReadAllQuery(Employee.class);
+        ExpressionBuilder controlEb = controlQuery.getExpressionBuilder();
+        controlQuery.setSelectionCriteria(controlEb.getAllowingNull("address").get("city").like("O%"));
+        List<Employee> controlEmps = (List)getDbSession().executeQuery(controlQuery);
 
+        // choose example that actually selects something
+        if(controlEmps.isEmpty()) {
+            fail("Test setup problem: control query result is empty. Choose selection criteria such that something is actually selected");
+        }
+        
+        // clear cache
+        getDbSession().getIdentityMapAccessor().initializeAllIdentityMaps();
+        
+        // execute the tested query
+        ReadAllQuery query = new ReadAllQuery(Employee.class);
+        ExpressionBuilder eb = query.getExpressionBuilder();
+        query.setSelectionCriteria(eb.getAllowingNull("addressQK").get("city").like("O%"));
+        List<Employee> emps = (List)getDbSession().executeQuery(query);
+        
+        // compare results with control query
+        String errorMsg = JoinedAttributeTestHelper.compareCollections(controlEmps, emps, getDbSession().getDescriptor(Employee.class), (AbstractSession)getDbSession());
+        if(errorMsg.length() > 0) {
+            fail(errorMsg);
+        }
+    }
+    
+    public void testManagedProjects() {
+        // TODO: currently the test verifies that the query doesn't blow up.
+        // Add control query so that the results could be verified.
+        ReadAllQuery query = new ReadAllQuery(Employee.class);
+        ExpressionBuilder eb = query.getExpressionBuilder();
+        query.setSelectionCriteria(eb.anyOfAllowingNone("managedProjects").get("name").containsSubstring("Enterprise"));
+        List<Employee> emps = (List)getDbSession().executeQuery(query);
+
+        // choose example that actually selects something
+        if(emps.isEmpty()) {
+            fail();
+        }
+    }
+            
+    public void testManagedLargeProjects() {
+        // TODO: currently the test verifies that the query doesn't blow up.
+        // Add control query so that the results could be verified.
+        ReadAllQuery query = new ReadAllQuery(Employee.class);
+        ExpressionBuilder eb = query.getExpressionBuilder();
+        query.setSelectionCriteria(eb.anyOfAllowingNone("managedLargeProjects").get("name").containsSubstring("Enterprise"));
+        List<Employee> emps = (List)getDbSession().executeQuery(query);
+
+        // choose example that actually selects something
+        if(emps.isEmpty()) {
+            fail();
+        }
+    }
+            
+    public void testProjectsQK() {
+        // control query - it's results should be the same as results of the tested query
+        ReadAllQuery controlQuery = new ReadAllQuery(Employee.class);
+        ExpressionBuilder controlEb = controlQuery.getExpressionBuilder();
+        controlQuery.setSelectionCriteria(controlEb.anyOfAllowingNone("projects").get("name").containsSubstring("Enterprise"));
+        List<Employee> controlEmps = (List)getDbSession().executeQuery(controlQuery);
+
+        // choose example that actually selects something
+        if(controlEmps.isEmpty()) {
+            fail("Test setup problem: control query result is empty. Choose selection criteria such that something is actually selected");
+        }
+                
+        // clear cache
+        getDbSession().getIdentityMapAccessor().initializeAllIdentityMaps();
+        
+        // execute the tested query
+        ReadAllQuery query = new ReadAllQuery(Employee.class);
+        ExpressionBuilder eb = query.getExpressionBuilder();
+        query.setSelectionCriteria(eb.anyOfAllowingNone("projectsQK").get("name").containsSubstring("Enterprise"));
+        List<Employee> emps = (List)getDbSession().executeQuery(query);
+
+        // choose example that actually selects something
+        if(emps.isEmpty()) {
+            fail();
+        }
+    }
+            
+    public void testLargeProjects() {
+        // TODO: currently the test verifies that the query doesn't blow up.
+        // Add control query so that the results could be verified.
+        ReadAllQuery query = new ReadAllQuery(Employee.class);
+        ExpressionBuilder eb = query.getExpressionBuilder();
+        query.setSelectionCriteria(eb.anyOfAllowingNone("largeProjects").get("name").containsSubstring("Enterprise"));
+        List<Employee> emps = (List)getDbSession().executeQuery(query);
+
+        // choose example that actually selects something
+        if(emps.isEmpty()) {
+            fail();
+        }
+    }
+            
+    // doesn't work yet
+    public void testResponsibilitiesQK() {
+        ReadAllQuery controlQuery = new ReadAllQuery(Employee.class);
+        ExpressionBuilder controlEb = controlQuery.getExpressionBuilder();
+        controlQuery.setSelectionCriteria(controlEb.anyOfAllowingNone("responsibilities").equal("Make the coffee."));
+        List<Employee> controlEmps = (List)getDbSession().executeQuery(controlQuery);
+
+        // choose example that actually selects something
+        if(controlEmps.isEmpty()) {
+            fail("Test setup problem: control query result is empty. Choose selection criteria such that something is actually selected");
+        }
+        
+        ReadAllQuery query = new ReadAllQuery(Employee.class);
+        ExpressionBuilder eb = query.getExpressionBuilder();
+        query.setSelectionCriteria(eb.anyOfAllowingNone("responsibilitiesQK").equal("Make the coffee."));
+        List<Employee> emps = (List)getDbSession().executeQuery(query);
+
+        String errorMsg = JoinedAttributeTestHelper.compareCollections(controlEmps, emps, getDbSession().getDescriptor(Employee.class), (AbstractSession)getDbSession());
+        if(errorMsg.length() > 0) {
+            fail(errorMsg);
+        }
+    }
+            
+    public void testOwner() {
+        // TODO: currently the test verifies that the query doesn't blow up.
+        // Add control query so that the results could be verified.
+        ReadAllQuery query = new ReadAllQuery(Address.class);
+        ExpressionBuilder eb = query.getExpressionBuilder();
+        query.setSelectionCriteria(eb.getAllowingNull("owner").get("firstName").like("J%"));
+        List<Address> addresses = (List)getDbSession().executeQuery(query);
+        
+        // choose example that actually selects something
+        if(addresses.isEmpty()) {
+            fail();
+        }
+    }
+    
+    public void testEmployees() {
+        // TODO: currently the test verifies that the query doesn't blow up.
+        // Add control query so that the results could be verified.
+        ReadAllQuery query = new ReadAllQuery(Project.class);
+        ExpressionBuilder eb = query.getExpressionBuilder();
+        query.setSelectionCriteria(eb.anyOfAllowingNone("employees").get("firstName").equal("John"));
+        List<Project> projects = (List)getDbSession().executeQuery(query);
+        
+        // choose example that actually selects something
+        if(projects.isEmpty()) {
+            fail();
+        }
+    }
+    
     protected String executeQueriesAndCompareResults(ObjectLevelReadQuery controlQuery, ObjectLevelReadQuery queryWithJoins) {
         return JoinedAttributeTestHelper.executeQueriesAndCompareResults(controlQuery, queryWithJoins, (AbstractSession)getDbSession());
     }
