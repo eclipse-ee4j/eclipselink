@@ -812,6 +812,14 @@ public class MergeManager {
         org.eclipse.persistence.queries.DoesExistQuery existQuery = descriptor.getQueryManager().getDoesExistQuery();
         // Optimize cache option to avoid executing the does exist query.
         if (existQuery.shouldCheckCacheForDoesExist()) {
+            if (descriptor.usesVersionLocking()){
+                VersionLockingPolicy policy = (VersionLockingPolicy)descriptor.getOptimisticLockingPolicy();
+                Object baseValue = policy.getBaseValue();
+                Object objectLockValue = policy.getWriteLockValue(clone, primaryKey, unitOfWork);
+                if ( policy.isNewerVersion(objectLockValue, baseValue) ) {
+                    throw OptimisticLockException.objectChangedSinceLastMerge(clone);
+                }
+            }
             Object registeredObject = unitOfWork.internalRegisterObject(clone, descriptor);
             
             if (unitOfWork.hasNewObjects() && unitOfWork.getNewObjectsOriginalToClone().containsKey(clone)) {
@@ -824,6 +832,15 @@ public class MergeManager {
         // Check early return to check if it is a new object, i.e. null primary key.
         Boolean doesExist = (Boolean)existQuery.checkEarlyReturn(clone, primaryKey, unitOfWork, null);
         if (doesExist == Boolean.FALSE) {
+            //bug272704: throw an exception if this object is new yet has a version set to avoid merging in deleted objects
+            if (descriptor.usesVersionLocking()){
+                VersionLockingPolicy policy = (VersionLockingPolicy)descriptor.getOptimisticLockingPolicy();
+                Object baseValue = policy.getBaseValue();
+                Object objectLockValue = policy.getWriteLockValue(clone, primaryKey, unitOfWork);
+                if ( policy.isNewerVersion(objectLockValue, baseValue) ) {
+                    throw OptimisticLockException.objectChangedSinceLastMerge(clone);
+                }
+            }
             Object registeredObject = unitOfWork.internalRegisterObject(clone, descriptor);
             mergedNewObjects.put(registeredObject, registeredObject);
             return registeredObject;
@@ -832,6 +849,16 @@ public class MergeManager {
         // Otherwise it is existing and not in the cache so it must be read.
         Object object = unitOfWork.readObject(clone);
         if (object == null) {
+            //bug272704: throw an exception if this object is new yet has a version set to avoid merging in deleted objects
+            if (descriptor.usesVersionLocking()){
+                VersionLockingPolicy policy = (VersionLockingPolicy)descriptor.getOptimisticLockingPolicy();
+                Object baseValue = policy.getBaseValue();
+                Object objectLockValue = policy.getWriteLockValue(clone, primaryKey, unitOfWork);
+                if ( policy.isNewerVersion(objectLockValue, baseValue) ) {
+                    throw OptimisticLockException.objectChangedSinceLastMerge(clone);
+                }
+            }
+            
             //bug6180972: avoid internal register's existence check and be sure to put the new object in the mergedNewObjects collection
             object =  unitOfWork.cloneAndRegisterNewObject(clone);
             mergedNewObjects.put(object, object);
