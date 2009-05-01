@@ -502,7 +502,7 @@
             <param name="TEST_WEAVING" value="${test.weaving}"/>
             <param name="ORM_TESTING" value="-Dorm.testing=eclipselink"/>
             <param name="RUN_PATH" value="run.extended.classpath"/>
-            <param name="DB_URL" value="${db.oci.url}"/>
+            <param name="DB_URL" value="${db.url}"/>
         </antcall>
         <antcall target="test-oracle" inheritRefs="true"/>
         <antcall target="generate-report" inheritRefs="true"/>
@@ -510,13 +510,13 @@
 
     <!-- Runs JPA Oracle-specific tests. -->
     <target name="test-oracle" if="is.oracle" depends="config-trunk, config-flat">
-        <!--antcall target="run-test" inheritRefs="true">
+        <antcall target="run-test" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.OracleJPATestSuite"/>
             <param name="TEST_AGENT" value="${test.agent}"/>
             <param name="TEST_WEAVING" value="${test.weaving}"/>
             <param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
             <param name="RUN_PATH" value="run.classpath"/>
-        </antcall-->
+        </antcall>
         <antcall target="run-test" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.OracleJPACustomFeaturesTestSuite"/>
             <param name="TEST_AGENT" value="${test.agent}"/>
