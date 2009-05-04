@@ -94,11 +94,6 @@ public class ConversionManager implements Serializable, Cloneable {
             return sourceObject;
         }
 
-        // Check if object is instance of the real class for the primitive class.
-        if (javaClass.isPrimitive() && (((sourceObject instanceof Boolean) && (javaClass == ClassConstants.PBOOLEAN)) || ((sourceObject instanceof Long) && (javaClass == ClassConstants.PLONG)) || ((sourceObject instanceof Integer) && (javaClass == ClassConstants.PINT)) || ((sourceObject instanceof Float) && (javaClass == ClassConstants.PFLOAT)) || ((sourceObject instanceof Double) && (javaClass == ClassConstants.PDOUBLE)) || ((sourceObject instanceof Byte) && (javaClass == ClassConstants.PBYTE)) || ((sourceObject instanceof Character) && (javaClass == ClassConstants.PCHAR)) || ((sourceObject instanceof Short) && (javaClass == ClassConstants.PSHORT)))) {
-            return sourceObject;
-        }
-
         try {
             if (javaClass == ClassConstants.STRING) {
                 return convertObjectToString(sourceObject);
@@ -112,19 +107,19 @@ public class ConversionManager implements Serializable, Cloneable {
                 return convertObjectToTimestamp(sourceObject);
             } else if ((javaClass == ClassConstants.CALENDAR) || (javaClass == ClassConstants.GREGORIAN_CALENDAR)) {
                 return convertObjectToCalendar(sourceObject);
-            } else if ((javaClass == ClassConstants.CHAR) || (javaClass == ClassConstants.PCHAR)) {
+            } else if ((javaClass == ClassConstants.CHAR) || (javaClass == ClassConstants.PCHAR && !(sourceObject instanceof Character))) {
                 return convertObjectToChar(sourceObject);
-            } else if ((javaClass == ClassConstants.INTEGER) || (javaClass == ClassConstants.PINT)) {
+            } else if ((javaClass == ClassConstants.INTEGER) || (javaClass == ClassConstants.PINT && !(sourceObject instanceof Integer))) {
                 return convertObjectToInteger(sourceObject);
-            } else if ((javaClass == ClassConstants.DOUBLE) || (javaClass == ClassConstants.PDOUBLE)) {
+            } else if ((javaClass == ClassConstants.DOUBLE) || (javaClass == ClassConstants.PDOUBLE && !(sourceObject instanceof Double))) {
                 return convertObjectToDouble(sourceObject);
-            } else if ((javaClass == ClassConstants.FLOAT) || (javaClass == ClassConstants.PFLOAT)) {
+            } else if ((javaClass == ClassConstants.FLOAT) || (javaClass == ClassConstants.PFLOAT && !(sourceObject instanceof Float))) {
                 return convertObjectToFloat(sourceObject);
-            } else if ((javaClass == ClassConstants.LONG) || (javaClass == ClassConstants.PLONG)) {
+        	} else if ((javaClass == ClassConstants.LONG) || (javaClass == ClassConstants.PLONG && !(sourceObject instanceof Long))) {
                 return convertObjectToLong(sourceObject);
-            } else if ((javaClass == ClassConstants.SHORT) || (javaClass == ClassConstants.PSHORT)) {
+            } else if ((javaClass == ClassConstants.SHORT) || (javaClass == ClassConstants.PSHORT && !(sourceObject instanceof Short))) {
                 return convertObjectToShort(sourceObject);
-            } else if ((javaClass == ClassConstants.BYTE) || (javaClass == ClassConstants.PBYTE)) {
+            } else if ((javaClass == ClassConstants.BYTE) || (javaClass == ClassConstants.PBYTE && !(sourceObject instanceof Byte))) {
                 return convertObjectToByte(sourceObject);
             } else if (javaClass == ClassConstants.BIGINTEGER) {
                 return convertObjectToBigInteger(sourceObject);
@@ -132,7 +127,7 @@ public class ConversionManager implements Serializable, Cloneable {
                 return convertObjectToBigDecimal(sourceObject);
             } else if (javaClass == ClassConstants.NUMBER) {
                 return convertObjectToNumber(sourceObject);
-            } else if ((javaClass == ClassConstants.BOOLEAN) || (javaClass == ClassConstants.PBOOLEAN)) {
+            } else if ((javaClass == ClassConstants.BOOLEAN) || (javaClass == ClassConstants.PBOOLEAN  && !(sourceObject instanceof Boolean))) {
                 return convertObjectToBoolean(sourceObject);
             } else if (javaClass == ClassConstants.APBYTE) {
                 return convertObjectToByteArray(sourceObject);
@@ -149,6 +144,18 @@ public class ConversionManager implements Serializable, Cloneable {
             throw ce;
         } catch (Exception e) {
             throw ConversionException.couldNotBeConverted(sourceObject, javaClass, e);
+        }
+        
+        // Check if object is instance of the real class for the primitive class.
+        if ((((javaClass == ClassConstants.PBOOLEAN) && (sourceObject instanceof Boolean)  ) || 
+            ((javaClass == ClassConstants.PLONG) && (sourceObject instanceof Long) ) || 
+            ((javaClass == ClassConstants.PINT) && (sourceObject instanceof Integer)  ) || 
+            ((javaClass == ClassConstants.PFLOAT) && (sourceObject instanceof Float)) || 
+            ((javaClass == ClassConstants.PDOUBLE) &&  (sourceObject instanceof Double) ) || 
+            ((javaClass == ClassConstants.PBYTE) &&  (sourceObject instanceof Byte)) || 
+            ((javaClass == ClassConstants.PCHAR) &&  (sourceObject instanceof Character)) || 
+            ((javaClass == ClassConstants.PSHORT) &&  (sourceObject instanceof Short)))) {
+            return sourceObject;
         }
 
         // Delay this check as poor performance.
