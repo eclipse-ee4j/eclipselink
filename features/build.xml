@@ -169,6 +169,13 @@
                 <include name="*.xml"/>
             </fileset>
         </jar>
+        
+        <echo message="update eclipselink.build for Galileo, and place in features dir for later check-in."/>
+        <copy todir="${classes.dir}" filtering="true">
+            <fileset dir="${feature.2.base.dir}/buildsystem">
+                <include name="eclipselink.build"/>
+            </fileset>
+        </copy>
     </target>
 
     <!-- P2 Targets -->
@@ -178,7 +185,8 @@
     </target>
     
     <target name="clear-repos" if="bundle.installer.exist" depends="test-ready-to-go">
-        <delete dir="${p2.base.dir}" failonerror="false"/>
+        <!-- delete dir="${p2.base.dir}" failonerror="false"/ -->
+        <echo message="Test without cleaning repos first."/>
     </target>
     
     <target name="populate-repos-site" if="bundle.installer.exist">
@@ -205,6 +213,9 @@
     </target -->
     
     <target name="generate-p2-repos" if="bundle.installer.exist">
+        <!-- property name="site.url" value="file:${p2.base.dir}/site.xml"/ -->
+        <property name="site.url" value="file:${feature.build.location}/${classes.dir}/site.xml"/>
+        <echo message="Site url='${site.url}'"/>
         <java classname="org.eclipse.equinox.launcher.Main" fork="true" timeout="10800000" taskname="p2"
             jvm="${java.home}/bin/java" failonerror="false" maxmemory="256m">
             <classpath>
@@ -216,7 +227,7 @@
             </classpath>
             <arg line=" -application org.eclipse.equinox.p2.metadata.generator.EclipseGenerator" />
             <arg line=" -base ${p2.base.dir}" />
-            <arg line=" -site file:${classes.dir}/site.xml" />
+            <arg line=" -site ${site.url}" />
             <arg line=" -features ${p2.feature.dir}" />
             <arg line=" -bundles ${p2.bundle.dir}" />
             <arg line=" -metadataRepository ${p2.repository.url}/ -metadataRepositoryName &quot;EclipseLink Repository&quot;" />
