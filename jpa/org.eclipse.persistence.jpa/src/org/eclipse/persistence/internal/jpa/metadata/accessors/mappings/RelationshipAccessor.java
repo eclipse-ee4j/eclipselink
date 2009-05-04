@@ -17,6 +17,8 @@
  *       - 248293: JPA 2.0 Element Collections (part 2)
  *     03/27/2009-2.0 Guy Pelletier 
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+ *     05/1/2009-2.0 Guy Pelletier 
+ *       - 249033: JPA 2.0 Orphan removal
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -57,7 +59,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public abstract class RelationshipAccessor extends MappingAccessor {
-    private Boolean m_orphanRemoval; // TODO: Mapped but not processed. Supported on 1-1, 1-M and V1-1. Those accessors are responsible for processing the metadata from their annotations.
+    private Boolean m_orphanRemoval;
     private boolean m_privateOwned;
     private CascadeTypes m_cascadeTypes;
     protected Class m_referenceClass;
@@ -322,6 +324,14 @@ public abstract class RelationshipAccessor extends MappingAccessor {
         
         return fetchType.name().equals(FetchType.LAZY.name());
     }
+  
+    /**
+     * INTERNAL:
+     * Return true is this relationship employs orphanRemoval.
+     */
+    protected boolean isOrphanRemoval() {
+        return m_orphanRemoval != null && m_orphanRemoval.booleanValue();
+    }
     
     /**
      * INTERNAL:
@@ -379,6 +389,30 @@ public abstract class RelationshipAccessor extends MappingAccessor {
         // Add all the inverseJoinColumns (target foreign keys) to the mapping.
         String defaultTargetFieldName = getAttributeName();
         addManyToManyRelationKeyFields(getJoinColumns(m_joinTable.getInverseJoinColumns(), getReferenceDescriptor()), mapping, defaultTargetFieldName, getReferenceDescriptor(), false);
+    }
+    
+    /**
+     * INTERNAL:
+     * This method should be called for all mappings even though they may
+     * not support. The reason is that we want to log a message for those 
+     * mappings that try to employ a private owned setting when it is not 
+     * supported on their mapping.
+     * 
+     * Order of checking is as follows:
+     *  1 - check for orphanRemoval first. Through meta data, this can only 
+     *      be true for 1-1, 1-M and V1-1
+     *  2 - check for isPrivateOwned. Do no check the variable directly
+     *      as the isPrivateOwned method is overridden in those classes that do 
+     *      not support it (to check if the user decorated the mapping with a 
+     *      private owned and log a warning message that we are ignoring it.)
+     */
+    protected void processOrphanRemoval(ForeignReferenceMapping mapping) {
+        if (isOrphanRemoval()) {
+            mapping.setIsPrivateOwned(true);
+            mapping.setCascadeRemove(true);
+        } else {
+            mapping.setIsPrivateOwned(isPrivateOwned());   
+        }
     }
     
     /**

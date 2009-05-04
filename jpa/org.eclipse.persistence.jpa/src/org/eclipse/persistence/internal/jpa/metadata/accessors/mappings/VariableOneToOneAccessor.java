@@ -15,7 +15,9 @@
  *     02/06/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 2)
  *     03/27/2009-2.0 Guy Pelletier 
- *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes   
+ *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+ *     05/1/2009-2.0 Guy Pelletier 
+ *       - 249033: JPA 2.0 Orphan removal   
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -210,10 +212,12 @@ public class VariableOneToOneAccessor extends ObjectAccessor {
         setMapping(mapping);
         
         mapping.setIsReadOnly(false);
-        mapping.setIsPrivateOwned(isPrivateOwned());
         mapping.setIsOptional(isOptional());
         mapping.setAttributeName(getAttributeName());
         mapping.setReferenceClassName(getReferenceClassName());
+        
+        // Process the orphanRemoval or PrivateOwned
+        processOrphanRemoval(mapping);
         
         // Process the indirection.
         processIndirection(mapping);

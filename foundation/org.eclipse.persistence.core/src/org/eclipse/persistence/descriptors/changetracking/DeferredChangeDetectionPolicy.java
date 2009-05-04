@@ -94,11 +94,9 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
                 DatabaseMapping mapping = descriptor.getMappingsPostCalculateChanges().get(i); 
                 org.eclipse.persistence.sessions.changesets.ChangeRecord record = changes.getChangesForAttributeNamed(mapping.getAttributeName());
                 if(record != null) {
-                    // don't call postCalculateChanges if calculateDeferredChanges has been already called:
-                    // the latter calls the former (required by DeferredChangePolicy). 
-                    if(!changes.hasDeferredAttributes() || !changes.getDeferredSet().contains(mapping.getAttributeName())) {
-                        mapping.postCalculateChanges(record, unitOfWork);
-                    }
+                    // Deferred attributes will already have been acted on, therefore we need
+                    // to post calculate changes to ensure orphaned objects are removed.
+                    mapping.postCalculateChanges(record, unitOfWork);
                 }
             }
         }

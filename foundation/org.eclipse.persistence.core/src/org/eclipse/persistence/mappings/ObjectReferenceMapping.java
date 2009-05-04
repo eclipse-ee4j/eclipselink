@@ -554,7 +554,9 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
         // no need for private owned check.  This code is only registered for private owned mappings.
         // targets are added to and/or removed to/from the source.
         Object oldValue = ((ObjectReferenceChangeRecord)changeRecord).getOldValue();
-        uow.addDeletedPrivateOwnedObjects(this, oldValue);
+        if (oldValue != null) {
+            uow.addDeletedPrivateOwnedObjects(this, oldValue);
+        }
     }
 
     /**

@@ -188,6 +188,9 @@ public class FullRegressionTestSuite extends TestSuite{
         
         // Private owned model
         fullSuite.addTest(org.eclipse.persistence.testing.tests.jpa.privateowned.PrivateOwnedJUnitTestCase.suite());
+        
+        // Orphan removal model
+        fullSuite.addTest(org.eclipse.persistence.testing.tests.jpa.orphanremoval.OrphanRemovalJUnitTestCase.suite());
 
         return fullSuite;
     }
