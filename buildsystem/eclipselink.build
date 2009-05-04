@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<build:Contribution xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:build="http://www.eclipse.org/amalgam/2008/build" label="EclipseLink">
+  <contacts name="Eric Gwin" email="eric.gwin@oracle.com"/>
+  <features id="org.eclipse.persistence.jpa" version="@VERSION@.@QUALIFIER@" repo="//@repositories.0">
+    <category href="galileo.build#//@categories.9"/>
+  </features>
+  <features id="org.eclipse.persistence.jpa.source" version="@VERSION@.@QUALIFIER@" repo="//@repositories.0">
+    <category href="galileo.build#//@categories.9"/>
+  </features>
+  <features id="org.eclipse.persistence.moxy" version="@VERSION@.@QUALIFIER@" repo="//@repositories.0">
+    <category href="galileo.build#//@categories.9"/>
+  </features>
+  <features id="org.eclipse.persistence.moxy.source" version="@VERSION@.@QUALIFIER@" repo="//@repositories.0">
+    <category href="galileo.build#//@categories.9"/>
+  </features>
+  <features id="org.eclipse.persistence.sdo" version="@VERSION@.@QUALIFIER@" repo="//@repositories.0">
+    <category href="galileo.build#//@categories.9"/>
+  </features>
+  <features id="org.eclipse.persistence.sdo.source" version="@VERSION@.@QUALIFIER@" repo="//@repositories.0">
+    <category href="galileo.build#//@categories.9"/>
+  </features>
+  <repositories location="http://download.eclipse.org/rt/eclipselink/updates/" label="EclipseLink"/> 
+</build:Contribution>
+  
