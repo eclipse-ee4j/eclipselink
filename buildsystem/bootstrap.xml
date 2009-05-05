@@ -202,7 +202,7 @@
         </java -->
     </target>
 
-    <target name="milestone" depends="get-src" description="Trigger the nightly automated build and lrg tests">
+    <target name="milestone" description="Trigger a build promotion of a nightly build to a milestone">
         <echo message="'milestone' target: Calling 'build-milestone' target in '${build.root.dir}/${autobld.file}'"/>
         <ant antfile="${autobld.file}" dir="${build.root.dir}" target="build-milestone"/>
     </target>
