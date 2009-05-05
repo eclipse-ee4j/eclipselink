@@ -238,6 +238,14 @@ public class ParameterExpression extends BaseExpression {
                 throw QueryException.parameterNameMismatch(getField().getName());
             }
             
+            // Must unwrap for EJBQL "Select Person(p) where p = ?1"
+            // if we had to unwrap it make sure we replace the argument with this value
+            // in case it is needed again, e.g. in conforming.
+            ClassDescriptor descriptor = session.getDescriptor(value);
+            if (descriptor != null) {
+                value = descriptor.getObjectBuilder().unwrapObject(value, session);
+            }
+            
             // validate parameter type against mapping
             // validate against the localbase (false), since there are no nested params
             validateParameterValueAgainstMapping(value, false);
