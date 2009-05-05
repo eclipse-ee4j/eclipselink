@@ -26,7 +26,7 @@
 <!-- =============================================================================
 *  General Comments
 *  This buildfile contains:
-*        - targets to generate a p2 repository for eclipselink on the 
+*        - targets to generate a p2 repository for eclipselink on the
 *          download site.
 *================================================================================= -->
 
@@ -40,7 +40,7 @@
     <dirname  property="feature.build.location" file="${ant.file.features}"/>
     <property name="feature.2.base.dir" value=".."/>
     <property name="feature.2.common.plugins.dir" value="${feature.2.base.dir}/plugins"/>
-    
+
     <!-- Defaults of Pre-Set variables -->
     <property name="release.version"                    value="1.1.1"/>
     <property name="version.qualifier"                  value="qualifier"/>
@@ -48,7 +48,9 @@
     <property name="eclipselink.plugins.install.prefix" value="eclipselink-plugins"/>
     <property name="eclipselink.zip.suffix"             value=".zip"/>
     <property name="classes.dir"                        value="classes"/>
-    
+    <property name="feature.build.dir"                  value="${classes.dir}/features"/>
+    <property name="bundle.working.dir"                 value="${classes.dir}/plugins"/>
+
     <!-- Tool definitions -->
     <property name="p2.SDK.install.dir" value="C:\eclipseSDK\eclipse"/>
     <property name="p2.generator.jar" value="org.eclipse.equinox.p2.metadata.generator_*.jar"/>
@@ -61,7 +63,7 @@
     <property name="p2.bundle.dir" value="${p2.base.dir}/plugins"/>
     <!-- Output definitions -->
     <property name="p2.repository.url" value="file:/${p2.base.dir}"/>
-    
+
     <echo message="ant.project.name='${ant.project.name}'"/>
     <echo message="feature.build.location='${feature.build.location}'"/>
     <echo message="feature.2.base.dir='${feature.2.base.dir}'"/>
@@ -78,17 +80,24 @@
 
     <!-- Make sure the bundle installer exists -->
     <available file="${feature.2.base.dir}/${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}" property="bundle.installer.exist"/>
-  
+    <available file="signing-script.sh" property="signing.script.exist"/>
+
+    <condition property="repack" value="-repack">
+        <not> <isset property="signing.script.exist" /> </not>
+    </condition>
+    <property name="repack" value=" " />
+    <condition property="sign" value="-sign signing-script.sh">
+        <isset property="signing.script.exist" />
+    </condition>
+    <!-- property name="sign" value=" " / -->
+
     <!-- Need to copy only the bundles that will be in the features into the "p2.base.dir/plugins" dir
          (so must copy from main plugins to new temp location). Also need to filter copy the feature xml
-         files to "p2.base.dir/features" to substitute the actual version.qualifer string into it. 
+         files to "p2.base.dir/features" to substitute the actual version.qualifer string into it.
          Then can Generate P2.                                                                               -->
-    <!-- Questions: Is this copy the generation of the P2 repository? should it go to the server and not be "temp"?
-                    How does this work for older "revisions of the repository?"
-                    -->
     <target name="build"    depends="clean, create-deployable-features, build-p2"/>
     <target name="build-p2" depends="clear-repos, populate-repos-site, generate-p2-repos"/>
-        
+
     <!-- Feature Targets -->
     <!-- clean -->
     <target name="clean" description="Clean all generated content">
@@ -99,8 +108,9 @@
     </target>
 
     <!-- build feature jars -->
-    <target name="create-deployable-features">
+    <target name="create-deployable-features" depends="create-eclipse-buildfile">
         <mkdir dir="${classes.dir}"/>
+        <mkdir dir="${feature.build.dir}"/>
         <filter token="VERSION"   value="${release.version}"/>
         <filter token="QUALIFIER" value="${version.qualifier}"/>
         <copy todir="${classes.dir}" filtering="true">
@@ -109,7 +119,7 @@
                 <exclude name="build*.xml"/>
             </fileset>
         </copy>
-        <jar jarfile="${feature.build.location}/org.eclipse.persistence.jpa_${version.string}.jar" duplicate="preserve">
+        <jar jarfile="${feature.build.dir}/org.eclipse.persistence.jpa_${version.string}.jar" duplicate="preserve">
             <fileset dir="${feature.2.base.dir}">
                 <include name="about.html"/>
                 <include name="readme.html"/>
@@ -119,7 +129,7 @@
                 <include name="*.xml"/>
             </fileset>
         </jar>
-        <jar jarfile="${feature.build.location}/org.eclipse.persistence.moxy_${version.string}.jar" duplicate="preserve">
+        <jar jarfile="${feature.build.dir}/org.eclipse.persistence.moxy_${version.string}.jar" duplicate="preserve">
             <fileset dir="${feature.2.base.dir}">
                 <include name="about.html"/>
                 <include name="readme.html"/>
@@ -129,7 +139,7 @@
                 <include name="*.xml"/>
             </fileset>
         </jar>
-        <jar jarfile="${feature.build.location}/org.eclipse.persistence.sdo_${version.string}.jar" duplicate="preserve">
+        <jar jarfile="${feature.build.dir}/org.eclipse.persistence.sdo_${version.string}.jar" duplicate="preserve">
             <fileset dir="${feature.2.base.dir}">
                 <include name="about.html"/>
                 <include name="readme.html"/>
@@ -139,7 +149,7 @@
                 <include name="*.xml"/>
             </fileset>
         </jar>
-        <jar jarfile="${feature.build.location}/org.eclipse.persistence.jpa.source_${version.string}.jar" duplicate="preserve">
+        <jar jarfile="${feature.build.dir}/org.eclipse.persistence.jpa.source_${version.string}.jar" duplicate="preserve">
             <fileset dir="${feature.2.base.dir}">
                 <include name="about.html"/>
                 <include name="readme.html"/>
@@ -149,7 +159,7 @@
                 <include name="*.xml"/>
             </fileset>
         </jar>
-        <jar jarfile="${feature.build.location}/org.eclipse.persistence.moxy.source_${version.string}.jar" duplicate="preserve">
+        <jar jarfile="${feature.build.dir}/org.eclipse.persistence.moxy.source_${version.string}.jar" duplicate="preserve">
             <fileset dir="${feature.2.base.dir}">
                 <include name="about.html"/>
                 <include name="readme.html"/>
@@ -159,7 +169,7 @@
                 <include name="*.xml"/>
             </fileset>
         </jar>
-        <jar jarfile="${feature.build.location}/org.eclipse.persistence.sdo.source_${version.string}.jar" duplicate="preserve">
+        <jar jarfile="${feature.build.dir}/org.eclipse.persistence.sdo.source_${version.string}.jar" duplicate="preserve">
             <fileset dir="${feature.2.base.dir}">
                 <include name="about.html"/>
                 <include name="readme.html"/>
@@ -169,7 +179,9 @@
                 <include name="*.xml"/>
             </fileset>
         </jar>
-        
+    </target>
+
+    <target name="create-eclipse-buildfile">
         <echo message="update eclipselink.build for Galileo, and place in features dir for later check-in."/>
         <copy todir="${classes.dir}" filtering="true">
             <fileset dir="${feature.2.base.dir}/buildsystem">
@@ -183,27 +195,72 @@
     <target name="test-ready-to-go" unless="bundle.installer.exist">
         <echo message="Bundle Installer not found! Skipping P2 repos generation."/>
     </target>
-    
+
     <target name="clear-repos" if="bundle.installer.exist" depends="test-ready-to-go">
-        <!-- delete dir="${p2.base.dir}" failonerror="false"/ -->
+        <delete dir="${p2.base.dir}" failonerror="false"/>
         <echo message="Test without cleaning repos first."/>
     </target>
-    
-    <target name="populate-repos-site" if="bundle.installer.exist">
-        <unzip src="${feature.2.base.dir}/${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}"
-               dest="${p2.bundle.dir}">
+
+    <!-- Pack and Sign Targets -->
+    <target name="pack-and-sign">
+        <!--condition jar if it is not built on eclipse.org for signing-->
+        <java classname="org.eclipse.equinox.launcher.Main" fork="true" timeout="10800000" taskname="jarProcessor"
+            jvm="${java.home}/bin/java" failonerror="false" maxmemory="256m">
+            <classpath>
+                <fileset dir="${p2.SDK.install.dir}\plugins"
+                    includes="${p2.launcher.jar},
+                              ${p2.generator.jar}
+                    "/>
+                <pathelement location="${p2.SDK.install.dir}\plugins" />
+            </classpath>
+            <arg line=" -application org.eclipse.update.core.siteOptimizer -jarProcessor" />
+            <!-- arg line=" -processAll -pack ${repack} ${sign}" / -->
+            <arg line=" -processAll ${repack} ${sign}" />
+            <arg line=" -verbose" />
+            <arg line=" -outputDir ${destination} ${target}" />
+        </java>
+    </target>
+
+    <target name="do-not-sign-features" unless="signing.script.exist">
+        <echo message="Skip signing and packing... just copying to repository."/>
+        <copy todir="${p2.feature.dir}">
+            <fileset dir="${feature.build.dir}">
+                <include name="**/*.jar"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="sign-features" > <!-- if="signing.script.exist" depends="do-not-sign-features" -->
+        <echo message="Signing and packing feature jars... output to repository."/>
+        <antcall target="pack-and-sign">
+            <param name="target" value="${feature.build.dir}"/>
+            <param name="destination" value="${p2.feature.dir}"/>
+        </antcall>
+    </target>
+
+    <target name="populate-repos-site" if="bundle.installer.exist" depends="sign-features">
+        <!-- unzip bundle jars for processing -->
+        <unzip dest="${bundle.working.dir}" src="${feature.2.base.dir}/${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}">
             <patternset>
                 <include name="**/*.jar"/>
             </patternset>
         </unzip>
+        <!-- Remove jars we are not including in features at this time (needs to be separate because exclude in unzip does not seem to work) -->
         <delete>
-            <fileset dir="${p2.bundle.dir}" includes="*dbws*.jar, *servlet*.jar, *soap*.jar, *xml.ws*.jar"/>
+            <fileset dir="${bundle.working.dir}" includes="*dbws*.jar, *servlet*.jar, *soap*.jar, *xml.ws*.jar"/>
         </delete>
-        <copy todir="${p2.feature.dir}">
-            <fileset dir="${feature.build.location}">
+        <!-- move non-product bundles to repos (do not process) -->
+        <move todir="${p2.bundle.dir}">
+            <fileset dir="${bundle.working.dir}">
                 <include name="**/*.jar"/>
+                <exclude name="**/org.eclipse.persistence.*.jar"/>
+                <exclude name="**/javax.persistence*1.99*.jar"/>
+                <exclude name="**/javax.persistence*2.0*.jar"/>
             </fileset>
-        </copy>
+        </move>
+        <!-- , **/javax.persistence*1.99*.jar, **/javax.persistence*2*.jar antcall target="pack-and-sign">
+            <param name="target" value="${classes.dir}"/>
+            <param name="destination" value="${p2.feature.dir}"/>
+        </antcall -->
     </target>
 
     <!-- target name="generate-p2-repos-with-anttask">
@@ -211,7 +268,7 @@
         <p2.composite.artifact.repository.create compressed="true" name="EclipseLink Repository" location="${p2.repository.url}"  />
         <p2.composite.metadata.repository.create compressed="false" name="EclipseLink Repository" location="${p2.repository.url}" />
     </target -->
-    
+
     <target name="generate-p2-repos" if="bundle.installer.exist">
         <!-- property name="site.url" value="file:${p2.base.dir}/site.xml"/ -->
         <property name="site.url" value="file:${feature.build.location}/${classes.dir}/site.xml"/>
@@ -235,5 +292,5 @@
             <arg line=" -append -noDefaultIUs -compress -reusePack200Files" />
         </java>
     </target>
-    
+
 </project>
