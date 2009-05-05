@@ -12,6 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.validation;
 
+import java.util.Vector;
+
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.IntegrityChecker;
@@ -41,7 +43,7 @@ public class NoSubClassMatchTest_Aggregate extends ExceptionTest {
         ClassDescriptor descriptor = ((DatabaseSession)getSession()).getDescriptor(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
         mapping.setReferenceDescriptor(descriptor);
 
-        ObjectChangeSet changeSet = new ObjectChangeSet(new TestAggregateMapping(), new UnitOfWorkChangeSet(), true);
+        ObjectChangeSet changeSet = new ObjectChangeSet(new Vector(), descriptor, new TestAggregateMapping(), new UnitOfWorkChangeSet(), true);
         changeRecord = new AggregateChangeRecord(changeSet);
         changeRecord.setChangedObject(changeSet);
 

@@ -15,8 +15,8 @@ package org.eclipse.persistence.sessions.coordination;
 
 /**
  * <p>
- * <b>Purpose</b>: Defines a pluggable interface for TopLink sessions and non-TopLink
- * applications to be able to be on the receiving end of TopLink command objects.
+ * <b>Purpose</b>: Defines a pluggable interface for EclipseLink sessions and EclipseLink
+ * applications to be able to be on the receiving end of EclipseLink command objects.
  * <p>
  * <b>Description</b>: This interface represents the entity that both initiates
  * (on the sending end) and processes (on the receiving end) remote commands.
@@ -25,7 +25,7 @@ package org.eclipse.persistence.sessions.coordination;
  * from other remote command managers in the TopLink cluster. When the implementing
  * class wants to send a remote command to other CommandProcessors then it invokes
  * the CommandManager to do so.
- * When running this remote command service in a TopLink application then the
+ * When running this remote command service in a EclipseLink application then the
  * the Session class should be used as the implementation class for this interface.
  * When running in a non-TopLink application then the application should provide
  * the implementation class.

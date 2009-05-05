@@ -255,50 +255,6 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
     }
 
     /**
-     * Ensure this change record is ready to by sent remotely for cache synchronization
-     * In general, this means setting the CacheSynchronizationType on any ObjectChangeSets
-     * associated with this ChangeRecord.
-     */
-    public void prepareForSynchronization(AbstractSession session) {
-        Iterator changes = getAddObjectList().values().iterator();
-        while (changes.hasNext()) {
-            prepareForSynchronization((ObjectChangeSet)changes.next(), session);
-        }
-        changes = getRemoveObjectList().values().iterator();
-        while (changes.hasNext()) {
-            prepareForSynchronization((ObjectChangeSet)changes.next(), session);
-        }
-        changes = getOrderedAddObjects().iterator();
-        while (changes.hasNext()) {
-            prepareForSynchronization((ObjectChangeSet)changes.next(), session);
-        }
-        changes = getOrderedRemoveObjects().values().iterator();
-        while (changes.hasNext()) {
-            prepareForSynchronization((ObjectChangeSet)changes.next(), session);
-        }
-        
-        //237545: prepare the OrderedList from attribute change tracking 
-        Iterator orderedChangeObjectEnum = getOrderedChangeObjectList().iterator();
-        while (orderedChangeObjectEnum.hasNext()) {
-            OrderedChangeObject orderedChangeObject = (OrderedChangeObject)orderedChangeObjectEnum.next();
-            prepareForSynchronization(orderedChangeObject.getChangeSet(), session);
-        }
-    }
-    
-    /**
-     * Ensure an ObjectChangeSet is ready to by sent remotely for cache synchronization.
-     * In general, this means setting the CacheSynchronizationType.
-     */
-    private void prepareForSynchronization(ObjectChangeSet changedObject, AbstractSession session) {
-        if (changedObject.getSynchronizationType() == ClassDescriptor.UNDEFINED_OBJECT_CHANGE_BEHAVIOR) {
-            ClassDescriptor descriptor = session.getDescriptor(changedObject.getClassType(session));
-            int syncType = descriptor.getCacheSynchronizationType();
-            changedObject.setSynchronizationType(syncType);
-            changedObject.prepareChangeRecordsForSynchronization(session);
-        }
-    }
-
-    /**
      * Sets the Added objects list.
      */
     public void setAddObjectList(Map objectChangesList) {

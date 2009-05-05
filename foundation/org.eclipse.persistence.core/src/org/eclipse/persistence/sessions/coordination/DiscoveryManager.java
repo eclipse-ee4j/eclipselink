@@ -19,7 +19,7 @@ import org.eclipse.persistence.internal.sessions.coordination.*;
 
 /**
  * <p>
- * <b>Purpose</b>: Detects new members of a logical TopLink cluster.
+ * <b>Purpose</b>: Detects new members of a logical EclipseLink cluster.
  * <p>
  * <b>Description</b>: Each RemoteCommandManager has its own DiscoveryManager,
  * which handles the detection of other remote command services as they become available.
@@ -69,7 +69,7 @@ public class DiscoveryManager implements Runnable {
     protected RemoteCommandManager rcm;
 
     /**
-     * Constructors to create a discvovery manager.
+     * Constructors to create a discovery manager.
      */
     public DiscoveryManager(RemoteCommandManager mgr) {
         this.rcm = mgr;
@@ -273,7 +273,7 @@ public class DiscoveryManager implements Runnable {
     public void receivedAnnouncement(ServiceId serviceId) {
         Object[] args = { serviceId };
         rcm.logInfo("announcement_received", args);
-        // Notify the RCM that a new service has beed detected 
+        // Notify the RCM that a new service has been detected 
         rcm.newServiceDiscovered(serviceId);
     }
 
@@ -301,7 +301,7 @@ public class DiscoveryManager implements Runnable {
 
     /**
      * PUBLIC:
-     * Return the host adddress of the multicast group.
+     * Return the host address of the multicast group.
      */
     public String getMulticastGroupAddress() {
         return (multicastGroupAddress);
@@ -309,7 +309,7 @@ public class DiscoveryManager implements Runnable {
 
     /**
      * PUBLIC:
-     * Set the host adddress of the multicast group. Takes effect the next time
+     * Set the host address of the multicast group. Takes effect the next time
      * listening is started.
      */
     public void setMulticastGroupAddress(String address) {
@@ -334,7 +334,7 @@ public class DiscoveryManager implements Runnable {
     }
 
     /**
-     * INTERNAL: invoke when the RCM shutdown. Subclass overides this method if necessary.
+     * INTERNAL: invoke when the RCM shutdown. Subclass overrides this method if necessary.
      */
     protected void shallowCopy(DiscoveryManager dmgr) {
         this.multicastGroupAddress = dmgr.multicastGroupAddress;
@@ -345,8 +345,8 @@ public class DiscoveryManager implements Runnable {
 
     /**
      * PUBLIC:
-     * Returns the number of hops the data packets of the session annoucemnt will take before expiring.
-     * The default is 2, a hub and an interface card to prevent the data packets from leaving the localnetwork.
+     * Returns the number of hops the data packets of the session announcement will take before expiring.
+     * The default is 2, a hub and an interface card to prevent the data packets from leaving the local network.
      */
     public int getPacketTimeToLive() {
         return this.packetTimeToLive;
@@ -354,10 +354,10 @@ public class DiscoveryManager implements Runnable {
 
     /**
      * PUBLIC:
-     * Set the number of hops the data packets of the session annoucemnt will take before expiring.
-     * The default is 2, a hub and an interface card to prevent the data packets from leaving the localnetwork.
+     * Set the number of hops the data packets of the session announcement will take before expiring.
+     * The default is 2, a hub and an interface card to prevent the data packets from leaving the local network.
      *
-     * Note that if sessions are hosted on different LANs that are part of WAN, the annoucment sending by one session
+     * Note that if sessions are hosted on different LANs that are part of WAN, the announcement sending by one session
      * may not reach other sessions.  In this case, consult your network administrator for the right time-to-live value
      * or test your network by increase the value until sessions receive announcement sent by others.
      */

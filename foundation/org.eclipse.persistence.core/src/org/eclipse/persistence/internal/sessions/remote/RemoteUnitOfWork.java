@@ -176,7 +176,7 @@ public class RemoteUnitOfWork extends UnitOfWorkImpl {
      * Merges remote unit of work to parent remote session.
      */
     protected void commitRootUnitOfWorkOnClient() {
-        Map allObjects = collectAndPrepareObjectsForNestedMerge();
+        collectAndPrepareObjectsForNestedMerge();
 
         //calculate the change set here as we have special behavior for remote
         // in that the new changesets must be updated within the UOWChangeSet as the
@@ -190,9 +190,7 @@ public class RemoteUnitOfWork extends UnitOfWorkImpl {
             calculateChanges(new IdentityHashMap(this.cloneMapping), (UnitOfWorkChangeSet)getUnitOfWorkChangeSet(), false);
             this.allClones = null;
         }
-        Enumeration classes = uowChangeSet.getNewObjectChangeSets().elements();
-        while (classes.hasMoreElements()) {
-            Map newList = (Map)classes.nextElement();
+        for (Map newList : uowChangeSet.getNewObjectChangeSets().values()) {
             Iterator newChangeSets = new IdentityHashMap(newList).keySet().iterator();
             while (newChangeSets.hasNext()) {
                 uowChangeSet.putNewObjectInChangesList((ObjectChangeSet)newChangeSets.next(), this);

@@ -64,6 +64,8 @@ public class HibernateJPAConcurrencyComparisonModel extends JPAConcurrencyCompar
         properties.put("hibernate.jdbc.batch_size", "100");
         properties.put("hibernate.dialect", "org.hibernate.dialect.Oracle9Dialect");
         properties.put("hibernate.cache.provider_class", "org.hibernate.cache.EhCacheProvider");
+        //properties.put("hibernate.cache.use_second_level_cache", "true");
+        //properties.put("hibernate.cache.use_structured_entries", "true");
         if (getSession().shouldLogMessages()) {
             properties.put("hibernate.show_sql", "true");
         }

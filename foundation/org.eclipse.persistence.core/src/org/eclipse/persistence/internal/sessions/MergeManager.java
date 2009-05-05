@@ -111,7 +111,7 @@ public class MergeManager {
         // find next power-of-2 size
         Map result = new IdentityHashMap(containerPolicy.sizeFor(container) + 1);
         for (Object iter = containerPolicy.iteratorFor(container); containerPolicy.hasNext(iter);) {
-            Object element = containerPolicy.next(iter, getSession());
+            Object element = containerPolicy.next(iter, this.session);
             if (keyByTarget) {
                 result.put(getTargetVersionOfSourceObject(element), element);
             } else {
@@ -203,7 +203,7 @@ public class MergeManager {
     public Object getTargetVersionOfSourceObject(Object source) {
         if (shouldMergeWorkingCopyIntoOriginal() || shouldMergeWorkingCopyIntoRemote()) {
             // Target is in uow parent, or original instance for new object.
-            return ((UnitOfWorkImpl)getSession()).getOriginalVersionOfObject(source);
+            return ((UnitOfWorkImpl)this.session).getOriginalVersionOfObject(source);
         } else if (shouldMergeCloneIntoWorkingCopy() || shouldMergeOriginalIntoWorkingCopy() || shouldMergeCloneWithReferencesIntoWorkingCopy()) {
             // Target is clone from uow.
             //make sure we use the register for merge
@@ -211,9 +211,9 @@ public class MergeManager {
             return registerObjectForMergeCloneIntoWorkingCopy(source);
         } else if (shouldRefreshRemoteObject()) {
             // Target is in session's cache.
-            ClassDescriptor descriptor = getSession().getDescriptor(source);
-            Vector primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(source, getSession());
-            return getSession().getIdentityMapAccessorInstance().getFromIdentityMap(primaryKey, source.getClass(), descriptor);
+            ClassDescriptor descriptor = this.session.getDescriptor(source);
+            Vector primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(source, this.session);
+            return this.session.getIdentityMapAccessorInstance().getFromIdentityMap(primaryKey, source.getClass(), descriptor);
         }
 
         throw ValidationException.invalidMergePolicy();
@@ -246,7 +246,7 @@ public class MergeManager {
         }
 
         // Do not merged read-only objects in a unit of work.
-        if (getSession().isClassReadOnly(object.getClass())) {
+        if (this.session.isClassReadOnly(object.getClass())) {
             return object;
         }
 
@@ -284,9 +284,9 @@ public class MergeManager {
      * This will only be called if the working copy exists.
      */
     protected Object mergeChangesForRefreshingRemoteObject(Object serverSideDomainObject) {
-        ClassDescriptor descriptor = getSession().getDescriptor(serverSideDomainObject);
-        Vector primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(serverSideDomainObject, getSession());
-        Object clientSideDomainObject = getSession().getIdentityMapAccessorInstance().getFromIdentityMap(primaryKey, serverSideDomainObject.getClass(), descriptor);
+        ClassDescriptor descriptor = this.session.getDescriptor(serverSideDomainObject);
+        Vector primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(serverSideDomainObject, this.session);
+        Object clientSideDomainObject = this.session.getIdentityMapAccessorInstance().getFromIdentityMap(primaryKey, serverSideDomainObject.getClass(), descriptor);
         if (clientSideDomainObject == null) {
             //the referenced object came back as null from the cache.
             ObjectDescriptor objectDescriptor = (ObjectDescriptor)getObjectDescriptors().get(serverSideDomainObject);
@@ -305,8 +305,8 @@ public class MergeManager {
             //query is used for the cascade policy only
             org.eclipse.persistence.queries.ObjectLevelReadQuery query = new org.eclipse.persistence.queries.ReadObjectQuery();
             query.setCascadePolicy(this.getCascadePolicy());
-            getSession().getIdentityMapAccessorInstance().putInIdentityMap(serverSideDomainObject, primaryKey, objectDescriptor.getWriteLockValue(), objectDescriptor.getReadTime(), descriptor);
-            descriptor.getObjectBuilder().fixObjectReferences(serverSideDomainObject, getObjectDescriptors(), getObjectsAlreadyMerged(), query, (RemoteSession)getSession());
+            this.session.getIdentityMapAccessorInstance().putInIdentityMap(serverSideDomainObject, primaryKey, objectDescriptor.getWriteLockValue(), objectDescriptor.getReadTime(), descriptor);
+            descriptor.getObjectBuilder().fixObjectReferences(serverSideDomainObject, getObjectDescriptors(), getObjectsAlreadyMerged(), query, (RemoteSession)this.session);
             clientSideDomainObject = serverSideDomainObject;
         } else {
             // merge into the clientSideDomainObject from the serverSideDomainObject;
@@ -325,14 +325,14 @@ public class MergeManager {
                     objectDescriptor.setWriteLockValue(policy.getBaseValue());
                 }
             }
-            CacheKey key = getSession().getIdentityMapAccessorInstance().getCacheKeyForObjectForLock(primaryKey, clientSideDomainObject.getClass(), descriptor);
+            CacheKey key = this.session.getIdentityMapAccessorInstance().getCacheKeyForObjectForLock(primaryKey, clientSideDomainObject.getClass(), descriptor);
 
             // Check for null because when there is NoIdentityMap, CacheKey will be null
             if (key != null) {
                 key.setReadTime(objectDescriptor.getReadTime());
             }
             if (descriptor.usesOptimisticLocking()) {
-                getSession().getIdentityMapAccessor().updateWriteLockValue(primaryKey, clientSideDomainObject.getClass(), objectDescriptor.getWriteLockValue());
+                this.session.getIdentityMapAccessor().updateWriteLockValue(primaryKey, clientSideDomainObject.getClass(), objectDescriptor.getWriteLockValue());
             }
         }
         return clientSideDomainObject;
@@ -343,52 +343,46 @@ public class MergeManager {
      * Merge the changes to all objects to session's cache.
      */
     public void mergeChangesFromChangeSet(UnitOfWorkChangeSet uowChangeSet) {
-        getSession().startOperationProfile(SessionProfiler.DistributedMerge);
+        this.session.startOperationProfile(SessionProfiler.DistributedMerge);
         // Ensure concurrency if cache isolation requires.
-        getSession().getIdentityMapAccessorInstance().acquireWriteLock();
-        getSession().log(SessionLog.FINER, SessionLog.PROPAGATION, "received_updates_from_remote_server");
-        getSession().getEventManager().preDistributedMergeUnitOfWorkChangeSet(uowChangeSet);
+        this.session.getIdentityMapAccessorInstance().acquireWriteLock();
+        this.session.log(SessionLog.FINER, SessionLog.PROPAGATION, "received_updates_from_remote_server");
+        this.session.getEventManager().preDistributedMergeUnitOfWorkChangeSet(uowChangeSet);
 
         try {
             // Iterate over each clone and let the object build merge to clones into the originals.
-            getSession().getIdentityMapAccessorInstance().getWriteLockManager().acquireRequiredLocks(this, uowChangeSet);
+            this.session.getIdentityMapAccessorInstance().getWriteLockManager().acquireRequiredLocks(this, uowChangeSet);
             Iterator objectChangeEnum = uowChangeSet.getAllChangeSets().keySet().iterator();
             while (objectChangeEnum.hasNext()) {
                 ObjectChangeSet objectChangeSet = (ObjectChangeSet)objectChangeEnum.next();
-                Object object = objectChangeSet.getTargetVersionOfSourceObject(getSession(), false);
-
                 // Don't read the object here.  If it is null then we won't merge it at this stage, unless it
-                // is being referenced which will force the load later
-                Object mergedObject = this.mergeChanges(object, objectChangeSet);
-
-                // if mergedObject is null, it might be because objectChangeSet represents a new object and could not look it up
-                // Check the descriptor setting for this change set to see if the new object should be added to the cache.
-                if (mergedObject == null) {
-                    if (objectChangeSet.isNew()) {
-                        mergedObject = mergeNewObjectIntoCache(objectChangeSet);
-                    }
-                }
-                if (mergedObject == null) {
-                    getSession().incrementProfile(SessionProfiler.ChangeSetsNotProcessed);
+                // is being referenced which will force the load later.
+                Object object = objectChangeSet.getTargetVersionOfSourceObject(this.session, false);
+                if (object != null) {
+                    mergeChanges(object, objectChangeSet);
+                    this.session.incrementProfile(SessionProfiler.ChangeSetsProcessed);
+                } else if (objectChangeSet.isNew()) {
+                    mergeNewObjectIntoCache(objectChangeSet);
+                    this.session.incrementProfile(SessionProfiler.ChangeSetsProcessed);
                 } else {
-                    getSession().incrementProfile(SessionProfiler.ChangeSetsProcessed);
+                    this.session.incrementProfile(SessionProfiler.ChangeSetsNotProcessed);
                 }
             }
             if (uowChangeSet.hasDeletedObjects()) {
                 Iterator deletedObjects = uowChangeSet.getDeletedObjects().values().iterator();
                 while (deletedObjects.hasNext()) {
                     ObjectChangeSet changeSet = (ObjectChangeSet)deletedObjects.next();
-                    changeSet.removeFromIdentityMap(getSession());
-                    getSession().incrementProfile(SessionProfiler.DeletedObject);
+                    changeSet.removeFromIdentityMap(this.session);
+                    this.session.incrementProfile(SessionProfiler.DeletedObject);
                 }
             }
         } catch (RuntimeException exception) {
-            getSession().handleException(exception);
+            this.session.handleException(exception);
         } finally {
-            getSession().getIdentityMapAccessorInstance().getWriteLockManager().releaseAllAcquiredLocks(this);
-            getSession().getIdentityMapAccessorInstance().releaseWriteLock();
-            getSession().getEventManager().postDistributedMergeUnitOfWorkChangeSet(uowChangeSet);
-            getSession().endOperationProfile(SessionProfiler.DistributedMerge);
+            this.session.getIdentityMapAccessorInstance().getWriteLockManager().releaseAllAcquiredLocks(this);
+            this.session.getIdentityMapAccessorInstance().releaseWriteLock();
+            this.session.getEventManager().postDistributedMergeUnitOfWorkChangeSet(uowChangeSet);
+            this.session.endOperationProfile(SessionProfiler.DistributedMerge);
         }
     }
 
@@ -397,62 +391,69 @@ public class MergeManager {
      * The object passed in is the original object from the cache.
      */
     protected Object mergeChangesIntoDistributedCache(Object original, ObjectChangeSet changeSet) {
-        AbstractSession session = getSession();
-
+        AbstractSession session = this.session;
+        
         // Determine if the object needs to be registered in the parent's clone mapping,
         // This is required for registered new objects in a nested unit of work.
         Class localClassType = changeSet.getClassType(session);
         ClassDescriptor descriptor = session.getDescriptor(localClassType);
-        
+
         // Perform invalidation of a cached object (when set on the ChangeSet) to avoid refreshing or merging
         if (changeSet.getSynchronizationType() == ClassDescriptor.INVALIDATE_CHANGED_OBJECTS) {
-            getSession().getIdentityMapAccessorInstance().invalidateObject(changeSet.getPrimaryKeys(), localClassType);
+            session.getIdentityMapAccessorInstance().invalidateObject(changeSet.getPrimaryKeys(), localClassType);
             return original;
-		}
+        }
         
-        if ((original != null) && descriptor.usesOptimisticLocking()) {
+        if ((!changeSet.isNew()) && descriptor.usesOptimisticLocking()) {
             if ((session.getCommandManager() != null) && (session.getCommandManager().getCommandConverter() != null)) {
                 // Rebuild the version value from user format i.e the change set was converted to XML
                 changeSet.rebuildWriteLockValueFromUserFormat(descriptor, session);
             }
             int difference = descriptor.getOptimisticLockingPolicy().getVersionDifference(changeSet.getWriteLockValue(), original, changeSet.getPrimaryKeys(), session);
 
-            //cr 4143 if the difference is the same merge anyway.  This prevents the version not channg error
+            // Should be = 1 if was a good update, otherwise was already refreshed, or a version change was lost,
+            // must also allow 0, as some changes such as add/removes to collections do not increment the version.
             if (difference < 0) {
                 // The current version is newer than the one on the remote system
-                getSession().log(SessionLog.FINEST, SessionLog.PROPAGATION, "change_from_remote_server_older_than_current_version", changeSet.getClassName(), changeSet.getPrimaryKeys());
+                session.log(SessionLog.FINEST, SessionLog.PROPAGATION, "change_from_remote_server_older_than_current_version", changeSet.getClassName(), changeSet.getPrimaryKeys());
                 return original;
             } else if (difference > 1) {
                 // If the current version is much older than the remote system, then refresh the object
-                getSession().log(SessionLog.FINEST, SessionLog.PROPAGATION, "current_version_much_older_than_change_from_remote_server", changeSet.getClassName(), changeSet.getPrimaryKeys());
-                session.refreshObject(original);
+                session.log(SessionLog.FINEST, SessionLog.PROPAGATION, "current_version_much_older_than_change_from_remote_server", changeSet.getClassName(), changeSet.getPrimaryKeys());
+                session.getIdentityMapAccessorInstance().invalidateObject(changeSet.getPrimaryKeys(), localClassType);
                 return original;
             }
         }
 
         // Always merge into the original.
-        getSession().log(SessionLog.FINEST, SessionLog.PROPAGATION, "Merging_from_remote_server", changeSet.getClassName(), changeSet.getPrimaryKeys());
+        session.log(SessionLog.FINEST, SessionLog.PROPAGATION, "Merging_from_remote_server", changeSet.getClassName(), changeSet.getPrimaryKeys());
 
-        if (!(changeSet.getSynchronizationType() == ClassDescriptor.DO_NOT_SEND_CHANGES)) {
+        if (changeSet.isNew() || (changeSet.getSynchronizationType() != ClassDescriptor.DO_NOT_SEND_CHANGES)) {
             descriptor.getObjectBuilder().mergeChangesIntoObject(original, changeSet, null, this, false);
             Vector primaryKey = changeSet.getPrimaryKeys();
 
-            // Must ensure the get and put of the cache occur as a single operation.
-            // Cache key hold a reference to a concurrency manager which is used for the lock/release operation
-            CacheKey cacheKey = session.getIdentityMapAccessorInstance().acquireLock(primaryKey, original.getClass(), descriptor);
+            // PERF: Get the cached cache-key from the change-set.
+            CacheKey cacheKey = changeSet.getActiveCacheKey();
+            boolean locked = false;
+            // The cache key should never be null for the new commit locks, but may be depending on the cache isolation level may not be locked,
+            // so needs to be re-acquired.
+            if (cacheKey == null || !cacheKey.isAcquired()) {                
+                cacheKey = session.getIdentityMapAccessorInstance().acquireLock(primaryKey, original.getClass(), descriptor);
+                locked = true;
+            }
             try {
-                if (descriptor.usesOptimisticLocking()) {
-                    if (descriptor.getOptimisticLockingPolicy().isChildWriteLockValueGreater(session, primaryKey, original.getClass(), changeSet)) {
-                        cacheKey.setWriteLockValue(changeSet.getWriteLockValue());
-                    }
+                if (descriptor.usesOptimisticLocking() && descriptor.getOptimisticLockingPolicy().isStoredInCache()) {
+                    cacheKey.setWriteLockValue(changeSet.getWriteLockValue());
                 }
                 cacheKey.setObject(original);
-                if (descriptor.getCacheInvalidationPolicy().shouldUpdateReadTimeOnUpdate()) {
+                if (descriptor.getCacheInvalidationPolicy().shouldUpdateReadTimeOnUpdate() || changeSet.isNew()) {
                     cacheKey.setReadTime(getSystemTime());
                 }
-            } finally {
                 cacheKey.updateAccess();
-                cacheKey.release();
+            } finally {
+                if (locked) {
+                    cacheKey.release();
+                }
             }
         }
 
@@ -471,7 +472,7 @@ public class MergeManager {
             return rmiClone;
         }
 
-        ClassDescriptor descriptor = getSession().getDescriptor(rmiClone);
+        ClassDescriptor descriptor = this.session.getDescriptor(rmiClone);
         try {
             ObjectBuilder builder = descriptor.getObjectBuilder();
             
@@ -510,10 +511,10 @@ public class MergeManager {
      * The map is used to resolve recursion.
      */
     protected Object mergeChangesOfOriginalIntoWorkingCopy(Object clone) {
-        ClassDescriptor descriptor = getSession().getDescriptor(clone);
+        ClassDescriptor descriptor = this.session.getDescriptor(clone);
 
         // Find the original object, if it is not there then do nothing.
-        Object original = ((UnitOfWorkImpl)getSession()).getOriginalVersionOfObjectOrNull(clone, descriptor);
+        Object original = ((UnitOfWorkImpl)this.session).getOriginalVersionOfObjectOrNull(clone, descriptor);
 
         if (original == null) {
             return clone;
@@ -528,14 +529,14 @@ public class MergeManager {
             descriptor.getObjectChangePolicy().enableEventProcessing(clone);
         }
         //update the change policies with the refresh
-        descriptor.getObjectChangePolicy().revertChanges(clone, descriptor, (UnitOfWorkImpl)this.getSession(), ((UnitOfWorkImpl)this.getSession()).getCloneMapping());
-        Vector primaryKey = getSession().keyFromObject(clone);
+        descriptor.getObjectChangePolicy().revertChanges(clone, descriptor, (UnitOfWorkImpl)this.session, ((UnitOfWorkImpl)this.session).getCloneMapping());
+        Vector primaryKey = this.session.keyFromObject(clone);
         if (descriptor.usesOptimisticLocking()) {
-            descriptor.getOptimisticLockingPolicy().mergeIntoParentCache((UnitOfWorkImpl)getSession(), primaryKey, clone);
+            descriptor.getOptimisticLockingPolicy().mergeIntoParentCache((UnitOfWorkImpl)this.session, primaryKey, clone);
         }
 
-        CacheKey parentCacheKey = ((UnitOfWorkImpl)getSession()).getParent().getIdentityMapAccessorInstance().getCacheKeyForObjectForLock(primaryKey, clone.getClass(), descriptor);
-        CacheKey uowCacheKey = getSession().getIdentityMapAccessorInstance().getCacheKeyForObjectForLock(primaryKey, clone.getClass(), descriptor);
+        CacheKey parentCacheKey = ((UnitOfWorkImpl)this.session).getParent().getIdentityMapAccessorInstance().getCacheKeyForObjectForLock(primaryKey, clone.getClass(), descriptor);
+        CacheKey uowCacheKey = this.session.getIdentityMapAccessorInstance().getCacheKeyForObjectForLock(primaryKey, clone.getClass(), descriptor);
 
         // Check for null because when there is NoIdentityMap, CacheKey will be null
         if ((parentCacheKey != null) && (uowCacheKey != null)) {
@@ -550,7 +551,7 @@ public class MergeManager {
      * The map is used to resolve recursion.
      */
     protected Object mergeChangesOfWorkingCopyIntoOriginal(Object clone, ObjectChangeSet objectChangeSet) {
-        UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl)getSession();
+        UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl)this.session;
         AbstractSession parent = unitOfWork.getParent();
         
         // If the clone is deleted, avoid this merge and simply return the clone.
@@ -658,7 +659,7 @@ public class MergeManager {
      * such as sequence numbers, version numbers or events triggered changes.
      */
     public Object mergeChangesOfWorkingCopyIntoRemote(Object clone) throws ValidationException {
-        UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl)getSession();
+        UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl)this.session;
 
         // This will return the object from the parent unit of work (original unit of work).
         Object original = unitOfWork.getOriginalVersionOfObject(clone);
@@ -724,32 +725,23 @@ public class MergeManager {
      * The newly merged object will then be added to the cache.
      */
     public Object mergeNewObjectIntoCache(ObjectChangeSet changeSet) {
-        if (changeSet.isNew()) {
-            Class objectClass = changeSet.getClassType(session);
-            ClassDescriptor descriptor = getSession().getDescriptor(objectClass);
-            // Try to find the object first we may have merged it all ready.
-            Object object = changeSet.getTargetVersionOfSourceObject(getSession(), false);
-            if (object == null) {
-                if (!getObjectsAlreadyMerged().containsKey(changeSet)) {
-                    // if we haven't merged this object already then build a new object
-                    // otherwise leave it as null which will stop the recursion
-                    object = descriptor.getObjectBuilder().buildNewInstance();
-                    //Store the changeset to prevent us from creating this new object again
-                    getObjectsAlreadyMerged().put(changeSet, object);
-                } else {
-                    //we have all ready created the object, must be in a cyclic
-                    //merge on a new object so get it out of the alreadymerged collection
-                    object = getObjectsAlreadyMerged().get(changeSet);
-                }
-            } else {
-                object = changeSet.getTargetVersionOfSourceObject(getSession(), true);
-            }
-            mergeChanges(object, changeSet);
-            Object implementation = descriptor.getObjectBuilder().unwrapObject(object, getSession());
-
-            return getSession().getIdentityMapAccessorInstance().putInIdentityMap(implementation, descriptor.getObjectBuilder().extractPrimaryKeyFromObject(implementation, getSession()), changeSet.getWriteLockValue(), getSystemTime(), descriptor);
+        Class localClassType = changeSet.getClassType(session);
+        ClassDescriptor descriptor = this.session.getDescriptor(localClassType);
+        
+        Object newObject = null;
+        if (!getObjectsAlreadyMerged().containsKey(changeSet)) {
+            // if we haven't merged this object already then build a new object
+            // otherwise leave it as null which will stop the recursion
+            newObject = descriptor.getObjectBuilder().buildNewInstance();
+            // store the changeset to prevent us from creating this new object again
+            getObjectsAlreadyMerged().put(changeSet, newObject);
+        } else {
+            //we have all ready created the object, must be in a cyclic
+            //merge on a new object so get it out of the alreadymerged collection
+            newObject = getObjectsAlreadyMerged().get(changeSet);
         }
-        return null;
+        mergeChanges(newObject, changeSet);
+        return newObject;
     }
 
     /**
@@ -787,7 +779,7 @@ public class MergeManager {
      * and not in the cache. Otherwise no changes will be detected as the original state is missing.
      */
     protected Object registerObjectForMergeCloneIntoWorkingCopy(Object clone) {
-        UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl)getSession();
+        UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl)this.session;
         ClassDescriptor descriptor = unitOfWork.getDescriptor(clone.getClass());
         Vector primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(clone, unitOfWork);
 
@@ -871,8 +863,8 @@ public class MergeManager {
      * merge into the parent.  In this case private mappings will register the object as being removed.
      */
     public void registerRemovedNewObjectIfRequired(Object removedObject) {
-        if (getSession().isUnitOfWork()) {
-            UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl)getSession();
+        if (this.session.isUnitOfWork()) {
+            UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl)this.session;
 
             if (shouldMergeWorkingCopyIntoOriginal() && unitOfWork.getParent().isUnitOfWork() && unitOfWork.isCloneNewObject(removedObject)) {
                 Object originalVersionOfRemovedObject = unitOfWork.getOriginalVersionOfObject(removedObject);

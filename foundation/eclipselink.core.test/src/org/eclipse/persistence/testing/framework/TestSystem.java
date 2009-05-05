@@ -119,12 +119,15 @@ public class TestSystem {
     public void loadLoginFromProperties() {        
         this.properties = JUnitTestCaseHelper.getDatabaseProperties();
         login = new DatabaseLogin();
-        login.setDriverClassName((String)properties.get(PersistenceUnitProperties.JDBC_DRIVER));
-        login.setConnectionString((String)properties.get(PersistenceUnitProperties.JDBC_URL));
-        login.setUserName((String)properties.get(PersistenceUnitProperties.JDBC_USER));
+        login.setDriverClassName(this.properties.get(PersistenceUnitProperties.JDBC_DRIVER));
+        login.setConnectionString(this.properties.get(PersistenceUnitProperties.JDBC_URL));
+        login.setUserName(this.properties.get(PersistenceUnitProperties.JDBC_USER));
         // This avoids encrypting the password, as some tests require it non-encrypted.
-        login.setEncryptedPassword((String)properties.get(PersistenceUnitProperties.JDBC_PASSWORD));
-        login.setPlatformClassName((String)properties.get("eclipselink.target-database"));
+        login.setEncryptedPassword(this.properties.get(PersistenceUnitProperties.JDBC_PASSWORD));
+        String platform = this.properties.get("eclipselink.target-database");
+        if (platform != null) {
+            login.setPlatformClassName(platform);
+        }
     }
 
     /**

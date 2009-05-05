@@ -697,39 +697,39 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
         return ((MapContainerPolicyIterator)iterator).getCurrentValue();
     }
     
-    /** INTERNAL:
-     *  This inner class is used to iterate through the Map.Entry s of a Map
-     *  It maintains a pointer to the current entry to allow access to the key and the value
+    /**
+     * INTERNAL:
+     * This inner class is used to iterate through the Map.Entry s of a Map.
+     * It maintains a pointer to the current entry to allow access to the key and the value.
      * @author tware
-     *
      */
-    public static class MapContainerPolicyIterator implements Iterator{
+    public static class MapContainerPolicyIterator implements Iterator {
         
         private Iterator iterator;
         private Map.Entry currentEntry;
         
-        public MapContainerPolicyIterator(Map container){
+        public MapContainerPolicyIterator(Map container) {
             this.iterator = container.entrySet().iterator();
         }
         
-        public boolean hasNext(){
+        public boolean hasNext() {
             return iterator.hasNext();
         }
         
-        public Map.Entry next(){
+        public Map.Entry next() {
             currentEntry = (Map.Entry)iterator.next();
             return currentEntry;
         }
         
-        public Object getCurrentKey(){
-            if (currentEntry != null){
+        public Object getCurrentKey() {
+            if (currentEntry != null) {
                 return currentEntry.getKey();
             }
             return null;
         }
 
-        public Object getCurrentValue(){
-            if (currentEntry != null){
+        public Object getCurrentValue() {
+            if (currentEntry != null) {
                 return currentEntry.getValue();
             }
             return null;

@@ -21,11 +21,11 @@ import org.eclipse.persistence.sessions.coordination.Command;
  * <p>
  * <b>Description</b>: The implementation class of this interface should be set
  * on the remote command manager through the setCommandConverter() method. The
- * implementation class will get invoked, through its convertToTopLinkCommand(),
+ * implementation class will get invoked, through its convertToEclipseLinkCommand(),
  * to convert the application command format into a TopLink Command object that
  * can be propagated throughout the cluster. Similarly, convertToUserCommand()
  * will be invoked on the implementation class to give the application an
- * opportunity to convert the TopLink Command object into an object that is suitable
+ * opportunity to convert the EclipseLink Command object into an object that is suitable
  * for being processed by the application.
  *
  * @see Command
@@ -38,16 +38,16 @@ public interface CommandConverter {
     /**
      * PUBLIC:
      * Convert a command from its application-specific format to
-     * a TopLink Command object.
+     * a EclipseLink Command object.
      *
      * @param command An application-formatted command
      * @return The converted Command object that will be sent to remote services
      */
-    public Command convertToTopLinkCommand(Object command);
+    public Command convertToEclipseLinkCommand(Object command);
 
     /**
      * PUBLIC:
-     * Convert a TopLink Command object into its application-specific
+     * Convert a EclipseLink Command object into its application-specific
      * format to a
      *
      * @param command An application-formatted command

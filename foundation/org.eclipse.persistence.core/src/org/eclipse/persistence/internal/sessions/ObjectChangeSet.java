@@ -35,8 +35,8 @@ import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 public class ObjectChangeSet implements Serializable, org.eclipse.persistence.sessions.changesets.ObjectChangeSet {
 
     /** This is the collection of changes */
-    protected Vector changes;
-    protected Hashtable attributesToChanges;
+    protected List<org.eclipse.persistence.sessions.changesets.ChangeRecord> changes;
+    protected transient Map<String, ChangeRecord> attributesToChanges;
     protected boolean shouldBeDeleted;
     protected CacheKey cacheKey;
     protected transient Class classType;
@@ -47,7 +47,7 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
     protected Object newKey;
 
     /** This member variable holds the reference to the parent UnitOfWork Change Set **/
-    protected UnitOfWorkChangeSet unitOfWorkChangeSet;
+    protected transient UnitOfWorkChangeSet unitOfWorkChangeSet;
     /** Used in mergeObjectChanges method for writeLock and initialWriteLock comparison of the merged change sets **/
     protected transient OptimisticLockingPolicy optimisticLockingPolicy;
     protected Object initialWriteLockValue;
@@ -67,51 +67,54 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
      * change was detected but that change can not be tracked (ie customer set
      * entire collection in object).
      */
-    protected transient HashSet deferredSet;
+    protected transient Set<String> deferredSet;
 
     /**
      * Used to store the type of cache synchronization used for this object
      * This variable is set just before the change set is serialized.
      */
-    protected int cacheSynchronizationType = ClassDescriptor.UNDEFINED_OBJECT_CHANGE_BEHAVIOR;
+    protected int cacheSynchronizationType;
     
     /** PERF: Cache the session cacheKey during the merge to avoid duplicate lookups. */
     protected transient CacheKey activeCacheKey;
 
+    /** Cache the descriptor as it is useful and required in some places. */
+    protected transient ClassDescriptor descriptor;
+    
     /**
      * The default constructor.
      */
-    public ObjectChangeSet() {
-        super();
-    }
-
-    /**
-     * This constructor is used to create an ObjectChangeSet that represents an aggregate object.
-     */
-    public ObjectChangeSet(Object cloneObject, UnitOfWorkChangeSet parent, boolean isNew) {
-        this.cloneObject = cloneObject;
-        this.shouldBeDeleted = false;
-        this.classType = cloneObject.getClass();
-        this.className = this.classType.getName();
-        this.unitOfWorkChangeSet = parent;
-        this.isNew = isNew;
-    }
+    public ObjectChangeSet() {    }
 
     /**
      * This constructor is used to create an ObjectChangeSet that represents a regular object.
      */
-    public ObjectChangeSet(Vector primaryKey, Class classType, Object cloneObject, UnitOfWorkChangeSet parent, boolean isNew) {
-        super();
+    public ObjectChangeSet(Vector primaryKey, ClassDescriptor descriptor, Object cloneObject, UnitOfWorkChangeSet parent, boolean isNew) {
+        this.cacheSynchronizationType = ClassDescriptor.UNDEFINED_OBJECT_CHANGE_BEHAVIOR;
         this.cloneObject = cloneObject;
         this.isNew = isNew;
         this.shouldBeDeleted = false;
         if ((primaryKey != null) && !primaryKey.contains(null)) {
             this.cacheKey = new CacheKey(primaryKey);
         }
-        this.classType = classType;
+        if (cloneObject != null) {
+            this.classType = cloneObject.getClass();
+        } else {
+            this.classType = descriptor.getJavaClass();
+        }
         this.className = this.classType.getName();
+        this.descriptor = descriptor;
+        this.cacheSynchronizationType = descriptor.getCacheSynchronizationType();
         this.unitOfWorkChangeSet = parent;
         this.isAggregate = false;
+    }
+
+    public ClassDescriptor getDescriptor() {
+        return descriptor;
+    }
+
+    public void setDescriptor(ClassDescriptor descriptor) {
+        this.descriptor = descriptor;
     }
 
     /**
@@ -196,9 +199,9 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
      * INTERNAL:
      * stores the change records indexed by the attribute names
      */
-    public Hashtable getAttributesToChanges() {
+    public Map getAttributesToChanges() {
         if (this.attributesToChanges == null) {
-            this.attributesToChanges = new Hashtable(10);
+            this.attributesToChanges = new HashMap();
         }
         return this.attributesToChanges;
     }
@@ -224,11 +227,10 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
      * ADVANCED:
      * This method will return a collection of the attributes changed in the object.
      */
-    public Vector getChangedAttributeNames() {
-        Vector names = new Vector();
-        Enumeration attributes = getChanges().elements();
-        while (attributes.hasMoreElements()) {
-            names.addElement(((ChangeRecord)attributes.nextElement()).getAttribute());
+    public List<String> getChangedAttributeNames() {
+        List<String> names = new ArrayList<String>();
+        for (org.eclipse.persistence.sessions.changesets.ChangeRecord changeRecord : getChanges()) {
+            names.add(changeRecord.getAttribute());
         }
         return names;
     }
@@ -237,9 +239,9 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
      * INTERNAL:
      * This method returns a reference to the collection of changes within this changeSet.
      */
-    public Vector getChanges() {
+    public List<org.eclipse.persistence.sessions.changesets.ChangeRecord> getChanges() {
         if (this.changes == null) {
-            this.changes = new Vector();
+            this.changes = new ArrayList<org.eclipse.persistence.sessions.changesets.ChangeRecord>();
         }
         return changes;
     }
@@ -333,7 +335,10 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
      */
     public Object getTargetVersionOfSourceObject(AbstractSession session, boolean shouldRead) {
         Object attributeValue = null;
-        ClassDescriptor descriptor = session.getDescriptor(getClassType(session));
+        ClassDescriptor descriptor = getDescriptor();
+        if (descriptor == null) {
+            descriptor = session.getDescriptor(getClassType(session));
+        }
 
         if (descriptor != null) {
             if (session.isUnitOfWork()) {
@@ -392,13 +397,12 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
 
     /**
      * ADVANCED:
-     * This method will return true if the specified attributue has been changed.
+     * This method will return true if the specified attribute has been changed.
      * @param attributeName the name of the attribute to search for.
      */
     public boolean hasChangeFor(String attributeName) {
-        Enumeration attributes = getChanges().elements();
-        while (attributes.hasMoreElements()) {
-            if (((ChangeRecord)attributes.nextElement()).getAttribute().equals(attributeName)) {
+        for (org.eclipse.persistence.sessions.changesets.ChangeRecord changeRecord : getChanges()) {
+            if (changeRecord.getAttribute().equals(attributeName)) {
                 return true;
             }
         }
@@ -601,18 +605,6 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
 
     /**
      * INTERNAL:
-     * Iterate through the change records and ensure the cache synchronization types
-     * are set on the change sets associated with those records.
-     */
-    public void prepareChangeRecordsForSynchronization(AbstractSession session) {
-        Enumeration records = getChanges().elements();
-        while (records.hasMoreElements()) {
-            ((ChangeRecord)records.nextElement()).prepareForSynchronization(session);
-        }
-    }
-
-    /**
-     * INTERNAL:
      * Helper method used by readObject to read a completely serialized change set from
      * the stream.
      */
@@ -620,9 +612,9 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
         readIdentityInformation(stream);
         // bug 3526981 - avoid side effects of setter methods by directly assigning variables
         // still calling setOldKey to avoid duplicating the code in that method
-        changes = (Vector)stream.readObject();
-        setOldKey(stream.readObject());
-        newKey = stream.readObject();
+        this.changes = (List)stream.readObject();
+        this.oldKey = stream.readObject();
+        this.newKey = stream.readObject();
     }
 
     /**
@@ -632,9 +624,9 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
      */
     public void readIdentityInformation(java.io.ObjectInputStream stream) throws java.io.IOException, ClassNotFoundException {
         // bug 3526981 - avoid side effects of setter methods by directly assigning variables
-        cacheKey = (CacheKey)stream.readObject();
-        className = (String)stream.readObject();
-        writeLockValue = stream.readObject();
+        this.cacheKey = (CacheKey)stream.readObject();
+        this.className = (String)stream.readObject();
+        this.writeLockValue = stream.readObject();
     }
 
     /**
@@ -644,25 +636,21 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
      */
     private void readObject(java.io.ObjectInputStream stream) throws java.io.IOException, ClassNotFoundException {
         int cacheSyncType = stream.read();
-        setSynchronizationType(cacheSyncType);
+        this.cacheSynchronizationType = cacheSyncType;
         // The boolean variables have been assembled into a byte.
         // Extract them here
-        setShouldBeDeleted(stream.readBoolean());
+        this.shouldBeDeleted = stream.readBoolean();
         this.isInvalid = stream.readBoolean();
-        setIsNew(stream.readBoolean());
-        setIsAggregate(stream.readBoolean());
+        this.isNew = stream.readBoolean();
+        this.isAggregate = stream.readBoolean();
 
         // Only the identity information is sent with a number of cache synchronization types
         // Here we decide what to read.
-        if (shouldBeDeleted || (cacheSynchronizationType == ClassDescriptor.DO_NOT_SEND_CHANGES) || (cacheSynchronizationType == ClassDescriptor.INVALIDATE_CHANGED_OBJECTS)) {
+        if (this.shouldBeDeleted || (cacheSyncType == ClassDescriptor.DO_NOT_SEND_CHANGES) || (cacheSyncType == ClassDescriptor.INVALIDATE_CHANGED_OBJECTS)) {
             readIdentityInformation(stream);
         } else {
             readCompleteChangeSet(stream);
         }
-
-        // bug 3526981 - ensure the UOWChangeSet is updated.  Required since we removed calls to methods that
-        // did this in readIdentityInformation and readCompleteChangeSet.
-        updateUOWChangeSet();
     }
 
     /**
@@ -675,7 +663,7 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
     /**
      * Set the changes.
      */
-    public void setChanges(Vector changesList) {
+    public void setChanges(List changesList) {
         this.changes = changesList;
         updateUOWChangeSet();
     }
@@ -862,8 +850,9 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
      * changesets within this UOWChangeSet.
      */
     public void updateReferences(UnitOfWorkChangeSet localChangeSet, UnitOfWorkChangeSet mergingChangeSet) {
-        for (int index = 0; index < this.getChanges().size(); ++index) {
-            ChangeRecord record = (ChangeRecord)this.getChanges().get(index);
+        int size = getChanges().size();
+        for (int index = 0; index < size; ++index) {
+            ChangeRecord record = (ChangeRecord)getChanges().get(index);
             record.updateReferences(localChangeSet, mergingChangeSet);
             record.setOwner(this);
         }
@@ -875,12 +864,12 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
      * be serialized depending on the type of CacheSynchronizationType
      */
     private void writeObject(java.io.ObjectOutputStream stream) throws java.io.IOException {
-        stream.write(cacheSynchronizationType);
-        stream.writeBoolean(shouldBeDeleted);
-        stream.writeBoolean(isInvalid);
-        stream.writeBoolean(isNew);
-        stream.writeBoolean(isAggregate);
-        if (shouldBeDeleted || (cacheSynchronizationType == ClassDescriptor.DO_NOT_SEND_CHANGES) || (cacheSynchronizationType == ClassDescriptor.INVALIDATE_CHANGED_OBJECTS)) {
+        stream.write(this.cacheSynchronizationType);
+        stream.writeBoolean(this.shouldBeDeleted);
+        stream.writeBoolean(this.isInvalid);
+        stream.writeBoolean(this.isNew);
+        stream.writeBoolean(this.isAggregate);
+        if (this.shouldBeDeleted || (this.cacheSynchronizationType == ClassDescriptor.DO_NOT_SEND_CHANGES) || (this.cacheSynchronizationType == ClassDescriptor.INVALIDATE_CHANGED_OBJECTS)) {
             writeIdentityInformation(stream);
         } else {
             writeCompleteChangeSet(stream);
@@ -893,9 +882,9 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
      * ObjectChangeSet to the stream
      */
     public void writeIdentityInformation(java.io.ObjectOutputStream stream) throws java.io.IOException {
-        stream.writeObject(cacheKey);
-        stream.writeObject(className);
-        stream.writeObject(writeLockValue);
+        stream.writeObject(this.cacheKey);
+        stream.writeObject(this.className);
+        stream.writeObject(this.writeLockValue);
     }
 
     /**
@@ -903,12 +892,10 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
      * Helper method to readObject.  Completely write this ObjectChangeSet to the stream
      */
     public void writeCompleteChangeSet(java.io.ObjectOutputStream stream) throws java.io.IOException {
-        // If the change set is new, it must be filled in.
-        // TODO: Rework change set coordination to not send changes at all if not required.
         if (this.isNew && ((this.changes == null) || this.changes.isEmpty())) {
             AbstractSession unitOfWork = this.unitOfWorkChangeSet.getSession();
-            if (unitOfWork != null) {
-                ClassDescriptor descriptor = unitOfWork.getDescriptor(cloneObject);
+            ClassDescriptor descriptor = getDescriptor();
+            if ((unitOfWork != null) && (descriptor != null)) {
                 List mappings = descriptor.getMappings();
                 int mappingsSize = mappings.size();
                 for (int index = 0; index < mappingsSize; index++) {
@@ -940,9 +927,9 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
     /**
      * This set contains the list of attributes that must be calculated at commit time.
      */
-    public HashSet getDeferredSet() {
+    public Set<String> getDeferredSet() {
         if (deferredSet == null){
-            this.deferredSet = new HashSet();
+            this.deferredSet = new HashSet<String>();
         }
         return deferredSet;
     }
@@ -967,7 +954,7 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
         // case of Optimistic read locking and ForceUpdate.  In these scenarios, the object
         // change set can be modified to contain 'real' changes after the uow change set has
         // computed its 'hasChanges' flag.  If not done, the change set will not be merged.
-        if (this.getUOWChangeSet() != null) {
+        if (getUOWChangeSet() != null) {
             ((org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet)this.getUOWChangeSet()).setHasChanges(this.hasChanges());
         }
     }
@@ -977,9 +964,9 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
      */
     protected void rebuildWriteLockValueFromUserFormat(ClassDescriptor descriptor, AbstractSession session) {
         if (descriptor.getOptimisticLockingPolicy() instanceof TimestampLockingPolicy) {
-            writeLockValue = session.getPlatform(descriptor.getJavaClass()).getConversionManager().convertObject(writeLockValue, ClassConstants.JavaSqlTimestamp_Class);
+            this.writeLockValue = session.getPlatform(descriptor.getJavaClass()).getConversionManager().convertObject(this.writeLockValue, ClassConstants.JavaSqlTimestamp_Class);
         } else if (descriptor.getOptimisticLockingPolicy() instanceof VersionLockingPolicy) {
-            writeLockValue = session.getPlatform(descriptor.getJavaClass()).getConversionManager().convertObject(writeLockValue, ClassConstants.BIGDECIMAL);
+            this.writeLockValue = session.getPlatform(descriptor.getJavaClass()).getConversionManager().convertObject(this.writeLockValue, ClassConstants.BIGDECIMAL);
         }
     }
 

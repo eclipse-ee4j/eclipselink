@@ -21,6 +21,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.jpa.JpaEntityManager;
+
 /**
  * EmployeeService session bean.
  */
@@ -31,31 +34,67 @@ public class EmployeeServiceBean implements EmployeeService {
     protected EntityManager entityManager;
 
     public List findAll() {
-        Query query = entityManager.createQuery("Select e from Employee e");
+        Query query = this.entityManager.createQuery("Select e from Employee e");
         return query.getResultList();
     }
     
     public Employee findById(long id) {
-        Employee employee = entityManager.find(Employee.class, id);
+        Employee employee = this.entityManager.find(Employee.class, id);
         employee.getAddress();
         return employee;
     }
     
     public Employee fetchById(long id) {
-        Employee employee = entityManager.find(Employee.class, id);
+        Employee employee = this.entityManager.find(Employee.class, id);
         employee.getAddress();
         employee.getManager();
         return employee;
     }
     
     public void update(Employee employee) {
-        entityManager.merge(employee);
+        this.entityManager.merge(employee);
     }
     
     public long insert(Employee employee) {
-        entityManager.persist(employee);
-        entityManager.flush();
+        this.entityManager.persist(employee);
+        this.entityManager.flush();
         return employee.getId();
     }
     
+    public void setup() {
+        // Populate database.
+        new EmployeeTableCreator().replaceTables(((JpaEntityManager)this.entityManager.getDelegate()).getServerSession());
+        
+        for (int j = 0; j < 1000; j++) {
+            Employee empInsert = new Employee();
+            empInsert.setFirstName("Brendan");
+            empInsert.setMale();
+            empInsert.setLastName("" + j + "");
+            empInsert.setSalary(100000);
+            EmploymentPeriod employmentPeriod = new EmploymentPeriod();
+            java.sql.Date startDate = Helper.dateFromString("1901-12-31");
+            java.sql.Date endDate = Helper.dateFromString("1895-01-01");
+            employmentPeriod.setEndDate(startDate);
+            employmentPeriod.setStartDate(endDate);
+            empInsert.setPeriod(employmentPeriod);
+            empInsert.setAddress(new Address());
+            empInsert.getAddress().setCity("Nepean");
+            empInsert.getAddress().setPostalCode("N5J2N5");
+            empInsert.getAddress().setProvince("ON");
+            empInsert.getAddress().setStreet("1111 Mountain Blvd. Floor 13, suite " + j);
+            empInsert.getAddress().setCountry("Canada");
+            empInsert.addPhoneNumber(new PhoneNumber("Work Fax", "613", "2255943"));
+            empInsert.addPhoneNumber(new PhoneNumber("Home", "613", "2224599"));
+            this.entityManager.persist(empInsert);
+        }
+
+        for (int j = 0; j < 50; j++) {
+            Project project = new SmallProject();
+            project.setName("Tracker");
+            this.entityManager.persist(project);
+            project = new LargeProject();
+            project.setName("Tracker");
+            this.entityManager.persist(project);
+        }
+    }
 }

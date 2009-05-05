@@ -305,7 +305,9 @@ public class MetadataProcessor {
                     URL nextURL = mappingFileURLs.nextElement();
 
                     if (mappingFileURLs.hasMoreElements()) {
-                        handleORMException(ValidationException.nonUniqueMappingFileName(puInfo.getPersistenceUnitName(), mappingFileName), mappingFileName, throwExceptionOnFail);
+                        // Switched to warning, same file can be on the classpath twice in some deployments,
+                        // should not be an error.
+                        logThrowable(ValidationException.nonUniqueMappingFileName(puInfo.getPersistenceUnitName(), mappingFileName));
                     }
                     
                     // Read the document through OX and add it to the project.

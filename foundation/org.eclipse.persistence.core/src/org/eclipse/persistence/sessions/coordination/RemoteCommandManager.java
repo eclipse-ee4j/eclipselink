@@ -28,8 +28,7 @@ import java.net.InetAddress;
 
 /**
  * <p>
- * <b>Purpose</b>: Provide a CommandManager implementation that will be used by both
- * TopLink and non-TopLink applications.
+ * <b>Purpose</b>: Provide a CommandManager implementation for caceh coordination.
  * <p>
  * <b>Description</b>: A RemoteCommandManager (or RCM) instance is the primary component
  * of an RCM service instance. It manages the other components of the service, and
@@ -44,7 +43,7 @@ import java.net.InetAddress;
  * channels may operate on the same or on different multicast groups.
  * <p>
  * An RCM instance knows about other instances in the cluster through its DiscoveryManager.
- * Its TransportManager is repsonsible for setting up the connections to other instances
+ * Its TransportManager is responsible for setting up the connections to other instances
  * once they are discovered.
  * <p>
  * An RCM is instructed to "propagate", or execute on all remote service instances
@@ -53,8 +52,8 @@ import java.net.InetAddress;
  * then it passes the command off to the CommandProcessor for the processing of the
  * command to occur. CommandProcessors pass commands to the RCM as an Object (in a
  * format that may be specific to the application) and the RCM uses its CommandConverter
- * to convert it to a TopLink Command object before sending the Command off to the
- * cluster. Similarly, when a TopLink Command object is received then the RCM invokes
+ * to convert it to a EclipseLink Command object before sending the Command off to the
+ * cluster. Similarly, when a EclipseLink Command object is received then the RCM invokes
  * its CommandConverter to convert the object into the application format that will be
  * passed to the CommandProcessor to process the command.
  *
@@ -68,7 +67,7 @@ import java.net.InetAddress;
  * @since OracleAS TopLink 10<i>g</i> (9.0.4)
  */
 public class RemoteCommandManager implements org.eclipse.persistence.sessions.coordination.CommandManager {
-    public static final String DEFAULT_CHANNEL = "TopLinkCommandChannel";
+    public static final String DEFAULT_CHANNEL = "EclipseLinkCommandChannel";
     public static final boolean DEFAULT_ASYNCHRONOUS_MODE = true;
 
     /** Uniquely identifies this service in the cluster */
@@ -83,14 +82,14 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
     /** Invoked to process a command when it is received from the cluster */
     protected CommandProcessor commandProcessor;
 
-    /** Used for converting commands between TopLink Command and app command formats */
+    /** Used for converting commands between EclipseLink Command and app command formats */
     protected CommandConverter commandConverter;
 
     /** Determines whether propagation should be synchronous or asynchronous */
     protected boolean isAsynchronous;
 
     /** Determines whether profiling command should be send */
-    protected boolean isTopLinkSession;
+    protected boolean isEclipseLinkSession;
 
     /** Uniquely identifies ServerPlatform in the cluster */
     protected ServerPlatform serverPlatform;
@@ -102,7 +101,7 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
         this.serviceId = new ServiceId();
 
         // BUG - 3824040 we must call the setCommandProcessor method to
-        // ensure the isTopLinkSession flag is set correctly.
+        // ensure the isEclipseLinkSession flag is set correctly.
         setCommandProcessor(commandProcessor);
 
         // Set default values
@@ -124,7 +123,7 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
     /**
      * PUBLIC:
      * Initialize the remote command manager. This will also trigger the
-     * DiscoveryManager to start establishing the TopLink cluster.
+     * DiscoveryManager to start establishing the EclipseLink cluster.
      */
     public void initialize() {
         Object[] args = { this.getServiceId() };
@@ -185,9 +184,9 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
     /**
      * ADVANCED:
      * Propagate a remote command to all remote RCM services participating
-     * in the TopLink cluster.
+     * in the EclipseLink cluster.
      *
-     * @param command An object representing a TopLink command
+     * @param command An object representing a EclipseLink command
      */
     public void propagateCommand(Object command) {
         Command newCommand;
@@ -201,7 +200,7 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
             if (isCommandProcessorASession()) {
                 getCommandProcessor().processCommand(new ProfileMessageSentCommand());
             }
-            newCommand = commandConverter.convertToTopLinkCommand(command);
+            newCommand = commandConverter.convertToEclipseLinkCommand(command);
         } else if (command instanceof Command) {
             // If converter is not set then maybe it just doesn't need converting
             newCommand = (Command)command;
@@ -266,7 +265,7 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
     public void setCommandProcessor(CommandProcessor newCommandProcessor) {
         commandProcessor = newCommandProcessor;
         if (newCommandProcessor instanceof Session) {
-            isTopLinkSession = true;
+            isEclipseLinkSession = true;
         }
     }
 
@@ -307,7 +306,7 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
 
     /**
      * PUBLIC:
-     * Return the converter instance used to convert between TopLink Command
+     * Return the converter instance used to convert between EclipseLink Command
      * objects and an application command format.
      */
     public CommandConverter getCommandConverter() {
@@ -317,9 +316,9 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
     /**
      * ADVANCED:
      * Set the converter instance that will be invoked by this CommandProcessor
-     * to convert commands from their application command format into TopLink
+     * to convert commands from their application command format into EclipseLink
      * Command objects before being propagated to remote command manager services.
-     * The converter will also be invoked to convert TopLink Command objects into
+     * The converter will also be invoked to convert EclipseLink Command objects into
      * application format before being sent to the CommandProcessor for execution.
      */
     public void setCommandConverter(CommandConverter newCommandConverter) {
@@ -424,7 +423,7 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
      * Return whether this command manager should process profile commands
      */
     public boolean isCommandProcessorASession() {
-        return this.isTopLinkSession;
+        return this.isEclipseLinkSession;
     }
 
     /**
@@ -472,7 +471,7 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
     /**
      * ADVANCED:
      * Allow user to replace the $HOST subString of the local host URL with the user user input at runtime.
-     * By default, TopLink will try to discovery the local host IP and may fail due to security or network restrictions.
+     * By default, EclipseLink will try to discovery the local host IP and may fail due to security or network restrictions.
      * In this case, user can call this API to specify the IP address or host name during pre-login session event or before session login.
      * Example:
      * If input is 145.23.127.79, the local host URL of ormi://$HOST:2971:/app_name will become ormi://145.23.127.79:2971:/app_name
@@ -516,8 +515,8 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
 
     /**
      * PUBLIC:
-     * The ServerPlatform must be set manually when the RemoteCommandManager'CommandProcessor is not TopLink Session.
-     * When the CommandProcessor is a TopLink Session, the ServerPlatform is automatically gotten from the Session.
+     * The ServerPlatform must be set manually when the RemoteCommandManager'CommandProcessor is not EclipseLink Session.
+     * When the CommandProcessor is a EclipseLink Session, the ServerPlatform is automatically gotten from the Session.
      */
     public void setServerPlatform(ServerPlatform theServerPlatform) {
         this.serverPlatform = theServerPlatform;

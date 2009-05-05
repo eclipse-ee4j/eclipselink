@@ -14,8 +14,6 @@ package org.eclipse.persistence.internal.sessions;
 
 import java.util.*;
 
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-
 /**
  * This change record records the changes for AggregateCollectionMapping.
  */
@@ -61,30 +59,6 @@ public class AggregateCollectionChangeRecord extends CollectionChangeRecord impl
         for (int index = 0; index < this.getChangedValues().size(); ++index) {
             ((ObjectChangeSet)this.getChangedValues().get(index)).updateReferences(mergeToChangeSet, mergeFromChangeSet);
             ;
-        }
-    }
-
-    /**
-     * INTERNAL:
-     * Ensure this change record is ready to by sent remotely for cache synchronization
-     * In general, this means setting the CacheSynchronizationType on any ObjectChangeSets
-     * associated with this ChangeRecord
-     */
-    public void prepareForSynchronization(AbstractSession session) {
-        //these two sets are calculated to detect private ownership removal but will cause
-        //errors (null pointers as the Aggregate ObjectChangeSet  writeCompleteChangeSet is called and the 
-        // descriptor is not initialized)during cache co-ordination if left in place.
-        getAddObjectList().clear();
-        getRemoveObjectList().clear();
-        Enumeration changes = getChangedValues().elements();
-        while (changes.hasMoreElements()) {
-            ObjectChangeSet changedObject = (ObjectChangeSet)changes.nextElement();
-            if (changedObject.getSynchronizationType() == ClassDescriptor.UNDEFINED_OBJECT_CHANGE_BEHAVIOR) {
-                ClassDescriptor descriptor = session.getDescriptor(changedObject.getClassType(session));
-                int syncType = descriptor.getCacheSynchronizationType();
-                changedObject.setSynchronizationType(syncType);
-                changedObject.prepareChangeRecordsForSynchronization(session);
-            }
         }
     }
 

@@ -231,7 +231,7 @@ public class RMITransportManager extends TransportManager {
     /**
      * ADVANCED:
      * Remove the local connection from remote accesses.  The implementation removes the local connection from JNDI or RMI registry and set it to null.
-     * This method is invoked internally by TopLink when the RCM is shutdown and should not be invoked by user's application.
+     * This method is invoked internally by EclipseLink when the RCM is shutdown and should not be invoked by user's application.
      */
     public void removeLocalConnection() {
         String unbindName = null;
@@ -271,7 +271,7 @@ public class RMITransportManager extends TransportManager {
     }
 
     /** INTERNAL
-     *  set RMI ocver IIOP
+     *  set RMI over IIOP
      */
     public void setIsRMIOverIIOP(boolean value) {
         this.isRMIOverIIOP = value;

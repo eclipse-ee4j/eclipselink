@@ -27,4 +27,6 @@ public interface EmployeeService {
     void update(Employee employee);
     
     long insert(Employee employee);
+    
+    void setup();
 }

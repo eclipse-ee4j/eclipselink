@@ -168,6 +168,7 @@ public class PersistenceUnitProperties {
      * This improves sequence allocation by allocating sequencing outside the current transaction.
      * This can be used with internal or external (DataSource) connection pooling,
      * external must provide a non-jta-datasource.
+     * A sequence connection pool is only used/necessary when using TABLE sequencing.
      * Valid values are case-insensitive "false" and "true"; "false" is default.
      */
     public static final String JDBC_SEQUENCE_CONNECTION_POOL = "eclipselink.jdbc.sequence-connection-pool";
@@ -625,6 +626,159 @@ public class PersistenceUnitProperties {
      */
     public static final String ORACLE_PROXY_TYPE = "eclipselink.oracle.proxy-type";
 
+    /**
+     * Configures cache coordination for a clustered environment.
+     * This needs to be set on every persistence unit/session in the cluster.
+     * Depending on the cache configuration for each descriptor, this will broadcast
+     * cache updates or inserts to the cluster to update or invalidate each session's cache.
+     * Either "jms" or "rmi", by default the cache is not coordinated.
+     * @see org.eclipse.persistence.annotations.Cache
+     * @see org.eclipse.persistence.sessions.coordination.RemoteCommandManager#setTransportManager(org.eclipse.persistence.sessions.coordination.TransportManager)
+     */
+    public static final String COORDINATION_PROTOCOL = "eclipselink.cache.coordination.protocol";
+    
+    /**
+     * Configures cache coordination for a clustered environment.
+     * Only used for JMS coordination.
+     * Sets the URL for the JMS server hosting the topic.
+     * @see COORDINATION_PROTOCOL
+     * @see org.eclipse.persistence.sessions.coordination.jms.JMSTopicTransportManager#setTopicHostUrl(String)
+     */
+    public static final String COORDINATION_JMS_HOST = "eclipselink.cache.coordination.jms.host";
+    
+    /**
+     * Configures cache coordination for a clustered environment.
+     * Only used for JMS coordination.
+     * Sets the JMS topic name.
+     * @see COORDINATION_PROTOCOL
+     * @see org.eclipse.persistence.sessions.coordination.broadcast.BroadcastTransportManager#setTopicName(String)
+     */
+    public static final String COORDINATION_JMS_TOPIC = "eclipselink.cache.coordination.jms.topic";
+    
+    /**
+     * Configures cache coordination for a clustered environment.
+     * Only used for JMS coordination.
+     * Sets the JMS topic connection factory name.
+     * @see COORDINATION_PROTOCOL
+     * @see org.eclipse.persistence.sessions.coordination.broadcast.BroadcastTransportManager#setTopicConnectionFactoryName(String)
+     */
+    public static final String COORDINATION_JMS_FACTORY = "eclipselink.cache.coordination.jms.factory";
+     
+    /**
+     * Configures cache coordination for a clustered environment.
+     * Only used for RMI coordination.
+     * Sets the number of milliseconds to wait for announcements from other cluster members on startup.
+     * @see COORDINATION_PROTOCOL
+     * @see org.eclipse.persistence.sessions.coordination.DiscoveryManager#setAnnouncementDelay(int)
+     */
+    public static final String COORDINATION_RMI_ANNOUNCEMENT_DELAY = "eclipselink.cache.coordination.rmi.announcement-delay";
+
+    /**
+     * Configures cache coordination for a clustered environment.
+     * Only used for RMI coordination.
+     * Sets the multicast socket group address.
+     * The multicast group is used to find other members of the cluster.
+     * @see COORDINATION_PROTOCOL
+     * @see org.eclipse.persistence.sessions.coordination.DiscoveryManager#setMulticastGroupAddress(String)
+     */
+    public static final String COORDINATION_RMI_MULTICAST_GROUP = "eclipselink.cache.coordination.rmi.multicast-group";
+
+    /**
+     * Configures cache coordination for a clustered environment.
+     * Only used for RMI coordination.
+     * Sets the multicast socket group port.
+     * The multicast group port is used to find other members of the cluster.
+     * @see COORDINATION_PROTOCOL
+     * @see org.eclipse.persistence.sessions.coordination.DiscoveryManager#setMulticastPort(int)
+     */
+    public static final String COORDINATION_RMI_MULTICAST_GROUP_PORT = "eclipselink.cache.coordination.rmi.multicast-group.port";
+
+    /**
+     * Configures cache coordination for a clustered environment.
+     * Only used for RMI coordination.
+     * Sets the multicast socket packet time to live.
+     * The multicast group is used to find other members of the cluster.
+     * Set the number of hops the data packets of the session announcement will take before expiring.
+     * The default is 2, a hub and an interface card to prevent the data packets from leaving the local network.
+     *
+     * Note that if sessions are hosted on different LANs that are part of WAN, the announcement sending by one session
+     * may not reach other sessions.  In this case, consult your network administrator for the right time-to-live value
+     * or test your network by increase the value until sessions receive announcement sent by others.
+     * @see COORDINATION_PROTOCOL
+     * @see org.eclipse.persistence.sessions.coordination.DiscoveryManager#setPacketTimeToLive(int)
+     */
+    public static final String COORDINATION_RMI_PACKET_TIME_TO_LIVE = "eclipselink.cache.coordination.rmi.packet-time-to-live";
+
+    /**
+     * Configures cache coordination for a clustered environment.
+     * Only used for RMI coordination.
+     * Sets the URL of the host server.
+     * This is the URL that other cluster member should use to connect to this host.
+     * @see COORDINATION_PROTOCOL
+     * @see org.eclipse.persistence.sessions.coordination.RemoteCommandManager#setUrl(String)
+     */
+    public static final String COORDINATION_RMI_URL = "eclipselink.cache.coordination.rmi.url";
+
+    /**
+     * Configures cache coordination for a clustered environment.
+     * Set the naming service to use, either "jndi" or "rmi".
+     * @see COORDINATION_PROTOCOL
+     * @see org.eclipse.persistence.sessions.coordination.TransportManager#setNamingServiceType(int)
+     */
+    public static final String COORDINATION_NAMING_SERVICE = "eclipselink.cache.coordination.naming-service";
+
+    /**
+     * Configures cache coordination for a clustered environment.
+     * Set the JNDI naming service user name.
+     * @see COORDINATION_PROTOCOL
+     * @see org.eclipse.persistence.sessions.coordination.TransportManager#setUserName(String)
+     */
+    public static final String COORDINATION_JNDI_USER = "eclipselink.cache.coordination.jndi.user";
+
+    /**
+     * Configures cache coordination for a clustered environment.
+     * Set the JNDI naming service user name.
+     * @see COORDINATION_PROTOCOL
+     * @see org.eclipse.persistence.sessions.coordination.TransportManager#setPassword(String)
+     */
+    public static final String COORDINATION_JNDI_PASSWORD = "eclipselink.cache.coordination.jndi.password";
+
+    /**
+     * Configures cache coordination for a clustered environment.
+     * Set the JNDI InitialContext factory.
+     * @see COORDINATION_PROTOCOL
+     * @see org.eclipse.persistence.sessions.coordination.TransportManager#setInitialContextFactoryName(String)
+     */
+    public static final String COORDINATION_JNDI_CONTEXT = "eclipselink.cache.coordination.jndi.initial-context-factory";
+
+    /**
+     * Configures cache coordination for a clustered environment.
+     * Set if the connection should be removed if a communication error occurs when coordinating with it.
+     * This is normally used for RMI coordination in case a server goes down (it will reconnect when it comes back up).
+     * @see COORDINATION_PROTOCOL
+     * @see org.eclipse.persistence.sessions.coordination.TransportManager#setShouldRemoveConnectionOnError(boolean)
+     */
+    public static final String COORDINATION_REMOVE_CONNECTION = "eclipselink.cache.coordination.remove-connection-on-error";
+
+    /**
+     * Configures cache coordination for a clustered environment.
+     * Set if the coordination broadcast should occur asynchronously with the committing thread.
+     * This means the coordination will be complete before the thread returns from the commit of the transaction.
+     * Note that JMS is always asynchronous.  By default RMI is asynchronous.
+     * @see COORDINATION_PROTOCOL
+     * @see org.eclipse.persistence.sessions.coordination.RemoteCommandManager#setShouldPropagateAsynchronously(boolean)
+     */
+    public static final String COORDINATION_ASYNCH = "eclipselink.cache.coordination.propagate-asynchronously";
+
+    /**
+     * Configures cache coordination for a clustered environment.
+     * Set if the channel for this cluster.
+     * All server's in the same channel will be coordinated.
+     * @see COORDINATION_PROTOCOL
+     * @see org.eclipse.persistence.sessions.coordination.RemoteCommandManager#setChannel(String)
+     */
+    public static final String COORDINATION_CHANNEL = "eclipselink.cache.coordination.channel";
+      
     /** INTERNAL: The following properties will not be displayed through logging but instead have an alternate value shown in the log. */
     public static final Map<String, String> PROPERTY_LOG_OVERRIDES = new HashMap<String, String>(1);
     

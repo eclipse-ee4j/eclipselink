@@ -33,7 +33,7 @@ import org.eclipse.persistence.logging.SessionLog;
  * INTERNAL:
  * <p>
  * <b>Purpose</b>: Acquires all required locks for a particular merge process.
- * Implements a deadlock avoidance algorithm to prevent concurrent merge conflicts
+ * Implements a deadlock avoidance algorithm to prevent concurrent merge conflicts.
  *
  * <p>
  * <b>Responsibilities</b>:
@@ -42,10 +42,13 @@ import org.eclipse.persistence.logging.SessionLog;
  * <li> Provides deadlock avoidance behavior.
  * <li> Releases locks for writing threads.
  * </ul>
- *  @author Gordon Yorke
- *  @since 10.0.3
+ * @author Gordon Yorke
+ * @since 10.0.3
  */
 public class WriteLockManager {
+
+    // this will allow us to prevent a readlock thread from looping forever.
+    public static int MAXTRIES = 10000;
 
     /* This attribute stores the list of threads that have had a problem acquiring locks */
     /*  the first element in this list will be the prevailing thread */
@@ -54,9 +57,6 @@ public class WriteLockManager {
     public WriteLockManager() {
         this.prevailingQueue = new ExposedNodeLinkedList();
     }
-
-    // this will allow us to prevent a readlock thread from looping forever.
-    public static int MAXTRIES = 10000;
 
     /**
      * INTERNAL:
@@ -244,7 +244,6 @@ public class WriteLockManager {
             return;
         }
         boolean locksToAcquire = true;
-        boolean isForDistributedMerge = false;
 
         //while that thread has locks to acquire continue to loop.
         try {
@@ -253,64 +252,52 @@ public class WriteLockManager {
             mergeManager.setLockThread(Thread.currentThread());
             
             AbstractSession session = mergeManager.getSession();
+            // If the session in the mergemanager is not a unit of work then the
+            // merge is of a changeSet into a distributed session.
             if (session.isUnitOfWork()) {
                 session = ((UnitOfWorkImpl)session).getParent();
-            } else {
-                // if the session in the mergemanager is not a unit of work then the
-                //merge is of a changeSet into a distributed session.
-                isForDistributedMerge = true;
             }
             while (locksToAcquire) {
                 //lets assume all locks will be acquired
                 locksToAcquire = false;
                 //first access the changeSet and begin to acquire locks
-                Iterator classIterator = changeSet.getObjectChanges().keySet().iterator();
-                while (classIterator.hasNext()) {
-                    // Bug 3294426 - objectChanges is now indexed by class name instead of class
-                    String objectClassName = (String)classIterator.next();
-                    Hashtable changeSetTable = (Hashtable)changeSet.getObjectChanges().get(objectClassName);
-
-                    //the order here does not matter as the deadlock avoidance code will handle any conflicts and maintaining
-                    //order would be costly
-                    Iterator changeSetIterator = changeSetTable.keySet().iterator();
-
-                    // Perf: Bug 3324418 - Reduce the number of Class.forName() calls
-                    Class objectClass = null;
-                    while (changeSetIterator.hasNext()) {
-                        ObjectChangeSet objectChangeSet = (ObjectChangeSet)changeSetIterator.next();
+                for (Map<ObjectChangeSet, ObjectChangeSet> changeSets : changeSet.getObjectChanges().values()) {
+                    ClassDescriptor descriptor = null;
+                    for (ObjectChangeSet objectChangeSet : changeSets.values()) {
                         if (objectChangeSet.getCacheKey() == null) {
                             //skip this process as we will be unable to acquire the correct cachekey anyway
                             //this is a new object with identity after write sequencing
                             continue;
                         }
-                        if (objectClass == null) {
-                            objectClass = objectChangeSet.getClassType(session);
+                        if (descriptor == null) {
+                            descriptor = objectChangeSet.getDescriptor();
+                            // Maybe null for distributed merge.
+                            if (descriptor == null) {
+                                descriptor = session.getDescriptor(objectChangeSet.getClassType(session));
+                            }
                         }
-                        // It would be so much nicer if the change set was keyed by the class instead of class name,
-                        // so this could be done once.  We should key on class, and only convert to keying on name when broadcasting changes.
-                        ClassDescriptor descriptor = session.getDescriptor(objectClass);
                         // PERF: Do not merge nor lock into the session cache if descriptor set to unit of work isolated.
                         if (descriptor.shouldIsolateObjectsInUnitOfWork()) {
                             break;
                         }
-                        CacheKey activeCacheKey = attemptToAcquireLock(objectClass, objectChangeSet.getCacheKey(), session);
+                        CacheKey activeCacheKey = attemptToAcquireLock(descriptor, objectChangeSet.getCacheKey(), session);
                         if (activeCacheKey == null) {
                             // if cacheKey is null then the lock was not available no need to synchronize this block,because if the
                             // check fails then this thread will just return to the queue until it gets woken up.
                             if (this.prevailingQueue.getFirst() == mergeManager) {
                                 // wait on this object until it is free,  or until wait time expires because
                                 // this thread is the prevailing thread
-                                activeCacheKey = waitOnObjectLock(objectClass, objectChangeSet.getCacheKey(), session,(int)Math.round((Math.random()*500)));
+                                activeCacheKey = waitOnObjectLock(descriptor, objectChangeSet.getCacheKey(), session, (int)Math.round((Math.random()*500)));
                             }
                             if (activeCacheKey == null) {
                                 // failed to acquire lock, release all acquired
                                 // locks and place thread on waiting list
                                 releaseAllAcquiredLocks(mergeManager);
                                 // get cacheKey
-                                activeCacheKey = session.getIdentityMapAccessorInstance().getCacheKeyForObjectForLock(objectChangeSet.getCacheKey().getKey(), objectClass, descriptor);
+                                activeCacheKey = session.getIdentityMapAccessorInstance().getCacheKeyForObjectForLock(objectChangeSet.getCacheKey().getKey(), descriptor.getJavaClass(), descriptor);
                                 if (session.shouldLog(SessionLog.FINER, SessionLog.CACHE)) {
                                     Object[] params = new Object[3];
-                                    params[0] = objectClass;
+                                    params[0] = descriptor.getJavaClass();
                                     params[1] = objectChangeSet.getCacheKey() != null ? objectChangeSet.getCacheKey().getKey() : new Vector();
                                     params[2] = Thread.currentThread().getName();
                                     session.log(SessionLog.FINER, SessionLog.CACHE, "dead_lock_encountered_on_write_no_cachekey", params, null, true);
@@ -379,13 +366,13 @@ public class WriteLockManager {
         }
     }
 
-	/**
-	 * INTERNAL:
-	 * This method will be called by a merging thread that is attempting to lock
-	 * a new object that was not locked previously.  Unlike the other methods
-	 * within this class this method will lock only this object.
-	 */
-	public Object appendLock(Vector primaryKeys, Object objectToLock, ClassDescriptor descriptor, MergeManager mergeManager, AbstractSession session) {
+    /**
+     * INTERNAL:
+     * This method will be called by a merging thread that is attempting to lock
+     * a new object that was not locked previously.  Unlike the other methods
+     * within this class this method will lock only this object.
+     */
+    public Object appendLock(Vector primaryKeys, Object objectToLock, ClassDescriptor descriptor, MergeManager mergeManager, AbstractSession session) {
         CacheKey lockedCacheKey = session.getIdentityMapAccessorInstance().acquireLockNoWait(primaryKeys, descriptor.getJavaClass(), true, descriptor);
         if (lockedCacheKey == null) {
             session.getIdentityMapAccessorInstance().getWriteLockManager().transitionToDeferredLocks(mergeManager);
@@ -407,13 +394,13 @@ public class WriteLockManager {
         }
     }
 	
-	/**
+    /**
      * INTERNAL:
      * This method performs the operations of finding the cacheKey and locking it if possible.
      * Returns True if the lock was acquired, false otherwise
      */
-    protected CacheKey attemptToAcquireLock(Class objectClass, CacheKey cacheKey, AbstractSession session) {
-        return session.getIdentityMapAccessorInstance().acquireLockNoWait(cacheKey.getKey(), objectClass, true, session.getDescriptor(objectClass));
+    protected CacheKey attemptToAcquireLock(ClassDescriptor descriptor, CacheKey cacheKey, AbstractSession session) {
+        return session.getIdentityMapAccessorInstance().acquireLockNoWait(cacheKey.getKey(), descriptor.getJavaClass(), true, descriptor);
     }
 
     /**
@@ -474,11 +461,11 @@ public class WriteLockManager {
     }
 
     /**
-      * INTERNAL:
-      * This method performs the operations of finding the cacheKey and locking it if possible.
-      * Waits until the lock can be acquired
-      */
-    protected CacheKey waitOnObjectLock(Class objectClass, CacheKey cacheKey, AbstractSession session, int waitTime) {
-        return session.getIdentityMapAccessorInstance().acquireLockWithWait(cacheKey.getKey(), objectClass, true, session.getDescriptor(objectClass), waitTime);
+     * INTERNAL:
+     * This method performs the operations of finding the cacheKey and locking it if possible.
+     * Waits until the lock can be acquired
+     */
+    protected CacheKey waitOnObjectLock(ClassDescriptor descriptor, CacheKey cacheKey, AbstractSession session, int waitTime) {
+        return session.getIdentityMapAccessorInstance().acquireLockWithWait(cacheKey.getKey(), descriptor.getJavaClass(), true, descriptor, waitTime);
     }
 }

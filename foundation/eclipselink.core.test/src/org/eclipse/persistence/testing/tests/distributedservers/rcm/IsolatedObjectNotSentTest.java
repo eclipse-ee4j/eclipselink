@@ -16,12 +16,12 @@ import java.util.Hashtable;
 
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.sessions.SessionEvent;
+import org.eclipse.persistence.sessions.SessionEventAdapter;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.tests.distributedservers.DistributedServer;
 import org.eclipse.persistence.testing.tests.distributedservers.DistributedServersModel;
 import org.eclipse.persistence.testing.tests.isolatedsession.IsolatedEmployee;
-import org.eclipse.persistence.testing.framework.TestErrorException;
-
 
 /**
  * Bug 3587273
@@ -31,6 +31,8 @@ public class IsolatedObjectNotSentTest extends ConfigurableCacheSyncDistributedT
     protected IsolatedEmployee employee = null;
     protected Expression expression = null;
     protected IsolatedEmployee distributedEmployee = null;
+    public boolean sentChanges = false;
+    protected SessionEventAdapter listener;
 
     public IsolatedObjectNotSentTest() {
         setDescription("Test to ensure that objects that are set as isolated will not be sent over Cache Synchronization.");
@@ -43,26 +45,42 @@ public class IsolatedObjectNotSentTest extends ConfigurableCacheSyncDistributedT
     public void setup() {
         super.setup();
         ExpressionBuilder employees = new ExpressionBuilder();
-        expression = employees.get("firstName").equal("Andy");
-        expression = expression.and(employees.get("lastName").equal("McDurmont"));
+        this.expression = employees.get("firstName").equal("Andy");
+        this.expression = this.expression.and(employees.get("lastName").equal("McDurmont"));
         // ensure our employee is in one of the distributed caches
         DistributedServer server = (DistributedServer)DistributedServersModel.getDistributedServers().get(0);
-        distributedEmployee = (IsolatedEmployee)server.getDistributedSession().readObject(IsolatedEmployee.class, expression);
+        this.distributedEmployee = (IsolatedEmployee)server.getDistributedSession().readObject(IsolatedEmployee.class, this.expression);
+        this.listener = new SessionEventAdapter() {
+            public void preMergeUnitOfWorkChangeSet(SessionEvent event) {
+                sentChanges = true;
+            }
+        };
+        server.getDistributedSession().getEventManager().addListener(this.listener);
+        this.sentChanges = false;
     }
 
     public void test() {
-        employee = (IsolatedEmployee)getSession().readObject(IsolatedEmployee.class, expression);
+        this.employee = (IsolatedEmployee)getSession().readObject(IsolatedEmployee.class, this.expression);
 
         UnitOfWork uow = getSession().acquireUnitOfWork();
-        IsolatedEmployee employeeClone = (IsolatedEmployee)uow.registerObject(employee);
+        IsolatedEmployee employeeClone = (IsolatedEmployee)uow.registerObject(this.employee);
         employeeClone.setSalary(employeeClone.getSalary() + 1000);
         uow.commit();
     }
 
     public void verify() {
-        distributedEmployee = (IsolatedEmployee)getObjectFromDistributedCache(employee);
-        if (distributedEmployee.getSalary() == employee.getSalary()) {
-            throw new TestErrorException("The employee was sent by cache synchronization, but should not have been since it is isolated.");
+        this.distributedEmployee = (IsolatedEmployee)getObjectFromDistributedCache(this.employee);
+        if (this.distributedEmployee.getSalary() == this.employee.getSalary()) {
+            throwError("The employee was sent by cache synchronization, but should not have been since it is isolated.");
         }
+        if (this.sentChanges) {
+            throwError("Cache coordintion was sent even though no object were synchronized.");
+        }
+    }
+    
+    public void reset() {
+        super.reset();
+        DistributedServer server = (DistributedServer)DistributedServersModel.getDistributedServers().get(0);
+        server.getDistributedSession().getEventManager().removeListener(this.listener);
     }
 }

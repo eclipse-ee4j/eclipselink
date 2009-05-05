@@ -12,6 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.validation;
 
+import java.util.Vector;
+
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
@@ -70,7 +72,7 @@ public class VariableOneToOneMappingIsNotDefinedProperlyTest extends ExceptionTe
         if (testMode == 0) {
             //nothing extra needed
         } else if (testMode == 1) {
-            ObjectChangeSet changeSet = new ObjectChangeSet(actor, new UnitOfWorkChangeSet(), true);
+            ObjectChangeSet changeSet = new ObjectChangeSet(new Vector(), descriptor, actor, new UnitOfWorkChangeSet(), true);
             changeRecord = new ObjectReferenceChangeRecord(changeSet);
             changeRecord.setNewValue(changeSet);
         } else if (testMode == 2) {

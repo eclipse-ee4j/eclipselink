@@ -180,6 +180,15 @@ public class JPAConcurrencyComparisonModel extends TestModel {
             empInsert.addPhoneNumber(new PhoneNumber("Home", "613", "2224599"));
             manager.persist(empInsert);
         }
+
+        for (int j = 0; j < 50; j++) {
+            Project project = new SmallProject();
+            project.setName("Tracker");
+            manager.persist(project);
+            project = new LargeProject();
+            project.setName("Tracker");
+            manager.persist(project);
+        }
         
         manager.getTransaction().commit();
         manager.close();

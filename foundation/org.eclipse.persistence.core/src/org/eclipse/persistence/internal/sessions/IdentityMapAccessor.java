@@ -13,6 +13,7 @@
 package org.eclipse.persistence.internal.sessions;
 
 import java.util.*;
+
 import org.eclipse.persistence.internal.identitymaps.*;
 import org.eclipse.persistence.internal.descriptors.*;
 import org.eclipse.persistence.queries.*;
@@ -23,6 +24,8 @@ import org.eclipse.persistence.sessions.Record;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.internal.helper.WriteLockManager;
 import org.eclipse.persistence.sessions.DatabaseRecord;
+import org.eclipse.persistence.sessions.coordination.CommandManager;
+import org.eclipse.persistence.sessions.coordination.MergeChangeSetCommand;
 
 /**
  * INTERNAL:
@@ -489,7 +492,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
     /**
      * ADVANCED:
      * Return the remaining life of this object.  This method is associated with use of
-     * TopLink's cache invalidation feature and returns the difference between the next expiry
+     * cache invalidation and returns the difference between the next expiry
      * time of the object and its read time.  The method will return 0 for invalidated objects.
      */
     public long getRemainingValidTime(Object object) {
@@ -595,42 +598,86 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
 
     /**
      * ADVANCED:
-     * Set an object to be invalid in the TopLink identity maps.
+     * Set an object to be invalid in the cache.
      * If the object does not exist in the cache, this method will return
-     * without any action
+     * without any action.
      */
     public void invalidateObject(Object object) {
-        invalidateObject(getSession().keyFromObject(object), object.getClass());
+        invalidateObject(object, false);
     }
 
     /**
      * ADVANCED:
-     * Set an object to be invalid in the TopLink identity maps.
+     * Set an object to be invalid in the cache.
+     * @param invalidateCluster if true the invalidation will be broadcast to each server in the cluster.
+     */
+    public void invalidateObject(Object object, boolean invalidateCluster) {
+        invalidateObject(getSession().keyFromObject(object), object.getClass(), invalidateCluster);
+    }
+
+    /**
+     * ADVANCED:
+     * Set an object to be invalid in the cache.
      * If the object does not exist in the cache, this method will return
-     * without any action
+     * without any action.
      */
     public void invalidateObject(Vector primaryKey, Class theClass) {
+        invalidateObject(primaryKey, theClass, false);
+    }
+
+    /**
+     * ADVANCED:
+     * Set an object to be invalid in the cache.
+     * @param invalidateCluster if true the invalidation will be broadcast to each server in the cluster.
+     */
+    public void invalidateObject(Vector primaryKey, Class theClass, boolean invalidateCluster) {
         ClassDescriptor descriptor = getSession().getDescriptor(theClass);
         //forward the call to getCacheKeyForObject locally in case subclasses overload
         CacheKey key = this.getCacheKeyForObjectForLock(primaryKey, theClass, descriptor);
         if (key != null) {
             key.setInvalidationState(CacheKey.CACHE_KEY_INVALID);
         }
+        if (invalidateCluster) {
+            CommandManager rcm = getSession().getCommandManager();
+            if (rcm != null) {
+                UnitOfWorkChangeSet changeSet = new UnitOfWorkChangeSet(getSession());
+                ObjectChangeSet objectChangeSet = new ObjectChangeSet(primaryKey, descriptor, null, changeSet, false);
+                objectChangeSet.setSynchronizationType(ClassDescriptor.INVALIDATE_CHANGED_OBJECTS);
+                changeSet.getAllChangeSets().put(objectChangeSet, objectChangeSet);
+                MergeChangeSetCommand command = new MergeChangeSetCommand();
+                command.setChangeSet(changeSet);
+                try {
+                    command.convertChangeSetToByteArray(getSession());
+                } catch (java.io.IOException exception) {
+                    throw CommunicationException.unableToPropagateChanges(command.getServiceId().getId(), exception);
+                }
+                rcm.propagateCommand(command);
+            }
+        }
     }
 
     /**
      * ADVANCED:
-     * Set an object to be invalid in the TopLink identity maps.
+     * Set an object to be invalid in the cache.
      * If the object does not exist in the cache, this method will return
-     * without any action
+     * without any action.
      */
     public void invalidateObject(Record rowContainingPrimaryKey, Class theClass) {
-        invalidateObject(extractPrimaryKeyFromRow(rowContainingPrimaryKey, theClass), theClass);
+        invalidateObject(rowContainingPrimaryKey, theClass, false);
     }
 
     /**
      * ADVANCED:
-     * Set all of the objects from the given Expression to be invalid in the TopLink Identity Maps
+     * Set an object to be invalid in the cache.
+     * @param invalidateCluster if true the invalidation will be broadcast to each server in the cluster.
+     */
+    public void invalidateObject(Record rowContainingPrimaryKey, Class theClass, boolean invalidateCluster) {
+        invalidateObject(extractPrimaryKeyFromRow(rowContainingPrimaryKey, theClass), theClass, invalidateCluster);
+    }
+
+    /**
+     * ADVANCED:
+     * Set all of the objects from the given Expression to be invalid in the cache.
      */
     public void invalidateObjects(Expression selectionCriteria) {
         invalidateObjects(getAllFromIdentityMap(selectionCriteria, selectionCriteria.getBuilder().getQueryClass(), new DatabaseRecord(0)));
@@ -638,30 +685,39 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
 
     /**
      * ADVANCED:
-     * Set all of the objects in the given collection to be invalid in the TopLink Identity Maps
+     * Set all of the objects in the given collection to be invalid in the cache.
      * This method will take no action for any objects in the collection that do not exist in the cache.
      */
-    public void invalidateObjects(Vector collection) {
-        Enumeration enumtr = collection.elements();
-        while (enumtr.hasMoreElements()) {
-            invalidateObject(enumtr.nextElement());
+    public void invalidateObjects(Collection collection) {
+        invalidateObjects(collection, false);
+    }
+    
+    /**
+     * ADVANCED:
+     * Set all of the objects in the given collection to be invalid in the cache.
+     * @param invalidateCluster if true the invalidation will be broadcast to each server in the cluster.
+     */
+    public void invalidateObjects(Collection collection, boolean invalidateCluster) {
+        Iterator iterator = collection.iterator();
+        while (iterator.hasNext()) {
+            invalidateObject(iterator.next(), invalidateCluster);
         }
     }
 
     /**
-       * ADVANCED:
-       * Set all of the objects of a specific class to be invalid in TopLink's identity maps
+     * ADVANCED:
+     * Set all of the objects of a specific class to be invalid in the cache.
      * Will set the recurse on inheritance to true.
-       */
+     */
     public void invalidateClass(Class myClass) {
         invalidateClass(myClass, true);
     }
 
     /**
      * ADVANCED:
-     * Set all of the objects of a specific class to be invalid in TopLink's identity maps.
-    * User can set the recurse flag to false if they do not want to invalidate
-    * all the classes within an inheritance tree.
+     * Set all of the objects of a specific class to be invalid in the cache.
+     * User can set the recurse flag to false if they do not want to invalidate
+     * all the classes within an inheritance tree.
      */
     public void invalidateClass(Class myClass, boolean recurse) {
         //forward the call to getIdentityMap locally in case subclasses overload
@@ -685,8 +741,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
 
     /**
      * ADVANCED:
-     * Set all of the objects from all identity maps to be invalid in TopLink's 
-     * identity maps.
+     * Set all of the objects from all identity maps to be invalid in the cache.
      */
     public void invalidateAll() {
         Iterator identiyMapClasses = getIdentityMapManager().getIdentityMapClasses();
@@ -698,8 +753,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
     
     /**
      * ADVANCED:
-     * Return true if this object is valid in TopLink's identity maps
-     * return false otherwise
+     * Return if this object is valid in the cache.
      */
     public boolean isValid(Object object) {
         return isValid(getSession().keyFromObject(object), object.getClass());
@@ -707,8 +761,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
 
     /**
      * ADVANCED:
-     * Return true if this object is valid in TopLink's identity maps
-     * return false otherwise
+     * Return if this object is valid in the cache.
      */
     public boolean isValid(Vector primaryKey, Class theClass) {
         ClassDescriptor descriptor = getSession().getDescriptor(theClass);
@@ -722,8 +775,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
 
     /**
      * ADVANCED:
-     * Return true if this object is valid in TopLink's identity maps
-     * return false otherwise
+     * Return if this object is valid in the cache.
      */
     public boolean isValid(Record rowContainingPrimaryKey, Class theClass) {
         return isValid(extractPrimaryKeyFromRow(rowContainingPrimaryKey, theClass), theClass);
@@ -764,7 +816,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
 
     /**
      * ADVANCED:
-     * Register the object with the identity map.
+     * Register the object with the cache.
      * The object must always be registered with its version number if optimistic locking is used.
      */
     public Object putInIdentityMap(Object object) {
@@ -773,7 +825,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
 
     /**
      * ADVANCED:
-     * Register the object with the identity map.
+     * Register the object with the cache.
      * The object must always be registered with its version number if optimistic locking is used.
      */
     public Object putInIdentityMap(Object object, Vector key) {
@@ -782,7 +834,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
 
     /**
      * ADVANCED:
-     * Register the object with the identity map.
+     * Register the object with the cache.
      * The object must always be registered with its version number if optimistic locking is used.
      */
     public Object putInIdentityMap(Object object, Vector key, Object writeLockValue) {
@@ -791,9 +843,9 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
 
     /**
      * ADVANCED:
-     * Register the object with the identity map.
+     * Register the object with the cache.
      * The object must always be registered with its version number if optimistic locking is used.
-     * The readTime may also be included in the cache key as it is constructed
+     * The readTime may also be included in the cache key as it is constructed.
      */
     public Object putInIdentityMap(Object object, Vector key, Object writeLockValue, long readTime) {
         ClassDescriptor descriptor = getSession().getDescriptor(object);
@@ -802,9 +854,9 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
     
     /**
      * ADVANCED:
-     * Register the object with the identity map.
+     * Register the object with the cache.
      * The object must always be registered with its version number if optimistic locking is used.
-     * The readTime may also be included in the cache key as it is constructed
+     * The readTime may also be included in the cache key as it is constructed.
      */
     public Object putInIdentityMap(Object object, Vector key, Object writeLockValue, long readTime, ClassDescriptor descriptor) {
         CacheKey cacheKey = internalPutInIdentityMap(object, key, writeLockValue, readTime, descriptor);
@@ -815,18 +867,18 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
     }
 
     /**
-     *  INTERNAL:
- *  Set the results for a query.
- *  Query results are cached based on the parameter values provided to the query
- *  different parameter values access different caches.
- */
+     * INTERNAL:
+     * Set the results for a query.
+     * Query results are cached based on the parameter values provided to the query
+     * different parameter values access different caches.
+     */
     public void putQueryResult(ReadQuery query, Vector parameters, Object results) {
         getIdentityMapManager().putQueryResult(query, parameters, results);
     }
 
     /**
      * INTERNAL:
-     * Register the object with the identity map.
+     * Register the object with the cache.
      * The object must always be registered with its version number if optimistic locking is used.
      * The readTime may also be included in the cache key as it is constructed.
      * Return the cache-key.
@@ -892,7 +944,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
 
     /**
      * ADVANCED:
-     * Update the write lock value in the identity map.
+     * Update the write lock value in the cache.
      */
     public void updateWriteLockValue(Object object, Object writeLockValue) {
         updateWriteLockValue(getSession().keyFromObject(object), object.getClass(), writeLockValue);
@@ -900,7 +952,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
 
     /**
      * ADVANCED:
-     * Update the write lock value in the identity map.
+     * Update the write lock value in the cache.
      */
     public void updateWriteLockValue(Vector primaryKey, Class theClass, Object writeLockValue) {
         getIdentityMapManager().setWriteLockValue(primaryKey, theClass, writeLockValue);

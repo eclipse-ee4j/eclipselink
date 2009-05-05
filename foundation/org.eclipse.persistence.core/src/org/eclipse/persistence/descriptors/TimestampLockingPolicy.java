@@ -154,13 +154,14 @@ public class TimestampLockingPolicy extends VersionLockingPolicy {
         } else {
             writeLockFieldValue = (java.sql.Timestamp)lockValueFromObject(domainObject);
         }
-        if ((writeLockFieldValue != null) && !(newWriteLockFieldValue.after(writeLockFieldValue))) {
+        if ((writeLockFieldValue != null) && (newWriteLockFieldValue.equals(writeLockFieldValue))) {
             return 0;
         }
+        if ((writeLockFieldValue != null) && !(newWriteLockFieldValue.after(writeLockFieldValue))) {
+            return -1;
+        }
 
-        //if the new value is newer then perform the update.  Eventually this will be changed to
-        //record the old version and compare that for equality
-        return 2;
+        return 1;
     }
 
     /**

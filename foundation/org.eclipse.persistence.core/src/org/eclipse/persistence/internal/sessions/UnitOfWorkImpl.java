@@ -45,7 +45,6 @@ import org.eclipse.persistence.sessions.factories.ReferenceMode;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.internal.localization.LoggingLocalization;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.SessionProfiler;
@@ -84,28 +83,28 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
     /** Fix made for weak caches to avoid garbage collection of the originals. **/
     /** As well as used as lookup in merge algorithm for aggregates and others **/
-    protected transient Map cloneToOriginals;
+    protected transient Map<Object, Object> cloneToOriginals;
     protected transient AbstractSession parent;
 
     /** Map of all the clones.  The key contains the clone of the object. */
-    protected Map cloneMapping;
-    protected Map newObjectsCloneToOriginal;
-    protected Map newObjectsOriginalToClone;
-    protected Map deletedObjects;
+    protected Map<Object, Object> cloneMapping;
+    protected Map<Object, Object> newObjectsCloneToOriginal;
+    protected Map<Object, Object> newObjectsOriginalToClone;
+    protected Map<Object, Object> deletedObjects;
 
     /** This member variable contains a copy of all of the clones for this particular UOW */
-    protected Map allClones;
-    protected Map objectsDeletedDuringCommit;
-    protected Map removedObjects;
-    protected Map unregisteredNewObjects;
-    protected Map unregisteredNewObjectsInParent;
-    protected Map unregisteredExistingObjects;
+    protected Map<Object, Object> allClones;
+    protected Map<Object, Object> objectsDeletedDuringCommit;
+    protected Map<Object, Object> removedObjects;
+    protected Map<Object, Object> unregisteredNewObjects;
+    protected Map<Object, Object> unregisteredNewObjectsInParent;
+    protected Map<Object, Object> unregisteredExistingObjects;
 
     // bug # 3228185
     // this collection is used to store the new objects from the parent.
     // They will not be treated as new in the nested unit of work, so we must
     //store them somewhere specifically to lookup later.
-    protected Map newObjectsInParentOriginalToClone;
+    protected Map<Object, Object> newObjectsInParentOriginalToClone;
     
     /** Cache references of private owned objects for the removal of private owned orphans */
     protected Map<DatabaseMapping, Set> privateOwnedObjects;
@@ -113,30 +112,31 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     /** used to store a list of the new objects in the parent */
 
     //cr 2783 
-    protected Map newObjectsInParent;
-    protected Map newAggregates;
+    protected Map<Object, Object> newObjectsInParent;
+    protected Map<Object, Object> newAggregates;
 
     /** This method is used to store the current changeSet for this UnitOfWork. */
     protected UnitOfWorkChangeSet unitOfWorkChangeSet;
 
     /** This is only used for EJB entity beans to manage beans accessed in a transaction context. */
     protected UnitOfWorkImpl containerUnitOfWork;
-    protected Map containerBeans;
+    protected Map<Object, Object> containerBeans;
 
     /** use to track pessimistic locked objects  */
-    protected Map pessimisticLockedObjects;
+    protected Map<Object, Object> pessimisticLockedObjects;
 
     /** Used to store the list of locks that this UnitOfWork has acquired for this merge */
     protected MergeManager lastUsedMergeManager;
 
-    /** When in transaction batch read objects must be remembered on the
-     *  UnitOfWork not on the query.  Query is not safe
+    /**
+     * When in transaction batch read objects must be remembered on the
+     * UnitOfWork not on the query.  Query is not safe
      * and multiple units of work could trigger the same batch value holder.
      */
-    protected Map batchReadObjects;
+    protected Map<Object, Object> batchReadObjects;
 
     /** Read-only class can be used for reference data to avoid cloning when not required. */
-    protected Set readOnlyClasses;
+    protected Set<Class> readOnlyClasses;
 
     /** Flag indicating that the transaction for this UOW was already begun. */
     protected boolean wasTransactionBegunPrematurely;
@@ -185,19 +185,22 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     protected static boolean SmartMerge = false;
 
     /** Kept reference of read lock objects*/
-    protected Map optimisticReadLockObjects;
+    protected Map<Object, Object> optimisticReadLockObjects;
 
     /** Used for read lock to determine update the version field with the same value or increment value */
     public static final String ReadLockOnly = "no update";
     public static final String ReadLockUpdateVersion = "update version";
 
     /** lazy initialization done in storeModifyAllQuery.  For UpdateAllQuery, only clones of all UpdateAllQuery's (deferred and non-deferred) are stored here for validation only.*/
-    protected List modifyAllQueries;
+    protected List<ModifyAllQuery> modifyAllQueries;
 
-    /** Contains deferred ModifyAllQuery's that have translation row for execution only.  At commit their clones will be added to modifyAllQueries for validation afterwards*/
-
-     //Bug4607551 
-    protected List deferredModifyAllQueries;
+    /**
+     * Contains deferred ModifyAllQuery's that have translation row for execution only.
+     * At commit their clones will be added to modifyAllQueries for validation afterwards.
+     * Array of the query (ModifyAllQuery) and translationRow (AbstractRecord).
+     */
+    //Bug4607551 
+    protected List<Object[]> deferredModifyAllQueries;
 
     /**
      * Used during the cloning process to track the recursive depth in.  This will
@@ -260,10 +263,10 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     
     // This is list is used during change tracking to keep hard references
     // to changed objects that may otherwise have been garbage collected.
-    protected IdentityHashSet changeTrackedHardList;
+    protected Set<Object> changeTrackedHardList;
 
     /** Used to store objects already deleted from the db and unregistered */
-    protected Map unregisteredDeletedObjectsCloneToBackupAndOriginal;
+    protected Map<Object, Object> unregisteredDeletedObjectsCloneToBackupAndOriginal;
     
     /** This attribute records when the preDelete stage of Commit has completed */
     protected boolean preDeleteComplete = false;
@@ -3095,13 +3098,14 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     }
 
     /**
-       * INTERNAL:
-       * Will notify all the deferred ModifyAllQuery's (excluding UpdateAllQuery's) and deferred UpdateAllQuery's to execute.
-       */
+     * INTERNAL:
+     * Will notify all the deferred ModifyAllQuery's (excluding UpdateAllQuery's) and deferred UpdateAllQuery's to execute.
+     */
     protected void issueModifyAllQueryList() {
-        if (deferredModifyAllQueries != null) {
-            for (int i = 0; i < deferredModifyAllQueries.size(); i++) {
-                Object[] queries = (Object[])deferredModifyAllQueries.get(i);
+        if (this.deferredModifyAllQueries != null) {
+            int size = this.deferredModifyAllQueries.size();
+            for (int index = 0; index < size; index++) {
+                Object[] queries = this.deferredModifyAllQueries.get(index);
                 ModifyAllQuery query = (ModifyAllQuery)queries[0];
                 AbstractRecord translationRow = (AbstractRecord)queries[1];
                 getParent().executeQuery(query, translationRow);
@@ -3177,58 +3181,39 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                     //If we are merging into the shared cache acquire all required locks before merging.
                     getParent().getIdentityMapAccessorInstance().getWriteLockManager().acquireRequiredLocks(getMergeManager(), (UnitOfWorkChangeSet)getUnitOfWorkChangeSet());
                 }
-                Enumeration changeSetLists = ((UnitOfWorkChangeSet)getUnitOfWorkChangeSet()).getObjectChanges().elements();
-                while (changeSetLists.hasMoreElements()) {
-                    Hashtable objectChangesList = (Hashtable)((Hashtable)changeSetLists.nextElement()).clone();
+                for (Map<ObjectChangeSet, ObjectChangeSet> objectChangesList : ((UnitOfWorkChangeSet)getUnitOfWorkChangeSet()).getObjectChanges().values()) {
                     // May be no changes for that class type.
-                    if (objectChangesList != null) {                        
-                        for (Enumeration pendingEnum = objectChangesList.elements(); pendingEnum.hasMoreElements();) {
-                            ObjectChangeSet changeSetToWrite = (ObjectChangeSet)pendingEnum.nextElement();
-                            if (changeSetToWrite.hasChanges()) {
-                                Object objectToWrite = changeSetToWrite.getUnitOfWorkClone();
-                                // It would be so much nicer if the change set was keyed by the class instead of class name,
-                                // so this could be done once.  We should key on class, and only convert to keying on name when broadcasting changes.
-                                ClassDescriptor descriptor = getDescriptor(objectToWrite);
-                                // PERF: Do not merge into the session cache if set to unit of work isolated.
-                                if ((!isNestedUnitOfWork) && descriptor.shouldIsolateObjectsInUnitOfWork()) {
-                                    break;
-                                }
-                                manager.mergeChanges(objectToWrite, changeSetToWrite);
-                            } else {
-                                // If no 'real' changes to the object change set, remove it from the
-                                // list so it won't be unnecessarily sent via cache sync.
-                                // Should we really be doing this here?  Seems like would be better to do where we send the propagation.
-                                uowChangeSet.removeObjectChangeSet(changeSetToWrite);
+                    for (ObjectChangeSet changeSetToWrite : objectChangesList.values()) {
+                        if (changeSetToWrite.hasChanges()) {
+                            Object objectToWrite = changeSetToWrite.getUnitOfWorkClone();
+                            // It would be so much nicer if the change set was keyed by the class instead of class name,
+                            // so this could be done once.  We should key on class, and only convert to keying on name when broadcasting changes.
+                            ClassDescriptor descriptor = getDescriptor(objectToWrite);
+                            // PERF: Do not merge into the session cache if set to unit of work isolated.
+                            if ((!isNestedUnitOfWork) && descriptor.shouldIsolateObjectsInUnitOfWork()) {
+                                break;
                             }
+                            manager.mergeChanges(objectToWrite, changeSetToWrite);
                         }
                     }
                 }
 
                 // Notify the queries to merge into the shared cache
-                if (modifyAllQueries != null) {
-                    for (int i = 0; i < modifyAllQueries.size(); i++) {
-                        ModifyAllQuery query = (ModifyAllQuery)modifyAllQueries.get(i);
+                if (this.modifyAllQueries != null) {
+                    int size = this.modifyAllQueries.size();
+                    for (int index = 0; index < size; index++) {
+                        ModifyAllQuery query = this.modifyAllQueries.get(index);
                         query.setSession(getParent());// ensure the query knows which cache to update
                         query.mergeChangesIntoSharedCache();
                     }
                 }
 
                 if (isNestedUnitOfWork) {
-                    changeSetLists = ((UnitOfWorkChangeSet)getUnitOfWorkChangeSet()).getNewObjectChangeSets().elements();
-                    while (changeSetLists.hasMoreElements()) {
-                        Map objectChangesList = new IdentityHashMap((Map)changeSetLists.nextElement());
-                        if (objectChangesList != null) {// may be no changes for that class type.
-                            for (Iterator pendingEnum = objectChangesList.values().iterator();
-                                     pendingEnum.hasNext();) {
-                                ObjectChangeSet changeSetToWrite = (ObjectChangeSet)pendingEnum.next();
-                                if (changeSetToWrite.hasChanges()) {
-                                    Object objectToWrite = changeSetToWrite.getUnitOfWorkClone();
-                                    manager.mergeChanges(objectToWrite, changeSetToWrite);
-                                } else {
-                                    // if no 'real' changes to the object change set, remove it from the
-                                    // list so it won't be unnecessarily sent via cache sync.
-                                    uowChangeSet.removeObjectChangeSet(changeSetToWrite);
-                                }
+                    for (Map<ObjectChangeSet, ObjectChangeSet> objectChangesList : ((UnitOfWorkChangeSet)getUnitOfWorkChangeSet()).getNewObjectChangeSets().values()) {
+                        for (ObjectChangeSet changeSetToWrite : objectChangesList.values()) {
+                            if (changeSetToWrite.hasChanges()) {
+                                Object objectToWrite = changeSetToWrite.getUnitOfWorkClone();
+                                manager.mergeChanges(objectToWrite, changeSetToWrite);
                             }
                         }
                     }
@@ -3625,11 +3610,11 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             Map deletedObjects = this.unitOfWorkChangeSet.getDeletedObjects();
             for (Iterator removedObjects = deletedObjects.keySet().iterator(); removedObjects.hasNext(); ) {
                 ObjectChangeSet removedObjectChangeSet = (ObjectChangeSet) removedObjects.next();
-                java.util.Vector primaryKeys = removedObjectChangeSet.getPrimaryKeys();
-                ClassDescriptor descriptor = getDescriptor(removedObjectChangeSet.getClassType(this));
+                Vector primaryKeys = removedObjectChangeSet.getPrimaryKeys();
+                ClassDescriptor descriptor = removedObjectChangeSet.getDescriptor();
                 // PERF: Do not remove if uow is isolated.
                 if (!descriptor.shouldIsolateObjectsInUnitOfWork()) {
-                    getParent().getIdentityMapAccessorInstance().removeFromIdentityMap(primaryKeys, descriptor.getJavaClass(), descriptor, removedObjectChangeSet.getUnitOfWorkClone());
+                    this.parent.getIdentityMapAccessorInstance().removeFromIdentityMap(primaryKeys, descriptor.getJavaClass(), descriptor, removedObjectChangeSet.getUnitOfWorkClone());
                 }
             }
         }
@@ -4738,13 +4723,13 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * This set of classes given are checked that subclasses of a read-only class are also
      * in the read-only set provided.
      */
-    public void setReadOnlyClasses(List classes) {
+    public void setReadOnlyClasses(List<Class> classes) {
         if (classes.isEmpty()) {
             this.readOnlyClasses = null;
             return;
         }
         int size = classes.size();
-        this.readOnlyClasses = new HashSet(size);
+        this.readOnlyClasses = new HashSet<Class>(size);
         for (int index = 0; index < size; index++) {
             this.readOnlyClasses.add(classes.get(index));
         }
@@ -5048,11 +5033,11 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * deferred to commit time
      */
     public void storeModifyAllQuery(DatabaseQuery query) {
-        if (modifyAllQueries == null) {
-            modifyAllQueries = new ArrayList();
+        if (this.modifyAllQueries == null) {
+            this.modifyAllQueries = new ArrayList<ModifyAllQuery>();
         }
 
-        modifyAllQueries.add(query);
+        this.modifyAllQueries.add((ModifyAllQuery)query);
     }
 
     /**
@@ -5123,15 +5108,10 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         // PERF: only clear objects that changed.
         // The change sets include new objects as well.
         if (this.unitOfWorkChangeSet != null) {
-            Map objectChanges = this.unitOfWorkChangeSet.getObjectChanges();
-            Iterator classes = objectChanges.keySet().iterator();
-            while (classes.hasNext()) {
-                String objectClass = (String)classes.next();
+            for (Map<ObjectChangeSet, ObjectChangeSet> objectChanges : this.unitOfWorkChangeSet.getObjectChanges().values()) {
                 ClassDescriptor descriptor = null;
-                Iterator changeSets = ((Map)objectChanges.get(objectClass)).values().iterator();
-                while (changeSets.hasNext()) {
-                    ObjectChangeSet changeSet = (ObjectChangeSet)changeSets.next();
-                    descriptor = getDescriptor(changeSet.getUnitOfWorkClone());
+                for (ObjectChangeSet changeSet : objectChanges.values()) {
+                    descriptor = changeSet.getDescriptor();
                     // Build backup clone for DeferredChangeDetectionPolicy or ObjectChangeTrackingPolicy,
                     // but not for AttributeChangeTrackingPolicy.
                     descriptor.getObjectChangePolicy().revertChanges(changeSet.getUnitOfWorkClone(), descriptor, this, cloneMapping);
@@ -5642,7 +5622,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Return the list of object with changes.
      * This is used in weak reference mode to avoid garbage collection of changed objects.
      */
-    public IdentityHashSet getChangeTrackedHardList() {
+    public Set<Object> getChangeTrackedHardList() {
         if (this.changeTrackedHardList == null) {
             this.changeTrackedHardList = new IdentityHashSet();
         }

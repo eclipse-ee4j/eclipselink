@@ -400,7 +400,6 @@ public class Project implements Serializable, Cloneable {
      * <br>
      * By default the ServerSession has a single shared read/write connection pool
      * with 32 min/max connections and an initial of 1 connection.
-     * This pool is also used for TABLE sequencing.
      */
     public Server createServerSession() {
         return new ServerSession(this);
@@ -438,7 +437,6 @@ public class Project implements Serializable, Cloneable {
      * <br>
      * By default the ServerSession has a single shared read/write connection pool
      * with 32 min/max connections and an initial of 1 connection.
-     * This pool is also used for TABLE sequencing.
      */
     public Server createServerSession(ConnectionPolicy defaultConnectionPolicy) {
         return new ServerSession(this, defaultConnectionPolicy);

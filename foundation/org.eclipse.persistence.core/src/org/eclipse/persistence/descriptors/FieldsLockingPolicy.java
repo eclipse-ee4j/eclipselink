@@ -265,9 +265,9 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
      * Return the number of version difference between the two states of the object.
      */
     public int getVersionDifference(Object currentValue, Object domainObject, Vector primaryKeys, AbstractSession session) {
-        //There is no way of knowing what the difference is so return -1
+        //There is no way of knowing what the difference is so return 1
         // This will merge the object.
-        return -1;
+        return 1;
     }
 
     /**

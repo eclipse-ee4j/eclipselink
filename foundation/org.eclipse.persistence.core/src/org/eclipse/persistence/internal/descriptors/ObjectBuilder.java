@@ -953,7 +953,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * This is only used for aggregates.
      */
     public AbstractRecord buildRowWithChangeSet(AbstractRecord databaseRow, ObjectChangeSet objectChangeSet, AbstractSession session) {
-        List<ChangeRecord> changes = objectChangeSet.getChanges();
+        List<ChangeRecord> changes = (List)objectChangeSet.getChanges();
         int size = changes.size();
         for (int index = 0; index < size; index++) {
             ChangeRecord changeRecord = changes.get(index);
@@ -1694,9 +1694,9 @@ public class ObjectBuilder implements Cloneable, Serializable {
         ObjectChangeSet changes = (ObjectChangeSet)uowChangeSet.getObjectChangeSetForClone(clone);
         if (changes == null) {
             if (this.descriptor.isAggregateDescriptor()) {
-                changes = new AggregateObjectChangeSet(new Vector(0), this.descriptor.getJavaClass(), clone, uowChangeSet, isNew);
+                changes = new AggregateObjectChangeSet(new Vector(0), this.descriptor, clone, uowChangeSet, isNew);
             } else {
-                changes = new ObjectChangeSet(extractPrimaryKeyFromObject(clone, session, true), this.descriptor.getJavaClass(), clone, uowChangeSet, isNew);
+                changes = new ObjectChangeSet(extractPrimaryKeyFromObject(clone, session, true), this.descriptor, clone, uowChangeSet, isNew);
             }
             changes.setIsAggregate(this.descriptor.isDescriptorTypeAggregate());
             uowChangeSet.addObjectChangeSetForIdentity(changes, clone);

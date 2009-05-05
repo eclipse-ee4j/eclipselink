@@ -13,6 +13,7 @@
 package org.eclipse.persistence.sessions;
 
 import java.util.*;
+
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.queries.*;
@@ -20,15 +21,17 @@ import org.eclipse.persistence.queries.*;
 /**
  * PUBLIC:
  * IdentityMapAccessor provides the public interface into all functionality associated with
- * TopLink identity maps. An appropriate IdentityMapAccessor can be obtained from a session 
+ * EclipseLink's cache. An appropriate IdentityMapAccessor can be obtained from a session 
  * with its getIdentityMapAccessor() method.
  * Methods that used to be called on the Session to access identity maps can now be called
  * through the IdentityMapAccessor.
  * <p>
- * For instance, to initialize identity maps the code used to be: <code>
- * session.initializeIdentityIdentityMaps()                       <br></code>
- * With this class, the code now is:                              <code>
- * session.getIdentityMapAccessor().initializeIdentityMaps()      </code>
+ * For instance, to initialize identity maps the code used to be:
+ * <code>
+ * session.initializeIdentityIdentityMaps()<br></code>
+ * With this class, the code now is:<code><br>
+ * session.getIdentityMapAccessor().initializeIdentityMaps()
+ * </code>
  * @see org.eclipse.persistence.sessions.Session
  */
 public interface IdentityMapAccessor {
@@ -40,21 +43,21 @@ public interface IdentityMapAccessor {
     public void clearQueryCache();
 
     /**
- * ADVANCED:
- * Clear the query class associated with the passed-in read query
- */
+     * ADVANCED:
+     * Clear the query class associated with the passed-in read query.
+     */
     public void clearQueryCache(ReadQuery query);
 
     /**
- * ADVANCED:
- * Clear the query cache associated with the named query on the session
- */
+     * ADVANCED:
+     * Clear the query cache associated with the named query on the session.
+     */
     public void clearQueryCache(String sessionQueryName);
 
     /**
- * ADVANCED:
- * Clear the query cache associated with the named query on the descriptor for the given class
- */
+     * ADVANCED:
+     * Clear the query cache associated with the named query on the descriptor for the given class.
+     */
     public void clearQueryCache(String descriptorQueryName, Class queryClass);
 
     /**
@@ -79,7 +82,7 @@ public interface IdentityMapAccessor {
     /**
      * ADVANCED:
      * Returns true if the identity map contains an Object with the same primary key 
-     * of the specified row (ie. the database record) and Class type.
+     * of the specified row (i.e. the database record) and Class type.
      * @param rowContainingPrimaryKey Record
      * @param theClass Class type to be found 
      * @return boolean - true if Object is in identity map
@@ -170,7 +173,7 @@ public interface IdentityMapAccessor {
     /**
      * ADVANCED:
      * Returns the Object from the identity map with the same primary key 
-     * of the specified row (ie. the database record) and Class type.
+     * of the specified row (i.e. the database record) and Class type.
      * @param rowContainingPrimaryKey Record
      * @param theClass Class
      * @return Object from identity map, may be null.
@@ -317,6 +320,13 @@ public interface IdentityMapAccessor {
 
     /**
      * ADVANCED:
+     * Set an object to be invalid in the cache.
+     * @param invalidateCluster if true the invalidation will be broadcast to each server in the cluster.
+     */
+    public void invalidateObject(Object object, boolean invalidateCluster);
+    
+    /**
+     * ADVANCED:
      * Sets an Object with the specified primary key and Class type to be invalid in 
      * the TopLink identity maps. If the Object does not exist in the cache, 
      * this method will return without any action.
@@ -325,6 +335,13 @@ public interface IdentityMapAccessor {
      */
     public void invalidateObject(Vector primaryKey, Class theClass);
 
+    /**
+     * ADVANCED:
+     * Set an object to be invalid in the cache.
+     * @param invalidateCluster if true the invalidation will be broadcast to each server in the cluster.
+     */
+    public void invalidateObject(Vector primaryKey, Class theClass, boolean invalidateCluster);
+    
     /**
      * ADVANCED:
      * Sets an Object with the specified primary key of the passed in Row and Class type to 
@@ -337,15 +354,29 @@ public interface IdentityMapAccessor {
 
     /**
      * ADVANCED:
+     * Set an object to be invalid in the cache.
+     * @param invalidateCluster if true the invalidation will be broadcast to each server in the cluster.
+     */
+    public void invalidateObject(Record rowContainingPrimaryKey, Class theClass, boolean invalidateCluster);
+    
+    /**
+     * ADVANCED:
      * Sets all of the Objects in the given collection to be invalid in the TopLink identity maps.
      * This method will take no action for any Objects in the collection that do not exist in the cache.
-     * @param collection Vector of Objects to be invalidated
+     * @param collection objects to be invalidated
      */
-    public void invalidateObjects(Vector collection);
+    public void invalidateObjects(Collection collection);
 
     /**
      * ADVANCED:
-     * Sets all of the Objects matching the given Expression to be invalid in the TopLink identity maps.
+     * Set all of the objects in the given collection to be invalid in the cache.
+     * @param invalidateCluster if true the invalidation will be broadcast to each server in the cluster.
+     */
+    public void invalidateObjects(Collection collection, boolean invalidateCluster);
+    
+    /**
+     * ADVANCED:
+     * Sets all of the Objects matching the given Expression to be invalid in the cache.
      * <p>
      * <b>Example</b> - Invalidating Employee Objects with non-null first names: 
      * <p> 
@@ -360,14 +391,14 @@ public interface IdentityMapAccessor {
 
     /**
      * ADVANCED:
-     * Sets all of the Objects for all classes to be invalid in TopLink's identity maps. 
+     * Sets all of the Objects for all classes to be invalid in the cache. 
      * It will recurse on inheritance.
      */
     public void invalidateAll();
     
     /**
      * ADVANCED:
-     * Sets all of the Objects of the specified Class type to be invalid in TopLink's identity maps
+     * Sets all of the Objects of the specified Class type to be invalid in the cache.
      * Will set the recurse on inheritance to true.
      * @param myClass Class
      */
@@ -375,7 +406,7 @@ public interface IdentityMapAccessor {
 
     /**
      * ADVANCED:
-     * Sets all of the Objects of the specified Class type to be invalid in TopLink's identity maps.
+     * Sets all of the Objects of the specified Class type to be invalid in the cache.
      * User can set the recurse flag to false if they do not want to invalidate
      * all the same Class types within an inheritance tree.
      * @param myClass Class
@@ -386,7 +417,7 @@ public interface IdentityMapAccessor {
     /**
      * ADVANCED:
      * Returns true if an Object with the same primary key and Class type of the
-     * the given Object is valid in TopLink's identity maps.
+     * the given Object is valid in the cache.
      * @param object Object
      * @return boolean
      */
@@ -395,7 +426,7 @@ public interface IdentityMapAccessor {
     /**
      * ADVANCED:
      * Returns true if the Object described by the given primary key and Class type is valid 
-     * in TopLink's identity maps.
+     * in the cache.
      * @param primaryKey Vector
      * @param theClass Class
      * @return boolean
@@ -405,7 +436,7 @@ public interface IdentityMapAccessor {
     /**
      * ADVANCED:
      * Returns true if this Object with the given primary key of the Row and Class type 
-     * given is valid in TopLink's identity maps.
+     * given is valid in the cache.
      * @param rowContainingPrimaryKey AbstractRecord
      * @param theClass Class
      * @return boolean

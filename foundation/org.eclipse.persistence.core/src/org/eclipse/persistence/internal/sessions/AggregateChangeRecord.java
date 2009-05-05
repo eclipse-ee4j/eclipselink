@@ -12,8 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.sessions;
 
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-
 /**
  * This change Record is used to record the changes for AggregateObjectMapping.
  */
@@ -58,21 +56,6 @@ public class AggregateChangeRecord extends ChangeRecord implements org.eclipse.p
             }
         }
         ((ObjectChangeSet)this.changedObject).mergeObjectChanges((ObjectChangeSet)((AggregateChangeRecord)mergeFromRecord).getChangedObject(), mergeToChangeSet, mergeFromChangeSet);
-    }
-
-    /**
-     * INTERNAL:
-     * Ensure this change record is ready to by sent remotely for cache synchronization
-     * In general, this means setting the CacheSynchronizationType on any ObjectChangeSets
-     * associated with this ChangeRecord
-     */
-    public void prepareForSynchronization(AbstractSession session) {
-        if ((changedObject != null) && (((org.eclipse.persistence.internal.sessions.ObjectChangeSet)changedObject).getSynchronizationType() == ClassDescriptor.UNDEFINED_OBJECT_CHANGE_BEHAVIOR)) {
-            ClassDescriptor descriptor = session.getDescriptor(changedObject.getClassType(session));
-            int syncType = descriptor.getCacheSynchronizationType();
-            ((org.eclipse.persistence.internal.sessions.ObjectChangeSet)changedObject).setSynchronizationType(syncType);
-            ((org.eclipse.persistence.internal.sessions.ObjectChangeSet)changedObject).prepareChangeRecordsForSynchronization(session);
-        }
     }
 
     /**

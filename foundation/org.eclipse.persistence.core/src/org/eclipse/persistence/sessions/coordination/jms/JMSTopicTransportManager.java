@@ -38,8 +38,8 @@ import org.eclipse.persistence.sessions.coordination.TransportManager;
 public class JMSTopicTransportManager extends BroadcastTransportManager {
     protected String connectionFactoryName;
 
-    public static final String DEFAULT_TOPIC = "jms/TopLinkTopic";
-    public static final String DEFAULT_CONNECTION_FACTORY = "jms/TopLinkTopicConnectionFactory";
+    public static final String DEFAULT_TOPIC = "jms/EclipseLinkTopic";
+    public static final String DEFAULT_CONNECTION_FACTORY = "jms/EclipseLinkTopicConnectionFactory";
 
     public JMSTopicTransportManager(RemoteCommandManager rcm) {
         super(rcm);
@@ -175,7 +175,7 @@ public class JMSTopicTransportManager extends BroadcastTransportManager {
 
     /**
      * PUBLIC:
-     * Return the URL of the machine on the network that hosts the JMS Topic.  This is a reqired property and must be configured.
+     * Return the URL of the machine on the network that hosts the JMS Topic.  This is a required property and must be configured.
      */
     public String getTopicHostUrl() {
         return (String)getRemoteContextProperties().get(Context.PROVIDER_URL);

@@ -54,7 +54,7 @@ public abstract class BroadcastTransportManager extends TransportManager {
     /**
      * INTERNAL:
      * BroadcastTransportManager doesn't use DiscoveryManager
-     * (createDiscoveryManager method retuns null) therefore
+     * (createDiscoveryManager method returns null) therefore
      * this method called during RCM initialization to create all the necessary connections.
      * BroadcastTransportManager ancestors may need to override this method.
      */

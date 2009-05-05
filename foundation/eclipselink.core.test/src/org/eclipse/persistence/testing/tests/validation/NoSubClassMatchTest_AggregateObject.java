@@ -12,11 +12,15 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.validation;
 
+import java.util.Vector;
+
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.IntegrityChecker;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
+import org.eclipse.persistence.mappings.AggregateObjectMapping;
 import org.eclipse.persistence.sessions.DatabaseSession;
 
 //import org.eclipse.persistence.mappings.*;
@@ -37,14 +41,14 @@ public class NoSubClassMatchTest_AggregateObject extends ExceptionTest {
     }
 
     protected void setup() {
-        expectedException = DescriptorException.noSubClassMatch(null, new org.eclipse.persistence.mappings.AggregateObjectMapping());
+        expectedException = DescriptorException.noSubClassMatch(null, new AggregateObjectMapping());
 
         Employee employee = new Employee();
 
         ClassDescriptor descriptor = ((DatabaseSession)getSession()).getDescriptor(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
         mapping = (org.eclipse.persistence.mappings.AggregateObjectMapping)descriptor.getMappingForAttributeName("period");
         orgInheritancePolicy = mapping.getReferenceDescriptor().getInheritancePolicyOrNull();
-        org.eclipse.persistence.internal.sessions.ObjectChangeSet changeSet = new org.eclipse.persistence.internal.sessions.ObjectChangeSet(employee, new org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet(), true);
+        org.eclipse.persistence.internal.sessions.ObjectChangeSet changeSet = new ObjectChangeSet(new Vector(), descriptor, employee, new org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet(), true);
         changeRecord = new org.eclipse.persistence.internal.sessions.AggregateChangeRecord(changeSet);
         changeRecord.setChangedObject(changeSet);
 

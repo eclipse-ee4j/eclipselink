@@ -36,7 +36,7 @@ public abstract class Command implements java.io.Serializable {
 
     /**
      * INTERNAL:
-     * If the CommandProcessor is a TopLink session then this method will
+     * If the CommandProcessor is a EclipseLink session then this method will
      * get executed.
      *
      * @param session The session that can be used to execute the command on.
@@ -65,7 +65,7 @@ public abstract class Command implements java.io.Serializable {
 
     /**
      * INTERNAL:
-     * Determine whether this command is public or internal to TopLink.
+     * Determine whether this command is public or internal to EclipseLink.
      * User commands must return false.
      */
     public boolean isInternalCommand() {

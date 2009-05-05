@@ -50,6 +50,9 @@ import org.eclipse.persistence.sessions.server.ConnectionPool;
 import org.eclipse.persistence.sessions.server.ReadConnectionPool;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProcessor;
+import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
+import org.eclipse.persistence.sessions.coordination.TransportManager;
+import org.eclipse.persistence.sessions.coordination.jms.JMSTopicTransportManager;
 import org.eclipse.persistence.sessions.factories.SessionManager;
 import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
 import org.eclipse.persistence.config.BatchWriting;
@@ -269,7 +272,6 @@ public class EntityManagerSetupImpl {
             PersistenceException persistenceException = null;
             if (exception instanceof PersistenceException) {
                 persistenceException = (PersistenceException)exception;
-                persistenceException = new PersistenceException(exception);
             } else {
                 persistenceException = new PersistenceException(exception);
             }
@@ -577,19 +579,20 @@ public class EntityManagerSetupImpl {
         }
 
         String defaultTypeName = (String)typeMap.remove(PersistenceUnitProperties.DEFAULT);
-        if(defaultTypeName != null) {
-            Class defaultType = findClassForProperty(defaultTypeName, PersistenceUnitProperties.CACHE_TYPE_DEFAULT, loader);
+        if (defaultTypeName != null) {
+            // Always use the EclipseLink class loader, otherwise can have loader/redeployment issues.
+            Class defaultType = findClassForProperty(defaultTypeName, PersistenceUnitProperties.CACHE_TYPE_DEFAULT, getClass().getClassLoader());
             session.getProject().setDefaultIdentityMapClass(defaultType);
         }
         
         String defaultSizeString = (String)sizeMap.remove(PersistenceUnitProperties.DEFAULT);
-        if(defaultSizeString != null) {
+        if (defaultSizeString != null) {
             int defaultSize = Integer.parseInt(defaultSizeString);
             session.getProject().setDefaultIdentityMapSize(defaultSize);
         }
         
         String defaultSharedString = (String)sharedMap.remove(PersistenceUnitProperties.DEFAULT);
-        if(defaultSharedString != null) {
+        if (defaultSharedString != null) {
             boolean defaultShared = Boolean.parseBoolean(defaultSharedString);
             session.getProject().setDefaultIsIsolated(!defaultShared);
         }
@@ -598,7 +601,7 @@ public class EntityManagerSetupImpl {
         while (it.hasNext() && (!typeMap.isEmpty() || !sizeMap.isEmpty() || !sharedMap.isEmpty())) {
             ClassDescriptor descriptor = (ClassDescriptor)it.next();
             
-            if(descriptor.isDescriptorTypeAggregate()) {
+            if (descriptor.isDescriptorTypeAggregate()) {
                 continue;
             }
             
@@ -608,33 +611,33 @@ public class EntityManagerSetupImpl {
             
             name = entityName;
             String typeName = (String)typeMap.remove(name);
-            if(typeName == null) {
+            if( typeName == null) {
                 name = className;
                 typeName = (String)typeMap.remove(name);
             }
-            if(typeName != null) {
-                Class type = findClassForProperty(typeName, PersistenceUnitProperties.CACHE_TYPE_ + name, loader);
+            if (typeName != null) {
+                Class type = findClassForProperty(typeName, PersistenceUnitProperties.CACHE_TYPE_ + name, getClass().getClassLoader());
                 descriptor.setIdentityMapClass(type);
             }
 
             name = entityName;
             String sizeString = (String)sizeMap.remove(name);
-            if(sizeString == null) {
+            if (sizeString == null) {
                 name = className;
                 sizeString = (String)sizeMap.remove(name);
             }
-            if(sizeString != null) {
+            if (sizeString != null) {
                 int size = Integer.parseInt(sizeString);
                 descriptor.setIdentityMapSize(size);
             }
 
             name = entityName;
             String sharedString = (String)sharedMap.remove(name);
-            if(sharedString == null) {
+            if (sharedString == null) {
                 name = className;
                 sharedString = (String)sharedMap.remove(name);
             }
-            if(sharedString != null) {
+            if (sharedString != null) {
                 boolean shared = Boolean.parseBoolean(sharedString);
                 descriptor.setIsIsolated(!shared);
             }
@@ -937,6 +940,99 @@ public class EntityManagerSetupImpl {
         return isInContainerMode;
     }
 
+    /**
+     * Configure cache coordination using properties.
+     */
+    protected void updateCacheCoordination(Map m, ClassLoader loader) {
+        String protocol = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_PROTOCOL, m, this.session);
+        
+        if (protocol != null) {
+            RemoteCommandManager rcm = new RemoteCommandManager(this.session);            
+            if (protocol.equalsIgnoreCase("jms")) {
+                JMSTopicTransportManager transport = new JMSTopicTransportManager(rcm);
+                rcm.setTransportManager(transport);
+                
+                String host = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_JMS_HOST, m, this.session);
+                if (host != null) {
+                    transport.setTopicHostUrl(host);
+                }
+                String topic = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_JMS_TOPIC, m, this.session);
+                if (topic != null) {
+                    transport.setTopicName(topic);
+                }
+                String factory = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_JMS_FACTORY, m, this.session);
+                if (factory != null) {
+                    transport.setTopicConnectionFactoryName(factory);
+                }
+                
+            } else if (protocol.equalsIgnoreCase("rmi")) {
+                // Default protocol.
+                String delay = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_RMI_ANNOUNCEMENT_DELAY, m, this.session);
+                if (delay != null) {
+                    rcm.getDiscoveryManager().setAnnouncementDelay(Integer.parseInt(delay));
+                }
+                String multicast = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_RMI_MULTICAST_GROUP, m, this.session);
+                if (multicast != null) {
+                    rcm.getDiscoveryManager().setMulticastGroupAddress(multicast);
+                }
+                String port = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_RMI_MULTICAST_GROUP_PORT, m, this.session);
+                if (port != null) {
+                    rcm.getDiscoveryManager().setMulticastPort(Integer.parseInt(port));
+                }
+                String timeToLive = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_RMI_PACKET_TIME_TO_LIVE, m, this.session);
+                if (timeToLive != null) {
+                    rcm.getDiscoveryManager().setPacketTimeToLive(Integer.parseInt(timeToLive));
+                }
+                String url = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_RMI_URL, m, this.session);
+                if (url != null) {
+                    rcm.setUrl(url);
+                }
+            } else {
+                Class transportClass = findClassForProperty(protocol, PersistenceUnitProperties.COORDINATION_PROTOCOL, loader);
+                try {
+                    rcm.setTransportManager((TransportManager)transportClass.newInstance());
+                } catch (Exception invalid) {
+                    // TODO: ex
+                    throw new RuntimeException(invalid);
+                }
+            }
+            String naming = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_NAMING_SERVICE, m, this.session);
+            if (naming != null) {
+                if (naming.equalsIgnoreCase("jndi")) {
+                    rcm.getTransportManager().setNamingServiceType(TransportManager.JNDI_NAMING_SERVICE);
+                } else if (naming.equalsIgnoreCase("rmi")) {
+                    rcm.getTransportManager().setNamingServiceType(TransportManager.REGISTRY_NAMING_SERVICE);
+                }
+            }
+            String user = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_JNDI_USER, m, this.session);
+            if (user != null) {
+                rcm.getTransportManager().setUserName(user);
+            }
+            String password = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_JNDI_PASSWORD, m, this.session);
+            if (password != null) {
+                rcm.getTransportManager().setPassword(password);
+            }
+            String context = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_JNDI_CONTEXT, m, this.session);
+            if (context != null) {
+                rcm.getTransportManager().setInitialContextFactoryName(context);
+            }
+            String removeOnError = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_REMOVE_CONNECTION, m, this.session);
+            if (removeOnError != null) {
+                rcm.getTransportManager().setShouldRemoveConnectionOnError(removeOnError.equalsIgnoreCase("true"));
+            }
+            String asynch = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_ASYNCH, m, this.session);
+            if (asynch != null) {
+                rcm.setShouldPropagateAsynchronously(asynch.equalsIgnoreCase("true"));
+            }
+            String channel = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_CHANNEL, m, this.session);
+            if (channel != null) {
+                rcm.setChannel(channel);
+            }
+            this.session.setCommandManager(rcm);
+            this.session.setShouldPropagateChanges(true);
+        }
+    }
+        
     /**
      * Override the default login creation method.
      * If persistenceInfo is available, use the information from it to setup the login
@@ -1269,6 +1365,7 @@ public class EntityManagerSetupImpl {
         updateAllowZeroIdSetting(m);
         updatePessimisticLockTimeout(m);
         updateQueryTimeout(m);
+        updateCacheCoordination(m, loader);
         // Customizers should be processed last
         processDescriptorCustomizers(m, loader);
         processSessionCustomizer(m, loader);

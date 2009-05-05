@@ -104,6 +104,7 @@ public class RCMDistributedServersModel extends DistributedServersModel {
 
         addTest(new InvalidateObjectWithMissingReferenceTest());
         addTest(new UpdateObjectInvalidationTest());
+        addTest(new NativeUpdateObjectInvalidationTest());
     }
 
     public void startCacheSynchronization() {

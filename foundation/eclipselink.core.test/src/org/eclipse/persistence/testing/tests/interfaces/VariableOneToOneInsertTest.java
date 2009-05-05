@@ -38,7 +38,7 @@ public class VariableOneToOneInsertTest extends TransactionalTestCase {
         // this is a little magic to ensure we write Company first, it will not enduce
         // any side effects.
         UnitOfWorkChangeSet uowcs = (UnitOfWorkChangeSet)uow.getCurrentChanges();
-        uowcs.getObjectChanges().remove(Email.class.getName());
+        uowcs.getObjectChanges().remove(Email.class);
         try {
             ((org.eclipse.persistence.internal.sessions.UnitOfWorkImpl)uow).commitRootUnitOfWorkWithPreBuiltChangeSet(uowcs);
         } catch (DatabaseException ex) {

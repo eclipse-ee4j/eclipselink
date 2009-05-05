@@ -16,11 +16,11 @@ package org.eclipse.persistence.sessions.coordination;
 /**
  * <p>
  * <b>Purpose</b>: Provide an interface that clients can use to invoke remote
- * commands on other TopLink instances, or on other applications that may want
- * to receive and process TopLink commands.
+ * commands on other EclipseLink instances, or on other applications that may want
+ * to receive and process EclipseLink commands.
  * <p>
  * <b>Description</b>: This is the main interface that is used to send and receive
- * remote commands in a TopLink cluster. The sequence of remote command execution
+ * remote commands in a EclipseLink cluster. The sequence of remote command execution
  * is as follows:
  * <p>
  * <ol>
@@ -36,16 +36,16 @@ package org.eclipse.persistence.sessions.coordination;
  * into a format appropriate to its application (CommandProcessor)
  * <li> Each CommandManager invokes its local CommandProcessor and passes it the
  * command (formatted the way that the application-specified converter left it in)
- * to be executed. If the CommandProcessor is a TopLink session then the
+ * to be executed. If the CommandProcessor is a EclipseLink session then the
  * executeWithSession method will be invoked on the command.
  * </ol>
  * <p>
  * <b>Responsibilities</b>:
  * <ul>
- * <li> Invoke the DiscoveryManager to establish the TopLink cluster
- * <li> Propagate remote command to TopLink cluster
+ * <li> Invoke the DiscoveryManager to establish the EclipseLink cluster
+ * <li> Propagate remote command to EclipseLink cluster
  * <li> Delegate processing command to its CommandProssesor
- * <li> Convert command to appropriate format for sending to TopLink cluster
+ * <li> Convert command to appropriate format for sending to EclipseLink cluster
  * or its command processor
  * </ul>
  * @see Command
@@ -58,7 +58,7 @@ public interface CommandManager {
     /**
      * PUBLIC:
      * Initialize the remote command manager. This will also trigger the
-     * DiscoveryManager to start establishing the TopLink cluster.
+     * DiscoveryManager to start establishing the EclipseLink cluster.
      */
     public void initialize();
 
@@ -112,7 +112,7 @@ public interface CommandManager {
     /**
      * ADVANCED:
      * Propagate a remote command to all remote RCM services participating
-     * in the TopLink cluster.
+     * in the EclipseLink cluster.
      *
      * @param command An object representing a TopLink command
      */
@@ -128,9 +128,9 @@ public interface CommandManager {
 
     /**
      * ADVANCED:
-     * Set the command processor that will be invoked to process commands. Non-TopLink
+     * Set the command processor that will be invoked to process commands. EclipseLink
      * applications can implement this interface in order to receive remote commands
-     * from a TopLink cluster.
+     * from a EclipseLink cluster.
      *
      * @param commandProcessor The intended processor of remote commands
      */
@@ -154,7 +154,7 @@ public interface CommandManager {
 
     /**
      * PUBLIC:
-     * Return the discovery manager that manages membership in the TopLink cluster.
+     * Return the discovery manager that manages membership in the EclipseLink cluster.
      *
      * @return The DiscoveryManager instance being used by this CommandManager
      */
@@ -172,9 +172,9 @@ public interface CommandManager {
     /**
      * ADVANCED:
      * Set the converter instance that will be invoked by this CommandProcessor
-     * to convert commands from their application command format into TopLink
+     * to convert commands from their application command format into EclipseLink
      * Command objects before being propagated to remote command manager services.
-     * The converter will also be invoked to convert TopLink Command objects into
+     * The converter will also be invoked to convert EclipseLink Command objects into
      * application format before being sent to the CommandProcessor for execution.
      *
      * @param commandConverter The converter to be used by this CommandManager
@@ -205,7 +205,7 @@ public interface CommandManager {
 
     /**
     * ADVANCE:
-    * Return whether this commandProcessor is a TopLink session or not.
+    * Return whether this commandProcessor is a EclipseLink session or not.
     */
     public boolean isCommandProcessorASession();
 

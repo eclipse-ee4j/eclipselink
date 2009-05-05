@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.sessions.changesets;
 
+import java.util.List;
 import java.util.Vector;
 import org.eclipse.persistence.sessions.Session;
 
@@ -28,15 +29,15 @@ public interface ObjectChangeSet {
 
     /**
      * ADVANCED:
-     * This method will return a collection of the fieldnames of attributes changed in an object.
+     * This method will return a collection of the names of attributes changed in an object.
      */
-    Vector getChangedAttributeNames();
+    List<String> getChangedAttributeNames();
 
     /**
      * ADVANCED:
      * This method returns a reference to the collection of changes within this changeSet.
      */
-    Vector getChanges();
+    List<ChangeRecord> getChanges();
 
     /**
      * ADVANCE:
@@ -90,7 +91,7 @@ public interface ObjectChangeSet {
     
     /**
      * ADVANCED:
-     * This method will return true if the specified attributue has been changed..
+     * This method will return true if the specified attribute has been changed.
      * @param String the name of the attribute to search for.
      */
     boolean hasChangeFor(String attributeName);

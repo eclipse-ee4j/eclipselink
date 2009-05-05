@@ -44,14 +44,14 @@ public class ExceptionMessageGenerator {
             }
         }
 
-        bundle = ResourceBundle.getBundle("org.eclipse.persistence.exceptions.i18n." + shortClassName + "Resource", Locale.getDefault());
+        bundle = ResourceBundle.getBundle("org.eclipse.persistence.exceptions.i18n." + shortClassName + "Resource", Locale.getDefault(), ExceptionMessageGenerator.class.getClassLoader());
 
         try {
             message = bundle.getString(String.valueOf(errorNumber));
         } catch (java.util.MissingResourceException mre) {
             // Found bundle, but couldn't find exception translation.
             // Get the current language's NoExceptionTranslationForThisLocale message.
-            bundle = ResourceBundle.getBundle("org.eclipse.persistence.exceptions.i18n.ExceptionResource", Locale.getDefault());
+            bundle = ResourceBundle.getBundle("org.eclipse.persistence.exceptions.i18n.ExceptionResource", Locale.getDefault(), ExceptionMessageGenerator.class.getClassLoader());
             String noTranslationMessage = bundle.getString("NoExceptionTranslationForThisLocale");
             Object[] args = { CR };
             return format(message, arguments) + format(noTranslationMessage, args);
@@ -68,7 +68,7 @@ public class ExceptionMessageGenerator {
             return MessageFormat.format(message, arguments);
         } catch (Exception ex) {
             ResourceBundle bundle = null;
-            bundle = ResourceBundle.getBundle("org.eclipse.persistence.exceptions.i18n.ExceptionResource", Locale.getDefault());
+            bundle = ResourceBundle.getBundle("org.eclipse.persistence.exceptions.i18n.ExceptionResource", Locale.getDefault(), ExceptionMessageGenerator.class.getClassLoader());
             String errorMessage = bundle.getString("ErrorFormattingMessage");
             Vector vec = new Vector();
             if (arguments != null) {
@@ -92,7 +92,7 @@ public class ExceptionMessageGenerator {
     public static String getHeader(String headerLabel) {
         ResourceBundle bundle = null;
         try {
-            bundle = ResourceBundle.getBundle("org.eclipse.persistence.exceptions.i18n.ExceptionResource", Locale.getDefault());
+            bundle = ResourceBundle.getBundle("org.eclipse.persistence.exceptions.i18n.ExceptionResource", Locale.getDefault(), ExceptionMessageGenerator.class.getClassLoader());
             return bundle.getString(headerLabel);
         } catch (java.util.MissingResourceException mre) {
             return "[" + headerLabel + "]";

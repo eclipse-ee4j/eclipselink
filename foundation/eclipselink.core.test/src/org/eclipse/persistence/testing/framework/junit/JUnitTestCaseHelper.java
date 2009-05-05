@@ -70,7 +70,6 @@ public class JUnitTestCaseHelper {
                 Properties properties = new Properties();
                 File testPropertiesFile 
                     = new File(System.getProperty(TEST_PROPERTIES_FILE_KEY, TEST_PROPERTIES_FILE_DEFAULT));
-            
                 URL url = null;
                 if (testPropertiesFile.exists()) {
                     try {
@@ -78,6 +77,9 @@ public class JUnitTestCaseHelper {
                     } catch (MalformedURLException exception) {
                         throw new RuntimeException("Error loading " + testPropertiesFile.getName() + ".", exception);
                     }
+                } else {
+                    // Load as a resource if from a jar.
+                    url = JUnitTestCaseHelper.class.getResource("/" + System.getProperty(TEST_PROPERTIES_FILE_KEY, TEST_PROPERTIES_FILE_DEFAULT));
                 }
                 if (url != null){
                     try{

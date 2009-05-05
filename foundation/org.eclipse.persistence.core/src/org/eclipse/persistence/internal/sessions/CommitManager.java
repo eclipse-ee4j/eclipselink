@@ -97,15 +97,15 @@ public class CommitManager {
             // PERF: if the number of classes in the project is large this loop can be a perf issue.
             // If only one class types changed, then avoid loop.
             if ((uowChangeSet.getObjectChanges().size() + uowChangeSet.getNewObjectChangeSets().size()) <= 1) {
-                Iterator classes = uowChangeSet.getNewObjectChangeSets().keySet().iterator();
+                Iterator<Class> classes = uowChangeSet.getNewObjectChangeSets().keySet().iterator();
                 if (classes.hasNext()) {
-                    Class theClass = (Class)classes.next();
+                    Class theClass = classes.next();
                     commitNewObjectsForClassWithChangeSet(uowChangeSet, theClass);
                 }
-                Iterator classNames = uowChangeSet.getObjectChanges().keySet().iterator();
-                if (classNames.hasNext()) {
-                    String className = (String)classNames.next();
-                    commitChangedObjectsForClassWithChangeSet(uowChangeSet, className);
+                classes = uowChangeSet.getObjectChanges().keySet().iterator();
+                if (classes.hasNext()) {
+                    Class theClass = classes.next();
+                    commitChangedObjectsForClassWithChangeSet(uowChangeSet, theClass);
                 }
             } else {
                 // The commit order is all of the classes ordered by dependencies, this is done for deadlock avoidance.
@@ -160,7 +160,7 @@ public class CommitManager {
     protected void commitAllObjectsForClassWithChangeSet(UnitOfWorkChangeSet uowChangeSet, Class theClass) {    
         // Although new objects should be first, there is an issue that new objects get added to non-new after the insert,
         // so the object would be written twice.
-        commitChangedObjectsForClassWithChangeSet(uowChangeSet, theClass.getName());
+        commitChangedObjectsForClassWithChangeSet(uowChangeSet, theClass);
         commitNewObjectsForClassWithChangeSet(uowChangeSet, theClass);
     }
 
@@ -169,7 +169,7 @@ public class CommitManager {
      * This allows for the order of the classes to be processed optimally.
      */
     protected void commitNewObjectsForClassWithChangeSet(UnitOfWorkChangeSet uowChangeSet, Class theClass) {
-        Map newObjectChangesList = (Map)uowChangeSet.getNewObjectChangeSets().get(theClass);
+        Map<ObjectChangeSet, ObjectChangeSet> newObjectChangesList = uowChangeSet.getNewObjectChangeSets().get(theClass);
         if (newObjectChangesList != null) { // may be no changes for that class type.
             AbstractSession session = getSession();
             ClassDescriptor descriptor = session.getDescriptor(theClass);
@@ -203,13 +203,12 @@ public class CommitManager {
      * Commit changed of the objects of the class type in the change set.
      * This allows for the order of the classes to be processed optimally.
      */
-    protected void commitChangedObjectsForClassWithChangeSet(UnitOfWorkChangeSet uowChangeSet, String className) {
-        Map objectChangesList = (Map)uowChangeSet.getObjectChanges().get(className);
+    protected void commitChangedObjectsForClassWithChangeSet(UnitOfWorkChangeSet uowChangeSet, Class theClass) {
+        Map<ObjectChangeSet, ObjectChangeSet> objectChangesList = uowChangeSet.getObjectChanges().get(theClass);
         if (objectChangesList != null) {// may be no changes for that class type.				
             ClassDescriptor descriptor = null;
             AbstractSession session = getSession();
-            for (Iterator iterator = objectChangesList.values().iterator(); iterator.hasNext();) {
-                ObjectChangeSet changeSetToWrite = (ObjectChangeSet)iterator.next();
+            for (ObjectChangeSet changeSetToWrite : objectChangesList.values()) {
                 Object objectToWrite = changeSetToWrite.getUnitOfWorkClone();
                 if (descriptor == null) {
                     descriptor = session.getDescriptor(objectToWrite);

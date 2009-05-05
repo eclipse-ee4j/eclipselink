@@ -185,8 +185,12 @@
             <pathelement path="${junit.lib}"/>
             <pathelement path="${eclipselink.plugins}/${antlr}"/>
             <pathelement path="${eclipselink.plugins}/${asm}"/>
-            <!-- Needed for performance tests using hibernate caching.>
+            <!-- Needed for performance tests comparing with hibernate.>
             <fileset dir="${hibernate.dir}">
+                <include name="*.jar"/>
+            </fileset-->
+            <!-- Needed for tests using coherence.>
+            <fileset dir="${coherence.dir}">
                 <include name="*.jar"/>
             </fileset-->
         </path>
@@ -469,6 +473,7 @@
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.advanced.properties}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.pu.with.spaces}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.cascade.deletes}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/${jpa.performance}.jar"/>
             <!--pathelement path="${eclipselink.jpa.test}/${eclipselink.pu.with.multibyte}.jar"/-->
             <pathelement path="${eclipselink.extension.oracle.test.dir}/${eclipselink.struct.converter.model}.jar"/>
             <pathelement path="${eclipselink.extension.oracle.test.dir}/${eclipselink.customfeatures.model}.jar"/>
@@ -666,6 +671,20 @@
             <param name="RUN_PATH" value="run.classpath"/>
             <param name="TEST_AGENT" value="${test.agent}"/>
             <param name="TEST_WEAVING" value="${test.weaving}"/>
+        </antcall>
+    </target>
+
+    <!-- Tests concurrency inside the JEE server or cluster. -->
+    <target name="server-test-concurrency">
+        <antcall target="server-run-all-prompt" inheritRefs="true">
+            <param name="PERSISTENCE_UNIT_NAME" value="performance"/>
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/performance"/>
+            <param name="MODEL_NAME" value="jpa-performance"/>
+            <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/performance"/>
+            <param name="TEST_NAME" value="jpa-performance"/>
+            <param name="EAR_NAME" value="jpa-performance"/>
+            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.performance.JPAClusteredConcurrencyComparisonModel"/>
+            <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
     </target>
 
@@ -1040,6 +1059,9 @@
             <classpath refid="compile.server.path"/>
         </javac>
         <copy file="${eclipselink.jpa.test}/resource/server/application-client.xml" todir="stage/META-INF"/>
+        <copy todir="stage">
+            <fileset dir="${eclipselink.jpa.test}/" includes="*.properties"/>
+        </copy>
         <filter token="server.user" value="${server.user}"/>
         <filter token="server.pwd" value="${server.pwd}"/>
         <filter token="server.factory" value="${server.factory}"/>
@@ -1102,7 +1124,16 @@
                 org/eclipse/persistence/testing/framework/TestErrorException.java,
                 org/eclipse/persistence/testing/framework/TestProblemException.java,
                 org/eclipse/persistence/testing/framework/ResultInterface.java,
-                org/eclipse/persistence/testing/framework/TestCollection.java">
+                org/eclipse/persistence/testing/framework/TestCollection.java,
+                org/eclipse/persistence/testing/framework/PerformanceComparisonTest.java,
+                org/eclipse/persistence/testing/framework/PerformanceComparisonTestCase.java,
+                org/eclipse/persistence/testing/framework/TestResult.java,
+                org/eclipse/persistence/testing/framework/PerformanceComparisonTestResult.java,
+                org/eclipse/persistence/testing/framework/PerformanceRegressionTest.java,
+                org/eclipse/persistence/testing/framework/PerformanceRegressionTestCase.java,
+                org/eclipse/persistence/testing/framework/ConcurrencyTestAdapter.java,
+                org/eclipse/persistence/testing/framework/ConcurrentPerformanceComparisonTest.java,
+                org/eclipse/persistence/testing/framework/ConcurrentPerformanceRegressionTest.java">
             <classpath refid="compile.server.path"/>
         </javac>
         <javac
@@ -1148,6 +1179,12 @@
         <copy todir="${eclipselink.jpa.test}/stage/META-INF" overwrite="true" failonerror="false">
             <fileset dir="${eclipselink.jpa.test}/resource/${MODEL_NAME}/server/">
                 <include name="*.xml"/>
+            </fileset>
+        </copy>
+    	
+    	<copy todir="${eclipselink.jpa.test}/stage/" overwrite="true" failonerror="false">
+            <fileset dir="${eclipselink.jpa.test}/resource/${MODEL_NAME}/server/">
+                <include name="tang*.xml"/>
             </fileset>
         </copy>
 
@@ -1213,6 +1250,19 @@
         </antcall>
     </target>
 
+    <!-- Build, deploy and run a test suite on the server using the prompt runner. -->
+    <target name="server-run-all-prompt" depends="detect-os,set-app-name">
+        <antcall target="server-build" inheritRefs="true"/>
+        <!--antcall target="server-deploy" inheritRefs="true">
+            <param name="ear.name" value="${EAR_NAME}.ear"/>
+            <param name="application.name" value="${EAR_NAME}"/>
+        </antcall-->
+        <antcall target="server-run-test-prompt" inheritRefs="true"/>
+        <!--antcall target="server-undeploy" inheritRefs="true">
+            <param name="application.name" value="${EAR_NAME}"/>
+        </antcall-->
+    </target>
+
     <!-- Run an ear on the server. -->
     <target name="server-run-test" depends="config-trunk, config-flat">
         <property file="${user.home}/${server.name}.properties"/>
@@ -1236,6 +1286,53 @@
             <formatter type="xml"/>
             <test name="${TEST_SUITE}" haltonfailure="no" outfile="${report.dir}/${TEST_SUITE}-test-results"/>
         </junit>
+    </target>
+	
+    <!-- Run an ear on the server using prompt runner. -->
+    <target name="server-run-test-prompt" depends="config-trunk, config-flat">
+        <property file="${user.home}/${server.name}.properties"/>
+        <property file="${eclipselink.jpa.test}/${server.name}.properties"/>
+        <path id="run.path">
+            <pathelement path="${eclipselink.jpa.test}/${build.dir}/${TEST_NAME}_client.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/${build.dir}/${MODEL_NAME}_ejb.jar"/>
+            <fileset dir="${server.lib}" includes="${server.depend}"/>
+            <path refid="compile.server.path"/>
+        </path>
+        <echo>Running test ${EAR_NAME} on ${server.name}</echo>
+        <mkdir dir="${eclipselink.jpa.test}/${report.dir}"/>
+        <condition property="jvmarg.performance.baseline.version" value="-Dtoplink.loadbuild.baseline-version=${performance.baseline.version}">
+            <isset property="performance.baseline.version"/>
+        </condition>
+        <condition property="jvmarg.performance.baseline.version" value="-Ddummy=dummy">
+            <not>
+                <isset property="performance.baseline.version"/>
+            </not>
+        </condition>
+        <java classname="org.eclipse.persistence.testing.framework.PromptTestRunner"
+             fork="true"
+             maxmemory="512m"
+             failonerror="false"
+             dir="${eclipselink.jpa.test}/${run.dir}">
+            <jvmarg value="${jvmarg.performance.baseline.version}"/>
+                <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
+                <jvmarg value="-Ddb.driver=${db.driver}"/>
+                <jvmarg value="-Ddb.url=${db.url}"/>
+                <jvmarg value="-Ddb.user=${db.user}"/>
+                <jvmarg value="-Ddb.pwd=${db.pwd}"/>
+                <jvmarg value="-Ddb.platform=${db.platform}"/>
+            <jvmarg value="-Dserver.platform=${server.platform}"/>
+            <jvmarg value="-Dserver.user=${server.user}"/>
+            <jvmarg value="-Dserver.password=${server.pwd}"/>
+            <jvmarg value="-Dserver.url=${server.url}${APP_NAME}"/>
+            <jvmarg value="-Dserver.testrunner=${server.testrunner}"/>
+            <jvmarg value="-Dserver.run=TRUE"/>
+            <arg value="testmodel=${TEST_SUITE}"/>
+            <arg value="regressionlog=../${report.dir}/test.log"/>
+            <arg value="saveresults=${should.save.results}" />
+            <classpath>
+                <path refid="run.path"/>
+            </classpath>
+        </java>
     </target>
 
     <target name="generate-servertest-report">

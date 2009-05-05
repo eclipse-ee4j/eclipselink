@@ -27,6 +27,7 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.internal.descriptors.CascadeLockingPolicy;
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
+import org.eclipse.persistence.internal.expressions.ObjectExpression;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.mappings.foundation.MapKeyMapping;
 
@@ -216,7 +217,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * Used to allow object level comparisons.
      */
     public Expression buildObjectJoinExpression(Expression expression, Object value, AbstractSession session) {
-        Expression base = ((org.eclipse.persistence.internal.expressions.ObjectExpression)expression).getBaseExpression();
+        Expression base = ((ObjectExpression)expression).getBaseExpression();
         Expression foreignKeyJoin = null;
 
         // Allow for equal null.
@@ -773,14 +774,14 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
 
     /**
      * INTERNAL:
-     * The foreign keys primary keys are stored as database fields in the hashtable.
+     * The foreign keys primary keys are stored as database fields in the map.
      */
     protected void initializeForeignKeys(AbstractSession session) {
         HashMap<DatabaseField, DatabaseField> newSourceToTargetKeyFields = new HashMap(getSourceToTargetKeyFields().size());
         HashMap<DatabaseField, DatabaseField> newTargetToSourceKeyFields = new HashMap(getTargetToSourceKeyFields().size());
         Iterator<Map.Entry<DatabaseField, DatabaseField>> iterator = getSourceToTargetKeyFields().entrySet().iterator();
         while (iterator.hasNext()) {
-            Map.Entry<DatabaseField, DatabaseField> entry = (Map.Entry)iterator.next();
+            Map.Entry<DatabaseField, DatabaseField> entry = iterator.next();
             DatabaseField sourceField = entry.getKey();
             sourceField = getDescriptor().buildField(sourceField, keyTableForMapKey);
             DatabaseField targetField = entry.getValue();
@@ -794,7 +795,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
 
     /**
      * INTERNAL:
-     * The foreign keys primary keys are stored as database fields in the hashtable.
+     * The foreign keys primary keys are stored as database fields in the map.
      */
     protected void initializeForeignKeysWithDefaults(AbstractSession session) {
         if (isForeignKeyRelationship()) {
@@ -807,7 +808,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
                 throw DescriptorException.sizeMismatchOfForeignKeys(this);
             }
 
-            //grab the only element out of the Hashtable
+            //grab the only element out of the map
             DatabaseField sourceField = getSourceToTargetKeyFields().keySet().iterator().next();
             sourceField = getDescriptor().buildField(sourceField);
             getSourceToTargetKeyFields().clear();
@@ -824,7 +825,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
                 throw DescriptorException.sizeMismatchOfForeignKeys(this);
             }
 
-            //grab the only element out of the Hashtable
+            //grab the only element out of the map
             DatabaseField targetField = getTargetToSourceKeyFields().keySet().iterator().next();
             targetField = getReferenceDescriptor().buildField(targetField);
             getSourceToTargetKeyFields().clear();
@@ -888,8 +889,8 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     
     /**
      * This method would allow customers to get the potential selection criteria for a mapping
-     * prior to initialization.  This would allow them to more easily create an ammendment method
-     * that would ammend the SQL for the join.
+     * prior to initialization.  This would allow them to more easily create an amendment method
+     * that would amend the SQL for the join.
      */
     public Expression buildSelectionCriteria() {
         return buildSelectionCriteria(true, false);
@@ -948,9 +949,9 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      */
     public void buildShallowOriginalFromRow(AbstractRecord databaseRow, Object original, JoinedAttributeManager joinManager, ObjectBuildingQuery query, AbstractSession executionSession) {
         // Now we are only building this original so we can extract the primary
-        // key out of it.  If the primary key is stored accross a 1-1 a value
+        // key out of it.  If the primary key is stored across a 1-1 a value
         // holder needs to be built/triggered to get at it.
-        // In this case recursively build the shallow original accross the 1-1.
+        // In this case recursively build the shallow original across the 1-1.
         // We only need the primary key for that object, and we know
         // what that primary key is: it is the foreign key in our row.
         ClassDescriptor descriptor = getReferenceDescriptor();
@@ -997,7 +998,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
 
     /**
      * INTERNAL:
-     * Rehash any hashtables based on fields.
+     * Rehash any map based on fields.
      * This is used to clone descriptors for aggregates, which hammer field names,
      * it is probably better not to hammer the field name and this should be refactored.
      */

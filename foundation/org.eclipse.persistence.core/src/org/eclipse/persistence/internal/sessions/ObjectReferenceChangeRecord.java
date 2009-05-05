@@ -12,8 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.sessions;
 
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-
 /**
  * <p>
  * <b>Purpose</b>: To record the changes for an attribute that references a single Object
@@ -57,21 +55,6 @@ public class ObjectReferenceChangeRecord extends ChangeRecord implements org.ecl
     public void mergeRecord(ChangeRecord mergeFromRecord, UnitOfWorkChangeSet mergeToChangeSet, UnitOfWorkChangeSet mergeFromChangeSet) {
         ObjectChangeSet localChangeSet = mergeToChangeSet.findOrIntegrateObjectChangeSet((ObjectChangeSet)((ObjectReferenceChangeRecord)mergeFromRecord).getNewValue(), mergeFromChangeSet);
         this.newValue = localChangeSet;
-    }
-
-    /**
-     * INTERNAL:
-     * Ensure this change record is ready to by sent remotely for cache synchronization
-     * In general, this means setting the CacheSynchronizationType on any ObjectChangeSets
-     * associated with this ChangeRecord
-     */
-    public void prepareForSynchronization(AbstractSession session) {
-        if ((newValue != null) && (newValue.getSynchronizationType() == ClassDescriptor.UNDEFINED_OBJECT_CHANGE_BEHAVIOR)) {
-            ClassDescriptor descriptor = session.getDescriptor(newValue.getClassType(session));
-            int syncType = descriptor.getCacheSynchronizationType();
-            newValue.setSynchronizationType(syncType);
-            newValue.prepareChangeRecordsForSynchronization(session);
-        }
     }
 
     /**
