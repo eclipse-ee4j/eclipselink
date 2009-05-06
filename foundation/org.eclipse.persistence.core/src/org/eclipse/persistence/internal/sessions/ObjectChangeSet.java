@@ -97,11 +97,7 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
         if ((primaryKey != null) && !primaryKey.contains(null)) {
             this.cacheKey = new CacheKey(primaryKey);
         }
-        if (cloneObject != null) {
-            this.classType = cloneObject.getClass();
-        } else {
-            this.classType = descriptor.getJavaClass();
-        }
+        this.classType = descriptor.getJavaClass();
         this.className = this.classType.getName();
         this.descriptor = descriptor;
         this.cacheSynchronizationType = descriptor.getCacheSynchronizationType();

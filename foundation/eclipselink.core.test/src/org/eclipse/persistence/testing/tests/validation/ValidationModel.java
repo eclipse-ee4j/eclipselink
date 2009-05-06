@@ -243,7 +243,6 @@ public class ValidationModel extends TestModel {
         suite.setDescription("This suite tests that proper descriptor exceptions are thrown when appropriate.");
         suite.addTest(new ConstructingDescriptorExceptionTests()); //ian added -- non-standard test -- catch all
         suite.addTest(new ChildDoesNotDefineAbstractQueryKeyOfParentTest()); //ian added
-        suite.addTest(new NoSubClassMatchTest_Aggregate()); //ian added
         suite.addTest(new NullPointerWhileConstructorInstantiationTest()); //ian added
         suite.addTest(new VariableOneToOneMappingIsNotDefinedProperlyTest("writeFromObjectIntoRow")); //ian added
         suite.addTest(new VariableOneToOneMappingIsNotDefinedProperlyTest("writeFromObjectIntoRowWithChangeRecord")); //ian added

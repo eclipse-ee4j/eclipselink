@@ -46,9 +46,10 @@ public class NoSubClassMatchTest_AggregateObject extends ExceptionTest {
         Employee employee = new Employee();
 
         ClassDescriptor descriptor = ((DatabaseSession)getSession()).getDescriptor(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
+        ClassDescriptor projDescriptor = ((DatabaseSession)getSession()).getDescriptor(org.eclipse.persistence.testing.models.employee.domain.SmallProject.class);
         mapping = (org.eclipse.persistence.mappings.AggregateObjectMapping)descriptor.getMappingForAttributeName("period");
         orgInheritancePolicy = mapping.getReferenceDescriptor().getInheritancePolicyOrNull();
-        org.eclipse.persistence.internal.sessions.ObjectChangeSet changeSet = new ObjectChangeSet(new Vector(), descriptor, employee, new org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet(), true);
+        org.eclipse.persistence.internal.sessions.ObjectChangeSet changeSet = new ObjectChangeSet(new Vector(), projDescriptor, employee, new org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet(), true);
         changeRecord = new org.eclipse.persistence.internal.sessions.AggregateChangeRecord(changeSet);
         changeRecord.setChangedObject(changeSet);
 
