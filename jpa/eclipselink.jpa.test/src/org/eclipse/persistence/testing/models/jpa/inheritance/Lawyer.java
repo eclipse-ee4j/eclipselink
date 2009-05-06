@@ -18,6 +18,6 @@ import javax.persistence.*;
 
 @Entity
 @Table(name="CMP3_PERSON")
-@DiscriminatorValue("L")
+@DiscriminatorValue("3")
 public class Lawyer extends Person {
 }

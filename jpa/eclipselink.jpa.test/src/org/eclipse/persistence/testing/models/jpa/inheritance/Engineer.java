@@ -20,7 +20,7 @@ import java.util.List;
 
 @Entity
 @Table(name="CMP3_ENGINEER")
-@DiscriminatorValue("E")
+@DiscriminatorValue("2")
 public class Engineer extends Person {
     private String title;
     private Company company;

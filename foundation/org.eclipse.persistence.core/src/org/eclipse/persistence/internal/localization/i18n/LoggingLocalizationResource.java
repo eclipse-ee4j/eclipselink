@@ -230,7 +230,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "non_jpa_allowed_type_used_for_collection_using_lazy_access", "Element [{1}] within entity class [{0}] uses a collection type [{2}] when the JPA specification only supports java.util.Collection, " +
                 "java.util.Set, java.util.List, or java.util.Map.  This type is supported with eager loading; using lazy loading with this collection type requires additional configuration and an IndirectContainer implementation " +
                 "that extends [{2}] or setting the mapping to use basic indirection and the type to be ValueholderInterface." },
-        
+        { "metadata_warning_integer_discriminator_could_not_be_built", "Class [{0}] specifies discriminatorType=INTEGER and uses [{1}] as the discriminatorValue.  That value cannot be converted to an integer.  We will attempt to use this value in String format." },
         { "metadata_warning_override_annotation_with_xml", "Ignoring the annotation [{0}] from [{1}] since an XML element was defined in the mapping file [{2}]." },
         { "metadata_warning_override_named_annotation_with_xml", "Ignoring the annotation [{0}] from [{2}] since an XML element with the same name [{1}] was defined in the mapping file [{3}]" },        
         { "metadata_warning_override_xml_with_eclipselink_xml", "Ignoring the element [{0}] from [{1}] defined in the mapping file [{2}] since this element was defined in the eclipselink-orm mapping file [{3}]" },
