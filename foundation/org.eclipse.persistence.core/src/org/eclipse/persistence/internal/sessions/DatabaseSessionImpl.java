@@ -434,6 +434,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
                         descriptor.initializeAggregateInheritancePolicy(session);
                     }
                 } catch (RuntimeException exception) {
+                    exception.printStackTrace();
                     getIntegrityChecker().handleError(exception);
                 }
             }

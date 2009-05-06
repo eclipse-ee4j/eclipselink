@@ -216,6 +216,7 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
  */
 public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirectCollectionMapping implements XMLMapping {
     private boolean isCDATA;
+    private boolean isWriteOnly;
 
     public XMLCompositeDirectCollectionMapping() {
         super();
@@ -361,4 +362,26 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
     public boolean isCDATA() {
         return isCDATA;
     }
+    
+    public void setIsWriteOnly(boolean b) {
+        this.isWriteOnly = b;
+    }
+    
+    public boolean isWriteOnly() {
+        return isWriteOnly;
+    }
+    
+    public void setAttributeValueInObject(Object object, Object value) throws DescriptorException {
+        if(isWriteOnly()) {
+            return;
+        }
+        super.setAttributeValueInObject(object, value);
+    }
+    
+    public void preInitialize(AbstractSession session) throws DescriptorException {
+        getAttributeAccessor().setIsWriteOnly(this.isWriteOnly());
+        getAttributeAccessor().setIsReadOnly(this.isReadOnly());
+        super.preInitialize(session);
+    }
+    
 }

@@ -201,6 +201,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
     AbstractNullPolicy nullPolicy;
     private AttributeAccessor containerAccessor;
     private UnmarshalKeepAsElementPolicy keepAsElementPolicy;
+    private boolean isWriteOnly;
 
     public XMLCompositeObjectMapping() {
         super();
@@ -357,6 +358,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
         if(null != containerAccessor) {
             containerAccessor.initializeAttributes(this.referenceClass);
         }
+        
     }
 
     /**
@@ -441,6 +443,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
     }
 
     public Object readFromRowIntoObject(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object targetObject, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
+
         Object fieldValue = databaseRow.getIndicatingNoEntry(getField());
         // 20071002: noEntry ineffective as a check for an absent node, empty nodes are DOMRecords, absent nodes are null)
         //        if(fieldValue == AbstractRecord.noEntry && !getNullPolicy().getIsSetPerformedForAbsentNode()) {           
@@ -723,5 +726,27 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
         }
         return xmlDescriptor;
     }
+    
+    public void setIsWriteOnly(boolean b) {
+        isWriteOnly = b;
+    }
+    
+    public boolean isWriteOnly() {
+        return isWriteOnly;
+    }
+    
+    public void preInitialize(AbstractSession session) throws DescriptorException {
+        getAttributeAccessor().setIsWriteOnly(this.isWriteOnly());
+        getAttributeAccessor().setIsReadOnly(this.isReadOnly());
+        super.preInitialize(session);
+    }
+    
+    public void setAttributeValueInObject(Object object, Object value) throws DescriptorException {
+        if(isWriteOnly()) {
+            return;
+        }
+        super.setAttributeValueInObject(object, value);
+    }    
+    
     
 }

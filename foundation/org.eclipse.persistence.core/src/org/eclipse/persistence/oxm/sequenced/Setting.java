@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.mappings.ContainerMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.oxm.mappings.XMLMapping;
 
 /**
  * <p>Setting objects are used to control the order in which the
@@ -170,7 +171,9 @@ public class Setting {
             if(null != children) {
                 return;
             }
-            mapping.setAttributeValueInObject(object, value);
+            if(!mapping.isWriteOnly()) {
+                mapping.setAttributeValueInObject(object, value);
+            }
         }              
     }
 
@@ -189,7 +192,7 @@ public class Setting {
 
             ContainerMapping containerMapping = (ContainerMapping) mapping;
             ContainerPolicy containerPolicy = containerMapping.getContainerPolicy();
-            if(null == container) {
+            if(null == container && !(mapping.isWriteOnly())) {
                 container = containerPolicy.containerInstance();
                 mapping.setAttributeValueInObject(object, container);
             }

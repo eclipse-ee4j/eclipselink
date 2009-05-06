@@ -16,10 +16,13 @@ package org.eclipse.persistence.oxm.mappings;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLContext;
@@ -34,7 +37,8 @@ import org.w3c.dom.Node;
 
 public abstract class XMLAbstractAnyMapping extends DatabaseMapping {
 
-    private UnmarshalKeepAsElementPolicy keepAsElementPolicy;    
+    private UnmarshalKeepAsElementPolicy keepAsElementPolicy;  
+    private boolean isWriteOnly;
     
     public UnmarshalKeepAsElementPolicy getKeepAsElementPolicy() {
         return keepAsElementPolicy;
@@ -116,5 +120,29 @@ public abstract class XMLAbstractAnyMapping extends DatabaseMapping {
         
         return objectValue;
     }
+    
+    public boolean isWriteOnly() {
+        return this.isWriteOnly;
+    }
+    
+    public void setIsWriteOnly(boolean b) {
+        this.isWriteOnly = b;
+    }
+    
+    public void setAttributeValueInObject(Object object, Object value) throws DescriptorException {
+        if(isWriteOnly()) {
+            return;
+        }
+        super.setAttributeValueInObject(object, value);
+    }
+
+    
+    public void preInitialize(AbstractSession session) throws DescriptorException {
+        getAttributeAccessor().setIsWriteOnly(this.isWriteOnly());
+        getAttributeAccessor().setIsReadOnly(this.isReadOnly());
+        super.preInitialize(session);
+    }
+    
+        
     
 }

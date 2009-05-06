@@ -53,6 +53,7 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
 public class XMLObjectReferenceMapping extends AggregateMapping implements XMLMapping {
     protected HashMap sourceToTargetKeyFieldAssociations;
     protected Vector sourceToTargetKeys; // maintain the order of the keys
+    private boolean isWriteOnly;
 
     /**
      * PUBLIC:
@@ -306,6 +307,13 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements XMLMa
             sourceToTargetKeyFieldAssociations.put(sourceField, targetField);
         }
     }
+    
+    public void preInitialize(AbstractSession session) throws DescriptorException {
+        getAttributeAccessor().setIsWriteOnly(this.isWriteOnly());
+        getAttributeAccessor().setIsReadOnly(this.isReadOnly());
+        super.preInitialize(session);
+    }
+    
 
     /**
      * INTERNAL:
@@ -394,4 +402,19 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements XMLMa
         }
 
     }
+    
+    public void setIsWriteOnly(boolean b) {
+        this.isWriteOnly = b;
+    }
+    
+    public boolean isWriteOnly() {
+        return this.isWriteOnly;
+    }
+    
+    public void setAttributeValueInObject(Object object, Object value) throws DescriptorException {
+        if(isWriteOnly()) {
+            return;
+        }
+        super.setAttributeValueInObject(object, value);
+    }    
 }

@@ -153,6 +153,8 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
     private AttributeAccessor containerAccessor;
     private UnmarshalKeepAsElementPolicy keepAsElementPolicy;
     
+    private boolean isWriteOnly;
+
     public XMLCompositeCollectionMapping() {
         super();
         // The default policy is NullPolicy
@@ -321,7 +323,8 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
         }
         if(null != containerAccessor) {
             containerAccessor.initializeAttributes(this.referenceClass);
-        }        
+        }    
+        
     }
 
     /**
@@ -658,4 +661,26 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
         }
         return xmlDescriptor;
     }
+
+    public boolean isWriteOnly() {
+        return this.isWriteOnly;
+    }
+    
+    public void setIsWriteOnly(boolean b) {
+        this.isWriteOnly = b;
+    }
+    
+    public void preInitialize(AbstractSession session) throws DescriptorException {
+        getAttributeAccessor().setIsWriteOnly(this.isWriteOnly());
+        getAttributeAccessor().setIsReadOnly(this.isReadOnly());
+        super.preInitialize(session);
+    }
+    
+    public void setAttributeValueInObject(Object object, Object value) throws DescriptorException {
+        if(isWriteOnly()) {
+            return;
+        }
+        super.setAttributeValueInObject(object, value);
+    }    
+    
 }

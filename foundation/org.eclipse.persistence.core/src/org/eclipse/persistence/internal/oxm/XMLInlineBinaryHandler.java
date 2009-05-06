@@ -51,8 +51,6 @@ public class XMLInlineBinaryHandler extends UnmarshalRecord {
        //text.
        Object value = this.getStringBuffer().toString();
        resetStringBuffer();
-       
-
 
        boolean isSwaRef = false;
        if(isCollection) {

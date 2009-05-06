@@ -14,6 +14,7 @@ package org.eclipse.persistence.oxm.mappings;
 
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.record.XMLRecord;
+import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
 import org.eclipse.persistence.mappings.transformers.FieldTransformer;
@@ -145,5 +146,16 @@ import org.eclipse.persistence.mappings.transformers.FieldTransformer;
     }
     public void writeSingleValue(Object value, Object parent, XMLRecord row, AbstractSession session) {
         this.writeFromObjectIntoRow(parent, row, session);
+    }
+    
+    public void setIsWriteOnly(boolean b) {
+        // no op for this mapping.
+        // A Transformation Mapping is write only if it has no Attribute Transformations.
+    }
+    
+    public void preInitialize(AbstractSession session) throws DescriptorException {
+        getAttributeAccessor().setIsWriteOnly(this.isWriteOnly());
+        getAttributeAccessor().setIsReadOnly(this.isReadOnly());
+        super.preInitialize(session);
     }
 }

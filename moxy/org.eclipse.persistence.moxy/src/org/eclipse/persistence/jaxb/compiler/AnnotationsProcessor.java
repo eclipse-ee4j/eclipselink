@@ -719,244 +719,301 @@ public class AnnotationsProcessor {
         ArrayList<Property> properties = new ArrayList<Property>();
         if (cls == null) { return properties; }
 
-        // First collect all the getters
-        ArrayList<JavaMethod> getMethods = new ArrayList<JavaMethod>();
+        // First collect all the getters and setters
+        ArrayList<JavaMethod> propertyMethods = new ArrayList<JavaMethod>();
         for (JavaMethod next : new ArrayList<JavaMethod>(cls.getDeclaredMethods())) {
             if ((next.getName().startsWith("get") && next.getName().length() > 3) || (next.getName().startsWith("is") && next.getName().length() > 2)) {
                 int modifiers = next.getModifiers();
                 if (!Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers) && ((onlyPublic && Modifier.isPublic(next.getModifiers())) || !onlyPublic)) {
-                    getMethods.add(next);                    
+                    propertyMethods.add(next);                    
+                }
+            } else if ((next.getName().startsWith("set") && next.getName().length() > 3)) {
+                int modifiers = next.getModifiers();
+                if (!Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers) && ((onlyPublic && Modifier.isPublic(next.getModifiers())) || !onlyPublic)) {
+                    propertyMethods.add(next);                    
                 }
             }
         }
         // Next iterate over the getters and find their setter methods, add whichever one is
         // annotated to the properties list. If neither is, use the getter
         boolean hasAnyAttribteProperty = false;
-        for (int i=0; i<getMethods.size(); i++) {
-            JavaMethod getMethod = getMethods.get(i);
+        
+        //keep track of property names to avoid processing the same property twice (for getter and setter)
+        ArrayList<String> propertyNames = new ArrayList<String>();
+        for (int i=0; i<propertyMethods.size(); i++) {
+            JavaMethod nextMethod = propertyMethods.get(i);
             String propertyName = "";
-            if (getMethod.getName().startsWith("get")) {
-                propertyName = getMethod.getName().substring(3);
-            } else if(getMethod.getName().startsWith("is")) {
-                propertyName = getMethod.getName().substring(2);
-            }
-            //make the first Character lowercase
-            String setMethodName = "set" + propertyName;
-
-            propertyName = Character.toLowerCase(propertyName.charAt(0)) + propertyName.substring(1);
             
-            JavaClass[] paramTypes = { (JavaClass) getMethod.getReturnType() };
-            JavaMethod setMethod = cls.getDeclaredMethod(setMethodName, paramTypes);
+            JavaMethod getMethod;
+            JavaMethod setMethod;
+            
             JavaMethod propertyMethod = null;
-            if (setMethod != null && !setMethod.getAnnotations().isEmpty()) {
-                // use the set method if it exists and is annotated
-                if (!helper.isAnnotationPresent(setMethod, XmlTransient.class)) {
-                    propertyMethod = setMethod;   
-                }
-            } else {
-                if (!helper.isAnnotationPresent(getMethod, XmlTransient.class)) {
-                    propertyMethod = getMethod;
-                }
-            }
-            Property property = null;
-            if(helper.isAnnotationPresent(propertyMethod, XmlElements.class)) {
-                property = new ChoiceProperty(helper);
-            } else if (helper.isAnnotationPresent(propertyMethod, XmlAnyElement.class)) {
-                property = new AnyProperty(helper);
-            } else if (helper.isAnnotationPresent(propertyMethod, XmlElementRef.class) || helper.isAnnotationPresent(propertyMethod, XmlElementRefs.class)) {
-                property = new ReferenceProperty(helper);
-            } else {
-                property = new Property(helper);
-            }
 
-            // Check for mixed context
-            if (helper.isAnnotationPresent(propertyMethod, XmlMixed.class)) {
-                info.setMixed(true);
-            }
-            
-            property.setElement(propertyMethod);
-            property.setSchemaName(getQNameForProperty(propertyName, propertyMethod, getNamespaceInfoForPackage(cls.getPackage())));
-            property.setPropertyName(propertyName);
-            
-            JavaClass returnClass = (JavaClass) getMethod.getReturnType();
-            if (!helper.isAnnotationPresent(returnClass, XmlTransient.class)) {
-                property.setType(returnClass);
-            } else {
-                JavaClass parent = returnClass.getSuperclass();
-                while (parent != null) {
-                    if (parent.getName().equals("java.lang.Object")) {
-                        property.setType(parent);
-                        break;
-                    }
-                    if (!helper.isAnnotationPresent(parent, XmlTransient.class)) {
-                        property.setType(parent);
-                        break;
-                    }
-                    parent = parent.getSuperclass();
+            if(!nextMethod.getName().startsWith("set")) {
+                if (nextMethod.getName().startsWith("get")) {
+                    propertyName = nextMethod.getName().substring(3);
+                } else if(nextMethod.getName().startsWith("is")) {
+                    propertyName = nextMethod.getName().substring(2);
                 }
-            }
-            property.setGenericType(helper.getGenericReturnType(getMethod));
-            property.setGetMethodName(getMethod.getName());
-            if(setMethod != null) {
-                property.setSetMethodName(setMethodName);
-            }
-            property.setMethodProperty(true);
-            JavaClass ptype = property.getType();
-            if (helper.isAnnotationPresent(property.getElement(), XmlJavaTypeAdapter.class)) {
-                XmlJavaTypeAdapter adapter = (XmlJavaTypeAdapter) helper.getAnnotation(property.getElement(), XmlJavaTypeAdapter.class);
-                property.setAdapterClass(adapter.value());
-            } else if (info.getAdaptersByClass().get(ptype) != null) {
-                property.setAdapterClass(info.getAdaptersByClass().get(ptype));
-            }
+                getMethod = nextMethod;
+                //make the first Character lowercase
+                String setMethodName = "set" + propertyName;
 
-            if (property.hasAdapterClass()) {
-                ptype = property.getValueType();
-            }
+                propertyName = Character.toLowerCase(propertyName.charAt(0)) + propertyName.substring(1);
             
-            // Get schema-type info if specified and set it on the property for later use:
-            if (helper.isAnnotationPresent(property.getElement(), XmlSchemaType.class)) {
-                XmlSchemaType schemaType = (XmlSchemaType) helper.getAnnotation(property.getElement(), XmlSchemaType.class);
-                QName schemaTypeQname = new QName(schemaType.namespace(), schemaType.name());
-                property.setSchemaType(schemaTypeQname);
-            }            
-            if (helper.isAnnotationPresent(property.getElement(), XmlAttachmentRef.class) && areEquals(ptype, JAVAX_ACTIVATION_DATAHANDLER)) {
-                property.setIsSwaAttachmentRef(true);
-                property.setSchemaType(XMLConstants.SWA_REF_QNAME);
-            } else if (areEquals(ptype, JAVAX_ACTIVATION_DATAHANDLER) || areEquals(ptype, byte[].class) || areEquals(ptype, Byte[].class) || areEquals(ptype, Image.class) || areEquals(ptype, Source.class) || areEquals(ptype, JAVAX_MAIL_INTERNET_MIMEMULTIPART)) {
-                property.setIsMtomAttachment(true);
-                property.setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
-            }
-            if (helper.isAnnotationPresent(property.getElement(), XmlMimeType.class)) {
-                property.setMimeType(((XmlMimeType) helper.getAnnotation(property.getElement(), XmlMimeType.class)).value());
-            }
-            if (helper.isAnnotationPresent(property.getElement(), XmlJavaTypeAdapter.class)) {
-                XmlJavaTypeAdapter adapter = (XmlJavaTypeAdapter) helper.getAnnotation(property.getElement(), XmlJavaTypeAdapter.class);
-                property.setAdapterClass(adapter.value());
-            } else if(info.getAdaptersByClass().get(ptype) != null) {
-                property.setAdapterClass(info.getAdaptersByClass().get(ptype));
-            }
-            if(helper.isAnnotationPresent(property.getElement(), XmlAttribute.class)) {
-                property.setIsAttribute(true);
-                property.setIsRequired(((XmlAttribute)helper.getAnnotation(property.getElement(), XmlAttribute.class)).required());
-            }
-            
-            if(helper.isAnnotationPresent(property.getElement(), XmlAnyAttribute.class)) {
-                if(hasAnyAttribteProperty) {
-                    throw org.eclipse.persistence.exceptions.JAXBException.multipleAnyAttributeMapping(cls.getName());
-                }
-                if(!ptype.getName().equals("java.util.Map")) {
-                    throw org.eclipse.persistence.exceptions.JAXBException.anyAttributeOnNonMap(property.getPropertyName());
-                }
-                property.setIsAttribute(true);
-                hasAnyAttribteProperty = true;
-            }
-            if(helper.isAnnotationPresent(property.getElement(), XmlElements.class)) {
-                XmlElements xmlElements = (XmlElements)helper.getAnnotation(property.getElement(), XmlElements.class);
-                XmlElement[] elements = xmlElements.value();
-                ArrayList<Property> choiceProperties = new ArrayList<Property>(elements.length);
-                for(int j = 0; j < elements.length; j++) {
-                    XmlElement next = elements[j];
-                    Property choiceProp = new Property();
-                    String name = next.name();
-                    String namespace = next.namespace();
-                    QName qName = null;
-                    if(name.equals("##defualt")) {
-                        name = propertyName;
+                JavaClass[] paramTypes = { (JavaClass) getMethod.getReturnType() };
+                setMethod = cls.getDeclaredMethod(setMethodName, paramTypes);
+                if (setMethod != null && !setMethod.getAnnotations().isEmpty()) {
+                    // use the set method if it exists and is annotated
+                    if (!helper.isAnnotationPresent(setMethod, XmlTransient.class)) {
+                        propertyMethod = setMethod;   
                     }
-                    if (!namespace.equals("##default")) {
-                        qName = new QName(namespace, name);
-                    } else {
-                        qName = new QName(name);
-                    }
-                    choiceProp.setPropertyName(property.getPropertyName());
-                    choiceProp.setType(helper.getJavaClass(next.type()));
-                    choiceProp.setSchemaName(qName);
-                    choiceProp.setSchemaType(getSchemaTypeFor(helper.getJavaClass(next.type())));
-                    choiceProp.setElement(property.getElement());
-                    choiceProperties.add(choiceProp);
-                }
-                ((ChoiceProperty)property).setChoiceProperties(choiceProperties);
-            }
-            if(helper.isAnnotationPresent(property.getElement(), XmlAnyElement.class)) {
-                XmlAnyElement anyElement = (XmlAnyElement)helper.getAnnotation(property.getElement(), XmlAnyElement.class);
-                ((AnyProperty)property).setDomHandlerClass(anyElement.value());
-                ((AnyProperty)property).setLax(anyElement.lax());
-                
-            }
-            if(helper.isAnnotationPresent(property.getElement(), XmlElementRef.class) || helper.isAnnotationPresent(property.getElement(), XmlElementRefs.class)) { 
-                XmlElementRef[] elementRefs;
-                XmlElementRef ref = (XmlElementRef)helper.getAnnotation(property.getElement(), XmlElementRef.class);
-                if(ref != null) {
-                    elementRefs = new XmlElementRef[]{ref};
                 } else {
-                    XmlElementRefs refs = (XmlElementRefs)helper.getAnnotation(property.getElement(), XmlElementRefs.class);
-                    elementRefs = refs.value();
-                    info.setHasElementRefs(true);
+                    if (!helper.isAnnotationPresent(getMethod, XmlTransient.class)) {
+                        propertyMethod = getMethod;
+                    }
                 }
-                for(XmlElementRef nextRef:elementRefs) {
-                    JavaClass type = ptype;
-                    String typeName = type.getQualifiedName();
-                    property.setType(type);
-                    if(isCollectionType(property)) {
-                        if(type.hasActualTypeArguments()) {
-                            type = (JavaClass)type.getActualTypeArguments().toArray()[0];
-                            typeName = type.getQualifiedName();
+            } else {
+                propertyName = nextMethod.getName().substring(3);
+                setMethod = nextMethod;
+                
+                String getMethodName = "get" + propertyName;
+
+                getMethod = cls.getDeclaredMethod(getMethodName, new JavaClass[]{});
+                if(getMethod == null) {
+                    //try is instead of get
+                    getMethodName = "is" + propertyName;
+                    getMethod = cls.getDeclaredMethod(getMethodName, new JavaClass[]{});
+                }
+                if (getMethod != null && !getMethod.getAnnotations().isEmpty()) {
+                    // use the set method if it exists and is annotated
+                    if (!helper.isAnnotationPresent(getMethod, XmlTransient.class)) {
+                        propertyMethod = getMethod;   
+                    }
+                } else {
+                    if (!helper.isAnnotationPresent(setMethod, XmlTransient.class)) {
+                        propertyMethod = setMethod;
+                    }
+                }
+                propertyName = Character.toLowerCase(propertyName.charAt(0)) + propertyName.substring(1);
+            }
+            if(!propertyNames.contains(propertyName)) {
+                propertyNames.add(propertyName);
+
+                Property property = null;
+                if(helper.isAnnotationPresent(propertyMethod, XmlElements.class)) {
+                    property = new ChoiceProperty(helper);
+                } else if (helper.isAnnotationPresent(propertyMethod, XmlAnyElement.class)) {
+                    property = new AnyProperty(helper);
+                } else if (helper.isAnnotationPresent(propertyMethod, XmlElementRef.class) || helper.isAnnotationPresent(propertyMethod, XmlElementRefs.class)) {
+                    property = new ReferenceProperty(helper);
+                } else {
+                    property = new Property(helper);
+                }
+                
+                //  Check for mixed context
+                if (helper.isAnnotationPresent(propertyMethod, XmlMixed.class)) {
+                    info.setMixed(true);
+                }
+                
+                property.setElement(propertyMethod);
+                property.setSchemaName(getQNameForProperty(propertyName, propertyMethod, getNamespaceInfoForPackage(cls.getPackage())));
+                property.setPropertyName(propertyName);
+            
+                JavaClass returnClass = null;
+                if(getMethod != null) {
+                    returnClass = (JavaClass) getMethod.getReturnType();
+                } else {
+                    returnClass = setMethod.getParameterTypes()[0];
+                }
+                if (!helper.isAnnotationPresent(returnClass, XmlTransient.class)) {
+                    property.setType(returnClass);
+                } else {
+                    JavaClass parent = returnClass.getSuperclass();
+                    while (parent != null) {
+                        if (parent.getName().equals("java.lang.Object")) {
+                            property.setType(parent);
+                            break;
                         }
+                        if (!helper.isAnnotationPresent(parent, XmlTransient.class)) {
+                            property.setType(parent);
+                            break;
+                        }
+                        parent = parent.getSuperclass();
                     }
-                    if(nextRef.type() != XmlElementRef.DEFAULT.class) {
-                        typeName = helper.getJavaClass(nextRef.type()).getQualifiedName();
-                    }
-                    ElementDeclaration referencedElement = this.xmlRootElements.get(typeName);
-                    if(referencedElement != null) {
-                        addReferencedElement((ReferenceProperty)property, referencedElement);
+                }
+                if(returnClass != null) {
+                    if(returnClass.hasActualTypeArguments()) {
+                        ArrayList typeArgs =  (ArrayList) returnClass.getActualTypeArguments();
+                        JavaClass genericType = (JavaClass) typeArgs.get(0);
+                        property.setGenericType(genericType);
                     } else {
-                        String name = nextRef.name();
-                        String namespace = nextRef.namespace();
-                        if(namespace.equals("##default")) {
-                            namespace = "";
+                        property.setGenericType(returnClass);
+                    }
+                }
+                if(getMethod != null) {
+                    property.setGetMethodName(getMethod.getName());
+                }
+                if(setMethod != null) {
+                    property.setSetMethodName(setMethod.getName());
+                }
+                property.setMethodProperty(true);
+                JavaClass ptype = property.getType();
+                if (helper.isAnnotationPresent(property.getElement(), XmlJavaTypeAdapter.class)) {
+                    XmlJavaTypeAdapter adapter = (XmlJavaTypeAdapter) helper.getAnnotation(property.getElement(), XmlJavaTypeAdapter.class);
+                    property.setAdapterClass(adapter.value());
+                } else if (info.getAdaptersByClass().get(ptype) != null) {
+                    property.setAdapterClass(info.getAdaptersByClass().get(ptype));
+                }
+
+                if (property.hasAdapterClass()) {
+                    ptype = property.getValueType();
+                }
+            
+                // Get schema-type info if specified and set it on the property for later use:
+                if (helper.isAnnotationPresent(property.getElement(), XmlSchemaType.class)) {
+                    XmlSchemaType schemaType = (XmlSchemaType) helper.getAnnotation(property.getElement(), XmlSchemaType.class);
+                    QName schemaTypeQname = new QName(schemaType.namespace(), schemaType.name());
+                    property.setSchemaType(schemaTypeQname);
+                }            
+                if (helper.isAnnotationPresent(property.getElement(), XmlAttachmentRef.class) && areEquals(ptype, JAVAX_ACTIVATION_DATAHANDLER)) {
+                    property.setIsSwaAttachmentRef(true);
+                    property.setSchemaType(XMLConstants.SWA_REF_QNAME);
+                } else if (areEquals(ptype, JAVAX_ACTIVATION_DATAHANDLER) || areEquals(ptype, byte[].class) || areEquals(ptype, Byte[].class) || areEquals(ptype, Image.class) || areEquals(ptype, Source.class) || areEquals(ptype, JAVAX_MAIL_INTERNET_MIMEMULTIPART)) {
+                    property.setIsMtomAttachment(true);
+                    property.setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
+                }
+                if (helper.isAnnotationPresent(property.getElement(), XmlMimeType.class)) {
+                    property.setMimeType(((XmlMimeType) helper.getAnnotation(property.getElement(), XmlMimeType.class)).value());
+                }
+                if (helper.isAnnotationPresent(property.getElement(), XmlJavaTypeAdapter.class)) {
+                    XmlJavaTypeAdapter adapter = (XmlJavaTypeAdapter) helper.getAnnotation(property.getElement(), XmlJavaTypeAdapter.class);
+                    property.setAdapterClass(adapter.value());
+                } else if(info.getAdaptersByClass().get(ptype) != null) {
+                    property.setAdapterClass(info.getAdaptersByClass().get(ptype));
+                }
+                if(helper.isAnnotationPresent(property.getElement(), XmlAttribute.class)) {
+                    property.setIsAttribute(true);
+                    property.setIsRequired(((XmlAttribute)helper.getAnnotation(property.getElement(), XmlAttribute.class)).required());
+                }
+            
+                if(helper.isAnnotationPresent(property.getElement(), XmlAnyAttribute.class)) {
+                    if(hasAnyAttribteProperty) {
+                        throw org.eclipse.persistence.exceptions.JAXBException.multipleAnyAttributeMapping(cls.getName());
+                    }
+                    if(!ptype.getName().equals("java.util.Map")) {
+                        throw org.eclipse.persistence.exceptions.JAXBException.anyAttributeOnNonMap(property.getPropertyName());
+                    }
+                    property.setIsAttribute(true);
+                    hasAnyAttribteProperty = true;
+                }
+                if(helper.isAnnotationPresent(property.getElement(), XmlElements.class)) {
+                    XmlElements xmlElements = (XmlElements)helper.getAnnotation(property.getElement(), XmlElements.class);
+                    XmlElement[] elements = xmlElements.value();
+                    ArrayList<Property> choiceProperties = new ArrayList<Property>(elements.length);
+                    for(int j = 0; j < elements.length; j++) {
+                        XmlElement next = elements[j];
+                        Property choiceProp = new Property();
+                        String name = next.name();
+                        String namespace = next.namespace();
+                        QName qName = null;
+                        if(name.equals("##defualt")) {
+                            name = propertyName;
                         }
-                        QName qname = new QName(namespace, name);
-                        referencedElement = this.globalElements.get(qname);
+                        if (!namespace.equals("##default")) {
+                            qName = new QName(namespace, name);
+                        } else {
+                            qName = new QName(name);
+                        }
+                        choiceProp.setPropertyName(property.getPropertyName());
+                        choiceProp.setType(helper.getJavaClass(next.type()));
+                        choiceProp.setSchemaName(qName);
+                        choiceProp.setSchemaType(getSchemaTypeFor(helper.getJavaClass(next.type())));
+                        choiceProp.setElement(property.getElement());
+                        choiceProperties.add(choiceProp);
+                    }
+                    ((ChoiceProperty)property).setChoiceProperties(choiceProperties);
+                }
+                if(helper.isAnnotationPresent(property.getElement(), XmlAnyElement.class)) {
+                    XmlAnyElement anyElement = (XmlAnyElement)helper.getAnnotation(property.getElement(), XmlAnyElement.class);
+                    ((AnyProperty)property).setDomHandlerClass(anyElement.value());
+                    ((AnyProperty)property).setLax(anyElement.lax());
+                    
+                }
+                if(helper.isAnnotationPresent(property.getElement(), XmlElementRef.class) || helper.isAnnotationPresent(property.getElement(), XmlElementRefs.class)) { 
+                    XmlElementRef[] elementRefs;
+                    XmlElementRef ref = (XmlElementRef)helper.getAnnotation(property.getElement(), XmlElementRef.class);
+                    if(ref != null) {
+                        elementRefs = new XmlElementRef[]{ref};
+                    } else {
+                        XmlElementRefs refs = (XmlElementRefs)helper.getAnnotation(property.getElement(), XmlElementRefs.class);
+                        elementRefs = refs.value();
+                        info.setHasElementRefs(true);
+                    }
+                    for(XmlElementRef nextRef:elementRefs) {
+                        JavaClass type = ptype;
+                        String typeName = type.getQualifiedName();
+                        property.setType(type);
+                        if(isCollectionType(property)) {
+                            if(type.hasActualTypeArguments()) {
+                                type = (JavaClass)type.getActualTypeArguments().toArray()[0];
+                                typeName = type.getQualifiedName();
+                            }
+                        }
+                        if(nextRef.type() != XmlElementRef.DEFAULT.class) {
+                            typeName = helper.getJavaClass(nextRef.type()).getQualifiedName();
+                        }
+                        ElementDeclaration referencedElement = this.xmlRootElements.get(typeName);
                         if(referencedElement != null) {
                             addReferencedElement((ReferenceProperty)property, referencedElement);
                         } else {
-                            throw org.eclipse.persistence.exceptions.JAXBException.invalidElementRef(property.getPropertyName(), cls.getName());
+                            String name = nextRef.name();
+                            String namespace = nextRef.namespace();
+                            if(namespace.equals("##default")) {
+                                namespace = "";
+                            }
+                            QName qname = new QName(namespace, name);
+                            referencedElement = this.globalElements.get(qname);
+                            if(referencedElement != null) {
+                                addReferencedElement((ReferenceProperty)property, referencedElement);
+                            } else {
+                                throw org.eclipse.persistence.exceptions.JAXBException.invalidElementRef(property.getPropertyName(), cls.getName());
+                            }
                         }
                     }
+                }           
+                
+                if (helper.isAnnotationPresent(property.getElement(), XmlValue.class)) {
+                	info.setXmlValueProperty(property);
+                	
+                	JavaClass parent = cls.getSuperclass();
+                	while (parent != null && !(parent.getQualifiedName().equals("java.lang.Object"))) {                
+                    	if(typeInfo.get(parent.getQualifiedName())!=null ){
+                    		throw JAXBException.propertyOrFieldCannotBeXmlValue(propertyName);
+                    	}
+                    	parent = parent.getSuperclass();
+                    }
                 }
-            }           
-            
-            if (helper.isAnnotationPresent(property.getElement(), XmlValue.class)) {
-            	info.setXmlValueProperty(property);
-            	
-            	JavaClass parent = cls.getSuperclass();
-            	while (parent != null && !(parent.getQualifiedName().equals("java.lang.Object"))) {                
-                	if(typeInfo.get(parent.getQualifiedName())!=null ){
-                		throw JAXBException.propertyOrFieldCannotBeXmlValue(propertyName);
-                	}
-                	parent = parent.getSuperclass();
-                }
+    
+                if (!helper.isAnnotationPresent(property.getElement(), XmlTransient.class)) {
+                    properties.add(property);
+                } else {          
+                    //If a property is marked transient ensure it doesn't exist in the propOrder            	
+                    List<String> propOrderList = Arrays.asList(info.getPropOrder());
+                    if(propOrderList.contains(propertyName)){
+                    	throw JAXBException.transientInProporder(propertyName);
+                    }
+                }                     
+                   
+                // Check for XmlElement annotation and set required (a.k.a. minOccurs) accordingly
+                // primitives are always required
+                if (ptype.isPrimitive()) {
+                    property.setIsRequired(true);
+                } else if (helper.isAnnotationPresent(property.getElement(), XmlElement.class)) {
+                    property.setIsRequired(((XmlElement) helper.getAnnotation(property.getElement(), XmlElement.class)).required());
+                    property.setNillable(((XmlElement) helper.getAnnotation(property.getElement(), XmlElement.class)).required());
+                }                    
             }
-
-            if (!helper.isAnnotationPresent(property.getElement(), XmlTransient.class)) {
-                properties.add(property);
-            } else {          
-                //If a property is marked transient ensure it doesn't exist in the propOrder            	
-                List<String> propOrderList = Arrays.asList(info.getPropOrder());
-                if(propOrderList.contains(propertyName)){
-                	throw JAXBException.transientInProporder(propertyName);
-                }
-            }                     
-               
-            // Check for XmlElement annotation and set required (a.k.a. minOccurs) accordingly
-            // primitives are always required
-            if (ptype.isPrimitive()) {
-                property.setIsRequired(true);
-            } else if (helper.isAnnotationPresent(property.getElement(), XmlElement.class)) {
-                XmlElement xmlElement = (XmlElement) helper.getAnnotation(property.getElement(), XmlElement.class);
-                property.setIsRequired(xmlElement.required());
-                property.setNillable(xmlElement.nillable());
-            }                    
         }
         return properties;
     }

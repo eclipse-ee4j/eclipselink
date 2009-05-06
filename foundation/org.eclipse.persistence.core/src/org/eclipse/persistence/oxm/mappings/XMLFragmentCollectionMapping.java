@@ -36,6 +36,8 @@ import org.w3c.dom.Text;
  *  @since   release specific (what release of product did this appear in)
  */
 public class XMLFragmentCollectionMapping extends AbstractCompositeDirectCollectionMapping implements XMLMapping {
+    private boolean isWriteOnly;
+    
     public XMLFragmentCollectionMapping() {
         super();
     }
@@ -145,4 +147,26 @@ public class XMLFragmentCollectionMapping extends AbstractCompositeDirectCollect
         }
         row.put(getField(), attributeValue);
     }
+    
+    public boolean isWriteOnly() {
+        return this.isWriteOnly;
+    }
+    
+    public void setIsWriteOnly(boolean b) {
+        this.isWriteOnly = b;
+    }
+    
+    public void preInitialize(AbstractSession session) throws DescriptorException {
+        getAttributeAccessor().setIsWriteOnly(this.isWriteOnly());
+        getAttributeAccessor().setIsReadOnly(this.isReadOnly());
+        super.preInitialize(session);
+    }
+    
+    public void setAttributeValueInObject(Object object, Object value) throws DescriptorException {
+        if(isWriteOnly()) {
+            return;
+        }
+        super.setAttributeValueInObject(object, value);
+    }    
+    
 }

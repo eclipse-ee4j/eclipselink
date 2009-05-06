@@ -29,6 +29,8 @@ public abstract class AttributeAccessor implements Cloneable, Serializable {
 
     /** Stores the name of the attribute */
     protected String attributeName;
+    protected boolean isWriteOnly = false;
+    protected boolean isReadOnly = false; 
 
     /**
      * INTERNAL:
@@ -84,6 +86,37 @@ public abstract class AttributeAccessor implements Cloneable, Serializable {
 
     public boolean isMethodAttributeAccessor() {
         return false;
+    }
+    
+    /**
+     * INTERNAL:
+     * @return
+     */
+    public boolean isWriteOnly() {
+        return isWriteOnly;
+    }
+    
+    /**
+     * INTERNAL:
+     * @param aBoolean
+     */
+    public void setIsWriteOnly(boolean aBoolean) {
+        this.isWriteOnly = aBoolean;
+    }
+    
+    /**
+     * INTERNAL
+     * @return
+     */
+    public boolean isReadOnly() {
+        return isReadOnly;
+    }
+    /**
+     * INTERNAL
+     * @param aBoolean
+     */
+    public void setIsReadOnly(boolean aBoolean) {
+        this.isReadOnly = aBoolean;
     }
 
     /**

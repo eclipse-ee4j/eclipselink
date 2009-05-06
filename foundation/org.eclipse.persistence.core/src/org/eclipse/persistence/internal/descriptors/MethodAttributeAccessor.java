@@ -30,11 +30,11 @@ import org.eclipse.persistence.internal.security.*;
  * @since TOPLink/Java 1.0
  */
 public class MethodAttributeAccessor extends AttributeAccessor {
-    protected String setMethodName;
+    protected String setMethodName = "";
     protected String getMethodName;
     protected transient Method setMethod;
     protected transient Method getMethod;
-
+    
     /**
      * Return the return type of the method accessor.
      */
@@ -144,9 +144,11 @@ public class MethodAttributeAccessor extends AttributeAccessor {
             setGetMethod(Helper.getDeclaredMethod(theJavaClass, getGetMethodName(), (Class[])null));
 
             // The parameter type for the set method must always be the return type of the get method.
-            Class[] parameterTypes = new Class[1];
-            parameterTypes[0] = getGetMethodReturnType();
-            setSetMethod(Helper.getDeclaredMethod(theJavaClass, getSetMethodName(), parameterTypes));
+            if(!isWriteOnly()) {
+                Class[] parameterTypes = new Class[1];
+                parameterTypes[0] = getGetMethodReturnType();
+                setSetMethod(Helper.getDeclaredMethod(theJavaClass, getSetMethodName(), parameterTypes));
+            }
         } catch (NoSuchMethodException ex) {
             DescriptorException descriptorException = DescriptorException.noSuchMethodWhileInitializingAttributesInMethodAccessor(getSetMethodName(), getGetMethodName(), theJavaClass.getName());
             descriptorException.setInternalException(ex);
@@ -163,7 +165,7 @@ public class MethodAttributeAccessor extends AttributeAccessor {
      * class's attribute.  An attribute accessor can become uninitialized on serialization.
      */
     public boolean isInitialized(){
-        return this.getMethod !=  null && this.setMethod != null;
+        return (this.getMethod !=  null || isReadOnly()) && (this.setMethod != null || isWriteOnly());
     }
 
     public boolean isMethodAttributeAccessor() {

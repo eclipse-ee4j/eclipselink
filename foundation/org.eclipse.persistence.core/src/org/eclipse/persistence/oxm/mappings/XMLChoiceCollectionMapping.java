@@ -80,7 +80,8 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
     private Map<XMLField, String> fieldToClassNameMappings;
     private Map<XMLField, Converter> fieldsToConverters;
     private ContainerPolicy containerPolicy;
-
+    private boolean isWriteOnly;
+    
     public XMLChoiceCollectionMapping() {
         fieldToClassMappings = new HashMap<XMLField, Class>();
         fieldToClassNameMappings = new HashMap<XMLField, String>();
@@ -387,4 +388,26 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
             this.choiceElementMappings.put(xmlField, xmlMapping);                
         }        
     }
+    
+    public boolean isWriteOnly() {
+        return this.isWriteOnly;
+    }
+    
+    public void setIsWriteOnly(boolean b) {
+        this.isWriteOnly = b;
+    }
+    
+    public void preInitialize(AbstractSession session) throws DescriptorException {
+        getAttributeAccessor().setIsWriteOnly(this.isWriteOnly());
+        getAttributeAccessor().setIsReadOnly(this.isReadOnly());
+        super.preInitialize(session);
+    }
+    
+    public void setAttributeValueInObject(Object object, Object value) throws DescriptorException {
+        if(isWriteOnly()) {
+            return;
+        }
+        super.setAttributeValueInObject(object, value);
+    }    
+    
 }

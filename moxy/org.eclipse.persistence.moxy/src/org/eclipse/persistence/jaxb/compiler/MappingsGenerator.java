@@ -302,11 +302,12 @@ public class MappingsGenerator {
         XMLChoiceObjectMapping mapping = new XMLChoiceObjectMapping();
         mapping.setAttributeName(property.getPropertyName());
         if(property.isMethodProperty()) {
-            if(property.getSetMethodName() != null) {
-                mapping.setSetMethodName(property.getSetMethodName());
-                mapping.setGetMethodName(property.getGetMethodName());
-            } else {
-                mapping.setGetMethodName(property.getGetMethodName());
+            mapping.setSetMethodName(property.getSetMethodName());
+            mapping.setGetMethodName(property.getGetMethodName());
+            if(property.getGetMethodName() == null) {
+                mapping.setIsReadOnly(true);
+            } else if(property.getSetMethodName() == null) {
+                mapping.setIsWriteOnly(true);
             }
         }
         Iterator<Property> choiceProperties = prop.getChoiceProperties().iterator();
@@ -325,11 +326,12 @@ public class MappingsGenerator {
         XMLChoiceCollectionMapping mapping = new XMLChoiceCollectionMapping();
         mapping.setAttributeName(property.getPropertyName());
         if(property.isMethodProperty()) {
-            if(property.getSetMethodName() != null) {
-                mapping.setSetMethodName(property.getSetMethodName());
-                mapping.setGetMethodName(property.getGetMethodName());
-            } else {
-                mapping.setGetMethodName(property.getGetMethodName());
+            mapping.setSetMethodName(property.getSetMethodName());
+            mapping.setGetMethodName(property.getGetMethodName());
+            if(property.getGetMethodName() == null) {
+                mapping.setIsReadOnly(true);
+            } else if(property.getSetMethodName() == null) {
+                mapping.setIsWriteOnly(true);
             }
         }
         JavaClass collectionType = property.getType();
@@ -362,11 +364,12 @@ public class MappingsGenerator {
         }
         mapping.setAttributeName(property.getPropertyName());
         if(property.isMethodProperty()) {
-            if(property.getSetMethodName() != null) {
-                mapping.setSetMethodName(property.getSetMethodName());
-                mapping.setGetMethodName(property.getGetMethodName());
-            } else {
-                mapping.setGetMethodName(property.getGetMethodName());
+            mapping.setSetMethodName(property.getSetMethodName());
+            mapping.setGetMethodName(property.getGetMethodName());
+            if(property.getGetMethodName() == null) {
+                mapping.setIsReadOnly(true);
+            } else if(property.getSetMethodName() == null) {
+                ((XMLMapping)mapping).setIsWriteOnly(true);
             }
         }
 
@@ -424,6 +427,15 @@ public class MappingsGenerator {
         AnyProperty prop = (AnyProperty)property;
         XMLAnyCollectionMapping  mapping = new XMLAnyCollectionMapping();
         mapping.setAttributeName(property.getPropertyName());
+        if(property.isMethodProperty()) {
+            mapping.setSetMethodName(property.getSetMethodName());
+            mapping.setGetMethodName(property.getGetMethodName());
+            if(property.getGetMethodName() == null) {
+                mapping.setIsReadOnly(true);
+            } else if(property.getSetMethodName() == null) {
+                mapping.setIsWriteOnly(true);
+            }
+        }
         mapping.setUseXMLRoot(true);
         mapping.setAttributeAccessor(new JAXBElementAttributeAccessor(mapping.getAttributeAccessor(), mapping.getContainerPolicy()));
         if(prop.isLax()) {
@@ -444,11 +456,12 @@ public class MappingsGenerator {
         mapping.setReferenceClassName(referenceClassName);
         mapping.setAttributeName(property.getPropertyName());
         if(property.isMethodProperty()) {
-            if(property.getSetMethodName() != null) {
-                mapping.setSetMethodName(property.getSetMethodName());
-                mapping.setGetMethodName(property.getGetMethodName());
-            } else {
-                mapping.setGetMethodName(property.getGetMethodName());
+            mapping.setSetMethodName(property.getSetMethodName());
+            mapping.setGetMethodName(property.getGetMethodName());
+            if(property.getGetMethodName() == null) {
+                mapping.setIsReadOnly(true);
+            } else if(property.getSetMethodName() == null) {
+                mapping.setIsWriteOnly(true);
             }
         }
         if(property.isNillable()){
@@ -473,11 +486,12 @@ public class MappingsGenerator {
         XMLDirectMapping mapping = new XMLDirectMapping();
         mapping.setAttributeName(property.getPropertyName());
         if(property.isMethodProperty()) {
-            if(property.getSetMethodName() != null) {
-                mapping.setSetMethodName(property.getSetMethodName());
-                mapping.setGetMethodName(property.getGetMethodName());
-            } else {
-                mapping.setGetMethodName(property.getGetMethodName());
+            mapping.setSetMethodName(property.getSetMethodName());
+            mapping.setGetMethodName(property.getGetMethodName());
+            if(property.getGetMethodName() == null) {
+                mapping.setIsReadOnly(true);
+            } else if(property.getSetMethodName() == null) {
+                mapping.setIsWriteOnly(true);
             }
         }
         if(property.isNillable()){
@@ -494,11 +508,12 @@ public class MappingsGenerator {
         XMLBinaryDataMapping mapping = new XMLBinaryDataMapping();
         mapping.setAttributeName(property.getPropertyName());
         if(property.isMethodProperty()) {
-            if(property.getSetMethodName() != null) {
-                mapping.setSetMethodName(property.getSetMethodName());
-                mapping.setGetMethodName(property.getGetMethodName());
-            } else {
-                mapping.setGetMethodName(property.getGetMethodName());
+            mapping.setSetMethodName(property.getSetMethodName());
+            mapping.setGetMethodName(property.getGetMethodName());
+            if(property.getGetMethodName() == null) {
+                mapping.setIsReadOnly(true);
+            } else if(property.getSetMethodName() == null) {
+                mapping.setIsWriteOnly(true);
             }
         }
         mapping.setField(getXPathForField(property, namespaceInfo, false));
@@ -523,11 +538,12 @@ public class MappingsGenerator {
         mapping.setConverter(buildJAXBEnumTypeConverter(mapping, enumInfo));
         mapping.setAttributeName(property.getPropertyName());
         if(property.isMethodProperty()) {
-            if(property.getSetMethodName() != null) {
-                mapping.setSetMethodName(property.getSetMethodName());
-                mapping.setGetMethodName(property.getGetMethodName());
-            } else {
-                mapping.setGetMethodName(property.getGetMethodName());
+            mapping.setSetMethodName(property.getSetMethodName());
+            mapping.setGetMethodName(property.getGetMethodName());
+            if(property.getGetMethodName() == null) {
+                mapping.setIsReadOnly(true);
+            } else if(property.getSetMethodName() == null) {
+                mapping.setIsWriteOnly(true);
             }
         }
         mapping.setField(getXPathForField(property, namespaceInfo, true));
@@ -581,11 +597,12 @@ public class MappingsGenerator {
         XMLCompositeDirectCollectionMapping mapping = new XMLCompositeDirectCollectionMapping();
         mapping.setAttributeName(property.getPropertyName());
         if(property.isMethodProperty()) {
-            if(property.getSetMethodName() != null) {
-                mapping.setSetMethodName(property.getSetMethodName());
-                mapping.setGetMethodName(property.getGetMethodName());
-            } else {
-                mapping.setGetMethodName(property.getGetMethodName());
+            mapping.setSetMethodName(property.getSetMethodName());
+            mapping.setGetMethodName(property.getGetMethodName());
+            if(property.getGetMethodName() == null) {
+                mapping.setIsReadOnly(true);
+            } else if(property.getSetMethodName() == null) {
+                mapping.setIsWriteOnly(true);
             }
         }
 
@@ -611,11 +628,12 @@ public class MappingsGenerator {
         XMLAnyAttributeMapping mapping = new XMLAnyAttributeMapping();
         mapping.setAttributeName(property.getPropertyName());
         if(property.isMethodProperty()) {
-            if(property.getSetMethodName() != null) {
-                mapping.setSetMethodName(property.getSetMethodName());
-                mapping.setGetMethodName(property.getGetMethodName());
-            } else {
-                mapping.setGetMethodName(property.getGetMethodName());
+            mapping.setSetMethodName(property.getSetMethodName());
+            mapping.setGetMethodName(property.getGetMethodName());
+            if(property.getGetMethodName() == null) {
+                mapping.setIsReadOnly(true);
+            } else if(property.getSetMethodName() == null) {
+                mapping.setIsWriteOnly(true);
             }
         }
         mapping.setSchemaInstanceIncluded(false);
@@ -627,11 +645,12 @@ public class MappingsGenerator {
         XMLAnyObjectMapping mapping = new XMLAnyObjectMapping();
         mapping.setAttributeName(property.getPropertyName());
         if(property.isMethodProperty()) {
-            if(property.getSetMethodName() != null) {
-                mapping.setSetMethodName(property.getSetMethodName());
-                mapping.setGetMethodName(property.getGetMethodName());
-            } else {
-                mapping.setGetMethodName(property.getGetMethodName());
+            mapping.setSetMethodName(property.getSetMethodName());
+            mapping.setGetMethodName(property.getGetMethodName());
+            if(property.getGetMethodName() == null) {
+                mapping.setIsReadOnly(true);
+            } else if(property.getSetMethodName() == null) {
+                mapping.setIsWriteOnly(true);
             }
         }
         if(property.getType().getQualifiedName().equals("org.w3c.dom.Element")){
@@ -654,11 +673,12 @@ public class MappingsGenerator {
         XMLCompositeCollectionMapping mapping = new XMLCompositeCollectionMapping();
         mapping.setAttributeName(property.getPropertyName());
         if(property.isMethodProperty()) {
-            if(property.getSetMethodName() != null) {
-                mapping.setSetMethodName(property.getSetMethodName());
-                mapping.setGetMethodName(property.getGetMethodName());
-            } else {
-                mapping.setGetMethodName(property.getGetMethodName());
+            mapping.setSetMethodName(property.getSetMethodName());
+            mapping.setGetMethodName(property.getGetMethodName());
+            if(property.getGetMethodName() == null) {
+                mapping.setIsReadOnly(true);
+            } else if(property.getSetMethodName() == null) {
+                mapping.setIsWriteOnly(true);
             }
         }
         mapping.setReferenceClassName(referenceClassName);
@@ -694,11 +714,12 @@ public class MappingsGenerator {
         XMLCompositeDirectCollectionMapping mapping = new XMLCompositeDirectCollectionMapping();
         mapping.setAttributeName(property.getPropertyName());
         if(property.isMethodProperty()) {
-            if(property.getSetMethodName() != null) {
-                mapping.setSetMethodName(property.getSetMethodName());
-                mapping.setGetMethodName(property.getGetMethodName());
-            } else {
-                mapping.setGetMethodName(property.getGetMethodName());
+            mapping.setSetMethodName(property.getSetMethodName());
+            mapping.setGetMethodName(property.getGetMethodName());
+            if(property.getGetMethodName() == null) {
+                mapping.setIsReadOnly(true);
+            } else if(property.getSetMethodName() == null) {
+                mapping.setIsWriteOnly(true);
             }
         }
         JavaClass collectionType = property.getType();
@@ -904,11 +925,12 @@ public class MappingsGenerator {
         XMLCollectionReferenceMapping mapping = new XMLCollectionReferenceMapping();
         mapping.setAttributeName(property.getPropertyName());
         if(property.isMethodProperty()) {
-            if(property.getSetMethodName() != null) {
-                mapping.setSetMethodName(property.getSetMethodName());
-                mapping.setGetMethodName(property.getGetMethodName());
-            } else {
-                mapping.setGetMethodName(property.getGetMethodName());
+            mapping.setSetMethodName(property.getSetMethodName());
+            mapping.setGetMethodName(property.getGetMethodName());
+            if(property.getGetMethodName() == null) {
+                mapping.setIsReadOnly(true);
+            } else if(property.getSetMethodName() == null) {
+                mapping.setIsWriteOnly(true);
             }
         }
         mapping.setReferenceClassName(referenceClass.getQualifiedName());
@@ -947,11 +969,12 @@ public class MappingsGenerator {
         XMLObjectReferenceMapping mapping = new XMLObjectReferenceMapping();
         mapping.setAttributeName(property.getPropertyName());
         if(property.isMethodProperty()) {
-            if(property.getSetMethodName() != null) {
-                mapping.setSetMethodName(property.getSetMethodName());
-                mapping.setGetMethodName(property.getGetMethodName());
-            } else {
-                mapping.setGetMethodName(property.getGetMethodName());
+            mapping.setSetMethodName(property.getSetMethodName());
+            mapping.setGetMethodName(property.getGetMethodName());
+            if(property.getGetMethodName() == null) {
+                mapping.setIsReadOnly(true);
+            } else if(property.getSetMethodName() == null) {
+                mapping.setIsWriteOnly(true);
             }
         }
         mapping.setReferenceClassName(referenceClass.getQualifiedName());

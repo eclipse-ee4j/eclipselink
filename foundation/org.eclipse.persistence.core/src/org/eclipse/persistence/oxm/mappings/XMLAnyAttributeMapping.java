@@ -72,6 +72,7 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
     private DirectMapContainerPolicy containerPolicy;
     private boolean isNamespaceDeclarationIncluded;
     private boolean isSchemaInstanceIncluded;
+    private boolean isWriteOnly;
     
     public XMLAnyAttributeMapping() {
         this.containerPolicy = new DirectMapContainerPolicy(HashMap.class);
@@ -390,5 +391,28 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
     public void setSchemaInstanceIncluded(boolean isSchemaInstanceIncluded) {
         this.isSchemaInstanceIncluded = isSchemaInstanceIncluded;
     }
+    
+    public boolean isWriteOnly() {
+        return isWriteOnly;
+    }
+    
+    public void setIsWriteOnly(boolean b) {
+        this.isWriteOnly = b;
+    }
+    
+    public void setAttributeValueInObject(Object object, Object value) throws DescriptorException {
+        if(isWriteOnly()) {
+            return;
+        }
+        super.setAttributeValueInObject(object, value);
+    }
+
+    
+    public void preInitialize(AbstractSession session) throws DescriptorException {
+        getAttributeAccessor().setIsWriteOnly(this.isWriteOnly());
+        getAttributeAccessor().setIsReadOnly(this.isReadOnly());
+        super.preInitialize(session);
+    }
+    
 
 }

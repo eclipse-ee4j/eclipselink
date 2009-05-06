@@ -79,6 +79,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
     private Map<XMLField, String> fieldToClassNameMappings;
     private Map<XMLField, XMLMapping> choiceElementMappings;
     private Map<XMLField, Converter> fieldsToConverters;
+    private boolean isWriteOnly;
 
     public XMLChoiceObjectMapping() {
         fieldToClassMappings = new HashMap<XMLField, Class>();
@@ -380,4 +381,27 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
             this.choiceElementMappings.put(xmlField, xmlMapping);            
         }
     }
+    
+    public boolean isWriteOnly() {
+        return this.isWriteOnly;
+    }
+    
+    public void setIsWriteOnly(boolean b) {
+        this.isWriteOnly = b;
+    }
+    
+    public void preInitialize(AbstractSession session) throws DescriptorException {
+        getAttributeAccessor().setIsWriteOnly(this.isWriteOnly());
+        getAttributeAccessor().setIsReadOnly(this.isReadOnly());
+        super.preInitialize(session);
+    }
+    
+    public void setAttributeValueInObject(Object object, Object value) throws DescriptorException {
+        if(isWriteOnly()) {
+            return;
+        }
+        super.setAttributeValueInObject(object, value);
+    }    
+    
+
 }

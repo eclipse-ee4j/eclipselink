@@ -31,4 +31,8 @@ public interface XMLMapping {
      * @param record - The Record the value is being marshalled too. 
      */
     public void writeSingleValue(Object value, Object parent, XMLRecord record, AbstractSession session);
+    
+    public boolean isWriteOnly();
+    
+    public void setIsWriteOnly(boolean b);
 }

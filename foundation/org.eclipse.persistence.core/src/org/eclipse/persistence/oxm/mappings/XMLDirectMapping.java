@@ -13,6 +13,7 @@
 package org.eclipse.persistence.oxm.mappings;
 
 import org.eclipse.persistence.exceptions.ConversionException;
+import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
@@ -185,6 +186,7 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
     protected static final String EMPTY_STRING = "";
     AbstractNullPolicy nullPolicy;
     public boolean isCDATA;
+    private boolean isWriteOnly;
     
     public XMLDirectMapping() {
         super();
@@ -359,6 +361,9 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
     
     public void setAttributeValueInObject(Object object, Object value) throws DescriptorException {
         // PERF: Direct variable access.
+        if(isWriteOnly()) {
+            return;
+        }
         try {
             if(value == XMLRecord.noEntry) {
                 return;                    
@@ -377,4 +382,20 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
     public boolean isCDATA() {
         return isCDATA;
     }
+    
+    public boolean isWriteOnly() {
+        return this.isWriteOnly;
+    }
+    
+    public void setIsWriteOnly(boolean b) {
+        this.isWriteOnly = b;
+    }
+    
+    public void preInitialize(AbstractSession session) throws DescriptorException {
+        getAttributeAccessor().setIsWriteOnly(this.isWriteOnly());
+        getAttributeAccessor().setIsReadOnly(this.isReadOnly());
+        super.preInitialize(session);
+    }
+    
+    
 }

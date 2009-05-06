@@ -213,4 +213,8 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
         }
         return null;
     }
+    
+    public XMLBinaryDataMapping getMapping() {
+        return this.xmlBinaryDataMapping;
+    }
 }
