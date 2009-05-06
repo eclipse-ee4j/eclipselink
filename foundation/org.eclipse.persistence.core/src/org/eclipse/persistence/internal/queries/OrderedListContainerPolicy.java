@@ -25,7 +25,6 @@ import java.util.IdentityHashMap;
 import java.util.ListIterator;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.exceptions.ValidationException;
-import java.util.*;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.OrderedChangeObject;

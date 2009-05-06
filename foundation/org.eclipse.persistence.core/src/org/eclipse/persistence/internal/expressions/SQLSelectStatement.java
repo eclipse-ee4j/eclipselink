@@ -874,7 +874,7 @@ public class SQLSelectStatement extends SQLStatement {
             // printSQL does (i.e. using getFields() instead of getField()).
             // The problem was that getField() on an expression builder led to a null pointer
             // exception.
-            else {
+            else if (fieldOrExpression != null){
                 Expression exp = (Expression)fieldOrExpression;
                 DatabaseTable table = orderByField.getTable();
 

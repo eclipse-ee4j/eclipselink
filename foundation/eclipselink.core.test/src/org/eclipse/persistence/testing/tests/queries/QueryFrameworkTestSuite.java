@@ -40,6 +40,7 @@ public class QueryFrameworkTestSuite extends TestSuite {
         addTest(new ServerSessionTestAdapter(new PessimisticLockNoLockJoinedTest()));
         addTest(new ReadAllNoDistinctTest());
         addTest(new PartialAttributeTestWithJoinAttribute());
+        addTest(new PartialAttributeDistinctOrderByTest());
         addTest(new FourPartialAttributeTestsWithJoinAttribute());
         addTest(buildReadOnlyQueryTest());
         addTest(buildGetSQLTest());
