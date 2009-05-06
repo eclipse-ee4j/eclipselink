@@ -60,7 +60,8 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
         super();
         DataReadQuery query = new DataReadQuery();
         this.selectionQuery = query;
-        this.containerPolicy = new DirectMapContainerPolicy(ClassConstants.Hashtable_Class);
+        this.containerPolicy = new DirectMapContainerPolicy(ClassConstants.Hashtable_Class);        
+        this.isListOrderFieldSupported = false;
     }
 
     private DirectMapUsableContainerPolicy getDirectMapUsableContainerPolicy(){
@@ -727,7 +728,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      * Remove a value and its change set from the collection change record.  This is used by
      * attribute change tracking.
      */
-    public void removeFromCollectionChangeRecord(Object newKey, Object newValue, ObjectChangeSet objectChangeSet, UnitOfWorkImpl uow) throws DescriptorException {
+    protected void removeFromCollectionChangeRecord(Object newKey, Object newValue, ObjectChangeSet objectChangeSet, UnitOfWorkImpl uow) throws DescriptorException {
         DirectMapChangeRecord collectionChangeRecord = (DirectMapChangeRecord)objectChangeSet.getChangesForAttributeNamed(this.getAttributeName());
         if (collectionChangeRecord == null) {
             collectionChangeRecord = new DirectMapChangeRecord(objectChangeSet);
@@ -785,6 +786,31 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
         collectionChangeRecord.setIsDeferred(true);
 
         objectChangeSet.deferredDetectionRequiredOn(getAttributeName());
+    }
+
+    /**
+     * INTERNAL:
+     * Add or removes a new value and its change set to the collection change record based on the event passed in.  This is used by
+     * attribute change tracking.
+     */
+    public void updateCollectionChangeRecord(CollectionChangeEvent event, ObjectChangeSet changeSet, UnitOfWorkImpl uow) {
+        if (event != null ) {
+            //Letting the mapping create and add the ChangeSet to the ChangeRecord rather 
+            // than the policy, since the policy doesn't know how to handle DirectCollectionChangeRecord.
+            // if ordering is to be supported in the future, check how the method in CollectionMapping is implemented
+            Object key = null;
+            if (event.getClass().equals(ClassConstants.MapChangeEvent_Class)){
+                key = ((MapChangeEvent)event).getKey();
+            }
+            
+            if (event.getChangeType() == CollectionChangeEvent.ADD) {
+                addToCollectionChangeRecord(key, event.getNewValue(), changeSet, uow);
+            } else if (event.getChangeType() == CollectionChangeEvent.REMOVE) {
+                removeFromCollectionChangeRecord(key, event.getNewValue(), changeSet, uow);
+            } else {
+                throw ValidationException.wrongCollectionChangeEventType(event.getChangeType());
+            }
+        }
     }
 
     /**

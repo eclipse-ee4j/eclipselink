@@ -43,6 +43,16 @@ public class CollectionChangeEvent extends PropertyChangeEvent {
     protected Integer index;
 
     /**
+     * INTERNAL:
+     * Set operation in IndirectList results in raising two events: removal of the old value and addition of the new one at the same index:
+     *   oldValue = list.set(i, newValue);
+     *   raiseRemoveEvent(i, oldValue, true);
+     *   raiseAddEvent(i, newValue, true);
+     * This flag indicates whether the event was raised by set operation on the list. 
+     */
+    protected boolean isSet;
+
+    /**
      * PUBLIC:
      * Create a CollectionChangeEvent for an object based on the property name, old value, new value
      * and change type (add or remove)
@@ -57,9 +67,20 @@ public class CollectionChangeEvent extends PropertyChangeEvent {
      * change type (add or remove) and the index where the object is/was in the collection (list)
      */
     public CollectionChangeEvent(Object collectionOwner, String propertyName, Object collectionChanged, Object elementChanged, int changeType, Integer index) {
+        this(collectionOwner, propertyName, collectionChanged, elementChanged, changeType, index, false);
+    }
+
+    /**
+     * PUBLIC:
+     * Create a CollectionChangeEvent for an object based on the property name, old value, new value, 
+     * change type (add or remove) and the index where the object is/was in the collection (list),
+     * flag indicating whether the change (addition or removal) is part of a single set operation on a list. 
+     */
+    public CollectionChangeEvent(Object collectionOwner, String propertyName, Object collectionChanged, Object elementChanged, int changeType, Integer index, boolean isSet) {
         super(collectionOwner, propertyName, collectionChanged, elementChanged);
         this.changeType = changeType;
         this.index = index;
+        this.isSet = isSet;
     }
 
     /**
@@ -68,6 +89,14 @@ public class CollectionChangeEvent extends PropertyChangeEvent {
      */
     public int getChangeType() {
         return changeType;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return whether the event was raised by set operation on the list.
+     */
+    public boolean isSet() {
+        return isSet;
     }
     
     /**

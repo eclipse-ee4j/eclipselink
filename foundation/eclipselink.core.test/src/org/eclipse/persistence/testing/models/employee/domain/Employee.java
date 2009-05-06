@@ -137,28 +137,32 @@ public class Employee implements org.eclipse.persistence.testing.models.employee
      * For bi-directional relationships, it is important to maintain both sides of the relationship when changing it.
      */
     public void addManagedEmployee(org.eclipse.persistence.testing.models.employee.interfaces.Employee employee) {
-        collectionChange("managedEmployees", managedEmployees, employee, 0);
-        getManagedEmployees().addElement(employee);
-        employee.setManager(this);
+        if(getManagedEmployees().add(employee)) {
+            collectionChange("managedEmployees", managedEmployees, employee, 0);
+            employee.setManager(this);
+        }
     }
 
     /**
      * For bi-directional relationships, it is important to maintain both sides of the relationship when changing it.
      */
     public void addPhoneNumber(PhoneNumber phoneNumber) {
-        collectionChange("phoneNumbers", phoneNumbers, phoneNumber, 0);
-        getPhoneNumbers().addElement(phoneNumber);
-        phoneNumber.setOwner(this);
+        if(getPhoneNumbers().add(phoneNumber)) {
+            collectionChange("phoneNumbers", phoneNumbers, phoneNumber, 0);
+            phoneNumber.setOwner(this);
+        }
     }
 
     public void addProject(org.eclipse.persistence.testing.models.employee.interfaces.Project project) {
-        collectionChange("projects", projects, project, 0);
-        getProjects().addElement(project);
+        if(getProjects().add(project)) {
+            collectionChange("projects", projects, project, 0);
+        }
     }
 
     public void addResponsibility(String responsibility) {
-        collectionChange("responsibilitiesList", responsibilitiesList, responsibility, 0);
-        getResponsibilitiesList().addElement(responsibility);
+        if(getResponsibilitiesList().add(responsibility)) {
+            collectionChange("responsibilitiesList", responsibilitiesList, responsibility, 0);
+        }
     }
 
     /**
@@ -304,9 +308,10 @@ public class Employee implements org.eclipse.persistence.testing.models.employee
      * For bi-directional relationships, it is important to maintain both sides of the relationship when changing it.
      */
     public void removeManagedEmployee(org.eclipse.persistence.testing.models.employee.interfaces.Employee employee) {
-        collectionChange("managedEmployees", managedEmployees, employee, 1);
-        getManagedEmployees().removeElement(employee);
-        employee.setManager(null);
+        if(getManagedEmployees().removeElement(employee)) {
+            collectionChange("managedEmployees", managedEmployees, employee, 1);
+            employee.setManager(null);
+        }
     }
 
     /**
@@ -316,18 +321,21 @@ public class Employee implements org.eclipse.persistence.testing.models.employee
      * Only in independent relationships should you null out the back reference.
      */
     public void removePhoneNumber(PhoneNumber phoneNumber) {
-        collectionChange("phoneNumbers", phoneNumbers, phoneNumber, 1);
-        getPhoneNumbers().removeElement(phoneNumber);
+        if(getPhoneNumbers().removeElement(phoneNumber)) {
+            collectionChange("phoneNumbers", phoneNumbers, phoneNumber, 1);
+        }
     }
 
     public void removeProject(org.eclipse.persistence.testing.models.employee.interfaces.Project project) {
-        collectionChange("projects", projects, project, 1);
-        getProjects().removeElement(project);
+        if(getProjects().removeElement(project)) {
+            collectionChange("projects", projects, project, 1);
+        }
     }
 
     public void removeResponsibility(String responsibility) {
-        collectionChange("responsibilitiesList", responsibilitiesList, responsibility, 1);
-        getResponsibilitiesList().removeElement(responsibility);
+        if(getResponsibilitiesList().removeElement(responsibility)) {
+            collectionChange("responsibilitiesList", responsibilitiesList, responsibility, 1);
+        }
     }
 
     /**
@@ -405,17 +413,7 @@ public class Employee implements org.eclipse.persistence.testing.models.employee
      * The get/set methods must however be changed to wrap/unwrap the value holder.
      */
     public void setManagedEmployees(Vector managedEmployees) {
-        //Replace for collection is not supported for attribute change tracking.  However user can
-        //fire a remove event for each element in the old collection, and an add event for each element
-        //in the new collection
-        for (int index = 0; index < getManagedEmployees().size(); index++) {
-            collectionChange("managedEmployees", this.managedEmployees, getManagedEmployees().get(index), 1);
-        }
-        if (managedEmployees != null) {
-            for (int index = 0; index < managedEmployees.size(); index++) {
-                collectionChange("managedEmployees", this.managedEmployees, managedEmployees.get(index), 0);
-            }
-        }
+        propertyChange("managedEmployees", this.managedEmployees.getValue(), managedEmployees);
         this.managedEmployees.setValue(managedEmployees);
     }
 
@@ -445,17 +443,7 @@ public class Employee implements org.eclipse.persistence.testing.models.employee
      * The get/set methods must however be changed to wrap/unwrap the value holder.
      */
     public void setPhoneNumbers(Vector phoneNumbers) {
-        //Replace for collection is not supported for attribute change tracking.  However user can
-        //fire a remove event for each element in the old collection, and an add event for each element
-        //in the new collection
-        for (int index = 0; index < getPhoneNumbers().size(); index++) {
-            collectionChange("phoneNumbers", this.phoneNumbers, getPhoneNumbers().get(index), 1);
-        }
-        if (phoneNumbers != null) {
-            for (int index = 0; index < phoneNumbers.size(); index++) {
-                collectionChange("phoneNumbers", this.phoneNumbers, phoneNumbers.get(index), 0);
-            }
-        }
+        propertyChange("phoneNumbers", this.phoneNumbers.getValue(), phoneNumbers);
         this.phoneNumbers.setValue(phoneNumbers);
     }
 
@@ -464,17 +452,7 @@ public class Employee implements org.eclipse.persistence.testing.models.employee
      * The get/set methods must however be changed to wrap/unwrap the value holder.
      */
     public void setProjects(Vector projects) {
-        //Replace for collection is not supported for attribute change tracking.  However user can
-        //fire a remove event for each element in the old collection, and an add event for each element
-        //in the new collection
-        for (int index = 0; index < getProjects().size(); index++) {
-            collectionChange("projects", this.projects, getProjects().get(index), 1);
-        }
-        if (projects != null) {
-            for (int index = 0; index < projects.size(); index++) {
-                collectionChange("projects", this.projects, projects.get(index), 0);
-            }
-        }
+        propertyChange("projects", this.projects.getValue(), projects);
         this.projects.setValue(projects);
     }
 

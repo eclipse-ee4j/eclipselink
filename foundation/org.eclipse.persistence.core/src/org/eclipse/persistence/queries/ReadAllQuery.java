@@ -44,9 +44,6 @@ import org.eclipse.persistence.tools.profiler.QueryMonitor;
  */
 public class ReadAllQuery extends ObjectLevelReadQuery {
 
-    /** Used for ordering support. */
-    protected Vector orderByExpressions;
-
     /** Used for query optimization. */
     protected Vector batchReadAttributeExpressions;
     /** PERF: Used internally for batch reading. */
@@ -194,26 +191,6 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
     }
 
     /**
-     * PUBLIC:
-     * Order the query results by the object's attribute or query key name.
-     */
-    public void addDescendingOrdering(String queryKeyName) {
-        addOrdering(getExpressionBuilder().get(queryKeyName).descending());
-    }
-
-    /**
-     * PUBLIC:
-     * Add the ordering expression.  This allows for ordering across relationships or functions.
-     * Example: readAllQuery.addOrdering(expBuilder.get("address").get("city").toUpperCase().descending())
-     */
-    public void addOrdering(Expression orderingExpression) {
-        getOrderByExpressions().addElement(orderingExpression);
-        //Bug2804042 Must un-prepare if prepared as the SQL may change.
-        setIsPrepared(false);
-        setShouldOuterJoinSubclasses(true);
-    }
-
-    /**
      * INTERNAL:
      * <P> This method is called by the object builder when building an original.
      * It will cause the original to be cached in the query results if the query
@@ -289,9 +266,6 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
         ReadAllQuery cloneQuery = (ReadAllQuery)super.clone();
 
         // Don't use setters as that will trigger unprepare
-        if (hasOrderByExpressions()) {
-            cloneQuery.orderByExpressions = (Vector)getOrderByExpressions().clone();
-        }
         cloneQuery.containerPolicy = getContainerPolicy().clone(cloneQuery);
 
         return cloneQuery;
@@ -625,25 +599,6 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
 
     /**
      * INTERNAL:
-     * Return the order expressions for the query.
-     */
-    public Vector getOrderByExpressions() {
-        if (orderByExpressions == null) {
-            orderByExpressions = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
-        }
-        return orderByExpressions;
-    }
-
-    /**
-     * INTERNAL:
-     * The order bys are lazy initialized to conserve space.
-     */
-    public boolean hasOrderByExpressions() {
-        return orderByExpressions != null;
-    }
-
-    /**
-     * INTERNAL:
      * Verify that we have hierarchical query expressions
      */
     public boolean hasHierarchicalExpressions() {
@@ -745,24 +700,6 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
         if (!getContainerPolicy().equals(query.getContainerPolicy())) {
             return false;
         }
-        if (hasOrderByExpressions()) {
-            if (!query.hasOrderByExpressions()) {
-                return false;
-            }
-            List orderBys = getOrderByExpressions();
-            List otherOrderBys = query.getOrderByExpressions();
-            int size = orderBys.size();
-            if (size != otherOrderBys.size()) {
-                return false;
-            }
-            for (int index = 0; index < size; index++) {
-                if (!orderBys.get(index).equals(otherOrderBys.get(index))) {
-                    return false;
-                }
-            }
-        } else if (query.hasOrderByExpressions()) {
-            return false;
-        }
         return true;
     }
     
@@ -810,9 +747,6 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
         super.prepareFromQuery(query);
         if (query.isReadAllQuery()) {
             ReadAllQuery readQuery = (ReadAllQuery)query;
-            if (readQuery.hasOrderByExpressions()) {
-                this.orderByExpressions = readQuery.orderByExpressions;
-            }
             this.containerPolicy = readQuery.containerPolicy;
             if (readQuery.hasHierarchicalExpressions()) {
                 this.orderSiblingsByExpressions = readQuery.getOrderSiblingsByExpressions();
@@ -1013,14 +947,6 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
         this.connectByExpression = connectBy;
         this.orderSiblingsByExpressions = orderSiblingsExpressions;
         setIsPrepared(false);
-    }
-
-    /**
-     * INTERNAL:
-     * Set the order expressions for the query.
-     */
-    public void setOrderByExpressions(Vector orderByExpressions) {
-        this.orderByExpressions = orderByExpressions;
     }
 
     /**

@@ -429,6 +429,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             batchQuery.setShouldBindAllParameters(query.getShouldBindAllParameters());
             batchQuery.setShouldPrepare(query.shouldPrepare());
         }
+        batchQuery.setShouldOuterJoinSubclasses(query.shouldOuterJoinSubclasses());
         //CR #4365
         batchQuery.setQueryId(query.getQueryId());
 

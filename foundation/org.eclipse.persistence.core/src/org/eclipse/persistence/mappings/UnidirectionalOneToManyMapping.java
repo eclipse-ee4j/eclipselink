@@ -21,10 +21,7 @@ import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.OptimisticLockException;
-import org.eclipse.persistence.expressions.Expression;
-import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.descriptors.CascadeLockingPolicy;
-import org.eclipse.persistence.internal.expressions.SQLUpdateStatement;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
@@ -241,41 +238,15 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
 
     /**
      * INTERNAL:
-     * Initialize addTargetQuery.
      */
-    protected void initializeAddTargetQuery(AbstractSession session) {
-        if (!addTargetQuery.hasSessionName()) {
-            addTargetQuery.setSessionName(session.getName());
-        }
-        if (hasCustomAddTargetQuery) {
-            return;
-        }
-
-        // Build where clause expression.
-        Expression whereClause = null;
-        Expression builder = new ExpressionBuilder();
-
-        List<DatabaseField> targetPrimaryKeyFields = getReferenceDescriptor().getPrimaryKeyFields();
-        int size = targetPrimaryKeyFields.size();
-        for (int index = 0; index < size; index++) {
-            DatabaseField targetPrimaryKey = targetPrimaryKeyFields.get(index);
-            Expression expression = builder.getField(targetPrimaryKey).equal(builder.getParameter(targetPrimaryKey));
-            whereClause = expression.and(whereClause);
-        }
-
-        AbstractRecord modifyRow = new DatabaseRecord();
-        size = targetForeignKeyFields.size();
+    protected AbstractRecord createModifyRowForAddTargetQuery() {
+        AbstractRecord modifyRow = super.createModifyRowForAddTargetQuery();
+        int size = targetForeignKeyFields.size();
         for (int index = 0; index < size; index++) {
             DatabaseField targetForeignKey = targetForeignKeyFields.get(index);
             modifyRow.put(targetForeignKey, null);
         }
-        containerPolicy.addFieldsForMapKey(modifyRow);
-        
-        SQLUpdateStatement statement = new SQLUpdateStatement();
-        statement.setTable(getReferenceDescriptor().getDefaultTable());
-        statement.setWhereClause(whereClause);
-        statement.setModifyRow(modifyRow);
-        addTargetQuery.setSQLStatement(statement);
+        return modifyRow;
     }
 
     /**

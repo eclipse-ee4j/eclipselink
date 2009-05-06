@@ -28,12 +28,22 @@ public class OrderedChangeObject implements Serializable{
     int changeType;
     Integer index;
     ObjectChangeSet changeSet;
+    transient Object addedOrRemovedObject;
     
     
     public OrderedChangeObject(int changeType, Integer index, ObjectChangeSet changeSet) {
+        this(changeType, index, changeSet, null); 
+    }
+    
+    public OrderedChangeObject(int changeType, Integer index, ObjectChangeSet changeSet, Object addedOrRemovedObject) {
         this.changeType = changeType;
         this.index = index;
         this.changeSet = changeSet;
+        this.addedOrRemovedObject = addedOrRemovedObject;
+    }
+    
+    public Object getAddedOrRemovedObject() {
+        return this.addedOrRemovedObject;
     }
     
     /**

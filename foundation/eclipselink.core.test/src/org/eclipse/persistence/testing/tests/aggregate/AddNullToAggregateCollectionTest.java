@@ -29,6 +29,8 @@ public class AddNullToAggregateCollectionTest extends ComplexUpdateTest {
 
     public AddNullToAggregateCollectionTest(Agent originalObject) {
         super(originalObject);
+        // Compare will fail because null is ignored.
+        this.shouldCompareClone = false;
         // The original problem was with compareForChange() called by
         // mergeChangesIntoParent().  The following allows the latter to
         // be executed prior to a write to the database, which would 
@@ -39,6 +41,8 @@ public class AddNullToAggregateCollectionTest extends ComplexUpdateTest {
 
     public AddNullToAggregateCollectionTest(Builder originalObject) {
         super(originalObject);
+        // Compare will fail because null is ignored.
+        this.shouldCompareClone = false;
         // The original problem was with compareForChange() called by
         // mergeChangesIntoParent().  The following allows the latter to
         // be executed prior to a write to the database, which would 

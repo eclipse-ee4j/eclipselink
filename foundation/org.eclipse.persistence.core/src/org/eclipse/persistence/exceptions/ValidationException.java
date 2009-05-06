@@ -382,6 +382,8 @@ public class ValidationException extends EclipseLinkException {
     public static final int MAP_KEY_CANNOT_USE_INDIRECTION = 7314;
     public static final int UNABLE_TO_DETERMINE_MAP_KEY_CLASS = 7315;
     public static final int INVALID_MAPPED_BY_ID_VALUE = 7316;
+    public static final int LIST_ORDER_FIELD_NOT_SUPPORTED = 7317;
+    public static final int COLLECTION_REMOVE_EVENT_WITH_NO_INDEX = 7318;
     
     /**
      * INTERNAL:
@@ -2695,4 +2697,29 @@ public class ValidationException extends EclipseLinkException {
         validationException.setErrorCode(MAP_KEY_CANNOT_USE_INDIRECTION);
         return validationException;
     }    
+
+    /**
+     * PUBLIC:
+     * Attempt to call setListOrderField method on a mapping that doesn't support listOrderField.
+     */
+    public static ValidationException listOrderFieldNotSupported(DatabaseMapping mapping) {
+        Object[] args = { mapping };
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, LIST_ORDER_FIELD_NOT_SUPPORTED, args));
+        validationException.setErrorCode(LIST_ORDER_FIELD_NOT_SUPPORTED);
+        return validationException;
+    }
+
+    /**
+     * PUBLIC:
+     * Attempt to call setListOrderField method on a mapping that doesn't support listOrderField.
+     */
+    public static ValidationException collectionRemoveEventWithNoIndex(DatabaseMapping mapping) {
+        Object[] args = { mapping };
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, COLLECTION_REMOVE_EVENT_WITH_NO_INDEX, args));
+        validationException.setErrorCode(COLLECTION_REMOVE_EVENT_WITH_NO_INDEX);
+        return validationException;
+    }
+
 }

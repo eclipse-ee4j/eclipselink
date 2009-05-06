@@ -45,13 +45,15 @@ public class UpdateChangeValueTest extends ComplexUpdateTest {
         employee.addPhoneNumber(new PhoneNumber("office", "416", "8224599"));
         // Many to many
         if (!employee.getProjects().isEmpty()) {
-            employee.getProjects().removeElement(employee.getProjects().lastElement());
+            Project lastProject = (Project)employee.getProjects().lastElement();
+            employee.removeProject(lastProject);
         }
-        employee.getProjects().addElement(getSession().readObject(LargeProject.class));
+        employee.addProject((Project)getSession().readObject(LargeProject.class));
 
         // Direct collection
         if (!employee.getResponsibilitiesList().isEmpty()) {
-            employee.getResponsibilitiesList().removeElement(employee.getResponsibilitiesList().lastElement());
+            String lastResponsibility = (String)employee.getResponsibilitiesList().lastElement();
+            employee.removeResponsibility(lastResponsibility);
         }
         employee.addResponsibility("buy lots of donuts");
 

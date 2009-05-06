@@ -109,6 +109,8 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         this.addTargetQuery = new DataModifyQuery();
         this.removeTargetQuery = new DataModifyQuery();
         this.removeAllTargetsQuery = new DataModifyQuery();
+        
+        this.isListOrderFieldSupported = true;
     }
 
     /**
@@ -497,14 +499,67 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
             whereClause = expression.and(whereClause);
         }
 
-        AbstractRecord modifyRow = new DatabaseRecord();
-        containerPolicy.addFieldsForMapKey(modifyRow);
-
         SQLUpdateStatement statement = new SQLUpdateStatement();
         statement.setTable(getReferenceDescriptor().getDefaultTable());
         statement.setWhereClause(whereClause);
-        statement.setModifyRow(modifyRow);
+        statement.setModifyRow(createModifyRowForAddTargetQuery());
         addTargetQuery.setSQLStatement(statement);
+    }
+
+    /**
+     * INTERNAL:
+     */
+    protected AbstractRecord createModifyRowForAddTargetQuery() {
+        AbstractRecord modifyRow = new DatabaseRecord();
+        containerPolicy.addFieldsForMapKey(modifyRow);
+        if(listOrderField != null) {
+            modifyRow.add(listOrderField, null);
+        }
+        return modifyRow;
+    }
+    
+    /**
+     * INTERNAL:
+     * Initialize changeOrderTargetQuery.
+     */
+    protected void initializeChangeOrderTargetQuery(AbstractSession session) {
+        boolean hasChangeOrderTargetQuery = changeOrderTargetQuery != null;
+        if(!hasChangeOrderTargetQuery) {
+            changeOrderTargetQuery = new DataModifyQuery();
+        }
+        
+        changeOrderTargetQuery = new DataModifyQuery();
+        if (!changeOrderTargetQuery.hasSessionName()) {
+            changeOrderTargetQuery.setSessionName(session.getName());
+        }
+        if (hasChangeOrderTargetQuery) {
+            return;
+        }
+
+        // Build where clause expression.
+        Expression whereClause = null;
+        Expression builder = new ExpressionBuilder();
+
+        List<DatabaseField> targetPrimaryKeyFields = getReferenceDescriptor().getPrimaryKeyFields();
+        int size = targetPrimaryKeyFields.size();
+        for (int index = 0; index < size; index++) {
+            DatabaseField targetPrimaryKey = targetPrimaryKeyFields.get(index);
+            Expression expression = builder.getField(targetPrimaryKey).equal(builder.getParameter(targetPrimaryKey));
+            whereClause = expression.and(whereClause);
+        }
+
+        AbstractRecord modifyRow = new DatabaseRecord();
+        modifyRow.add(listOrderField, null);
+
+        SQLUpdateStatement statement = new SQLUpdateStatement();
+        if(listOrderField.hasTableName()) {
+            statement.setTable(listOrderField.getTable());
+        } else {
+            statement.setTable(getReferenceDescriptor().getDefaultTable());
+        }
+        statement.setWhereClause(whereClause);
+        statement.setModifyRow(modifyRow);
+        changeOrderTargetQuery.setSQLStatement(statement);
     }
 
     /**
@@ -556,6 +611,9 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
             Expression expression = builder.getField(targetForeignKey).equal(builder.getParameter(targetForeignKey));
             whereClause = expression.and(whereClause);
         }
+        if(listOrderField != null) {
+            modifyRow.add(listOrderField, null);
+        }
 
         SQLUpdateStatement statement = new SQLUpdateStatement();
         statement.setTable(getReferenceDescriptor().getDefaultTable());
@@ -587,6 +645,9 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
             modifyRow.put(targetForeignKey, null);
             Expression expression = builder.getField(targetForeignKey).equal(builder.getParameter(targetForeignKey));
             whereClause = expression.and(whereClause);
+        }
+        if(listOrderField != null) {
+            modifyRow.add(listOrderField, null);
         }
 
         SQLUpdateStatement statement = new SQLUpdateStatement();
@@ -660,13 +721,14 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
             // In the uow data queries are cached until the end of the commit.
             if (query.shouldCascadeOnlyDependentParts()) {
                 // Hey I might actually want to use an inner class here... ok array for now.
-                Object[] event = new Object[3];
+                Object[] event = new Object[4];
                 event[0] = ObjectAdded;
                 event[1] = query;
                 event[2] = objectAdded;
+                event[3] = extraData;
                 query.getSession().getCommitManager().addDataModificationEvent(this, event);
             } else {
-                updateTargetForeignKeyPostUpdateSource_ObjectAdded(query, objectAdded);
+                updateTargetForeignKeyPostUpdateSource_ObjectAdded(query, objectAdded, extraData);
             }
         }
     }
@@ -709,7 +771,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         } else if (event[0] == ObjectRemoved) {
             updateTargetForeignKeyPostUpdateSource_ObjectRemoved((WriteObjectQuery)event[1], event[2]);
         } else if (event[0] == ObjectAdded) {
-            updateTargetForeignKeyPostUpdateSource_ObjectAdded((WriteObjectQuery)event[1], event[2]);
+            updateTargetForeignKeyPostUpdateSource_ObjectAdded((WriteObjectQuery)event[1], event[2], (Map)event[3]);
         } else {
             throw DescriptorException.invalidDataModificationEventCode(event[0], this);
         }
@@ -849,7 +911,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * @return
      */
     public boolean requiresDataModificationEvents(){
-        return false;
+        return this.listOrderField != null;
     }
     
     /**
@@ -1083,6 +1145,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         // Extract target field and its value. Construct insert statement and execute it
         List<DatabaseField> targetPrimaryKeyFields = getReferenceDescriptor().getPrimaryKeyFields();
         int size = targetPrimaryKeyFields.size();
+        int objectIndex = 0;
         for (Object iter = cp.iteratorFor(objects); cp.hasNext(iter);) {
             AbstractRecord databaseRow = new DatabaseRecord();
             databaseRow.mergeFrom(keyRow);
@@ -1094,6 +1157,9 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
                 databaseRow.put(targetPrimaryKey, targetKeyValue);
             }
             ContainerPolicy.copyMapDataToRow(cp.getKeyMappingDataForWriteQuery(wrappedObject, query.getSession()), databaseRow);
+            if(listOrderField != null) {
+                databaseRow.put(listOrderField, objectIndex++);
+            }
             query.getSession().executeQuery(addTargetQuery, databaseRow);
         }
     }
@@ -1110,7 +1176,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * <p>- Construct an update statement with above fields and values for target table.
      * <p>- execute the statement.
      */
-    public void updateTargetForeignKeyPostUpdateSource_ObjectAdded(ObjectLevelModifyQuery query, Object objectAdded) throws DatabaseException {
+    public void updateTargetForeignKeyPostUpdateSource_ObjectAdded(ObjectLevelModifyQuery query, Object objectAdded, Map extraData) throws DatabaseException {
         if (isReadOnly()) {
             return;
         }
@@ -1129,6 +1195,9 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         }
   
         ContainerPolicy.copyMapDataToRow(cp.getKeyMappingDataForWriteQuery(objectAdded, query.getSession()), databaseRow);
+        if(listOrderField != null && extraData != null) {
+            databaseRow.put(listOrderField, extraData.get(listOrderField));
+        }
 
         query.getSession().executeQuery(addTargetQuery, databaseRow);
     }
@@ -1159,6 +1228,9 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
             translationRow.add(targetForeignKey, sourceKeyValue);
             // Need to set this value to null in the modify row.
             modifyRow.add(targetForeignKey, null);
+        }
+        if(listOrderField != null) {
+            modifyRow.add(listOrderField, null);
         }
 
         ContainerPolicy cp = getContainerPolicy();
@@ -1203,6 +1275,10 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
             // Need to set this value to null in the modify row.
             modifyRow.add(targetForeignKey, null);
         }
+        if(listOrderField != null) {
+            modifyRow.add(listOrderField, null);
+        }
+
         // Need a different modify row than translation row, as the same field has different values in each.
         DataModifyQuery removeQuery = (DataModifyQuery)this.removeAllTargetsQuery.clone();
         removeQuery.setModifyRow(modifyRow);

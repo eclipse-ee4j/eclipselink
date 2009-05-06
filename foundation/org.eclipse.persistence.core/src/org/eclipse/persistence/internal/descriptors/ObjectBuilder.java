@@ -86,6 +86,8 @@ public class ObjectBuilder implements Cloneable, Serializable {
     protected boolean hasWrapperPolicy;
     /** PERF: Cache sequence mappings. */
     protected AbstractDirectMapping sequenceMapping;
+    /** indicates whether part of primary key is unmapped - may happen only in case AggregateObject or AggregateCollection descriptor. */
+    protected boolean mayHaveNullInPrimaryKey;
 
     public ObjectBuilder(ClassDescriptor descriptor) {
         this.mappingsByField = new HashMap(20);
@@ -1852,6 +1854,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
         List primaryKeyClassifications = getPrimaryKeyClassifications();
         int size = primaryKeyFields.size();
         Vector primaryKeyValues = new NonSynchronizedVector(size);
+        int numberOfNulls = 0;
 
         // PERF: use index not enumeration
         for (int index = 0; index < size; index++) {
@@ -1866,7 +1869,17 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 }
                 primaryKeyValues.addElement(value);
             } else {
-                return null;
+                if(this.mayHaveNullInPrimaryKey) {
+                    numberOfNulls++;
+                    if(numberOfNulls < size) {
+                        primaryKeyValues.addElement(null);
+                    } else {
+                        // Must have some non null elements. If all elements are null return null.
+                        return null;
+                    }
+                } else {
+                    return null;
+                }
             }
         }
 
@@ -2408,7 +2421,13 @@ public class ObjectBuilder implements Cloneable, Serializable {
                     primaryKeyFields.add(field);
                 }
             }
-            primaryKeyFields.addAll(this.descriptor.getAdditionalAggregateCollectionKeyFields());
+            List<DatabaseField> additionalFields = this.descriptor.getAdditionalAggregateCollectionKeyFields();
+            for(int i=0; i < additionalFields.size(); i++) {
+                DatabaseField additionalField = additionalFields.get(i); 
+                if(!primaryKeyFields.contains(additionalField)) {
+                    primaryKeyFields.add(additionalField);
+                }
+            }
         }
         createPrimaryKeyExpression(session);
 
@@ -2430,8 +2449,12 @@ public class ObjectBuilder implements Cloneable, Serializable {
             DatabaseField primaryKeyField = (DatabaseField)primaryKeyFields.get(index);
             DatabaseMapping mapping = getMappingForField(primaryKeyField);
 
-            if ((mapping == null) && (!this.descriptor.isDescriptorTypeAggregate())) {
-                throw DescriptorException.noMappingForPrimaryKey(primaryKeyField, this.descriptor);
+            if (mapping == null) {
+                if(this.descriptor.isDescriptorTypeAggregate()) {
+                    this.mayHaveNullInPrimaryKey = true;
+                } else {
+                    throw DescriptorException.noMappingForPrimaryKey(primaryKeyField, this.descriptor);
+                }
             }
 
             getPrimaryKeyMappings().add(mapping);

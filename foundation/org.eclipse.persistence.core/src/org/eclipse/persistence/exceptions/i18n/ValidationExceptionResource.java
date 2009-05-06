@@ -296,6 +296,8 @@ public class ValidationExceptionResource extends ListResourceBundle {
                                            { "7314", "The mapping [{0}] is being used to map the key in a MappedKeyMapContainerPolicy and uses indirection.  Mappings used for Map Keys cannot use indirection."},
                                            { "7315", "The map key class of the element collection attribute [{0}] on the class [{1}] cannot be determined.  When specifying a convert key with an element collection, ensure you are using a generic definition so that a class type can be determined for the converter."},
                                            { "7316", "The mapped by id value [{0}] from the mapping attribute [{1}] is invalid. An equivalent attribute with that name must be defined on the id class [{2}]"},
+                                           { "7317", "List order field is not supported for [{0}]." },
+                                           { "7318", "[{0}] has list order set, but CollectionChangeEvent.REMOVE was sent without index." },
  };
     
     /**

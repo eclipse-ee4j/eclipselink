@@ -33,7 +33,22 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
      */
     protected HashMap commitAddMap;
     
+    /**
+     * Used only in case listOrderField != null in the mapping.
+     * Maps each object which has been added or removed or which order in the list has changed
+     * to an array of two (non-intersecting) sets of indexes - old and new.
+     */
+    protected Map changedIndexes;
+    protected int oldSize;
+    protected int newSize;
+    
     public static final NULL Null = new NULL();
+    
+    protected boolean isFirstToAddAlreadyInCollection;
+    protected boolean isFirstToRemoveAlreadyOutCollection;
+    
+    protected boolean isFirstToAdd = true;
+    protected boolean isFirstToRemove = true;
 
     /**
      * This default constructor.
@@ -89,6 +104,12 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
                 this.getAddObjectMap().put(key, count);
             }
         }
+        if(this.isFirstToAdd) {
+            this.isFirstToAdd = false;
+            if(!this.isFirstToAddAlreadyInCollection) {
+                return;
+            }
+        }
         // this is an attribute change track add keep count
         int addValue = count.intValue();
         int commitValue = 0;
@@ -139,13 +160,18 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
                 this.getRemoveObjectMap().put(key, count);
             }
         }
+        if(this.isFirstToRemove) {
+            this.isFirstToRemove = false;
+            if(this.isFirstToRemoveAlreadyOutCollection) {
+                return;
+            }
+        }   
         int removeValue = count.intValue();
         int commitValue = 0;
         if (getCommitAddMap().containsKey(key)){
             commitValue = ((Integer)getCommitAddMap().get(key)).intValue();
         }
         getCommitAddMap().put(key, new Integer(commitValue - removeValue));
-        
     }
 
     /**
@@ -170,11 +196,32 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
         Object iterator = containerPolicy.iteratorFor(collection);
         while (containerPolicy.hasNext(iterator)) {
             Object object = containerPolicy.next(iterator, session);
-            if (getCommitAddMap().containsKey(object)) {
-                int count = ((Integer)getCommitAddMap().get(object)).intValue();
-                getCommitAddMap().put(object, new Integer(++count));
+            incrementDatabaseCount(object);
+        }
+    }
+
+    /**
+     * Increment the count for object
+     */
+    public void incrementDatabaseCount(Object object){
+        if (getCommitAddMap().containsKey(object)) {
+            int count = ((Integer)getCommitAddMap().get(object)).intValue();
+            getCommitAddMap().put(object, new Integer(++count));
+        } else {
+            getCommitAddMap().put(object, new Integer(1));
+        }
+    }
+
+    /**
+     * Decrement the count for object
+     */
+    public void decrementDatabaseCount(Object object){
+        if (getCommitAddMap().containsKey(object)) {
+            int count = ((Integer)getCommitAddMap().get(object)).intValue();
+            if(count > 1) {
+                getCommitAddMap().put(object, new Integer(--count));
             } else {
-                getCommitAddMap().put(object, new Integer(1));
+                getCommitAddMap().remove(object);
             }
         }
     }
@@ -248,7 +295,8 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
      */
     public boolean hasChanges() {
         return (!((this.addObjectMap == null || this.addObjectMap.isEmpty())
-            && (this.removeObjectMap == null || this.removeObjectMap.isEmpty()))) || getOwner().isNew();
+            && (this.removeObjectMap == null || this.removeObjectMap.isEmpty())
+            && (this.changedIndexes == null || this.changedIndexes.isEmpty()))) || getOwner().isNew();
     }
 
     /**
@@ -275,6 +323,31 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
             }
             this.addRemoveChange(removed, (Integer)removeMapToMerge.get(removed));
         }
+
+        if(this.changedIndexes != null) {
+            if(((DirectCollectionChangeRecord)mergeFromRecord).getChangedIndexes() != null) {
+                Iterator<Map.Entry<Object, Set[]>> itEntries = ((DirectCollectionChangeRecord)mergeFromRecord).getChangedIndexes().entrySet().iterator();  
+                while(itEntries.hasNext()) {
+                    Map.Entry<Object, Set[]> entry = itEntries.next();
+                    Object obj = entry.getValue();
+                    Set[] indexes = (Set[])entry.getValue();
+                    if(this.changedIndexes.containsKey(obj)) {
+                        // we assuming that these are two consecutive change records:
+                        // oldIndexes[1] should be equal to newIndexes[0]
+                        ((Set[])(this.changedIndexes.get(obj)))[1] = indexes[1];  
+                    } else {
+                        this.changedIndexes.put(obj, indexes);
+                    }
+                }
+                this.newSize = ((DirectCollectionChangeRecord)mergeFromRecord).getNewSize();
+            }
+        } else {
+            if(((DirectCollectionChangeRecord)mergeFromRecord).getChangedIndexes() != null) {
+                this.changedIndexes = new HashMap(((DirectCollectionChangeRecord)mergeFromRecord).getChangedIndexes());
+                this.oldSize = ((DirectCollectionChangeRecord)mergeFromRecord).getOldSize();
+                this.newSize = ((DirectCollectionChangeRecord)mergeFromRecord).getNewSize();
+            }
+        }
    }
 
     /**
@@ -291,5 +364,72 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
         public boolean equals(Object object){
             return object instanceof NULL;
         }        
+    }
+    
+    public void firstToAddAlreadyInCollection() {
+        this.isFirstToAddAlreadyInCollection = true;
+    }
+    public boolean isFirstToAddAlreadyInCollection() {
+        return this.isFirstToAddAlreadyInCollection;
+    }
+
+    public void firstToRemoveAlreadyOutCollection() {
+        this.isFirstToRemoveAlreadyOutCollection = true;
+    }
+    public boolean isFirstToRemoveAlreadyOutCollection() {
+        return this.isFirstToRemoveAlreadyOutCollection;
+    }
+    
+    public void setChangedIndexes(Map changedIndexes) {
+        this.changedIndexes = changedIndexes;
+    }
+    public Map getChangedIndexes() {
+        return this.changedIndexes;
+    }
+    public void setOldSize(int size) {
+        this.oldSize = size;
+    }
+    public int getOldSize() {
+        return this.oldSize;
+    }
+    public void setNewSize(int size) {
+        this.newSize = size;
+    }
+    public int getNewSize() {
+        return this.newSize;
+    }
+
+    /**
+     * Recreates the original state of the collection.
+     */
+   public void recreateOriginalCollection(Object currentCollection, ContainerPolicy cp, AbstractSession session) {
+        this.setOriginalCollection(currentCollection);
+        if(currentCollection == null) {
+            return;
+        }
+        if(this.removeObjectMap != null) {
+            Iterator it = this.removeObjectMap.entrySet().iterator();
+            while(it.hasNext()) {
+                Map.Entry entry = (Map.Entry)it.next();
+                Object obj = entry.getKey();
+                int n = (Integer)entry.getValue();
+                for(int i=0; i < n; i++) {
+                    cp.addInto(obj, currentCollection, session);
+                }
+            }
+            this.removeObjectMap.clear();
+        }
+        if(this.addObjectMap != null) {
+            Iterator it = this.addObjectMap.entrySet().iterator();
+            while(it.hasNext()) {
+                Map.Entry entry = (Map.Entry)it.next();
+                Object obj = entry.getKey();
+                int n = (Integer)entry.getValue();
+                for(int i=0; i < n; i++) {
+                    cp.removeFrom(obj, currentCollection, session);
+                }
+            }
+            this.addObjectMap.clear();
+        }
     }
 }

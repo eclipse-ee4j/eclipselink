@@ -35,6 +35,7 @@ import org.eclipse.persistence.internal.sessions.remote.*;
 import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.remote.*;
+import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.ObjectCopyingPolicy;
 import org.eclipse.persistence.sessions.Project;
 
@@ -52,6 +53,13 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     protected ContainerPolicy containerPolicy;
     protected transient boolean hasOrderBy;
 
+    /** Field holds the order of elements in the list in the db, requires collection of type List, may be not null only in case isListOrderFieldSupported==true */
+    protected DatabaseField listOrderField;
+    /** indicates whether the mapping supports listOrderField, if it doesn't attempt to set listOrderField throws exception. */
+    protected boolean isListOrderFieldSupported;
+    /** query used when order of list members is changed. Used only if listOrderField!=null */
+    protected transient DataModifyQuery changeOrderTargetQuery;
+    
     /**
      * PUBLIC:
      * Default constructor.
@@ -61,6 +69,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         this.hasCustomDeleteAllQuery = false;
         this.containerPolicy = ContainerPolicy.buildDefaultPolicy();
         this.hasOrderBy = false;
+        this.isListOrderFieldSupported = false;
     }
 
     /**
@@ -379,6 +388,10 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         CollectionChangeRecord collectionRecord = (CollectionChangeRecord)changeRecord;
         // TODO: Handle events that fired after collection was replaced.
         compareCollectionsForChange(collectionRecord.getOriginalCollection(), collectionRecord.getLatestCollection(), collectionRecord, session);
+        
+        if(this.isPrivateOwned()) {
+            postCalculateChanges(collectionRecord, (UnitOfWorkImpl)session);
+        }
     }
 
     /**
@@ -486,16 +499,70 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                     }
                 }
                 Iterator addedObjects = record.getAddObjectList().values().iterator();
+                Map extraData = null;
                 while (addedObjects.hasNext()) {
                     addedChangeSet = (ObjectChangeSet)addedObjects.next();
-                    objectAddedDuringUpdate(query, getContainerPolicy().getCloneDataFromChangeSet(addedChangeSet), addedChangeSet, null);
+                    if(this.listOrderField != null) {
+                        extraData = new HashMap(1);
+                        Integer addedIndexInList = (Integer)record.getOrderedAddObjectIndices().get(addedChangeSet);
+                        extraData.put(listOrderField, addedIndexInList);
+                    }
+                    objectAddedDuringUpdate(query, getContainerPolicy().getCloneDataFromChangeSet(addedChangeSet), addedChangeSet, extraData);
                     if (addedChangeSet.getNewKey() != null){
                         containerPolicy.propogatePostUpdate(query, addedChangeSet.getNewKey());
+                    }
+                }
+                if(listOrderField != null) {
+                    List previousList = (List)previousObjects;
+                    int previousSize = previousList.size();
+                    List currentList = (List)currentObjects;
+                    int currentSize = currentList.size();
+                    if(previousList == currentList) {
+                        // previousList is not available
+                        
+                        // The same size as previous list,
+                        // at the i-th position holds the index of the i-th object in previous list in the current list (-1 if the object was removed): 
+                        // for example: {0, -1, 1, -1, 3} means that:
+                        //   previous(0) == current(0);
+                        //   previous(1) was removed;
+                        //   previous(2) == current(1);
+                        //   previous(3) was removed;
+                        //   previous(4) == current(3);
+                        // current(1) and current(3) were also on previous list, but with different indexes: they are the ones that should have their index changed. 
+                        List<Integer> previousIndexes = record.getOriginalIndexes(currentList);
+                        for(int i=0; i < previousIndexes.size(); i++) {
+                            int prevIndex = previousIndexes.get(i);
+                            if(prevIndex != i && prevIndex >= 0) {
+                                objectOrderChangedDuringUpdate(query, currentList.get(i), i);
+                            }
+                        }
+                    } else {
+                        for(int i=0; i < previousSize; i++) {
+                            // TODO: should we check for previousObject != null? 
+                            Object prevObject = previousList.get(i);
+                            Object currentObject = null;
+                            if(i < currentSize) {
+                                currentObject = currentList.get(i);
+                            }
+                            if(prevObject != currentObject) {
+                                // object has either been removed or its index in the List has changed
+                                int newIndex = currentList.indexOf(prevObject);
+                                if(newIndex >= 0) {
+                                    objectOrderChangedDuringUpdate(query, prevObject, newIndex);
+                                }
+                            }
+                        }
                     }
                 }
             }
             return;
         }
+        
+        if(this.listOrderField != null && this.isAggregateCollectionMapping()) {
+            this.compareListsAndWrite((List)previousObjects, (List)currentObjects, query);
+            return;
+        }
+        
         ContainerPolicy cp = getContainerPolicy();
 
         Hashtable previousObjectsByKey = new Hashtable(cp.sizeFor(previousObjects) + 2); // Read from db or from backup in uow.
@@ -564,9 +631,23 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     }
 
     /**
+     * INTERNAL:
+     * Old and new lists are compared and only the changes are written to the database.
+     * Currently there's no support for listOrderField in CollectionMapping in case there's no change sets,
+     * so this method currently never called (currently only overriding method in AggregateCollectionMapping is called).
+     * This method should be implemented to support listOrderField functionality without change sets.
+     */
+    protected void compareListsAndWrite(List previousList, List currentList, WriteObjectQuery query) throws DatabaseException, OptimisticLockException {
+    }
+    
+    /**
      * Compare two objects if their parts are not private owned
      */
     protected boolean compareObjectsWithoutPrivateOwned(Object firstCollection, Object secondCollection, AbstractSession session) {
+        if(this.listOrderField != null) {
+            return compareLists((List)firstCollection, (List)secondCollection, session, false);
+        }
+        
         ContainerPolicy cp = getContainerPolicy();
         if (cp.sizeFor(firstCollection) != cp.sizeFor(secondCollection)) {
             return false;
@@ -598,6 +679,10 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * Compare two objects if their parts are private owned
      */
     protected boolean compareObjectsWithPrivateOwned(Object firstCollection, Object secondCollection, AbstractSession session) {
+        if(this.listOrderField != null) {
+            return compareLists((List)firstCollection, (List)secondCollection, session, true);
+        }
+
         ContainerPolicy cp = getContainerPolicy();
         if (cp.sizeFor(firstCollection) != cp.sizeFor(secondCollection)) {
             return false;
@@ -631,6 +716,34 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             }
         }
 
+        return true;
+    }
+
+    /**
+     * Compare two lists. For equality the order of the elements should be the same. 
+     * Used only if listOrderField != null
+     */
+    protected boolean compareLists(List firstList, List secondList, AbstractSession session, boolean withPrivateOwned) {
+        if (firstList.size() != secondList.size()) {
+            return false;
+        }
+
+        int size = firstList.size();
+        for(int i=0; i < size; i++) {
+            Object firstObject = firstList.get(i);
+            Object secondObject = secondList.get(i);
+            if(withPrivateOwned) {
+                if(!session.compareObjects(firstObject, secondObject)) {
+                    return false;
+                }
+            } else {
+                CacheKey firstKey = new CacheKey(getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(firstObject, session));
+                CacheKey secondKey = new CacheKey(getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(secondObject, session));
+                if(!firstKey.equals(secondKey)) {
+                    return false;
+                }
+            }
+        }
         return true;
     }
 
@@ -749,6 +862,14 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         return value;
     }
 
+    /**
+     * PUBLIC:
+     * Field holds the order of elements in the list in the db, requires collection of type List, may be not null only in case isListOrderFieldSupported==true
+     */
+    public DatabaseField getListOrderField() {
+        return listOrderField;
+    }
+    
     protected boolean hasCustomDeleteAllQuery() {
         return hasCustomDeleteAllQuery;
     }
@@ -775,8 +896,42 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         if ((!usesIndirection()) && (!getAttributeAccessor().getAttributeClass().isAssignableFrom(getContainerPolicy().getContainerClass()))) {
             throw DescriptorException.incorrectCollectionPolicy(this, getAttributeAccessor().getAttributeClass(), getContainerPolicy().getContainerClass());
         }
+        
+        if(listOrderField != null) {
+            if(!List.class.isAssignableFrom(getAttributeAccessor().getAttributeClass())) {
+                throw DescriptorException.listOrderFieldRequiersList(getDescriptor(), this);
+            } else if(!getContainerPolicy().isOrderedListPolicy()) {
+                throw DescriptorException.listOrderFieldRequiersOrderedListContainerPolicy(getDescriptor(), this);
+            } else {
+                initializeListOrderField(session);
+            }
+        }
     }
 
+    /**
+     * INTERNAL:
+     * Initializes listOrderField. 
+     * Precondition: listOrderField != null.
+     */
+    protected void initializeListOrderField(AbstractSession session) {
+        this.getReferenceDescriptor().buildField(this.listOrderField);
+        // TODO: should verify that listOrderField's table is one of the tables of the target descriptor.
+        // Could we check that here for AggregateCollectionMapping?
+        ReadAllQuery readAllQuery = (ReadAllQuery)getSelectionQuery();
+        Expression expField = readAllQuery.getExpressionBuilder().getField(this.listOrderField);
+        readAllQuery.addOrdering(expField);
+        readAllQuery.addAdditionalField(expField);
+        
+        initializeChangeOrderTargetQuery(session);
+    }
+    
+    /**
+     * INTERNAL:
+     * Initialize changeOrderTargetQuery.
+     */
+    protected void initializeChangeOrderTargetQuery(AbstractSession session) {
+    }
+    
     /**
      * INTERNAL:
      */
@@ -1101,6 +1256,23 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         }
     }
 
+    protected void objectOrderChangedDuringUpdate(WriteObjectQuery query, Object orderChangedObject, int orderIndex) {
+        prepareTranslationRow(query.getTranslationRow(), query.getObject(), query.getSession());
+        AbstractRecord databaseRow = new DatabaseRecord();
+
+        // Extract target field and its value. Construct insert statement and execute it
+        List<DatabaseField> targetPrimaryKeyFields = getReferenceDescriptor().getPrimaryKeyFields();
+        int size = targetPrimaryKeyFields.size();
+        for (int index = 0; index < size; index++) {
+            DatabaseField targetPrimaryKey = targetPrimaryKeyFields.get(index);
+            Object targetKeyValue = getReferenceDescriptor().getObjectBuilder().extractValueFromObjectForField(orderChangedObject, targetPrimaryKey, query.getSession());
+            databaseRow.put(targetPrimaryKey, targetKeyValue);
+        }
+        databaseRow.put(listOrderField, orderIndex);
+  
+        query.getSession().executeQuery(changeOrderTargetQuery, databaseRow);
+    }
+    
     /**
      * INTERNAL:
      * An object was removed to the collection during an update, delete it if private.
@@ -1418,13 +1590,14 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             collectionChangeRecord.setMapping(this);
             objectChangeSet.addChange(collectionChangeRecord);
         }
-        if (collectionChangeRecord.getOriginalCollection() == null) {
-            collectionChangeRecord.setOriginalCollection(oldValue);
-        }
-        collectionChangeRecord.setLatestCollection(newValue);
+        // the order is essential - the record should be set to deferred before recreateOriginalCollection is called -
+        // otherwise will keep altering the change record while adding/removing each element into/from the original collection. 
         collectionChangeRecord.setIsDeferred(true);
-        
         objectChangeSet.deferredDetectionRequiredOn(getAttributeName());
+        if (collectionChangeRecord.getOriginalCollection() == null) {
+            collectionChangeRecord.recreateOriginalCollection(oldValue, getContainerPolicy(), uow);
+        }
+        collectionChangeRecord.setLatestCollection(newValue);        
     }
     
     /**
@@ -1453,7 +1626,9 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                 collectionChangeRecord.setMapping(this);
                 changeSet.addChange(collectionChangeRecord);
             }
-            getContainerPolicy().recordUpdateToCollectionInChangeRecord(event, changeSetToAdd, collectionChangeRecord);
+            if(!collectionChangeRecord.isDeferred()) {
+                getContainerPolicy().recordUpdateToCollectionInChangeRecord(event, changeSetToAdd, collectionChangeRecord);
+            }
         }
     }
            
@@ -1489,13 +1664,45 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
 
     /**
      * PUBLIC:
+     * indicates whether the mapping supports listOrderField, if it doesn't attempt to set listOrderField throws exception.
+     */
+    public boolean isListOrderFieldSupported() {
+        return isListOrderFieldSupported;
+    }
+    
+    /**
+     * PUBLIC:
+     * Field holds the order of elements in the list in the db, requires collection of type List.
+     * Throws exception if the mapping doesn't support listOrderField.
+     */
+    public void setListOrderField(DatabaseField field) {
+        if(isListOrderFieldSupported) {
+            this.listOrderField = field;
+        } else {
+            throw ValidationException.listOrderFieldNotSupported(this);
+        }
+    }
+    
+    /**
+     * PUBLIC:
+     * Field holds the order of elements in the list in the db, requires collection of type List.
+     * Throws exception if the mapping doesn't support listOrderField.
+     */
+    public void setListOrderFieldName(String fieldName) {
+        setListOrderField(new DatabaseField(fieldName));
+    }
+    
+    /**
+     * PUBLIC:
      * Configure the mapping to use an instance of the specified container class
      * to hold the target objects.
+     * Note that if listOrderField is used then setListOrderField method 
+     * should be called before this method.
      * <p>The container class must implement (directly or indirectly) the
      * <code>java.util.Collection</code> interface.
      */
     public void useCollectionClass(Class concreteClass) {
-        ContainerPolicy policy = ContainerPolicy.buildPolicyFor(concreteClass, hasOrderBy());
+        ContainerPolicy policy = ContainerPolicy.buildPolicyFor(concreteClass, hasOrderBy() || listOrderField != null);
         setContainerPolicy(policy);
     }
 
@@ -1735,52 +1942,10 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
 
     /**
      * INTERNAL:
-     * Add a new value and its change set to the collection change record.  This is used by
-     * attribute change tracking.
-     */
-    public void addToCollectionChangeRecord(Object newKey, Object newValue, ObjectChangeSet objectChangeSet, UnitOfWorkImpl uow) {
-        if (newValue != null) {
-            ClassDescriptor descriptor;
-
-            //PERF: Use referenceDescriptor if it does not have inheritance
-            if (!getReferenceDescriptor().hasInheritance()) {
-                descriptor = getReferenceDescriptor();
-            } else {
-                descriptor = uow.getDescriptor(newValue);
-            }
-            newValue = descriptor.getObjectBuilder().unwrapObject(newValue, uow);
-            ObjectChangeSet newSet = descriptor.getObjectBuilder().createObjectChangeSet(newValue, (UnitOfWorkChangeSet)objectChangeSet.getUOWChangeSet(), uow);
-            simpleAddToCollectionChangeRecord(newKey, newSet, objectChangeSet, uow);
-        }
-    }
-
-    /**
-     * INTERNAL:
      * Return if this mapping supports change tracking.
      */
     public boolean isChangeTrackingSupported(Project project) {
         return getIndirectionPolicy().usesTransparentIndirection();
-    }
-
-    /**
-     * INTERNAL:
-     * Remove a value and its change set from the collection change record.  This is used by
-     * attribute change tracking.
-     */
-    public void removeFromCollectionChangeRecord(Object newKey, Object newValue, ObjectChangeSet objectChangeSet, UnitOfWorkImpl uow) {
-        if (newValue != null) {
-            ClassDescriptor descriptor;
-
-            //PERF: Use referenceDescriptor if it does not have inheritance
-            if (!getReferenceDescriptor().hasInheritance()) {
-                descriptor = getReferenceDescriptor();
-            } else {
-                descriptor = uow.getDescriptor(newValue);
-            }
-            newValue = descriptor.getObjectBuilder().unwrapObject(newValue, uow);
-            ObjectChangeSet newSet = descriptor.getObjectBuilder().createObjectChangeSet(newValue, (UnitOfWorkChangeSet)objectChangeSet.getUOWChangeSet(), uow);
-            simpleRemoveFromCollectionChangeRecord(newKey, newSet, objectChangeSet, uow);
-        }
     }
 
     /**

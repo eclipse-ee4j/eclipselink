@@ -16,6 +16,7 @@ import java.util.*;
 import java.beans.PropertyChangeListener;
 import org.eclipse.persistence.internal.descriptors.changetracking.AttributeChangeListener;
 import org.eclipse.persistence.internal.indirection.*;
+import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.descriptors.changetracking.*;
 
 /**
@@ -126,8 +127,11 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
      * Raise the add change event and relationship maintenance.
      */
     protected void raiseAddChangeEvent(Object element, Integer index) {
+        raiseAddChangeEvent(element, index, false);
+    }    
+    protected void raiseAddChangeEvent(Object element, Integer index, boolean isSet) {
         if (hasTrackedPropertyChangeListener()) {
-            _persistence_getPropertyChangeListener().propertyChange(new CollectionChangeEvent(this, getTrackedAttributeName(), this, element, CollectionChangeEvent.ADD, index));
+            _persistence_getPropertyChangeListener().propertyChange(new CollectionChangeEvent(this, getTrackedAttributeName(), this, element, CollectionChangeEvent.ADD, index, isSet));
         }
         if (hasBeenRegistered()) {
             ((UnitOfWorkQueryValueHolder)getValueHolder()).updateForeignReferenceSet(element, null);
@@ -138,8 +142,11 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
      * Raise the remove change event.
      */
     protected void raiseRemoveChangeEvent(Object element, Integer index) {
+        raiseRemoveChangeEvent(element, index, false);
+    }
+    protected void raiseRemoveChangeEvent(Object element, Integer index, boolean isSet) {
         if (hasTrackedPropertyChangeListener()) {
-            _persistence_getPropertyChangeListener().propertyChange(new CollectionChangeEvent(this, getTrackedAttributeName(), this, element, CollectionChangeEvent.REMOVE, index));
+            _persistence_getPropertyChangeListener().propertyChange(new CollectionChangeEvent(this, getTrackedAttributeName(), this, element, CollectionChangeEvent.REMOVE, index, isSet));
         }
         if (hasBeenRegistered()) {
             ((UnitOfWorkQueryValueHolder)getValueHolder()).updateForeignReferenceRemove(element);
@@ -260,16 +267,7 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
      * @see java.util.Vector#clear()
      */
     public void clear() {
-        if (hasBeenRegistered() || hasTrackedPropertyChangeListener()) {
-            Iterator objects = iterator();
-            while (objects.hasNext()) {
-                Object o = objects.next();
-                objects.remove();
-                raiseRemoveChangeEvent(o, null);
-            }
-        } else {
-            getDelegate().clear();
-        }
+        removeAllElements();
     }
 
     /**
@@ -548,8 +546,8 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
             public void set(Object object) {
                 this.delegateIterator.set(object);
                 Integer index = new Integer(this.delegateIterator.previousIndex());
-                IndirectList.this.raiseRemoveChangeEvent(this.currentObject, index);
-                IndirectList.this.raiseAddChangeEvent(object, index);
+                IndirectList.this.raiseRemoveChangeEvent(this.currentObject, index, true);
+                IndirectList.this.raiseAddChangeEvent(object, index, true);
             }
             
             public void add(Object object) {
@@ -587,9 +585,13 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
             }
             this.raiseRemoveChangeEvent(element, null);
             return true;
-        } else if (this.getDelegate().remove(element)) {
-            this.raiseRemoveChangeEvent(element, null);
-            return true;
+        } else { 
+            int index = this.getDelegate().indexOf(element);
+            if(index > -1) {
+                this.getDelegate().remove(index);
+                this.raiseRemoveChangeEvent(element, index);
+                return true;
+            }
         }  
         return false;
     }
@@ -600,11 +602,12 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
     public boolean removeAll(Collection c) {
         // Must trigger remove events if tracked or uow.
         if (hasBeenRegistered() || hasTrackedPropertyChangeListener()) {
+            boolean hasChanged = false;
             Iterator objects = c.iterator();
             while (objects.hasNext()) {
-                remove(objects.next());
+                hasChanged |= remove(objects.next());
             }
-            return true;
+            return hasChanged;
         }
         return getDelegate().removeAll(c);
     }
@@ -619,7 +622,6 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
             while (objects.hasNext()) {
                 Object object = objects.next();
                 objects.remove();
-                raiseRemoveChangeEvent(object, null);
             }
             return;
         }
@@ -665,8 +667,8 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
     public Object set(int index, Object element) {
         Object oldValue = getDelegate().set(index, element);
         Integer bigIntIndex = new Integer(index);
-        raiseRemoveChangeEvent(oldValue, bigIntIndex);
-        raiseAddChangeEvent(element, bigIntIndex);
+        raiseRemoveChangeEvent(oldValue, bigIntIndex, true);
+        raiseAddChangeEvent(element, bigIntIndex, true);
         return oldValue;
     }
 
@@ -853,6 +855,18 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
      * Current instantiation is avoided is using change tracking.
      */
     protected boolean shouldAvoidInstantiation() {
-        return (!isInstantiated()) && (_persistence_getPropertyChangeListener() instanceof AttributeChangeListener);
+        return (!isInstantiated()) && (_persistence_getPropertyChangeListener() instanceof AttributeChangeListener) && !usesListOrderField();
+    }
+    
+    /**
+     * INTERNAL:
+     * Returns whether the mapping has listOrderField.
+     */
+    protected boolean usesListOrderField() {
+        if(this.valueHolder instanceof UnitOfWorkValueHolder) {
+            return ((CollectionMapping)((UnitOfWorkValueHolder)this.valueHolder).getMapping()).getListOrderField() != null;
+        } else {
+            return false;
+        }
     }
 }

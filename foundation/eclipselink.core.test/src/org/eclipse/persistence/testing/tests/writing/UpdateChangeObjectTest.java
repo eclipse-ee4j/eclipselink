@@ -46,6 +46,10 @@ public class UpdateChangeObjectTest extends ComplexUpdateTest {
         employee.addResponsibility("make cafee");
         employee.addResponsibility("buy donuts");
 
+        employee.setResponsibilitiesList(new Vector());
+        employee.addResponsibility("make more cafee");
+        employee.addResponsibility("buy more donuts");
+
         // One to many private
         employee.setPhoneNumbers(new Vector());
         employee.addPhoneNumber(new org.eclipse.persistence.testing.models.employee.domain.PhoneNumber("home", "613", "2263374"));

@@ -33,6 +33,7 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.expressions.ForUpdateOfClause;
 import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.NonSynchronizedSubVector;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -96,6 +97,9 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
         
     /** Determine if duplicate rows should be filter when using 1-m joining. */
     protected boolean shouldFilterDuplicates = true;
+    
+    //** Stores orderBy expressions of the joined CollectionMappings - in case the mapping has listFieldOrder */ 
+    protected transient List<Expression> orderByExpressions;
     
     public JoinedAttributeManager(){
     }
@@ -178,6 +182,9 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
         if (this.joinedMappingQueries != null) {
             joinManager.joinedMappingQueries = new HashMap<DatabaseMapping, ObjectLevelReadQuery>(this.joinedMappingQueries);
         }
+        if(this.orderByExpressions != null) {
+            joinManager.orderByExpressions = new ArrayList<Expression>(this.orderByExpressions);
+        }
         return joinManager;
     }
     
@@ -193,6 +200,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
         this.hasOuterJoinedAttribute = false;
         this.joinedMappingQueries = null;
         this.joinedMappingQueryClones = null;
+        this.orderByExpressions = null;
     }
 
     /**
@@ -384,7 +392,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
     }
 
     /**
-     * THis methos checks bot attribute expressions and mapping expressions and
+     * This method checks both attribute expressions and mapping expressions and
      * determines if there are any joins to be made.
      */
     public boolean hasJoinedExpressions() {
@@ -411,6 +419,37 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
      */
     public boolean hasOuterJoinedAttributeQuery() {
         return this.hasOuterJoinedAttribute;
+    }
+
+    /**
+     * Get the list of orderBy expressions.
+     */
+    public List<Expression> getOrderByExpressions() {
+        if (this.orderByExpressions == null){
+            this.orderByExpressions = new ArrayList<Expression>();
+        }
+        return orderByExpressions;
+    }
+
+    /**
+     * Get the list of orderBy expressions.
+     */
+    public List<Expression> getOrderByExpressions_() {
+        return orderByExpressions;
+    }
+
+    /**
+     * Return if there are orderBy expressions.
+     */
+    public boolean hasOrderByExpressions() {
+        return (this.orderByExpressions != null) && (!this.orderByExpressions.isEmpty());
+    }
+
+    /**
+     * Set the list of orderBy expressions.
+     */
+    public void setOrderByExpressions_(List<Expression> expressions) {
+        this.orderByExpressions = expressions;
     }
 
     /**
@@ -607,10 +646,19 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
      */
     public void addJoinedMapping(ForeignReferenceMapping mapping) {
         if (mapping.isCollectionMapping()) {
+            Expression joinMappingExpression = null;
             if (mapping.isInnerJoinFetched()) {
-                addJoinedMappingExpression(getBaseExpressionBuilder().anyOf(mapping.getAttributeName()));
+                joinMappingExpression = getBaseExpressionBuilder().anyOf(mapping.getAttributeName());
             } else if (mapping.isOuterJoinFetched()) {
-                addJoinedMappingExpression(getBaseExpressionBuilder().anyOfAllowingNone(mapping.getAttributeName()));
+                joinMappingExpression = getBaseExpressionBuilder().anyOfAllowingNone(mapping.getAttributeName());
+            }
+            if(joinMappingExpression != null) {
+                addJoinedMappingExpression(joinMappingExpression);
+                DatabaseField listOrderField = ((CollectionMapping)mapping).getListOrderField(); 
+                if(listOrderField != null) {
+                    Expression fieldExpression = joinMappingExpression.getTable(listOrderField.getTable()).getField(listOrderField);
+                    getOrderByExpressions().add(fieldExpression);
+                }
             }
         } else {
             if (mapping.isInnerJoinFetched()) {

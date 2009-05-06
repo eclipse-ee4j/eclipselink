@@ -223,6 +223,8 @@ public class DescriptorException extends ValidationException {
     public final static int INSERT_ORDER_CHILD_BEFORE_PARENT = 207;
     public final static int CANNOT_SET_CONVERTER_FOR_NON_DIRECT_MAPPING = 208;
     public final static int DIRECT_KEY_NOT_SET = 209;
+    public final static int LIST_ORDER_FIELD_REQUIRES_LIST = 210;
+    public final static int LIST_ORDER_FIELD_REQUIRES_ORDERED_LIST_CONTAINER_POLICY = 211;
 
     /**
      * INTERNAL:
@@ -1945,4 +1947,20 @@ public class DescriptorException extends ValidationException {
         return descriptorException;
     }
 
+    public static DescriptorException listOrderFieldRequiersList(ClassDescriptor descriptor, DatabaseMapping mapping) {
+        Object[] args = { mapping };
+
+        DescriptorException descriptorException = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, LIST_ORDER_FIELD_REQUIRES_LIST, args), descriptor);
+        descriptorException.setErrorCode(LIST_ORDER_FIELD_REQUIRES_LIST);
+        return descriptorException;
+    }
+
+    public static DescriptorException listOrderFieldRequiersOrderedListContainerPolicy(ClassDescriptor descriptor, DatabaseMapping mapping) {
+        Object[] args = { mapping };
+
+        DescriptorException descriptorException = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, LIST_ORDER_FIELD_REQUIRES_ORDERED_LIST_CONTAINER_POLICY, args), descriptor);
+        descriptorException.setErrorCode(LIST_ORDER_FIELD_REQUIRES_ORDERED_LIST_CONTAINER_POLICY);
+        return descriptorException;
+    }
+    
 }

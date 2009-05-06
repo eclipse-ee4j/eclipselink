@@ -3241,7 +3241,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                             try {
                                 hasData = command.convertChangeSetToByteArray(this);
                             } catch (java.io.IOException exception) {
-                                throw CommunicationException.unableToPropagateChanges(command.getServiceId().getId(), exception);
+                                throw CommunicationException.unableToPropagateChanges("", exception);
                             }
                             if (hasData) {
                                 getParent().getCommandManager().propagateCommand(command);

@@ -909,6 +909,10 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
         return false;
     }
 
+    public boolean isOrderedListPolicy() {
+        return false;
+    }
+    
     public boolean isMapPolicy() {
         return false;
     }

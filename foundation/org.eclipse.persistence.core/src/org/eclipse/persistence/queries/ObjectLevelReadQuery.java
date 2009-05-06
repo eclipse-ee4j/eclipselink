@@ -142,6 +142,9 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     protected Integer waitTimeout;
     
+    /** Used for ordering support. */
+    protected Vector orderByExpressions;
+
     /**
      * INTERNAL:
      * Initialize the state of the query
@@ -154,6 +157,26 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         this.inMemoryQueryIndirectionPolicy = InMemoryQueryIndirectionPolicy.SHOULD_THROW_INDIRECTION_EXCEPTION;
     }
     
+    /**
+     * PUBLIC:
+     * Order the query results by the object's attribute or query key name.
+     */
+    public void addDescendingOrdering(String queryKeyName) {
+        addOrdering(getExpressionBuilder().get(queryKeyName).descending());
+    }
+
+    /**
+     * PUBLIC:
+     * Add the ordering expression.  This allows for ordering across relationships or functions.
+     * Example: readAllQuery.addOrdering(expBuilder.get("address").get("city").toUpperCase().descending())
+     */
+    public void addOrdering(Expression orderingExpression) {
+        getOrderByExpressions().addElement(orderingExpression);
+        //Bug2804042 Must un-prepare if prepared as the SQL may change.
+        setIsPrepared(false);
+        setShouldOuterJoinSubclasses(true);
+    }
+
     /**
      * INTERNAL:
      * Return if the query is equal to the other.
@@ -190,6 +213,24 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
                 }
             }
         } else if (query.hasJoining()) {
+            return false;
+        }
+        if (hasOrderByExpressions()) {
+            if (!query.hasOrderByExpressions()) {
+                return false;
+            }
+            List orderBys = getOrderByExpressions();
+            List otherOrderBys = query.getOrderByExpressions();
+            int size = orderBys.size();
+            if (size != otherOrderBys.size()) {
+                return false;
+            }
+            for (int index = 0; index < size; index++) {
+                if (!orderBys.get(index).equals(otherOrderBys.get(index))) {
+                    return false;
+                }
+            }
+        } else if (query.hasOrderByExpressions()) {
             return false;
         }
         return ((getReferenceClass() == query.getReferenceClass()) || ((getReferenceClass() != null) && getReferenceClass().equals(query.getReferenceClass())))
@@ -299,6 +340,10 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         }
         if (hasNonFetchJoinedAttributeExpressions()){
             cloneQuery.setNonFetchJoinAttributeExpressions((Vector)this.nonFetchJoinAttributeExpressions.clone());
+        }
+        // Don't use setters as that will trigger unprepare
+        if (hasOrderByExpressions()) {
+            cloneQuery.orderByExpressions = (Vector)getOrderByExpressions().clone();
         }
         return cloneQuery;
     }
@@ -1143,6 +1188,33 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     }
             
     /**
+     * INTERNAL:
+     * Return the order expressions for the query.
+     */
+    public Vector getOrderByExpressions() {
+        if (orderByExpressions == null) {
+            orderByExpressions = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        }
+        return orderByExpressions;
+    }
+
+    /**
+     * INTERNAL:
+     * Set the order expressions for the query.
+     */
+    public void setOrderByExpressions(Vector orderByExpressions) {
+        this.orderByExpressions = orderByExpressions;
+    }
+
+    /**
+     * INTERNAL:
+     * The order bys are lazy initialized to conserve space.
+     */
+    public boolean hasOrderByExpressions() {
+        return orderByExpressions != null;
+    }
+
+    /**
      * PUBLIC:
      * Return if duplicate rows should be filter when using 1-m joining.
      */
@@ -1709,6 +1781,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
                 thisManager.setJoinedMappingExpressions_(queryManager.getJoinedMappingExpressions());
                 thisManager.setJoinedMappingIndexes_(queryManager.getJoinedMappingIndexes_());
                 thisManager.setJoinedMappingQueries_(queryManager.getJoinedMappingQueries_());
+                thisManager.setOrderByExpressions_(queryManager.getOrderByExpressions_());
             }
             this.nonFetchJoinAttributeExpressions = objectQuery.nonFetchJoinAttributeExpressions;
             this.defaultBuilder = objectQuery.defaultBuilder;
@@ -1720,6 +1793,9 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             this.concreteSubclassCalls = objectQuery.concreteSubclassCalls;
             this.additionalFields = objectQuery.additionalFields;
             this.partialAttributeExpressions = objectQuery.partialAttributeExpressions;
+            if (objectQuery.hasOrderByExpressions()) {
+                this.orderByExpressions = objectQuery.orderByExpressions;
+            }
         }
     }
     
@@ -1736,6 +1812,12 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         // Add mapping joined attributes.
         if (getQueryMechanism().isExpressionQueryMechanism() && getDescriptor().getObjectBuilder().hasJoinedAttributes()) {
             getJoinedAttributeManager().processJoinedMappings();
+            if(getJoinedAttributeManager().hasOrderByExpressions()) {
+                Iterator<Expression> it = getJoinedAttributeManager().getOrderByExpressions().iterator();
+                while(it.hasNext()) {
+                    addOrdering(it.next());
+                }
+            }
         }
 
         if (lockModeType != null) {

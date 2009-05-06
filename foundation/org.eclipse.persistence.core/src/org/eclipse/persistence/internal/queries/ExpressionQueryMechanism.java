@@ -162,12 +162,10 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         selectStatement.setDistinctState(query.getDistinctState());
         selectStatement.setTables((Vector)getDescriptor().getTables().clone());
         selectStatement.setWhereClause(buildBaseSelectionCriteria(isSubSelect, clonedExpressions));
-        if (query.isReadAllQuery() && ((ReadAllQuery)query).hasOrderByExpressions()) {
-            //For bug 5900782, the clone of the OrderBy expressions needs to be used to ensure they are normalized
-            //every time when select SQL statement gets re-prepared, which will further guarantee the calculation 
-            //of table alias always be correct
-            selectStatement.setOrderByExpressions(cloneExpressions(((ReadAllQuery)getQuery()).getOrderByExpressions(),clonedExpressions));
-        }
+        //For bug 5900782, the clone of the OrderBy expressions needs to be used to ensure they are normalized
+        //every time when select SQL statement gets re-prepared, which will further guarantee the calculation 
+        //of table alias always be correct
+        selectStatement.setOrderByExpressions(cloneExpressions(query.getOrderByExpressions(),clonedExpressions));
         if (getQuery().isReadAllQuery() && ((ReadAllQuery)getQuery()).hasHierarchicalExpressions()) {
             ReadAllQuery readAllquery = (ReadAllQuery)query;
             selectStatement.setHierarchicalQueryExpressions(readAllquery.getStartWithExpression(), readAllquery.getConnectByExpression(), readAllquery.getOrderSiblingsByExpressions());

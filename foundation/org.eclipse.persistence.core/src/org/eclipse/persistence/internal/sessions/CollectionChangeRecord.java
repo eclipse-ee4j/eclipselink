@@ -14,6 +14,9 @@ package org.eclipse.persistence.internal.sessions;
 
 import java.util.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.indirection.IndirectCollection;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 
 /**
@@ -432,5 +435,107 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
      */
     public void setOrderedRemoveObjects(Hashtable orderedRemoveObjects) {
         this.orderedRemoveObjects = orderedRemoveObjects;
+    }
+    
+    /**
+     * The same size as original list,
+     * at the i-th position holds the index of the i-th object in previous list in the current list (-1 if the object was removed):
+     * for example: {0, -1, 1, -1, 3} means that:
+     *   previous(0) == current(0);
+     *   previous(1) was removed;
+     *   previous(2) == current(1);
+     *   previous(3) was removed;
+     *   previous(4) == current(3);
+     */
+    public List<Integer> getOriginalIndexes(List newList) {
+        int newSize = newList.size();
+        List<Integer> originalIndexesList = new ArrayList(newSize);
+        for(int i=0; i < newSize; i++) {
+            originalIndexesList.add(i);
+        }
+        for (int i = this.orderedChangeObjectList.size() - 1; i>=0; i--) {
+            OrderedChangeObject  orderedChange = (OrderedChangeObject)orderedChangeObjectList.get(i);
+            Object obj = orderedChange.getAddedOrRemovedObject();
+            Integer index = orderedChange.getIndex();
+            int changeType = orderedChange.getChangeType();
+            if(changeType == CollectionChangeEvent.ADD) {
+                // the object was added - remove the corresponding index
+                if(index == null) {
+                    originalIndexesList.remove(originalIndexesList.size()-1);
+                } else {
+                    originalIndexesList.remove(index.intValue());
+                }
+            } else if(changeType == CollectionChangeEvent.REMOVE) {
+                // the object was removed - add its index in the new list 
+                if(index == null) {
+                    throw ValidationException.collectionRemoveEventWithNoIndex(getMapping());
+                } else {
+                    originalIndexesList.add(index.intValue(), newList.indexOf(obj));
+                }
+            }
+        }
+        return originalIndexesList;
+    }
+    
+    /**
+     * Recreates the original state of the collection.
+     */
+   public void recreateOriginalCollection(Object currentCollection, ContainerPolicy cp, AbstractSession session) {
+        if(currentCollection == null) {
+            this.setOriginalCollection(null);
+            return;
+        }
+        if(currentCollection instanceof IndirectCollection) {
+            // to avoid raising event when we add/remove elements from this collection later in this method.
+            this.setOriginalCollection(((IndirectCollection)currentCollection).getDelegateObject());
+        } else {
+            this.setOriginalCollection(currentCollection);
+        }
+        if(orderedChangeObjectList == null || orderedChangeObjectList.isEmpty()) {
+            if(this.removeObjectList != null) {
+                Iterator it = this.removeObjectList.keySet().iterator();
+                while(it.hasNext()) {
+                    cp.addInto(((ObjectChangeSet)it.next()).getUnitOfWorkClone(), this.getOriginalCollection(), session);
+                }
+                this.removeObjectList.clear();
+            }
+            if(this.addObjectList != null) {
+                Iterator it = this.addObjectList.keySet().iterator();
+                while(it.hasNext()) {
+                    cp.removeFrom(((ObjectChangeSet)it.next()).getUnitOfWorkClone(), this.getOriginalCollection(), session);
+                }
+                this.addObjectList.clear();
+            }
+        } else {
+            List originalList = (List)this.getOriginalCollection();
+            for (int i = this.orderedChangeObjectList.size() - 1; i>=0; i--) {
+                OrderedChangeObject  orderedChange = (OrderedChangeObject)orderedChangeObjectList.get(i);
+                Object obj = orderedChange.getAddedOrRemovedObject();
+                Integer index = orderedChange.getIndex();
+                int changeType = orderedChange.getChangeType();
+                if(changeType == CollectionChangeEvent.ADD) {
+                    // the object was added - remove the corresponding index
+                    if(index == null) {
+                        originalList.remove(originalList.size()-1);
+                    } else {
+                        originalList.remove(index.intValue());
+                    }
+                } else if(changeType == CollectionChangeEvent.REMOVE) {
+                    // the object was removed - add its index in the new list 
+                    if(index == null) {
+                        throw ValidationException.collectionRemoveEventWithNoIndex(getMapping());
+                    } else {
+                        originalList.add(index.intValue(), obj);
+                    }
+                }
+            }
+            this.orderedChangeObjectList.clear();
+            if(this.removeObjectList != null) {
+                this.removeObjectList.clear();
+            }
+            if(this.addObjectList != null) {
+                this.addObjectList.clear();
+            }
+        }
     }
 }

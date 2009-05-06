@@ -80,6 +80,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
         this.targetKeyFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
         this.hasCustomDeleteQuery = false;
         this.hasCustomInsertQuery = false;
+        this.isListOrderFieldSupported = true;
     }
 
     /**
@@ -510,6 +511,13 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
                 initializeSelectionCriteriaAndAddFieldsToQuery(session, getSelectionCriteria());
             }
         }
+        if(listOrderField != null) {
+            // TODO: what about the table? Can we assume that listOrderField.getTable() always the same as relationTable?
+            // should throw exception if it's a wrong table.
+            Expression fieldExp = ((ReadAllQuery)getSelectionQuery()).getExpressionBuilder().getTable(this.listOrderField.getTable()).getField(this.listOrderField);
+            ((ReadAllQuery)getSelectionQuery()).addOrdering(fieldExp);
+            ((ReadAllQuery)getSelectionQuery()).addAdditionalField(fieldExp);
+        }
         if (!getSelectionQuery().hasSessionName()) {
             getSelectionQuery().setSessionName(session.getName());
         }
@@ -529,6 +537,65 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
         }
     }
 
+    /**
+     * INTERNAL:
+     * Initializes listOrderField. 
+     * Precondition: listOrderField != null.
+     */
+    protected void initializeListOrderField(AbstractSession session) {
+        initializeChangeOrderTargetQuery(session);
+    }
+    
+    /**
+     * INTERNAL:
+     * Initialize changeOrderTargetQuery.
+     */
+    protected void initializeChangeOrderTargetQuery(AbstractSession session) {
+        boolean hasChangeOrderTargetQuery = changeOrderTargetQuery != null;
+        if(!hasChangeOrderTargetQuery) {
+            changeOrderTargetQuery = new DataModifyQuery();
+        }
+        
+        changeOrderTargetQuery = new DataModifyQuery();
+        if (!changeOrderTargetQuery.hasSessionName()) {
+            changeOrderTargetQuery.setSessionName(session.getName());
+        }
+        if (hasChangeOrderTargetQuery) {
+            return;
+        }
+
+        // Build where clause expression.
+        Expression whereClause = null;
+        Expression builder = new ExpressionBuilder();
+
+        List<DatabaseField> sourceRelationKeyFields = getSourceRelationKeyFields();
+        int size = sourceRelationKeyFields.size();
+        for (int index = 0; index < size; index++) {
+            DatabaseField sourceRelationKeyField = sourceRelationKeyFields.get(index);
+            Expression expression = builder.getField(sourceRelationKeyField).equal(builder.getParameter(sourceRelationKeyField));
+            whereClause = expression.and(whereClause);
+        }
+
+        List<DatabaseField> targetRelationKeyFields = getTargetRelationKeyFields();
+        size = targetRelationKeyFields.size();
+        for (int index = 0; index < size; index++) {
+            DatabaseField targetRelationKeyField = targetRelationKeyFields.get(index);
+            Expression expression = builder.getField(targetRelationKeyField).equal(builder.getParameter(targetRelationKeyField));
+            whereClause = expression.and(whereClause);
+        }
+
+        AbstractRecord modifyRow = new DatabaseRecord();
+        modifyRow.add(listOrderField, null);
+
+        SQLUpdateStatement statement = new SQLUpdateStatement();
+        // TODO: for now we assume that listOrderField.getTable() == relationalTable. 
+        // Should we cover the case when it's not true (i.e. listOrderField.getTable() == defaultTable)?
+        statement.setTable(listOrderField.getTable());
+        statement.setWhereClause(whereClause);
+        statement.setModifyRow(modifyRow);
+        changeOrderTargetQuery.setSQLStatement(statement);
+    }
+    
     /**
      * Initialize delete all query. This query is used to all relevant rows from the
      * relation table.
@@ -624,6 +691,9 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
         for (Enumeration sourceEnum = getSourceRelationKeyFields().elements();
                  sourceEnum.hasMoreElements();) {
             joinRow.put((DatabaseField)sourceEnum.nextElement(), null);
+        }
+        if(listOrderField != null) {
+            joinRow.put(listOrderField, null);
         }
         getContainerPolicy().addFieldsForMapKey(joinRow);
         statement.setModifyRow(joinRow);
@@ -805,7 +875,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * INTERNAL:
      * An object was added to the collection during an update, insert it.
      */
-    protected void insertAddedObjectEntry(ObjectLevelModifyQuery query, Object objectAdded) throws DatabaseException, OptimisticLockException {
+    protected void insertAddedObjectEntry(ObjectLevelModifyQuery query, Object objectAdded, Map extraData) throws DatabaseException, OptimisticLockException {
         //cr 3819 added the line below to fix the translationtable to ensure that it
         // contains the required values
         prepareTranslationRow(query.getTranslationRow(), query.getObject(), query.getSession());
@@ -827,6 +897,10 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
             databaseRow.put(targetRelationKey, targetKeyValue);
         }
         ContainerPolicy.copyMapDataToRow(getContainerPolicy().getKeyMappingDataForWriteQuery(objectAdded, query.getSession()), databaseRow);
+        
+        if(listOrderField != null && extraData != null) {
+            databaseRow.put(listOrderField, extraData.get(listOrderField));
+        }
         
         query.getSession().executeQuery(getInsertQuery(), databaseRow);
         if ((getHistoryPolicy() != null) && getHistoryPolicy().shouldHandleWrites()) {
@@ -865,6 +939,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
             databaseRow.put(sourceRelationKey, sourceKeyValue);
         }
 
+        int orderIndex = 0;
         // Extract target field and its value. Construct insert statement and execute it
         for (Object iter = cp.iteratorFor(objects); cp.hasNext(iter);) {
             Object wrappedObject = cp.nextEntry(iter, query.getSession());
@@ -877,6 +952,10 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
             }
 
             ContainerPolicy.copyMapDataToRow(cp.getKeyMappingDataForWriteQuery(wrappedObject, query.getSession()), databaseRow);
+            
+            if(listOrderField != null) {
+                databaseRow.put(listOrderField, orderIndex++);
+            }
 
             query.getSession().executeQuery(getInsertQuery(), databaseRow);
             if ((getHistoryPolicy() != null) && getHistoryPolicy().shouldHandleWrites()) {
@@ -985,13 +1064,14 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
         // In the uow data queries are cached until the end of the commit.
         if (query.shouldCascadeOnlyDependentParts()) {
             // Hey I might actually want to use an inner class here... ok array for now.
-            Object[] event = new Object[3];
+            Object[] event = new Object[4];
             event[0] = ObjectAdded;
             event[1] = query;
             event[2] = objectAdded;
+            event[3] = extraData;
             query.getSession().getCommitManager().addDataModificationEvent(this, event);
         } else {
-            insertAddedObjectEntry(query, objectAdded);
+            insertAddedObjectEntry(query, objectAdded, (Map)extraData);
         }
     }
 
@@ -1038,6 +1118,34 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
         super.objectRemovedDuringUpdate(query, objectDeleted, extraData);
     }
 
+    protected void objectOrderChangedDuringUpdate(WriteObjectQuery query, Object orderChangedObject, int orderIndex) {
+        prepareTranslationRow(query.getTranslationRow(), query.getObject(), query.getSession());
+        AbstractRecord databaseRow = new DatabaseRecord();
+
+        // Extract primary key and value from the source.
+        for (int index = 0; index < getSourceRelationKeyFields().size(); index++) {
+            DatabaseField sourceRelationKey = getSourceRelationKeyFields().elementAt(index);
+            DatabaseField sourceKey = getSourceKeyFields().elementAt(index);
+            Object sourceKeyValue = query.getTranslationRow().get(sourceKey);
+            databaseRow.put(sourceRelationKey, sourceKeyValue);
+        }
+
+        // TODO: Do we need to unwrapped object here? 
+        // Object unwrappedOrderChangedObject = getContainerPolicy().unwrapIteratorResult(orderChangedObject);
+        
+        // Extract target field and its value. Construct insert statement and execute it
+        for (int index = 0; index < getTargetRelationKeyFields().size(); index++) {
+            DatabaseField targetRelationKey = getTargetRelationKeyFields().elementAt(index);
+            DatabaseField targetKey = getTargetKeyFields().elementAt(index);
+            Object targetKeyValue = getReferenceDescriptor().getObjectBuilder().extractValueFromObjectForField(orderChangedObject, targetKey, query.getSession());
+            databaseRow.put(targetRelationKey, targetKeyValue);
+        }
+
+        databaseRow.put(listOrderField, orderIndex);
+  
+        query.getSession().executeQuery(changeOrderTargetQuery, databaseRow);
+    }
+
     /**
      * INTERNAL:
      * Perform the commit event.
@@ -1053,7 +1161,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
                 getHistoryPolicy().mappingLogicalDelete((DataModifyQuery)event[1], (AbstractRecord)event[2], session);
             }
         } else if (event[0] == ObjectAdded) {
-            insertAddedObjectEntry((WriteObjectQuery)event[1], event[2]);
+            insertAddedObjectEntry((WriteObjectQuery)event[1], event[2], (Map)event[3]);
         } else {
             throw DescriptorException.invalidDataModificationEventCode(event[0], this);
         }

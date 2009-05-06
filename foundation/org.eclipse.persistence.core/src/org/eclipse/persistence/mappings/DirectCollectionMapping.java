@@ -61,6 +61,8 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
     protected static final String Delete = "delete";
     protected static final String Insert = "insert";
     protected static final String DeleteAll = "deleteAll";
+    protected static final String DeleteAtIndex = "deleteAtIndex";
+    protected static final String UpdateAtIndex = "updateAtIndex";
 
     /** Allows user defined conversion between the object value and the database value. */
     protected Converter valueConverter;
@@ -82,6 +84,13 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
     protected transient boolean hasCustomDeleteQuery;
     protected transient boolean hasCustomInsertQuery;
     protected HistoryPolicy historyPolicy;
+    
+    /** Used (only in case listOrderField != null) to delete object with particular orderFieldValue */
+    protected transient ModifyQuery deleteAtIndexQuery;
+    /** Used (only in case listOrderField != null) to update orderFieldValue of object with particular orderFieldValue */
+    protected transient ModifyQuery updateAtIndexQuery;
+    protected transient boolean hasCustomDeleteAtIndexQuery;
+    protected transient boolean hasCustomUpdateAtIndexQuery;
 
     /**
      * PUBLIC:
@@ -93,7 +102,8 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         this.referenceKeyFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
         this.selectionQuery = new DirectReadQuery();
         this.hasCustomInsertQuery = false;
-        this.isPrivateOwned = true;
+        this.isPrivateOwned = true;        
+        this.isListOrderFieldSupported = true;
     }
 
     public boolean isRelationalMapping() {
@@ -209,6 +219,14 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         }
 
         batchStatement.addField(builder.getTable(getReferenceTable()).getField(getDirectField()));
+
+        if(listOrderField != null) {
+            Vector order = new Vector(1);
+            Expression fieldExp = builder.getTable(getReferenceTable()).getField(this.listOrderField);
+            order.add(fieldExp);
+            batchStatement.setOrderByExpressions(order);
+            batchStatement.addField(fieldExp);
+        }
 
         batchStatement.setWhereClause(twisted);
         batchQuery.setSQLStatement(batchStatement);
@@ -352,6 +370,10 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * This method is used to calculate the differences between two collections.
      */
     public void compareCollectionsForChange(Object oldCollection, Object newCollection, ChangeRecord changeRecord, AbstractSession session) {
+        if(this.listOrderField != null) {
+            compareListsForChange((List)oldCollection, (List)newCollection, changeRecord, session);
+            return;
+        }
         ContainerPolicy cp = getContainerPolicy();
         int numberOfNewNulls = 0;
 
@@ -437,6 +459,100 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
 
     /**
      * INTERNAL:
+     * This method is used to calculate the differences between two Lists.
+     */
+    public void compareListsForChange(List oldList, List newList, ChangeRecord changeRecord, AbstractSession session) {
+        // Maps objects (null included) in newList and oldList to an array of two Sets:
+        // the first one contains indexes of the object in oldList, the second - in newList.
+        // Contains only the objects for which the set of indexes in newList and oldList are different;
+        // only changed indexes appear in the sets (therefore the old index set and new index set don't intersect).
+        // Examples:
+        //    obj was first (index 0) in oldList; first and second (indexes 0 and 1)in newList: obj -> {{}, {1}};
+        //    obj was not in oldList; first in newList: obj -> {null, {0}};
+        //    obj was first in oldList; not in newList: obj -> {{0}, null};
+        //    obj was first and second in oldList; first in newList: obj -> {{1}, {}};
+        // Note the difference between null and empty set:
+        //    empty set means there's at least one index (the same in oldList and newList - otherwise it would've been in the set);
+        //    null means there's no indexes.
+        // That helps during deletion - if we know there is no remaining duplicates for the object to be removed
+        // we can delete it without checking its index (which allows delete several duplicates in one sql).
+        // Map entry sets with no new and no old indexes removed.
+        HashMap changedIndexes = new HashMap(Math.max(oldList.size(), newList.size()));
+        
+        int nOldSize = 0;
+        // for each object in oldList insert all its indexes in oldList into the old indexes set corresponding to each object.
+        if (oldList != null) {
+            nOldSize = oldList.size();
+            for(int i=0; i < nOldSize; i++) {
+                Object obj = oldList.get(i);    
+                Set[] indexes = (Set[])changedIndexes.get(obj);
+                if (indexes == null) {
+                    // the first index found for the object.
+                    indexes = new Set[]{new HashSet(), null};
+                    changedIndexes.put(obj, indexes);
+                }
+                indexes[0].add(i);
+            }
+        }
+
+        // helper set to store objects for which entries into changedIndexes has been removed:
+        // if an entry for the object is created again, it will have an empty old indexes set (rather than null)
+        // to indicate that the object has been on the oldList, too.
+        HashSet removedFromChangedIndexes = new HashSet();
+        HashSet dummySet = new HashSet(0);
+        
+        // for each object in newList, for each its index in newList:
+        //   if the object has the same index in oldList - remove the index from old indexes set;
+        //   if the object doesn't have the same index in oldList - insert the index into new indexes set.
+        int nNewSize = 0;
+        if (newList != null) {
+            nNewSize = newList.size();
+            for(int i=0; i < nNewSize; i++) {
+                Object obj = newList.get(i);
+                Set[] indexes = (Set[])changedIndexes.get(obj);
+                if (indexes == null) {
+                    // the first index found for the object - or was found and removed before.
+                    if(removedFromChangedIndexes.contains(obj)) {
+                        // the object also exists in oldList
+                        indexes = new Set[]{dummySet, new HashSet()};
+                    } else {
+                        // the object does not exist in oldList
+                        indexes = new Set[]{null, new HashSet()};
+                    }
+                    changedIndexes.put(obj, indexes);
+                    // the object doesn't have this index in oldList - add the index to new indexes set.
+                    indexes[1].add(i);
+                } else {
+                    if(indexes[0] == null || !indexes[0].contains(i)) {
+                        // the object doesn't have this index in oldList - add the index to new indexes set.
+                        if(indexes[1] == null) {
+                            indexes[1] = new HashSet();
+                        }
+                        indexes[1].add(i);
+                    } else {
+                        // the object has this index in oldList - remove the index from the old indexes set.
+                        indexes[0].remove(i);
+                        if(indexes[0].isEmpty()) {
+                            // no old indexes left for the object.
+                            if(indexes[1] == null || indexes[1].isEmpty()) {
+                                // no new indexes left, too - remove the entry for the object.
+                                changedIndexes.remove(obj);
+                                // store the object in case it has another index on newList 
+                                removedFromChangedIndexes.add(obj);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        ((DirectCollectionChangeRecord)changeRecord).setChangedIndexes(changedIndexes);
+        ((DirectCollectionChangeRecord)changeRecord).setOldSize(nOldSize);
+        ((DirectCollectionChangeRecord)changeRecord).setNewSize(nNewSize);
+    }
+
+    /**
+     * INTERNAL:
      * This method compares the changes between two direct collections.  Comparisons are made on equality
      * not identity.
      */
@@ -477,6 +593,9 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
     public boolean compareObjects(Object firstObject, Object secondObject, AbstractSession session) {
         Object firstCollection = getRealCollectionAttributeValueFromObject(firstObject, session);
         Object secondCollection = getRealCollectionAttributeValueFromObject(secondObject, session);
+        if(this.listOrderField != null) {
+            return compareLists((List)firstCollection, (List)secondCollection);
+        }
         ContainerPolicy containerPolicy = getContainerPolicy();
 
         if (containerPolicy.sizeFor(firstCollection) != containerPolicy.sizeFor(secondCollection)) {
@@ -533,6 +652,32 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         }
         if (!firstCounter.isEmpty() || !secondCounter.isEmpty()) {
             return false;
+        }
+        return true;
+    }
+
+    /**
+     * Compare two lists. For equality the order of the elements should be the same. 
+     * Used only if listOrderField != null
+     */
+    protected boolean compareLists(List firstList, List secondList) {
+        if (firstList.size() != secondList.size()) {
+            return false;
+        }
+
+        int size = firstList.size();
+        for(int i=0; i < size; i++) {
+            Object firstObject = firstList.get(i);
+            Object secondObject = secondList.get(i);
+            if(firstObject != secondObject) {
+                if(firstObject==null || secondObject==null) {
+                    return false;
+                } else {
+                    if(!firstObject.equals(secondObject)) {
+                        return false;
+                    }
+                }
+            }
         }
         return true;
     }
@@ -706,6 +851,20 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
             changeSetDeleteQuery = new DataModifyQuery();
         }
         return changeSetDeleteQuery;
+    }
+
+    protected ModifyQuery getDeleteAtIndexQuery() {
+        if (deleteAtIndexQuery == null) {
+            deleteAtIndexQuery = new DataModifyQuery();
+        }
+        return deleteAtIndexQuery;
+    }
+
+    protected ModifyQuery getUpdateAtIndexQuery() {
+        if (updateAtIndexQuery == null) {
+            updateAtIndexQuery = new DataModifyQuery();
+        }
+        return updateAtIndexQuery;
     }
 
     /**
@@ -909,6 +1068,14 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         return hasCustomInsertQuery;
     }
 
+    protected boolean hasCustomDeleteAtIndexQuery() {
+        return hasCustomDeleteAtIndexQuery;
+    }
+
+    protected boolean hasCustomUpdateAtIndexQuery() {
+        return hasCustomUpdateAtIndexQuery;
+    }
+
     /**
      * INTERNAL:
      * Initialize and validate the mapping properties.
@@ -952,6 +1119,8 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         initializeDeleteAllQuery(session);
         initializeDeleteQuery(session);
         initializeInsertQuery(session);
+        initializeDeleteAtIndexQuery(session);
+        initializeUpdateAtIndexQuery(session);
         if (getHistoryPolicy() != null) {
             getHistoryPolicy().initialize(session);
         }
@@ -961,6 +1130,15 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         super.initialize(session);
     }
 
+    /**
+     * INTERNAL:
+     * Initializes listOrderField. 
+     * Precondition: listOrderField != null.
+     * Noop - initialization of listOrderField is done in initializeSelectStatement method.
+     */
+    protected void initializeListOrderField(AbstractSession session) {
+    }
+    
     /**
      * Initialize delete all query. This query is used to delete the collection of objects from the
      * reference table.
@@ -1011,10 +1189,56 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
             return;
         }
 
-        Expression builder = new ExpressionBuilder();
+        SQLDeleteStatement statement = new SQLDeleteStatement();
+        ExpressionBuilder builder = new ExpressionBuilder();
+        Expression expression = createWhereClauseForDeleteQuery(builder);
+        statement.setWhereClause(expression);
+        statement.setTable(getReferenceTable());
+        getDeleteQuery().setSQLStatement(statement);
+    }
+
+    protected void initializeDeleteAtIndexQuery(AbstractSession session) {
+        if (!getDeleteAtIndexQuery().hasSessionName()) {
+            getDeleteAtIndexQuery().setSessionName(session.getName());
+        }
+
+        if (hasCustomDeleteAtIndexQuery()) {
+            return;
+        }
+
+        SQLDeleteStatement statement = new SQLDeleteStatement();
+        ExpressionBuilder builder = new ExpressionBuilder();
+        Expression expression = createWhereClauseForDeleteQuery(builder);
+        expression = expression.and(builder.getField(this.listOrderField).equal(builder.getParameter(this.listOrderField)));
+        statement.setWhereClause(expression);
+        statement.setTable(getReferenceTable());
+        getDeleteAtIndexQuery().setSQLStatement(statement);
+    }
+
+    protected void initializeUpdateAtIndexQuery(AbstractSession session) {
+        if (!getUpdateAtIndexQuery().hasSessionName()) {
+            getUpdateAtIndexQuery().setSessionName(session.getName());
+        }
+
+        if (hasCustomUpdateAtIndexQuery()) {
+            return;
+        }
+
+        SQLUpdateStatement statement = new SQLUpdateStatement();
+        ExpressionBuilder builder = new ExpressionBuilder();
+        Expression expression = createWhereClauseForDeleteQuery(builder);
+        expression = expression.and(builder.getField(this.listOrderField).equal(builder.getParameter(this.listOrderField)));
+        statement.setWhereClause(expression);
+        statement.setTable(getReferenceTable());
+        AbstractRecord modifyRow = new DatabaseRecord();
+        modifyRow.add(listOrderField, null);
+        statement.setModifyRow(modifyRow);
+        getUpdateAtIndexQuery().setSQLStatement(statement);
+    }
+
+    protected Expression createWhereClauseForDeleteQuery(ExpressionBuilder builder) {
         Expression directExp = builder.getField(getDirectField()).equal(builder.getParameter(getDirectField()));
         Expression expression = null;
-        SQLDeleteStatement statement = new SQLDeleteStatement();
 
         // Construct an expression to delete from the relation table.
         for (int index = 0; index < getReferenceKeyFields().size(); index++) {
@@ -1028,9 +1252,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
             expression = subExpression.and(expression);
         }
         expression = expression.and(directExp);
-        statement.setWhereClause(expression);
-        statement.setTable(getReferenceTable());
-        getDeleteQuery().setSQLStatement(statement);
+        return expression;
     }
 
     /**
@@ -1066,6 +1288,9 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
             directRow.put((DatabaseField)referenceEnum.nextElement(), null);
         }
         directRow.put(getDirectField(), null);
+        if(listOrderField != null) {
+            directRow.put(listOrderField, null);
+        }
         statement.setModifyRow(directRow);
         getInsertQuery().setSQLStatement(statement);
         getInsertQuery().setModifyRow(directRow);
@@ -1156,6 +1381,15 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         statement.addTable(getReferenceTable());
         statement.addField((DatabaseField)getDirectField().clone());
         statement.setWhereClause(getSelectionCriteria());
+        if(listOrderField != null) {
+            Vector order = new Vector(1);
+            // TODO: what about the table? Can we assume that listOrderField.getTable() always the same as referenceTable?
+            // should throw exception if it's a wrong table.
+            Expression fieldExp = statement.getBuilder().getTable(getReferenceTable()).getField(listOrderField.getName());
+            order.add(fieldExp);
+            statement.setOrderByExpressions(order);
+            statement.addField(fieldExp);
+        }
         statement.normalize(session, null);
         getSelectionQuery().setSQLStatement(statement);
     }
@@ -1271,6 +1505,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
                      containerPolicy.hasNext(iterator);) {
                 containerPolicy.addInto(containerPolicy.next(iterator, session), valueOfTarget, session);
             }
+            // TODO: How to handle this case for listOrderField != null.
         } else {
             Object synchronizationTarget = valueOfTarget;
             // For indirect containers the delegate must be synchronized on,
@@ -1285,7 +1520,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
                     int objectCount = ((Integer)addObjects.get(object)).intValue();
                     for (int i = 0; i < objectCount; ++i) {
                         if (mergeManager.shouldMergeChangesIntoDistributedCache()) {
-                            //bug#4458089 and 4454532- check if collection contains new item before adding during merge into distributed cache					
+                            //bug#4458089 and 4544532- check if collection contains new item before adding during merge into distributed cache					
                             if (!containerPolicy.contains(object, valueOfTarget, session)) {
                                 containerPolicy.addInto(object, valueOfTarget, session);
                             }
@@ -1299,6 +1534,47 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
                     int objectCount = ((Integer)removeObjects.get(object)).intValue();
                     for (int i = 0; i < objectCount; ++i) {
                         containerPolicy.removeFrom(object, valueOfTarget, session);
+                    }
+                }
+                //**temp - should move compareListsForChange into DirectCollectionChangeRecord
+                if(this.listOrderField != null && ((DirectCollectionChangeRecord)changeRecord).getChangedIndexes() == null) {
+                    this.compareListsForChange((List)((DirectCollectionChangeRecord)changeRecord).getOriginalCollection(), (List)((DirectCollectionChangeRecord)changeRecord).getLatestCollection(), changeRecord, session);
+                }
+                
+                if(((DirectCollectionChangeRecord)changeRecord).getChangedIndexes() != null) {
+                    int oldSize = ((DirectCollectionChangeRecord)changeRecord).getOldSize();
+                    int newSize = ((DirectCollectionChangeRecord)changeRecord).getNewSize();
+                    int delta = newSize - oldSize;
+                    Object newTail[] = null;
+                    if(delta > 0) {
+                        newTail = new Object[delta];
+                    }
+                    Iterator<Map.Entry<Object, Set[]>> it = ((DirectCollectionChangeRecord)changeRecord).getChangedIndexes().entrySet().iterator();
+                    while(it.hasNext()) {
+                        Map.Entry<Object, Set[]> entry = it.next();
+                        Object value = entry.getKey();
+                        Set[] indexes = entry.getValue();
+                        Set indexesAfter = indexes[1];
+                        if(indexesAfter != null) {
+                            Iterator<Integer> itIndexesAfter = indexesAfter.iterator();
+                            while(itIndexesAfter.hasNext()) {
+                                int index = itIndexesAfter.next();
+                                if(index < oldSize) {
+                                    ((List)synchronizationTarget).set(index, value);
+                                } else {
+                                    newTail[index - oldSize] = value;
+                                }
+                            }
+                        }
+                    }
+                    if(delta > 0) {
+                        for(int i=0; i < delta; i++) {
+                            ((List)synchronizationTarget).add(newTail[i]);
+                        }
+                    } else if(delta < 0) {
+                        for(int i=oldSize -1 ; i >= newSize; i--) {
+                            ((List)synchronizationTarget).remove(i);
+                        }
                     }
                 }
             }
@@ -1410,6 +1686,14 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
             }
         } else if (event[0] == DeleteAll) {
             preDelete((DeleteObjectQuery)event[1]);
+        } else if (event[0] == DeleteAtIndex) {
+            session.executeQuery((DataModifyQuery)event[1], (AbstractRecord)event[2]);
+        } else if (event[0] == UpdateAtIndex) {
+            DataModifyQuery updateAtIndexQuery = (DataModifyQuery)((DataModifyQuery)event[1]).clone();
+            updateAtIndexQuery.setModifyRow((AbstractRecord)event[3]);
+            updateAtIndexQuery.setHasModifyRow(true);
+            updateAtIndexQuery.setIsExecutionClone(true);
+            session.executeQuery(updateAtIndexQuery, (AbstractRecord)event[2]);
         } else {
             throw DescriptorException.invalidDataModificationEventCode(event[0], this);
         }
@@ -1451,6 +1735,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
             databaseRow.put(referenceKey, sourceKeyValue);
         }
 
+        int orderIndex = 0;
         // Extract target field and its value. Construct insert statement and execute it
         for (Object iter = containerPolicy.iteratorFor(objects); containerPolicy.hasNext(iter);) {
             Object wrappedObject = containerPolicy.nextEntry(iter, query.getSession());
@@ -1467,6 +1752,9 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
                 event[0] = Insert;
                 event[1] = getInsertQuery();
                 event[2] = databaseRow.clone();
+                if(listOrderField != null) {
+                    ((AbstractRecord)event[2]).put(listOrderField, orderIndex++);
+                }
                 query.getSession().getCommitManager().addDataModificationEvent(this, event);
             } else {
                 query.getSession().executeQuery(getInsertQuery(), databaseRow);
@@ -1488,7 +1776,11 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         }
 
         if (writeQuery.getObjectChangeSet() != null) {
-            postUpdateWithChangeSet(writeQuery);
+            if(this.listOrderField != null) {
+                postUpdateWithChangeSetListOrder(writeQuery);
+            } else {
+                postUpdateWithChangeSet(writeQuery);
+            }
             return;
         }
 
@@ -1592,6 +1884,129 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
                 event[1] = getInsertQuery();
                 event[2] = thisRow;
                 writeQuery.getSession().getCommitManager().addDataModificationEvent(this, event);
+            }
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Update private owned part.
+     */
+    protected void postUpdateWithChangeSetListOrder(WriteObjectQuery writeQuery) throws DatabaseException {
+        ObjectChangeSet changeSet = writeQuery.getObjectChangeSet();
+        DirectCollectionChangeRecord changeRecord = (DirectCollectionChangeRecord)changeSet.getChangesForAttributeNamed(this.getAttributeName());
+        if (changeRecord == null) {
+            return;
+        }
+        for (int index = 0; index < getReferenceKeyFields().size(); index++) {
+            DatabaseField referenceKey = getReferenceKeyFields().get(index);
+            DatabaseField sourceKey = getSourceKeyFields().get(index);
+            Object sourceKeyValue = writeQuery.getTranslationRow().get(sourceKey);
+            writeQuery.getTranslationRow().put(referenceKey, sourceKeyValue);
+        }
+
+        //**temp - should move compareListsForChange into DirectCollectionChangeRecord
+        if(this.listOrderField != null && changeRecord.getChangedIndexes() == null) {
+            this.compareListsForChange((List)changeRecord.getOriginalCollection(), (List) changeRecord.getLatestCollection(), changeRecord, writeQuery.getSession());
+        }
+        
+        Iterator<Map.Entry<Object, Set[]>> it = changeRecord.getChangedIndexes().entrySet().iterator();
+        while(it.hasNext()) {
+            Map.Entry<Object, Set[]> entry = it.next();
+            Object value = entry.getKey();
+            if (getValueConverter() != null) {
+                value = getValueConverter().convertObjectValueToDataValue(value, writeQuery.getSession());
+            }
+
+            Set[] indexes = entry.getValue();
+            Set indexesBefore = indexes[0];
+            Set indexesAfter = indexes[1];
+            
+            if(indexesAfter == null) {
+                // All copies of the target object deleted - don't need to verify order field contents.
+                AbstractRecord deleteRow = (AbstractRecord)writeQuery.getTranslationRow().clone();
+                deleteRow.add(getDirectField(), value);
+                // Hey I might actually want to use an inner class here... ok array for now.
+                Object[] event = new Object[3];
+                event[0] = Delete;
+                event[1] = getDeleteQuery();
+                event[2] = deleteRow;
+                writeQuery.getSession().getCommitManager().addDataModificationEvent(this, event);
+            } else if(indexesAfter.isEmpty()) {
+                // Some copies of the target objects should be deleted, some left in the db
+                Iterator<Integer> itBefore = indexesBefore.iterator();
+                while(itBefore.hasNext()) {
+                    AbstractRecord deleteAtIndexRow = (AbstractRecord)writeQuery.getTranslationRow().clone();
+                    deleteAtIndexRow.add(getDirectField(), value);
+                    deleteAtIndexRow.add(this.listOrderField, itBefore.next());
+                    // Hey I might actually want to use an inner class here... ok array for now.
+                    Object[] event = new Object[3];
+                    event[0] = DeleteAtIndex;
+                    event[1] = deleteAtIndexQuery;
+                    event[2] = deleteAtIndexRow;
+                    writeQuery.getSession().getCommitManager().addDataModificationEvent(this, event);
+                }
+            } else {
+                if(indexesBefore == null || indexesBefore.isEmpty()) {
+                    // insert the object for each index in indexesAfter
+                    Iterator<Integer> itAfter = indexesAfter.iterator();
+                    while(itAfter.hasNext()) {
+                        AbstractRecord insertRow = (AbstractRecord)writeQuery.getTranslationRow().clone();
+                        insertRow.add(getDirectField(), value);
+                        insertRow.add(this.listOrderField, itAfter.next());
+                        // Hey I might actually want to use an inner class here... ok array for now.
+                        Object[] event = new Object[3];
+                        event[0] = Insert;
+                        event[1] = getInsertQuery();
+                        event[2] = insertRow;
+                        writeQuery.getSession().getCommitManager().addDataModificationEvent(this, event);
+                    }
+                } else {
+                    Iterator<Integer> itBefore = indexesBefore.iterator();
+                    Iterator<Integer> itAfter = indexesAfter.iterator();
+                    while(itBefore.hasNext() || itAfter.hasNext()) {
+                        if(itBefore.hasNext()) {
+                            if(itAfter.hasNext()) {
+                                // update the object changing index from indexBefore to indexAfter
+                                AbstractRecord updateAtIndexRow = (AbstractRecord)writeQuery.getTranslationRow().clone();
+                                updateAtIndexRow.add(getDirectField(), value);
+                                updateAtIndexRow.add(this.listOrderField, itBefore.next());
+                                // Hey I might actually want to use an inner class here... ok array for now.
+                                Object[] event = new Object[4];
+                                event[0] = UpdateAtIndex;
+                                event[1] = updateAtIndexQuery;
+                                event[2] = updateAtIndexRow;
+                                DatabaseRecord modifyRow = new DatabaseRecord(1);
+                                modifyRow.add(this.listOrderField, itAfter.next());
+                                event[3] = modifyRow;
+                                writeQuery.getSession().getCommitManager().addDataModificationEvent(this, event);
+                            } else {
+                                // delete the object at indexBefore
+                                AbstractRecord deleteAtIndexRow = (AbstractRecord)writeQuery.getTranslationRow().clone();
+                                deleteAtIndexRow.add(getDirectField(), value);
+                                deleteAtIndexRow.add(this.listOrderField, itBefore.next());
+                                // Hey I might actually want to use an inner class here... ok array for now.
+                                Object[] event = new Object[3];
+                                event[0] = DeleteAtIndex;
+                                event[1] = deleteAtIndexQuery;
+                                event[2] = deleteAtIndexRow;
+                                writeQuery.getSession().getCommitManager().addDataModificationEvent(this, event);
+                            }
+                        } else {
+                            // itAfter.hasNext() must be true
+                            // insert the object at indexAfter
+                            AbstractRecord insertRow = (AbstractRecord)writeQuery.getTranslationRow().clone();
+                            insertRow.add(getDirectField(), value);
+                            insertRow.add(this.listOrderField, itAfter.next());
+                            // Hey I might actually want to use an inner class here... ok array for now.
+                            Object[] event = new Object[3];
+                            event[0] = Insert;
+                            event[1] = getInsertQuery();
+                            event[2] = insertRow;
+                            writeQuery.getSession().getCommitManager().addDataModificationEvent(this, event);
+                        }
+                    }
+                }
             }
         }
     }
@@ -1705,12 +2120,32 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
 
     /**
      * PUBLIC:
+     * The default delete by index query for this mapping can be overridden by specifying the new query.
+     * This query used (only in case listOrderField != null) to delete object with particular orderFieldValue.
+     */
+    public void setCustomDeleteAtIndexQuery(ModifyQuery query) {
+        this.deleteAtIndexQuery = query;
+        hasCustomDeleteAtIndexQuery = true;
+    }
+
+    /**
+     * PUBLIC:
      * The default insert query for mapping can be overridden by specifying the new query.
      * This query inserts the row into the direct table.
      */
     public void setCustomInsertQuery(DataModifyQuery query) {
         setInsertQuery(query);
         setHasCustomInsertQuery(true);
+    }
+
+    /**
+     * PUBLIC:
+     * The default delete by index query for this mapping can be overridden by specifying the new query.
+     * This query used (only in case listOrderField != null) to update orderFieldValue of object with particular orderFieldValue.
+     */
+    public void setCustomUpdateAtIndexQuery(ModifyQuery query) {
+        this.updateAtIndexQuery = query;
+        hasCustomUpdateAtIndexQuery = true;
     }
 
     /**
@@ -1915,6 +2350,9 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * The referenceKey parameter should only be used for direct Maps.
      */
     public void simpleAddToCollectionChangeRecord(Object referenceKey, Object objectToAdd, ObjectChangeSet changeSet, AbstractSession session) {
+        simpleAddToCollectionChangeRecord(objectToAdd, null, false, changeSet, session);
+    }
+    protected void simpleAddToCollectionChangeRecord(Object objectToAdd, Integer index, boolean isSet, ObjectChangeSet changeSet, AbstractSession session) {
         DirectCollectionChangeRecord collectionChangeRecord = (DirectCollectionChangeRecord)changeSet.getChangesForAttributeNamed(getAttributeName());
         if (collectionChangeRecord == null) {
             collectionChangeRecord = new DirectCollectionChangeRecord(changeSet);
@@ -1922,9 +2360,24 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
             collectionChangeRecord.setMapping(this);
             changeSet.addChange(collectionChangeRecord);
             Object collection = getRealAttributeValueFromObject(changeSet.getUnitOfWorkClone(), session);
-            collectionChangeRecord.storeDatabaseCounts(collection, getContainerPolicy(), session);
+            if(this.listOrderField != null) {
+                List originalListCopy = new ArrayList((List)collection);
+                // collection already contains the added object - to bring it to the original state it should be removed
+                if(index == null) {
+                    originalListCopy.remove(originalListCopy.size() - 1);
+                } else {
+                    originalListCopy.remove(index);
+                }
+                collectionChangeRecord.setOriginalCollection(originalListCopy);
+                collectionChangeRecord.setLatestCollection(collection);
+            } else {
+                collectionChangeRecord.storeDatabaseCounts(collection, getContainerPolicy(), session);
+                collectionChangeRecord.firstToAddAlreadyInCollection();
+            }
         }
-        collectionChangeRecord.addAdditionChange(objectToAdd, new Integer(1));
+        if(!collectionChangeRecord.isDeferred() && this.listOrderField == null) {
+            collectionChangeRecord.addAdditionChange(objectToAdd, new Integer(1));
+        }
     }
 
     /**
@@ -1933,6 +2386,9 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * The referenceKey parameter should only be used for direct Maps.
      */
     public void simpleRemoveFromCollectionChangeRecord(Object referenceKey, Object objectToRemove, ObjectChangeSet changeSet, AbstractSession session) {
+        simpleRemoveFromCollectionChangeRecord(objectToRemove, null, false, changeSet, session);
+    }
+    protected void simpleRemoveFromCollectionChangeRecord(Object objectToRemove, Integer index, boolean isSet, ObjectChangeSet changeSet, AbstractSession session) {
         DirectCollectionChangeRecord collectionChangeRecord = (DirectCollectionChangeRecord)changeSet.getChangesForAttributeNamed(getAttributeName());
         if (collectionChangeRecord == null) {
             collectionChangeRecord = new DirectCollectionChangeRecord(changeSet);
@@ -1940,9 +2396,33 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
             collectionChangeRecord.setMapping(this);
             changeSet.addChange(collectionChangeRecord);
             Object collection = getRealAttributeValueFromObject(changeSet.getUnitOfWorkClone(), session);
-            collectionChangeRecord.storeDatabaseCounts(collection, getContainerPolicy(), session);
+            if(this.listOrderField != null) {
+                List originalListCopy = new ArrayList((List)collection);
+                // collection already doesn't contain the removed object - to bring it to the original state it should be added or set back
+                if(index == null) {
+                    // should never happen - IndirectList does remove through indexOf.
+                    // TODO: which exception to throw here?
+                    throw new RuntimeException("Remove event must come with an index");
+                } else {
+                    if(isSet) {
+                        originalListCopy.set(index, objectToRemove);
+                    } else {
+                        originalListCopy.add(index, objectToRemove);
+                    }
+                }
+                collectionChangeRecord.setOriginalCollection(originalListCopy);
+                collectionChangeRecord.setLatestCollection(collection);
+            } else {
+                collectionChangeRecord.storeDatabaseCounts(collection, getContainerPolicy(), session);
+                collectionChangeRecord.firstToRemoveAlreadyOutCollection();
+                if(isSet) {
+                    collectionChangeRecord.firstToAddAlreadyInCollection();
+                }
+            }
         }
-        collectionChangeRecord.addRemoveChange(objectToRemove, new Integer(1));
+        if(!collectionChangeRecord.isDeferred() && this.listOrderField == null) {
+            collectionChangeRecord.addRemoveChange(objectToRemove, new Integer(1));
+        }
     }
 
     /**
@@ -1963,13 +2443,12 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
             collectionChangeRecord.setMapping(this);
             objectChangeSet.addChange(collectionChangeRecord);
         }
+        collectionChangeRecord.setIsDeferred(true);
+        objectChangeSet.deferredDetectionRequiredOn(getAttributeName());
         if (collectionChangeRecord.getOriginalCollection() == null) {
-            collectionChangeRecord.setOriginalCollection(oldValue);
+            collectionChangeRecord.recreateOriginalCollection(oldValue, getContainerPolicy(), uow);
         }
         collectionChangeRecord.setLatestCollection(newValue);
-        collectionChangeRecord.setIsDeferred(true);
-
-        objectChangeSet.deferredDetectionRequiredOn(getAttributeName());
     }
     
     /**
@@ -1982,30 +2461,19 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
             //Letting the mapping create and add the ChangeSet to the ChangeRecord rather 
             // than the policy, since the policy doesn't know how to handle DirectCollectionChangeRecord.
             // if ordering is to be supported in the future, check how the method in CollectionMapping is implemented
-            Object key = null;
-            if (event.getClass().equals(ClassConstants.MapChangeEvent_Class)){
-                key = ((MapChangeEvent)event).getKey();
+            Object value =  event.getNewValue();
+            if (value == null) {
+                value = DirectCollectionChangeRecord.Null;
             }
             
             if (event.getChangeType() == CollectionChangeEvent.ADD) {
-                addToCollectionChangeRecord(key, event.getNewValue(), changeSet, uow);
+                simpleAddToCollectionChangeRecord(value, event.getIndex(), event.isSet(), changeSet, uow);
             } else if (event.getChangeType() == CollectionChangeEvent.REMOVE) {
-                removeFromCollectionChangeRecord(key, event.getNewValue(), changeSet, uow);
+                simpleRemoveFromCollectionChangeRecord(value, event.getIndex(), event.isSet(), changeSet, uow);
             } else {
                 throw ValidationException.wrongCollectionChangeEventType(event.getChangeType());
             }
         }
-    }
-
-    /**
-     * PUBLIC:
-     * Configure the mapping to use an instance of the specified container class
-     * to hold the target objects.
-     * <p>The container class must implement (directly or indirectly) the Collection interface.
-     */
-    public void useCollectionClass(Class concreteClass) {
-        ContainerPolicy policy = ContainerPolicy.buildPolicyFor(concreteClass);
-        setContainerPolicy(policy);
     }
 
     /**
@@ -2086,18 +2554,6 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
 
     /**
      * INTERNAL:
-     * Add a new value and its change set to the collection change record.  This is used by
-     * attribute change tracking.
-     */
-    public void addToCollectionChangeRecord(Object newKey, Object newValue, ObjectChangeSet objectChangeSet, UnitOfWorkImpl uow) {
-        if (newValue == null) {
-            newValue = DirectCollectionChangeRecord.Null;
-        }
-        simpleAddToCollectionChangeRecord(newKey, newValue, objectChangeSet, uow);
-    }
-
-    /**
-     * INTERNAL:
      * DirectCollectionMapping contents should not be considered for addition to the UnitOfWork
      * private owned objects list for removal.
      */
@@ -2111,17 +2567,5 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      */
     public boolean isCascadedLockingSupported() {
         return true;
-    }
-
-    /**
-     * INTERNAL:
-     * Remove a value and its change set from the collection change record.  This is used by
-     * attribute change tracking.
-     */
-    public void removeFromCollectionChangeRecord(Object newKey, Object newValue, ObjectChangeSet objectChangeSet, UnitOfWorkImpl uow) {
-        if (newValue == null) {
-            newValue = DirectCollectionChangeRecord.Null;
-        }
-        simpleRemoveFromCollectionChangeRecord(newKey, newValue, objectChangeSet, uow);
     }
 }

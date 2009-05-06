@@ -17,6 +17,7 @@ import java.util.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.descriptors.*;
+import org.eclipse.persistence.internal.expressions.SQLUpdateStatement;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.identitymaps.*;
 import org.eclipse.persistence.internal.queries.*;
@@ -65,6 +66,23 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      */  
     protected ClassDescriptor remoteReferenceDescriptor;
 
+    /** Indicates whether the entire target object is primary key - in that case the object can't be updated in the db,
+     * but rather deleted and then re-inserted. 
+     */
+    protected transient boolean isEntireObjectPK;
+    
+    /** These queries used to update listOrderField
+     */
+    protected transient DataModifyQuery updateListOrderFieldQuery;
+    protected transient DataModifyQuery bulkUpdateListOrderFieldQuery;
+    protected transient DataModifyQuery pkUpdateListOrderFieldQuery;
+
+    /** indicates whether listOrderField value could be updated in the db. Used only if listOrderField!=null */
+    protected boolean isListOrderFieldUpdatable;
+    
+    protected static String min = "min";
+    protected static String max = "max";
+    protected static String shift = "shift";
 
     /**
      * PUBLIC:
@@ -79,6 +97,8 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         this.deleteAllQuery = new DeleteAllQuery();
         //aggregates should always cascade all operations
         this.setCascadeAll(true);
+        this.isListOrderFieldSupported = true;
+        this.isListOrderFieldUpdatable = true;
     }
 
     /**
@@ -453,11 +473,293 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
 
     /**
      * INTERNAL:
+     * Old and new lists are compared and only the changes are written to the database.
+     * Called only if listOrderField != null
+     */
+    protected void compareListsAndWrite(List previousList, List currentList, WriteObjectQuery query) throws DatabaseException, OptimisticLockException {
+        if(this.isListOrderFieldUpdatable) {
+            compareListsAndWrite_UpdatableListOrderField(previousList, currentList, query);
+        } else {
+            compareListsAndWrite_NonUpdatableListOrderField(previousList, currentList, query);
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Old and new lists are compared and only the changes are written to the database.
+     * Called only if listOrderField != null
+     */
+    protected void compareListsAndWrite_NonUpdatableListOrderField(List previousList, List currentList, WriteObjectQuery query) throws DatabaseException, OptimisticLockException {
+        HashMap<CacheKey, Object[]> previousAndCurrentByKey = new HashMap<CacheKey, Object[]>();
+        int pkSize = getReferenceDescriptor().getPrimaryKeyFields().size();
+        
+        // First index the current objects by their primary key.
+        for(int i=0; i < currentList.size(); i++) {
+            Object currentObject = currentList.get(i);
+            try {
+                Vector primaryKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(currentObject, query.getSession());
+                primaryKey.add(i);
+                CacheKey key = new CacheKey(primaryKey);
+                Object[] previousAndCurrent = new Object[]{null, currentObject};
+                previousAndCurrentByKey.put(key, previousAndCurrent);
+            } catch (NullPointerException e) {
+                // For CR#2646 quietly discard nulls added to a collection mapping.
+                // This try-catch is essentially a null check on currentObject, for
+                // ideally the customer should check for these themselves.
+                if (currentObject != null) {
+                    throw e;
+                }
+            }
+        }
+
+        // Next index the previous objects (read from db or from backup in uow)
+        for(int i=0; i < previousList.size(); i++) {
+            Object previousObject = previousList.get(i);
+            Vector primaryKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(previousObject, query.getSession());
+            primaryKey.add(i);
+            CacheKey key = new CacheKey(primaryKey);
+            Object[] previousAndCurrent = previousAndCurrentByKey.get(key);
+            if(previousAndCurrent == null) {
+                // there's no current object - that means that previous object should be deleted
+                DatabaseRecord extraData = new DatabaseRecord(1);
+                extraData.put(this.listOrderField, i);
+                objectRemovedDuringUpdate(query, previousObject, extraData);
+            } else {
+                previousAndCurrent[0] = previousObject;
+            }
+        }
+
+        Iterator<Map.Entry<CacheKey, Object[]>> it = previousAndCurrentByKey.entrySet().iterator();
+        while(it.hasNext()) {
+            Map.Entry<CacheKey, Object[]> entry = it.next();
+            CacheKey key = entry.getKey();
+            Object[] previousAndCurrent = entry.getValue();
+            // previousObject may be null, meaning currentObject has been added to the list
+            Object previousObject = previousAndCurrent[0];
+            // currentObject is not null
+            Object currentObject = previousAndCurrent[1];
+            
+            if(previousObject == null) {
+                // there's no previous object - that means that current object should be added.
+                // index of currentObject in currentList
+                int iCurrent = (Integer)((List)key.getKey()).get(pkSize);
+                DatabaseRecord extraData = new DatabaseRecord(1);
+                extraData.put(this.listOrderField, iCurrent);
+                
+                objectAddedDuringUpdate(query, currentObject, null, extraData);
+            } else {
+                if(!this.isEntireObjectPK) {
+                    objectUnchangedDuringUpdate(query, currentObject, previousObject);
+                }
+            }
+        }        
+    }
+    
+    /**
+     * INTERNAL:
+     * Old and new lists are compared and only the changes are written to the database.
+     * Called only if listOrderField != null
+     */
+    protected void compareListsAndWrite_UpdatableListOrderField(List previousList, List currentList, WriteObjectQuery query) throws DatabaseException, OptimisticLockException {
+        // Object[] = {previousObject, currentObject, previousIndex, currentIndex}
+        HashMap<CacheKey, Object[]> previousAndCurrentByKey = new HashMap<CacheKey, Object[]>();
+        // a SortedMap, current index mapped by previous index, both indexes must exist and be not equal.
+        TreeMap<Integer, Integer> currentIndexByPreviousIndex = new TreeMap<Integer, Integer>();
+
+        // First index the current objects by their primary key.
+        for(int i=0; i < currentList.size(); i++) {
+            Object currentObject = currentList.get(i);
+            try {
+                Vector primaryKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(currentObject, query.getSession());
+                CacheKey key = new CacheKey(primaryKey);
+                Object[] previousAndCurrent = new Object[]{null, currentObject, null, i};
+                previousAndCurrentByKey.put(key, previousAndCurrent);
+            } catch (NullPointerException e) {
+                // For CR#2646 quietly discard nulls added to a collection mapping.
+                // This try-catch is essentially a null check on currentObject, for
+                // ideally the customer should check for these themselves.
+                if (currentObject != null) {
+                    throw e;
+                }
+            }
+        }
+
+        // Next index the previous objects (read from db or from backup in uow), also remove the objects to be removed.
+        for(int i=0; i < previousList.size(); i++) {
+            Object previousObject = previousList.get(i);
+            Vector primaryKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(previousObject, query.getSession());
+            CacheKey key = new CacheKey(primaryKey);
+            Object[] previousAndCurrent = previousAndCurrentByKey.get(key);
+            if(previousAndCurrent == null) {
+                // there's no current object - that means that previous object should be deleted
+                objectRemovedDuringUpdate(query, previousObject, null);
+            } else {
+                previousAndCurrent[0] = previousObject;
+                previousAndCurrent[2] = i;
+                int iCurrent = (Integer)previousAndCurrent[3];
+                if(i != iCurrent) {
+                    currentIndexByPreviousIndex.put(i, iCurrent);
+                }
+            }
+        }
+
+        // some order indexes should be changed
+        if(!currentIndexByPreviousIndex.isEmpty()) {
+            // search for cycles in order changes, such as, for instance: 
+            //   previous index  1, 2 
+            //   current  index  2, 1
+            // or
+            //   previous index  1, 3, 5 
+            //   current  index  3, 5, 1
+            // those objects order index can't be updated using their previous order index value - should use pk in where clause instead.
+            // For now, if a cycle is found let's update all order indexes using pk.
+            // Ideally that should be refined in the future so that only indexes participating in cycles updated using pks - others still through bulk update.
+            boolean isCycleFound = false;
+            int iCurrentMax = -1;
+            Iterator<Integer> itCurrentIndexes = currentIndexByPreviousIndex.values().iterator();
+            while(itCurrentIndexes.hasNext() && !isCycleFound) {
+                int iCurrent = itCurrentIndexes.next();
+                if(iCurrent > iCurrentMax) {
+                    iCurrentMax = iCurrent;
+                } else {
+                    isCycleFound = true;
+                }
+            }
+
+            if(isCycleFound) {
+                Iterator<Map.Entry<CacheKey, Object[]>> it = previousAndCurrentByKey.entrySet().iterator();
+                while(it.hasNext()) {
+                    Map.Entry<CacheKey, Object[]> entry = it.next();
+                    CacheKey key = entry.getKey();
+                    Object[] previousAndCurrent = entry.getValue();
+                    // previousObject may be null, meaning currentObject has been added to the list
+                    Object previousObject = previousAndCurrent[0];                    
+                    if(previousObject != null) {
+                        Object currentObject = previousAndCurrent[1];                    
+                        if(!this.isEntireObjectPK) {
+                            objectUnchangedDuringUpdate(query, currentObject, previousObject);
+                        }
+                        int iPrevious = (Integer)previousAndCurrent[2];
+                        int iCurrent = (Integer)previousAndCurrent[3];
+                        if(iPrevious != iCurrent) {
+                            objectChangedListOrderDuringUpdate(query, key, iCurrent);
+                        }
+                    }
+                }        
+            } else {
+                // update the objects - but not their order values
+                if(!this.isEntireObjectPK) {
+                    Iterator<Map.Entry<CacheKey, Object[]>> it = previousAndCurrentByKey.entrySet().iterator();
+                    while(it.hasNext()) {
+                        Map.Entry<CacheKey, Object[]> entry = it.next();
+                        CacheKey key = entry.getKey();
+                        Object[] previousAndCurrent = entry.getValue();
+                        // previousObject may be null, meaning currentObject has been added to the list
+                        Object previousObject = previousAndCurrent[0];
+                        if(previousObject != null) {
+                            Object currentObject = previousAndCurrent[1];                    
+                            objectUnchangedDuringUpdate(query, currentObject, previousObject);
+                        }
+                    }        
+                }
+                
+                // a bulk update query will be executed for each bunch of adjacent previous indexes from which current indexes could be obtained with a shift, for instance:
+                //   previous index  1, 2, 3 
+                //   current  index  5, 6, 7
+                // the sql will look like:
+                //   UPDATE ... SET ListOrderField = ListOrderField + 4 WHERE 1 <= ListOrderField AND ListOrderField <= 3 AND FK = ...  
+                int iMin = -1;
+                int iMax = -1;
+                int iShift = 0;
+                Iterator<Map.Entry<Integer, Integer>> itEntries = currentIndexByPreviousIndex.entrySet().iterator();
+                while(itEntries.hasNext()) {
+                    Map.Entry<Integer, Integer> entry = itEntries.next();
+                    int iPrevious = entry.getKey();
+                    int iCurrent = entry.getValue();
+                    if(iMin >= 0) {
+                        // the shift should be the same for all indexes participating in bulk update
+                        int iPreviousExpected = iMax + 1;
+                        if(iPrevious == iPreviousExpected && iCurrent == iPreviousExpected + iShift) {
+                            iMax++;
+                        } else {
+                            objectChangedListOrderDuringUpdate(query, iMin, iMax, iShift);
+                            iMin = -1;
+                        }
+                    }
+                    if(iMin == -1) {
+                        // start defining a new bulk update - define iShift, iFirst, iLast
+                        iMin = iPrevious;
+                        iMax = iPrevious;
+                        iShift = iCurrent - iPrevious;
+                    }
+                }
+                if(iMin >= 0) {
+                    objectChangedListOrderDuringUpdate(query, iMin, iMax, iShift);
+                }
+            }
+        }
+
+        // Add the new objects
+        Iterator<Map.Entry<CacheKey, Object[]>> it = previousAndCurrentByKey.entrySet().iterator();
+        while(it.hasNext()) {
+            Map.Entry<CacheKey, Object[]> entry = it.next();
+            CacheKey key = entry.getKey();
+            Object[] previousAndCurrent = entry.getValue();
+            // previousObject may be null, meaning currentObject has been added to the list
+            Object previousObject = previousAndCurrent[0];
+            if(previousObject == null) {
+                // there's no previous object - that means that current object should be added.
+                // currentObject is not null
+                Object currentObject = previousAndCurrent[1];
+                // index of currentObject in currentList
+                int iCurrent = (Integer)previousAndCurrent[3];
+                
+                DatabaseRecord extraData = new DatabaseRecord(1);
+                extraData.put(this.listOrderField, iCurrent);
+                
+                objectAddedDuringUpdate(query, currentObject, null, extraData);
+            }
+        }        
+    }
+    
+    protected int objectChangedListOrderDuringUpdate(WriteObjectQuery query, int iMin, int iMax, int iShift) {
+        DataModifyQuery updateQuery;
+        AbstractRecord translationRow = (AbstractRecord)query.getTranslationRow().clone();
+        translationRow.put(min, iMin);
+        if(iMin == iMax) {
+            translationRow.put(this.listOrderField, iMin + iShift);
+            updateQuery = updateListOrderFieldQuery;
+        } else {
+            translationRow.put(max, iMax);
+            translationRow.put(shift, iShift);
+            updateQuery = bulkUpdateListOrderFieldQuery;
+        }
+        return (Integer)query.getSession().executeQuery(updateQuery, translationRow);
+    }
+
+    protected int objectChangedListOrderDuringUpdate(WriteObjectQuery query, CacheKey key, int newOrderValue) {
+        DataModifyQuery updateQuery;
+        AbstractRecord translationRow = (AbstractRecord)query.getTranslationRow().clone();
+        translationRow.put(this.listOrderField, newOrderValue);
+        List pkValues = key.getKey();
+        List<DatabaseField> pkFields = getReferenceDescriptor().getPrimaryKeyFields(); 
+        int size = pkFields.size();
+        for(int i=0; i < size; i++) {
+            translationRow.put(pkFields.get(i), pkValues.get(i));
+        }
+        return (Integer)query.getSession().executeQuery(this.pkUpdateListOrderFieldQuery, translationRow);
+    }
+
+    /**
+     * INTERNAL:
      * Compare the attributes belonging to this mapping for the objects.
      */
     public boolean compareObjects(Object firstObject, Object secondObject, AbstractSession session) {
         Object firstCollection = getRealCollectionAttributeValueFromObject(firstObject, session);
         Object secondCollection = getRealCollectionAttributeValueFromObject(secondObject, session);
+        if(this.listOrderField != null) {
+            return this.compareLists((List)firstCollection, (List)secondCollection, session);
+        }
         ContainerPolicy containerPolicy = getContainerPolicy();
 
         if (containerPolicy.sizeFor(firstCollection) != containerPolicy.sizeFor(secondCollection)) {
@@ -487,6 +789,27 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
                 if (!containerPolicy.hasNext(iterSecond)) {
                     return false;
                 }
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * INTERNAL:
+     * Compare the attributes belonging to this mapping for the objects.
+     */
+    public boolean compareLists(List firstList, List secondList, AbstractSession session) {
+        if (firstList.size() != secondList.size()) {
+            return false;
+        }
+
+        int size = firstList.size();
+        for(int i=0; i < size; i++) {
+            Object firstObject = firstList.get(i);
+            Object secondObject = secondList.get(i);
+            if (!getReferenceDescriptor().getObjectBuilder().compareObjects(firstObject, secondObject, session)) {
+                return false;
             }
         }
 
@@ -848,6 +1171,11 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         getSelectionQuery().setShouldMaintainCache(false);
 
         initializeDeleteAllQuery(session);
+        if(this.listOrderField != null) {
+            initializeUpdateListOrderQuery(session, "");
+            initializeUpdateListOrderQuery(session, "bulk");
+            initializeUpdateListOrderQuery(session, "pk");
+        }
     }
 
     /**
@@ -922,6 +1250,13 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         
         clonedDescriptor.preInitialize(session);
         getContainerPolicy().initialize(session, clonedDescriptor.getDefaultTable());
+        if(clonedDescriptor.getPrimaryKeyFields().isEmpty()) {
+            this.isEntireObjectPK = true;
+            clonedDescriptor.getAdditionalAggregateCollectionKeyFields().addAll(this.getTargetForeignKeyFields());
+            if(this.listOrderField != null && !this.isListOrderFieldUpdatable) {
+                clonedDescriptor.getAdditionalAggregateCollectionKeyFields().add(this.listOrderField);
+            }
+        }
         List<DatabaseField> identityFields = getContainerPolicy().getIdentityFieldsForMapKey();
         if (identityFields != null){
             clonedDescriptor.getAdditionalAggregateCollectionKeyFields().addAll(identityFields);
@@ -933,6 +1268,70 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         }
     }
 
+    protected void initializeUpdateListOrderQuery(AbstractSession session, String queryType) {
+        DataModifyQuery query = new DataModifyQuery();
+        if(queryType.equals("pk")) {
+            this.pkUpdateListOrderFieldQuery = query;
+        } else if(queryType.equals("bulk")) {
+            this.bulkUpdateListOrderFieldQuery = query;
+        } else {
+            this.updateListOrderFieldQuery = query;
+        }
+
+        query.setSessionName(session.getName());
+        
+        // Build where clause expression.
+        Expression whereClause = null;
+        Expression builder = new ExpressionBuilder();
+
+        AbstractRecord modifyRow = new DatabaseRecord();
+
+        if(queryType.equals("pk")) {
+            Iterator<DatabaseField> it = getReferenceDescriptor().getPrimaryKeyFields().iterator();
+            while(it.hasNext()) {
+                DatabaseField pkField = it.next();
+                DatabaseField sourceField = targetForeignKeyToSourceKeys.get(pkField);
+                DatabaseField parameterField = sourceField != null ? sourceField : pkField;
+                Expression expression = builder.getField(pkField).equal(builder.getParameter(parameterField));
+                whereClause = expression.and(whereClause);
+            }
+            modifyRow.add(this.listOrderField, null);
+        } else {
+            Iterator<Map.Entry<DatabaseField, DatabaseField>> it = targetForeignKeyToSourceKeys.entrySet().iterator();
+            while(it.hasNext()) {
+                Map.Entry<DatabaseField, DatabaseField> entry = it.next();
+                Expression expression = builder.getField(entry.getKey()).equal(builder.getParameter(entry.getValue()));
+                whereClause = expression.and(whereClause);
+            }
+            Expression listOrderExpression;
+            if(queryType.equals("bulk")) {
+                listOrderExpression = builder.getField(this.listOrderField).between(builder.getParameter(min), builder.getParameter(max));
+                modifyRow.add(this.listOrderField, ExpressionMath.add(builder.getField(this.listOrderField), builder.getParameter(shift)));
+            } else {
+                listOrderExpression = builder.getField(this.listOrderField).equal(builder.getParameter(min));
+                modifyRow.add(this.listOrderField, null);
+            }
+            whereClause = listOrderExpression.and(whereClause);
+        }
+
+        SQLUpdateStatement statement = new SQLUpdateStatement();
+        statement.setTable(getReferenceDescriptor().getDefaultTable());
+        statement.setWhereClause(whereClause);
+        statement.setModifyRow(modifyRow);
+        query.setSQLStatement(statement);
+    }
+    
+    /**
+     * INTERNAL:
+     * Clone and prepare the JoinedAttributeManager nested JoinedAttributeManager.
+     * This is used for nested joining as the JoinedAttributeManager passed to the joined build object.
+     */
+    public ObjectLevelReadQuery prepareNestedJoins(JoinedAttributeManager joinManager, ObjectBuildingQuery baseQuery, AbstractSession session) {
+        ObjectLevelReadQuery nestedQuery = super.prepareNestedJoins(joinManager, baseQuery, session);
+        nestedQuery.setShouldMaintainCache(false);
+        return nestedQuery;
+    }
+    
     /**
      * INTERNAL:
      * Called in case fieldTranslation != null
@@ -1397,6 +1796,9 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         // Insert must not be done for uow or cascaded queries and we must cascade to cascade policy.
         InsertObjectQuery insertQuery = getAndPrepareModifyQueryForInsert(query, objectAdded);
         ContainerPolicy.copyMapDataToRow(extraData, insertQuery.getModifyRow());
+        if(this.listOrderField != null && extraData != null) {
+            insertQuery.getModifyRow().put(this.listOrderField, extraData.get(this.listOrderField));
+        }
         query.getSession().executeQuery(insertQuery, insertQuery.getTranslationRow());
     }
 
@@ -1410,7 +1812,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         // Delete must not be done for uow or cascaded queries and we must cascade to cascade policy.
         DeleteObjectQuery deleteQuery = new DeleteObjectQuery();
         deleteQuery.setIsExecutionClone(true);
-        prepareModifyQueryForDelete(query, deleteQuery, objectDeleted);
+        prepareModifyQueryForDelete(query, deleteQuery, objectDeleted, extraData);
         ContainerPolicy.copyMapDataToRow(extraData, deleteQuery.getTranslationRow());
         query.getSession().executeQuery(deleteQuery, deleteQuery.getTranslationRow());
         
@@ -1429,6 +1831,14 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         updateQuery.setIsExecutionClone(true);
         Object backupclone = backupCloneKeyedCache.get(cachedKey);
         updateQuery.setBackupClone(backupclone);
+        prepareModifyQueryForUpdate(query, updateQuery, object);
+        query.getSession().executeQuery(updateQuery, updateQuery.getTranslationRow());
+    }
+    protected void objectUnchangedDuringUpdate(ObjectLevelModifyQuery query, Object object, Object backupClone) throws DatabaseException, OptimisticLockException {
+        // Always write for updates, either private or in uow if calling this method.
+        UpdateObjectQuery updateQuery = new UpdateObjectQuery();
+        updateQuery.setIsExecutionClone(true);
+        updateQuery.setBackupClone(backupClone);
         prepareModifyQueryForUpdate(query, updateQuery, object);
         query.getSession().executeQuery(updateQuery, updateQuery.getTranslationRow());
     }
@@ -1458,6 +1868,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
 
         Object objects = getRealCollectionAttributeValueFromObject(query.getObject(), query.getSession());
 
+        int index = 0;
         // insert each object one by one
         ContainerPolicy cp = getContainerPolicy();
         for (Object iter = cp.iteratorFor(objects); cp.hasNext(iter);) {
@@ -1465,6 +1876,9 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
             Object object = cp.unwrapIteratorResult(wrappedObject);
             InsertObjectQuery insertQuery = getAndPrepareModifyQueryForInsert(query, object);
             ContainerPolicy.copyMapDataToRow(cp.getKeyMappingDataForWriteQuery(wrappedObject, query.getSession()), insertQuery.getModifyRow());
+            if(this.listOrderField != null) {
+                insertQuery.getModifyRow().add(this.listOrderField, index++);
+            }
             query.getSession().executeQuery(insertQuery, insertQuery.getTranslationRow());
             cp.propogatePostInsert(query, wrappedObject);
         }
@@ -1508,13 +1922,19 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
 
         // if privately owned parts have their privately own parts, delete those one by one
         // else delete everything in one shot.
+        int index = 0;
         if (containerPolicy.propagatesEventsToCollection() || mustDeleteReferenceObjectsOneByOne()) {
             for (Object iter = containerPolicy.iteratorFor(objects); containerPolicy.hasNext(iter);) {
                 Object wrappedObject = containerPolicy.nextEntry(iter, query.getSession());
                 Object object = containerPolicy.unwrapIteratorResult(wrappedObject);
                 DeleteObjectQuery deleteQuery = new DeleteObjectQuery();
                 deleteQuery.setIsExecutionClone(true);
-                prepareModifyQueryForDelete(query, deleteQuery, wrappedObject);
+                Map extraData = null;
+                if(this.listOrderField != null) {
+                    extraData = new DatabaseRecord(1);
+                    extraData.put(this.listOrderField, index++);
+                }
+                prepareModifyQueryForDelete(query, deleteQuery, wrappedObject, extraData);
                 query.getSession().executeQuery(deleteQuery, deleteQuery.getTranslationRow());
                 containerPolicy.propogatePreDelete(query, wrappedObject);
             }
@@ -1540,6 +1960,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
 
         Object objects = getRealCollectionAttributeValueFromObject(query.getObject(), query.getSession());
 
+        int index = 0;
         // pre-insert each object one by one
         ContainerPolicy cp = getContainerPolicy();
         for (Object iter = cp.iteratorFor(objects); cp.hasNext(iter);) {
@@ -1547,6 +1968,9 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
             Object object = cp.unwrapIteratorResult(wrappedObject);
             InsertObjectQuery insertQuery = getAndPrepareModifyQueryForInsert(query, object);
             ContainerPolicy.copyMapDataToRow(cp.getKeyMappingDataForWriteQuery(wrappedObject, query.getSession()), insertQuery.getModifyRow());
+            if(this.listOrderField != null) {
+                insertQuery.getModifyRow().add(this.listOrderField, index++);
+            }
 
             // aggregates do not actually use a query to write to the database so the pre-write must be called here
             executeEvent(DescriptorEventManager.PreWriteEvent, insertQuery);
@@ -1574,6 +1998,9 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
             }
             desc.getObjectBuilder().buildTemplateInsertRow(session, modifyRow);
             getContainerPolicy().addFieldsForMapKey(modifyRow);
+            if(this.listOrderField != null) {
+                modifyRow.put(this.listOrderField, null);
+            }
             insertQuery.setModifyRow(modifyRow);
         }
         return insertQuery;
@@ -1619,10 +2046,13 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * INTERNAL:
      * setup the modifyQuery for pre delete
      */
-    public void prepareModifyQueryForDelete(ObjectLevelModifyQuery originalQuery, ObjectLevelModifyQuery modifyQuery, Object wrappedObject) {
+    public void prepareModifyQueryForDelete(ObjectLevelModifyQuery originalQuery, ObjectLevelModifyQuery modifyQuery, Object wrappedObject, Map extraData) {
         Object object = getContainerPolicy().unwrapIteratorResult(wrappedObject);
         AbstractRecord aggregateRow = getAggregateRow(originalQuery, object);
         ContainerPolicy.copyMapDataToRow(containerPolicy.getKeyMappingDataForWriteQuery(wrappedObject, modifyQuery.getSession()), aggregateRow);
+        if(this.listOrderField != null && extraData != null) {
+            aggregateRow.put(this.listOrderField, extraData.get(this.listOrderField));
+        }
         modifyQuery.setObject(object);
         modifyQuery.setDescriptor(getReferenceDescriptor(object.getClass(), originalQuery.getSession()));
         modifyQuery.setPrimaryKey(getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromRow(aggregateRow, originalQuery.getSession()));
@@ -1836,15 +2266,6 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
 
     /**
      * INTERNAL:
-     * Add a new value and its change set to the collection change record.  This is used by
-     * attribute change tracking.  Currently it is not supported in AggregateCollectionMapping.
-     */
-    public void addToCollectionChangeRecord(Object newKey, Object newValue, ObjectChangeSet objectChangeSet, UnitOfWorkImpl uow) throws DescriptorException {
-        throw DescriptorException.invalidMappingOperation(this, "addToCollectionChangeRecord");
-    }
-
-    /**
-     * INTERNAL:
      * AggregateCollection contents should not be considered for addition to the UnitOfWork
      * private owned objects list for removal.
      */
@@ -1870,15 +2291,6 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
 
     /**
      * INTERNAL:
-     * Remove a value and its change set from the collection change record.  This is used by
-     * attribute change tracking.  Currently it is not supported in AggregateCollectionMapping.
-     */
-    public void removeFromCollectionChangeRecord(Object newKey, Object newValue, ObjectChangeSet objectChangeSet, UnitOfWorkImpl uow) throws DescriptorException {
-        throw DescriptorException.invalidMappingOperation(this, "removeFromCollectionChangeRecord");
-    }
-
-    /**
-     * INTERNAL:
      * Once a descriptor is serialized to the remote session, all its mappings and reference descriptors are traversed.
      * Usually the mappings are initialized and the serialized reference descriptors are replaced with local descriptors
      * if they already exist in the remote session.
@@ -1886,5 +2298,22 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     public void remoteInitialization(DistributedSession session) {
         super.remoteInitialization(session);
         getReferenceDescriptor().remoteInitialization(session);
+    }
+    
+    /**
+     * PUBLIC:
+     * indicates whether listOrderField value could be updated in the db. Used only if listOrderField!=null 
+     */
+    public boolean isListOrderFieldUpdatable() {
+        return this.isListOrderFieldUpdatable;
+    }
+
+   /**
+    * PUBLIC:
+    * indicates whether listOrderField value could be updated in the db. Used only if listOrderField!=null
+    * Default value is true. 
+    */
+    public void setIsListOrderFieldUpdatable(boolean isUpdatable) {
+       this.isListOrderFieldUpdatable = isUpdatable;
     }
 }

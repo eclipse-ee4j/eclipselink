@@ -1670,24 +1670,6 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     * Add a new value and its change set to the collection change record.  This is used by
-     * attribute change tracking.
-     */
-    public void addToCollectionChangeRecord(Object newKey, Object newValue, ObjectChangeSet objectChangeSet, UnitOfWorkImpl uow) throws DescriptorException {
-        throw DescriptorException.invalidMappingOperation(this, "addToCollectionChangeRecord");
-    }
-
-    /**
-     * INTERNAL:
-     * Remove a value and its change set from the collection change record.  This is used by
-     * attribute change tracking.
-     */
-    public void removeFromCollectionChangeRecord(Object newKey, Object newValue, ObjectChangeSet objectChangeSet, UnitOfWorkImpl uow) throws DescriptorException {
-        throw DescriptorException.invalidMappingOperation(this, "removeFromCollectionChangeRecord");
-    }
-
-    /**
-     * INTERNAL:
      * Directly build a change record without comparison
      */
     public ChangeRecord buildChangeRecord(Object newValue, ObjectChangeSet owner, AbstractSession session) throws DescriptorException {

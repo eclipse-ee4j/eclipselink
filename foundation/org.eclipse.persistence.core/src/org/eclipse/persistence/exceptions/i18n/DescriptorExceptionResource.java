@@ -218,6 +218,8 @@ public class DescriptorExceptionResource extends ListResourceBundle {
                                            { "207", "Insert table order is wrong: table [{0}] mapped to parent is specified to be inserted after table [{1}] mapped to child." },
                                            { "208", "You are trying to set a Converter with class name [{1}] on a non-direct-mapping [{0}].  Only Direct Mappings are allowed to have converters.  This usually happens when trying to set a key converter on a DirectMapMapping with a non-direct key." },
                                            { "209", "This descriptor contains a mapping with a DirectMapMapping and no key field set." },
+                                           { "210", "[{0}] has list order field set, but attribute does not implement List." },
+                                           { "211", "[{0}] has list order field set, but ContainerPolicy is not OrderedListContainerPolicy. Make sure that useCollectionClass method is called after setListOrderField method. Alternatively call setPolicy method with OrderedListContainerPolicy." },
 
     };
 

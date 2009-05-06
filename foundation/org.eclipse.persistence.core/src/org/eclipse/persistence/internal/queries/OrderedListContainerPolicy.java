@@ -242,6 +242,10 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
         return ((List)container).listIterator();
     }
     
+    public boolean isOrderedListPolicy() {
+        return true;
+    }
+    
     /**
      * INTERNAL:
      * Merge changes from the source to the target object. Because this is a 
@@ -448,7 +452,7 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
             throw ValidationException.wrongCollectionChangeEventType(changeType);
         }
 
-        OrderedChangeObject orderedChangeObject = new OrderedChangeObject(changeType, event.getIndex(), changeSet);;
+        OrderedChangeObject orderedChangeObject = new OrderedChangeObject(changeType, event.getIndex(), changeSet, event.getNewValue());
         collectionChangeRecord.getOrderedChangeObjectList().add(orderedChangeObject);
     }
 }

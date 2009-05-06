@@ -13,6 +13,7 @@
 package org.eclipse.persistence.testing.tests.writing;
 
 import org.eclipse.persistence.testing.framework.*;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.testing.framework.WriteObjectTest;
 
@@ -27,7 +28,7 @@ public class ComplexUpdateTest extends WriteObjectTest {
     public boolean usesNestedUnitOfWork = false;
     public boolean shouldCommitParent = false;
     /** TODO: Set this to true, and fix issues from tests that fail. */
-    public boolean shouldCompareClone = false;
+    public boolean shouldCompareClone = true;
 
     public ComplexUpdateTest() {
         super();
@@ -91,8 +92,15 @@ public class ComplexUpdateTest extends WriteObjectTest {
                 getExecutor().setSession(((UnitOfWork)getSession()).getParent());
             }
             // Ensure that the clone matches the cache.
-            if (this.shouldCompareClone && !getAbstractSession().compareObjects(this.workingCopy, this.objectToBeWritten)) {
-                throw new TestErrorException("The clone does not match the cached object.");
+            if (this.shouldCompareClone) {
+                ClassDescriptor descriptor = getSession().getClassDescriptor(this.objectToBeWritten);
+                if(!descriptor.shouldIsolateObjectsInUnitOfWork()) {
+                    if (!getAbstractSession().compareObjects(this.workingCopy, this.objectToBeWritten)) {
+                        throw new TestErrorException("The clone does not match the cached object.");
+                    }
+                } else {
+                    getSession().logMessage("ComplexUpdateTest: descriptor.shouldIsolateObjectsInUnitOfWork() == null. In this case object's changes are not merged back into parent's cache");
+                }
             }
         } else {
             super.test();

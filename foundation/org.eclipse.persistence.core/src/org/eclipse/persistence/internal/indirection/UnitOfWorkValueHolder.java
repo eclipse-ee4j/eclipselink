@@ -87,7 +87,7 @@ public abstract class UnitOfWorkValueHolder extends DatabaseValueHolder {
         return backupValueHolder;
     }
 
-    protected DatabaseMapping getMapping() {
+    public DatabaseMapping getMapping() {
         return mapping;
     }
 
