@@ -15,6 +15,9 @@ package org.eclipse.persistence.tools.dbws;
 
 // javase imports
 import java.util.List;
+import static java.sql.Types.ARRAY;
+import static java.sql.Types.OTHER;
+import static java.sql.Types.STRUCT;
 import static java.util.logging.Level.FINEST;
 
 // Java extension imports
@@ -26,15 +29,19 @@ import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 // EclipseLink imports
 import org.eclipse.persistence.internal.xr.Attachment;
 import org.eclipse.persistence.internal.xr.CollectionResult;
+import org.eclipse.persistence.internal.xr.NamedQueryHandler;
 import org.eclipse.persistence.internal.xr.Parameter;
 import org.eclipse.persistence.internal.xr.ProcedureArgument;
 import org.eclipse.persistence.internal.xr.ProcedureOutputArgument;
+import org.eclipse.persistence.internal.xr.QueryHandler;
 import org.eclipse.persistence.internal.xr.QueryOperation;
 import org.eclipse.persistence.internal.xr.Result;
 import org.eclipse.persistence.internal.xr.StoredFunctionQueryHandler;
 import org.eclipse.persistence.internal.xr.StoredProcedureQueryHandler;
 import org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat;
 import org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormatProject;
+import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.SqlTypeWithMethods;
+import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.tools.dbws.Util.InOut;
 import org.eclipse.persistence.tools.dbws.jdbc.DbStoredArgument;
 import org.eclipse.persistence.tools.dbws.jdbc.DbStoredFunction;
@@ -44,6 +51,7 @@ import org.eclipse.persistence.tools.dbws.oracle.PLSQLStoredArgument;
 import static org.eclipse.persistence.internal.xr.QNameTransformer.SCHEMA_QNAMES;
 import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.DEFAULT_SIMPLE_XML_FORMAT_TAG;
 import static org.eclipse.persistence.internal.xr.Util.SXF_QNAME;
+import static org.eclipse.persistence.oxm.XMLConstants.ANY_QNAME;
 import static org.eclipse.persistence.tools.dbws.Util.SXF_QNAME_CURSOR;
 import static org.eclipse.persistence.tools.dbws.Util.addSimpleXMLFormat;
 import static org.eclipse.persistence.tools.dbws.Util.getXMLTypeFromJDBCType;
@@ -58,6 +66,7 @@ public class ProcedureOperationModel extends OperationModel {
     protected String schemaPattern;
     protected String procedurePattern;
     protected int overload; // Oracle-specific
+    protected SqlTypeWithMethods typ; // cache JPub description of operation
 
     public ProcedureOperationModel() {
         super();
@@ -106,14 +115,23 @@ public class ProcedureOperationModel extends OperationModel {
         return true;
     }
 
+    public boolean isPLSQLProcedureOperation() {
+        return false;
+    }
+
+    public SqlTypeWithMethods getJPubType() {
+        return typ;
+    }
+    public void setJPubType(SqlTypeWithMethods typ) {
+        this.typ = typ;
+    }
+
     @Override
     public void buildOperation(DBWSBuilder builder) {
 
         super.buildOperation(builder);
-        boolean isOracle = 
-            builder.getDatabasePlatform().getClass().getName().contains("Oracle") ? true : false;
-        List<DbStoredProcedure> procs = builder.loadProcedures(catalogPattern, schemaPattern,
-            procedurePattern, overload, isOracle);
+        boolean isOracle = builder.databasePlatform.getClass().getName().contains("Oracle");
+        List<DbStoredProcedure> procs = builder.loadProcedures(this, isOracle);
         for (DbStoredProcedure storedProcedure : procs) {
             StringBuilder sb = new StringBuilder();
             if (name == null || name.length() == 0) {
@@ -136,15 +154,15 @@ public class ProcedureOperationModel extends OperationModel {
             }
             QueryOperation qo = new QueryOperation();
             qo.setName(sb.toString());
-            StoredProcedureQueryHandler spqh;
+            QueryHandler qh;
             if (storedProcedure.isFunction()) {
-                spqh = new StoredFunctionQueryHandler();
+                qh = new StoredFunctionQueryHandler();
             }
             else {
-              spqh = new StoredProcedureQueryHandler();
+              qh = new StoredProcedureQueryHandler();
             }
             sb = new StringBuilder();
-            if (builder.databasePlatform.getClass().getName().contains("Oracle")) {
+            if (isOracle) {
                 if (storedProcedure.getSchema() != null && storedProcedure.getSchema().length() > 0) {
                     sb.append(storedProcedure.getSchema());
                     sb.append('.');
@@ -165,9 +183,19 @@ public class ProcedureOperationModel extends OperationModel {
                 }
             }
             sb.append(storedProcedure.getName());
-            spqh.setName(sb.toString());
-            builder.logMessage(FINEST, "Building QueryOperation for " + spqh.getName());
-            qo.setQueryHandler(spqh);
+            ((StoredProcedureQueryHandler)qh).setName(sb.toString());
+            builder.logMessage(FINEST, "Building QueryOperation for " + sb.toString());
+            // before assigning queryHandler, check for named query in OR project
+            List<DatabaseQuery> queries = builder.getOrProject().getQueries();
+            if (queries.size() > 0) {
+                for (DatabaseQuery q : queries) {
+                    if (q.getName().equals(qo.getName())) {
+                        qh = new NamedQueryHandler();
+                        ((NamedQueryHandler)qh).setName(qo.getName());
+                    }
+                }
+            }
+            qo.setQueryHandler(qh);
             SimpleXMLFormat sxf = null;
             if (isSimpleXMLFormat() || getReturnType() == null) {
                 sxf = new SimpleXMLFormat();
@@ -182,9 +210,7 @@ public class ProcedureOperationModel extends OperationModel {
                 sxf.setXMLTag(xmlTag);
             }
             Result result = null;
-            if (!storedProcedure.isFunction() &&
-            	builder.getPlatformClassname().contains("Oracle") &&
-            	noOutArguments(storedProcedure)) {
+            if (!storedProcedure.isFunction() && isOracle && noOutArguments(storedProcedure)) {
                 result = new Result();
                 result.setType(new QName(W3C_XML_SCHEMA_NS_URI, "int", "xsd")); // rowcount
             }
@@ -198,42 +224,35 @@ public class ProcedureOperationModel extends OperationModel {
                     }
                     else {
                         result = new Result();
-                        result.setType(getXMLTypeFromJDBCType(rarg.getJdbcType()));
+                        int rargJdbcType = rarg.getJdbcType();
+                        switch (rargJdbcType) {
+                            case STRUCT:
+                            case ARRAY:
+                            case OTHER:
+                                if (returnType != null) {
+                                    result.setType(buildCustomQName(returnType, builder));
+                                }
+                                else {
+                                    result.setType(ANY_QNAME);
+                                }
+                                break;
+                            default :
+                                if (isOracle) {
+                                    result.setType(OracleHelper.getXMLTypeFromJDBCType(
+                                        rarg, builder.getTargetNamespace()));
+                                }
+                                else {
+                                    result.setType(getXMLTypeFromJDBCType(rargJdbcType));
+                                }
+                                break;
+                        }
                     }
                 }
-                else if (!(builder.getPlatformClassname().contains("Oracle"))) {
+                else if (!isOracle) {
                     // if user overrides returnType, assume they're right
                 	if (returnType != null) {
-                        String nsURI = null;
-                        String prefix = null;
-                        String localPart = null;
-                        int colonIdx = returnType.indexOf(':');
                         result = new Result();
-                        if (colonIdx > 0) {
-                        	QName qName = null;
-                            prefix = returnType.substring(0, colonIdx);
-                            nsURI = builder.schema.getNamespaceResolver().resolveNamespacePrefix(prefix);
-                            if (nsURI == null) {
-                                nsURI = DEFAULT_NS_PREFIX;
-                            }
-                            localPart = returnType.substring(colonIdx+1);
-                            if (W3C_XML_SCHEMA_NS_URI.equals(nsURI)) {
-                            	qName = SCHEMA_QNAMES.get(localPart);
-                                if (qName == null) { // unknown W3C_XML_SCHEMA_NS_URI type ?
-                                    qName = new QName(W3C_XML_SCHEMA_NS_URI, localPart,
-                                        prefix == null ? DEFAULT_NS_PREFIX : prefix);
-                                }
-                            }
-                            else {
-                                qName = new QName(nsURI == null ? NULL_NS_URI : nsURI,
-                                    localPart, prefix == null ? DEFAULT_NS_PREFIX : prefix);
-                            }
-                            result.setType(qName);
-                        }
-                        else {
-                        	result.setType(qNameFromString("{" + builder.getTargetNamespace() +
-                        		"}" + returnType, builder.schema));
-                        }
+                        result.setType(buildCustomQName(returnType, builder));
                 	}
                 	else {
 	                    if (isCollection) {
@@ -262,11 +281,23 @@ public class ProcedureOperationModel extends OperationModel {
                     Parameter parm = null;
                     InOut direction = arg.getInOut();
                     QName xmlType = null;
-                    if (isOracle) {
-                        xmlType = OracleHelper.getXMLTypeFromJDBCType(arg, builder.getTargetNamespace());
-                    }
-                    else {
-                        xmlType = getXMLTypeFromJDBCType(arg.getJdbcType());
+                    switch (arg.getJdbcType()) {
+                        case STRUCT:
+                        case ARRAY:
+                        case OTHER:
+                            String typeString = 
+                                builder.topTransformer.generateSchemaAlias(arg.getJdbcTypeName());
+                            xmlType = buildCustomQName(typeString, builder);
+                            break;
+                        default :
+                            if (isOracle) {
+                                xmlType = OracleHelper.getXMLTypeFromJDBCType(
+                                    arg, builder.getTargetNamespace());
+                            }
+                            else {
+                                xmlType = getXMLTypeFromJDBCType(arg.getJdbcType());
+                            }
+                            break;
                     }
                     if (direction == IN) {
                         parm = new Parameter();
@@ -275,7 +306,9 @@ public class ProcedureOperationModel extends OperationModel {
                         pa = new ProcedureArgument();
                         pa.setName(argName);
                         pa.setParameterName(argName);
-                        spqh.getInArguments().add(pa);
+                        if (qh instanceof StoredProcedureQueryHandler) {
+                            ((StoredProcedureQueryHandler)qh).getInArguments().add(pa);
+                        }
                     }
                     else {
                         // the first OUT/INOUT arg determines singleResult vs. collectionResult
@@ -310,17 +343,18 @@ public class ProcedureOperationModel extends OperationModel {
                             }
                         }
                         if (direction == INOUT) {
-                            spqh.getInOutArguments().add(pao);
+                            if (qh instanceof StoredProcedureQueryHandler) {
+                                ((StoredProcedureQueryHandler)qh).getInOutArguments().add(pao);
+                            }
                         }
                         else {
-                            spqh.getOutArguments().add(pao);
+                            if (qh instanceof StoredProcedureQueryHandler) {
+                                ((StoredProcedureQueryHandler)qh).getOutArguments().add(pao);
+                            }
                         }
                     }
                     if (arg instanceof PLSQLStoredArgument) {
                         pa.setComplexTypeName(((PLSQLStoredArgument)arg).getPlSqlTypeName());
-                        if (spqh instanceof StoredProcedureQueryHandler) {
-                            
-                        }
                     }
                     if (parm != null) {
                         qo.getParameters().add(parm);
@@ -346,4 +380,35 @@ public class ProcedureOperationModel extends OperationModel {
         }
     }
 
+    protected QName buildCustomQName(String typeString, DBWSBuilder builder) {
+        QName qName = null;
+        String nsURI = null;
+        String prefix = null;
+        String localPart = null;
+        int colonIdx = typeString.indexOf(':');
+        if (colonIdx > 0) {
+            prefix = typeString.substring(0, colonIdx);
+            nsURI = builder.schema.getNamespaceResolver().resolveNamespacePrefix(prefix);
+            if (nsURI == null) {
+                nsURI = DEFAULT_NS_PREFIX;
+            }
+            localPart = typeString.substring(colonIdx+1);
+            if (W3C_XML_SCHEMA_NS_URI.equals(nsURI)) {
+                qName = SCHEMA_QNAMES.get(localPart);
+                if (qName == null) { // unknown W3C_XML_SCHEMA_NS_URI type ?
+                    qName = new QName(W3C_XML_SCHEMA_NS_URI, localPart,
+                        prefix == null ? DEFAULT_NS_PREFIX : prefix);
+                }
+            }
+            else {
+                qName = new QName(nsURI == null ? NULL_NS_URI : nsURI,
+                    localPart, prefix == null ? DEFAULT_NS_PREFIX : prefix);
+            }
+        }
+        else {
+            qName = qNameFromString("{" + builder.getTargetNamespace() +
+                "}" + typeString, builder.schema);
+        }
+        return qName;
+    }
 }

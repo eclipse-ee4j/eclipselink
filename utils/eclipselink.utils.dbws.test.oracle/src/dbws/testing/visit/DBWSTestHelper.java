@@ -113,6 +113,20 @@ public class DBWSTestHelper {
     public static final String BRECORD_DESCRIPTOR_ALIAS = BRECORD_COMPATIBLETYPE.toLowerCase();
     public static final String BRECORD_DESCRIPTOR_JAVACLASSNAME = BRECORD_DATABASETYPE.toLowerCase();
 
+    public static final String ADVJDBC_PACKAGE_NAME = 
+        "ADVANCED_OBJECT_DEMO";
+    public static final String ADVJDBC_ECHO_EMPOBJECT = 
+        "echoEmpObject";
+    public static final String ADVJDBC_ECHO_EMPOBJECT_TEST = 
+        "echoEmpObjectTest";
+    public static final String ADVJDBC_ECHO_EMPOBJECT_SERVICE = 
+        ADVJDBC_ECHO_EMPOBJECT + "Service";
+    public static final String ADVJDBC_ECHO_EMPOBJECT_NAMESPACE = 
+        "urn:echoEmp";
+    public static final String ADVJDBC_ECHO_EMPOBJECT_SERVICE_NAMESPACE = 
+        "urn:echoEmpService";
+    public static final String ADVJDBC_ECHO_EMPOBJECT_PORT = "echoEmpServicePort";
+    
     public static String documentToString(Document doc) {
         DOMSource domSource = new DOMSource(doc);
         StringWriter stringWriter = new StringWriter();

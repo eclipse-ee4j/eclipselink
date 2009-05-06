@@ -201,7 +201,7 @@ public class PLSQLORDescriptorBuilder extends PublisherDefaultListener {
         stac.push(new SqltypeHelper(sqlTypeName));
     }
     @Override
-    public void handleObjectType(String objectTypename, String targetTypeName) {
-        stac.push(new ObjectTypeHelper(objectTypename, targetTypeName));
+    public void handleObjectType(String objectTypename, String targetTypeName, int numAttributes) {
+        stac.push(new ObjectTypeHelper(objectTypename, targetTypeName, numAttributes));
     }
 }

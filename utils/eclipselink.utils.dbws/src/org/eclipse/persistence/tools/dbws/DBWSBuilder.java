@@ -31,6 +31,7 @@ import java.sql.DriverManager;
 import java.sql.Struct;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -120,7 +121,6 @@ import org.eclipse.persistence.platform.database.jdbc.JDBCTypes;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLCollection;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredProcedureCall;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLrecord;
-import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.SqlType;
 import org.eclipse.persistence.platform.database.oracle.publisher.visit.PublisherListenerChainAdapter;
 import org.eclipse.persistence.platform.database.oracle.publisher.visit.PublisherWalker;
 import org.eclipse.persistence.queries.DataModifyQuery;
@@ -141,6 +141,9 @@ import org.eclipse.persistence.tools.dbws.jdbc.DbStoredArgument;
 import org.eclipse.persistence.tools.dbws.jdbc.DbStoredProcedure;
 import org.eclipse.persistence.tools.dbws.jdbc.DbTable;
 import org.eclipse.persistence.tools.dbws.jdbc.JDBCHelper;
+import org.eclipse.persistence.tools.dbws.oracle.AdvancedJDBCORDescriptorBuilder;
+import org.eclipse.persistence.tools.dbws.oracle.AdvancedJDBCOXDescriptorBuilder;
+import org.eclipse.persistence.tools.dbws.oracle.AdvancedJDBCQueryBuilder;
 import org.eclipse.persistence.tools.dbws.oracle.OracleHelper;
 import org.eclipse.persistence.tools.dbws.oracle.PLSQLHelperObjectsBuilder;
 import org.eclipse.persistence.tools.dbws.oracle.PLSQLORDescriptorBuilder;
@@ -244,9 +247,9 @@ public class DBWSBuilder extends DBWSBuilderModel {
     protected XRServiceModel xrServiceModel = new DBWSModel();
     protected List<DbTable> dbTables = new ArrayList<DbTable>();
     protected List<DbStoredProcedure> dbStoredProcedures = new ArrayList<DbStoredProcedure>();
-    protected SqlType sqlType;
-    protected Map<DbStoredProcedure, DbStoredProcedureNameAndModel > dbStoredProcedure2QueryName = 
+    protected Map<DbStoredProcedure, DbStoredProcedureNameAndModel> dbStoredProcedure2QueryName = 
         new HashMap<DbStoredProcedure, DbStoredProcedureNameAndModel>();
+    protected NamingConventionTransformer topTransformer;
 
     public DBWSBuilder() {
         super();
@@ -452,7 +455,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         ServiceLoader<NamingConventionTransformer> transformers =
             ServiceLoader.load(NamingConventionTransformer.class);
         Iterator<NamingConventionTransformer> transformerIter = transformers.iterator();
-        NamingConventionTransformer topTransformer = transformerIter.next();
+        topTransformer = transformerIter.next();
         LinkedList<NamingConventionTransformer> transformerList =
             new LinkedList<NamingConventionTransformer>();
         // check for user-provided transformer in front of default transformers
@@ -537,8 +540,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                 String catalogPattern = procedureModel.getCatalogPattern();
                 String schemaPattern = procedureModel.getSchemaPattern();
                 String procedurePattern = procedureModel.getProcedurePattern();
-                List<DbStoredProcedure> procs = loadProcedures(catalogPattern,
-                    schemaPattern, procedurePattern, procedureModel.overload, isOracle);
+                List<DbStoredProcedure> procs = loadProcedures(procedureModel, isOracle);
                 if (procs.isEmpty()) {
                     StringBuilder sb = new StringBuilder();
                     sb.append("No matching procedures for pattern ");
@@ -558,7 +560,8 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                 }
             }
         }
-        buildDbStoredProcedure2QueryNameMap(dbStoredProcedures, operations, isOracle);
+        buildDbStoredProcedure2QueryNameMap(dbStoredProcedure2QueryName, dbStoredProcedures,
+            operations, isOracle);
     }
 
     protected List<DbTable> loadTables(String catalogPattern, String schemaPattern,
@@ -573,8 +576,8 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
             boolean unSupportedColumnType = false;
             for (DbColumn dbColumn : dbTable.getColumns()) {
                 switch (dbColumn.getJDBCType()) {
-                    case Types.ARRAY :   // TODO - figure out how to support 
-                    case Types.STRUCT :  // these types via JDBC
+                    case Types.ARRAY : 
+                    case Types.STRUCT :
                     case Types.OTHER :
                     case Types.DATALINK :
                     case Types.JAVA_OBJECT :
@@ -593,17 +596,16 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         dbTables.add(dbTable);
     }
 
-    protected List<DbStoredProcedure> loadProcedures(String catalogPattern, String schemaPattern,
-        String procedurePattern, int overload, boolean isOracle) {
-        if (isOracle && catalogPattern != null) { // procedure is in a package, use OracleHelper
+    protected List<DbStoredProcedure> loadProcedures(ProcedureOperationModel procedureModel,
+        boolean isOracle) {
+        if (isOracle) { // use OracleHelper
             return OracleHelper.buildStoredProcedure(getConnection(), getUsername(), databasePlatform,
-                catalogPattern, schemaPattern, procedurePattern, this);
+                procedureModel);
         }
         else {
             // use JDBC helper
-            return checkStoredProcedures(
-                JDBCHelper.buildStoredProcedure(getConnection(), databasePlatform, catalogPattern,
-                schemaPattern, procedurePattern), overload);
+            return checkStoredProcedures(JDBCHelper.buildStoredProcedure(getConnection(),
+                databasePlatform, procedureModel), 0);
         }
     }
 
@@ -647,8 +649,8 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                         break;
                     }
                 }
-                else if (jdbcType == ARRAY ||     // TODO - figure out how to support  
-                         jdbcType == STRUCT ||    // these types via JDBC
+                else if (jdbcType == ARRAY ||     
+                         jdbcType == STRUCT ||
                          jdbcType == DATALINK ||
                          jdbcType == JAVA_OBJECT) {
                         unSupportedArgType = true;
@@ -670,7 +672,6 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         operations.add(sqlOperation);
     }
 
-    @SuppressWarnings("unchecked")
     protected void buildOROXProjects(NamingConventionTransformer nct) {
         String projectName = getProjectName();
         orProject = new Project();
@@ -818,130 +819,21 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
           raq.setReferenceClassName(generatedJavaClassName);
           desc.getQueryManager().addQuery(FINDALL_QUERYNAME, raq);
         }
-        if (sqlType != null) {
-            /* The list of stored procedures was built using a Helper class; if object 'sqlType'
-             * is not-null, then the helper is OracleHelper and sqlType uses the trimmed-down
-             * JPublisher classes (org.eclipse.persistence.platform.database.oracle.publisher.*)
-             * to describe the package, its procedures and types.
-             * 
-             * Walk-thru sqlType, building PLSQLCollection/PLSQLrecord helper objects,
-             * ObjectRelationalDataTypeDescriptors and mappings, XMLDescriptors and mappings
-             */
-            PLSQLHelperObjectsBuilder helperObjectsBuilder = new PLSQLHelperObjectsBuilder();
-            PLSQLORDescriptorBuilder orDescriptorBuilder = new PLSQLORDescriptorBuilder();
-            PLSQLOXDescriptorBuilder oxDescriptorBuilder = new PLSQLOXDescriptorBuilder(getTargetNamespace());
-            PublisherListenerChainAdapter chain = new PublisherListenerChainAdapter();
-            chain.addListener(helperObjectsBuilder);
-            chain.addListener(orDescriptorBuilder);
-            chain.addListener(oxDescriptorBuilder);
-            PublisherWalker walker = new PublisherWalker(chain);
-            sqlType.accept(walker);
-            if (orDescriptorBuilder.getDescriptors() != null) {
-                for (ObjectRelationalDataTypeDescriptor ordtDescriptor : orDescriptorBuilder.getDescriptors()) {
-                    orProject.addDescriptor(ordtDescriptor);
-                }
-            }
-            if (oxDescriptorBuilder.getDescriptors() != null) {
-                for (XMLDescriptor xdesc : oxDescriptorBuilder.getDescriptors()) {
-                    oxProject.addDescriptor(xdesc);
-                }
-            }
-            for (DbStoredProcedure storedProcedure : dbStoredProcedures) {
-                boolean isPLSQLStoredProc = false; 
-                for (DbStoredArgument arg : storedProcedure.getArguments()) {
-                    if (arg.isPLSQLArgument()) {
-                        isPLSQLStoredProc = true;
-                        break;
-                    }
-                }
-                if (isPLSQLStoredProc) {
-                    PLSQLStoredProcedureCall call = new PLSQLStoredProcedureCall();
-                    String catalogPrefix = null;
-                    String cat = storedProcedure.getCatalog();
-                    if (cat == null | cat.length() == 0) {
-                        catalogPrefix = "";
+        for (OperationModel opModel : operations) {
+            if (opModel.isProcedureOperation()) {
+                ProcedureOperationModel procOpModel = (ProcedureOperationModel)opModel;
+                if (procOpModel.getJPubType() != null) {
+                    /* procedure's operationModel has a non-null JPubType, then the helper was
+                     * OracleHelper and the trimmed-down JPublisher classes
+                     * (org.eclipse.persistence.platform.database.oracle.publisher.*) were used
+                     * to describe the procedure, its package and types.
+                     */
+                    if (procOpModel.isPLSQLProcedureOperation()) {
+                        buildOROXProjectsForAdvancedPLSQLProcedure(procOpModel);
                     }
                     else {
-                        catalogPrefix = cat + ".";
+                        buildOROXProjectsForAdvancedProcedure(procOpModel, nct);
                     }
-                    call.setProcedureName(catalogPrefix + storedProcedure.getName());
-                    DatabaseQuery dq = null;
-                    DbStoredProcedureNameAndModel nameAndModel = 
-                        dbStoredProcedure2QueryName.get(storedProcedure);
-                    String returnType = nameAndModel.procOpModel.getReturnType();
-                    boolean hasResponse = returnType != null;
-                    String typ = null;
-                    ClassDescriptor xdesc = null;
-                    if (hasResponse) {
-                        int idx = 0;
-                        int colonIdx = returnType.indexOf(":");
-                        if (colonIdx == -1) {
-                            idx = returnType.indexOf("}");
-                        }
-                        else {
-                            idx = colonIdx;
-                        }
-                        if (idx > 0) {
-                            typ = returnType.substring(idx+1);
-                            for (XMLDescriptor xd : (Vector<XMLDescriptor>)oxProject.getOrderedDescriptors()) {
-                                if (xd.getSchemaReference() != null) {
-                                    String context = xd.getSchemaReference().getSchemaContext();
-                                    if (context.substring(1).equals(typ)) {
-                                        xdesc = xd;
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    if (hasResponse) {
-                        if (nameAndModel.procOpModel.isCollection) {
-                            dq = new DataReadQuery();
-                        }
-                        else {
-                            dq = new ValueReadQuery();
-                        }
-                    }
-                    else {
-                        dq = new DataModifyQuery();
-                    }
-                    dq.bindAllParameters();
-                    dq.setName(nameAndModel.name);
-                    dq.setCall(call);
-                    DatabaseType[] typesForMethod = 
-                        helperObjectsBuilder.getTypesForMethod(storedProcedure.getName());
-                    for (int i = 0, len = typesForMethod.length; i < len; i++) {
-                        DbStoredArgument arg = storedProcedure.getArguments().get(i);
-                        DatabaseType databaseType = typesForMethod[i];
-                        InOut direction = arg.getInOut();
-                        if (direction == OUT) {
-                            call.addNamedOutputArgument(arg.getName(), databaseType);
-                        }
-                        else if (direction == IN) {
-                            call.addNamedArgument(arg.getName(), databaseType);
-                        }
-                        else {
-                            call.addNamedInOutputArgument(arg.getName(), databaseType);
-                        }
-                        if (direction == IN | direction == INOUT) {
-                            if (xdesc != null) {
-                                dq.addArgumentByTypeName(arg.getName(), xdesc.getJavaClassName());
-                            }
-                            else {
-                                if (databaseType instanceof PLSQLCollection) {
-                                    dq.addArgument(arg.getName(), Array.class);
-                                }
-                                else if (databaseType instanceof PLSQLrecord) {
-                                    dq.addArgument(arg.getName(), Struct.class);
-                                }
-                                else {
-                                    dq.addArgument(arg.getName(),
-                                        JDBCTypes.getClassForCode(databaseType.getConversionCode()));
-                                }
-                            }
-                        }
-                    }
-                    orProject.getQueries().add(dq);
                 }
             }
         }
@@ -958,6 +850,167 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         oxProject.setLogin(xmlLogin);
     }
 
+    @SuppressWarnings("unchecked")
+    protected void buildOROXProjectsForAdvancedPLSQLProcedure(ProcedureOperationModel procOpModel) {
+        /*
+         * Walk-thru sqlType, building PLSQLCollection/PLSQLrecord helper objects,
+         * ObjectRelationalDataTypeDescriptors and mappings, XMLDescriptors and mappings
+         */
+        PLSQLHelperObjectsBuilder helperObjectsBuilder = new PLSQLHelperObjectsBuilder();
+        PLSQLORDescriptorBuilder orDescriptorBuilder = new PLSQLORDescriptorBuilder();
+        PLSQLOXDescriptorBuilder oxDescriptorBuilder = new PLSQLOXDescriptorBuilder(getTargetNamespace());
+        PublisherListenerChainAdapter chain = new PublisherListenerChainAdapter();
+        chain.addListener(helperObjectsBuilder);
+        chain.addListener(orDescriptorBuilder);
+        chain.addListener(oxDescriptorBuilder);
+        PublisherWalker walker = new PublisherWalker(chain);
+        procOpModel.getJPubType().accept(walker);
+        if (orDescriptorBuilder.getDescriptors() != null) {
+            for (ObjectRelationalDataTypeDescriptor ordtDescriptor : orDescriptorBuilder.getDescriptors()) {
+                orProject.addDescriptor(ordtDescriptor);
+            }
+        }
+        if (oxDescriptorBuilder.getDescriptors() != null) {
+            for (XMLDescriptor xdesc : oxDescriptorBuilder.getDescriptors()) {
+                oxProject.addDescriptor(xdesc);
+            }
+        }
+        for (DbStoredProcedure storedProcedure : dbStoredProcedures) {
+            boolean isPLSQLStoredProc = false; 
+            for (DbStoredArgument arg : storedProcedure.getArguments()) {
+                if (arg.isPLSQLArgument()) {
+                    isPLSQLStoredProc = true;
+                    break;
+                }
+            }
+            if (isPLSQLStoredProc) {
+                PLSQLStoredProcedureCall call = new PLSQLStoredProcedureCall();
+                String catalogPrefix = null;
+                String cat = storedProcedure.getCatalog();
+                if (cat == null | cat.length() == 0) {
+                    catalogPrefix = "";
+                }
+                else {
+                    catalogPrefix = cat + ".";
+                }
+                call.setProcedureName(catalogPrefix + storedProcedure.getName());
+                DatabaseQuery dq = null;
+                DbStoredProcedureNameAndModel nameAndModel = 
+                    dbStoredProcedure2QueryName.get(storedProcedure);
+                String returnType = nameAndModel.procOpModel.getReturnType();
+                boolean hasResponse = returnType != null;
+                String typ = null;
+                ClassDescriptor xdesc = null;
+                if (hasResponse) {
+                    int idx = 0;
+                    int colonIdx = returnType.indexOf(":");
+                    if (colonIdx == -1) {
+                        idx = returnType.indexOf("}");
+                    }
+                    else {
+                        idx = colonIdx;
+                    }
+                    if (idx > 0) {
+                        typ = returnType.substring(idx+1);
+                        for (XMLDescriptor xd : (Vector<XMLDescriptor>)oxProject.getOrderedDescriptors()) {
+                            if (xd.getSchemaReference() != null) {
+                                String context = xd.getSchemaReference().getSchemaContext();
+                                if (context.substring(1).equals(typ)) {
+                                    xdesc = xd;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+                if (hasResponse) {
+                    if (nameAndModel.procOpModel.isCollection) {
+                        dq = new DataReadQuery();
+                    }
+                    else {
+                        dq = new ValueReadQuery();
+                    }
+                }
+                else {
+                    dq = new DataModifyQuery();
+                }
+                dq.bindAllParameters();
+                dq.setName(nameAndModel.name);
+                dq.setCall(call);
+                DatabaseType[] typesForMethod = 
+                    helperObjectsBuilder.getTypesForMethod(storedProcedure.getName());
+                for (int i = 0, len = typesForMethod.length; i < len; i++) {
+                    DbStoredArgument arg = storedProcedure.getArguments().get(i);
+                    DatabaseType databaseType = typesForMethod[i];
+                    InOut direction = arg.getInOut();
+                    if (direction == OUT) {
+                        call.addNamedOutputArgument(arg.getName(), databaseType);
+                    }
+                    else if (direction == IN) {
+                        call.addNamedArgument(arg.getName(), databaseType);
+                    }
+                    else {
+                        call.addNamedInOutputArgument(arg.getName(), databaseType);
+                    }
+                    if (direction == IN | direction == INOUT) {
+                        if (xdesc != null) {
+                            dq.addArgumentByTypeName(arg.getName(), xdesc.getJavaClassName());
+                        }
+                        else {
+                            if (databaseType instanceof PLSQLCollection) {
+                                dq.addArgument(arg.getName(), Array.class);
+                            }
+                            else if (databaseType instanceof PLSQLrecord) {
+                                dq.addArgument(arg.getName(), Struct.class);
+                            }
+                            else {
+                                dq.addArgument(arg.getName(),
+                                    JDBCTypes.getClassForCode(databaseType.getConversionCode()));
+                            }
+                        }
+                    }
+                }
+                orProject.getQueries().add(dq);
+            }
+        }    
+    }
+    
+    protected void buildOROXProjectsForAdvancedProcedure(ProcedureOperationModel procOpModel,
+        NamingConventionTransformer nct) {
+        // bug 271679 Advanced JDBC types (table, object, array)
+        
+        /*
+         * Walk-thru sqlType, building ObjectRelationalDataTypeDescriptors (and mappings),
+         * XMLDescriptors (and mappings) and DatabaseQuery's 
+         */
+        AdvancedJDBCQueryBuilder queryBuilder = 
+            new AdvancedJDBCQueryBuilder(dbStoredProcedures, dbStoredProcedure2QueryName);
+        AdvancedJDBCORDescriptorBuilder orDescriptorBuilder = new AdvancedJDBCORDescriptorBuilder();
+        AdvancedJDBCOXDescriptorBuilder oxDescriptorBuilder =
+            new AdvancedJDBCOXDescriptorBuilder(getTargetNamespace(), nct);
+        PublisherListenerChainAdapter chain = new PublisherListenerChainAdapter();
+        chain.addListener(queryBuilder);
+        chain.addListener(orDescriptorBuilder);
+        chain.addListener(oxDescriptorBuilder);
+        PublisherWalker walker = new PublisherWalker(chain);
+        procOpModel.getJPubType().accept(walker);
+        if (orDescriptorBuilder.getDescriptors() != null) {
+            for (ObjectRelationalDataTypeDescriptor ordtDescriptor : orDescriptorBuilder.getDescriptors()) {
+                orProject.addDescriptor(ordtDescriptor);
+            }
+        }
+        if (oxDescriptorBuilder.getDescriptors() != null) {
+            for (XMLDescriptor xdesc : oxDescriptorBuilder.getDescriptors()) {
+                oxProject.addDescriptor(xdesc);
+            }
+        }
+        List<DatabaseQuery> newQueries = queryBuilder.getQueries();
+        if (newQueries != null) {
+            orProject.getQueries().addAll(newQueries);
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
     protected void writeOROXProjects(OutputStream dbwsOrStream, OutputStream dbwsOxStream) {
         boolean writeORProject = false;
         if (dbTables.size() > 0) {
@@ -973,6 +1026,18 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                 }
                 if (writeORProject) {
                     break;
+                }
+            }
+            if (!writeORProject) {
+                // check for ObjectRelationalDataTypeDescriptor's - Advanced JDBC object/varray types
+                if (orProject.getDescriptors().size() > 0) {
+                    Collection<ClassDescriptor> descriptors = orProject.getDescriptors().values();
+                    for (ClassDescriptor desc : descriptors) {
+                        if (desc.isObjectRelationalDataTypeDescriptor()) {
+                            writeORProject = true;
+                            break;
+                        }
+                    }
                 }
             }
         }
@@ -1263,6 +1328,9 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         }
     }
 
+    //TODO - refactor common stuff in buildXXXConfig
+    
+    @SuppressWarnings("unchecked")
     protected ProjectConfig buildORProjectConfig() {
         ProjectConfig orProjectConfig = null;
         boolean useProjectXML = false;
@@ -1281,7 +1349,19 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                     break;
                 }
             }
-        }
+            if (!useProjectXML) {
+                // check for ObjectRelationalDataTypeDescriptor's - Advanced JDBC object/varray types
+                if (orProject.getDescriptors().size() > 0) {
+                    Collection<ClassDescriptor> descriptors = orProject.getDescriptors().values();
+                    for (ClassDescriptor desc : descriptors) {
+                        if (desc.isObjectRelationalDataTypeDescriptor()) {
+                            useProjectXML = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }        
         if (useProjectXML) {
             orProjectConfig = new ProjectXMLConfig();
             String pathPrefix = packager.getOrProjectPathPrefix();
@@ -1295,6 +1375,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         return orProjectConfig;
     }
 
+    @SuppressWarnings("unchecked")
     protected ProjectConfig buildOXProjectConfig() {
         ProjectConfig oxProjectConfig = null;
         boolean useProjectXML = false;
@@ -1311,6 +1392,18 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                 }
                 if (useProjectXML) {
                     break;
+                }
+            }
+            if (!useProjectXML) {
+                // check for ObjectRelationalDataTypeDescriptor's - Advanced JDBC object/varray types
+                if (orProject.getDescriptors().size() > 0) {
+                    Collection<ClassDescriptor> descriptors = orProject.getDescriptors().values();
+                    for (ClassDescriptor desc : descriptors) {
+                        if (desc.isObjectRelationalDataTypeDescriptor()) {
+                            useProjectXML = true;
+                            break;
+                        }
+                    }
                 }
             }
         }
@@ -1404,7 +1497,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                 conn = DriverManager.getConnection(getUrl(), props);
             }
             catch (Exception e) {
-                logMessage(SEVERE, "cannot load JDBC driver " + driverClassName, e);
+                logMessage(SEVERE, "JDBC driver error" + driverClassName, e);
             }
         }
         return conn;
@@ -1587,14 +1680,9 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         return false;
     }
 
-    public SqlType getSqlType() {
-        return sqlType;
-    }
-    public void setSqlType(SqlType sqlType) {
-        this.sqlType = sqlType;
-    }
-
-    protected void buildDbStoredProcedure2QueryNameMap(List<DbStoredProcedure> dbStoredProcedures,
+    public static void buildDbStoredProcedure2QueryNameMap(
+        Map<DbStoredProcedure, DbStoredProcedureNameAndModel> dbStoredProcedure2QueryName,
+        List<DbStoredProcedure> dbStoredProcedures,
         ArrayList<OperationModel> operations, boolean isOracle) {
         for (OperationModel opModel : operations) {
             if (opModel.isProcedureOperation()) {
@@ -1656,9 +1744,9 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
             }
         }
     }
-    class DbStoredProcedureNameAndModel {
-        String name;
-        ProcedureOperationModel procOpModel;
+    public static class DbStoredProcedureNameAndModel {
+        public String name;
+        public ProcedureOperationModel procOpModel;
         DbStoredProcedureNameAndModel(String name, ProcedureOperationModel procOpModel) {
             this.name = name;
             this.procOpModel = procOpModel;

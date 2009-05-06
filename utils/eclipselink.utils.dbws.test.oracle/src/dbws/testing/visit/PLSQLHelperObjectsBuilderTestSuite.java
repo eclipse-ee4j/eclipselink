@@ -15,6 +15,7 @@ import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLCollection;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLargument;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLrecord;
 import org.eclipse.persistence.platform.database.oracle.publisher.visit.PublisherWalker;
+import org.eclipse.persistence.tools.dbws.PLSQLProcedureOperationModel;
 import org.eclipse.persistence.tools.dbws.oracle.OracleHelper;
 import org.eclipse.persistence.tools.dbws.oracle.PLSQLHelperObjectsBuilder;
 import static org.eclipse.persistence.platform.database.jdbc.JDBCTypes.NUMERIC_TYPE;
@@ -43,11 +44,14 @@ public class PLSQLHelperObjectsBuilderTestSuite extends BuilderTestSuite {
     
     @Test
     public void p1Test() {
-        OracleHelper.buildStoredProcedure(conn, username, ora11Platform, PACKAGE_NAME,
-            username.toUpperCase(), PROC1, builder);
+        PLSQLProcedureOperationModel pModel = new PLSQLProcedureOperationModel();
+        pModel.setCatalogPattern(PACKAGE_NAME);
+        pModel.setSchemaPattern(username.toUpperCase());
+        pModel.setProcedurePattern(PROC1);
+        OracleHelper.buildStoredProcedure(conn, username, ora11Platform, pModel);
         PLSQLHelperObjectsBuilder helperObjectsBuilder = new PLSQLHelperObjectsBuilder();
         PublisherWalker walker = new PublisherWalker(helperObjectsBuilder);
-        builder.getSqlType().accept(walker);
+        pModel.getJPubType().accept(walker);
         DatabaseType[] typesForMethod = helperObjectsBuilder.getTypesForMethod(PROC1.toUpperCase());
         assertTrue("incorrect number of types returned for procedure " + PROC1,
             typesForMethod.length == 2);
@@ -71,11 +75,14 @@ public class PLSQLHelperObjectsBuilderTestSuite extends BuilderTestSuite {
 
     @Test
     public void p2Test() {
-        OracleHelper.buildStoredProcedure(conn, username, ora11Platform, PACKAGE_NAME,
-            username.toUpperCase(), PROC2, builder);
+        PLSQLProcedureOperationModel pModel = new PLSQLProcedureOperationModel();
+        pModel.setCatalogPattern(PACKAGE_NAME);
+        pModel.setSchemaPattern(username.toUpperCase());
+        pModel.setProcedurePattern(PROC2);
+        OracleHelper.buildStoredProcedure(conn, username, ora11Platform, pModel);
         PLSQLHelperObjectsBuilder helperObjectsBuilder = new PLSQLHelperObjectsBuilder();
         PublisherWalker walker = new PublisherWalker(helperObjectsBuilder);
-        builder.getSqlType().accept(walker);
+        pModel.getJPubType().accept(walker);
         DatabaseType[] typesForMethod = helperObjectsBuilder.getTypesForMethod(PROC2.toUpperCase());
         assertTrue("incorrect number of types returned for procedure " + PROC2,
             typesForMethod.length == 2);
@@ -99,11 +106,14 @@ public class PLSQLHelperObjectsBuilderTestSuite extends BuilderTestSuite {
 
     @Test
     public void p3Test() {
-        OracleHelper.buildStoredProcedure(conn, username, ora11Platform, PACKAGE_NAME,
-            username.toUpperCase(), PROC3, builder);
+        PLSQLProcedureOperationModel pModel = new PLSQLProcedureOperationModel();
+        pModel.setCatalogPattern(PACKAGE_NAME);
+        pModel.setSchemaPattern(username.toUpperCase());
+        pModel.setProcedurePattern(PROC3);
+        OracleHelper.buildStoredProcedure(conn, username, ora11Platform, pModel);
         PLSQLHelperObjectsBuilder helperObjectsBuilder = new PLSQLHelperObjectsBuilder();
         PublisherWalker walker = new PublisherWalker(helperObjectsBuilder);
-        builder.getSqlType().accept(walker);
+        pModel.getJPubType().accept(walker);
         DatabaseType[] typesForMethod = helperObjectsBuilder.getTypesForMethod(PROC3.toUpperCase());
         assertTrue("incorrect number of types returned for procedure " + PROC3,
             typesForMethod.length == 1);
@@ -141,11 +151,14 @@ public class PLSQLHelperObjectsBuilderTestSuite extends BuilderTestSuite {
 
     @Test
     public void p4Test() {
-        OracleHelper.buildStoredProcedure(conn, username, ora11Platform, PACKAGE_NAME,
-            username.toUpperCase(), PROC4, builder);
+        PLSQLProcedureOperationModel pModel = new PLSQLProcedureOperationModel();
+        pModel.setCatalogPattern(PACKAGE_NAME);
+        pModel.setSchemaPattern(username.toUpperCase());
+        pModel.setProcedurePattern(PROC4);
+        OracleHelper.buildStoredProcedure(conn, username, ora11Platform, pModel);
         PLSQLHelperObjectsBuilder helperObjectsBuilder = new PLSQLHelperObjectsBuilder();
         PublisherWalker walker = new PublisherWalker(helperObjectsBuilder);
-        builder.getSqlType().accept(walker);
+        pModel.getJPubType().accept(walker);
         DatabaseType[] typesForMethod = helperObjectsBuilder.getTypesForMethod(PROC4.toUpperCase());
         assertTrue("incorrect number of types returned for procedure " + PROC4,
             typesForMethod.length == 1);
@@ -154,11 +167,14 @@ public class PLSQLHelperObjectsBuilderTestSuite extends BuilderTestSuite {
 
     @Test
     public void p5Test() {
-        OracleHelper.buildStoredProcedure(conn, username, ora11Platform, PACKAGE_NAME,
-            username.toUpperCase(), PROC5, builder);
+        PLSQLProcedureOperationModel pModel = new PLSQLProcedureOperationModel();
+        pModel.setCatalogPattern(PACKAGE_NAME);
+        pModel.setSchemaPattern(username.toUpperCase());
+        pModel.setProcedurePattern(PROC5);
+        OracleHelper.buildStoredProcedure(conn, username, ora11Platform, pModel);
         PLSQLHelperObjectsBuilder helperObjectsBuilder = new PLSQLHelperObjectsBuilder();
         PublisherWalker walker = new PublisherWalker(helperObjectsBuilder);
-        builder.getSqlType().accept(walker);
+        pModel.getJPubType().accept(walker);
         DatabaseType[] typesForMethod = helperObjectsBuilder.getTypesForMethod(PROC5.toUpperCase());
         assertTrue("incorrect number of types returned for procedure " + PROC5,
             typesForMethod.length == 2);
@@ -171,11 +187,14 @@ public class PLSQLHelperObjectsBuilderTestSuite extends BuilderTestSuite {
 
     @Test
     public void p6Test() {
-        OracleHelper.buildStoredProcedure(conn, username, ora11Platform, PACKAGE_NAME,
-            username.toUpperCase(), PROC6, builder);
+        PLSQLProcedureOperationModel pModel = new PLSQLProcedureOperationModel();
+        pModel.setCatalogPattern(PACKAGE_NAME);
+        pModel.setSchemaPattern(username.toUpperCase());
+        pModel.setProcedurePattern(PROC6);
+        OracleHelper.buildStoredProcedure(conn, username, ora11Platform, pModel);
         PLSQLHelperObjectsBuilder helperObjectsBuilder = new PLSQLHelperObjectsBuilder();
         PublisherWalker walker = new PublisherWalker(helperObjectsBuilder);
-        builder.getSqlType().accept(walker);
+        pModel.getJPubType().accept(walker);
         DatabaseType[] typesForMethod = helperObjectsBuilder.getTypesForMethod(PROC6.toUpperCase());
         assertTrue("incorrect number of types returned for procedure " + PROC6,
             typesForMethod.length == 1);

@@ -14,23 +14,30 @@
 package dbws.testing.visit;
 
 //javase imports
+import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
-//Java extension imports
+//java eXtension imports
 
 //JUnit imports
 import static org.junit.Assert.fail;
 import org.junit.BeforeClass;
 
 //EclipseLink imports
+import org.eclipse.persistence.internal.descriptors.TransformerBasedFieldTransformation;
+import org.eclipse.persistence.internal.sessions.factories.EclipseLinkObjectPersistenceRuntimeXMLProject;
+import org.eclipse.persistence.internal.sessions.factories.ObjectPersistenceWorkbenchXMLProject;
+import org.eclipse.persistence.mappings.transformers.ConstantTransformer;
+import org.eclipse.persistence.oxm.mappings.XMLTransformationMapping;
 import org.eclipse.persistence.platform.database.oracle.Oracle11Platform;
 import org.eclipse.persistence.platform.xml.XMLComparer;
 import org.eclipse.persistence.platform.xml.XMLParser;
 import org.eclipse.persistence.platform.xml.XMLPlatform;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
+import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.tools.dbws.DBWSBuilder;
 
 // domain-specific (testing) imports
@@ -40,6 +47,9 @@ import static dbws.testing.visit.WebServiceTestSuite.DATABASE_USERNAME_KEY;
 import static dbws.testing.visit.WebServiceTestSuite.DEFAULT_DATABASE_DRIVER;
 
 public class BuilderTestSuite {
+    
+    public static final String CONSTANT_PROJECT_BUILD_VERSION = 
+        "Eclipse Persistence Services - some version (some build date)";
 
     // JUnit test fixtures
     public static Connection conn;
@@ -51,9 +61,12 @@ public class BuilderTestSuite {
     public static XMLComparer comparer = new XMLComparer();
     public static XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
     public static XMLParser xmlParser = xmlPlatform.newXMLParser();
+    public static ObjectPersistenceWorkbenchXMLProject writeObjectPersistenceProject;
+    public static EclipseLinkObjectPersistenceRuntimeXMLProject readObjectPersistenceProject;
 
     @BeforeClass
-    public static void setUp() throws ClassNotFoundException, SQLException {
+    public static void setUp() throws ClassNotFoundException, SQLException, SecurityException,
+        NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
         username = System.getProperty(DATABASE_USERNAME_KEY);
         if (username == null) {
             fail("error retrieving database username");
@@ -72,5 +85,30 @@ public class BuilderTestSuite {
         props.put("user", username);
         props.put("password", password);
         conn = DriverManager.getConnection(url, props);
+        
+        writeObjectPersistenceProject = new ObjectPersistenceWorkbenchXMLProject();
+        XMLTransformationMapping versionMapping = 
+            (XMLTransformationMapping)writeObjectPersistenceProject.getDescriptor(Project.class).
+                getMappings().firstElement();
+        TransformerBasedFieldTransformation  versionTransformer = 
+            (TransformerBasedFieldTransformation)versionMapping.getFieldTransformations().
+                firstElement();
+        Field transformerField =
+            TransformerBasedFieldTransformation.class.getDeclaredField("transformer");
+        transformerField.setAccessible(true);
+        ConstantTransformer constantTransformer = 
+            (ConstantTransformer)transformerField.get(versionTransformer);
+        constantTransformer.setValue(CONSTANT_PROJECT_BUILD_VERSION);
+        
+        readObjectPersistenceProject = new EclipseLinkObjectPersistenceRuntimeXMLProject();
+        versionMapping = (XMLTransformationMapping)writeObjectPersistenceProject.getDescriptor(
+            Project.class).getMappings().firstElement();
+        versionTransformer = (TransformerBasedFieldTransformation)versionMapping.
+            getFieldTransformations().firstElement();
+        transformerField = TransformerBasedFieldTransformation.class.getDeclaredField("transformer");
+        transformerField.setAccessible(true);
+        constantTransformer = (ConstantTransformer)transformerField.get(versionTransformer);
+        constantTransformer.setValue(CONSTANT_PROJECT_BUILD_VERSION);
     }
+
 }

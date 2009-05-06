@@ -16,6 +16,7 @@ import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.platform.database.oracle.publisher.visit.PublisherWalker;
+import org.eclipse.persistence.tools.dbws.PLSQLProcedureOperationModel;
 import org.eclipse.persistence.tools.dbws.oracle.OracleHelper;
 import org.eclipse.persistence.tools.dbws.oracle.PLSQLOXDescriptorBuilder;
 
@@ -44,11 +45,14 @@ public class OXDescriptorBuilderTestSuite extends BuilderTestSuite {
 
     @Test
     public void p1test() {
-        OracleHelper.buildStoredProcedure(conn, username, ora11Platform, PACKAGE_NAME,
-            username.toUpperCase(), PROC1, builder);
+        PLSQLProcedureOperationModel pModel = new PLSQLProcedureOperationModel();
+        pModel.setCatalogPattern(PACKAGE_NAME);
+        pModel.setSchemaPattern(username.toUpperCase());
+        pModel.setProcedurePattern(PROC1);
+        OracleHelper.buildStoredProcedure(conn, username, ora11Platform, pModel);
         PLSQLOXDescriptorBuilder oxDescriptorBuilder = new PLSQLOXDescriptorBuilder("urn:test");
         PublisherWalker walker = new PublisherWalker(oxDescriptorBuilder);
-        builder.getSqlType().accept(walker);
+        pModel.getJPubType().accept(walker);
         List<XMLDescriptor> descriptors = oxDescriptorBuilder.getDescriptors();
         assertTrue("wrong number of descriptors for " + PROC1, descriptors.size() == 1);
         tbl1Asserts(descriptors.get(0));
@@ -74,11 +78,14 @@ public class OXDescriptorBuilderTestSuite extends BuilderTestSuite {
 
     @Test
     public void p2test() {
-        OracleHelper.buildStoredProcedure(conn, username, ora11Platform, PACKAGE_NAME,
-            username.toUpperCase(), PROC2, builder);
+        PLSQLProcedureOperationModel pModel = new PLSQLProcedureOperationModel();
+        pModel.setCatalogPattern(PACKAGE_NAME);
+        pModel.setSchemaPattern(username.toUpperCase());
+        pModel.setProcedurePattern(PROC2);
+        OracleHelper.buildStoredProcedure(conn, username, ora11Platform, pModel);
         PLSQLOXDescriptorBuilder oxDescriptorBuilder = new PLSQLOXDescriptorBuilder("urn:test");
         PublisherWalker walker = new PublisherWalker(oxDescriptorBuilder);
-        builder.getSqlType().accept(walker);
+        pModel.getJPubType().accept(walker);
         List<XMLDescriptor> descriptors = oxDescriptorBuilder.getDescriptors();
         assertTrue("wrong number of descriptors for " + PROC2, descriptors.size() == 1);
         tbl2Asserts(descriptors.get(0));
@@ -104,11 +111,14 @@ public class OXDescriptorBuilderTestSuite extends BuilderTestSuite {
 
     @Test
     public void p3test() {
-        OracleHelper.buildStoredProcedure(conn, username, ora11Platform, PACKAGE_NAME,
-            username.toUpperCase(), PROC3, builder);
+        PLSQLProcedureOperationModel pModel = new PLSQLProcedureOperationModel();
+        pModel.setCatalogPattern(PACKAGE_NAME);
+        pModel.setSchemaPattern(username.toUpperCase());
+        pModel.setProcedurePattern(PROC3);
+        OracleHelper.buildStoredProcedure(conn, username, ora11Platform, pModel);
         PLSQLOXDescriptorBuilder oxDescriptorBuilder = new PLSQLOXDescriptorBuilder("urn:test");
         PublisherWalker walker = new PublisherWalker(oxDescriptorBuilder);
-        builder.getSqlType().accept(walker);
+        pModel.getJPubType().accept(walker);
         List<XMLDescriptor> descriptors = oxDescriptorBuilder.getDescriptors();
         assertTrue("wrong number of descriptors for " + PROC3, descriptors.size() == 4);
         tbl3Asserts(descriptors.get(3));
@@ -168,11 +178,14 @@ public class OXDescriptorBuilderTestSuite extends BuilderTestSuite {
 
     @Test
     public void p4test() {
-        OracleHelper.buildStoredProcedure(conn, username, ora11Platform, PACKAGE_NAME,
-            username.toUpperCase(), PROC4, builder);
+        PLSQLProcedureOperationModel pModel = new PLSQLProcedureOperationModel();
+        pModel.setCatalogPattern(PACKAGE_NAME);
+        pModel.setSchemaPattern(username.toUpperCase());
+        pModel.setProcedurePattern(PROC4);
+        OracleHelper.buildStoredProcedure(conn, username, ora11Platform, pModel);
         PLSQLOXDescriptorBuilder oxDescriptorBuilder = new PLSQLOXDescriptorBuilder("urn:test");
         PublisherWalker walker = new PublisherWalker(oxDescriptorBuilder);
-        builder.getSqlType().accept(walker);
+        pModel.getJPubType().accept(walker);
         List<XMLDescriptor> descriptors = oxDescriptorBuilder.getDescriptors();
         assertTrue("wrong number of descriptors for " + PROC4, descriptors.size() == 3);
         aRecordAsserts(descriptors.get(0));
@@ -182,11 +195,14 @@ public class OXDescriptorBuilderTestSuite extends BuilderTestSuite {
 
     @Test
     public void p5test() {
-        OracleHelper.buildStoredProcedure(conn, username, ora11Platform, PACKAGE_NAME,
-            username.toUpperCase(), PROC5, builder);
+        PLSQLProcedureOperationModel pModel = new PLSQLProcedureOperationModel();
+        pModel.setCatalogPattern(PACKAGE_NAME);
+        pModel.setSchemaPattern(username.toUpperCase());
+        pModel.setProcedurePattern(PROC5);
+        OracleHelper.buildStoredProcedure(conn, username, ora11Platform, pModel);
         PLSQLOXDescriptorBuilder oxDescriptorBuilder = new PLSQLOXDescriptorBuilder("urn:test");
         PublisherWalker walker = new PublisherWalker(oxDescriptorBuilder);
-        builder.getSqlType().accept(walker);
+        pModel.getJPubType().accept(walker);
         List<XMLDescriptor> descriptors = oxDescriptorBuilder.getDescriptors();
         assertTrue("wrong number of descriptors for " + PROC5, descriptors.size() == 3);
         aRecordAsserts(descriptors.get(0));
@@ -196,11 +212,14 @@ public class OXDescriptorBuilderTestSuite extends BuilderTestSuite {
 
     @Test
     public void p6test() {
-        OracleHelper.buildStoredProcedure(conn, username, ora11Platform, PACKAGE_NAME,
-            username.toUpperCase(), PROC6, builder);
+        PLSQLProcedureOperationModel pModel = new PLSQLProcedureOperationModel();
+        pModel.setCatalogPattern(PACKAGE_NAME);
+        pModel.setSchemaPattern(username.toUpperCase());
+        pModel.setProcedurePattern(PROC6);
+        OracleHelper.buildStoredProcedure(conn, username, ora11Platform, pModel);
         PLSQLOXDescriptorBuilder oxDescriptorBuilder = new PLSQLOXDescriptorBuilder("urn:test");
         PublisherWalker walker = new PublisherWalker(oxDescriptorBuilder);
-        builder.getSqlType().accept(walker);
+        pModel.getJPubType().accept(walker);
         List<XMLDescriptor> descriptors = oxDescriptorBuilder.getDescriptors();
         assertTrue("wrong number of descriptors for " + PROC6, descriptors.size() == 2);
         tbl2Asserts(descriptors.get(0));

@@ -74,7 +74,7 @@ public class OperationModel {
         }
     }
 
-    public boolean getIsCollection() {
+    public boolean isCollection() {
         return isCollection;
     }
     public void setIsCollection(boolean isCollection) {

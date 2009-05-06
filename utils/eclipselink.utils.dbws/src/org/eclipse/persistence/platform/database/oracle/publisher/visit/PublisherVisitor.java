@@ -16,8 +16,10 @@ package org.eclipse.persistence.platform.database.oracle.publisher.visit;
 import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.ProcedureMethod;
 import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.PlsqlRecordType;
 import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.PlsqlTableType;
+import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.SqlArrayType;
 import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.SqlObjectType;
 import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.SqlPackageType;
+import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.SqlTableType;
 import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.SqlToplevelType;
 
 public interface PublisherVisitor {
@@ -25,6 +27,10 @@ public interface PublisherVisitor {
     public void visit(ProcedureMethod method);
 
     public void visit(SqlObjectType sqlObjectType);
+
+    public void visit(SqlArrayType sqlArrayType);
+
+    public void visit(SqlTableType sqlTableType);
 
     public void visit(SqlPackageType sqlPackageType);
 

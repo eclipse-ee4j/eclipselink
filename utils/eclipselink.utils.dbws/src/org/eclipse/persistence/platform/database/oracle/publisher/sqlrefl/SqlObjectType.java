@@ -48,6 +48,14 @@ public class SqlObjectType extends SqlTypeWithMethods {
         m_methods = new ProcedureMethod[]{};
     }
 
+    /**
+     * Determines if this Type represents an object type.
+     * <p/>
+     */
+    public boolean isObject() {
+        return true;
+    }
+    
     public void setFields(AttributeField[] fields) {
         m_fields = fields;
         m_fieldsPublishedOnly = fields;

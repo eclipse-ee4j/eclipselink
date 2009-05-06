@@ -12,6 +12,9 @@
  ******************************************************************************/
 package org.eclipse.persistence.platform.database.oracle.publisher.visit;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class PublisherDefaultListener implements PublisherListener {
 
     public void beginPackage(String packageName) {
@@ -44,10 +47,19 @@ public class PublisherDefaultListener implements PublisherListener {
     public void endMethod(String methodName) {
     }
 
-    public void handleObjectType(String objectTypeName, String targetTypeName) {
+    public void handleObjectType(String objectTypeName, String targetTypeName, int numAttributes) { 
+    }
+    
+    public void handleSqlType(String sqlTypeName, int typecode, String targetTypeName) {
     }
 
-    public void handleSqlType(String sqlTypeName, int typecode, String targetTypeName) {
+    public void handleSqlArrayType(String name, String targetTypeName) {
+    }
+
+    public void handleSqlTableType(String tableTypeName, String targetTypeName) {        
+    }
+
+    public void handleAttributeField(String attributeFieldName) {
     }
 
     public static interface ListenerHelper {
@@ -55,6 +67,11 @@ public class PublisherDefaultListener implements PublisherListener {
         public boolean isComplex();
         public boolean isTable();
         public boolean isRecord();
+        public boolean isObject();
+        public boolean isAttribute();
+        public boolean isMethod();
+        public boolean isMethodArg();
+        public boolean isReturnArg();
     }
 
     public static class DefaultListenerHelper implements ListenerHelper {
@@ -74,9 +91,24 @@ public class PublisherDefaultListener implements PublisherListener {
         public boolean isRecord() {
             return false;
         }
+        public boolean isObject() {
+            return false;
+        }
+        public boolean isAttribute() {
+            return false;
+        }
+        public boolean isMethod() {
+            return false;
+        }
+        public boolean isMethodArg() {
+            return false;
+        }
+        public boolean isReturnArg() {
+            return false;
+        }
     }
     
-    public static final class SqltypeHelper extends DefaultListenerHelper {
+    public static class SqltypeHelper extends DefaultListenerHelper {
         protected String sqlTypeName;
         public SqltypeHelper(String sqlTypeName) {
             super(null);
@@ -85,20 +117,32 @@ public class PublisherDefaultListener implements PublisherListener {
         public String sqlTypeName() {
             return sqlTypeName;
         }
+        public void setSqlTypeName(String sqlTypeName) {
+            this.sqlTypeName = sqlTypeName;
+        }
         @Override
         public String toString() {
             return "{" + sqlTypeName + "}";
         }
     }
     
-    public static final class ObjectTypeHelper extends DefaultListenerHelper {
+    public static class ObjectTypeHelper extends DefaultListenerHelper {
         protected String objectTypename;
-        public ObjectTypeHelper(String objectTypename, String targetTypeName) {
+        protected int numAttributes;
+        public ObjectTypeHelper(String objectTypename, String targetTypeName, int numAttributes) {
             super(targetTypeName);
             this.objectTypename = objectTypename;
+            this.numAttributes = numAttributes;
         }
         public String objectTypename() {
             return objectTypename;
+        }
+        public int numAttributes() {
+            return numAttributes;
+        }
+        @Override
+        public boolean isObject() {
+            return true;
         }
         @Override
         public String toString() {
@@ -110,9 +154,12 @@ public class PublisherDefaultListener implements PublisherListener {
             sb.append("}");
             return sb.toString();
         }
+        public int decrNumAttributes() {
+            return --numAttributes;
+        }
     }
     
-    public static final class TableHelper extends DefaultListenerHelper {
+    public static class TableHelper extends DefaultListenerHelper {
         protected String tableName;
         protected String tableAlias;
         protected boolean nestedIsComplex = false;
@@ -154,7 +201,7 @@ public class PublisherDefaultListener implements PublisherListener {
         }
     }
     
-    public static final class RecordHelper extends DefaultListenerHelper {
+    public static class RecordHelper extends DefaultListenerHelper {
         protected String recordName;
         protected int numFields;
         public RecordHelper(String recordName, String targetTypeName, int numFields) {
@@ -185,6 +232,157 @@ public class PublisherDefaultListener implements PublisherListener {
             sb.append(targetTypeName);
             sb.append("}");
             return sb.toString();
+        }
+    }
+
+    public static class AttributeFieldHelper extends SqltypeHelper {
+        String attributeFieldName;
+        public AttributeFieldHelper(String attributeFieldName, String sqlTypeName) {
+            super(sqlTypeName);
+            this.attributeFieldName = attributeFieldName;
+        }
+        public String attributeFieldName() {
+            return attributeFieldName;
+        }
+        @Override
+        public boolean isAttribute() {
+            return true;
+        }
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            sb.append("{");
+            sb.append(attributeFieldName);
+            sb.append(":");
+            sb.append(sqlTypeName);
+            sb.append("}");
+            return sb.toString();
+        }
+    }
+
+    public static class MethodHelper extends DefaultListenerHelper {
+        int numArgs;
+        boolean isFunc;
+        List<MethodArgHelper> args;
+        public MethodHelper(String methodName, int numArgs) {
+            super(methodName);
+            this.numArgs = numArgs;
+            args = new ArrayList<MethodArgHelper>(numArgs+1);
+        }
+        public String methodName() {
+            return targetTypeName;
+        }
+        public int numArgs() {
+            return numArgs;
+        }
+        public boolean isFunc() {
+            return isFunc;
+        }
+        public void setFunc(boolean isFunc) {
+            this.isFunc = isFunc;
+        }
+        public List<MethodArgHelper> args() {
+            return args;
+        }
+        @Override
+        public boolean isMethod() {
+            return true;
+        }
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            int idx = 0;
+            int len = args.size();
+            if (isFunc) {
+                if (len > 0) {
+                    idx++;
+                }
+                sb.append("function ");
+            }
+            else {
+                sb.append("procedure ");
+            }
+            sb.append(targetTypeName);
+            sb.append("(");
+            for (int i = idx; i < len; i++) {
+                sb.append(args.get(i));
+                if (i < len -1) {
+                    sb.append(", ");
+                }
+            }
+            sb.append(")");
+            if (isFunc) {
+                sb.append(" returns ");
+                if (len > 0) {
+                    MethodArgHelper returnArg = args.get(0);
+                    sb.append(returnArg.sqlTypeName());
+                    if (returnArg.isComplex) {
+                        sb.append("{C}");
+                    }
+                }
+            }
+            return sb.toString();
+        }
+    }
+
+    public static class MethodArgHelper extends SqltypeHelper {
+        String argName;
+        String direction = null;
+        boolean isComplex = false;
+        public MethodArgHelper(String argName, String sqlTypeName) {
+            super(sqlTypeName);
+            this.argName = argName;
+        }
+        public String argName() {
+            return argName;
+        }
+        public void setDirection(String direction) {
+            this.direction = direction;
+        }
+        public String direction() {
+            return direction;
+        }
+        @Override
+        public boolean isComplex() {
+            return isComplex;
+        }
+        public void setIsComplex(boolean isComplex) {
+            this.isComplex = isComplex;
+        }
+        @Override
+        public boolean isMethodArg() {
+            return true;
+        }
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            if (argName != null && argName.length() > 0) {
+                sb.append(argName);
+            }
+            sb.append(" ");
+            if (direction != null) {
+                sb.append(direction);
+                sb.append(" ");
+            }
+            sb.append(sqlTypeName);
+            if (isComplex) {
+                sb.append("{C}");
+            }
+            return sb.toString();
+        }
+    }
+
+    public static class ReturnArgHelper extends MethodArgHelper {
+        public ReturnArgHelper(String argName, String sqlTypeName) {
+            super(argName, sqlTypeName);
+        }
+        @Override
+        public boolean isMethodArg() {
+            return false;
+        }
+        @Override
+        public boolean isReturnArg() {
+            return true;
         }
     }
 }

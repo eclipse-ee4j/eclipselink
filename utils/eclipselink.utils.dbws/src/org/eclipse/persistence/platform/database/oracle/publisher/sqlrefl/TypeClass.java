@@ -108,6 +108,14 @@ public abstract class TypeClass {
     }
 
     /**
+     * Determines if this Type represents an object type.
+     * <p/>
+     */
+    public boolean isObject() {
+        return false;
+    }
+
+    /**
      * Determines if this Type represents a primitive type.
      */
     public boolean isPrimitive() {

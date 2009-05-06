@@ -101,15 +101,33 @@ public class PublisherListenerChainAdapter implements PublisherListener {
         }
     }
 
-    public void handleObjectType(String objectTypeName, String targetTypeName) {
+    public void handleObjectType(String objectTypeName, String targetTypeName, int numAttributes) {
         for (PublisherListener listener : chain) {
-            listener.handleObjectType(objectTypeName, targetTypeName);
+            listener.handleObjectType(objectTypeName, targetTypeName, numAttributes);
         }
     }
 
     public void handleSqlType(String sqlTypeName, int typecode, String targetTypeName) {
         for (PublisherListener listener : chain) {
             listener.handleSqlType(sqlTypeName, typecode, targetTypeName);
+        }
+    }
+
+    public void handleSqlArrayType(String arrayTypeName, String targetTypeName) {
+        for (PublisherListener listener : chain) {
+            listener.handleSqlArrayType(arrayTypeName, targetTypeName);
+        }
+    }
+
+    public void handleSqlTableType(String tableTypeName, String targetTypeName) {
+        for (PublisherListener listener : chain) {
+            listener.handleSqlTableType(tableTypeName, targetTypeName);
+        }
+    }
+
+    public void handleAttributeField(String attributeFieldName) {
+        for (PublisherListener listener : chain) {
+            listener.handleAttributeField(attributeFieldName);
         }
     }
 }

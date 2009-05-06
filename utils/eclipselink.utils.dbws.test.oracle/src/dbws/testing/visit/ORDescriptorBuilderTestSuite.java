@@ -14,6 +14,7 @@ import org.eclipse.persistence.mappings.structures.ArrayMapping;
 import org.eclipse.persistence.mappings.structures.ObjectArrayMapping;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescriptor;
 import org.eclipse.persistence.platform.database.oracle.publisher.visit.PublisherWalker;
+import org.eclipse.persistence.tools.dbws.PLSQLProcedureOperationModel;
 import org.eclipse.persistence.tools.dbws.oracle.OracleHelper;
 import org.eclipse.persistence.tools.dbws.oracle.PLSQLORDescriptorBuilder;
 import static org.eclipse.persistence.tools.dbws.oracle.PLSQLORDescriptorBuilder.ITEMS_MAPPING_ATTRIBUTE_NAME;
@@ -46,11 +47,14 @@ public class ORDescriptorBuilderTestSuite extends BuilderTestSuite {
 
     @Test
     public void p1test() {
-        OracleHelper.buildStoredProcedure(conn, username, ora11Platform, PACKAGE_NAME,
-            username.toUpperCase(), PROC1, builder);
+        PLSQLProcedureOperationModel pModel = new PLSQLProcedureOperationModel();
+        pModel.setCatalogPattern(PACKAGE_NAME);
+        pModel.setSchemaPattern(username.toUpperCase());
+        pModel.setProcedurePattern(PROC1);
+        OracleHelper.buildStoredProcedure(conn, username, ora11Platform, pModel);
         PLSQLORDescriptorBuilder orDescriptorBuilder = new PLSQLORDescriptorBuilder();
         PublisherWalker walker = new PublisherWalker(orDescriptorBuilder);
-        builder.getSqlType().accept(walker);
+        pModel.getJPubType().accept(walker);
         List<ObjectRelationalDataTypeDescriptor> descriptors = 
             orDescriptorBuilder.getDescriptors();
         assertTrue("wrong number of descriptors for " + PROC1, descriptors.size() == 1);
@@ -78,11 +82,14 @@ public class ORDescriptorBuilderTestSuite extends BuilderTestSuite {
 
     @Test
     public void p2test() {
-        OracleHelper.buildStoredProcedure(conn, username, ora11Platform, PACKAGE_NAME,
-            username.toUpperCase(), PROC2, builder);
+        PLSQLProcedureOperationModel pModel = new PLSQLProcedureOperationModel();
+        pModel.setCatalogPattern(PACKAGE_NAME);
+        pModel.setSchemaPattern(username.toUpperCase());
+        pModel.setProcedurePattern(PROC2);
+        OracleHelper.buildStoredProcedure(conn, username, ora11Platform, pModel);
         PLSQLORDescriptorBuilder orDescriptorBuilder = new PLSQLORDescriptorBuilder();
         PublisherWalker walker = new PublisherWalker(orDescriptorBuilder);
-        builder.getSqlType().accept(walker);
+        pModel.getJPubType().accept(walker);
         List<ObjectRelationalDataTypeDescriptor> descriptors = 
             orDescriptorBuilder.getDescriptors();
         assertTrue("wrong number of descriptors for " + PROC2, descriptors.size() == 1);
@@ -110,11 +117,14 @@ public class ORDescriptorBuilderTestSuite extends BuilderTestSuite {
 
     @Test
     public void p3test() {
-        OracleHelper.buildStoredProcedure(conn, username, ora11Platform, PACKAGE_NAME,
-            username.toUpperCase(), PROC3, builder);
+        PLSQLProcedureOperationModel pModel = new PLSQLProcedureOperationModel();
+        pModel.setCatalogPattern(PACKAGE_NAME);
+        pModel.setSchemaPattern(username.toUpperCase());
+        pModel.setProcedurePattern(PROC3);
+        OracleHelper.buildStoredProcedure(conn, username, ora11Platform, pModel);
         PLSQLORDescriptorBuilder orDescriptorBuilder = new PLSQLORDescriptorBuilder();
         PublisherWalker walker = new PublisherWalker(orDescriptorBuilder);
-        builder.getSqlType().accept(walker);
+        pModel.getJPubType().accept(walker);
         List<ObjectRelationalDataTypeDescriptor> descriptors = 
             orDescriptorBuilder.getDescriptors();
         assertTrue("wrong number of descriptors for " + PROC3, descriptors.size() == 4);
@@ -177,11 +187,14 @@ public class ORDescriptorBuilderTestSuite extends BuilderTestSuite {
 
     @Test
     public void p4test() {
-        OracleHelper.buildStoredProcedure(conn, username, ora11Platform, PACKAGE_NAME,
-            username.toUpperCase(), PROC4, builder);
+        PLSQLProcedureOperationModel pModel = new PLSQLProcedureOperationModel();
+        pModel.setCatalogPattern(PACKAGE_NAME);
+        pModel.setSchemaPattern(username.toUpperCase());
+        pModel.setProcedurePattern(PROC4);
+        OracleHelper.buildStoredProcedure(conn, username, ora11Platform, pModel);
         PLSQLORDescriptorBuilder orDescriptorBuilder = new PLSQLORDescriptorBuilder();
         PublisherWalker walker = new PublisherWalker(orDescriptorBuilder);
-        builder.getSqlType().accept(walker);
+        pModel.getJPubType().accept(walker);
         List<ObjectRelationalDataTypeDescriptor> descriptors = 
             orDescriptorBuilder.getDescriptors();
         assertTrue("wrong number of descriptors for " + PROC4, descriptors.size() == 3);
@@ -192,11 +205,14 @@ public class ORDescriptorBuilderTestSuite extends BuilderTestSuite {
 
     @Test
     public void p5test() {
-        OracleHelper.buildStoredProcedure(conn, username, ora11Platform, PACKAGE_NAME,
-            username.toUpperCase(), PROC5, builder);
+        PLSQLProcedureOperationModel pModel = new PLSQLProcedureOperationModel();
+        pModel.setCatalogPattern(PACKAGE_NAME);
+        pModel.setSchemaPattern(username.toUpperCase());
+        pModel.setProcedurePattern(PROC5);
+        OracleHelper.buildStoredProcedure(conn, username, ora11Platform, pModel);
         PLSQLORDescriptorBuilder orDescriptorBuilder = new PLSQLORDescriptorBuilder();
         PublisherWalker walker = new PublisherWalker(orDescriptorBuilder);
-        builder.getSqlType().accept(walker);
+        pModel.getJPubType().accept(walker);
         List<ObjectRelationalDataTypeDescriptor> descriptors = 
             orDescriptorBuilder.getDescriptors();
         assertTrue("wrong number of descriptors for " + PROC5, descriptors.size() == 3);
@@ -207,11 +223,14 @@ public class ORDescriptorBuilderTestSuite extends BuilderTestSuite {
 
     @Test
     public void p6test() {
-        OracleHelper.buildStoredProcedure(conn, username, ora11Platform, PACKAGE_NAME,
-            username.toUpperCase(), PROC6, builder);
+        PLSQLProcedureOperationModel pModel = new PLSQLProcedureOperationModel();
+        pModel.setCatalogPattern(PACKAGE_NAME);
+        pModel.setSchemaPattern(username.toUpperCase());
+        pModel.setProcedurePattern(PROC6);
+        OracleHelper.buildStoredProcedure(conn, username, ora11Platform, pModel);
         PLSQLORDescriptorBuilder orDescriptorBuilder = new PLSQLORDescriptorBuilder();
         PublisherWalker walker = new PublisherWalker(orDescriptorBuilder);
-        builder.getSqlType().accept(walker);
+        pModel.getJPubType().accept(walker);
         List<ObjectRelationalDataTypeDescriptor> descriptors = 
             orDescriptorBuilder.getDescriptors();
         assertTrue("wrong number of descriptors for " + PROC6, descriptors.size() == 2);

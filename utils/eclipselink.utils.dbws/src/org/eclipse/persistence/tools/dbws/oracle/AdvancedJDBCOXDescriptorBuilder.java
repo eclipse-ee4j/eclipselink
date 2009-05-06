@@ -1,0 +1,225 @@
+/*******************************************************************************
+ * Copyright (c) 1998-2009 Oracle. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * Contributors:
+ *     Mike Norman - 090423
+ ******************************************************************************/
+package org.eclipse.persistence.tools.dbws.oracle;
+
+//javase imports
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Stack;
+
+//java eXtension imports
+import javax.xml.namespace.QName;
+import static javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI;
+import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
+
+//EclipseLink imports
+import org.eclipse.persistence.internal.oxm.XMLConversionManager;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
+import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
+import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
+import org.eclipse.persistence.oxm.schema.XMLSchemaURLReference;
+import org.eclipse.persistence.platform.database.oracle.publisher.visit.PublisherDefaultListener;
+import org.eclipse.persistence.tools.dbws.NamingConventionTransformer;
+import static org.eclipse.persistence.internal.helper.ClassConstants.Object_Class;
+import static org.eclipse.persistence.oxm.XMLConstants.DATE_QNAME;
+import static org.eclipse.persistence.oxm.XMLConstants.SCHEMA_INSTANCE_PREFIX;
+import static org.eclipse.persistence.oxm.XMLConstants.SCHEMA_PREFIX;
+import static org.eclipse.persistence.tools.dbws.oracle.PLSQLOXDescriptorBuilder.qnameFromDatabaseType;
+
+public class AdvancedJDBCOXDescriptorBuilder extends PublisherDefaultListener {
+
+    protected String targetNamespace;
+    protected NamingConventionTransformer nct;
+    protected Stack<ListenerHelper> stac = new Stack<ListenerHelper>();
+    protected Map<String, XMLDescriptor> descriptorMap =
+        new HashMap<String, XMLDescriptor>();
+    protected String packageName = null;
+
+    public AdvancedJDBCOXDescriptorBuilder(String targetNamespace, NamingConventionTransformer nct) {
+        super();
+        this.targetNamespace = targetNamespace;
+        this.nct = nct;
+    }
+    
+    public AdvancedJDBCOXDescriptorBuilder(String targetNamespace, NamingConventionTransformer nct,
+        String packageName) {
+        this(targetNamespace, nct);
+        this.packageName = packageName;
+    }
+
+    public List<XMLDescriptor> getDescriptors() {
+        if (descriptorMap.isEmpty()) {
+            return null;
+        }
+        ArrayList<XMLDescriptor> al = new ArrayList<XMLDescriptor>();
+        al.addAll(descriptorMap.values());
+        return al;
+    }
+
+    @Override
+    public void beginPackage(String packageName) {
+        if (this.packageName == null) {
+            // trim-off dotted-prefix
+            int dotIdx = packageName.indexOf('.');
+            if (dotIdx > -1) {
+                this.packageName = packageName.substring(dotIdx+1);
+            }
+        }
+    }
+
+    @Override
+    public void handleMethodReturn(String returnTypeName) {
+        stac.push(new ReturnArgHelper("", returnTypeName));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void handleSqlType(String sqlTypeName, int typecode, String targetTypeName) {
+        if (!stac.isEmpty()) {
+            ListenerHelper listenerHelper = stac.pop();
+            if (listenerHelper.isAttribute()) {
+                AttributeFieldHelper attributeFieldHelper = (AttributeFieldHelper)listenerHelper;
+                attributeFieldHelper.setSqlTypeName(sqlTypeName);
+                String fieldName = attributeFieldHelper.attributeFieldName();
+                String attributeName = fieldName.toLowerCase();
+                ListenerHelper listenerHelper2 = stac.peek();
+                if (listenerHelper2.isObject()) {
+                    ObjectTypeHelper objectTypeHelper = (ObjectTypeHelper)listenerHelper2;
+                    XMLDescriptor xdesc = descriptorMap.get(objectTypeHelper.objectTypename());
+                    DatabaseMapping dm = xdesc.getMappingForAttributeName(attributeName);
+                    if (dm == null) {
+                        XMLDirectMapping fieldMapping = new XMLDirectMapping();
+                        fieldMapping.setAttributeName(attributeName);
+                        XMLField xField = new XMLField(attributeName + "/text()");
+                        QName qnameFromDatabaseType = qnameFromDatabaseType(listenerHelper);
+                        xField.setSchemaType(qnameFromDatabaseType);
+                        // special case to avoid Calendar problems
+                        if (qnameFromDatabaseType == DATE_QNAME) {
+                            fieldMapping.setAttributeClassification(java.sql.Date.class);
+                            xField.addXMLConversion(DATE_QNAME, java.sql.Date.class);
+                            xField.addJavaConversion(java.sql.Date.class, DATE_QNAME);
+                            xdesc.getNamespaceResolver().put(SCHEMA_INSTANCE_PREFIX,
+                                W3C_XML_SCHEMA_INSTANCE_NS_URI);
+                            xdesc.getNamespaceResolver().put(SCHEMA_PREFIX, W3C_XML_SCHEMA_NS_URI);
+                        }
+                        else {
+                            Class attributeClass = (Class)XMLConversionManager.getDefaultXMLTypes().
+                                get(qnameFromDatabaseType);
+                            if (attributeClass == null) {
+                                attributeClass =  Object_Class;
+                            }
+                            fieldMapping.setAttributeClassification(attributeClass);
+                        }
+                        fieldMapping.setField(xField);
+                        xdesc.addMapping(fieldMapping);
+                    }
+                    // last attribute, pop ObjectTypeHelper off stack
+                    int numAttributes = objectTypeHelper.decrNumAttributes();
+                    if (numAttributes == 0) {
+                        stac.pop();
+                    }
+                }
+            }  
+        }
+    }
+
+    @Override
+    public void handleObjectType(String objectTypeName, String targetTypeName, int numAttributes) {
+        // JDBC Advanced type?
+        if (numAttributes > 0) {
+            // trim-off dotted-prefix, toLowerCase
+            String objectTypeNameAlias = objectTypeName;
+            int dotIdx = objectTypeName.indexOf('.');
+            if (dotIdx > -1) {
+                objectTypeNameAlias = objectTypeName.substring(dotIdx+1).toLowerCase();
+            }
+            XMLDescriptor xdesc = descriptorMap.get(objectTypeNameAlias);
+            String userType = nct.generateSchemaAlias(objectTypeNameAlias);
+            if (xdesc == null) {
+                xdesc = new XMLDescriptor();
+                xdesc.setAlias(objectTypeNameAlias);
+                xdesc.setJavaClassName(packageName.toLowerCase() + "." + objectTypeNameAlias);
+                xdesc.getQueryManager();
+                XMLSchemaURLReference schemaReference = new XMLSchemaURLReference();
+                schemaReference.setSchemaContext("/" + userType);
+                schemaReference.setType(XMLSchemaReference.COMPLEX_TYPE);
+                xdesc.setSchemaReference(schemaReference);
+                NamespaceResolver nr = new NamespaceResolver();
+                nr.setDefaultNamespaceURI(targetNamespace);
+                xdesc.setNamespaceResolver(nr);
+                descriptorMap.put(objectTypeNameAlias, xdesc);
+            }
+            // before we push the new ObjectTypeHelper, check stac to see if we are part
+            // of nested chain of object types
+            if (!stac.isEmpty()) {
+                ListenerHelper listenerHelper = stac.peek();
+                if (listenerHelper.isAttribute()) {
+                    AttributeFieldHelper fieldHelper = (AttributeFieldHelper)stac.pop();
+                    fieldHelper.setSqlTypeName(objectTypeNameAlias);
+                    String fieldName = fieldHelper.attributeFieldName();
+                    String attributeName = fieldName.toLowerCase();
+                    ListenerHelper listenerHelper2 = stac.peek();
+                    if (listenerHelper2.isObject()) {
+                        ObjectTypeHelper objectTypeHelper2 = (ObjectTypeHelper)listenerHelper2;
+                        String objectTypeNameAlias2 = objectTypeHelper2.objectTypename();
+                        XMLDescriptor xdesc2 = 
+                            descriptorMap.get(objectTypeNameAlias2);
+                        if (xdesc2 != null) {
+                            DatabaseMapping dm = xdesc2.getMappingForAttributeName(attributeName);
+                            if (dm == null) {
+                                XMLCompositeObjectMapping compMapping =
+                                    new XMLCompositeObjectMapping();
+                                compMapping.setAttributeName(attributeName);
+                                compMapping.setReferenceClassName(xdesc.getJavaClassName());
+                                compMapping.setXPath(attributeName);
+                                xdesc2.addMapping(compMapping);
+                            }
+                            // last attribute, pop ObjectTypeHelper off stack
+                            int numAttributes2 = objectTypeHelper2.decrNumAttributes();
+                            if (numAttributes2 == 0) {
+                                stac.pop();
+                            }
+                        }
+                    }
+                }
+                else if (listenerHelper.isReturnArg()) {
+                    //ReturnArgHelper returnArgHelper = (ReturnArgHelper)stac.pop();
+                    stac.pop();
+                    xdesc.setDefaultRootElement(userType);
+                }
+            }
+            stac.push(new ObjectTypeHelper(objectTypeNameAlias, targetTypeName, numAttributes));
+        }
+    }
+
+    @Override
+    public void handleSqlArrayType(String arrayTypename, String targetTypeName) {
+        // TODO
+    }
+
+    @Override
+    public void handleSqlTableType(String tableTypeName, String targetTypeName) {
+        // TODO
+    }
+
+    @Override
+    public void handleAttributeField(String attributeFieldName) {
+        stac.push(new AttributeFieldHelper(attributeFieldName, null));
+    }
+}

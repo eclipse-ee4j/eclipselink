@@ -250,7 +250,7 @@ public class PLSQLHelperObjectsBuilder extends PublisherDefaultListener {
     }
 
     @Override
-    public void handleObjectType(String objectTypename, String targetTypeName) {
+    public void handleObjectType(String objectTypename, String targetTypeName, int numAttributes) {
         DatabaseType databaseType = OraclePLSQLTypes.getDatabaseTypeForCode(objectTypename);
         if (!typeStack.empty()) {
             DatabaseType top = typeStack.peek();

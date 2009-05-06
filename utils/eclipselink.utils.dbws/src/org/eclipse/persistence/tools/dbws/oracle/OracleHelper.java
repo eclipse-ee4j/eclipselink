@@ -30,7 +30,7 @@ import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.SqlNam
 import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.SqlReflector;
 import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.SqlTypeWithMethods;
 import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.TypeClass;
-import org.eclipse.persistence.tools.dbws.DBWSBuilder;
+import org.eclipse.persistence.tools.dbws.ProcedureOperationModel;
 import org.eclipse.persistence.tools.dbws.Util;
 import org.eclipse.persistence.tools.dbws.Util.InOut;
 import org.eclipse.persistence.tools.dbws.jdbc.DbStoredArgument;
@@ -51,108 +51,126 @@ import static org.eclipse.persistence.tools.dbws.Util.InOut.RETURN;
 public class OracleHelper {
 
     public static List<DbStoredProcedure> buildStoredProcedure(Connection connection,
-        String username, DatabasePlatform platform, String originalCatalogPattern,
-        String originalSchemaPattern, String originalProcedurePattern, DBWSBuilder builder) {
+        String username, DatabasePlatform platform, ProcedureOperationModel procedureModel) {
 
         List<DbStoredProcedure> dbStoredProcedures = null;
+        String originalCatalogPattern = procedureModel.getCatalogPattern();
+        String originalSchemaPattern = procedureModel.getSchemaPattern();
+        String originalProcedurePattern = procedureModel.getProcedurePattern();
         String packageName = escapePunctuation(originalCatalogPattern, true);
         String schemaPattern = escapePunctuation(originalSchemaPattern, true);
         final String procedurePattern = escapePunctuation(originalProcedurePattern, true);
         if (schemaPattern == null || schemaPattern.length() == 0) {
             schemaPattern = username;
         }
-        SqlReflector sqlReflector = new SqlReflector(connection,username);
-        try {
+        SqlTypeWithMethods typ = null;
+        if (procedureModel.getJPubType() == null) {
+            SqlReflector sqlReflector = new SqlReflector(connection,username);
             int whatItIs = IS_PACKAGE;
             if (TOPLEVEL.equalsIgnoreCase(packageName)) {
                 whatItIs = IS_TOPLEVEL;
                 packageName = "";
             }
-            SqlTypeWithMethods typ = (SqlTypeWithMethods)sqlReflector.addSqlUserType(schemaPattern,
-                packageName, whatItIs, true, 0, 0, new MethodFilter() {
-                    public boolean acceptMethod(ProcedureMethod method, boolean preApprove) {
-                        String methodName = method.getName();
-                        if (sqlMatch(procedurePattern, methodName)) {
-                            return true;
+            try {
+                typ = (SqlTypeWithMethods)sqlReflector.addSqlUserType(schemaPattern,
+                    packageName, whatItIs, true, 0, 0, new MethodFilter() {
+                        public boolean acceptMethod(ProcedureMethod method, boolean preApprove) {
+                            String methodName = method.getName();
+                            if (sqlMatch(procedurePattern, methodName)) {
+                                return true;
+                            }
+                            return false;
                         }
-                        return false;
-                    }
 
-                });
-            ProcedureMethod[] methods = typ.getDeclaredMethods();
-            if (methods.length > 0) {
-                // save SqlTypeWithMethods for later processing
-                builder.setSqlType(typ);
-                dbStoredProcedures = new ArrayList<DbStoredProcedure>();
-                for (ProcedureMethod m : methods) {
-                    DbStoredProcedure dbStoredProcedure = null;
-                    TypeClass returnType = m.getReturnType();
-                    if (returnType == null) {
-                        dbStoredProcedure = new DbStoredProcedure(m.getName());
                     }
-                    else {
-                        dbStoredProcedure = new DbStoredFunction(m.getName());
-                        DbStoredArgument dbStoredArgument = new DbStoredArgument(returnType.getName());
-                        dbStoredArgument.setInOut(RETURN);
-                        dbStoredArgument.setSeq(0);
-                        dbStoredArgument.setJdbcType(returnType.getJdbcTypecode());
-                        Name n = returnType.getNameObject();
-                        String typeName;
-                        if (n instanceof SqlName) {
-                            typeName = ((SqlName)n).getTypeName();
-                        }
-                        else {
-                            typeName = n.getSimpleName();
-                        }
-                        dbStoredArgument.setJdbcTypeName(typeName);
-                        ((DbStoredFunction)dbStoredProcedure).setReturnArg(dbStoredArgument);
-                    }
-                    dbStoredProcedure.setCatalog(packageName);
-                    dbStoredProcedure.setSchema(originalSchemaPattern);
-                    for (int i = 0, l = m.getParamNames().length; i < l; i ++) {
-                        String argName = m.getParamNames()[i];
-                        TypeClass parameterType = m.getParamTypes()[i];
-                        DbStoredArgument dbStoredArgument = null;
-                        if (parameterType.isPrimitive()) {
-                            dbStoredArgument = new DbStoredArgument(argName);
-                        }
-                        else {
-                            dbStoredArgument = new PLSQLStoredArgument(argName);
-                        }
-                        int mode = m.getParamModes()[i];
-                        InOut inOut = IN;
-                        if (mode == ProcedureMethod.OUT) {
-                            inOut = OUT;
-                        }
-                        else if (mode == ProcedureMethod.INOUT) {
-                            inOut = INOUT;
-                        }
-                        dbStoredArgument.setInOut(inOut);
-                        dbStoredArgument.setSeq(i);
-                        dbStoredArgument.setJdbcType(parameterType.getJdbcTypecode());
-                        Name n = parameterType.getNameObject();
-                        String typeName;
-                        if (n instanceof SqlName) {
-                            typeName = ((SqlName)n).getTypeName();
-                        }
-                        else {
-                            typeName = n.getSimpleName();
-                        }
-                        if (parameterType.isPrimitive()) {
-                            dbStoredArgument.setJdbcTypeName(typeName);
-                        }
-                        else {
-                            PLSQLStoredArgument plSqlArg =  (PLSQLStoredArgument)dbStoredArgument;
-                            plSqlArg.setPlSqlTypeName(typeName);
-                            plSqlArg.setJdbcTypeName(n.getSimpleName());
-                        }
-                        dbStoredProcedure.getArguments().add(dbStoredArgument);
-                    }
-                    dbStoredProcedures.add(dbStoredProcedure);
-                }
+                );
+                procedureModel.setJPubType(typ);
+            }
+            catch (Exception e) {
+                // TODO 
             }
         }
-        catch (Exception e) { /* ignore */ }
+        else {
+            typ = procedureModel.getJPubType();
+        }
+        ProcedureMethod[] methods = null;
+        try {
+            methods = typ.getDeclaredMethods();
+        }
+        catch (Exception e) {
+            // TODO 
+        }
+        if (methods.length > 0) {
+            dbStoredProcedures = new ArrayList<DbStoredProcedure>();
+            for (ProcedureMethod m : methods) {
+                DbStoredProcedure dbStoredProcedure = null;
+                TypeClass returnType = m.getReturnType();
+                if (returnType == null) {
+                    dbStoredProcedure = new DbStoredProcedure(m.getName());
+                }
+                else {
+                    dbStoredProcedure = new DbStoredFunction(m.getName());
+                    DbStoredArgument dbStoredArgument = new DbStoredArgument(returnType.getName());
+                    dbStoredArgument.setInOut(RETURN);
+                    dbStoredArgument.setSeq(0);
+                    dbStoredArgument.setJdbcType(returnType.getJdbcTypecode());
+                    Name n = returnType.getNameObject();
+                    String typeName;
+                    if (n instanceof SqlName) {
+                        typeName = ((SqlName)n).getTypeName();
+                    }
+                    else {
+                        typeName = n.getSimpleName();
+                    }
+                    dbStoredArgument.setJdbcTypeName(typeName);
+                    ((DbStoredFunction)dbStoredProcedure).setReturnArg(dbStoredArgument);
+                }
+                dbStoredProcedure.setCatalog(packageName);
+                dbStoredProcedure.setSchema(originalSchemaPattern);
+                for (int i = 0, l = m.getParamNames().length; i < l; i ++) {
+                    String argName = m.getParamNames()[i];
+                    TypeClass parameterType = m.getParamTypes()[i];
+                    boolean isJDBCType = parameterType.isPrimitive() || parameterType.isObject() ||
+                        parameterType.isTable() || parameterType.isArray();
+                    DbStoredArgument dbStoredArgument = null;
+                    if (isJDBCType) {
+                        dbStoredArgument = new DbStoredArgument(argName);
+                    }
+                    else {
+                        dbStoredArgument = new PLSQLStoredArgument(argName);
+                    }
+                    int mode = m.getParamModes()[i];
+                    InOut inOut = IN;
+                    if (mode == ProcedureMethod.OUT) {
+                        inOut = OUT;
+                    }
+                    else if (mode == ProcedureMethod.INOUT) {
+                        inOut = INOUT;
+                    }
+                    dbStoredArgument.setInOut(inOut);
+                    dbStoredArgument.setSeq(i);
+                    dbStoredArgument.setJdbcType(parameterType.getJdbcTypecode());
+                    Name n = parameterType.getNameObject();
+                    String typeName;
+                    if (n instanceof SqlName) {
+                        typeName = ((SqlName)n).getTypeName();
+                    }
+                    else {
+                        typeName = n.getSimpleName();
+                    }
+                    if (isJDBCType) {
+                        dbStoredArgument.setJdbcTypeName(typeName);
+                    }
+                    else {
+                        PLSQLStoredArgument plSqlArg =  (PLSQLStoredArgument)dbStoredArgument;
+                        plSqlArg.setPlSqlTypeName(typeName);
+                        plSqlArg.setJdbcTypeName(n.getSimpleName());
+                    }
+                    dbStoredProcedure.getArguments().add(dbStoredArgument);
+                }
+                dbStoredProcedures.add(dbStoredProcedure);
+            }
+        }
         return dbStoredProcedures;
     }
 

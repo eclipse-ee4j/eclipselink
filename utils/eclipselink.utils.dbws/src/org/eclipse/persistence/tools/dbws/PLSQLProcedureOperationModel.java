@@ -38,9 +38,13 @@ import static org.eclipse.persistence.tools.dbws.Util.InOut.IN;
 public class PLSQLProcedureOperationModel extends ProcedureOperationModel {
 
     @Override
+    public boolean isPLSQLProcedureOperation() {
+        return true;
+    }
+    
+    @Override
     public void buildOperation(DBWSBuilder builder) {
-        List<DbStoredProcedure> procs = builder.loadProcedures(catalogPattern, schemaPattern,
-            procedurePattern, overload, true);
+        List<DbStoredProcedure> procs = builder.loadProcedures(this, true);
         for (DbStoredProcedure storedProcedure : procs) {
             StringBuilder sb = new StringBuilder();
             if (name == null || name.length() == 0) {

@@ -106,7 +106,8 @@ public class WebServiceTestSuite extends ProviderHelper {
     public static void serviceSetup(String endPointAddress, WebServiceTestSuite endPoint)
         throws WSDLException {
         builder.quiet = true;
-        builder.setLogLevel(SessionLog.OFF_LABEL);
+        //builder.setLogLevel(SessionLog.OFF_LABEL);
+        builder.setLogLevel(SessionLog.FINE_LABEL);
         builder.setDriver(DEFAULT_DATABASE_DRIVER);
         builder.setPlatformClassname(DEFAULT_DATABASE_PLATFORM);
         builder.getProperties().put(SESSIONS_FILENAME_KEY, NO_SESSIONS_FILENAME);

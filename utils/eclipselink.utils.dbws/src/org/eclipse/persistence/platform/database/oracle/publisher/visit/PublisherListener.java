@@ -32,6 +32,9 @@ public interface PublisherListener {
     public void endMethod(String methodName);
 
     public void handleSqlType(String sqlTypeName, int typecode, String targetTypeName);
-    public void handleObjectType(String objectTypeName, String targetTypeName);
+    public void handleObjectType(String objectTypeName, String targetTypeName, int numAttributes);
+    public void handleSqlArrayType(String arrayTypeName, String targetTypeName);
+    public void handleSqlTableType(String tableTypeName, String targetTypeName);
+    public void handleAttributeField(String attributeFieldName);
 
 }

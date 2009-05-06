@@ -13,15 +13,19 @@
 package org.eclipse.persistence.tools.dbws.oracle;
 
 //javase imports
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
+
+//java eXtension imports
 import javax.xml.namespace.QName;
+import static javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI;
+import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 
 //EclipseLink imports
+import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
@@ -33,9 +37,19 @@ import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.oxm.schema.XMLSchemaURLReference;
 import org.eclipse.persistence.platform.database.oracle.publisher.visit.PublisherDefaultListener;
 import static org.eclipse.persistence.internal.dynamicpersist.BaseEntityClassLoader.COLLECTION_WRAPPER_SUFFIX;
+import static org.eclipse.persistence.internal.helper.ClassConstants.BIGDECIMAL;
+import static org.eclipse.persistence.internal.helper.ClassConstants.BOOLEAN;
+import static org.eclipse.persistence.internal.helper.ClassConstants.INTEGER;
+import static org.eclipse.persistence.internal.helper.ClassConstants.JavaSqlDate_Class;
+import static org.eclipse.persistence.internal.helper.ClassConstants.Object_Class;
+import static org.eclipse.persistence.internal.helper.ClassConstants.STRING;
 import static org.eclipse.persistence.oxm.XMLConstants.ANY_SIMPLE_TYPE_QNAME;
 import static org.eclipse.persistence.oxm.XMLConstants.BOOLEAN_QNAME;
+import static org.eclipse.persistence.oxm.XMLConstants.DATE_QNAME;
 import static org.eclipse.persistence.oxm.XMLConstants.DECIMAL_QNAME;
+import static org.eclipse.persistence.oxm.XMLConstants.INTEGER_QNAME;
+import static org.eclipse.persistence.oxm.XMLConstants.SCHEMA_INSTANCE_PREFIX;
+import static org.eclipse.persistence.oxm.XMLConstants.SCHEMA_PREFIX;
 import static org.eclipse.persistence.oxm.XMLConstants.STRING_QNAME;
 
 public class PLSQLOXDescriptorBuilder extends PublisherDefaultListener {
@@ -165,6 +179,7 @@ public class PLSQLOXDescriptorBuilder extends PublisherDefaultListener {
             descriptorMap.put(recordAlias, xdesc);
         }
     }
+    @SuppressWarnings("unchecked")
     @Override
     public void endPlsqlRecordField(String fieldName, int idx) {
         ListenerHelper top = stac.pop();
@@ -216,7 +231,25 @@ public class PLSQLOXDescriptorBuilder extends PublisherDefaultListener {
                 XMLDirectMapping fieldMapping = new XMLDirectMapping();
                 fieldMapping.setAttributeName(lfieldName);
                 XMLField xField = new XMLField(lfieldName + "/text()");
-                xField.setSchemaType(qnameFromDatabaseType((DefaultListenerHelper)top));
+                QName qnameFromDatabaseType = qnameFromDatabaseType(top);
+                xField.setSchemaType(qnameFromDatabaseType);
+                // special case to avoid Calendar problems
+                if (qnameFromDatabaseType == DATE_QNAME) {
+                    fieldMapping.setAttributeClassification(java.sql.Date.class);
+                    xField.addXMLConversion(DATE_QNAME, java.sql.Date.class);
+                    xField.addJavaConversion(java.sql.Date.class, DATE_QNAME);
+                    xdesc.getNamespaceResolver().put(SCHEMA_INSTANCE_PREFIX,
+                        W3C_XML_SCHEMA_INSTANCE_NS_URI);
+                    xdesc.getNamespaceResolver().put(SCHEMA_PREFIX, W3C_XML_SCHEMA_NS_URI);
+                }
+                else {
+                    Class attributeClass = (Class)XMLConversionManager.getDefaultXMLTypes().
+                        get(qnameFromDatabaseType);
+                    if (attributeClass == null) {
+                        attributeClass =  Object_Class;
+                    }
+                    fieldMapping.setAttributeClassification(attributeClass);
+                }
                 fieldMapping.setField(xField);
                 xdesc.addMapping(fieldMapping);
             }
@@ -231,8 +264,8 @@ public class PLSQLOXDescriptorBuilder extends PublisherDefaultListener {
         stac.push(new SqltypeHelper(sqlTypeName));
     }
     @Override
-    public void handleObjectType(String objectTypename, String targetTypeName) {
-        stac.push(new ObjectTypeHelper(objectTypename, targetTypeName));
+    public void handleObjectType(String objectTypename, String targetTypeName, int numAttributes) {
+        stac.push(new ObjectTypeHelper(objectTypename, targetTypeName, numAttributes));
     }
     
     public static Class<?> attributeClassFromDatabaseType(DefaultListenerHelper helper) {
@@ -249,17 +282,24 @@ public class PLSQLOXDescriptorBuilder extends PublisherDefaultListener {
                 }
             }
             if ("NUMBER".equals(typeName)) {
-                return BigDecimal.class;
+                return BIGDECIMAL;
+            }
+            if ("INTEGER".equals(typeName)) {
+                return INTEGER;
             }
             else if ("BOOLEAN".equals(typeName)) {
-                return Boolean.class;
+                return BOOLEAN;
             }
+            else if ("DATE".equals(typeName)) {
+                return JavaSqlDate_Class;
+            }
+            // TODO - more conversions
         }
-        // TODO - more conversions
-        return String.class;
+        // default is String
+        return STRING;
     }
 
-    public static QName qnameFromDatabaseType(DefaultListenerHelper helper) {
+    public static <T extends ListenerHelper> QName qnameFromDatabaseType(T helper) {
         if (!helper.isComplex()) {
             String typeName = helper.targetTypeName();
             if (typeName == null) {
@@ -272,14 +312,20 @@ public class PLSQLOXDescriptorBuilder extends PublisherDefaultListener {
                     }
                 }
             }
-            if ("VARCHAR2".equals(typeName)) {
+            if ("VARCHAR2".equals(typeName) || "VARCHAR".equals(typeName)) {
                 return STRING_QNAME;
             }
             else if ("NUMBER".equals(typeName)) {
                 return DECIMAL_QNAME;
             }
+            else if ("INTEGER".equals(typeName)) {
+                return INTEGER_QNAME;
+            }
             else if ("BOOLEAN".equals(typeName)) {
                 return BOOLEAN_QNAME;
+            }
+            else if ("DATE".equals(typeName)) {
+                return DATE_QNAME;
             }
             // TODO - more conversions
         }

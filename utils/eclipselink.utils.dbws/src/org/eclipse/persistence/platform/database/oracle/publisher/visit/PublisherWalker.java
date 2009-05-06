@@ -17,8 +17,10 @@ import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.Attrib
 import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.ProcedureMethod;
 import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.PlsqlRecordType;
 import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.PlsqlTableType;
+import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.SqlArrayType;
 import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.SqlObjectType;
 import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.SqlPackageType;
+import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.SqlTableType;
 import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.SqlToplevelType;
 import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.SqlType;
 import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.TypeClass;
@@ -48,9 +50,40 @@ public class PublisherWalker implements PublisherVisitor {
         if (sqlObjectType.hasConversion()) {
             targetTypeName = sqlObjectType.getTargetTypeName();
         }
-        listener.handleObjectType(sqlObjectType.getName(), targetTypeName);
+        int numAttributes = 0;
+        AttributeField[] fields = null;
+        try {
+            fields = sqlObjectType.getDeclaredFields(false);
+            numAttributes = fields.length;
+        }
+        catch (Exception e) {
+        }
+        listener.handleObjectType(sqlObjectType.getName(), targetTypeName, numAttributes);
+        if (numAttributes > 0) {
+            for (AttributeField field : fields) {
+                TypeClass typeClass = field.getType();
+                listener.handleAttributeField(field.getName());
+                ((SqlType)typeClass).accept(this);
+            }
+        }
     }
     
+    public void visit(SqlArrayType sqlArrayType) {
+        String targetTypeName = null;
+        if (sqlArrayType.hasConversion()) {
+            targetTypeName = sqlArrayType.getTargetTypeName();
+        }
+        listener.handleSqlArrayType(sqlArrayType.getName(), targetTypeName);
+    }
+
+    public void visit(SqlTableType sqlTableType) {
+        String targetTypeName = null;
+        if (sqlTableType.hasConversion()) {
+            targetTypeName = sqlTableType.getTargetTypeName();
+        }
+        listener.handleSqlTableType(sqlTableType.getName(), targetTypeName);
+    }
+
     public void visit(SqlPackageType sqlPackageType) {
         listener.beginPackage(sqlPackageType.getName());
         try {

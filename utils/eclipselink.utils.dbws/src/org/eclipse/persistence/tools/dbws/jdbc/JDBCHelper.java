@@ -39,6 +39,8 @@ import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.platform.database.DerbyPlatform;
 import org.eclipse.persistence.platform.database.MySQLPlatform;
 import org.eclipse.persistence.platform.database.PostgreSQLPlatform;
+import org.eclipse.persistence.tools.dbws.ProcedureOperationModel;
+
 import static org.eclipse.persistence.tools.dbws.Util.InOut.INOUT;
 import static org.eclipse.persistence.tools.dbws.Util.InOut.OUT;
 import static org.eclipse.persistence.tools.dbws.Util.InOut.RETURN;
@@ -349,8 +351,7 @@ public class JDBCHelper {
     }
 
     public static List<DbStoredProcedure> buildStoredProcedure(Connection connection,
-        DatabasePlatform platform, String originalCatalogPattern, String originalSchemaPattern,
-        String originalProcedurePattern) {
+        DatabasePlatform platform, ProcedureOperationModel procedureModel ) {
 
         List<DbStoredProcedure> dbStoredProcedures = null;
         boolean catalogMatchDontCare = false;
@@ -362,6 +363,9 @@ public class JDBCHelper {
         // Oracle is 'special' - the catalogMatchDontCare logic only applies if the catalogPattern
         // is NULL vs. the empty "" string
         boolean isOracle = platform.getClass().getName().contains("Oracle") ? true : false;
+        String originalCatalogPattern = procedureModel.getCatalogPattern();
+        String originalSchemaPattern = procedureModel.getSchemaPattern();
+        String originalProcedurePattern = procedureModel.getProcedurePattern();
         String catalogPattern = escapePunctuation(originalCatalogPattern, isOracle);
         String schemaPattern = escapePunctuation(originalSchemaPattern, isOracle);
         String procedurePattern = escapePunctuation(originalProcedurePattern, isOracle);
@@ -399,149 +403,151 @@ public class JDBCHelper {
                  * return multiple hits across multiple packages for the same procedureName.
                  */
                 int numProcs = tmpProcs.size();
-                dbStoredProcedures = new ArrayList<DbStoredProcedure>(numProcs);
-                List<OverloadHolder> overloadHolderList = new ArrayList<OverloadHolder>();
-                ResultSet procedureColumnsInfo = null;
-                procedureColumnsInfo = databaseMetaData.getProcedureColumns(catalogPattern,
-                    schemaPattern, procedurePattern, "%");
-                while (procedureColumnsInfo.next()) {
-                    String actualCatalogName = procedureColumnsInfo.getString(PROC_COLS_INFO_CATALOG);
-                    String actualSchemaName = procedureColumnsInfo.getString(PROC_COLS_INFO_SCHEMA);
-                    String actualProcedureName = procedureColumnsInfo.getString(PROC_COLS_INFO_NAME);
-                    String argName = procedureColumnsInfo.getString(PROC_COLS_INFO_COLNAME);
-                    DbStoredArgument dbStoredArgument = new DbStoredArgument(argName);
-                    short inOut = procedureColumnsInfo.getShort(PROC_COLS_INFO_TYPE);
-                    if (inOut == procedureColumnInOut) {
-                        dbStoredArgument.setInOut(INOUT);
-                    }
-                    else if (inOut == procedureColumnOut) {
-                        dbStoredArgument.setInOut(OUT);
-                    }
-                    else if (inOut == procedureColumnReturn) {
-                        dbStoredArgument.setInOut(RETURN);
-                    }
-                    dbStoredArgument.setJdbcType(procedureColumnsInfo.getInt(
-                        PROC_COLS_INFO_DATA_TYPE));
-                    dbStoredArgument.setJdbcTypeName(procedureColumnsInfo.getString(
-                        PROC_COLS_INFO_TYPE_NAME));
-                    dbStoredArgument.setPrecision(procedureColumnsInfo.getInt(
-                        PROC_COLS_INFO_PRECISION));
-                    dbStoredArgument.setScale(procedureColumnsInfo.getInt(
-                        PROC_COLS_INFO_SCALE));
-                    dbStoredArgument.setRadix(procedureColumnsInfo.getShort(
-                        PROC_COLS_INFO_RADIX));
-                    dbStoredArgument.setNullable(procedureColumnsInfo.getShort(
-                        PROC_COLS_INFO_NULLABLE) == procedureNullable ? true
-                        : false);
-                    if (isOracle) {
-                        dbStoredArgument.setSeq(procedureColumnsInfo.getShort(
-                            PROC_COLS_INFO_ORA_SEQUENCE));
-                    }
-                    short overload = isOracle ?
-                        procedureColumnsInfo.getShort(PROC_COLS_INFO_ORA_OVERLOAD) : 0;
-                    // find matching DbStoredProcedure
-                    if (overload == 0) {
-                        // this dbStoredArgument belongs to a 'regular' procedure
-                        DbStoredProcedure matchingProc = null;
-                        for (int i = 0; i < tmpProcs.size();) {
-                        	DbStoredProcedure tmpProc = tmpProcs.get(i);
-                            if (tmpProc.matches(actualCatalogName, actualSchemaName,
-                                actualProcedureName, isOracle, catalogMatchDontCare)) {
-                            	matchingProc = tmpProc;
-                                dbStoredProcedures.add(matchingProc);
-                                break;
-                            }
-                            i++;
+                if (numProcs > 0) {
+                    dbStoredProcedures = new ArrayList<DbStoredProcedure>(numProcs);
+                    List<OverloadHolder> overloadHolderList = new ArrayList<OverloadHolder>();
+                    ResultSet procedureColumnsInfo = null;
+                    procedureColumnsInfo = databaseMetaData.getProcedureColumns(catalogPattern,
+                        schemaPattern, procedurePattern, "%");
+                    while (procedureColumnsInfo.next()) {
+                        String actualCatalogName = procedureColumnsInfo.getString(PROC_COLS_INFO_CATALOG);
+                        String actualSchemaName = procedureColumnsInfo.getString(PROC_COLS_INFO_SCHEMA);
+                        String actualProcedureName = procedureColumnsInfo.getString(PROC_COLS_INFO_NAME);
+                        String argName = procedureColumnsInfo.getString(PROC_COLS_INFO_COLNAME);
+                        DbStoredArgument dbStoredArgument = new DbStoredArgument(argName);
+                        short inOut = procedureColumnsInfo.getShort(PROC_COLS_INFO_TYPE);
+                        if (inOut == procedureColumnInOut) {
+                            dbStoredArgument.setInOut(INOUT);
                         }
-                        if (matchingProc == null) {
-                            // look in dbStoredProcedures - matching proc already moved over ?
-                            for (DbStoredProcedure dbStoredProcedure: dbStoredProcedures) {
-                                if (dbStoredProcedure.matches(actualCatalogName, actualSchemaName,
+                        else if (inOut == procedureColumnOut) {
+                            dbStoredArgument.setInOut(OUT);
+                        }
+                        else if (inOut == procedureColumnReturn) {
+                            dbStoredArgument.setInOut(RETURN);
+                        }
+                        dbStoredArgument.setJdbcType(procedureColumnsInfo.getInt(
+                            PROC_COLS_INFO_DATA_TYPE));
+                        dbStoredArgument.setJdbcTypeName(procedureColumnsInfo.getString(
+                            PROC_COLS_INFO_TYPE_NAME));
+                        dbStoredArgument.setPrecision(procedureColumnsInfo.getInt(
+                            PROC_COLS_INFO_PRECISION));
+                        dbStoredArgument.setScale(procedureColumnsInfo.getInt(
+                            PROC_COLS_INFO_SCALE));
+                        dbStoredArgument.setRadix(procedureColumnsInfo.getShort(
+                            PROC_COLS_INFO_RADIX));
+                        dbStoredArgument.setNullable(procedureColumnsInfo.getShort(
+                            PROC_COLS_INFO_NULLABLE) == procedureNullable ? true
+                            : false);
+                        if (isOracle) {
+                            dbStoredArgument.setSeq(procedureColumnsInfo.getShort(
+                                PROC_COLS_INFO_ORA_SEQUENCE));
+                        }
+                        short overload = isOracle ?
+                            procedureColumnsInfo.getShort(PROC_COLS_INFO_ORA_OVERLOAD) : 0;
+                        // find matching DbStoredProcedure
+                        if (overload == 0) {
+                            // this dbStoredArgument belongs to a 'regular' procedure
+                            DbStoredProcedure matchingProc = null;
+                            for (int i = 0; i < tmpProcs.size();) {
+                            	DbStoredProcedure tmpProc = tmpProcs.get(i);
+                                if (tmpProc.matches(actualCatalogName, actualSchemaName,
                                     actualProcedureName, isOracle, catalogMatchDontCare)) {
-                                    matchingProc = dbStoredProcedure;
+                                	matchingProc = tmpProc;
+                                    dbStoredProcedures.add(matchingProc);
+                                    break;
+                                }
+                                i++;
+                            }
+                            if (matchingProc == null) {
+                                // look in dbStoredProcedures - matching proc already moved over ?
+                                for (DbStoredProcedure dbStoredProcedure: dbStoredProcedures) {
+                                    if (dbStoredProcedure.matches(actualCatalogName, actualSchemaName,
+                                        actualProcedureName, isOracle, catalogMatchDontCare)) {
+                                        matchingProc = dbStoredProcedure;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (matchingProc != null) {
+                                if (matchingProc.isFunction() &&
+                                   (isOracle ? (dbStoredArgument.getName() == null) :
+                                    (dbStoredArgument.getName().equalsIgnoreCase(""))) &&
+                                    dbStoredArgument.getSeq() == (isOracle ? 1 : 0)) {
+                                    ((DbStoredFunction)matchingProc).setReturnArg(dbStoredArgument);
+                                }
+                                else {
+                                    matchingProc.getArguments().add(dbStoredArgument);
+                                }
+                                tmpProcs.remove(matchingProc);
+                            }
+                            // else some argument that doesn't have a matching proc? ignore for now
+                        }
+                        else {
+                            // this dbStoredArgument belongs to an overloaded procedure
+                            OverloadHolder overloadHolder = null;
+                            for (Iterator<OverloadHolder> i = overloadHolderList.iterator(); i.hasNext();) {
+                                OverloadHolder ovrldhldr = i.next();
+                                if (ovrldhldr.overload == overload &&
+                                    ovrldhldr.packageName.equals(actualCatalogName) &&
+                                    ovrldhldr.procedureSchema.equals(actualSchemaName) &&
+                                    ovrldhldr.procedureName.equals(actualProcedureName)) {
+                                    overloadHolder = ovrldhldr;
                                     break;
                                 }
                             }
-                        }
-                        if (matchingProc != null) {
-                            if (matchingProc.isFunction() &&
-                               (isOracle ? (dbStoredArgument.getName() == null) :
-                                (dbStoredArgument.getName().equalsIgnoreCase(""))) &&
-                                dbStoredArgument.getSeq() == (isOracle ? 1 : 0)) {
-                                ((DbStoredFunction)matchingProc).setReturnArg(dbStoredArgument);
+                            if (overloadHolder == null) {
+                                // need to create a new one
+                                overloadHolder = new OverloadHolder(actualCatalogName, actualSchemaName,
+                                    actualProcedureName, overload);
+                                overloadHolderList.add(overloadHolder);
                             }
-                            else {
-                                matchingProc.getArguments().add(dbStoredArgument);
-                            }
-                            tmpProcs.remove(matchingProc);
+                            overloadHolder.getArgs().add(dbStoredArgument);
                         }
-                        // else some argument that doesn't have a matching proc? ignore for now
                     }
-                    else {
-                        // this dbStoredArgument belongs to an overloaded procedure
-                        OverloadHolder overloadHolder = null;
-                        for (Iterator<OverloadHolder> i = overloadHolderList.iterator(); i.hasNext();) {
-                            OverloadHolder ovrldhldr = i.next();
-                            if (ovrldhldr.overload == overload &&
-                                ovrldhldr.packageName.equals(actualCatalogName) &&
-                                ovrldhldr.procedureSchema.equals(actualSchemaName) &&
-                                ovrldhldr.procedureName.equals(actualProcedureName)) {
-                                overloadHolder = ovrldhldr;
-                                break;
+                    procedureColumnsInfo.close();
+                    for (Iterator<OverloadHolder> i = overloadHolderList.iterator(); i.hasNext();) {
+                        OverloadHolder ovrldhldr = i.next();
+                        Collections.sort(ovrldhldr.getArgs(), new Comparator<DbStoredArgument>() {
+                            public int compare(DbStoredArgument o1, DbStoredArgument o2) {
+                                return o1.getSeq() - o2.getSeq();
                             }
-                        }
-                        if (overloadHolder == null) {
-                            // need to create a new one
-                            overloadHolder = new OverloadHolder(actualCatalogName, actualSchemaName,
-                                actualProcedureName, overload);
-                            overloadHolderList.add(overloadHolder);
-                        }
-                        overloadHolder.getArgs().add(dbStoredArgument);
-                    }
-                }
-                procedureColumnsInfo.close();
-                for (Iterator<OverloadHolder> i = overloadHolderList.iterator(); i.hasNext();) {
-                    OverloadHolder ovrldhldr = i.next();
-                    Collections.sort(ovrldhldr.getArgs(), new Comparator<DbStoredArgument>() {
-                        public int compare(DbStoredArgument o1, DbStoredArgument o2) {
-                            return o1.getSeq() - o2.getSeq();
-                        }
-                    });
-                    DbStoredProcedure matchingProc = null;
-                    // find a matching proc from dbStoredProcedures
-                    for (int j = 0; j < tmpProcs.size();) {
-                        DbStoredProcedure dbStoredProcedure = tmpProcs.get(j);
-                        if (dbStoredProcedure.matches(ovrldhldr.packageName,
-                            ovrldhldr.procedureSchema, ovrldhldr.procedureName, true, false)) {
-                            // check for function/procedures with same names
-                            DbStoredArgument firstArg = ovrldhldr.getArgs().get(0);
-                            if (firstArg.getName() == null && firstArg.getSeq() == 1) {
-                                // need a DbStoredFunction
-                                if (dbStoredProcedure.isFunction()) {
+                        });
+                        DbStoredProcedure matchingProc = null;
+                        // find a matching proc from dbStoredProcedures
+                        for (int j = 0; j < tmpProcs.size();) {
+                            DbStoredProcedure dbStoredProcedure = tmpProcs.get(j);
+                            if (dbStoredProcedure.matches(ovrldhldr.packageName,
+                                ovrldhldr.procedureSchema, ovrldhldr.procedureName, true, false)) {
+                                // check for function/procedures with same names
+                                DbStoredArgument firstArg = ovrldhldr.getArgs().get(0);
+                                if (firstArg.getName() == null && firstArg.getSeq() == 1) {
+                                    // need a DbStoredFunction
+                                    if (dbStoredProcedure.isFunction()) {
+                                        matchingProc = tmpProcs.remove(j);
+                                        break;
+                                    }
+                                }
+                                else {
                                     matchingProc = tmpProcs.remove(j);
                                     break;
                                 }
                             }
-                            else {
-                                matchingProc = tmpProcs.remove(j);
-                                break;
+                            j++;
+                        }
+                        if (matchingProc != null) {
+                            if (matchingProc.isFunction()) {
+                                DbStoredArgument returnArg = ovrldhldr.getArgs().remove(0);
+                                ((DbStoredFunction)matchingProc).setReturnArg(returnArg);
                             }
+                            matchingProc.setOverload(ovrldhldr.overload);
+                            matchingProc.getArguments().addAll(ovrldhldr.getArgs());
+                            dbStoredProcedures.add(matchingProc);
                         }
-                        j++;
                     }
-                    if (matchingProc != null) {
-                        if (matchingProc.isFunction()) {
-                            DbStoredArgument returnArg = ovrldhldr.getArgs().remove(0);
-                            ((DbStoredFunction)matchingProc).setReturnArg(returnArg);
-                        }
-                        matchingProc.setOverload(ovrldhldr.overload);
-                        matchingProc.getArguments().addAll(ovrldhldr.getArgs());
-                        dbStoredProcedures.add(matchingProc);
+                    if (!tmpProcs.isEmpty()) {
+                        // leftovers are the no-arg procedures
+                        dbStoredProcedures.addAll(tmpProcs);
                     }
-                }
-                if (!tmpProcs.isEmpty()) {
-                    // leftovers are the no-arg procedures
-                    dbStoredProcedures.addAll(tmpProcs);
                 }
             }
         }
