@@ -87,6 +87,7 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
     private Employee proxyEmp = null;
     private PhoneNumber proxyPhone = null;
     private static final String PROXY_PU = "proxyauthentication";
+    private static boolean shouldOverrideGetEntityManager = false;
 
     public ProxyAuthenticationServerTestSuite(){
     }
@@ -99,7 +100,7 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
         TestSuite suite = new TestSuite();
         suite.setName("Proxy Authentication Test Suite");
 
-        //suite.addTest(new ProxyAuthenticationServerTestSuite("testSetup"));
+        suite.addTest(new ProxyAuthenticationServerTestSuite("testSetup"));
         suite.addTest(new ProxyAuthenticationServerTestSuite("testCreateWithProxy"));
         suite.addTest(new ProxyAuthenticationServerTestSuite("testUpdateWithProxy"));
         suite.addTest(new ProxyAuthenticationServerTestSuite("testReadDeleteWithProxy"));
@@ -108,6 +109,8 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
     }
 
     public void testSetup() {
+        shouldOverrideGetEntityManager = shouldOverrideGetEntityManager();
+        System.out.println("====the shouldOverrideGetEntityManager====" + shouldOverrideGetEntityManager);
         //new PhoneNumberTableCreator().replaceTables(JUnitTestCase.getServerSession(PROXY_PU));
         //new EmployeeTableCreator().replaceTables(JUnitTestCase.getServerSession(PROXY_PU));
         //getServerSession(PROXY_PU).executeNonSelectingSQL("update PROXY_EMPLOYEE_SEQ set SEQ_COUNT = 1 where SEQ_NAME='PROXY_EMPLOYEE_SEQ'");
@@ -118,7 +121,7 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
      */
     public void testCreateWithProxy() throws Exception{
         proxyEmp  = new Employee();
-        EntityManager em = createEntityManager(PROXY_PU);
+        EntityManager em = createEntityManager_proxy(PROXY_PU);
         try {
             startTransaction(em);
             proxyEmp.setFirstName("Guy");
@@ -145,7 +148,7 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
 
-        EntityManager newEm = createEntityManager(PROXY_PU);
+        EntityManager newEm = createEntityManager_proxy(PROXY_PU);
         try {
             startTransaction(newEm);
             PhoneNumberPK pk = new PhoneNumberPK();
@@ -173,8 +176,7 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
      * Tests Read and Delete with proxy setting
      */
     public void testReadDeleteWithProxy() throws Exception{
-        System.out.println("=======testReadDeleteWithProxy()========");
-        EntityManager em = createEntityManager(PROXY_PU);
+        EntityManager em = createEntityManager_proxy(PROXY_PU);
         Employee readEmp = null;
         PhoneNumber readPhone = null;
         try {
@@ -202,7 +204,7 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
      * Tests Update with proxy setting
      */
     public void testUpdateWithProxy() throws Exception{
-        EntityManager em = createEntityManager(PROXY_PU);
+        EntityManager em = createEntityManager_proxy(PROXY_PU);
         try {
             startTransaction(em);
             Query query = em.createQuery("SELECT e FROM PhoneNumber e");
@@ -227,9 +229,8 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
      * Tests create with out proxy setting, it should fail
      */
     public void testCreateWithOutProxy() throws Exception{
-        System.out.println("=======testCreateWithOutProxy()========");
         Employee employee  = new Employee();
-        EntityManager em = createEntityManager(PROXY_PU);
+        EntityManager em = createEntityManager_proxy(PROXY_PU);
         try {
             beginTransaction(em);
             employee.setFirstName("Guy");
@@ -263,20 +264,29 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
      */
     private void setupProperties(EntityManager em){
         EntityManagerImpl empl = (EntityManagerImpl)em.getDelegate();
+        empl.setProperties(createProperties());
+    }
+    
+    private Map createProperties(){
         Map newProps = new HashMap(3);
         newProps.put(PersistenceUnitProperties.ORACLE_PROXY_TYPE, OracleConnection.PROXYTYPE_USER_NAME);
         newProps.put(OracleConnection.PROXY_USER_NAME, "PAS_PROXY");
         newProps.put(PersistenceUnitProperties.EXCLUSIVE_CONNECTION_MODE, ExclusiveConnectionMode.Always);
-        empl.setProperties(newProps);
+        return newProps;
     }
     
     private void startTransaction(EntityManager em){
-        if (!isOnServer()){
+        if(shouldOverrideGetEntityManager) {
+            beginTransaction(em);
+            em.joinTransaction();
+        } else {
+            if (!isOnServer()){
+                    setupProperties(em);
+            }
+            beginTransaction(em);
+            if (isOnServer){
                 setupProperties(em);
-        }
-        beginTransaction(em);
-        if (isOnServer){
-            setupProperties(em);
+            }
         }
     }
 
@@ -289,4 +299,20 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
         }
     }
     
+    EntityManager createEntityManager_proxy(String puName) {
+        if(shouldOverrideGetEntityManager) {
+            EntityManager em = getEntityManagerFactory(puName).createEntityManager(createProperties());
+            return em;
+        }else 
+            return createEntityManager(puName);
+    }
+
+    private boolean shouldOverrideGetEntityManager(){
+        if(getServerSession(PROXY_PU).getServerPlatform().getClass().getName().equals("org.eclipse.persistence.platform.server.oc4j.Oc4jPlatform") ||
+           getServerSession(PROXY_PU).getServerPlatform().getClass().getName().equals("org.eclipse.persistence.platform.server.jboss.JBossPlatform") ){
+            return true;
+        }else
+            return false;
+    }
+
 }
