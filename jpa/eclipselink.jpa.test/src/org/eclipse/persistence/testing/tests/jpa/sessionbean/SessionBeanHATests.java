@@ -29,6 +29,7 @@ import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.sessionbean.EmployeeService;
+import org.eclipse.persistence.sessions.server.ServerSession;
 
 /**
  * EJB 3 SessionBean tests using EclipseLink JPA
@@ -39,6 +40,7 @@ import org.eclipse.persistence.testing.models.jpa.sessionbean.EmployeeService;
  */
 public class SessionBeanHATests extends JUnitTestCase {
     protected EmployeeService service;
+    static ServerSession serverSession;
     
     public SessionBeanHATests() {
         super();
@@ -56,8 +58,9 @@ public class SessionBeanHATests extends JUnitTestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite("SessionBeanHATests");
         suite.addTest(new SessionBeanHATests("testSetup", true));
-        suite.addTest(new SessionBeanHATests("testFindAll", false));
-        suite.addTest(new SessionBeanHATests("testUpdate", false));
+//        suite.addTest(new SessionBeanHATests("testFindAll", true));
+        suite.addTest(new SessionBeanHATests("testFindAllMultipleThread", true));
+//        suite.addTest(new SessionBeanHATests("testUpdate", false));
 
         return suite;
     }
@@ -95,7 +98,7 @@ public class SessionBeanHATests extends JUnitTestCase {
         }
         return service;
     }
-        
+
     public void testFindAll() throws Exception {
         int repeatTimes = 300;
 
@@ -115,6 +118,37 @@ public class SessionBeanHATests extends JUnitTestCase {
             } catch (Exception e) {
                 fail(e.toString());
             }
+        }
+    }
+
+    public void testFindAllMultipleThread() throws Exception {
+        // Initialize and launch threads to find Employees
+        FindAllThread[] helperRunnable = new FindAllThread[10];
+        for (int i = 0; i < helperRunnable.length; i++) {
+            helperRunnable[i] = new FindAllThread(i);
+        }
+        org.eclipse.persistence.platform.server.ServerPlatform platform = JUnitTestCase.getServerSession("sessionbean").getServerPlatform();
+
+        for (int i = 0; i < helperRunnable.length; i++) {
+            platform.launchContainerRunnable(helperRunnable[i]);
+        }
+
+        // wait all FindAllConcurrentlyThread's for finishing FindAll queries
+        while(true){
+            Thread.currentThread().sleep(3000);
+
+            boolean finished = true;
+            for (int i = 0; i < helperRunnable.length; i++) 
+            {
+                finished = finished && helperRunnable[i].finished;
+            }
+            if (finished) break;
+        }
+    
+        // verify if all FindAllConcurrentlyThread's are succeeded
+        for (int i = 0; i < helperRunnable.length; i++) {
+            if (!helperRunnable[i].succeeded) 
+                fail("RAC failure caused some other exception: "+helperRunnable[i].relatedException);
         }
     }
 
