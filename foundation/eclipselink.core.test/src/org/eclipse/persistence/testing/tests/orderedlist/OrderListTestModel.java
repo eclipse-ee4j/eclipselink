@@ -79,9 +79,9 @@ public class OrderListTestModel extends TestModel {
         addTest(new OrderListTestModel(true, false, ChangeTracking.DEFERRED, JoinFetchOrBatchRead.OUTER_JOIN));
         addTest(new OrderListTestModel(true, false, ChangeTracking.DEFERRED, JoinFetchOrBatchRead.BATCH_READ));
 
-        addTest(new OrderListTestModel(true, true, ChangeTracking.ATTRIBUTE, JoinFetchOrBatchRead.NONE));
-        addTest(new OrderListTestModel(true, true, ChangeTracking.ATTRIBUTE, JoinFetchOrBatchRead.OUTER_JOIN));
-        addTest(new OrderListTestModel(true, true, ChangeTracking.ATTRIBUTE, JoinFetchOrBatchRead.BATCH_READ));
+//        addTest(new OrderListTestModel(true, true, ChangeTracking.ATTRIBUTE, JoinFetchOrBatchRead.NONE));
+//        addTest(new OrderListTestModel(true, true, ChangeTracking.ATTRIBUTE, JoinFetchOrBatchRead.OUTER_JOIN));
+//        addTest(new OrderListTestModel(true, true, ChangeTracking.ATTRIBUTE, JoinFetchOrBatchRead.BATCH_READ));
 
     }
 

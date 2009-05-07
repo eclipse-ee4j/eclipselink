@@ -32,7 +32,7 @@ public class EmployeeTableCreator extends org.eclipse.persistence.tools.schemafr
     }
 
     protected void applyPROJECT() {
-        setName("Employee");
+        setName("OL_Employee");
     }
 
     protected void buildCHILDTable() {
@@ -405,7 +405,7 @@ public class EmployeeTableCreator extends org.eclipse.persistence.tools.schemafr
         field4.setIsPrimaryKey(false);
         field4.setUnique(false);
         field4.setIsIdentity(false);
-        field4.setForeignKeyFieldName("EMPLOYEE.EMP_ID");
+        field4.setForeignKeyFieldName("OL_EMPLOYEE.EMP_ID");
         tabledefinition.addField(field4);
 
         // SECTION: FIELD
