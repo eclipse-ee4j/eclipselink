@@ -375,7 +375,15 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
             setWasTransactionBegunPrematurely(true);
         }
     }
-
+    /**
+     * INTERNAL:
+     * This is internal to the uow, transactions should not be used explicitly in a uow.
+     * The uow shares its parents transactions.  Called in JTA this should not set the 
+     * transaction to rollback.
+     */
+    protected void rollbackTransaction(boolean intendedToCommitTransaction) throws DatabaseException {
+        rollbackTransaction();
+    }
     /**
      * INTERNAL
      * Synchronize the clones and update their backup copies.
