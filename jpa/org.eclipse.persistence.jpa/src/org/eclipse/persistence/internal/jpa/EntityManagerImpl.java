@@ -635,7 +635,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             // JPA 2.0 locking exception we should throw. It will be either
             // be a PessimisticLockException or a LockTimeoutException (if
             // the query was executed using a wait timeout value)
-            if (lockMode != null && lockMode.name().contains(ObjectLevelReadQuery.PESSIMISTIC)) {
+            if (lockMode != null && lockMode.name().contains(ObjectLevelReadQuery.PESSIMISTIC_)) {
                 // ask the platform if it is a lock timeout
                 if (uow.getPlatform().isLockTimeoutException(e)) {
                     throw new LockTimeoutException(e);

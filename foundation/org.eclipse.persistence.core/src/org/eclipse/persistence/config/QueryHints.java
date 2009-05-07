@@ -131,6 +131,11 @@ public class QueryHints {
      * Pessimistic locking support and behavior may differ on difference database platforms.
      * @see PessimisticLock
      * @see org.eclipse.persistence.queries.ObjectLevelReadQuery#setLockMode(short)
+     * 
+     * <B>Note:</B> As of JPA 2.0 there is a standard way to configure pessimistic locking.
+     * @see javax.persistence.LockModeType
+     * @see javax.persistence.EntityManager (find(), refresh(), lock())
+     * @see javax.persistence.Query (setLockMode())
      */
     public static final String PESSIMISTIC_LOCK = "eclipselink.pessimistic-lock";
     

@@ -963,7 +963,7 @@ public class ReportQuery extends ReadAllQuery {
                 // all have a version locking policy if the lock is set to anything 
                 // but PESSIMISTIC and NONE. Validate only those report items that
                 // are expression builders (ignoring the others)
-                if (! lockModeType.equals(PESSIMISTIC) && ! lockModeType.equals(NONE)) {
+                if (! lockModeType.equals(PESSIMISTIC_READ) && ! lockModeType.equals(PESSIMISTIC_WRITE) && ! lockModeType.equals(NONE)) {
                     for (ReportItem reportItem : (Vector<ReportItem>) getItems()) {
                         if (reportItem.getAttributeExpression() != null && reportItem.getAttributeExpression().isExpressionBuilder()) {
                             OptimisticLockingPolicy lockingPolicy = reportItem.getDescriptor().getOptimisticLockingPolicy();

@@ -189,10 +189,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testSerializedLazy"));
         suite.addTest(new EntityManagerJUnitTestSuite("testCloneable"));
         suite.addTest(new EntityManagerJUnitTestSuite("testLeftJoinOneToOneQuery"));
-        /* KERNEL-SRG-TEMP
         suite.addTest(new EntityManagerJUnitTestSuite("testLockingLeftJoinOneToOneQuery"));
         suite.addTest(new EntityManagerJUnitTestSuite("testLockingLeftJoinOneToOneQuery2"));
-*/
         suite.addTest(new EntityManagerJUnitTestSuite("testNullifyAddressIn"));
         suite.addTest(new EntityManagerJUnitTestSuite("testQueryOnClosedEM"));
         suite.addTest(new EntityManagerJUnitTestSuite("testIncorrectBatchQueryHint"));
@@ -209,9 +207,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testPersistOnNonEntity"));
         suite.addTest(new EntityManagerJUnitTestSuite("testDetachNonEntity"));
         suite.addTest(new EntityManagerJUnitTestSuite("testWRITELock"));
-        /* KERNEL-SRG-TEMP
         suite.addTest(new EntityManagerJUnitTestSuite("testOPTIMISTIC_FORCE_INCREMENTLock"));
-*/
         suite.addTest(new EntityManagerJUnitTestSuite("testReadTransactionIsolation_OriginalInCache_UpdateAll_Refresh_Flush"));
         suite.addTest(new EntityManagerJUnitTestSuite("testReadTransactionIsolation_OriginalInCache_UpdateAll_Refresh"));
         suite.addTest(new EntityManagerJUnitTestSuite("testReadTransactionIsolation_OriginalInCache_UpdateAll_Flush"));
@@ -241,19 +237,18 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testDetachManagedObject"));
         suite.addTest(new EntityManagerJUnitTestSuite("testDetachNonManagedObject"));
         suite.addTest(new EntityManagerJUnitTestSuite("testPersistRemoved"));
-        /* KERNEL-SRG-TEMP
         suite.addTest(new EntityManagerJUnitTestSuite("testREADLock"));
         suite.addTest(new EntityManagerJUnitTestSuite("testOPTIMISTICLock"));
-        // Temporary removal of JPA 2.0 dependency
-        //suite.addTest(new EntityManagerJUnitTestSuite("testPESSIMISTICLock"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testPESSIMISTIC_READLock"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testPESSIMISTIC_WRITELock"));
         suite.addTest(new EntityManagerJUnitTestSuite("testPESSIMISTIC_FORCE_INCREMENTLock"));
-        suite.addTest(new EntityManagerJUnitTestSuite("testPESSIMISTICLockWithNoChanges"));
-        // Temporary removal of JPA 2.0 dependency
-        //suite.addTest(new EntityManagerJUnitTestSuite("testPESSIMISTIC_TIMEOUTLock"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testPESSIMISTIC_READLockWithNoChanges"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testPESSIMISTIC_WRITELockWithNoChanges"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testPESSIMISTIC_READ_TIMEOUTLock"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testPESSIMISTIC_WRITE_TIMEOUTLock"));
         suite.addTest(new EntityManagerJUnitTestSuite("testRefreshOPTIMISTICLock"));
-        // Temporary removal of JPA 2.0 dependency
-        //suite.addTest(new EntityManagerJUnitTestSuite("testRefreshPESSIMISTICLock"));
-*/
+        suite.addTest(new EntityManagerJUnitTestSuite("testRefreshPESSIMISTIC_READLock"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testRefreshPESSIMISTIC_WRITELock"));
         suite.addTest(new EntityManagerJUnitTestSuite("testIgnoreRemovedObjectsOnDatabaseSync"));
         suite.addTest(new EntityManagerJUnitTestSuite("testIdentityOutsideTransaction"));
         suite.addTest(new EntityManagerJUnitTestSuite("testIdentityInsideTransaction"));
@@ -399,8 +394,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             fail(errorMsg);
         }
     }
-
-    /* // KERNEL_SRG_TEMP       
+ 
     public void testRefreshOPTIMISTICLock(){
         // Cannot create parallel entity managers in the server.
         if (! isOnServer()) {
@@ -481,11 +475,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             
             assertFalse("Proper exception not thrown when EntityManager.lock(object, OPTIMISTIC) is used.", optimisticLockException == null);
         }
-    }
-    */
-    /* // KERNEL_SRG_TEMP       
+    }       
     
-    public void testRefreshPESSIMISTICLock() {
+    public void testRefreshPESSIMISTIC_READLock() {
         ServerSession session = JUnitTestCase.getServerSession();
         
         // Cannot create parallel entity managers in the server.
@@ -512,7 +504,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             try {
                 beginTransaction(em);
                 dept = em.find(Department.class, dept.getId());
-                em.lock(dept, LockModeType.PESSIMISTIC);
+                em.lock(dept, LockModeType.PESSIMISTIC_READ);
                 dept.setName("New Pessimistic Department");
                 
                 EntityManager em2 = createEntityManager();
@@ -523,7 +515,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     HashMap properties = new HashMap();
                     // According to the spec a 0 indicates a NOWAIT clause.
                     properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 0);
-                    em2.refresh(dept2, LockModeType.PESSIMISTIC, properties);
+                    em2.refresh(dept2, LockModeType.PESSIMISTIC_READ, properties);
                 } catch (PersistenceException ex) {
                     if (ex instanceof javax.persistence.PessimisticLockException) {
                         pessimisticLockException = ex;
@@ -548,7 +540,70 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             assertFalse("Proper exception not thrown when EntityManager.lock(object, PESSIMISTIC) is used.", pessimisticLockException == null);
         }
     }
-    */
+    
+    public void testRefreshPESSIMISTIC_WRITELock() {
+        ServerSession session = JUnitTestCase.getServerSession();
+        
+        // Cannot create parallel entity managers in the server.
+        if (! isOnServer() && ! session.getPlatform().isMySQL() && ! session.getPlatform().isTimesTen()) {
+            EntityManager em = createEntityManager();
+            Department dept = null;
+            
+            try {
+                beginTransaction(em);
+                dept = new Department();
+                dept.setName("Pessimistic Department");
+                em.persist(dept);
+                commitTransaction(em);
+            } catch (RuntimeException ex) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+                
+                closeEntityManager(em);
+                throw ex;
+            }
+            
+            Exception pessimisticLockException = null;
+            try {
+                beginTransaction(em);
+                dept = em.find(Department.class, dept.getId());
+                em.lock(dept, LockModeType.PESSIMISTIC_WRITE);
+                dept.setName("New Pessimistic Department");
+                
+                EntityManager em2 = createEntityManager();
+                
+                try {
+                    beginTransaction(em2);
+                    Department dept2 = em2.find(Department.class, dept.getId());
+                    HashMap properties = new HashMap();
+                    // According to the spec a 0 indicates a NOWAIT clause.
+                    properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 0);
+                    em2.refresh(dept2, LockModeType.PESSIMISTIC_WRITE, properties);
+                } catch (PersistenceException ex) {
+                    if (ex instanceof javax.persistence.PessimisticLockException) {
+                        pessimisticLockException = ex;
+                    } else {
+                        throw ex;
+                    } 
+                } finally {
+                    closeEntityManager(em2);
+                }
+            
+                commitTransaction(em);
+            } catch (RuntimeException ex) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+                
+                throw ex;
+            } finally {
+                closeEntityManager(em);
+            }
+            
+            assertFalse("Proper exception not thrown when EntityManager.lock(object, PESSIMISTIC) is used.", pessimisticLockException == null);
+        }
+    }
     
     public void testRefreshRemoved() {
         // find an existing or create a new Employee
@@ -1147,8 +1202,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         
         commitTransaction(em);
     }
-    
-    /* // KERNEL_SRG_TEMP       
+
     public void testREADLock(){
         // Cannot create parallel entity managers in the server.
         if (isOnServer()) {
@@ -1386,12 +1440,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             assertFalse("Proper exception not thrown when EntityManager.lock(object, OPTIMISTIC) is used.", optimisticLockException == null);
         }
     }
-    */
-    /**
-     * This test issues a LOCK and a LOCK NOWAIT.
-     */
-    /* // KERNEL_SRG_TEMP       
-    public void testPESSIMISTICLock() {
+
+    // This test issues a LOCK and a LOCK NOWAIT.
+    public void testPESSIMISTIC_READLock() {
         ServerSession session = JUnitTestCase.getServerSession();
         
         // Cannot create parallel entity managers in the server.
@@ -1419,7 +1470,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             try {
                 beginTransaction(em);
                 dept = em.find(Department.class, dept.getId());
-                em.lock(dept, LockModeType.PESSIMISTIC);
+                em.lock(dept, LockModeType.PESSIMISTIC_READ);
                 dept.setName("New Pessimistic Department");
                 
                 EntityManager em2 = createEntityManager();
@@ -1430,7 +1481,72 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     HashMap properties = new HashMap();
                     // According to the spec a 0 indicates a NOWAIT clause.
                     properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 0);
-                    em2.lock(dept2, LockModeType.PESSIMISTIC, properties);
+                    em2.lock(dept2, LockModeType.PESSIMISTIC_READ, properties);
+                } catch (PersistenceException ex) {
+                    if (ex instanceof javax.persistence.PessimisticLockException) {
+                        pessimisticLockException = ex;
+                    } else {
+                        throw ex;
+                    } 
+                } finally {
+                    closeEntityManager(em2);
+                }
+            
+                commitTransaction(em);
+            } catch (RuntimeException ex) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+                
+                throw ex;
+            } finally {
+                closeEntityManager(em);
+            }
+            
+            assertFalse("Proper exception not thrown when EntityManager.lock(object, PESSIMISTIC) is used.", pessimisticLockException == null);
+        }
+    }
+    
+    public void testPESSIMISTIC_WRITELock() {
+        ServerSession session = JUnitTestCase.getServerSession();
+        
+        // Cannot create parallel entity managers in the server.
+        if (! isOnServer() && ! session.getPlatform().isMySQL() && ! session.getPlatform().isTimesTen()) {
+            EntityManager em = createEntityManager();
+            Department dept = null;
+            
+            try {
+                beginTransaction(em);
+                dept = new Department();
+                dept.setName("Pessimistic Department");
+                em.persist(dept);
+                commitTransaction(em);
+            } catch (RuntimeException ex) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+                
+                closeEntityManager(em);
+                throw ex;
+            }
+            
+            Exception pessimisticLockException = null;
+            
+            try {
+                beginTransaction(em);
+                dept = em.find(Department.class, dept.getId());
+                em.lock(dept, LockModeType.PESSIMISTIC_WRITE);
+                dept.setName("New Pessimistic Department");
+                
+                EntityManager em2 = createEntityManager();
+                
+                try {
+                    beginTransaction(em2);
+                    Department dept2 = em2.find(Department.class, dept.getId());
+                    HashMap properties = new HashMap();
+                    // According to the spec a 0 indicates a NOWAIT clause.
+                    properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 0);
+                    em2.lock(dept2, LockModeType.PESSIMISTIC_WRITE, properties);
                 } catch (PersistenceException ex) {
                     if (ex instanceof javax.persistence.PessimisticLockException) {
                         pessimisticLockException = ex;
@@ -1497,7 +1613,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
     }
     
-    public void testPESSIMISTICLockWithNoChanges() {        
+    public void testPESSIMISTIC_READLockWithNoChanges() {        
         Employee employee = null;
         Integer version1;
         
@@ -1523,7 +1639,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         
         try {
             beginTransaction(em);
-            employee = em.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC);
+            employee = em.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC_READ);
             commitTransaction(em);
             
             assertTrue("The version was updated on the pessimistic lock.", version1.intValue() == employee.getVersion().intValue());
@@ -1538,7 +1654,48 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
     }
     
-    public void testPESSIMISTIC_TIMEOUTLock() {
+    public void testPESSIMISTIC_WRITELockWithNoChanges() {        
+        Employee employee = null;
+        Integer version1;
+        
+        EntityManager em = createEntityManager();
+        
+        try {
+            beginTransaction(em);
+            employee = new Employee();
+            employee.setFirstName("Black");
+            employee.setLastName("Crappie");
+            em.persist(employee);
+            commitTransaction(em);
+        } catch (RuntimeException ex) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+         
+            closeEntityManager(em);
+            throw ex;
+        }
+        
+        version1 = employee.getVersion();
+        
+        try {
+            beginTransaction(em);
+            employee = em.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC_WRITE);
+            commitTransaction(em);
+            
+            assertTrue("The version was updated on the pessimistic lock.", version1.intValue() == employee.getVersion().intValue());
+        } catch (RuntimeException ex) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            
+            throw ex;
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+    
+    public void testPESSIMISTIC_READ_TIMEOUTLock() {
         ServerSession session = JUnitTestCase.getServerSession();
         
         // Cannot create parallel entity managers in the server.
@@ -1550,7 +1707,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
            
             try {
                 beginTransaction(em);
-                employee = em.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC);
+                employee = em.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC_READ);
             
                 EntityManager em2 = createEntityManager();
             
@@ -1559,7 +1716,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     
                     HashMap properties = new HashMap();
                     properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 5);
-                    Employee employee2 = em2.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC, properties);
+                    Employee employee2 = em2.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC_READ, properties);
                     employee2.setFirstName("Invalid Lock Employee");
                     commitTransaction(em2);
                 } catch (PersistenceException ex) {
@@ -1586,7 +1743,56 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             assertFalse("Proper exception not thrown when Query with LockModeType.PESSIMISTIC is used.", lockTimeOutException == null);
         }
     }
- */   
+    
+    public void testPESSIMISTIC_WRITE_TIMEOUTLock() {
+        ServerSession session = JUnitTestCase.getServerSession();
+        
+        // Cannot create parallel entity managers in the server.
+        if (! isOnServer() && ! session.getPlatform().isMySQL() && ! session.getPlatform().isTimesTen()) {
+            EntityManager em = createEntityManager();
+            List result = em.createQuery("Select employee from Employee employee").getResultList();
+            Employee employee = (Employee) result.get(0);
+            Exception lockTimeOutException = null;
+           
+            try {
+                beginTransaction(em);
+                employee = em.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC_WRITE);
+            
+                EntityManager em2 = createEntityManager();
+            
+                try {
+                    beginTransaction(em2);
+                    
+                    HashMap properties = new HashMap();
+                    properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 5);
+                    Employee employee2 = em2.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC_WRITE, properties);
+                    employee2.setFirstName("Invalid Lock Employee");
+                    commitTransaction(em2);
+                } catch (PersistenceException ex) {
+                    if (ex instanceof javax.persistence.LockTimeoutException) {
+                        lockTimeOutException = ex;
+                    } else {
+                        throw ex;
+                    } 
+                } finally {
+                    closeEntityManager(em2);
+                }
+                
+                commitTransaction(em);
+            } catch (RuntimeException ex) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+                
+                throw ex;
+            } finally {
+                closeEntityManager(em);
+            }
+        
+            assertFalse("Proper exception not thrown when Query with LockModeType.PESSIMISTIC is used.", lockTimeOutException == null);
+        }
+    }
+    
     // test for bug 4676587: 
     // CTS: AFTER A REMOVE THEN A PERSIST ON THE SAME ENTITY, CONTAINS RETURNS FALSE
     // The test performs persist, remove, persist sequence on a single object
@@ -4436,8 +4642,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         results.toString();
         closeEntityManager(em);
     }
-    /* // KERNEL_SRG_TEMP       
-    
+           
     // Test multiple items from a report query. Will verify the version on
     // only one of the results.
     public void testLockingLeftJoinOneToOneQuery() {
@@ -4511,7 +4716,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             }
         }
     }
-*/
     
     // Test the clone method works correctly with lazy attributes.
     public void testCloneable() {

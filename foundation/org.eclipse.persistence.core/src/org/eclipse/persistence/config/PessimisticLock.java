@@ -27,6 +27,11 @@ package org.eclipse.persistence.config;
  * "" could be used instead of default value PessimisticLock.DEFAULT.
  * 
  * @see QueryHints
+ * 
+ * <B>Note:</B> As of JPA 2.0 there is a standard way to configure pessimistic locking.
+ * @see javax.persistence.LockModeType
+ * @see javax.persistence.EntityManager (find(), refresh(), lock())
+ * @see javax.persistence.Query (setLockMode())
  */
 public class PessimisticLock {
     public static final String  NoLock = "NoLock";

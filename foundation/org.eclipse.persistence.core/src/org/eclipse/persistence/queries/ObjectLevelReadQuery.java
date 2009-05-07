@@ -9,6 +9,15 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/5/2009-2.0 Guy Pelletier 
+ *       - 248489: JPA 2.0 Pessimistic Locking/Lock Mode support
+ *       - Allows the configuration of pessimistic locking from JPA entity manager
+ *         functions (find, refresh, lock) and from individual query execution.
+ *         A pessimistic lock can be issued with a lock timeout value as well, in
+ *         which case, for those databases that support LOCK WAIT will cause
+ *         a LockTimeoutException to be thrown if the query fails as a result of
+ *         a timeout trying to acquire the lock. A PessimisticLockException is
+ *         thrown otherwise.
  ******************************************************************************/  
 package org.eclipse.persistence.queries;
 
@@ -44,12 +53,16 @@ import org.eclipse.persistence.logging.SessionLog;
  * @since TOPLink/Java 1.0
  */
 public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
-    // Names of the possible lock more types.
-    public static final String NONE = "NONE";
-    public static final String PESSIMISTIC = "PESSIMISTIC";
-    public static final String PESSIMISTIC_FORCE_INCREMENT = "PESSIMISTIC_FORCE_INCREMENT";
+    /** Names of the possible lock mode types, JPA 1.0 and 2.0 */
     public static final String READ = "READ";
     public static final String WRITE = "WRITE";
+    
+    /** Names of the possible lock mode types, JPA 2.0 only */
+    public static final String NONE = "NONE";
+    public static final String PESSIMISTIC_ = "PESSIMISTIC_";
+    public static final String PESSIMISTIC_READ = PESSIMISTIC_ + "READ";
+    public static final String PESSIMISTIC_WRITE = PESSIMISTIC_ + "WRITE";
+    public static final String PESSIMISTIC_FORCE_INCREMENT = PESSIMISTIC_ + "FORCE_INCREMENT";
     public static final String OPTIMISTIC = "OPTIMISTIC";
     public static final String OPTIMISTIC_FORCE_INCREMENT = "OPTIMISTIC_FORCE_INCREMENT";
     
@@ -1823,7 +1836,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         if (lockModeType != null) {
             if (lockModeType.equals(NONE)) {
                 setLockMode(ObjectBuildingQuery.NO_LOCK);
-            } else if (lockModeType.contains(PESSIMISTIC)) {
+            } else if (lockModeType.contains(PESSIMISTIC_)) {
                 // If no wait timeout was set from a query hint, grab the
                 // default one from the session if one is available.
                 Integer timeout = (waitTimeout == null) ? getSession().getPessimisticLockTimeoutDefault() : waitTimeout;
@@ -2152,7 +2165,8 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      *  - READ
      *  - OPTIMISTIC
      *  - OPTIMISTIC_FORCE_INCREMENT
-     *  - PESSIMISTIC
+     *  - PESSIMISTIC_READ
+     *  - PESSIMISTIC_WRITE
      *  - PESSIMISTIC_FORCE_INCREMENT
      *  - NONE
      * Setting a null type will do nothing.
@@ -2165,7 +2179,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             OptimisticLockingPolicy lockingPolicy = session.getDescriptor(getReferenceClass()).getOptimisticLockingPolicy();
         
             if (lockingPolicy == null || !(lockingPolicy instanceof VersionLockingPolicy)) {
-                if (! lockModeType.equals(PESSIMISTIC) && ! lockModeType.equals(NONE)) {
+                if (! lockModeType.equals(PESSIMISTIC_READ) && ! lockModeType.equals(PESSIMISTIC_WRITE) && ! lockModeType.equals(NONE)) {
                     // Any locking mode other than PESSIMISTIC and NONE needs a 
                     // version locking policy to be present, otherwise return a
                     // failure flag of true.

@@ -14,12 +14,17 @@
 package org.eclipse.persistence.testing.tests.jpa.jpql;
 
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.persistence.FlushModeType;
+import javax.persistence.LockModeType;
+import javax.persistence.OptimisticLockException;
+import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import javax.persistence.EntityManager;
+import javax.persistence.RollbackException;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -38,6 +43,7 @@ import org.eclipse.persistence.queries.Cursor;
 import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.queries.ScrollableCursor;
 import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.server.ServerSession;
 
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.QuerySQLTracker;
@@ -90,17 +96,15 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         suite.addTest(new AdvancedQueryTestSuite("testQueryExactPrimaryKeyCacheHits"));
         suite.addTest(new AdvancedQueryTestSuite("testQueryTypeCacheHits"));
         suite.addTest(new AdvancedQueryTestSuite("testQueryCache"));
-/* KERNEL-SRG-TEMP
         suite.addTest(new AdvancedQueryTestSuite("testQueryREADLock"));
         suite.addTest(new AdvancedQueryTestSuite("testQueryWRITELock"));
         suite.addTest(new AdvancedQueryTestSuite("testQueryOPTIMISTICLock"));
         suite.addTest(new AdvancedQueryTestSuite("testQueryOPTIMISTIC_FORCE_INCREMENTLock"));
-        // Temporary removal of JPA 2.0 dependency
-        //suite.addTest(new AdvancedQueryTestSuite("testQueryPESSIMISTICLock"));
+        suite.addTest(new AdvancedQueryTestSuite("testQueryPESSIMISTIC_READLock"));
+        suite.addTest(new AdvancedQueryTestSuite("testQueryPESSIMISTIC_WRITELock"));
         suite.addTest(new AdvancedQueryTestSuite("testQueryPESSIMISTIC_FORCE_INCREMENTLock"));
-        // Temporary removal of JPA 2.0 dependency
-        //suite.addTest(new AdvancedQueryTestSuite("testQueryPESSIMISTICTIMEOUTLock"));
-*/        
+        suite.addTest(new AdvancedQueryTestSuite("testQueryPESSIMISTIC_READ_TIMEOUTLock"));
+        suite.addTest(new AdvancedQueryTestSuite("testQueryPESSIMISTIC_WRITE_TIMEOUTLock"));        
         suite.addTest(new AdvancedQueryTestSuite("testObjectResultType"));
         suite.addTest(new AdvancedQueryTestSuite("testNativeResultType"));
         suite.addTest(new AdvancedQueryTestSuite("testCursors"));
@@ -775,8 +779,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             }
         }
     }
-    
-    /* // KERNEL_SRG_TEMP       
+       
     public void testQueryREADLock(){
         // Cannot create parallel entity managers in the server.
         if (isOnServer()) {
@@ -1007,7 +1010,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         }
     }
     
-    public void testQueryPESSIMISTICLock() {
+    public void testQueryPESSIMISTIC_READLock() {
         ServerSession session = JUnitTestCase.getServerSession();
         
         // Cannot create parallel entity managers in the server.
@@ -1019,7 +1022,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                 beginTransaction(em);
             
                 // Find all the departments and lock them.
-                List employees = em.createQuery("Select employee from Employee employee").setLockMode(LockModeType.PESSIMISTIC).getResultList();
+                List employees = em.createQuery("Select employee from Employee employee").setLockMode(LockModeType.PESSIMISTIC_READ).getResultList();
                 Employee employee = (Employee) employees.get(0);
                 employee.setFirstName("New Pessimistic Employee");
             
@@ -1031,7 +1034,60 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                     Employee employee2 = em2.find(Employee.class, employee.getId());
                     HashMap properties = new HashMap();
                     properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 0);
-                    em2.lock(employee2, LockModeType.PESSIMISTIC, properties);
+                    em2.lock(employee2, LockModeType.PESSIMISTIC_READ, properties);
+                    employee2.setFirstName("Invalid Lock Employee");
+                    
+                    commitTransaction(em2);
+                } catch (PersistenceException ex) {
+                    if (ex instanceof javax.persistence.PessimisticLockException) {
+                        pessimisticLockException = ex;
+                    } else {
+                        throw ex;
+                    } 
+                } finally {
+                    closeEntityManager(em2);
+                }
+                
+                commitTransaction(em);
+            } catch (RuntimeException ex) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+                
+                throw ex;
+            } finally {
+                closeEntityManager(em);
+            }
+        
+            assertFalse("Proper exception not thrown when Query with LockModeType.PESSIMISTIC is used.", pessimisticLockException == null);
+        }
+    }
+    
+    public void testQueryPESSIMISTIC_WRITELock() {
+        ServerSession session = JUnitTestCase.getServerSession();
+        
+        // Cannot create parallel entity managers in the server.
+        if (! isOnServer() && ! session.getPlatform().isMySQL() && ! session.getPlatform().isTimesTen()) {
+            EntityManager em = createEntityManager();
+            Exception pessimisticLockException = null;
+        
+            try {
+                beginTransaction(em);
+            
+                // Find all the departments and lock them.
+                List employees = em.createQuery("Select employee from Employee employee").setLockMode(LockModeType.PESSIMISTIC_WRITE).getResultList();
+                Employee employee = (Employee) employees.get(0);
+                employee.setFirstName("New Pessimistic Employee");
+            
+                EntityManager em2 = createEntityManager();
+            
+                try {
+                    beginTransaction(em2);
+                
+                    Employee employee2 = em2.find(Employee.class, employee.getId());
+                    HashMap properties = new HashMap();
+                    properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 0);
+                    em2.lock(employee2, LockModeType.PESSIMISTIC_WRITE, properties);
                     employee2.setFirstName("Invalid Lock Employee");
                     
                     commitTransaction(em2);
@@ -1106,7 +1162,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         }
     }
     
-    public void testQueryPESSIMISTICTIMEOUTLock() {
+    public void testQueryPESSIMISTIC_READ_TIMEOUTLock() {
         ServerSession session = JUnitTestCase.getServerSession();
         
         // Cannot create parallel entity managers in the server.
@@ -1121,7 +1177,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                 
                 // Query by primary key.
                 Query query = em.createQuery("Select employee from Employee employee where employee.id = :id and employee.firstName = :firstName");
-                query.setLockMode(LockModeType.PESSIMISTIC);
+                query.setLockMode(LockModeType.PESSIMISTIC_READ);
                 query.setHint(QueryHints.REFRESH, true);
                 query.setParameter("id", employee.getId());
                 query.setParameter("firstName", employee.getFirstName());
@@ -1135,7 +1191,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                 
                     // Query by primary key.
                     Query query2 = em2.createQuery("Select employee from Employee employee where employee.id = :id and employee.firstName = :firstName");
-                    query2.setLockMode(LockModeType.PESSIMISTIC);
+                    query2.setLockMode(LockModeType.PESSIMISTIC_READ);
                     query2.setHint(QueryHints.REFRESH, true);
                     query2.setHint(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 5);
                     query2.setParameter("id", employee.getId());
@@ -1166,5 +1222,67 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         
             assertFalse("Proper exception not thrown when Query with LockModeType.PESSIMISTIC is used.", lockTimeOutException == null);
         }
-    } */
+    }
+    
+    public void testQueryPESSIMISTIC_WRITE_TIMEOUTLock() {
+        ServerSession session = JUnitTestCase.getServerSession();
+        
+        // Cannot create parallel entity managers in the server.
+        if (! isOnServer() && ! session.getPlatform().isMySQL() && ! session.getPlatform().isTimesTen()) {
+            EntityManager em = createEntityManager();
+            List result = em.createQuery("Select employee from Employee employee").getResultList();
+            Employee employee = (Employee) result.get(0);
+            Exception lockTimeOutException = null;
+           
+            try {
+                beginTransaction(em);
+                
+                // Query by primary key.
+                Query query = em.createQuery("Select employee from Employee employee where employee.id = :id and employee.firstName = :firstName");
+                query.setLockMode(LockModeType.PESSIMISTIC_WRITE);
+                query.setHint(QueryHints.REFRESH, true);
+                query.setParameter("id", employee.getId());
+                query.setParameter("firstName", employee.getFirstName());
+                Employee queryResult = (Employee) query.getSingleResult();
+                queryResult.toString();
+            
+                EntityManager em2 = createEntityManager();
+            
+                try {
+                    beginTransaction(em2);
+                
+                    // Query by primary key.
+                    Query query2 = em2.createQuery("Select employee from Employee employee where employee.id = :id and employee.firstName = :firstName");
+                    query2.setLockMode(LockModeType.PESSIMISTIC_WRITE);
+                    query2.setHint(QueryHints.REFRESH, true);
+                    query2.setHint(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 5);
+                    query2.setParameter("id", employee.getId());
+                    query2.setParameter("firstName", employee.getFirstName());
+                    Employee employee2 = (Employee) query2.getSingleResult();
+                    employee2.setFirstName("Invalid Lock Employee");
+                    commitTransaction(em2);
+                } catch (PersistenceException ex) {
+                    if (ex instanceof javax.persistence.LockTimeoutException) {
+                        lockTimeOutException = ex;
+                    } else {
+                        throw ex;
+                    } 
+                } finally {
+                    closeEntityManager(em2);
+                }
+                
+                commitTransaction(em);
+            } catch (RuntimeException ex) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+                
+                throw ex;
+            } finally {
+                closeEntityManager(em);
+            }
+        
+            assertFalse("Proper exception not thrown when Query with LockModeType.PESSIMISTIC is used.", lockTimeOutException == null);
+        }
+    }
 }
