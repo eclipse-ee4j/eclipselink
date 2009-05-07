@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/07/2009-1.1.1 Guy Pelletier 
+ *       - 263904: [PATCH] ExpressionOperator doesn't compare arrays correctly
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.expressions;
 
@@ -45,6 +47,19 @@ public class ExpressionOperatorUnitTestSuite extends ExpressionTestSuite {
             throw new TestErrorException("Equals() must do comparison by selector only.");
         }
     }
+    
+    public void _testEqualsArrayTest() {
+        Vector dbStrings = new Vector();
+        dbStrings.add("one");
+        dbStrings.add("two");
+        
+        ExpressionOperator operator1 = new ExpressionOperator(0, dbStrings);
+        ExpressionOperator operator2 = new ExpressionOperator(0, dbStrings);
+                
+        if (!operator1.equals(operator2)) {
+            throw new TestErrorException("Equals() must do comparison by database strings.");
+        }
+    }
 
     public void _testIsComparisonOperatorTest() {
         ExpressionOperator operator = ExpressionOperator.getOperator(new Integer(ExpressionOperator.Between));
@@ -73,6 +88,7 @@ public class ExpressionOperatorUnitTestSuite extends ExpressionTestSuite {
         addTest(new UnitTestCase("Equals$nullTest"));
         addTest(new UnitTestCase("Equals$ObjectTest"));
         addTest(new UnitTestCase("EqualsTest"));
+        addTest(new UnitTestCase("EqualsArrayTest"));
         addTest(new UnitTestCase("IsComparisonOperatorTest"));
         addTest(new UnitTestCase("IsFunctionOperatorTest"));
         addTest(new UnitTestCase("IsLogicalOperatorTest"));

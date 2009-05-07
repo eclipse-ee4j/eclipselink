@@ -10,6 +10,8 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     Markus Karg - allow arguments to be specified multiple times in argumentIndices
+ *     05/07/2009-1.1.1 Dave Brosius 
+ *       - 263904: [PATCH] ExpressionOperator doesn't compare arrays correctly
  ******************************************************************************/  
 package org.eclipse.persistence.expressions;
 
@@ -238,7 +240,7 @@ public class ExpressionOperator implements Serializable {
         }
         ExpressionOperator operator = (ExpressionOperator) object;
         if (getSelector() == 0) {
-            return getDatabaseStrings().equals(operator.getDatabaseStrings());
+            return Arrays.equals(getDatabaseStrings(), operator.getDatabaseStrings());
         } else {
             return getSelector() == operator.getSelector();
         }
