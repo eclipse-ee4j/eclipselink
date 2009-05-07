@@ -14,6 +14,8 @@
  *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/248748</link>
  *     11/06/2008-1.1M5 Michael O'Brien 
  *       - 248746: Add getModuleName() implementation and new getApplicationName()
+ *     05/07/2009-1.1.1 Dave Brosius 
+ *       - 265755: [PATCH] Set application name correctly 
  ******************************************************************************/  
 package org.eclipse.persistence.platform.server.wls;
 
@@ -349,7 +351,7 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform {
 
             // defer to the superclass implementation            
             if(null == jpaApplicationName) {
-                 jpaModuleName = super.getApplicationName();
+            	jpaApplicationName = super.getApplicationName();
              }
             
             // If we are running a version of WebLogic 10.3 that does not support ExecuteThreadRuntime (from 10.3+) then use the ClassLoader                    
