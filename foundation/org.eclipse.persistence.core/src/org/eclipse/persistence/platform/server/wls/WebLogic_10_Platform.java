@@ -17,8 +17,6 @@
  *     31/03/2009-1.1.1 Michael O'Brien 
  *       - 265369: Cache runtimeServicesMBean until unregistration 
  *       - backport of trunk 3309 27/01/2009 in bug# 256944 (except registration root)
- *     07/05/2009-1.1.1 Dave Brosius 
- *       - 265755: [PATCH] Set application name correctly 
  ******************************************************************************/  
 package org.eclipse.persistence.platform.server.wls;
 
@@ -355,7 +353,7 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform {
 
             // defer to the superclass implementation            
             if(null == jpaApplicationName) {
-            	jpaApplicationName = super.getApplicationName();
+                 jpaModuleName = super.getApplicationName();
              }
             
             // If we are running a version of WebLogic 10.3 that does not support ExecuteThreadRuntime (from 10.3+) then use the ClassLoader                    
