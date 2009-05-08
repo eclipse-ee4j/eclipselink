@@ -479,7 +479,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     
     public void testRefreshPESSIMISTIC_READLock() {
         ServerSession session = JUnitTestCase.getServerSession();
-        
+        Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", JUnitTestCase.getServerSession().getPlatform().isSybase());
+
         // Cannot create parallel entity managers in the server.
         if (! isOnServer() && ! session.getPlatform().isMySQL() && ! session.getPlatform().isTimesTen()) {
             EntityManager em = createEntityManager();
@@ -543,7 +544,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     
     public void testRefreshPESSIMISTIC_WRITELock() {
         ServerSession session = JUnitTestCase.getServerSession();
-        
+        Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", JUnitTestCase.getServerSession().getPlatform().isSybase());
+
         // Cannot create parallel entity managers in the server.
         if (! isOnServer() && ! session.getPlatform().isMySQL() && ! session.getPlatform().isTimesTen()) {
             EntityManager em = createEntityManager();
@@ -1444,6 +1446,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     // This test issues a LOCK and a LOCK NOWAIT.
     public void testPESSIMISTIC_READLock() {
         ServerSession session = JUnitTestCase.getServerSession();
+        Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", JUnitTestCase.getServerSession().getPlatform().isSybase());
         
         // Cannot create parallel entity managers in the server.
         if (! isOnServer() && ! session.getPlatform().isMySQL() && ! session.getPlatform().isTimesTen()) {
@@ -1509,7 +1512,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     
     public void testPESSIMISTIC_WRITELock() {
         ServerSession session = JUnitTestCase.getServerSession();
-        
+        Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", JUnitTestCase.getServerSession().getPlatform().isSybase());
+
         // Cannot create parallel entity managers in the server.
         if (! isOnServer() && ! session.getPlatform().isMySQL() && ! session.getPlatform().isTimesTen()) {
             EntityManager em = createEntityManager();
@@ -1575,7 +1579,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     public void testPESSIMISTIC_FORCE_INCREMENTLock() {        
         Employee employee = null;
         Integer version1;
-        
+        Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", JUnitTestCase.getServerSession().getPlatform().isSybase());
+
         EntityManager em = createEntityManager();
         
         try {
@@ -1616,7 +1621,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     public void testPESSIMISTIC_READLockWithNoChanges() {        
         Employee employee = null;
         Integer version1;
-        
+        Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", JUnitTestCase.getServerSession().getPlatform().isSybase());
+
         EntityManager em = createEntityManager();
         
         try {
@@ -1657,7 +1663,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     public void testPESSIMISTIC_WRITELockWithNoChanges() {        
         Employee employee = null;
         Integer version1;
-        
+        Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", JUnitTestCase.getServerSession().getPlatform().isSybase());
+
         EntityManager em = createEntityManager();
         
         try {
@@ -1697,7 +1704,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     
     public void testPESSIMISTIC_READ_TIMEOUTLock() {
         ServerSession session = JUnitTestCase.getServerSession();
-        
+        Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", JUnitTestCase.getServerSession().getPlatform().isSybase());
+
         // Cannot create parallel entity managers in the server.
         if (! isOnServer() && ! session.getPlatform().isMySQL() && ! session.getPlatform().isTimesTen()) {
             EntityManager em = createEntityManager();
@@ -1746,7 +1754,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     
     public void testPESSIMISTIC_WRITE_TIMEOUTLock() {
         ServerSession session = JUnitTestCase.getServerSession();
-        
+        Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", JUnitTestCase.getServerSession().getPlatform().isSybase());
+
         // Cannot create parallel entity managers in the server.
         if (! isOnServer() && ! session.getPlatform().isMySQL() && ! session.getPlatform().isTimesTen()) {
             EntityManager em = createEntityManager();
@@ -7613,6 +7622,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
     }
     public void testEMCloseAndOpen(){
+        Assert.assertFalse("Warning Sybase Driver does not handle testEMCloseAndOpen appropriately.",  JUnitTestCase.getServerSession().getPlatform().isSQLServer() || JUnitTestCase.getServerSession().getPlatform().isSybase() || JUnitTestCase.getServerSession().getPlatform().isSybase());
+
         if (isOnServer()) {
             // Uses DefaultConnector.
             return;
@@ -7772,6 +7783,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             // Uses DefaultConnector.
             return;
         }
+        Assert.assertFalse("Warning Sybase Driver does not handle testEMCloseAndOpen appropriately.",  JUnitTestCase.getServerSession().getPlatform().isSQLServer() || JUnitTestCase.getServerSession().getPlatform().isSybase() || JUnitTestCase.getServerSession().getPlatform().isSybase());
         
         // cache the driver name
         String driverName = ((EntityManagerFactoryImpl)getEntityManagerFactory()).getServerSession().getLogin().getDriverClassName();
