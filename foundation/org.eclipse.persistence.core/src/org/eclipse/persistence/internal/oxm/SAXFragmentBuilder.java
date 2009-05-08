@@ -32,17 +32,27 @@ import org.eclipse.persistence.platform.xml.SAXDocumentBuilder;
  */
 public class SAXFragmentBuilder extends SAXDocumentBuilder {
     private UnmarshalRecord owningRecord;
-
+    
     public SAXFragmentBuilder(UnmarshalRecord unmarshalRecord) {
         super();
-        owningRecord = unmarshalRecord;
+        owningRecord = unmarshalRecord;        
     }
 
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
         if ((null != namespaceURI) && ("".equals(namespaceURI))) {
             namespaceURI = null;
         }
-
+        if(qName == null){        	
+            qName = localName;
+            if(namespaceURI != null){
+                if(owningRecord != null){
+                    String prefix = owningRecord.resolveNamespaceUri(namespaceURI);
+                    if(prefix != null && !prefix.equals("")){
+                        qName = prefix +":" + qName;
+                    }
+                }
+             }
+        }
         int qNameColonIndex = qName.indexOf(":");
         if ((namespaceURI != null) && (qNameColonIndex == -1)) {
             //check for a prefix from the unmarshal record:
@@ -134,9 +144,9 @@ public class SAXFragmentBuilder extends SAXDocumentBuilder {
             }
 
             //just the doc left in the stack. Finish this off.
-            //mapping.setAttributeValueInObject(owningRecord.getObject(), getDocument().getDocumentElement());
             owningRecord.getXMLReader().setContentHandler(owningRecord);
             owningRecord.endElement(namespaceURI, localName, qName);
+
         } else {
             super.endElement(namespaceURI, localName, qName);
         }
@@ -174,5 +184,5 @@ public class SAXFragmentBuilder extends SAXDocumentBuilder {
         }
         return null;
 
-    }
+    }    
 }

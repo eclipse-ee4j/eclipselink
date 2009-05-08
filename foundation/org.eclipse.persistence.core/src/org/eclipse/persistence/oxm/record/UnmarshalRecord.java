@@ -91,7 +91,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
     private UnmarshalRecord childRecord;
     private UnmarshalRecord parentRecord;
     private DOMRecord transformationRecord;
-    private List selfRecords;
+    private List selfRecords;    
     private Map indexMap;
     private Map namespaceMap;
     private Map uriToPrefixMap;
@@ -110,7 +110,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
     private String schemaLocation;
     private String noNamespaceSchemaLocation;
     private boolean isSelfRecord;
-    private UnmarshalContext unmarshalContext;
+    private UnmarshalContext unmarshalContext;    
 
     public UnmarshalRecord(TreeObjectBuilder treeObjectBuilder) {
         super();
@@ -196,7 +196,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
      */
     public String getRootElementNamespaceUri() {
         return rootElementNamespaceUri;
-    }
+    }     
 
     public void setParentRecord(UnmarshalRecord parentRecord) {
         this.parentRecord = parentRecord;
@@ -380,7 +380,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
 
             if (null != xPathNode.getSelfChildren()) {
                 int selfChildrenSize = xPathNode.getSelfChildren().size();
-                selfRecords = new ArrayList(selfChildrenSize);
+                selfRecords = new ArrayList(selfChildrenSize);                
                 XPathNode selfNode;
                 for (int x = 0; x < selfChildrenSize; x++) {
                     selfNode = (XPathNode)xPathNode.getSelfChildren().get(x);
@@ -402,11 +402,27 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
     public void endDocument() throws SAXException {
         Object object = this.getCurrentObject();
         if (null != selfRecords) {
-            int selfRecordsSize = selfRecords.size();
+            int selfRecordsSize = selfRecords.size();                     
             for (int x = 0; x < selfRecordsSize; x++) {
-                ((UnmarshalRecord)selfRecords.get(x)).endDocument();
+            	UnmarshalRecord selfRecord = ((UnmarshalRecord)selfRecords.get(x));            	
+            	if(selfRecord != null){                        	
+                    selfRecord.endDocument();
+            	}
             }
         }
+        
+        if (null != xPathNode.getSelfChildren()) {
+            int selfChildrenSize = xPathNode.getSelfChildren().size();
+            selfRecords = new ArrayList(selfChildrenSize);            
+            XPathNode selfNode;
+            for (int x = 0; x < selfChildrenSize; x++) {
+                selfNode = (XPathNode)xPathNode.getSelfChildren().get(x);
+                if (null != selfNode.getNodeValue()) {
+                	selfNode.getNodeValue().endSelfNodeValue(this, attributes);
+                }
+            }
+        }
+        
         try {
             // PROCESS COLLECTION MAPPINGS
             if (null != containersMap) {
@@ -536,14 +552,20 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
             rootElementName = qName;
             rootElementNamespaceUri = namespaceURI;
             schemaLocation = atts.getValue(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_LOCATION);
-            noNamespaceSchemaLocation = atts.getValue(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.NO_NS_SCHEMA_LOCATION);
+            noNamespaceSchemaLocation = atts.getValue(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.NO_NS_SCHEMA_LOCATION);                  
         }
 
         try {
             if (null != selfRecords) {
-                int selfRecordsSize = selfRecords.size();
-                for (int x = 0; x < selfRecordsSize; x++) {
-                    ((UnmarshalRecord)selfRecords.get(x)).startElement(namespaceURI, localName, qName, atts);
+                int selfRecordsSize = selfRecords.size();                
+                for (int x = 0; x < selfRecordsSize; x++) {                
+                    UnmarshalRecord selfRecord =((UnmarshalRecord)selfRecords.get(x));                	
+                    if(selfRecord == null){                		
+                        getFragmentBuilder().startElement(namespaceURI, localName, qName, atts);
+                        getXMLReader().setContentHandler(getFragmentBuilder());                		
+                    }else{
+                        selfRecord.startElement(namespaceURI, localName, qName, atts);
+                    }                                        
                 }
             }
 
@@ -609,12 +631,14 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
                     }
 
                     //Look for any Self-Mapping nodes that may want this attribute.
-                    if (this.selfRecords != null) {
+                    if (this.selfRecords != null) {                    	                                                 
                         for (int j = 0; j < selfRecords.size(); j++) {
-                            UnmarshalRecord nestedRecord = ((UnmarshalRecord)selfRecords.get(j));
-                            attributeNodeValue = nestedRecord.getAttributeChildNodeValue(attNamespace, attLocalName);
-                            if (attributeNodeValue != null) {
-                                attributeNodeValue.attribute(nestedRecord, attNamespace, attLocalName, value);
+                            UnmarshalRecord nestedRecord = ((UnmarshalRecord)selfRecords.get(j));                        	
+                            if(nestedRecord != null){
+                                attributeNodeValue = nestedRecord.getAttributeChildNodeValue(attNamespace, attLocalName);                                
+                                if (attributeNodeValue != null) {
+                                    attributeNodeValue.attribute(nestedRecord, attNamespace, attLocalName, value);
+                                }
                             }
                         }
                     }
@@ -670,7 +694,10 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
             if (null != selfRecords) {
                 int selfRecordsSize = selfRecords.size();
                 for (int x = 0; x < selfRecordsSize; x++) {
-                    ((UnmarshalRecord)selfRecords.get(x)).endElement(namespaceURI, localName, qName);
+                    UnmarshalRecord selfRecord = ((UnmarshalRecord)selfRecords.get(x));            	
+                    if(selfRecord != null){
+                        selfRecord.endElement(namespaceURI, localName, qName);
+                    }
                 }
             }
 
@@ -725,7 +752,10 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
             if (null != selfRecords) {
                 int selfRecordsSize = selfRecords.size();
                 for (int x = 0; x < selfRecordsSize; x++) {
-                    ((UnmarshalRecord)selfRecords.get(x)).characters(ch, start, length);
+                    UnmarshalRecord selfRecord = ((UnmarshalRecord)selfRecords.get(x));            	
+                    if(selfRecord != null){
+                        selfRecord.characters(ch, start, length);
+                    }
                 }
             }
 
@@ -864,9 +894,11 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
         if (this.selfRecords != null) {
             for (int i = 0; i < selfRecords.size(); i++) {
                 UnmarshalRecord nestedRecord = ((UnmarshalRecord)selfRecords.get(i));
-                NodeValue node = nestedRecord.getAttributeChildNodeValue(namespace, localName);
-                if (node != null) {
-                    return node;
+                if(nestedRecord != null){
+                    NodeValue node = nestedRecord.getAttributeChildNodeValue(namespace, localName);
+                    if (node != null) {
+                        return node;
+                    }
                 }
             }
         }

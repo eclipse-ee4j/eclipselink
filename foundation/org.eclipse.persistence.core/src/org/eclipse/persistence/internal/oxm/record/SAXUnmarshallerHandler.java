@@ -266,6 +266,7 @@ public class SAXUnmarshallerHandler implements ContentHandler {
             }
             unmarshalRecord.setUnmarshaller(this.unmarshaller);
             unmarshalRecord.setXMLReader(this.getXMLReader());
+            unmarshalRecord.setAttributes(atts);
             unmarshalRecord.startDocument();
             unmarshalRecord.setNamespaceMap(namespaceMap);
             unmarshalRecord.setUriToPrefixMap(uriToPrefixMap);

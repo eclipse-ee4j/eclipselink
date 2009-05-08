@@ -101,34 +101,34 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
 
     protected XMLDescriptor findReferenceDescriptor(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts, DatabaseMapping mapping, UnmarshalKeepAsElementPolicy policy) {
         XMLDescriptor returnDescriptor = null;
-        XMLContext xmlContext = unmarshalRecord.getUnmarshaller().getXMLContext();
-
         //try xsi:type
-        String schemaType = atts.getValue(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
-        if ((schemaType != null) && (!schemaType.equals(""))) {
-            XPathFragment frag = new XPathFragment();
-            frag.setXPath(schemaType);
-
-            QName qname = null;
-            if (frag.hasNamespace()) {
-                String prefix = frag.getPrefix();
-                String url = unmarshalRecord.resolveNamespacePrefix(prefix);
-                frag.setNamespaceURI(url);
-                
-                qname = new QName(url, frag.getLocalName());
-                unmarshalRecord.setTypeQName(qname);
-            }
-            returnDescriptor = xmlContext.getDescriptorByGlobalType(frag);
-            if(returnDescriptor == null){
-                if(policy ==null || (policy != null && policy != UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT && policy != UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)){
-                    Class theClass = (Class)((XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager()).getDefaultXMLTypes().get(qname);
-                    if(theClass == null){
-                        throw XMLMarshalException.noDescriptorFound(mapping);
-                    }                   
+        if(atts != null){           
+            XMLContext xmlContext = unmarshalRecord.getUnmarshaller().getXMLContext();
+            String schemaType = atts.getValue(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
+            if ((schemaType != null) && (!schemaType.equals(""))) {
+                XPathFragment frag = new XPathFragment();
+                frag.setXPath(schemaType);
+    
+                QName qname = null;
+                if (frag.hasNamespace()) {
+                    String prefix = frag.getPrefix();
+                    String url = unmarshalRecord.resolveNamespacePrefix(prefix);
+                    frag.setNamespaceURI(url);
+                    
+                    qname = new QName(url, frag.getLocalName());
+                    unmarshalRecord.setTypeQName(qname);
                 }
-           }
-        } 
-        
+                returnDescriptor = xmlContext.getDescriptorByGlobalType(frag);
+                if(returnDescriptor == null){
+                    if(policy ==null || (policy != null && policy != UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT && policy != UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)){
+                        Class theClass = (Class)((XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager()).getDefaultXMLTypes().get(qname);
+                        if(theClass == null){
+                            throw XMLMarshalException.noDescriptorFound(mapping);
+                        }                   
+                    }
+               }
+            } 
+        }
         return returnDescriptor;
     }
 
@@ -187,11 +187,11 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
         }
         
         if (isCollection) {
-        	if(collection != null){
-        		unmarshalRecord.addAttributeValue((ContainerValue) this, node, collection);
-        	}else{
-        		unmarshalRecord.addAttributeValue((ContainerValue) this, node);
-        	}
+            if(collection != null){
+                unmarshalRecord.addAttributeValue((ContainerValue) this, node, collection);
+            }else{
+                unmarshalRecord.addAttributeValue((ContainerValue) this, node);
+            }
         } else {
             unmarshalRecord.setAttributeValue(node, (DatabaseMapping) mapping);
         }

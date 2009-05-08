@@ -602,8 +602,19 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
         }
         // handle "self" xpath
         if (((XMLField) getField()).isSelfField()) {
-            XMLObjectBuilder objectBuilder = (XMLObjectBuilder) this.getReferenceDescriptor(attributeValue.getClass(), session).getObjectBuilder();
-            objectBuilder.buildIntoNestedRow(record, attributeValue, session);
+             if (((keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) || (keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)) && attributeValue instanceof org.w3c.dom.Node) {
+                 //write out node
+            	 org.w3c.dom.Document doc = record.getDocument();
+            	 Node root = record.getDOM();
+            	 NodeList children = ((Node) attributeValue).getChildNodes();
+            	 for(int i=0;i<children.getLength(); i++){
+                     Node importedCopy = doc.importNode(children.item(i), true);                     
+                     root.appendChild(importedCopy);
+                 }
+             }else{      
+                 XMLObjectBuilder objectBuilder = (XMLObjectBuilder) this.getReferenceDescriptor(attributeValue.getClass(), session).getObjectBuilder();
+                 objectBuilder.buildIntoNestedRow(record, attributeValue, session);
+             }
         } else {
             Object fieldValue = null;
             if (attributeValue != null) {                               
