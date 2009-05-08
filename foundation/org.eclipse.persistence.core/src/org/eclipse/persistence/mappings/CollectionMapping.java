@@ -505,6 +505,9 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                     if(this.listOrderField != null) {
                         extraData = new HashMap(1);
                         Integer addedIndexInList = (Integer)record.getOrderedAddObjectIndices().get(addedChangeSet);
+                        if(addedIndexInList == null) {
+                            addedIndexInList = ((List)currentObjects).indexOf(addedChangeSet.getUnitOfWorkClone());
+                        }
                         extraData.put(listOrderField, addedIndexInList);
                     }
                     objectAddedDuringUpdate(query, getContainerPolicy().getCloneDataFromChangeSet(addedChangeSet), addedChangeSet, extraData);
@@ -521,7 +524,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                         // previousList is not available
                         
                         // The same size as previous list,
-                        // at the i-th position holds the index of the i-th object in previous list in the current list (-1 if the object was removed): 
+                        // at the i-th position holds the index of the i-th original object in the current list (-1 if the object was removed): 
                         // for example: {0, -1, 1, -1, 3} means that:
                         //   previous(0) == current(0);
                         //   previous(1) was removed;
@@ -529,11 +532,11 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                         //   previous(3) was removed;
                         //   previous(4) == current(3);
                         // current(1) and current(3) were also on previous list, but with different indexes: they are the ones that should have their index changed. 
-                        List<Integer> previousIndexes = record.getOriginalIndexes(currentList);
-                        for(int i=0; i < previousIndexes.size(); i++) {
-                            int prevIndex = previousIndexes.get(i);
-                            if(prevIndex != i && prevIndex >= 0) {
-                                objectOrderChangedDuringUpdate(query, currentList.get(i), i);
+                        List<Integer> currentIndexes = record.getCurrentIndexesOfOriginalObjects(currentList);
+                        for(int i=0; i < currentIndexes.size(); i++) {
+                            int currentIndex = currentIndexes.get(i);
+                            if(currentIndex != i && currentIndex >= 0) {
+                                objectOrderChangedDuringUpdate(query, currentList.get(currentIndex), currentIndex);
                             }
                         }
                     } else {

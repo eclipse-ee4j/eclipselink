@@ -439,7 +439,7 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
     
     /**
      * The same size as original list,
-     * at the i-th position holds the index of the i-th object in previous list in the current list (-1 if the object was removed):
+     * at the i-th position holds the index of the i-th original object in the current list (-1 if the object was removed):
      * for example: {0, -1, 1, -1, 3} means that:
      *   previous(0) == current(0);
      *   previous(1) was removed;
@@ -447,11 +447,11 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
      *   previous(3) was removed;
      *   previous(4) == current(3);
      */
-    public List<Integer> getOriginalIndexes(List newList) {
+    public List<Integer> getCurrentIndexesOfOriginalObjects(List newList) {
         int newSize = newList.size();
-        List<Integer> originalIndexesList = new ArrayList(newSize);
+        List<Integer> currentIndexes = new ArrayList(newSize);
         for(int i=0; i < newSize; i++) {
-            originalIndexesList.add(i);
+            currentIndexes.add(i);
         }
         for (int i = this.orderedChangeObjectList.size() - 1; i>=0; i--) {
             OrderedChangeObject  orderedChange = (OrderedChangeObject)orderedChangeObjectList.get(i);
@@ -461,20 +461,20 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
             if(changeType == CollectionChangeEvent.ADD) {
                 // the object was added - remove the corresponding index
                 if(index == null) {
-                    originalIndexesList.remove(originalIndexesList.size()-1);
+                    currentIndexes.remove(currentIndexes.size()-1);
                 } else {
-                    originalIndexesList.remove(index.intValue());
+                    currentIndexes.remove(index.intValue());
                 }
             } else if(changeType == CollectionChangeEvent.REMOVE) {
                 // the object was removed - add its index in the new list 
                 if(index == null) {
                     throw ValidationException.collectionRemoveEventWithNoIndex(getMapping());
                 } else {
-                    originalIndexesList.add(index.intValue(), newList.indexOf(obj));
+                    currentIndexes.add(index.intValue(), newList.indexOf(obj));
                 }
             }
         }
-        return originalIndexesList;
+        return currentIndexes;
     }
     
     /**
