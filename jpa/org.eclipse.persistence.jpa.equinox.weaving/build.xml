@@ -117,7 +117,10 @@
             <fileset dir="${classes.dir}">
                 <include name="org/eclipse/persistence/**/*.class"/>
             </fileset>
-        </jar>
+             <fileset dir="${weaving.build.location}">
+                <include name="hookconfigurators.properties"/>
+            </fileset>
+       </jar>
         <jar jarfile="${weaving.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar">
              <manifest>
                 <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
@@ -138,10 +141,6 @@
             </fileset>
             <fileset dir="${src.dir}">
                 <include name="org/eclipse/persistence/**/*.java"/>
-            </fileset>
-            <fileset dir="${resource.dir}">
-                <include name="org/eclipse/persistence/**/*.xsd"/>
-                <include name="META-INF/services/javax.persistence.spi.PersistenceProvider"/>
             </fileset>
         </jar>
     </target>

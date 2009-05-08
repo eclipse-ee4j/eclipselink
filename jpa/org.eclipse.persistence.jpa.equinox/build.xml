@@ -138,10 +138,6 @@
             <fileset dir="${src.dir}">
                 <include name="org/eclipse/persistence/**/*.java"/>
             </fileset>
-            <fileset dir="${resource.dir}">
-                <include name="org/eclipse/persistence/**/*.xsd"/>
-                <include name="META-INF/services/javax.persistence.spi.PersistenceProvider"/>
-            </fileset>
         </jar>
     </target>
 
