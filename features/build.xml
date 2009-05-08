@@ -28,6 +28,28 @@
 *  This buildfile contains:
 *        - targets to generate a p2 repository for eclipselink on the
 *          download site.
+*
+*  It is setup to run by "default" in test mode on a local windows machine.
+*  To use in production, it should be called after with some variables overridden:
+*        - the target repository dir 
+*        - the install location of the Eclipse SDK libraries
+*        - the version qualifier of the built bundles to sign and promote to p2
+*
+*  The commandline would look something like:
+*        ant -Dp2.SDK.install.dir=${sdk.install.dir} -Dbundle.install.file=${bundle.install.filepath} \
+*            -Dversion.qualifier=${version.qualifier} -Dp2.base.dir=${update.site.base.dir}
+*         
+*  There are some additional parameters that should be added:
+*        - flags to specify if the repos should be overwritten or built upon (would change how the repos is built)
+*        
+*  In addition, it may be useful to call into this build to access the signing target directly:
+*       <antcall target="pack-and-sign">
+*           <param name="repack" value="-repack" or ""/>          - will 'normalize' the jar
+*           <param name="pack" value="-pack" or ""/>              - will pack the jars *.jar->*.jar.gz
+*           <param name="target" value="${classes.dir}"/>         - can be a zip, jar, or directory
+*           <param name="destination" value="${p2.feature.dir}"/> - can be a zip, jar, dir or url
+*       </antcall>
+*
 *================================================================================= -->
 
 <project name="features" default="build" basedir=".">
@@ -61,6 +83,7 @@
     <property name="p2.base.dir" value="C:\__EL-RepositorySite"/>
     <property name="p2.feature.dir" value="${p2.base.dir}/features"/>
     <property name="p2.bundle.dir" value="${p2.base.dir}/plugins"/>
+    <property name="bundle.install.file" value="${feature.2.base.dir}/${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}"/>
     <!-- Output definitions -->
     <property name="p2.repository.url" value="file:/${p2.base.dir}"/>
 
@@ -79,7 +102,7 @@
     <echo message="p2.repository.url='${p2.repository.url}'"/>
 
     <!-- Make sure the bundle installer exists -->
-    <available file="${feature.2.base.dir}/${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}" property="bundle.installer.exist"/>
+    <available file="${bundle.install.file}" property="bundle.installer.exist"/>
     <available file="signing-script.sh" property="signing.script.exist"/>
 
     <!-- Need to copy only the bundles that will be in the features into the "p2.base.dir/plugins" dir
