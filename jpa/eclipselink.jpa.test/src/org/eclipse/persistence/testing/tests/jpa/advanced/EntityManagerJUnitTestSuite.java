@@ -7096,6 +7096,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             // Uses DefaultConnector.
             return;
         }
+        Assert.assertFalse("Warning Sybase Driver does not handle testEMCloseAndOpen appropriately.",  JUnitTestCase.getServerSession().getPlatform().isSQLServer() || JUnitTestCase.getServerSession().getPlatform().isSybase() || JUnitTestCase.getServerSession().getPlatform().isSybase());
+
         
         ServerSession ss = ((EntityManagerFactoryImpl)getEntityManagerFactory()).getServerSession();
         
@@ -7251,7 +7253,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             // Uses DefaultConnector.
             return;
         }
-        
+        Assert.assertFalse("Warning Sybase Driver does not handle testEMFactoryCloseAndOpen appropriately.",  JUnitTestCase.getServerSession().getPlatform().isSQLServer() || JUnitTestCase.getServerSession().getPlatform().isSybase() || JUnitTestCase.getServerSession().getPlatform().isSybase());
+
         // cache the driver name
         String driverName = ((EntityManagerFactoryImpl)getEntityManagerFactory()).getServerSession().getLogin().getDriverClassName();
         
