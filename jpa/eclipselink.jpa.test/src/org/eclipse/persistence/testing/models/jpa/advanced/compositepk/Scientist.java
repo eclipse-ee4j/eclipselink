@@ -73,7 +73,7 @@ public class Scientist {
     @ManyToOne
     @JoinColumns({
         @JoinColumn(name="DEPT_NAME", referencedColumnName="NAME"),
-        @JoinColumn(name="DEPT_ROLE", referencedColumnName="ROLE"),
+        @JoinColumn(name="DEPT_ROLE", referencedColumnName="DROLE"),
         @JoinColumn(name="DEPT_LOCATION", referencedColumnName="LOCATION")
     })
     public Department getDepartment() {

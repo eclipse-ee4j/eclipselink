@@ -327,7 +327,7 @@ public class AdvancedTableCreator extends TableCreator {
         // SECTION: FIELD
         FieldDefinition fieldID = new FieldDefinition();
         //fieldID.setName("ADV_DEPT_ID");
-		fieldID.setName("DEPARTMENT_ID");
+		fieldID.setName("Department_ID");
         fieldID.setTypeName("NUMERIC");
         fieldID.setSize(15);
         fieldID.setShouldAllowNull(false);
@@ -339,7 +339,7 @@ public class AdvancedTableCreator extends TableCreator {
         
         // SECTION: FIELD
         FieldDefinition fieldEMP = new FieldDefinition();
-        fieldEMP.setName("MANAGERS_EMP_ID");
+        fieldEMP.setName("managers_EMP_ID");
         fieldEMP.setTypeName("NUMERIC");
         fieldEMP.setSize(15);
         fieldEMP.setShouldAllowNull(false);
@@ -948,7 +948,7 @@ public class AdvancedTableCreator extends TableCreator {
     
         // SECTION: FIELD
         FieldDefinition field1 = new FieldDefinition();
-        field1.setName("PROJECTS_PROJ_ID");
+        field1.setName("projects_PROJ_ID");
         field1.setTypeName("NUMERIC");
         field1.setSize(15);
         field1.setShouldAllowNull(false );

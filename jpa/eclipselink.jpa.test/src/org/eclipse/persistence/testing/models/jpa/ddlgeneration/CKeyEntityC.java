@@ -52,7 +52,7 @@ public class CKeyEntityC {
         @JoinTable(name="DDL_CKENT_C_B",
         joinColumns={
             @JoinColumn(name="C_SEQ", referencedColumnName="SEQ"),
-            @JoinColumn(name="C_ROLE", referencedColumnName="ROLE")
+            @JoinColumn(name="C_ROLE", referencedColumnName="CROLE")
         },
         inverseJoinColumns={
             @JoinColumn(name="B_SEQ", referencedColumnName = "SEQ"),
