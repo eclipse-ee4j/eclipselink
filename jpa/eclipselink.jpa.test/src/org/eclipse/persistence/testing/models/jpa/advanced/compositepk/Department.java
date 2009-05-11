@@ -16,6 +16,7 @@ package org.eclipse.persistence.testing.models.jpa.advanced.compositepk;
 import java.util.Vector;
 import java.util.Collection;
 
+import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Entity;
@@ -48,6 +49,7 @@ public class Department {
     }
 
     @Id
+    @Column(name="DROLE")
     public String getRole() {
         return role;
     }

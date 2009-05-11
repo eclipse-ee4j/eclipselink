@@ -136,7 +136,7 @@ public class CompositePKTableCreator extends TableCreator {
         fkConstraint2.addSourceField("DEPT_LOCATION");
         fkConstraint2.setTargetTable("CMP3_DEPARTMENT");
         fkConstraint2.addTargetField("NAME");
-        fkConstraint2.addTargetField("ROLE");
+        fkConstraint2.addTargetField("DROLE");
         fkConstraint2.addTargetField("LOCATION");
         table.addForeignKeyConstraint(fkConstraint2);
        
@@ -158,7 +158,7 @@ public class CompositePKTableCreator extends TableCreator {
         table.addField(NAME_field);
     
         FieldDefinition ROLE_field = new FieldDefinition();
-        ROLE_field.setName("ROLE");
+        ROLE_field.setName("DROLE");
         ROLE_field.setTypeName("VARCHAR");
         ROLE_field.setSize(40);
         ROLE_field.setShouldAllowNull(false);
