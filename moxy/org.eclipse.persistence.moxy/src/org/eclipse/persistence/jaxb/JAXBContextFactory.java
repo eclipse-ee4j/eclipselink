@@ -30,6 +30,8 @@ import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelInputImpl;
 import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
 import org.eclipse.persistence.internal.jaxb.SessionEventListener;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.exceptions.EclipseLinkException;
+import org.eclipse.persistence.exceptions.SessionLoaderException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.sessions.Project;
 
@@ -102,14 +104,16 @@ public class JAXBContextFactory {
     }
 
     public static javax.xml.bind.JAXBContext createContext(String contextPath, ClassLoader classLoader) throws JAXBException {
+        EclipseLinkException sessionLoadingException = null;
         try {
             XMLContext xmlContext = new XMLContext(contextPath, classLoader);
             return new org.eclipse.persistence.jaxb.JAXBContext(xmlContext);
         } catch (ValidationException vex) {
             if(vex.getErrorCode() != ValidationException.NO_SESSIONS_XML_FOUND) {
-                //If something went wrong other than not finding a sessions.xml re-throw the exception
-                throw new JAXBException(vex);
+                sessionLoadingException = vex;
             }
+        } catch (SessionLoaderException ex) {
+            sessionLoadingException = ex;
         } catch (Exception ex) {
             throw new JAXBException(ex);
         }
@@ -150,7 +154,11 @@ public class JAXBContextFactory {
             }
         }
         if(classes.size() == 0) {
-            throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.noObjectFactoryOrJaxbIndexInPath(contextPath));
+            org.eclipse.persistence.exceptions.JAXBException jaxbException = org.eclipse.persistence.exceptions.JAXBException.noObjectFactoryOrJaxbIndexInPath(contextPath);
+            if(sessionLoadingException != null) {
+                jaxbException.setInternalException(sessionLoadingException);
+            }
+            throw new JAXBException(jaxbException); 
         }
         Class[] classArray = new Class[classes.size()];
         for (int i = 0; i < classes.size(); i++) {
