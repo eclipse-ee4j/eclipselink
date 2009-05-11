@@ -13,7 +13,6 @@
 package org.eclipse.persistence.oxm.mappings;
 
 import org.eclipse.persistence.exceptions.ConversionException;
-import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;

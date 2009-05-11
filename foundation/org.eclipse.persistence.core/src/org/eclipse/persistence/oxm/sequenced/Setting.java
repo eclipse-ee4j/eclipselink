@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.mappings.ContainerMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.oxm.mappings.XMLMapping;
 
 /**
  * <p>Setting objects are used to control the order in which the
