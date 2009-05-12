@@ -153,9 +153,16 @@ public interface IdentityMap extends Cloneable{
 
     /**
      * Allow for the CacheKeys to be iterated on.
+     * Read locks should be checked
      */
     public Enumeration keys();
 
+    /**
+     * Allow for the CacheKeys to be iterated on.
+     * @param checkReadLocks - true if readLocks should be checked, false otherwise.
+     */
+    public Enumeration keys(boolean checkReadLocks);
+    
     /**
      * Store the object in the cache at its primary key.
      * This is used by InsertObjectQuery, typically into the UnitOfWork identity map.

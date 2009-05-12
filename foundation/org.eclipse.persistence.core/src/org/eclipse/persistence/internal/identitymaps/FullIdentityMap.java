@@ -149,11 +149,20 @@ public class FullIdentityMap extends AbstractIdentityMap {
 
     /**
      * Allow for the cache keys to be iterated on.
+     * Read locks will be checked.
      */
     public Enumeration keys() {
-        return new IdentityMapKeyEnumeration(this);
+        return this.keys(true);
     }
 
+    /**
+     * Allow for the cache keys to be iterated on.
+     * @param checkReadLocks - true if readLocks should be checked, false otherwise.
+     */
+    public Enumeration keys(boolean checkReadLocks) {
+        return new IdentityMapKeyEnumeration(this, checkReadLocks);
+    }
+    
     /**
      * Store the object in the cache at its primary key.
      * This is used by InsertObjectQuery, typically into the UnitOfWork identity map.

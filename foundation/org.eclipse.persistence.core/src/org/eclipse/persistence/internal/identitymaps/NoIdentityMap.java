@@ -96,6 +96,13 @@ public class NoIdentityMap extends AbstractIdentityMap {
     }
 
     /**
+     * Return an empty enumerator.
+     */
+    public Enumeration keys(boolean shouldCheckReadLocks) {
+        return new Vector(1).elements();
+    }
+    
+    /**
      * Do Nothing.
      */
     public CacheKey put(Vector aVector, Object object, Object writeLockValue, long readTime) {
