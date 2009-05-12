@@ -55,7 +55,7 @@ public class BaseEntityClassLoader extends ClassLoader {
     private static final String BASE_ENTITY_COLLECTION_WRAPPER_CLASSNAME_SLASHES =
         BaseEntityCollectionWrapper.class.getName().replace('.', '/');
 
-    protected boolean generateSubclasses = true;
+    private Boolean generateSubclasses = Boolean.TRUE;
 
     public BaseEntityClassLoader() {
         this(BaseEntityClassLoader.class.getClassLoader());
@@ -67,7 +67,7 @@ public class BaseEntityClassLoader extends ClassLoader {
 
     protected Class<?> findClass(String className) throws ClassNotFoundException {
 
-        if (!generateSubclasses) {
+        if (!generateSubclasses.booleanValue()) {
             throw new ClassNotFoundException(className);
         }
         try {
@@ -154,6 +154,6 @@ public class BaseEntityClassLoader extends ClassLoader {
     }
 
     public void dontGenerateSubclasses() {
-        generateSubclasses = false;
+        this.generateSubclasses = Boolean.TRUE;
     }
 }
