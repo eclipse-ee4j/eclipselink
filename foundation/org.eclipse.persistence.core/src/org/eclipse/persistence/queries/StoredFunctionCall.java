@@ -36,11 +36,23 @@ public class StoredFunctionCall extends StoredProcedureCall {
         addUnamedOutputArgument("", sqlType, sqlTypeName, javaType);
     }
     
+    public StoredFunctionCall(int sqlType, String sqlTypeName, Class javaType, DatabaseField nestedType) {
+        super();
+        addUnamedOutputArgument("", sqlType, sqlTypeName, javaType, nestedType);
+    }
+    
     public StoredFunctionCall(int sqlType, String sqlTypeName, String javaTypeClassName) {
         this(sqlType, sqlTypeName, (Class)null);
         ObjectRelationalDatabaseField ordf = (ObjectRelationalDatabaseField)parameters.get(0);
         ordf.setTypeName(javaTypeClassName);
     }
+
+    public StoredFunctionCall(int sqlType, String sqlTypeName, String javaTypeClassName, DatabaseField nestedType) {
+        this(sqlType, sqlTypeName, javaTypeClassName);
+        ObjectRelationalDatabaseField ordf = (ObjectRelationalDatabaseField)parameters.get(0);
+        ordf.setNestedTypeField(nestedType);
+    }
+    
 
     /**
      * INTERNAL:
