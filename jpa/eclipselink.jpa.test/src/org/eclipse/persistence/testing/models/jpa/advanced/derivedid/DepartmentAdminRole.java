@@ -47,7 +47,7 @@ public class DepartmentAdminRole {
     //This is required by the spec, but if not specified, defaults field names to NAME, ROLE and LOCATION. 
     @JoinColumns({
         @JoinColumn(name="DEPT_NAME", referencedColumnName="NAME"),
-        @JoinColumn(name="DEPT_ROLE", referencedColumnName="ROLE"),
+        @JoinColumn(name="DEPT_ROLE", referencedColumnName="DROLE"),
         @JoinColumn(name="DEPT_LOCATION", referencedColumnName="LOCATION")
     })
     public Department getDepartment(){
