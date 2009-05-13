@@ -44,6 +44,7 @@ import org.eclipse.persistence.testing.oxm.mappings.directcollection.identifiedb
 import org.eclipse.persistence.testing.oxm.mappings.directcollection.identifiedbyposition.withgroupingelement.DirectCollectionWithGroupingElementIdentifiedByPositionEmptyTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.directcollection.identifiedbyposition.withgroupingelement.DirectCollectionWithGroupingElementIdentifiedByPositionNullTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.directcollection.identifiedbyposition.withgroupingelement.DirectCollectionWithGroupingElementIdentifiedByPositionTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.directcollection.listoflists.XMLDirectCollectionOfListsTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.directcollection.nillable.DirectCollectionIsSetNodeNullPolicyTrueTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.directcollection.nillable.DirectCollectionNillableNodeNullPolicyTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.directcollection.nillable.DirectCollectionOptionalNodeNullPolicyAttributeTestCases;
@@ -106,13 +107,15 @@ public class DirectCollectionMappingTestSuite extends TestCase {
         // UC2b
         //suite.addTestSuite(DirectCollectionOptionalNodeNullPolicyAttributeTestCases.class);// 6 of 6 pass by default
         // UC3
-		// see #5876860: we are turning off failing Nillable tests for collections until the feature is implemented
+        // see #5876860: we are turning off failing Nillable tests for collections until the feature is implemented
         //suite.addTestSuite(DirectCollectionNillableNodeNullPolicyTestCases.class);// 3 of 6 pass until implementation set
         // UC4-true
-		// see #5876860: we are turning off failing Nillable tests for collections until the feature is implemented
+        // see #5876860: we are turning off failing Nillable tests for collections until the feature is implemented
         //suite.addTestSuite(DirectCollectionIsSetNodeNullPolicyTrueTestCases.class);// 3 of 6 pass until implementation set
         // UC4-false - n/a
-        
+
+        suite.addTestSuite(XMLDirectCollectionOfListsTestCases.class);
+
         return suite;
     }
 
@@ -121,4 +124,5 @@ public class DirectCollectionMappingTestSuite extends TestCase {
         //junit.swingui.TestRunner.main(arguments);
         junit.textui.TestRunner.main(arguments);
     }
+
 }

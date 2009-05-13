@@ -2091,6 +2091,22 @@
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
+  <xsd:complexType name="xml-list-converter">
+    <xsd:annotation>
+      <xsd:documentation>List converter</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent mixed="false">
+      <xsd:extension base="value-converter">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" name="object-class-name" type="xsd:string">
+            <xsd:annotation>
+              <xsd:documentation>Specifies the fully qualified class name of the list's element type.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:extension> 
+    </xsd:complexContent>
+  </xsd:complexType>
   <xsd:complexType name="typesafe-enumeration-converter">
     <xsd:annotation>
       <xsd:documentation>Typesafe Enumeration conversion</xsd:documentation>

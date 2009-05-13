@@ -16,7 +16,6 @@ package org.eclipse.persistence.internal.sessions.factories;
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI;
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 
-// EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.mappings.converters.Converter;
@@ -27,6 +26,7 @@ import org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
+import org.eclipse.persistence.oxm.mappings.converters.XMLListConverter;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
 import org.eclipse.persistence.oxm.schema.XMLSchemaClassPathReference;
 import org.eclipse.persistence.queries.DatabaseQuery;
@@ -59,8 +59,9 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends ObjectPersist
     @Override
     public void buildDescriptors() {
         super.buildDescriptors();
-        
-        // Any new mappings go after call to super.buildDescriptors();
+        // Any new mappings go after call to super.buildDescriptors();        
+
+        addDescriptor(buildXMLListConverterDescriptor());
     }
 
     @Override
@@ -235,5 +236,27 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends ObjectPersist
         
         return descriptor;
     }
-    
+
+    protected ClassDescriptor buildConverterDescriptor() {
+        ClassDescriptor descriptor = super.buildConverterDescriptor();
+        descriptor.getInheritancePolicy().addClassIndicator(XMLListConverter.class, getPrimaryNamespaceXPath() + "xml-list-converter");
+        return descriptor;
+    }
+
+    protected ClassDescriptor buildXMLListConverterDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(XMLListConverter.class);
+
+        descriptor.getInheritancePolicy().setParentClass(Converter.class);
+
+        XMLDirectMapping fieldSubElementClassNameMapping = new XMLDirectMapping();
+        fieldSubElementClassNameMapping.setAttributeName("objectClassName");
+        fieldSubElementClassNameMapping.setGetMethodName("getObjectClassName");
+        fieldSubElementClassNameMapping.setSetMethodName("setObjectClassName");
+        fieldSubElementClassNameMapping.setXPath(getPrimaryNamespaceXPath() + "object-class-name");
+        descriptor.addMapping(fieldSubElementClassNameMapping);
+
+        return descriptor;
+    }
+
 }

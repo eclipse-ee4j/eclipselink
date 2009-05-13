@@ -18,6 +18,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -36,6 +37,7 @@ import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.XMLConversionException;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.oxm.conversion.Base64;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.oxm.XMLConstants;
 
 /**
@@ -1687,19 +1689,39 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         }
         return list;
     }
+    
+    /**
+     * Convert the given sourceObject (String) to the appropriate collection type specified by the 
+     * containerPolicy, using the elementType to properly convert each element of the list.
+     *
+     * @param sourceObject - will always be a string if read from XML
+     * @param elementType - the type of the elements contained in the list
+     * @return - the newly converted object
+     */
+    public Object convertStringToList(Object sourceObject, Class elementType, ContainerPolicy containerPolicy) throws ConversionException {
+        Collection collection = (Collection) containerPolicy.containerInstance();
+        
+        if (sourceObject instanceof String) {
+            StringTokenizer tokenizer = new StringTokenizer((String) sourceObject, " ");
+            while (tokenizer.hasMoreElements()) {
+                String token = tokenizer.nextToken();
+                collection.add(convertObject(token, elementType));
+            }
+        }
+        
+        return collection;
+    }
 
-    protected String convertListToString(Object sourceObject) throws ConversionException {
+    public String convertListToString(Object sourceObject) throws ConversionException {
         String returnString = new String();
         if (sourceObject instanceof List) {
             List list = (List) sourceObject;
             for (int i = 0; i < list.size(); i++) {
                 Object next = list.get(i);
-                if (next instanceof String) {
                     if (i > 0) {
                         returnString += " ";
                     }
-                    returnString = returnString + next;
-                }
+                    returnString = returnString + convertObjectToString(next);
             }
         }
         return returnString;

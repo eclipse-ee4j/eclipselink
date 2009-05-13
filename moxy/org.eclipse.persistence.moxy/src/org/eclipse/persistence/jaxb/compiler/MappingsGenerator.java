@@ -41,6 +41,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 
 import org.eclipse.persistence.oxm.*;
 import org.eclipse.persistence.oxm.mappings.*;
+import org.eclipse.persistence.oxm.mappings.converters.XMLListConverter;
 import org.eclipse.persistence.oxm.mappings.converters.XMLRootConverter;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.IsSetNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
@@ -386,6 +387,11 @@ public class MappingsGenerator {
                 XMLMapping nestedMapping = ((XMLChoiceCollectionMapping)mapping).getChoiceElementMappings().get(xmlField);
                 if(((DatabaseMapping)nestedMapping).isAbstractCompositeCollectionMapping()){
                     ((XMLCompositeCollectionMapping)nestedMapping).setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
+                }
+                if (element.isList() && ((DatabaseMapping)nestedMapping).isAbstractCompositeDirectCollectionMapping()) {
+                    XMLListConverter listConverter = new XMLListConverter();
+                    listConverter.setObjectClassName(element.getJavaType().getQualifiedName());
+                    ((XMLCompositeDirectCollectionMapping)nestedMapping).setValueConverter(listConverter);
                 }
             }else{
                 ((XMLChoiceObjectMapping)mapping).addChoiceElement(xmlField, element.getJavaTypeName());
