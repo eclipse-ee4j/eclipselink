@@ -47,7 +47,7 @@
             depends="clean, build, test-lrg, publish-build, publish-results, test-for-errors"
     />
     <target name="build-milestone"  description="Trigger build, testing, and publishing of a milestone release ('release' is a milestone in this case)"
-            depends="clean, build, test-lrg, test-for-errors, create-tag, publish-build, publish-results"
+            depends="create-tag, promote-build, publish-milestone"
     />
     <target name="build-continuous" description="Trigger an automated build and run the tests if source changes exist"
             depends="clean, build-no-javadoc, build-utils, test-srg"
@@ -55,8 +55,8 @@
     <target name="publish-all"      description="Trigger just the publish targets"
             depends="init, publish-build, publish-results"
     />
-    
-    <!-- script to "cleanup" the revision information --> 
+
+    <!-- script to "cleanup" the revision information -->
     <scriptdef name="cleanRevision" language="javascript" manager="javax">
         <attribute name="input"/>
         <attribute name="property"/>
@@ -72,12 +72,12 @@
                 project.setProperty(attributes.get("property"), "NA");
             }
             else {
-                // Last changed revision (branch specific) is stored 2nd to last line of 
+                // Last changed revision (branch specific) is stored 2nd to last line of
                 //    "svn info --revision HEAD <url>" output
                 // Get "endString" Index based on search for last instance of "Last Changed"
                 endLastRev = input.lastIndexOf("Last Changed");
                 // Get "beginString" index based upon the last space in the line above the endString index
-                beginLastRev = input.lastIndexOf(" ", endLastRev); 
+                beginLastRev = input.lastIndexOf(" ", endLastRev);
                 // Trim the string to not include the leading space, or the end-of-line
                 trimmedInput = input.substring(beginLastRev+1, endLastRev-1);
                 project.setProperty(attributes.get("property"), trimmedInput);
@@ -85,7 +85,8 @@
         ]]>
     </scriptdef>
 
-    <target name="init">
+    <target name="init" depends="pre-init, common-init"/>
+    <target name="pre-init">
         <tstamp>
             <format property="build.date" pattern="yyyyMMdd"/>
             <format property="build.time" pattern="HHmm"/>
@@ -117,15 +118,20 @@
         <!-- build.type should default to "SNAPSHOT, unless it is set to "M#"  -->
         <!--   or "RELEASE" on the command-line for milestone or release builds  -->
         <property name="build.type" value="SNAPSHOT"/>
-        <property file="${basedir}/autobuild.properties"/>
 
-        <!-- Set version.string appropriately depending upon build.type and if svn -->
-        <!--    is present. variable should only be used for uploaded filenames    -->
-        <!--    or manifest entries.                                               -->
-        <condition property="version.qualifier" value="qualifier" 
+        <!-- Set version.qualifier appropriately. variable should only be used    -->
+        <!--    for uploaded filenames  or manifest entries.                      -->
+        <condition property="version.qualifier" value="qualifier"
                                                 else="v${build.date}-r${svn.revision}">
             <equals arg1="${svn.revision}" arg2="NA"/>
         </condition>
+    </target>
+
+    <target name="common-init">
+        <property file="${basedir}/autobuild.properties"/>
+
+        <!-- Set version.string appropriately. variable should only be used for   -->
+        <!--    uploaded filenames  or manifest entries.                          -->
         <property name="version.string" value="${release.version}.${version.qualifier}"/>
 
         <!-- Set download.path appropriately depending upon build target          -->
@@ -148,13 +154,13 @@
             <equals arg1="${build.type}" arg2="RELEASE"/>
         </condition>
         <property name="release.designation" value="EclipseLink ${build.type}"/>
-        
+
         <!-- generate string for tag creation (only used if milestone, or release build)  -->
         <condition property="milestone.tag" value="${release.version}">
             <equals arg1="${build.type}" arg2="RELEASE"/>
         </condition>
         <property name="milestone.tag" value="${release.version}${build.type}"/>
-        
+
         <!-- Now that all our overrides are complete, pull in the rest of the build properties -->
         <property file="${build.root.dir}/build.properties"/>
 
@@ -259,7 +265,12 @@
     </target>
 
     <target name="build" depends="get-dependencies">
-        <ant antfile="build.xml" dir="${build.root.dir}" target="build-distribution"/>
+        <ant antfile="build.xml" dir="${build.root.dir}" target="build-all-but-ext"/>
+        <ant antfile="build.xml" dir="${build.root.dir}/features" target="build-features-sign-jars">
+            <property name="signing.script" value="sign"/>
+            <property name="signing.dir"    value="/opt/public/download-staging.priv/rt/eclipselink"/>
+        </ant>
+        <ant antfile="build.xml" dir="${build.root.dir}" target="package-all"/>
     </target>
 
     <target name="build-no-javadoc" depends="get-dependencies">
@@ -374,10 +385,10 @@
         <echo message="   ${svn.branch.url} = ${svn.branch.url}"/>
         <echo message="   ${svn.base.url}   = ${svn.base.url}"/>
         <echo message="   "/>
-        <echo message="${svn.exec} copy -r ${svn.revision} \\"/>        
-        <echo message="            ${svn.branch.url} \\"/>        
-        <echo message="            ${svn.base.url}/tags/${milestone.tag} \\"/>        
-        <echo message="            -m 'Create ${milestone.tag} Tag for ${version.string}'"/>        
+        <echo message="${svn.exec} copy -r ${svn.revision} \\"/>
+        <echo message="            ${svn.branch.url} \\"/>
+        <echo message="            ${svn.base.url}/tags/${milestone.tag} \\"/>
+        <echo message="            -m 'Create ${milestone.tag} Tag for ${version.string}'"/>
         <!-- exec executable="${svn.exec}" failonerror="false" logError="true">
             <arg value="copy"/>
             <arg value="-r ${svn.revision}"/>
@@ -385,5 +396,76 @@
             <arg value="${svn.base.url}/tags/${milestone.tag}"/>
             <arg value="-m 'Create ${milestone.tag} Tag for ${version.string}'"/>
         </exec -->
+    </target>
+
+    <target name="promote-pre-init">
+        <fail unless="svn.revision" message="svn.revision doesn't exist and it should before we reach this point!"/>
+        <fail unless="build.date" message="build.date doesn't exist and it should before we reach this point!"/>
+        <!-- build.type should be set to "M#" or "RELEASE" on the command-line for milestone or release builds  -->
+        <fail unless="build.type" message="build.type doesn't exist and it should before we reach this point!"/>
+        <fail unless="build_id" message="build_id doesn't exist and it should before we reach this point!"/>
+        <tstamp>
+            <format property="promote.date" pattern="MMM dd, yyyy"/>
+        </tstamp>
+        <property name="version.qualifier" value="v${build.date}-r${svn.revision}"/>
+    </target>
+    <target name="promote-init" depends="promote-pre-init, common-init">
+        <property name="build.source.path" value="${eclipselink.download.path}/nightly/${release.version}/${build.date}">
+    </target>
+
+    <target name="promote-build">
+        <!-- Promote to new P2 -->
+        ${build.source.path}/${eclipselink.install.prefix}-P2-${version.string}${eclipselink.zip.suffix}
+
+    </target>
+
+    <target name="publish-milestone">
+        <!-- Publish from nightly published location to Milestone dir -->
+        <mkdir dir="${download.path}"/>
+        <copy file="${build.source.path}/${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}"         tofile="${download.path}/${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
+        <copy file="${build.source.path}/${eclipselink.src.install.prefix}-${version.string}${eclipselink.zip.suffix}"     tofile="${download.path}/${eclipselink.src.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
+        <copy file="${build.source.path}/${eclipselink.tst.src.prefix}-${version.string}${eclipselink.zip.suffix}"         tofile="${download.path}/${eclipselink.tst.src.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
+        <copy file="${build.source.path}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}" tofile="${download.path}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
+        <copy file="${build.source.path}/eclipselink-core-lrg-${version.string}.html"                                      tofile="${download.path}/eclipselink-core-lrg-${version.string}.html" failonerror="false"/>
+        <copy file="${build.source.path}/eclipselink-jpa-lrg-${version.string}.html"                                       tofile="${download.path}/eclipselink-jpa-lrg-${version.string}.html" failonerror="false"/>
+        <copy file="${build.source.path}/eclipselink-jaxb-lrg-${version.string}.html"                                      tofile="${download.path}/eclipselink-jaxb-lrg-${version.string}.html" failonerror="false"/>
+        <copy file="${build.source.path}/eclipselink-oxm-lrg-${version.string}.html"                                       tofile="${download.path}/eclipselink-oxm-lrg-${version.string}.html" failonerror="false"/>
+        <copy file="${build.source.path}/eclipselink-sdo-lrg-${version.string}.html"                                       tofile="${download.path}/eclipselink-sdo-lrg-${version.string}.html" failonerror="false"/>
+        <copy file="${build.source.path}/eclipselink-dbws-lrg-${version.string}.html"                                      tofile="${download.path}/eclipselink-dbws-lrg-${version.string}.html" failonerror="false"/>
+        <copy file="${build.source.path}/eclipselink-dbws-util-lrg-${version.string}.html"                                 tofile="${download.path}/eclipselink-dbws-util-lrg-${version.string}.html" failonerror="false"/>
+        <!-- copy P2 archive as well for safekeeping (in case rebuild needed) -->
+        <copy file="${build.source.path}/${eclipselink.install.prefix}-P2-${version.string}${eclipselink.zip.suffix}"      tofile="${download.path}/${eclipselink.install.prefix}-P2-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
+        <!-- need to setup a dir that contains the correct contents for maven to promote -->
+        <!-- extract bundles from -->
+        <unzip dest="${tmp.dir}" src="${build.source.path}/${eclipselink.install.prefix}-P2-${version.string}${eclipselink.zip.suffix}">
+            <patternset>
+                <include name="**/*.jar"/>
+            </patternset>
+        </unzip>
+        <!-- delete extra jars (features, and thirdparty jars) -->
+        <delete>
+            <fileset dir="${tmp.dir}">
+                <include name="**/*.jar"/>
+                <exclude name="**/org.eclipse.persistence.*.jar"/>
+                <exclude name="**/javax.persistence*1.99*.jar"/>
+                <exclude name="**/javax.persistence*2.0*.jar"/>
+            </fileset>
+        </delete>
+        <!-- move javax.persistence* -->
+        <move todir="${tmp.dir}/${eclipselink.jpa.base}/${plugins.dir}">
+            <fileset dir="${tmp.dir}/${plugins.dir}">
+                <include name="javax.persistence*.jar"/>
+            </fileset>
+        </move>
+        <!-- extract eclipselink.jar -->
+        <unzip dest="${tmp.dir}" src="${build.source.path}/${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}">
+            <patternset>
+                <include name="jlib/eclipselink.jar"/>
+            </patternset>
+        </unzip>
+        <!-- copy eclipselink.source.jar -->
+        <copy todir="${tmp.dir}" file="${build.source.path}/${eclipselink.src.install.prefix}-${version.string}${eclipselink.zip.suffix}"/>
+        <!-- ant antfile="uploadToMaven.xml" dir="${build.root.dir}" target="upload-maven-all"/>
+        <delete dir="${tmp.dir}"/ -->
     </target>
 </project>

@@ -31,17 +31,17 @@
 *
 *  It is setup to run by "default" in test mode on a local windows machine.
 *  To use in production, it should be called after with some variables overridden:
-*        - the target repository dir 
+*        - the target repository dir
 *        - the install location of the Eclipse SDK libraries
 *        - the version qualifier of the built bundles to sign and promote to p2
 *
 *  The commandline would look something like:
 *        ant -Dp2.SDK.install.dir=${sdk.install.dir} -Dbundle.install.file=${bundle.install.filepath} \
 *            -Dversion.qualifier=${version.qualifier} -Dp2.base.dir=${update.site.base.dir}
-*         
+*
 *  There are some additional parameters that should be added:
 *        - flags to specify if the repos should be overwritten or built upon (would change how the repos is built)
-*        
+*
 *  In addition, it may be useful to call into this build to access the signing target directly:
 *       <antcall target="pack-and-sign">
 *           <param name="repack" value="-repack" or ""/>          - will 'normalize' the jar
@@ -75,15 +75,19 @@
 
     <!-- Tool definitions -->
     <property name="p2.SDK.install.dir" value="C:\eclipseSDK\eclipse"/>
+    <property name="p2.SDK.plugin.dir" value="${p2.SDK.install.dir}\plugins"/>
     <property name="p2.generator.jar" value="org.eclipse.equinox.p2.metadata.generator_*.jar"/>
     <property name="p2.launcher.jar" value="org.eclipse.equinox.launcher_*.jar"/>
-    <!-- property name="p2.ant.tasks.classpath" value="${p2.SDK.install.dir}\plugins\${p2.generator.jar}" / -->
+    <property name="signing.script" value="dir"/>
+    <property name="signing.dir" value="${classes.dir}"/>
+    <!-- property name="p2.ant.tasks.classpath" value="${p2.SDK.plugin.dir}\${p2.generator.jar}" / -->
 
     <!-- Input definitions -->
     <property name="p2.base.dir" value="C:\__EL-RepositorySite"/>
     <property name="p2.feature.dir" value="${p2.base.dir}/features"/>
     <property name="p2.bundle.dir" value="${p2.base.dir}/plugins"/>
     <property name="bundle.install.file" value="${feature.2.base.dir}/${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}"/>
+    <property name="site.url" value="file:${feature.build.location}/${classes.dir}/site.xml"/>
     <!-- Output definitions -->
     <property name="p2.repository.url" value="file:/${p2.base.dir}"/>
 
@@ -101,16 +105,19 @@
     <echo message="p2.bundle.dir='${p2.bundle.dir}'"/>
     <echo message="p2.repository.url='${p2.repository.url}'"/>
 
-    <!-- Make sure the bundle installer exists -->
+    <!-- Make sure necessary resources exist -->
     <available file="${bundle.install.file}" property="bundle.installer.exist"/>
-    <available file="signing-script.sh" property="signing.script.exist"/>
+    <available file="${p2.SDK.plugin.dir}" property="sdk.install.exist"/>
+    <!-- available file="${signing.script}" property="signing.script.exist"/ -->
 
     <!-- Need to copy only the bundles that will be in the features into the "p2.base.dir/plugins" dir
          (so must copy from main plugins to new temp location). Also need to filter copy the feature xml
          files to "p2.base.dir/features" to substitute the actual version.qualifer string into it.
          Then can Generate P2.                                                                               -->
-    <target name="build"    depends="clean, create-deployable-features, build-p2"/>
-    <target name="build-p2" depends="clear-repos, populate-repos-site, generate-p2-repos"/>
+    <target name="build-features-sign-jars" depends="clean, create-deployable-features, create-sign-zipfile,
+                                                     copy-and-queue-for-sign"/>
+    <target name="build"                    depends="clean, create-deployable-features, build-p2"/>
+    <target name="build-p2"                 depends="clear-repos, populate-repos-site, generate-p2-repos"/>
 
     <!-- Feature Targets -->
     <!-- clean -->
@@ -204,6 +211,28 @@
         </copy>
     </target>
 
+    <target name="create-sign-zipfile">
+        <delete file="eclipselink-P2.zip"/>
+        <zip destfile="eclipselink-P2.zip">
+            <zipfileset dir=".."                                     includes="eclipselink*.jar"/>
+            <zipfileset dir="../utils/eclipselink.utils.dbws"        includes="eclipselink-dbwsutils*.jar"/>
+            <zipfileset dir="${classes.dir}"                         includes="eclipselink.build"/>
+            <zipfileset dir="${classes.dir}"                         includes="site.xml"/>
+            <zipfileset dir="${feature.build.dir}" prefix="features" includes="*.jar"/>
+            <zipfileset dir="../plugins"           prefix="plugins"  includes="org.eclipse.persistence*.jar"/>
+            <zipfileset dir="../jpa/plugins"       prefix="plugins"  includes="javax.persistence*.jar"/>
+        </zip>
+    </target>
+
+    <target name="copy-and-queue-for-sign">
+        <copy file="eclipselink-P2.zip" todir="${signing.dir}"/>
+        <exec executable="${signing.script}" dir="${signing.dir}">
+            <arg value="eclipselink-P2.zip"/>
+            <arg value="nomail"/>
+            <arg value="signed-output/"/>
+        </exec>
+    </target>
+
     <!-- P2 Targets -->
     <!-- clean -->
     <target name="test-ready-to-go" unless="bundle.installer.exist">
@@ -217,18 +246,21 @@
 
     <!-- Pack and Sign Targets -->
     <target name="pack-and-sign">
-        <condition property="sign" value="-sign signing-script.sh">
+        <condition property="sign" value="-sign ${signing.script}">
             <isset property="signing.script.exist" />
         </condition>
         <property name="sign" value="" />
+        <echo message="sign   ='${sign}'"/>
+        <echo message="pack   ='${pack}'"/>
+        <echo message="repack ='${repack}'"/>
         <java classname="org.eclipse.equinox.launcher.Main" fork="true" timeout="10800000" taskname="jarProcessor"
             jvm="${java.home}/bin/java" failonerror="false" maxmemory="256m">
             <classpath>
-                <fileset dir="${p2.SDK.install.dir}\plugins"
+                <fileset dir="${p2.SDK.plugin.dir}"
                     includes="${p2.launcher.jar},
                               ${p2.generator.jar}
                     "/>
-                <pathelement location="${p2.SDK.install.dir}\plugins" />
+                <pathelement location="${p2.SDK.plugin.dir}" />
             </classpath>
             <arg line=" -application org.eclipse.update.core.siteOptimizer -jarProcessor" />
             <arg line=" -processAll ${pack} ${repack} ${sign}" />
@@ -239,7 +271,7 @@
 
     <target name="populate-repos-site" if="bundle.installer.exist">
         <!-- unzip bundle jars for processing -->
-        <unzip dest="${bundle.working.dir}" src="${feature.2.base.dir}/${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}">
+        <unzip dest="${bundle.working.dir}" src="${bundle.install.file}">
             <patternset>
                 <include name="**/*.jar"/>
             </patternset>
@@ -261,6 +293,7 @@
         <antcall target="pack-and-sign">
             <param name="repack" value="-repack"/>
             <param name="pack" value=""/>
+            <param name="sign" value=""/>
             <param name="target" value="${classes.dir}"/>
             <param name="destination" value="${p2.feature.dir}"/>
         </antcall>
@@ -274,16 +307,15 @@
 
     <target name="generate-p2-repos" if="bundle.installer.exist">
         <!-- property name="site.url" value="file:${p2.base.dir}/site.xml"/ -->
-        <property name="site.url" value="file:${feature.build.location}/${classes.dir}/site.xml"/>
         <echo message="Site url='${site.url}'"/>
-        <java classname="org.eclipse.equinox.launcher.Main" fork="true" timeout="10800000" taskname="p2"
+        <!-- java classname="org.eclipse.equinox.launcher.Main" fork="true" timeout="10800000" taskname="p2"
             jvm="${java.home}/bin/java" failonerror="false" maxmemory="256m">
             <classpath>
-                <fileset dir="${p2.SDK.install.dir}\plugins"
+                <fileset dir="${p2.SDK.plugin.dir}"
                     includes="${p2.launcher.jar},
                               ${p2.generator.jar}
                     "/>
-                <pathelement location="${p2.SDK.install.dir}\plugins" />
+                <pathelement location="${p2.SDK.plugin.dir}" />
             </classpath>
             <arg line=" -application org.eclipse.equinox.p2.metadata.generator.EclipseGenerator" />
             <arg line=" -base ${p2.base.dir}" />
@@ -293,6 +325,27 @@
             <arg line=" -metadataRepository ${p2.repository.url}/ -metadataRepositoryName &quot;EclipseLink Repository&quot;" />
             <arg line=" -artifactRepository ${p2.repository.url}/ -artifactRepositoryName &quot;EclipseLink Artifacts&quot;" />
             <arg line=" -append -noDefaultIUs -compress -reusePack200Files" />
+        </java -->
+        <!-- Metadata generatore appearently doesn't rebuild the artifact and content xml files if they already exist -->
+        <delete failonerror="false">
+            <fileset dir="${p2.base.dir}" includes="*.xml"/>
+        </delete>
+        <java classname="org.eclipse.equinox.launcher.Main" fork="true" timeout="10800000" taskname="p2"
+            jvm="${java.home}/bin/java" failonerror="false" maxmemory="256m">
+            <classpath>
+                <fileset dir="${p2.SDK.plugin.dir}"
+                    includes="${p2.launcher.jar},
+                              ${p2.generator.jar}
+                    "/>
+                <pathelement location="${p2.SDK.plugin.dir}" />
+            </classpath>
+            <arg line=" -application org.eclipse.equinox.p2.metadata.generator.EclipseGenerator" />
+            <arg line=" -updateSite ${p2.base.dir}/" />
+            <arg line=" -site ${site.url}" />
+            <arg line=" -source ${p2.base.dir}/" />
+            <arg line=" -metadataRepository ${p2.repository.url}/ -metadataRepositoryName &quot;EclipseLink Repository&quot;" />
+            <arg line=" -artifactRepository ${p2.repository.url}/ -artifactRepositoryName &quot;EclipseLink Artifacts&quot;" />
+            <arg line=" -compress -reusePack200Files" />
         </java>
     </target>
 
