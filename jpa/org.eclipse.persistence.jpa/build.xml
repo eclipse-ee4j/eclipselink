@@ -159,7 +159,8 @@
         <echo message="Bundle-Vendor: ${implementation.vendor}${line.separator}"                                    file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="Bundle-Version: ${version.string}${line.separator}"                                          file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="Bundle-RequiredExecutionEnvironment: J2SE-1.5${line.separator}"                                                                  file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Require-Bundle: org.eclipse.persistence.core;bundle-version=&quot;${version.string}&quot;;visibility:=reexport${line.separator}" file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Require-Bundle: org.eclipse.persistence.core;bundle-version=&quot;${version.string}&quot;;visibility:=reexport,${line.separator}" file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.asm;bundle-version=&quot;${version.string}&quot;;resolution:=optional${line.separator}"                 file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="Export-Package: org.eclipse.persistence.internal.jpa;version=&quot;${version.string}&quot;,${line.separator}"                    file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.internal.jpa.deployment;version=&quot;${version.string}&quot;,${line.separator}"                        file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.internal.jpa.deployment.osgi;version=&quot;${version.string}&quot;,${line.separator}"                   file="${classes.dir}/MANIFEST.MF" append="true"/>
@@ -187,20 +188,20 @@
         <echo message=" org.eclipse.persistence.jpa;version=&quot;${version.string}&quot;,${line.separator}"                                            file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.jpa.osgi;version=&quot;${version.string}&quot;,${line.separator}"                                       file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.tools.weaving.jpa;version=&quot;${version.string}&quot;${line.separator}"                               file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-Activator: org.eclipse.persistence.jpa.osgi.Activator${line.separator}"                                                    file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Import-Package: javax.persistence;version=&quot;1.99.4&quot;,${line.separator}"                                           file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.persistence.metamodel;version=&quot;1.99.4&quot;,${line.separator}"                                                      file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.persistence.criteria;version=&quot;1.99.4&quot;,${line.separator}"                                                       file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.persistence.spi;version=&quot;1.99.4&quot;,${line.separator}"                                                            file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.transaction;version=&quot;1.1.0&quot;;resolution:=optional,${line.separator}"                                              file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-Activator: org.eclipse.persistence.jpa.osgi.Activator${line.separator}"                                                   file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Import-Package: javax.persistence;version=&quot;1.99.4&quot;,${line.separator}"                                                  file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" javax.persistence.metamodel;version=&quot;1.99.4&quot;,${line.separator}"                                                       file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" javax.persistence.criteria;version=&quot;1.99.4&quot;,${line.separator}"                                                        file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" javax.persistence.spi;version=&quot;1.99.4&quot;,${line.separator}"                                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" javax.transaction;version=&quot;1.1.0&quot;;resolution:=optional,${line.separator}"                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" org.apache.tools.ant;resolution:=optional,${line.separator}"                                           file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" org.apache.tools.ant.types;resolution:=optional,${line.separator}"                                     file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.osgi.framework;resolution:=optional,${line.separator}"                                                                       file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.osgi.service.packageadmin;resolution:=optional,${line.separator}"                                                            file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.xml.sax;resolution:=optional,${line.separator}"                                                                              file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.xml.parsers;resolution:=optional,${line.separator}"                                                                        file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.osgi.framework;resolution:=optional,${line.separator}"                                                                      file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.osgi.service.packageadmin;resolution:=optional,${line.separator}"                                                           file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.xml.sax;resolution:=optional,${line.separator}"                                                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" javax.xml.parsers;resolution:=optional,${line.separator}"                                                                       file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" javax.sql;resolution:=optional${line.separator}"                                                                                file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="HK2-Bundle-Name: org.eclipse.persistence:${ant.project.name}${line.separator}"                                                    file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="HK2-Bundle-Name: org.eclipse.persistence:${ant.project.name}${line.separator}"                                                   file="${classes.dir}/MANIFEST.MF" append="true"/>
     </target>
 
 </project>
