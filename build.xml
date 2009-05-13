@@ -113,7 +113,7 @@
     </tstamp>
     <property name="build.type" value="SNAPSHOT"/>
     <property name="svn.revision" value="NA"/>
-    <condition property="version.qualifier" value="qualifier" 
+    <condition property="version.qualifier" value="qualifier"
                                             else="v${build.date}-r${svn.revision}">
         <equals arg1="${svn.revision}" arg2="NA"/>
     </condition>
