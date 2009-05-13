@@ -12,7 +12,10 @@
  ******************************************************************************/  
 package org.eclipse.persistence.jaxb;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
 import javax.xml.bind.Binder;
 import javax.xml.bind.Marshaller;
@@ -23,7 +26,10 @@ import javax.xml.namespace.QName;
 import java.util.HashMap;
 
 import org.eclipse.persistence.oxm.XMLContext;
+import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.exceptions.JAXBException;
+import org.eclipse.persistence.internal.oxm.schema.SchemaModelGenerator;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jaxb.compiler.Generator;
 import org.eclipse.persistence.jaxb.compiler.MarshalCallback;
@@ -79,9 +85,19 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     
     public void generateSchema(SchemaOutputResolver outputResolver) {
         if(generator == null) {
-            return;
+            List<XMLDescriptor> descriptorsToProcess = new ArrayList<XMLDescriptor>();
+            List<Session> sessions = xmlContext.getSessions();
+            for (Session session : sessions) {
+                Vector<XMLDescriptor> descriptors = session.getProject().getOrderedDescriptors();
+                for (XMLDescriptor xDesc : descriptors) {
+                    descriptorsToProcess.add(xDesc);
+                }
+            }
+            SchemaModelGenerator smGen = new SchemaModelGenerator();
+            smGen.generateSchemas(descriptorsToProcess, null, outputResolver);
+        } else {
+            generator.generateSchemaFiles(outputResolver, null);
         }
-        generator.generateSchemaFiles(outputResolver, null);
     }
     
     public Marshaller createMarshaller() {

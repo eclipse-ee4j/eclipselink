@@ -73,4 +73,12 @@
 			<platform-class>org.eclipse.persistence.oxm.platform.SAXPlatform</platform-class>
 		</login>
 	</session>
+    <session xsi:type="database-session">
+       <name>org.eclipse.persistence.testing.jaxb.schemagen.deploymentxml</name>
+       <primary-project xsi:type="xml">org/eclipse/persistence/testing/jaxb/schemagen/deploymentxml/EmployeeProject.xml</primary-project>
+    </session>
+    <session xsi:type="database-session">
+       <name>org.eclipse.persistence.testing.oxm.schemamodelgenerator.mappings.pathbased</name>
+       <primary-project xsi:type="xml">org/eclipse/persistence/testing/oxm/schemamodelgenerator/mappings/pathbased/Customer-deployment.xml</primary-project>
+    </session>
 </sessions>
