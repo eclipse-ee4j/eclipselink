@@ -30,7 +30,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -56,6 +55,8 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 
 import org.eclipse.persistence.internal.jpa.metadata.columns.AssociationOverrideMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.AttributeOverrideMetadata;
@@ -81,7 +82,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
     private static final String ASCENDING = "ASC";
     private static final String DESCENDING = "DESC";
     
-    private Class m_mapKeyClass;
+    private MetadataClass m_mapKeyClass;
     private ColumnMetadata m_mapKeyColumn;
     private ColumnMetadata m_orderColumn; // TODO: mapped but not processed.
     
@@ -110,24 +111,24 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
     /**
      * INTERNAL:
      */
-    protected CollectionAccessor(Annotation annotation, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
+    protected CollectionAccessor(MetadataAnnotation annotation, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(annotation, accessibleObject, classAccessor);
         
-        m_mappedBy = (annotation == null) ? "" : (String) MetadataHelper.invokeMethod("mappedBy", annotation);
+        m_mappedBy = (annotation == null) ? "" : (String) annotation.getAttribute("mappedBy");
         
         // Set the order if one is present.
         if (isAnnotationPresent(OrderBy.class)) {
-            m_orderBy = (String) MetadataHelper.invokeMethod("value", getAnnotation(OrderBy.class));
+            m_orderBy = (String) getAnnotation(OrderBy.class).getAttribute("value");
         }
         
         // Set the map key if one is present.
         if (isAnnotationPresent(MapKey.class)) {
-            m_mapKey = (String) MetadataHelper.invokeMethod("name", getAnnotation(MapKey.class));
+            m_mapKey = (String) getAnnotation(MapKey.class).getAttribute("name");
         }
         
         // Set the map key class if one is defined.
         if (isAnnotationPresent(MapKeyClass.class)) {
-            m_mapKeyClass = (Class) MetadataHelper.invokeMethod("value", getAnnotation(MapKeyClass.class));
+            m_mapKeyClass = getMetadataClass((String)getAnnotation(MapKeyClass.class).getAttribute("value"));
         }
         
         // Set the map key column if one is defined.
@@ -139,8 +140,8 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
         m_mapKeyJoinColumns = new ArrayList<JoinColumnMetadata>();
         // Process all the map key join columns first.
         if (isAnnotationPresent(MapKeyJoinColumns.class)) {
-            for (Annotation jColumn : (Annotation[]) MetadataHelper.invokeMethod("value", getAnnotation(MapKeyJoinColumns.class))) {
-                m_mapKeyJoinColumns.add(new JoinColumnMetadata(jColumn, accessibleObject));
+            for (Object jColumn : (Object[]) getAnnotation(MapKeyJoinColumns.class).getAttributeArray("value")) {
+                m_mapKeyJoinColumns.add(new JoinColumnMetadata((MetadataAnnotation)jColumn, accessibleObject));
             }
         }
         
@@ -153,8 +154,8 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
         m_mapKeyAttributeOverrides = new ArrayList<AttributeOverrideMetadata>();
         // Process the attribute overrides first.
         if (isAnnotationPresent(AttributeOverrides.class)) {
-            for (Annotation attributeOverride : (Annotation[]) MetadataHelper.invokeMethod("value", getAnnotation(AttributeOverrides.class))) {
-                m_mapKeyAttributeOverrides.add(new AttributeOverrideMetadata(attributeOverride, accessibleObject));
+            for (Object attributeOverride : (Object[]) getAnnotation(AttributeOverrides.class).getAttributeArray("value")) {
+                m_mapKeyAttributeOverrides.add(new AttributeOverrideMetadata((MetadataAnnotation)attributeOverride, accessibleObject));
             }
         }
         
@@ -167,8 +168,8 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
         m_mapKeyAssociationOverrides = new ArrayList<AssociationOverrideMetadata>();
         // Process the attribute overrides first.
         if (isAnnotationPresent(AssociationOverrides.class)) {
-            for (Annotation associationOverride : (Annotation[]) MetadataHelper.invokeMethod("value", getAnnotation(AssociationOverrides.class))) {
-                m_mapKeyAssociationOverrides.add(new AssociationOverrideMetadata(associationOverride, accessibleObject));
+            for (Object associationOverride : (Object[]) getAnnotation(AssociationOverrides.class).getAttributeArray("value")) {
+                m_mapKeyAssociationOverrides.add(new AssociationOverrideMetadata((MetadataAnnotation)associationOverride, accessibleObject));
             }
         }
         
@@ -194,7 +195,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
         
         // Set the convert key if one is defined.
         if (isAnnotationPresent(MapKeyConvert.class)) {
-            m_mapKeyConvert = (String) MetadataHelper.invokeMethod("value", getAnnotation(MapKeyConvert.class));
+            m_mapKeyConvert = (String) getAnnotation(MapKeyConvert.class).getAttribute("value");
         }
     }
     
@@ -211,8 +212,8 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
      * INTERNAL:
      * Return the default fetch type for a collection mapping.
      */
-    public Enum getDefaultFetchType() {
-        return FetchType.valueOf("LAZY");
+    public String getDefaultFetchType() {
+        return FetchType.LAZY.name();
     }
     
     /**
@@ -251,7 +252,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
     /**
      * INTERNAL: 
      */
-    public Class getMapKeyClass() {
+    public MetadataClass getMapKeyClass() {
         return m_mapKeyClass;
     }
     
@@ -333,11 +334,11 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
      * reference class, otherwise we will look to extract one from generics.
      */
     @Override
-    public Class getReferenceClass() {
+    public MetadataClass getReferenceClass() {
         if (m_referenceClass == null) {
             m_referenceClass = getTargetEntity();
         
-            if (m_referenceClass == void.class) {
+            if (m_referenceClass.isVoid()) {
                 // This call will attempt to extract the reference class from generics.
                 m_referenceClass = getReferenceClassFromGeneric();
         
@@ -597,7 +598,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
     /**
      * INTERNAL: 
      */
-    public void setMapKeyClass(Class mapKeyClass) {
+    public void setMapKeyClass(MetadataClass mapKeyClass) {
         m_mapKeyClass = mapKeyClass;
     }
     

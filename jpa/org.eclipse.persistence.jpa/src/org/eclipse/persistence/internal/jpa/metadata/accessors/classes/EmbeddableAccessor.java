@@ -34,13 +34,13 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
-import java.lang.annotation.Annotation;
-
 import org.eclipse.persistence.annotations.Cache;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 
 /**
  * INTERNAL:
@@ -60,7 +60,7 @@ public class EmbeddableAccessor extends ClassAccessor {
     /**
      * INTERNAL:
      */
-    public EmbeddableAccessor(Annotation annotation, Class cls, MetadataProject project) {
+    public EmbeddableAccessor(MetadataAnnotation annotation, MetadataClass cls, MetadataProject project) {
         super(annotation, cls, project);
     }
     
@@ -71,7 +71,7 @@ public class EmbeddableAccessor extends ClassAccessor {
      * also be pre-processed now as well.
      */
     @Override
-    protected void addPotentialEmbeddableAccessor(Class potentialEmbeddableClass) {
+    protected void addPotentialEmbeddableAccessor(MetadataClass potentialEmbeddableClass) {
         if (potentialEmbeddableClass != null) {
             // Get embeddable accessor will add the embeddable to the 
             // project if it is a valid embeddable. That is, if one the class

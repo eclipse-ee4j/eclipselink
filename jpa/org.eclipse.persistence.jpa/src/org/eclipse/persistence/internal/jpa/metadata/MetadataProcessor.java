@@ -51,6 +51,8 @@ import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EmbeddableAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataFactory;
 
 import org.eclipse.persistence.internal.jpa.metadata.converters.StructConverterMetadata;
 
@@ -97,7 +99,7 @@ public class MetadataProcessor {
         // doing so, update the accessors associated class since the loader 
         // should have changed changed.
         for (EntityAccessor accessor : m_project.getEntityAccessors()) { 
-            accessor.setJavaClass(accessor.getDescriptor().getClassDescriptor().getJavaClass());
+            accessor.setJavaClass(accessor.getDescriptor().getJavaClass());
             accessor.processListeners(m_loader);
         }
     }
@@ -196,6 +198,10 @@ public class MetadataProcessor {
      * dependent on one another.
      */
     protected void initPersistenceUnitClasses() {
+        MetadataFactory.logger = m_project.getLogger();
+        MetadataFactory.loader = m_loader;
+        MetadataFactory.clear();
+        
         // 1 - Iterate through the classes that are defined in the <mapping>
         // files and add them to the map. This will merge the accessors where
         // necessary.
@@ -250,7 +256,7 @@ public class MetadataProcessor {
         // contents with an existing accessor and we only want that to happen 
         // in the XML case.
         for (String className : classNames) {
-            Class candidateClass = PersistenceUnitProcessor.loadClass(className, m_loader, true, m_project);
+            MetadataClass candidateClass = MetadataFactory.getClassMetadata(className);
             // Bug 227630: Do not process a null class whether it was from a 
             // NPE or a CNF, a warning or exception is thrown in loadClass() 
             if (candidateClass != null) {

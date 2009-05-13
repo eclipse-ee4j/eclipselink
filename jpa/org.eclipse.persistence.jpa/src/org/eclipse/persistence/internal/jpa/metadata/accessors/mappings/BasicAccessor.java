@@ -28,7 +28,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
-import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.Map;
 
@@ -50,6 +49,8 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.EnumeratedMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.LobMetadata;
@@ -94,22 +95,26 @@ public class BasicAccessor extends DirectAccessor {
     /**
      * INTERNAL:
      */
-    public BasicAccessor(Annotation annotation, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
+    public BasicAccessor(MetadataAnnotation annotation, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(annotation, accessibleObject, classAccessor);
         
         // Set the basic metadata if one is present.
-        Annotation basic = getAnnotation(Basic.class);
+        MetadataAnnotation basic = getAnnotation(Basic.class);
         if (basic != null) {
-            setFetch((Enum) MetadataHelper.invokeMethod("fetch", basic));
-            setOptional((Boolean) MetadataHelper.invokeMethod("optional", basic));
+            setFetch((String) basic.getAttribute("fetch"));
+            setOptional((Boolean) basic.getAttribute("optional"));
         }
         
         // Set the column metadata if one if present.
         m_column = new ColumnMetadata(getAnnotation(Column.class), accessibleObject, getAttributeName());
         
         // Set the mutable value if one is present.
-        if (isAnnotationPresent(Mutable.class)) {
-            m_mutable = (Boolean) MetadataHelper.invokeMethod("value", getAnnotation(Mutable.class));
+        MetadataAnnotation mutable = getAnnotation(Mutable.class);
+        if (mutable != null) {
+            m_mutable = (Boolean) mutable.getAttribute("value");
+            if (m_mutable == null) {
+                m_mutable = true;
+            }
         }
         
         // Set the generated value if one is present.
@@ -157,7 +162,7 @@ public class BasicAccessor extends DirectAccessor {
         // To correctly resolve the generics at runtime, we need to set the 
         // field type.
         if (getAccessibleObject().isGenericType()) {
-            field.setType(getReferenceClass());
+            field.setType(getJavaClass(getReferenceClass()));
         }
                     
         return field;
@@ -166,8 +171,8 @@ public class BasicAccessor extends DirectAccessor {
     /**
      * INTERNAL:
      */
-    public FetchType getDefaultFetchType() {
-        return FetchType.EAGER; 
+    public String getDefaultFetchType() {
+        return FetchType.EAGER.name(); 
     }
     
     /**
@@ -242,16 +247,16 @@ public class BasicAccessor extends DirectAccessor {
      * INTERNAL:
      * Method to return whether a class is a collection or not. 
      */
-    protected boolean isCollectionClass(Class cls) {
-        return Collection.class.isAssignableFrom(cls);
+    protected boolean isCollectionClass(MetadataClass cls) {
+        return cls.extendsInterface(Collection.class);
     }
     
     /**
      * INTERNAL:
      * Method to return whether a class is a map or not. 
      */
-    protected boolean isMapClass(Class cls) {
-        return Map.class.isAssignableFrom(cls);
+    protected boolean isMapClass(MetadataClass cls) {
+        return cls.extendsInterface(Map.class);
     }
     
     /**
@@ -274,7 +279,7 @@ public class BasicAccessor extends DirectAccessor {
         // classification on the mapping to ensure we do the right 
         // conversions.
         if (getAccessibleObject().isGenericType()) {
-            mapping.setAttributeClassification(getReferenceClass());
+            mapping.setAttributeClassificationName(getReferenceClassName());
         }
         
         mapping.setField(m_field);
@@ -325,7 +330,7 @@ public class BasicAccessor extends DirectAccessor {
      * class is a valid enumerated type.
      */
     @Override
-    protected void processEnumerated(EnumeratedMetadata enumerated, DatabaseMapping mapping, Class referenceClass, boolean isForMapKey) {
+    protected void processEnumerated(EnumeratedMetadata enumerated, DatabaseMapping mapping, MetadataClass referenceClass, boolean isForMapKey) {
         // If the raw class is a collection or map (with generics or not), we 
         // don't want to put a TypeConversionConverter on the mapping. Instead, 
         // we will want a serialized converter. For example, we could have 
@@ -361,12 +366,12 @@ public class BasicAccessor extends DirectAccessor {
      * create a lob type mapping.
      */
     @Override
-    protected void processLob(LobMetadata lob, DatabaseMapping mapping, Class referenceClass, boolean isForMapKey) {
+    protected void processLob(LobMetadata lob, DatabaseMapping mapping, MetadataClass referenceClass, boolean isForMapKey) {
         // If the raw class is a collection or map (with generics or not), we 
         // don't want to put a TypeConversionConverter on the mapping. Instead, 
         // we will want a serialized converter.
         if (isCollectionClass(referenceClass) || isMapClass(referenceClass)) {
-            processSerialized(mapping, referenceClass, java.sql.Blob.class, isForMapKey);
+            processSerialized(mapping, referenceClass, getMetadataClass(java.sql.Blob.class), isForMapKey);
         } else {
             super.processLob(lob, mapping, referenceClass, isForMapKey);
         }
@@ -380,10 +385,10 @@ public class BasicAccessor extends DirectAccessor {
      */
     @Override
     protected void processReturnInsert() {
-        Object returnInsert = getAnnotation(ReturnInsert.class);
+        MetadataAnnotation returnInsert = getAnnotation(ReturnInsert.class);
 
         if (returnInsert != null) {
-            boolean returnOnly = (Boolean) MetadataHelper.invokeMethod("returnOnly", returnInsert);
+            boolean returnOnly = (Boolean) returnInsert.getAttribute("returnOnly");
             
             if (returnOnly) {
                 getDescriptor().addFieldForInsertReturnOnly(m_field);

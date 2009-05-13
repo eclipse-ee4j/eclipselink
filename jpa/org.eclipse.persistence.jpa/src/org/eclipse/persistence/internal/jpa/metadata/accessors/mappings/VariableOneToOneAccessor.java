@@ -21,7 +21,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +32,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAcce
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.InterfaceAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.columns.DiscriminatorClassMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.DiscriminatorColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
@@ -66,7 +66,7 @@ public class VariableOneToOneAccessor extends ObjectAccessor {
     /**
      * INTERNAL:
      */
-    public VariableOneToOneAccessor(Annotation variableOneToOne, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
+    public VariableOneToOneAccessor(MetadataAnnotation variableOneToOne, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(variableOneToOne, accessibleObject, classAccessor);
         
         // Initialiaze the discriminator classes list.
@@ -76,14 +76,14 @@ public class VariableOneToOneAccessor extends ObjectAccessor {
         if (variableOneToOne != null) {
             // Parent class looks for 'targetEntity' and not 'targetInterface'
             // Need to set it correctly.
-            setTargetEntity((Class) MetadataHelper.invokeMethod("targetInterface", variableOneToOne));
-            setOrphanRemoval((Boolean) MetadataHelper.invokeMethod("orphanRemoval", variableOneToOne));
+            setTargetEntity(getMetadataClass((String)variableOneToOne.getAttribute("targetInterface")));
+            setOrphanRemoval((Boolean) variableOneToOne.getAttribute("orphanRemoval"));
             
-            m_discriminatorColumn = new DiscriminatorColumnMetadata((Annotation) MetadataHelper.invokeMethod("discriminatorColumn", variableOneToOne), accessibleObject);
+            m_discriminatorColumn = new DiscriminatorColumnMetadata((MetadataAnnotation) variableOneToOne.getAttribute("discriminatorColumn"), accessibleObject);
             
             // Set the discriminator classes if specified.
-            for (Annotation discriminatorClass : (Annotation[]) MetadataHelper.invokeMethod("discriminatorClasses", variableOneToOne)) {
-                m_discriminatorClasses.add(new DiscriminatorClassMetadata(discriminatorClass, accessibleObject));
+            for (Object discriminatorClass : (Object[]) variableOneToOne.getAttributeArray("discriminatorClasses")) {
+                m_discriminatorClasses.add(new DiscriminatorClassMetadata((MetadataAnnotation)discriminatorClass, accessibleObject));
             }
         }
     }

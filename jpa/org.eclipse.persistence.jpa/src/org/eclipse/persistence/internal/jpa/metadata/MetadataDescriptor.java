@@ -38,8 +38,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
-import java.lang.reflect.Type;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -68,6 +66,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingA
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ObjectAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.OneToOneAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.RelationshipAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataMethod;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.PropertyMetadata;
@@ -91,11 +90,11 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class MetadataDescriptor {
-    private Class m_javaClass;
+    private MetadataClass m_javaClass;
     private ClassAccessor m_classAccessor;
     private ClassDescriptor m_descriptor;
     private DatabaseTable m_primaryTable;
-    private Enum m_existenceChecking;
+    private String m_existenceChecking;
     
     // The embedded id accessor for this descritor if one exists.
     private EmbeddedIdAccessor m_embeddedIdAccessor;
@@ -132,9 +131,9 @@ public class MetadataDescriptor {
     private List<MetadataDescriptor> m_embeddableDescriptors;
     private List<ObjectAccessor> m_derivedIDAccessors;
     
-    private Class m_pkClass;
-    private Map<String, Type> m_pkClassIDs;
-    private Map<String, Type> m_genericTypes;
+    private MetadataClass m_pkClass;
+    public Map<String, String> m_pkClassIDs;
+    private Map<String, String> m_genericTypes;
     private Map<String, MappingAccessor> m_accessors;
     private Map<String, PropertyMetadata> m_properties;
     private Map<String, String> m_pkJoinColumnAssociations;
@@ -145,7 +144,7 @@ public class MetadataDescriptor {
     /**
      * INTERNAL: 
      */
-    public MetadataDescriptor(Class javaClass) {
+    public MetadataDescriptor(MetadataClass javaClass) {
         m_defaultAccess = null;
         m_defaultSchema = null;
         m_defaultCatalog = null;
@@ -170,8 +169,8 @@ public class MetadataDescriptor {
         m_embeddableDescriptors = new ArrayList<MetadataDescriptor>();
         m_derivedIDAccessors = new ArrayList<ObjectAccessor>();
         
-        m_pkClassIDs = new HashMap<String, Type>();
-        m_genericTypes = new HashMap<String, Type>();
+        m_pkClassIDs = new HashMap<String, String>();
+        m_genericTypes = new HashMap<String, String>();
         m_accessors = new HashMap<String, MappingAccessor>();
         m_properties = new HashMap<String, PropertyMetadata>();
         m_pkJoinColumnAssociations = new HashMap<String, String>();
@@ -191,7 +190,7 @@ public class MetadataDescriptor {
     /**
      * INTERNAL: 
      */
-    public MetadataDescriptor(Class javaClass, ClassAccessor classAccessor) {
+    public MetadataDescriptor(MetadataClass javaClass, ClassAccessor classAccessor) {
         this(javaClass);
         setClassAccessor(classAccessor);
     }
@@ -283,11 +282,15 @@ public class MetadataDescriptor {
         m_pkJoinColumnAssociations.put(fkField.getName(), pkField.getName());
     }
     
+    public Map getGenericTypes() {
+        return m_genericTypes;
+    }
+
     /**
      * INTERNAL:
      * Add a generic type for this descriptor.
      */
-    public void addGenericType(String genericName, Type type) {
+    public void addGenericType(String genericName, String type) {
         m_genericTypes.put(genericName, type);
     }
     
@@ -296,7 +299,7 @@ public class MetadataDescriptor {
      * We store these to validate the primary class when processing
      * the entity class.
      */
-    public void addPKClassId(String attributeName, Type type) {
+    public void addPKClassId(String attributeName, String type) {
         m_pkClassIDs.put(attributeName, type);
     }
     
@@ -545,7 +548,7 @@ public class MetadataDescriptor {
      * INTERNAL:
      * Return the type from the generic name.
      */
-    public Type getGenericType(String genericName) {
+    public String getGenericType(String genericName) {
        return m_genericTypes.get(genericName); 
     }
     
@@ -634,7 +637,7 @@ public class MetadataDescriptor {
     /**
      * INTERNAL:
      */
-    public Class getJavaClass() {
+    public MetadataClass getJavaClass() {
         return m_javaClass;
     }
     
@@ -732,7 +735,7 @@ public class MetadataDescriptor {
     /**
      * INTERNAL:
      */
-    public Class getPKClass(){
+    public MetadataClass getPKClass(){
         return m_pkClass;
     }
     
@@ -752,7 +755,7 @@ public class MetadataDescriptor {
     /**
      * INTERNAL:
      */
-    public Map<String, Type> getPKClassIDs() {
+    public Map<String, String> getPKClassIDs() {
         return m_pkClassIDs;
     }
     
@@ -1251,16 +1254,16 @@ public class MetadataDescriptor {
     /**
      * INTERNAL:
      */
-    public void setExistenceChecking(Enum existenceChecking) {
+    public void setExistenceChecking(String existenceChecking) {
         m_existenceChecking = existenceChecking;
         
-        if (existenceChecking.name().equals(ExistenceType.CHECK_CACHE.name())) {
+        if (existenceChecking.equals(ExistenceType.CHECK_CACHE.name())) {
             m_descriptor.getQueryManager().checkCacheForDoesExist();
-        } else if (existenceChecking.name().equals(ExistenceType.CHECK_DATABASE.name())) {
+        } else if (existenceChecking.equals(ExistenceType.CHECK_DATABASE.name())) {
             m_descriptor.getQueryManager().checkDatabaseForDoesExist();
-        } else if (existenceChecking.name().equals(ExistenceType.ASSUME_EXISTENCE.name())) {
+        } else if (existenceChecking.equals(ExistenceType.ASSUME_EXISTENCE.name())) {
             m_descriptor.getQueryManager().assumeExistenceForDoesExist();
-        } else if (existenceChecking.name().equals(ExistenceType.ASSUME_NON_EXISTENCE.name())) {
+        } else if (existenceChecking.equals(ExistenceType.ASSUME_NON_EXISTENCE.name())) {
             m_descriptor.getQueryManager().assumeNonExistenceForDoesExist();
         }
     }
@@ -1369,7 +1372,7 @@ public class MetadataDescriptor {
      * INTERNAL:
      * Used to set this descriptors java class. 
      */
-    public void setJavaClass(Class javaClass) {
+    public void setJavaClass(MetadataClass javaClass) {
         m_javaClass = javaClass;
         m_descriptor.setJavaClassName(javaClass.getName());
         
@@ -1390,7 +1393,7 @@ public class MetadataDescriptor {
     /**
      * INTERNAL:
      */
-    public void setPKClass(Class pkClass) {
+    public void setPKClass(MetadataClass pkClass) {
         m_pkClass = pkClass;
         
         CMP3Policy policy = new CMP3Policy();
@@ -1500,20 +1503,20 @@ public class MetadataDescriptor {
         // is, we won't have processed the cascade value.
         return m_usesCascadedOptimisticLocking != null;
     }
-    
+
     /**
      * INTERNAL:
      * This method is used only to validate id fields that were found on a
-     * pk class were also found on the entity.
+     * pk class were also found on the entity.  This is used for DerivedIds where the
+     * Type is only available as a string
      */
-    public void validatePKClassId(String attributeName, Type type) {
+    public void validatePKClassId(String attributeName, MetadataClass type) {
         if (m_pkClassIDs.containsKey(attributeName))  {
-            Type expectedType =  m_pkClassIDs.get(attributeName);
-            
-            if (type == expectedType) {
+            String expectedType =  m_pkClassIDs.get(attributeName);
+            if (expectedType.equals(type.getName())) {
                 m_pkClassIDs.remove(attributeName);
             } else {
-                throw ValidationException.invalidCompositePKAttribute(getJavaClass(), getPKClassName(), attributeName, expectedType, type);
+                throw ValidationException.invalidCompositePKAttribute(getJavaClass(), getPKClassName(), attributeName, expectedType, null);
             }
         }
     }

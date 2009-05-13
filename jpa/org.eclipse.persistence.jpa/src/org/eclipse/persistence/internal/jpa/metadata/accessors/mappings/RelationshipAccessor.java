@@ -22,7 +22,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,6 +49,8 @@ import org.eclipse.persistence.internal.jpa.metadata.tables.JoinTableMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 
 /**
  * INTERNAL:
@@ -62,11 +63,11 @@ public abstract class RelationshipAccessor extends MappingAccessor {
     private Boolean m_orphanRemoval;
     private boolean m_privateOwned;
     private CascadeTypes m_cascadeTypes;
-    protected Class m_referenceClass;
-    private Class m_targetEntity;
+    protected MetadataClass m_referenceClass;
+    private MetadataClass m_targetEntity;
     
-    private Enum m_fetch;
-    private Enum m_joinFetch;
+    private String m_fetch;
+    private String m_joinFetch;
    
     private JoinTableMetadata m_joinTable;
     private List<JoinColumnMetadata> m_joinColumns = new ArrayList<JoinColumnMetadata>();
@@ -83,16 +84,17 @@ public abstract class RelationshipAccessor extends MappingAccessor {
     /**
      * INTERNAL:
      */
-    protected RelationshipAccessor(Annotation annotation, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
+    protected RelationshipAccessor(MetadataAnnotation annotation, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(annotation, accessibleObject, classAccessor);
         
-        m_fetch = (annotation == null) ? getDefaultFetchType() : (Enum) MetadataHelper.invokeMethod("fetch", annotation);
-        m_targetEntity = (annotation == null) ? void.class : (Class) MetadataHelper.invokeMethod("targetEntity", annotation);         
-        m_cascadeTypes = (annotation == null) ? null : new CascadeTypes((Enum[]) MetadataHelper.invokeMethod("cascade", annotation), accessibleObject);
+        m_fetch = (annotation == null) ? getDefaultFetchType() : (String) annotation.getAttribute("fetch");
+        m_targetEntity = getMetadataClass((annotation == null) ? "void" : (String) annotation.getAttributeString("targetEntity"));         
+        m_cascadeTypes = (annotation == null) ? null : new CascadeTypes((Object[]) annotation.getAttributeArray("cascade"), accessibleObject);
         
         // Set the join fetch if one is present.           
-        if (isAnnotationPresent(JoinFetch.class)) {
-            m_joinFetch = (Enum) MetadataHelper.invokeMethod("value", getAnnotation(JoinFetch.class));
+        MetadataAnnotation joinFetch = getAnnotation(JoinFetch.class);            
+        if (joinFetch != null) {
+            m_joinFetch = (String) joinFetch.getAttribute("value");
         }
         
         // Set the private owned if one is present.
@@ -100,15 +102,17 @@ public abstract class RelationshipAccessor extends MappingAccessor {
         
         // Set the join columns if some are present. 
         // Process all the join columns first.
-        if (isAnnotationPresent(JoinColumns.class)) {
-            for (Annotation jColumn : (Annotation[]) MetadataHelper.invokeMethod("value", getAnnotation(JoinColumns.class))) {
-                m_joinColumns.add(new JoinColumnMetadata(jColumn, accessibleObject));
+        MetadataAnnotation joinColumns = getAnnotation(JoinColumns.class);
+        if (joinColumns != null) {
+            for (Object jColumn : (Object[]) joinColumns.getAttributeArray("value")) {
+                m_joinColumns.add(new JoinColumnMetadata((MetadataAnnotation)jColumn, accessibleObject));
             }
         }
         
         // Process the single key join column second.
-        if (isAnnotationPresent(JoinColumn.class)) {
-            m_joinColumns.add(new JoinColumnMetadata(getAnnotation(JoinColumn.class), accessibleObject));
+        MetadataAnnotation joinColumn = getAnnotation(JoinColumn.class);
+        if (joinColumn != null) {
+            m_joinColumns.add(new JoinColumnMetadata(joinColumn, accessibleObject));
         }
         
         // Set the join table if one is present.
@@ -178,13 +182,13 @@ public abstract class RelationshipAccessor extends MappingAccessor {
     /**
      * INTERNAL:
      */
-    public abstract Enum getDefaultFetchType();
+    public abstract String getDefaultFetchType();
     
     /**
      * INTERNAL: 
      * Used for OX mapping.
      */
-    public Enum getFetch() {
+    public String getFetch() {
         return m_fetch;
     }
     
@@ -200,7 +204,7 @@ public abstract class RelationshipAccessor extends MappingAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public Enum getJoinFetch() {
+    public String getJoinFetch() {
         return m_joinFetch;
     }
     
@@ -281,7 +285,7 @@ public abstract class RelationshipAccessor extends MappingAccessor {
      * INTERNAL:
      * Return the target entity for this accessor.
      */
-    public Class getTargetEntity() {
+    public MetadataClass getTargetEntity() {
         return m_targetEntity;
     }
     
@@ -316,13 +320,13 @@ public abstract class RelationshipAccessor extends MappingAccessor {
      * Return if the accessor should be lazy fetched.
      */
     public boolean isLazy() {        
-        Enum fetchType = getFetch();
+        String fetchType = getFetch();
         
         if (fetchType == null) {
             fetchType = getDefaultFetchType();
         }
         
-        return fetchType.name().equals(FetchType.LAZY.name());
+        return fetchType.equals(FetchType.LAZY.name());
     }
   
     /**
@@ -346,14 +350,14 @@ public abstract class RelationshipAccessor extends MappingAccessor {
      */
     protected void processCascadeTypes(ForeignReferenceMapping mapping) {
         if (m_cascadeTypes != null) {
-            for (Enum cascadeType : m_cascadeTypes.getTypes()) {
+            for (String cascadeType : m_cascadeTypes.getTypes()) {
                 setCascadeType(cascadeType, mapping);
             }
         }
         
         // Apply the persistence unit default cascade-persist if necessary.
         if (getDescriptor().isCascadePersist() && ! mapping.isCascadePersist()) {
-            setCascadeType(CascadeType.PERSIST, mapping);
+            setCascadeType(CascadeType.PERSIST.name(), mapping);
         }
     }
     
@@ -436,7 +440,7 @@ public abstract class RelationshipAccessor extends MappingAccessor {
                         
             // Process the relationship accessor only if the target entity
             // is not a ValueHolderInterface.
-            if (getTargetEntity() == ValueHolderInterface.class || (getTargetEntity() == void.class && getReferenceClass().getName().equalsIgnoreCase(ValueHolderInterface.class.getName()))) {
+            if (getTargetEntity().getName().equals(ValueHolderInterface.class.getName()) || (getTargetEntity().getName().equals(void.class.getName()) && getReferenceClass().getName().equals(ValueHolderInterface.class.getName()))) {
                 // do nothing ... I'm too lazy (or too stupid) to do the negation of this expression :-)
             } else { 
                 process();
@@ -466,16 +470,16 @@ public abstract class RelationshipAccessor extends MappingAccessor {
      * INTERNAL:
      * Set the cascade type on a mapping.
      */
-    protected void setCascadeType(Enum type, ForeignReferenceMapping mapping) {
-        if (type.name().equals(CascadeType.ALL.name())) {
+    protected void setCascadeType(String type, ForeignReferenceMapping mapping) {
+        if (type.equals(CascadeType.ALL.name())) {
             mapping.setCascadeAll(true);
-        } else if(type.name().equals(CascadeType.MERGE.name())) {
+        } else if(type.equals(CascadeType.MERGE.name())) {
             mapping.setCascadeMerge(true);
-        } else if(type.name().equals(CascadeType.PERSIST.name())) {
+        } else if(type.equals(CascadeType.PERSIST.name())) {
             mapping.setCascadePersist(true);
-        } else if(type.name().equals(CascadeType.REFRESH.name())) {
+        } else if(type.equals(CascadeType.REFRESH.name())) {
             mapping.setCascadeRefresh(true);
-        } else if(type.name().equals(CascadeType.REMOVE.name())) {
+        } else if(type.equals(CascadeType.REMOVE.name())) {
             mapping.setCascadeRemove(true);
         }
     }
@@ -492,7 +496,7 @@ public abstract class RelationshipAccessor extends MappingAccessor {
      * INTERNAL: 
      * Used for OX mapping.
      */
-    public void setFetch(Enum fetch) {
+    public void setFetch(String fetch) {
         m_fetch = fetch;
     }
     
@@ -508,7 +512,7 @@ public abstract class RelationshipAccessor extends MappingAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setJoinFetch(Enum joinFetch) {
+    public void setJoinFetch(String joinFetch) {
         m_joinFetch = joinFetch;
     }
     
@@ -539,7 +543,7 @@ public abstract class RelationshipAccessor extends MappingAccessor {
     /**
      * INTERNAL:
      */
-    public void setTargetEntity(Class targetEntity) {
+    public void setTargetEntity(MetadataClass targetEntity) {
         m_targetEntity = targetEntity;
     }
     

@@ -14,10 +14,9 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
-import java.lang.annotation.Annotation;
-
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
 /**
  * INTERNAL:
@@ -42,11 +41,11 @@ public class QueryHintMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public QueryHintMetadata(Annotation hint, MetadataAccessibleObject accessibleObject) {
+    public QueryHintMetadata(MetadataAnnotation hint, MetadataAccessibleObject accessibleObject) {
         super(hint, accessibleObject);
         
-        m_name = (String) MetadataHelper.invokeMethod("name", hint);
-        m_value = (String) MetadataHelper.invokeMethod("value", hint);
+        m_name = (String) hint.getAttribute("name");
+        m_value = (String) hint.getAttribute("value");
     }
     
     /**

@@ -32,22 +32,6 @@ package org.eclipse.persistence.internal.jpa.metadata.xml;
 
 import java.util.Collection;
 
-import javax.persistence.DiscriminatorType;
-import javax.persistence.EnumType;
-import javax.persistence.FetchType;
-import javax.persistence.GenerationType;
-import javax.persistence.InheritanceType;
-import javax.persistence.LockModeType;
-import javax.persistence.TemporalType;
-
-import org.eclipse.persistence.annotations.CacheCoordinationType;
-import org.eclipse.persistence.annotations.CacheType;
-import org.eclipse.persistence.annotations.ChangeTrackingType;
-import org.eclipse.persistence.annotations.Direction;
-import org.eclipse.persistence.annotations.ExistenceType;
-import org.eclipse.persistence.annotations.IdValidation;
-import org.eclipse.persistence.annotations.JoinFetchType;
-import org.eclipse.persistence.annotations.OptimisticLockingType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 
 import org.eclipse.persistence.internal.jpa.metadata.PrimaryKeyMetadata;
@@ -125,8 +109,6 @@ import org.eclipse.persistence.internal.jpa.metadata.tables.TableMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.tables.UniqueConstraintMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.transformers.ReadTransformerMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.transformers.WriteTransformerMetadata;
-
-import org.eclipse.persistence.mappings.converters.EnumTypeConverter;
 
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLDescriptor;
@@ -579,7 +561,6 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         cacheTypeMapping.setAttributeName("m_type");
         cacheTypeMapping.setGetMethodName("getType");
         cacheTypeMapping.setSetMethodName("setType");
-        cacheTypeMapping.setConverter(new EnumTypeConverter(cacheTypeMapping, CacheType.class, false));
         cacheTypeMapping.setXPath("@type");
         descriptor.addMapping(cacheTypeMapping);
         
@@ -608,7 +589,6 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         coordinationTypeMapping.setAttributeName("m_coordinationType");
         coordinationTypeMapping.setGetMethodName("getCoordinationType");
         coordinationTypeMapping.setSetMethodName("setCoordinationType");
-        coordinationTypeMapping.setConverter(new EnumTypeConverter(coordinationTypeMapping, CacheCoordinationType.class, false));
         coordinationTypeMapping.setXPath("@coordination-type");
         descriptor.addMapping(coordinationTypeMapping);
       
@@ -688,7 +668,6 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         typeMapping.setAttributeName("m_type");
         typeMapping.setGetMethodName("getType");
         typeMapping.setSetMethodName("setType");
-        typeMapping.setConverter(new EnumTypeConverter(typeMapping, ChangeTrackingType.class, false));
         typeMapping.setXPath("@type");
         descriptor.addMapping(typeMapping);
         
@@ -875,7 +854,6 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         discriminatorTypeMapping.setAttributeName("m_discriminatorType");
         discriminatorTypeMapping.setGetMethodName("getDiscriminatorType");
         discriminatorTypeMapping.setSetMethodName("setDiscriminatorType");
-        discriminatorTypeMapping.setConverter(new EnumTypeConverter(discriminatorTypeMapping, DiscriminatorType.class, false));
         discriminatorTypeMapping.setXPath("@discriminator-type");
         descriptor.addMapping(discriminatorTypeMapping);
         
@@ -1250,7 +1228,6 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         enumeratedMapping.setAttributeName("m_enumerated");
         enumeratedMapping.setGetMethodName("getEnumerated");
         enumeratedMapping.setSetMethodName("setEnumerated");
-        enumeratedMapping.setConverter(new EnumTypeConverter(enumeratedMapping, EnumType.class, false));
         enumeratedMapping.setXPath("text()");
         descriptor.addMapping(enumeratedMapping);
         
@@ -1283,7 +1260,6 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         strategyMapping.setAttributeName("m_strategy");
         strategyMapping.setGetMethodName("getStrategy");
         strategyMapping.setSetMethodName("setStrategy");
-        strategyMapping.setConverter(new EnumTypeConverter(strategyMapping, GenerationType.class, false));
         strategyMapping.setXPath("@strategy");
         descriptor.addMapping(strategyMapping);
         
@@ -1339,7 +1315,6 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         strategyMapping.setAttributeName("m_strategy");
         strategyMapping.setGetMethodName("getStrategy");
         strategyMapping.setSetMethodName("setStrategy");
-        strategyMapping.setConverter(new EnumTypeConverter(strategyMapping, InheritanceType.class, false));
         strategyMapping.setXPath("@strategy");
         descriptor.addMapping(strategyMapping);
         
@@ -1675,7 +1650,6 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         typeMapping.setAttributeName("m_type");
         typeMapping.setGetMethodName("getType");
         typeMapping.setSetMethodName("setType");
-        typeMapping.setConverter(new EnumTypeConverter(typeMapping, OptimisticLockingType.class, false));
         typeMapping.setXPath("@type");
         descriptor.addMapping(typeMapping);
         
@@ -1699,7 +1673,6 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         
         XMLDirectMapping validationMapping = new XMLDirectMapping();
         validationMapping.setAttributeName("m_validation");
-        validationMapping.setConverter(new EnumTypeConverter(validationMapping, IdValidation.class, false));
         validationMapping.setXPath("@validation");
         descriptor.addMapping(validationMapping);
         
@@ -1983,7 +1956,6 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         directionMapping.setAttributeName("m_direction");
         directionMapping.setGetMethodName("getDirection");
         directionMapping.setSetMethodName("setDirection");
-        directionMapping.setConverter(new EnumTypeConverter(directionMapping, Direction.class, false));
         directionMapping.setXPath("@direction");
         descriptor.addMapping(directionMapping);
         
@@ -2122,8 +2094,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         temporalMapping.setAttributeName("m_temporal");
         temporalMapping.setGetMethodName("getTemporal");
         temporalMapping.setSetMethodName("setTemporal");
-        temporalMapping.setConverter(new EnumTypeConverter(temporalMapping, TemporalType.class, false));
-        temporalMapping.setXPath("text()");    
+        temporalMapping.setXPath("text()");
         descriptor.addMapping(temporalMapping);
         
         return descriptor;
@@ -2725,7 +2696,6 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         existenceCheckingMapping.setAttributeName("m_existenceChecking");
         existenceCheckingMapping.setGetMethodName("getExistenceChecking");
         existenceCheckingMapping.setSetMethodName("setExistenceChecking");
-        existenceCheckingMapping.setConverter(new EnumTypeConverter(existenceCheckingMapping, ExistenceType.class, false));
         existenceCheckingMapping.setXPath("@existence-checking");
         return existenceCheckingMapping;
     }
@@ -2738,7 +2708,6 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         fetchMapping.setAttributeName("m_fetch");
         fetchMapping.setGetMethodName("getFetch");
         fetchMapping.setSetMethodName("setFetch");
-        fetchMapping.setConverter(new EnumTypeConverter(fetchMapping, FetchType.class, false));
         fetchMapping.setXPath("@fetch");
         return fetchMapping;
     }
@@ -2864,7 +2833,6 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         joinFetchMapping.setAttributeName("m_joinFetch");
         joinFetchMapping.setGetMethodName("getJoinFetch");
         joinFetchMapping.setSetMethodName("setJoinFetch");
-        joinFetchMapping.setConverter(new EnumTypeConverter(joinFetchMapping, JoinFetchType.class, false));
         joinFetchMapping.setXPath("orm:join-fetch/text()");
         return joinFetchMapping;
     }
@@ -2915,7 +2883,6 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         lockModeMapping.setAttributeName("m_lockMode");
         lockModeMapping.setGetMethodName("getLockMode");
         lockModeMapping.setSetMethodName("setLockMode");
-        lockModeMapping.setConverter(new EnumTypeConverter(lockModeMapping, LockModeType.class, false));
         lockModeMapping.setXPath("orm:lock-mode");
         return lockModeMapping;
     }

@@ -14,12 +14,12 @@
  *******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.tables;
 
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
 /**
  * INTERNAL:
@@ -38,13 +38,13 @@ public class UniqueConstraintMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public UniqueConstraintMetadata(Annotation uniqueConstraint, MetadataAccessibleObject accessibleObject) {
+    public UniqueConstraintMetadata(MetadataAnnotation uniqueConstraint, MetadataAccessibleObject accessibleObject) {
         super(uniqueConstraint, accessibleObject);
         
         m_columnNames = new ArrayList<String>();
         
-        for (String columnName : (String[]) MetadataHelper.invokeMethod("columnNames", uniqueConstraint)) { 
-            m_columnNames.add(columnName);
+        for (Object columnName : (Object[]) uniqueConstraint.getAttributeArray("columnNames")) { 
+            m_columnNames.add((String)columnName);
         }
     }
     

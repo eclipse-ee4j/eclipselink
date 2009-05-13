@@ -15,8 +15,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.changetracking;
 
-import java.lang.annotation.Annotation;
-
 import org.eclipse.persistence.annotations.ChangeTrackingType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 
@@ -28,6 +26,7 @@ import org.eclipse.persistence.descriptors.changetracking.ObjectChangeTrackingPo
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
 /**
  * Object to hold onto change tracking metadata.
@@ -36,7 +35,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
  * @since EclipseLink 1.0
  */
 public class ChangeTrackingMetadata extends ORMetadata {
-    private Enum m_type;    
+    private String m_type;    
     
     /**
      * INTERNAL:
@@ -48,17 +47,17 @@ public class ChangeTrackingMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public ChangeTrackingMetadata(Annotation changeTracking, MetadataAccessibleObject accessibleObject) {
+    public ChangeTrackingMetadata(MetadataAnnotation changeTracking, MetadataAccessibleObject accessibleObject) {
         super(changeTracking, accessibleObject);
         
-        m_type = (Enum) MetadataHelper.invokeMethod("value", changeTracking);
+        m_type = (String) changeTracking.getAttribute("value");
     }
     
     /**
      * INTERNAL:
      * Used for OX mapping.
      */
-    public Enum getType() {
+    public String getType() {
         return m_type;
     }
     
@@ -73,13 +72,13 @@ public class ChangeTrackingMetadata extends ORMetadata {
         ClassDescriptor classDescriptor = descriptor.getClassDescriptor();
         ObjectChangePolicy policy = null;
                    
-        if (m_type.name().equals(ChangeTrackingType.ATTRIBUTE.name())) {
+        if (m_type.equals(ChangeTrackingType.ATTRIBUTE.name())) {
             policy = new AttributeChangeTrackingPolicy();
-        } else if (m_type.name().equals(ChangeTrackingType.OBJECT.name())) {
+        } else if (m_type.equals(ChangeTrackingType.OBJECT.name())) {
             policy = new ObjectChangeTrackingPolicy();
-        } else if (m_type.name().equals(ChangeTrackingType.DEFERRED.name())) {
+        } else if (m_type.equals(ChangeTrackingType.DEFERRED.name())) {
             policy = new DeferredChangeDetectionPolicy();
-        } else if (m_type.name().equals(ChangeTrackingType.AUTO.name())) {
+        } else if (m_type.equals(ChangeTrackingType.AUTO.name())) {
             // By setting the policy to null, this will unset any global 
             // settings. EclipseLink will then determine the change tracking 
             // policy at runtime.
@@ -93,7 +92,7 @@ public class ChangeTrackingMetadata extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setType(Enum type) {
+    public void setType(String type) {
         m_type = type;
     }
 }

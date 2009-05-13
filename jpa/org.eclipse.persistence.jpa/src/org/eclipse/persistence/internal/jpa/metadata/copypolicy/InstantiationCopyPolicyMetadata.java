@@ -14,11 +14,10 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.copypolicy;
 
-import java.lang.annotation.Annotation;
-
 import org.eclipse.persistence.descriptors.copying.CopyPolicy;
 import org.eclipse.persistence.descriptors.copying.InstantiationCopyPolicy;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
 /**
  * INTERNAL:
@@ -40,7 +39,7 @@ public class InstantiationCopyPolicyMetadata extends CopyPolicyMetadata {
     /**
      * INTERNAL:
      */
-    public InstantiationCopyPolicyMetadata(Annotation copyPolicy, MetadataAccessibleObject accessibleObject) { 
+    public InstantiationCopyPolicyMetadata(MetadataAnnotation copyPolicy, MetadataAccessibleObject accessibleObject) { 
         super(copyPolicy, accessibleObject);
     }
     

@@ -16,12 +16,12 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.tables;
 
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
 
 /**
@@ -45,16 +45,16 @@ public class JoinTableMetadata extends TableMetadata {
     /**
      * INTERNAL:
      */
-    public JoinTableMetadata(Annotation joinTable, MetadataAccessibleObject accessibleObject) {
+    public JoinTableMetadata(MetadataAnnotation joinTable, MetadataAccessibleObject accessibleObject) {
         super(joinTable, accessibleObject);
         
         if (joinTable != null) {
-            for (Annotation joinColumn : (Annotation[]) MetadataHelper.invokeMethod("joinColumns", joinTable)) {
-                m_joinColumns.add(new JoinColumnMetadata(joinColumn, accessibleObject));
+            for (Object joinColumn : (Object[]) joinTable.getAttributeArray("joinColumns")) {
+                m_joinColumns.add(new JoinColumnMetadata((MetadataAnnotation)joinColumn, accessibleObject));
             }  
         
-            for (Annotation inverseJoinColumn : (Annotation[]) MetadataHelper.invokeMethod("inverseJoinColumns", joinTable)) {
-                m_inverseJoinColumns.add(new JoinColumnMetadata(inverseJoinColumn, accessibleObject));
+            for (Object inverseJoinColumn : (Object[]) joinTable.getAttributeArray("inverseJoinColumns")) {
+                m_inverseJoinColumns.add(new JoinColumnMetadata((MetadataAnnotation)inverseJoinColumn, accessibleObject));
             }
         }
     }

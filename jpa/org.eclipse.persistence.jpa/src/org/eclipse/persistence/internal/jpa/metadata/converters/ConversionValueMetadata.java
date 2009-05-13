@@ -14,10 +14,9 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
-import java.lang.annotation.Annotation;
-
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
 /**
  * Object to hold onto conversion values.
@@ -40,11 +39,11 @@ public class ConversionValueMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public ConversionValueMetadata(Annotation conversionValue, MetadataAccessibleObject accessibleObject) {
+    public ConversionValueMetadata(MetadataAnnotation conversionValue, MetadataAccessibleObject accessibleObject) {
         super(conversionValue, accessibleObject);
         
-        m_dataValue = (String) MetadataHelper.invokeMethod("dataValue", conversionValue); 
-        m_objectValue = (String) MetadataHelper.invokeMethod("objectValue", conversionValue);  
+        m_dataValue = (String) conversionValue.getAttribute("dataValue"); 
+        m_objectValue = (String) conversionValue.getAttribute("objectValue");  
     }
     
     /**

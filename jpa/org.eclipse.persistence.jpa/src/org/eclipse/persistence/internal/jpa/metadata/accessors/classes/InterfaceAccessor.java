@@ -17,11 +17,12 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
-import java.lang.annotation.Annotation;
 import java.util.HashSet;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.VariableOneToOneAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 
 /**
  * An interface accessor. This is kinda forward thinking. I assume once we
@@ -42,7 +43,7 @@ public class InterfaceAccessor extends ClassAccessor {
     /**
      * INTERNAL:
      */
-    public InterfaceAccessor(Annotation annotation, Class cls, MetadataProject project) {
+    public InterfaceAccessor(MetadataAnnotation annotation, MetadataClass cls, MetadataProject project) {
         super(annotation, cls, project);
         m_variableOneToOneAccessors = new HashSet<VariableOneToOneAccessor>();
     }

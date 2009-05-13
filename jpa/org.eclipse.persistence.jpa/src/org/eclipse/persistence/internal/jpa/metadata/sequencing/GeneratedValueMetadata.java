@@ -14,7 +14,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.sequencing;
 
-import java.lang.annotation.Annotation;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
 /**
  * Metadata object to hold generated value information.
@@ -23,7 +23,7 @@ import java.lang.annotation.Annotation;
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class GeneratedValueMetadata {
-    private Enum m_strategy;
+    private String m_strategy;
     private String m_generator;
     
     /**
@@ -34,9 +34,9 @@ public class GeneratedValueMetadata {
     /**
      * INTERNAL:
      */
-    public GeneratedValueMetadata(Annotation generatedValue) {
-        m_generator = (String) MetadataHelper.invokeMethod("generator", generatedValue);
-        m_strategy = (Enum) MetadataHelper.invokeMethod("strategy", generatedValue); 
+    public GeneratedValueMetadata(MetadataAnnotation generatedValue) {
+        m_generator = (String) generatedValue.getAttribute("generator");
+        m_strategy = (String) generatedValue.getAttribute("strategy"); 
     }
     
     /**
@@ -55,7 +55,7 @@ public class GeneratedValueMetadata {
                 
             if (m_strategy == null && generatedValue.getStrategy() != null) {
                 return false;
-            } else if (! m_strategy.name().equals(generatedValue.getStrategy().name())) {
+            } else if (! m_strategy.equals(generatedValue.getStrategy())) {
                 return false;
             }
             
@@ -77,7 +77,7 @@ public class GeneratedValueMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public Enum getStrategy() {
+    public String getStrategy() {
         return m_strategy;
     }
     
@@ -93,7 +93,7 @@ public class GeneratedValueMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setStrategy(Enum strategy) {
+    public void setStrategy(String strategy) {
         m_strategy = strategy;
     }
 }

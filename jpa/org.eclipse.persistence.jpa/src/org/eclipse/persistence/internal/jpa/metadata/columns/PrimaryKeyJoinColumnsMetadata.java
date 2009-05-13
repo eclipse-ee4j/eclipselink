@@ -14,12 +14,12 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
-import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.ArrayList;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
 /**
  * INTERNAL:
@@ -48,9 +48,9 @@ public class PrimaryKeyJoinColumnsMetadata {
     /**
      * INTERNAL:
      */
-    public PrimaryKeyJoinColumnsMetadata(Annotation[] primaryKeyJoinColumns, MetadataAccessibleObject accessibleObject) {
+    public PrimaryKeyJoinColumnsMetadata(MetadataAnnotation[] primaryKeyJoinColumns, MetadataAccessibleObject accessibleObject) {
         // Process the primary key join column array.
-        for (Annotation pkJoinColumn : primaryKeyJoinColumns) {
+        for (MetadataAnnotation pkJoinColumn : primaryKeyJoinColumns) {
             m_pkJoinColumns.add(new PrimaryKeyJoinColumnMetadata(pkJoinColumn, accessibleObject));
         }
     }
@@ -58,11 +58,11 @@ public class PrimaryKeyJoinColumnsMetadata {
     /**
      * INTERNAL:
      */
-    public PrimaryKeyJoinColumnsMetadata(Annotation primaryKeyJoinColumns, Annotation primaryKeyJoinColumn, MetadataAccessibleObject accessibleObject) {        
+    public PrimaryKeyJoinColumnsMetadata(MetadataAnnotation primaryKeyJoinColumns, MetadataAnnotation primaryKeyJoinColumn, MetadataAccessibleObject accessibleObject) {        
         // Process all the primary key join columns first.
         if (primaryKeyJoinColumns != null) {
-            for (Annotation pkJoinColumn : (Annotation[])MetadataHelper.invokeMethod("value", primaryKeyJoinColumns)) { 
-                m_pkJoinColumns.add(new PrimaryKeyJoinColumnMetadata(pkJoinColumn, accessibleObject));
+            for (Object pkJoinColumn : (Object[])primaryKeyJoinColumns.getAttributeArray("value")) { 
+                m_pkJoinColumns.add(new PrimaryKeyJoinColumnMetadata((MetadataAnnotation)pkJoinColumn, accessibleObject));
             }
         }
         

@@ -42,6 +42,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAcc
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.MappedSuperclassAccessor;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataFactory;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataFile;
 import org.eclipse.persistence.internal.jpa.metadata.converters.ConverterMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.ObjectTypeConverterMetadata;
@@ -146,31 +147,81 @@ public class XMLEntityMappings extends ORMetadata {
      * INTERNAL:
      * This will initialize the given classname, and append the default
      * package if necessary. If the className is null or blank, this method 
+     * will return "void".
+     */
+    public String getFullClassName(String className) {
+        if (className == null || className.equals("")) {
+            return "void";
+        } else if (className.equalsIgnoreCase("Boolean")) {
+            return "java.lang.Boolean";
+        } else if (className.equalsIgnoreCase("Byte")) {
+            return "java.lang.Byte";
+        } else if (className.equalsIgnoreCase("Character")) {
+            return "java.lang.Character";
+        } else if (className.equalsIgnoreCase("Double")) {
+            return "java.lang.Double";
+        } else if (className.equalsIgnoreCase("Float")) {
+            return "java.lang.Float";
+        } else if (className.equalsIgnoreCase("Integer")) {
+            return "java.lang.Integer";
+        } else if (className.equalsIgnoreCase("Long")) {
+            return "java.lang.Long";
+        } else if (className.equalsIgnoreCase("Number")) {
+            return "java.lang.Number";
+        } else if (className.equalsIgnoreCase("Short")) {
+            return "java.lang.Short";
+        } else if (className.equalsIgnoreCase("String")) {
+            return "java.lang.String";
+        } else {
+            return getFullyQualifiedClassName(className);
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * This will initialize the given classname, and append the default
+     * package if necessary. If the className is null or blank, this method 
      * will return void.class.
      */
     public Class getClassForName(String className) {
-        if (className == null || className.equals("")) {
+        if (className == null || className.equals("") || className.equals("void")) {
             return void.class;
-        } else if (className.equalsIgnoreCase("Boolean")) {
+        } else if (className.equals("Boolean")) {
             return Boolean.class;
-        } else if (className.equalsIgnoreCase("Byte")) {
+        } else if (className.equals("Byte")) {
             return Byte.class;
-        } else if (className.equalsIgnoreCase("Character")) {
+        } else if (className.equals("Character")) {
             return Character.class;
-        } else if (className.equalsIgnoreCase("Double")) {
+        } else if (className.equals("Double")) {
             return Double.class;
-        } else if (className.equalsIgnoreCase("Float")) {
+        } else if (className.equals("Float")) {
             return Float.class;
-        } else if (className.equalsIgnoreCase("Integer")) {
+        } else if (className.equals("Integer")) {
             return Integer.class;
-        } else if (className.equalsIgnoreCase("Long")) {
+        } else if (className.equals("Long")) {
             return Long.class;
-        } else if (className.equalsIgnoreCase("Number")) {
+        } else if (className.equals("Number")) {
             return Number.class;
-        } else if (className.equalsIgnoreCase("Short")) {
+        } else if (className.equals("Short")) {
             return Short.class;
-        } else if (className.equalsIgnoreCase("String")) {
+        } else if (className.equals("String")) {
             return String.class;
+        } else if (className.equals("boolean")) {
+            return boolean.class;
+        } else if (className.equals("byte")) {
+            return byte.class;
+        } else if (className.equals("char")) {
+            return char.class;
+        } else if (className.equals("double")) {
+            return double.class;
+        } else if (className.equals("float")) {
+            return float.class;
+        } else if (className.equals("int")) {
+            return int.class;
+        } else if (className.equals("long")) {
+            return long.class;
+        } else if (className.equals("short")) {
+            return short.class;
         } else {
             return getClassForName(getFullyQualifiedClassName(className), m_loader);
         }
@@ -412,11 +463,12 @@ public class XMLEntityMappings extends ORMetadata {
         // Process the entities
         for (EntityAccessor entity : getEntities()) {
             // Initialize the class with the package from entity mappings.
-            Class entityClass = getClassForName(entity.getClassName());
+            MetadataClass entityClass = getMetadataClass(getFullClassName(entity.getClassName()));
+            entityClass.setEntityMappings(this);
             
             // Initialize the entity with its metadata descriptor and 
             // project.
-            entity.initXMLClassAccessor(new MetadataClass(entityClass, this), new MetadataDescriptor(entityClass, entity), m_project);
+            entity.initXMLClassAccessor(entityClass, new MetadataDescriptor(entityClass, entity), m_project);
             
             if (allEntities.containsKey(entityClass.getName())) {
                 // Merge this entity with the existing one.
@@ -430,11 +482,12 @@ public class XMLEntityMappings extends ORMetadata {
         // Process the embeddables.
         for (EmbeddableAccessor embeddable : getEmbeddables()) {
             // Initialize the class with the package from entity mappings.
-            Class embeddableClass = getClassForName(embeddable.getClassName());
+            MetadataClass embeddableClass = getMetadataClass(getFullClassName(embeddable.getClassName()));
+            embeddableClass.setEntityMappings(this);
             
             // Initialize the embeddable with its metadata descriptor and
             // project.
-            embeddable.initXMLClassAccessor(new MetadataClass(embeddableClass, this), new MetadataDescriptor(embeddableClass, embeddable), m_project);
+            embeddable.initXMLClassAccessor(embeddableClass, new MetadataDescriptor(embeddableClass, embeddable), m_project);
             
             if (allEmbeddables.containsKey(embeddableClass.getName())) {
                 // Merge this embeddable with the existing one.
@@ -448,13 +501,14 @@ public class XMLEntityMappings extends ORMetadata {
         // Process the mapped superclasses
         for (MappedSuperclassAccessor mappedSuperclass : getMappedSuperclasses()) {
             // Initialize the class with the package from entity mappings.
-            Class mappedSuperclassClass = getClassForName(mappedSuperclass.getClassName());
+            MetadataClass mappedSuperclassClass = getMetadataClass(getFullClassName(mappedSuperclass.getClassName()));
+            mappedSuperclassClass.setEntityMappings(this);
             
             // Just set the accessible object on the mapped superclass for now.
             // Mapped superclasses are reloaded for each entity that inherits
             // from it. After each reload, the initXMLObjects is called and
             // ready to be processed there after.
-            mappedSuperclass.setAccessibleObject(new MetadataClass(mappedSuperclassClass, this));
+            mappedSuperclass.setAccessibleObject(mappedSuperclassClass);
             
             // Add it to the project. This will merge it if necessary.
             m_project.addMappedSuperclass(mappedSuperclassClass.getName(), mappedSuperclass);
@@ -630,8 +684,9 @@ public class XMLEntityMappings extends ORMetadata {
             
         // Initialize the newly loaded/built entity
         EntityAccessor entity = xmlEntityMappings.getEntities().get(0);
-        Class entityClass = getClassForName(entity.getClassName());
-        entity.initXMLClassAccessor(new MetadataClass(entityClass, this), descriptor, m_project);
+        MetadataClass metadataClass = MetadataFactory.getClassMetadata(entity.getClassName());
+        metadataClass.setEntityMappings(this);
+        entity.initXMLClassAccessor(metadataClass, descriptor, m_project);
             
         return entity;
     }
@@ -654,8 +709,9 @@ public class XMLEntityMappings extends ORMetadata {
         
         // Initialize the newly loaded/built mapped superclass
         MappedSuperclassAccessor mappedSuperclass = xmlEntityMappings.getMappedSuperclasses().get(0);
-        Class mappedSuperclassClass = getClassForName(mappedSuperclass.getClassName());
-        mappedSuperclass.initXMLClassAccessor(new MetadataClass(mappedSuperclassClass, this), descriptor, m_project);
+        MetadataClass metadataClass = MetadataFactory.getClassMetadata(mappedSuperclass.getClassName());
+        metadataClass.setEntityMappings(this);
+        mappedSuperclass.initXMLClassAccessor(metadataClass, descriptor, m_project);
         
         return mappedSuperclass;
     }

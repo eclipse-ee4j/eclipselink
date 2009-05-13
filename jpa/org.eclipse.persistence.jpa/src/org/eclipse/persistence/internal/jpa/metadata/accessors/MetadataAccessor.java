@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
 
 import org.eclipse.persistence.annotations.Converter;
 import org.eclipse.persistence.annotations.ObjectTypeConverter;
@@ -45,6 +44,8 @@ import org.eclipse.persistence.internal.helper.Helper;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotatedElement;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 
 import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnsMetadata;
@@ -95,7 +96,7 @@ public abstract class MetadataAccessor extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public MetadataAccessor(Annotation annotation, MetadataAccessibleObject accessibleObject, MetadataDescriptor descriptor, MetadataProject project) {
+    public MetadataAccessor(MetadataAnnotation annotation, MetadataAccessibleObject accessibleObject, MetadataDescriptor descriptor, MetadataProject project) {
         super(annotation, accessibleObject);
         
         m_project = project;
@@ -152,8 +153,8 @@ public abstract class MetadataAccessor extends ORMetadata {
      * INTERNAL:
      * Return the annotated element for this accessor.
      */
-    public AnnotatedElement getAnnotatedElement() {
-        return getAccessibleObject().getAnnotatedElement();
+    public MetadataAnnotatedElement getAnnotatedElement() {
+        return getAccessibleObject();
     }
     
     /**
@@ -168,16 +169,16 @@ public abstract class MetadataAccessor extends ORMetadata {
      * INTERNAL:
      * Return the annotation if it exists.
      */
-    protected <T extends Annotation> T getAnnotation(Class annotation) {
-        return (T) getAnnotation(annotation.getName());
+    protected MetadataAnnotation getAnnotation(Class annotation) {
+        return getAnnotation(annotation.getName());
     }
     
     /**
      * INTERNAL:
      * Return the annotation if it exists.
      */
-    protected <T extends Annotation> T getAnnotation(String annotation) {
-        return (T) getAccessibleObject().getAnnotation(annotation, m_descriptor);
+    protected MetadataAnnotation getAnnotation(String annotation) {
+        return getAccessibleObject().getAnnotation(annotation, m_descriptor);
     }
     
     /**
@@ -217,7 +218,7 @@ public abstract class MetadataAccessor extends ORMetadata {
      * INTERNAL:
      * Return the java class associated with this accessor's descriptor.
      */
-    public Class getJavaClass() {
+    public MetadataClass getJavaClass() {
         return m_descriptor.getJavaClass();
     }
     
@@ -385,9 +386,9 @@ public abstract class MetadataAccessor extends ORMetadata {
         // Look for an annotation as long as an access type hasn't already been 
         // loaded from XML (meaning m_access will not be null at this point)
         if (m_access == null) {
-            Annotation access = getAnnotation(MetadataConstants.ACCESS_ANNOTATION);
+            MetadataAnnotation access = getAnnotation(MetadataConstants.ACCESS_ANNOTATION);
             if (access != null) {
-                setAccess(((Enum) MetadataHelper.invokeMethod("value", access)).name());
+                setAccess((String) access.getAttribute("value"));
             }
         }
     }
@@ -470,7 +471,7 @@ public abstract class MetadataAccessor extends ORMetadata {
         }
         
         // Check for a Converter annotation.
-        Annotation converter = getAnnotation(Converter.class);
+        MetadataAnnotation converter = getAnnotation(Converter.class);
         if (converter != null) {
             m_project.addConverter(new ConverterMetadata(converter, getAccessibleObject()));
         }
@@ -488,7 +489,7 @@ public abstract class MetadataAccessor extends ORMetadata {
         }
         
         // Check for an ObjectTypeConverter annotation.
-        Annotation objectTypeConverter = getAnnotation(ObjectTypeConverter.class);
+        MetadataAnnotation objectTypeConverter = getAnnotation(ObjectTypeConverter.class);
         if (objectTypeConverter != null) {
             m_project.addConverter(new ObjectTypeConverterMetadata(objectTypeConverter, getAccessibleObject()));
         }
@@ -536,7 +537,7 @@ public abstract class MetadataAccessor extends ORMetadata {
         }
         
         // Check for a StructConverter annotation.
-        Annotation converter = getAnnotation(StructConverter.class);
+        MetadataAnnotation converter = getAnnotation(StructConverter.class);
         if (converter != null) {
             m_project.addConverter(new StructConverterMetadata(converter, getAccessibleObject()));
         }
@@ -563,7 +564,7 @@ public abstract class MetadataAccessor extends ORMetadata {
         }
         
         // Check for an TypeConverter annotation.
-        Annotation typeConverter = getAnnotation(TypeConverter.class);
+        MetadataAnnotation typeConverter = getAnnotation(TypeConverter.class);
         if (typeConverter != null) {
             m_project.addConverter(new TypeConverterMetadata(typeConverter, getAccessibleObject()));
         }

@@ -14,10 +14,9 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.cache;
 
-import java.lang.annotation.Annotation;
-
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
 /**
  * Object to hold onto time of day metadata.
@@ -41,13 +40,13 @@ public class TimeOfDayMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public TimeOfDayMetadata(Annotation timeOfDay, MetadataAccessibleObject accessibleObject) {
+    public TimeOfDayMetadata(MetadataAnnotation timeOfDay, MetadataAccessibleObject accessibleObject) {
         super(timeOfDay, accessibleObject);
         
-        m_hour = (Integer) MetadataHelper.invokeMethod("hour", timeOfDay);
-        m_millisecond = (Integer) MetadataHelper.invokeMethod("millisecond", timeOfDay);
-        m_minute = (Integer) MetadataHelper.invokeMethod("minute", timeOfDay);
-        m_second = (Integer) MetadataHelper.invokeMethod("second", timeOfDay);
+        m_hour = (Integer) timeOfDay.getAttribute("hour");
+        m_millisecond = (Integer) timeOfDay.getAttribute("millisecond");
+        m_minute = (Integer) timeOfDay.getAttribute("minute");
+        m_second = (Integer) timeOfDay.getAttribute("second");
     }
     
     /**

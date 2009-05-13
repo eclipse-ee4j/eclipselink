@@ -19,8 +19,6 @@
  ******************************************************************************/ 
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
-import java.lang.annotation.Annotation;
-
 import javax.persistence.FetchType;
 
 import org.eclipse.persistence.annotations.JoinFetch;
@@ -29,6 +27,9 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataFactory;
 import org.eclipse.persistence.internal.jpa.metadata.tables.CollectionTableMetadata;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DirectCollectionMapping;
@@ -44,7 +45,7 @@ import org.eclipse.persistence.mappings.DirectMapMapping;
  * @since EclipseLink 2.0
  */
 public abstract class DirectCollectionAccessor extends DirectAccessor {
-    private Enum m_joinFetch;
+    private String m_joinFetch;
     private CollectionTableMetadata m_collectionTable;
    
     /**
@@ -57,20 +58,20 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
     /**
      * INTERNAL:
      */
-    protected DirectCollectionAccessor(Annotation annotation, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
+    protected DirectCollectionAccessor(MetadataAnnotation annotation, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(annotation, accessibleObject, classAccessor);
         
         // Set the fetch type. A basic map may have no annotation (will default).
         if (annotation != null) {
             // Set the fetch type.
-            setFetch((Enum) MetadataHelper.invokeMethod("fetch", annotation));
+            setFetch((String) annotation.getAttribute("fetch"));
         }
         
-        // Set the join fetch if one is present.            
-        if (isAnnotationPresent(JoinFetch.class)) {
-            m_joinFetch = (Enum) MetadataHelper.invokeMethod("value", getAnnotation(JoinFetch.class));
+        // Set the join fetch if one is present.
+        MetadataAnnotation joinFetch = getAnnotation(JoinFetch.class);            
+        if (joinFetch != null) {
+            m_joinFetch = (String) joinFetch.getAttribute("value");
         }
-        
         // Since BasicCollection and ElementCollection look for different
         // collection tables, we will not initialize/look for one here. Those
         // accessors will be responsible for loading their collection table.
@@ -95,15 +96,15 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
      * INTERNAL:
      */
     @Override
-    public FetchType getDefaultFetchType() {
-        return FetchType.LAZY; 
+    public String getDefaultFetchType() {
+        return FetchType.LAZY.name(); 
     }
     
     /**
      * INTERNAL: 
      * Used for OX mapping.
      */
-    public Enum getJoinFetch() {
+    public String getJoinFetch() {
         return m_joinFetch;
     }
     
@@ -124,9 +125,9 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
      * reference class.
      */
     @Override
-    public Class getReferenceClass() {
-        Class cls = getReferenceClassFromGeneric();
-        return (cls == null) ? void.class : cls;
+    public MetadataClass getReferenceClass() {
+        MetadataClass cls = getReferenceClassFromGeneric();
+        return (cls == null) ? MetadataFactory.getClassMetadata(void.class.getName()) : cls;
     }
     
     /**
@@ -331,7 +332,7 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
      * INTERNAL: 
      * Used for OX mapping.
      */
-    public void setJoinFetch(Enum joinFetch) {
+    public void setJoinFetch(String joinFetch) {
         m_joinFetch = joinFetch;
     }
 }

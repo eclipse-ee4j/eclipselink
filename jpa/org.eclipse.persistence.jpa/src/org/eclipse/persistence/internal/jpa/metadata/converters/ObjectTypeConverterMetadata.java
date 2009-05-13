@@ -18,7 +18,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
@@ -32,6 +31,9 @@ import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataFactory;
 
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
@@ -62,14 +64,14 @@ public class ObjectTypeConverterMetadata extends TypeConverterMetadata {
     /**
      * INTERNAL:
      */
-    public ObjectTypeConverterMetadata(Annotation objectTypeConverter, MetadataAccessibleObject accessibleObject) {
+    public ObjectTypeConverterMetadata(MetadataAnnotation objectTypeConverter, MetadataAccessibleObject accessibleObject) {
         super(objectTypeConverter, accessibleObject);
         
-        for (Annotation conversionValue: (Annotation[]) MetadataHelper.invokeMethod("conversionValues", objectTypeConverter)) {
-            m_conversionValues.add(new ConversionValueMetadata(conversionValue, accessibleObject));
+        for (Object conversionValue: (Object[]) objectTypeConverter.getAttributeArray("conversionValues")) {
+            m_conversionValues.add(new ConversionValueMetadata((MetadataAnnotation)conversionValue, accessibleObject));
            }
         
-        m_defaultObjectValue = (String) MetadataHelper.invokeMethod("defaultObjectValue", objectTypeConverter); 
+        m_defaultObjectValue = (String) objectTypeConverter.getAttribute("defaultObjectValue"); 
     }
     
     /**
@@ -152,10 +154,10 @@ public class ObjectTypeConverterMetadata extends TypeConverterMetadata {
      * INTERNAL:
      */
     @Override
-    public void process(DatabaseMapping mapping, MappingAccessor accessor, Class referenceClass, boolean isForMapKey) {
+    public void process(DatabaseMapping mapping, MappingAccessor accessor, MetadataClass referenceClass, boolean isForMapKey) {
         org.eclipse.persistence.mappings.converters.ObjectTypeConverter converter;
-        Class dataType = getDataType(accessor, referenceClass);
-        Class objectType = getObjectType(accessor, referenceClass);
+        MetadataClass dataType = getDataType(accessor, referenceClass);
+        MetadataClass objectType = getObjectType(accessor, referenceClass);
         
         if (objectType.isEnum()) {
             // Create an EnumTypeConverter. 
@@ -164,7 +166,7 @@ public class ObjectTypeConverterMetadata extends TypeConverterMetadata {
             // The object values should be the names of the enum members so 
             // force the objectType to String to ensure the initObject calls 
             // below will work.
-            objectType = String.class;
+            objectType = MetadataFactory.getClassMetadata(String.class.getName());
         } else {
             // Create an ObjectTypeConverter.
             converter = new org.eclipse.persistence.mappings.converters.ObjectTypeConverter(mapping);
@@ -201,8 +203,8 @@ public class ObjectTypeConverterMetadata extends TypeConverterMetadata {
         for (String dataValue : dataToObjectValues.keySet()) {
             String objectValue = dataToObjectValues.get(dataValue);
             
-            Object data = initObject(dataType, dataValue, true);
-            Object object = initObject(objectType, objectValue, false);
+            Object data = initObject(getJavaClass(dataType), dataValue, true);
+            Object object = initObject(getJavaClass(objectType), objectValue, false);
             
             if (objectToDataValues.containsKey(objectValue)) {
                 // It's a two-way mapping ...
@@ -215,7 +217,7 @@ public class ObjectTypeConverterMetadata extends TypeConverterMetadata {
         
         // Process the defaultObjectValue if one is specified.
         if (m_defaultObjectValue != null && ! m_defaultObjectValue.equals("")) {
-            converter.setDefaultAttributeValue(initObject(objectType, m_defaultObjectValue, false));
+            converter.setDefaultAttributeValue(initObject(getJavaClass(objectType), m_defaultObjectValue, false));
         }
         
         // Set the converter on the mapping.

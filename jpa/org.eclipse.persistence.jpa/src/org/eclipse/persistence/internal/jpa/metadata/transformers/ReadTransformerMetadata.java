@@ -15,12 +15,13 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.transformers;
 
-import java.lang.annotation.Annotation;
-
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.mappings.TransformationMapping;
+import org.eclipse.persistence.mappings.transformers.AttributeTransformer;
 
 /**
  * INTERNAL:
@@ -30,7 +31,7 @@ import org.eclipse.persistence.mappings.TransformationMapping;
  * @since EclipseLink 1.0 
  */
 public class ReadTransformerMetadata extends ORMetadata {
-    private Class m_transformerClass;
+    private MetadataClass m_transformerClass;
     
     private String m_transformerClassName;
     private String m_method;
@@ -52,12 +53,12 @@ public class ReadTransformerMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public ReadTransformerMetadata(Annotation readTransformer, MetadataAccessibleObject accessibleObject) {
+    public ReadTransformerMetadata(MetadataAnnotation readTransformer, MetadataAccessibleObject accessibleObject) {
         super(readTransformer, accessibleObject);
     
         if (readTransformer != null) {
-            m_transformerClass = (Class) MetadataHelper.invokeMethod("transformerClass", readTransformer);
-            m_method = (String) MetadataHelper.invokeMethod("method", readTransformer);
+            m_transformerClass = getMetadataClass((String) readTransformer.getAttributeString("transformerClass"));
+            m_method = (String) readTransformer.getAttributeString("method");
         }
     }
     
@@ -72,7 +73,7 @@ public class ReadTransformerMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public Class getTransformerClass() {
+    public MetadataClass getTransformerClass() {
         return m_transformerClass;
     }
 
@@ -102,20 +103,17 @@ public class ReadTransformerMetadata extends ORMetadata {
      */
     public void process(TransformationMapping mapping, String annotatedElementName) {
         if (m_method == null || m_method.equals("")) {
-            if (m_transformerClass.equals(void.class)) {
+            if (m_transformerClass.isVoid()) {
                 throw ValidationException.readTransformerHasNeitherClassNorMethod(annotatedElementName);
             } else {
-                // We can't use isAssignableFrom here. When static weaving is 
-                // used we will have class loader dependencies that will cause 
-                // the isAssignableFrom check to always return false.
-                if (MetadataHelper.classImplementsInterface(m_transformerClass, "org.eclipse.persistence.mappings.transformers.AttributeTransformer")) {
+                if (m_transformerClass.extendsInterface(AttributeTransformer.class)) {
                     mapping.setAttributeTransformerClassName(m_transformerClass.getName());
                 } else {
                     throw ValidationException.readTransformerClassDoesntImplementAttributeTransformer(annotatedElementName);
                 }
             }
         } else {
-            if (m_transformerClass.equals(void.class)) {
+            if (m_transformerClass.isVoid()) {
                 mapping.setAttributeTransformation(m_method);
             } else {
                 throw ValidationException.readTransformerHasBothClassAndMethod(annotatedElementName);
@@ -134,7 +132,7 @@ public class ReadTransformerMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public void setTransformerClass(Class transformerClass) {
+    public void setTransformerClass(MetadataClass transformerClass) {
         m_transformerClass = transformerClass;
     }
     

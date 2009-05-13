@@ -52,7 +52,7 @@ public class DescriptorExceptionResource extends ListResourceBundle {
                                            { "30", "The number of actual and formal parameters differs for method [{0}], or an unwrapping conversion has failed." },
                                            { "31", "The number of actual and formal parameters for the descriptor callback method [{0}] differs, or an unwrapping conversion has failed." },
                                            { "32", "Trying to set value [{0}] for instance variable [{1}] of type [{2}] in the object.  The specified object is not an instance of the class or interface declaring the underlying field, or an unwrapping conversion has failed." },
-                                           { "33", "Trying to invoke [{0}] on the object [{1}].  The number of actual and formal parameters differs, or an unwrapping conversion has failed." },
+                                           { "33", "Trying to invoke [{0}] on the object with the value [{1}].  The number of actual and formal parameters differs, or an unwrapping conversion has failed." },
                                            { "34", "This class does not define a public default constructor, or the constructor raised an exception." },
                                            { "35", "Invalid event." },
                                            { "36", "Invalid event code [{0}]." },

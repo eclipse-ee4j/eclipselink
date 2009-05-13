@@ -14,7 +14,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.locking;
 
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +25,7 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
 
 /**
@@ -37,7 +37,7 @@ import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
 public class OptimisticLockingMetadata extends ORMetadata {
     private Boolean m_cascade;
     private List<ColumnMetadata> m_selectedColumns = new ArrayList<ColumnMetadata>();
-    private Enum m_type;
+    private String m_type;
     
     /**
      * INTERNAL:
@@ -49,14 +49,14 @@ public class OptimisticLockingMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public OptimisticLockingMetadata(Annotation optimisticLocking, MetadataAccessibleObject accessibleObject) {
+    public OptimisticLockingMetadata(MetadataAnnotation optimisticLocking, MetadataAccessibleObject accessibleObject) {
         super(optimisticLocking, accessibleObject);
         
-        m_type = (Enum) MetadataHelper.invokeMethod("type", optimisticLocking);
-        m_cascade = (Boolean) MetadataHelper.invokeMethod("cascade", optimisticLocking);
+        m_type = (String) optimisticLocking.getAttribute("type");
+        m_cascade = (Boolean) optimisticLocking.getAttribute("cascade");
         
-        for (Annotation selectedColumn : (Annotation[]) MetadataHelper.invokeMethod("selectedColumns", optimisticLocking)) {
-            m_selectedColumns.add(new ColumnMetadata(selectedColumn, accessibleObject));
+        for (Object selectedColumn : (Object[]) optimisticLocking.getAttributeArray("selectedColumns")) {
+            m_selectedColumns.add(new ColumnMetadata((MetadataAnnotation)selectedColumn, accessibleObject));
         }
     }
     
@@ -80,7 +80,7 @@ public class OptimisticLockingMetadata extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public Enum getType() {
+    public String getType() {
         return m_type;
     }
     
@@ -96,15 +96,15 @@ public class OptimisticLockingMetadata extends ORMetadata {
      */
     public void process(MetadataDescriptor descriptor) {
         // Process the type. A null will default to VERSION_COLUMN.
-        if (m_type == null || m_type.name().equals(OptimisticLockingType.VERSION_COLUMN.name())) {
+        if (m_type == null || m_type.equals(OptimisticLockingType.VERSION_COLUMN.name())) {
             // A version annotation or element should be define and discovered
             // in later processing.
             descriptor.setUsesCascadedOptimisticLocking(m_cascade != null && m_cascade.booleanValue());
-        } else if (m_type.name().equals(OptimisticLockingType.ALL_COLUMNS.name())) {
+        } else if (m_type.equals(OptimisticLockingType.ALL_COLUMNS.name())) {
             descriptor.setOptimisticLockingPolicy(new AllFieldsLockingPolicy());
-        } else if (m_type.name().equals(OptimisticLockingType.CHANGED_COLUMNS.name())) {
+        } else if (m_type.equals(OptimisticLockingType.CHANGED_COLUMNS.name())) {
             descriptor.setOptimisticLockingPolicy(new ChangedFieldsLockingPolicy());
-        } else if (m_type.name().equals(OptimisticLockingType.SELECTED_COLUMNS.name())) {
+        } else if (m_type.equals(OptimisticLockingType.SELECTED_COLUMNS.name())) {
             if (m_selectedColumns.isEmpty()) {
                 throw ValidationException.optimisticLockingSelectedColumnNamesNotSpecified(descriptor.getJavaClass());
             } else {
@@ -144,7 +144,7 @@ public class OptimisticLockingMetadata extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setType(Enum type) {
+    public void setType(String type) {
         m_type = type;
     }
 }

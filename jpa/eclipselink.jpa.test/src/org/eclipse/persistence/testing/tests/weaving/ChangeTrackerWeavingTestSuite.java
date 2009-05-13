@@ -28,6 +28,7 @@ import junit.framework.TestSuite;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProcessor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataFactory;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.weaving.PersistenceWeaver;
 import org.eclipse.persistence.internal.weaving.TransformerFactory;
@@ -49,7 +50,7 @@ public class ChangeTrackerWeavingTestSuite  extends TestCase {
             m_session = session;
             Collection<String> entityNames = new HashSet<String>(entities.size());
             for (Class entity : entities) {
-                m_project.addEntityAccessor(new EntityAccessor(entity.getAnnotation(Entity.class), entity, m_project));
+                m_project.addEntityAccessor(new EntityAccessor(MetadataFactory.getClassMetadata(entity.getName()).getAnnotation(Entity.class), MetadataFactory.getClassMetadata(entity.getName()), m_project));
                 entityNames.add(entity.getName());
             }
         }

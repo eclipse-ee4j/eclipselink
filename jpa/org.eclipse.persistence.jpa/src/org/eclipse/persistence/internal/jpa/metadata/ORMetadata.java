@@ -17,8 +17,7 @@
  ******************************************************************************/ 
 package org.eclipse.persistence.internal.jpa.metadata;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +25,9 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.MappedSuperclassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataFactory;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
 /**
@@ -53,7 +55,7 @@ public abstract class ORMetadata {
     // ignore logging message. Note: in a defaulted annotation case, this
     // annotation will be null. This is not an issue though since we're
     // obviously not going to ignore and log a message for this case.
-    private Annotation m_annotation;
+    private MetadataAnnotation m_annotation;
     
     // The accessible object this metadata is tied to.
     private MetadataAccessibleObject m_accessibleObject;
@@ -80,7 +82,7 @@ public abstract class ORMetadata {
      * INTERNAL:
      * Used for Annotation loading.
      */
-    public ORMetadata(Annotation annotation, MetadataAccessibleObject accessibleObject) {
+    public ORMetadata(MetadataAnnotation annotation, MetadataAccessibleObject accessibleObject) {
         m_annotation = annotation;
         m_accessibleObject = accessibleObject;
     }
@@ -94,11 +96,76 @@ public abstract class ORMetadata {
     }
     
     /**
+     * Return the MetadataClass for the class.
+     */
+    public MetadataClass getMetadataClass(Class javaClass) {
+        if (javaClass == null) {
+            return null;
+        }
+        return getMetadataClass(javaClass.getName());
+    }
+    
+    /**
+     * Return the MetadataClass for the class name.
+     */
+    public MetadataClass getMetadataClass(String className) {
+        return MetadataFactory.getClassMetadata(className);
+    }
+
+    /**
+     * Return the Java class for the metadata class using the metadata loader.
+     * The loader is the temp loader during predeploy, and the app loader during deploy.
+     */
+    public Class getJavaClass(MetadataClass metadataClass) {
+        return getJavaClass(metadataClass.getName());
+    }
+    
+    /**
+     * Return the Java class for the class name using the metadata loader.
+     * The loader is the temp loader during predeploy, and the app loader during deploy.
+     */
+    public Class getJavaClass(String className) {
+        if ((getAccessibleObject() != null) && (getAccessibleObject().getEntityMappings() != null)) {
+            return getAccessibleObject().getEntityMappings().getClassForName(className);
+        }
+        
+        if (className == null || className.equals("") || className.equals("void")) {
+            return void.class;
+        } else if (className.equals("boolean")) {
+            return boolean.class;
+        } else if (className.equals("byte")) {
+            return byte.class;
+        } else if (className.equals("char")) {
+            return char.class;
+        } else if (className.equals("double")) {
+            return double.class;
+        } else if (className.equals("float")) {
+            return float.class;
+        } else if (className.equals("int")) {
+            return int.class;
+        } else if (className.equals("long")) {
+            return long.class;
+        } else if (className.equals("short")) {
+            return short.class;
+        } else if (className.equals("byte[]")) {
+            return new byte[0].getClass();
+        } else if (className.equals("java.lang.Byte[]")) {
+            return new Byte[0].getClass();
+        } else if (className.equals("char[]")) {
+            return new char[0].getClass();
+        } else if (className.equals("java.lang.Character[]")) {
+            return new Character[0].getClass();
+        } else {
+            return MetadataHelper.getClassForName(className, getClass().getClassLoader());
+        }
+    }
+    
+    /**
      * INTERNAL:
      * This is a value is that is used when logging messages for overriding.
      * @see shouldOverride
      */
-    protected Annotation getAnnotation() {
+    protected MetadataAnnotation getAnnotation() {
         return m_annotation;
     }
     
@@ -152,8 +219,8 @@ public abstract class ORMetadata {
      * from XML and that need to initialize a class name. The assumption
      * here is that an entity mappings object will be available. 
      */
-    protected Class initXMLClassName(String className) {
-        return m_accessibleObject.getEntityMappings().getClassForName(className);
+    protected MetadataClass initXMLClassName(String className) {
+        return MetadataFactory.getClassMetadata(m_accessibleObject.getEntityMappings().getFullClassName(className));
     }
     
     /**
@@ -189,7 +256,7 @@ public abstract class ORMetadata {
      * Note: That annotations can default so the annotation may be null.
      */
     protected boolean loadedFromAnnotation() {
-        return m_annotation != null || m_accessibleObject.getLocation() instanceof AnnotatedElement;
+        return m_annotation != null || !(m_accessibleObject.getLocation() instanceof URL);
     }
     
     /**
@@ -442,7 +509,7 @@ public abstract class ORMetadata {
                         if (hasIdentifier()) {
                             throw ValidationException.conflictingNamedXMLElements(getIdentifier(), m_xmlElement, getLocation(), existing.getLocation());
                         } else {
-                            throw ValidationException.conflictingXMLElements(m_xmlElement, getAccessibleObject().getElement(), getLocation(), existing.getLocation());
+                            throw ValidationException.conflictingXMLElements(m_xmlElement, getAccessibleObject(), getLocation(), existing.getLocation());
                         }
                     }
                 }

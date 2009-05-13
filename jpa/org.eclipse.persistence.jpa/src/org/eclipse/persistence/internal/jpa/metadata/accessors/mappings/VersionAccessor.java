@@ -14,8 +14,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
-import java.lang.annotation.Annotation;
-
 import org.eclipse.persistence.descriptors.TimestampLockingPolicy;
 import org.eclipse.persistence.descriptors.VersionLockingPolicy;
 
@@ -25,6 +23,8 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 
 /**
  * INTERNAL:
@@ -45,7 +45,7 @@ public class VersionAccessor extends BasicAccessor {
     /**
      * INTERNAL:
      */
-    public VersionAccessor(Annotation version, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
+    public VersionAccessor(MetadataAnnotation version, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(version, accessibleObject, classAccessor);
     }
 
@@ -53,7 +53,7 @@ public class VersionAccessor extends BasicAccessor {
      * INTERNAL:
      * Returns true if the given class is a valid timestamp locking type.
      */
-    protected boolean isValidTimestampVersionLockingType(Class cls) {
+    protected boolean isValidTimestampVersionLockingType(MetadataClass cls) {
         return cls.equals(java.sql.Timestamp.class);
     }
      
@@ -61,7 +61,7 @@ public class VersionAccessor extends BasicAccessor {
      * INTERNAL:
      * Returns true if the given class is a valid version locking type.
      */
-    protected boolean isValidVersionLockingType(Class cls) {
+    protected boolean isValidVersionLockingType(MetadataClass cls) {
         return (cls.equals(int.class) ||
                 cls.equals(Integer.class) ||
                 cls.equals(short.class) ||
@@ -84,8 +84,8 @@ public class VersionAccessor extends BasicAccessor {
             // Ignore the version locking if it is already set.
             getLogger().logWarningMessage(MetadataLogger.IGNORE_VERSION_LOCKING, this);
         } else {
-            Class lockType = getRawClass();
-            getField().setType(lockType);
+            MetadataClass lockType = getRawClass();
+            getField().setType(getJavaClass(lockType));
 
             if (isValidVersionLockingType(lockType) || isValidTimestampVersionLockingType(lockType)) {
                 VersionLockingPolicy policy = isValidVersionLockingType(lockType) ? new VersionLockingPolicy(getField()) : new TimestampLockingPolicy(getField());  

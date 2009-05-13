@@ -21,7 +21,6 @@
  ******************************************************************************/ 
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +47,8 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EmbeddableAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.jpa.metadata.columns.AssociationOverrideMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.AttributeOverrideMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
@@ -73,9 +74,9 @@ import org.eclipse.persistence.mappings.OneToOneMapping;
  * @since EclipseLink 2.0
  */
 public class ElementCollectionAccessor extends DirectCollectionAccessor implements MappedKeyMapAccessor {
-    private Class m_targetClass;
-    private Class m_mapKeyClass;
-    private Class m_referenceClass;
+    private MetadataClass m_targetClass;
+    private MetadataClass m_mapKeyClass;
+    private MetadataClass m_referenceClass;
     
     private ColumnMetadata m_column;
     private ColumnMetadata m_mapKeyColumn;
@@ -108,11 +109,11 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
     /**
      * INTERNAL:
      */
-    public ElementCollectionAccessor(Annotation elementCollection, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
+    public ElementCollectionAccessor(MetadataAnnotation elementCollection, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(elementCollection, accessibleObject, classAccessor);
         
         // Set the target class.
-        m_targetClass = (Class) MetadataHelper.invokeMethod("targetClass", elementCollection);
+        m_targetClass = getMetadataClass((String) elementCollection.getAttribute("targetClass"));
         
         // Set the attribute overrides if some are present.
         m_attributeOverrides = new ArrayList<AttributeOverrideMetadata>();
@@ -120,8 +121,8 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
         
         // Set the attribute overrides first if defined.
         if (isAnnotationPresent(AttributeOverrides.class)) {
-            for (Annotation attributeOverride : (Annotation[]) MetadataHelper.invokeMethod("value", getAnnotation(AttributeOverrides.class))) {
-                addAttributeOverride(new AttributeOverrideMetadata(attributeOverride, accessibleObject));
+            for (Object attributeOverride : (Object[]) getAnnotation(AttributeOverrides.class).getAttributeArray("value")) {
+                addAttributeOverride(new AttributeOverrideMetadata((MetadataAnnotation)attributeOverride, accessibleObject));
             }
         }
         
@@ -136,7 +137,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
         
         // Set the association overrides first if defined.
         if (isAnnotationPresent(AssociationOverrides.class)) {
-            for (Annotation associationOverride : (Annotation[]) MetadataHelper.invokeMethod("value", getAnnotation(AssociationOverrides.class))) {
+            for (MetadataAnnotation associationOverride : (MetadataAnnotation[]) getAnnotation(AssociationOverrides.class).getAttribute("value")) {
                 addAssociationOverride(new AssociationOverrideMetadata(associationOverride, accessibleObject));
             }
         }
@@ -158,17 +159,17 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
         
         // Set the order if one is present.
         if (isAnnotationPresent(OrderBy.class)) {
-            m_orderBy = (String) MetadataHelper.invokeMethod("value", getAnnotation(OrderBy.class));
+            m_orderBy = (String) getAnnotation(OrderBy.class).getAttribute("value");
         }
         
         // Set the map key if one is defined.
         if (isAnnotationPresent(MapKey.class)) {
-            m_mapKey = (String) MetadataHelper.invokeMethod("name", getAnnotation(MapKey.class));
+            m_mapKey = (String) getAnnotation(MapKey.class).getAttribute("name");
         }
         
         // Set the map key class if one is defined.
         if (isAnnotationPresent(MapKeyClass.class)) {
-            m_mapKeyClass = (Class) MetadataHelper.invokeMethod("value", getAnnotation(MapKeyClass.class));
+            m_mapKeyClass = getMetadataClass((String) getAnnotation(MapKeyClass.class).getAttribute("value"));
         }
         
         // Set the map key enumerated if one is defined.
@@ -188,7 +189,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
         
         // Set the convert key if one is defined.
         if (isAnnotationPresent(MapKeyConvert.class)) {
-            m_mapKeyConvert = (String) MetadataHelper.invokeMethod("value", getAnnotation(MapKeyConvert.class));
+            m_mapKeyConvert = (String) getAnnotation(MapKeyConvert.class).getAttribute("value");
         }
         
         // Set the order column if one is defined.
@@ -305,7 +306,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
      * INTERNAL: 
      * Return the map key class on this element collection accessor.
      */
-    public Class getMapKeyClass() {
+    public MetadataClass getMapKeyClass() {
         return m_mapKeyClass;
     }
     
@@ -395,11 +396,11 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
      * reference class, otherwise we will look to extract one from generics.
      */
     @Override
-    public Class getReferenceClass() {
+    public MetadataClass getReferenceClass() {
         if (m_referenceClass == null) {
             m_referenceClass = getTargetClass();
         
-            if (m_referenceClass == void.class) {
+            if ((m_referenceClass == null) || m_referenceClass.isVoid()) {
                 // This call will attempt to extract the reference class from generics.
                 m_referenceClass = getReferenceClassFromGeneric();
         
@@ -437,7 +438,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
      * INTERNAL:
      * Return the target class for this accessor.
      */
-    protected Class getTargetClass() {
+    protected MetadataClass getTargetClass() {
         return m_targetClass;
     }
     
@@ -774,7 +775,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
     /**
      * INTERNAL: 
      */
-    public void setMapKeyClass(Class mapKeyClass) {
+    public void setMapKeyClass(MetadataClass mapKeyClass) {
         m_mapKeyClass = mapKeyClass;
     }
     

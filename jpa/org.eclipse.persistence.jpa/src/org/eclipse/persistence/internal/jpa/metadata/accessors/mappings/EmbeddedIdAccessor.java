@@ -26,7 +26,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
-import java.lang.annotation.Annotation;
 import java.util.HashMap;
 
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -34,6 +33,7 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.EmbeddableMapping;
@@ -61,7 +61,7 @@ public class EmbeddedIdAccessor extends EmbeddedAccessor {
     /**
      * INTERNAL:
      */
-    public EmbeddedIdAccessor(Annotation embeddedId, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
+    public EmbeddedIdAccessor(MetadataAnnotation embeddedId, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(embeddedId, accessibleObject, classAccessor);
     }
     

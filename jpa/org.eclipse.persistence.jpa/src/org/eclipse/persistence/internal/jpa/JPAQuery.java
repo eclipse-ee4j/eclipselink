@@ -17,6 +17,8 @@ import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.OptimisticLockException;
 import java.util.Map;
 
+import javax.persistence.LockModeType;
+
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.sessions.Session;
 
@@ -31,7 +33,7 @@ import org.eclipse.persistence.sessions.Session;
  */
 
 public class JPAQuery extends DatabaseQuery  {
-    private Enum lockMode;
+    private String lockMode;
     private String jpqlString;
     private Map<String, Object> hints;
     
@@ -42,12 +44,15 @@ public class JPAQuery extends DatabaseQuery  {
         this.jpqlString=jpqlString;
     }
     
-    public JPAQuery(String name, String jpqlString, Enum lockMode, Map<String, Object> hints) {
+    public JPAQuery(String name, String jpqlString, String lockMode, Map<String, Object> hints) {
         this.name = name;
         this.jpqlString = jpqlString;
         this.flushOnExecute = null;
         this.hints = hints;
         this.lockMode = lockMode;
+        if (lockMode == null) {
+            this.lockMode = "NONE";
+        }
     }
 
     /**
@@ -92,7 +97,7 @@ public class JPAQuery extends DatabaseQuery  {
     public DatabaseQuery processJPQLQuery(Session session){
         ClassLoader classloader = session.getDatasourcePlatform().getConversionManager().getLoader();
         DatabaseQuery ejbquery = EJBQueryImpl.buildEJBQLDatabaseQuery(
-            this.getName(), this.jpqlString, session, this.lockMode, this.hints, classloader);
+            this.getName(), this.jpqlString, session, LockModeType.valueOf(lockMode), this.hints, classloader);
         ejbquery.setName(this.getName());
         return ejbquery;
     }    

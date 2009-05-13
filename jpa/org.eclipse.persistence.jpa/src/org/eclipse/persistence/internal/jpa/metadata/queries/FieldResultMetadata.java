@@ -14,10 +14,9 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
-import java.lang.annotation.Annotation;
-
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
 /**
  * INTERNAL:
@@ -42,11 +41,11 @@ public class FieldResultMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public FieldResultMetadata(Annotation fieldResult, MetadataAccessibleObject accessibleObject) {
+    public FieldResultMetadata(MetadataAnnotation fieldResult, MetadataAccessibleObject accessibleObject) {
         super(fieldResult, accessibleObject);
         
-        m_name = (String) MetadataHelper.invokeMethod("name", fieldResult);
-        m_column = (String) MetadataHelper.invokeMethod("column", fieldResult);
+        m_name = (String) fieldResult.getAttribute("name");
+        m_column = (String) fieldResult.getAttribute("column");
     }
     
     /**

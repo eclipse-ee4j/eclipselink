@@ -14,11 +14,10 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
-import java.lang.annotation.Annotation;
-
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
 /**
  * INTERNAL:
@@ -55,32 +54,32 @@ public class ColumnMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public ColumnMetadata(Annotation column, MetadataAccessibleObject accessibleObject) {
+    public ColumnMetadata(MetadataAnnotation column, MetadataAccessibleObject accessibleObject) {
         this(column, accessibleObject, "");
     }
     
     /**
      * INTERNAL:
      */
-    public ColumnMetadata(Annotation column, MetadataAccessibleObject accessibleObject, String attributeName) {
+    public ColumnMetadata(MetadataAnnotation column, MetadataAccessibleObject accessibleObject, String attributeName) {
         super(column, accessibleObject);
         
         m_attributeName = attributeName;
         
         if (column != null) {
             // Apply the values from the column annotation.
-            setUnique((Boolean) MetadataHelper.invokeMethod("unique", column));
-            setNullable((Boolean) MetadataHelper.invokeMethod("nullable", column));
-            setUpdatable((Boolean) MetadataHelper.invokeMethod("updatable", column));
-            setInsertable((Boolean) MetadataHelper.invokeMethod("insertable", column));
+            setUnique((Boolean) column.getAttribute("unique"));
+            setNullable((Boolean) column.getAttribute("nullable"));
+            setUpdatable((Boolean) column.getAttribute("updatable"));
+            setInsertable((Boolean) column.getAttribute("insertable"));
         
-            setScale((Integer) MetadataHelper.invokeMethod("scale", column));
-            setLength((Integer) MetadataHelper.invokeMethod("length", column));
-            setPrecision((Integer) MetadataHelper.invokeMethod("precision", column));
+            setScale((Integer) column.getAttribute("scale"));
+            setLength((Integer) column.getAttribute("length"));
+            setPrecision((Integer) column.getAttribute("precision"));
         
-            setName((String) MetadataHelper.invokeMethod("name", column));
-            setTable((String) MetadataHelper.invokeMethod("table", column));
-            setColumnDefinition((String) MetadataHelper.invokeMethod("columnDefinition", column));
+            setName((String) column.getAttributeString("name"));
+            setTable((String) column.getAttributeString("table"));
+            setColumnDefinition((String) column.getAttributeString("columnDefinition"));
         }
     }
     

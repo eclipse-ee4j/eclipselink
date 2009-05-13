@@ -16,9 +16,9 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
-import java.lang.annotation.Annotation;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
 /**
  * INTERNAL:
@@ -40,10 +40,10 @@ public abstract class AbstractConverterMetadata extends MetadataConverter {
     /**
      * INTERNAL:
      */
-    public AbstractConverterMetadata(Annotation converter, MetadataAccessibleObject accessibleObject) {
+    public AbstractConverterMetadata(MetadataAnnotation converter, MetadataAccessibleObject accessibleObject) {
         super(converter, accessibleObject);
         
-        m_name = (String) MetadataHelper.invokeMethod("name", converter);
+        m_name = (String) converter.getAttribute("name");
     }
     
     /**

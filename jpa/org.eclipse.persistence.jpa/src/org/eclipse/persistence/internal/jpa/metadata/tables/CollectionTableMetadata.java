@@ -14,11 +14,11 @@
  ******************************************************************************/    
 package org.eclipse.persistence.internal.jpa.metadata.tables;
 
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
@@ -52,17 +52,17 @@ public class CollectionTableMetadata extends TableMetadata {
     /**
      * INTERNAL:
      */
-    public CollectionTableMetadata(Annotation collectionTable, MetadataAccessibleObject accessibleObject, boolean isJPACollectionTable) {
+    public CollectionTableMetadata(MetadataAnnotation collectionTable, MetadataAccessibleObject accessibleObject, boolean isJPACollectionTable) {
         super(collectionTable, accessibleObject);
         
         if (collectionTable != null) {
             if (isJPACollectionTable) {
-                for (Annotation joinColumn : (Annotation[]) MetadataHelper.invokeMethod("joinColumns", collectionTable)) {
-                    m_joinColumns.add(new JoinColumnMetadata(joinColumn, accessibleObject));
+                for (Object joinColumn : (Object[]) collectionTable.getAttributeArray("joinColumns")) {
+                    m_joinColumns.add(new JoinColumnMetadata((MetadataAnnotation)joinColumn, accessibleObject));
                 }
             } else {
-                for (Annotation primaryKeyJoinColumn : (Annotation[]) MetadataHelper.invokeMethod("primaryKeyJoinColumns", collectionTable)) {
-                    m_primaryKeyJoinColumns.add(new PrimaryKeyJoinColumnMetadata(primaryKeyJoinColumn, accessibleObject));
+                for (Object primaryKeyJoinColumn : (Object[]) collectionTable.getAttributeArray("primaryKeyJoinColumns")) {
+                    m_primaryKeyJoinColumns.add(new PrimaryKeyJoinColumnMetadata((MetadataAnnotation)primaryKeyJoinColumn, accessibleObject));
                 }
             }
         }

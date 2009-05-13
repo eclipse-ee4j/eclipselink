@@ -19,8 +19,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
-import java.lang.annotation.Annotation;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +28,7 @@ import org.eclipse.persistence.annotations.WriteTransformers;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
 import org.eclipse.persistence.internal.jpa.metadata.transformers.ReadTransformerMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.transformers.WriteTransformerMetadata;
@@ -58,31 +57,33 @@ public class TransformationAccessor extends BasicAccessor {
     /**
      * INTERNAL:
      */
-    public TransformationAccessor(Annotation transformation, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
+    public TransformationAccessor(MetadataAnnotation transformation, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(transformation, accessibleObject, classAccessor);
         
         if (transformation != null) {
-            setFetch((Enum) MetadataHelper.invokeMethod("fetch", transformation));
-            setOptional((Boolean) MetadataHelper.invokeMethod("optional", transformation));
+            setFetch((String) transformation.getAttribute("fetch"));
+            setOptional((Boolean) transformation.getAttribute("optional"));
         }
         
-        // Set the read transformer if specified.
-        if (isAnnotationPresent(ReadTransformer.class)) {
-            m_readTransformer = new ReadTransformerMetadata(getAnnotation(ReadTransformer.class), accessibleObject);
+        MetadataAnnotation readTransformer = getAnnotation(ReadTransformer.class);
+        if (readTransformer != null) {
+            m_readTransformer = new ReadTransformerMetadata(readTransformer, accessibleObject);
         }
         
         // Set the write transformers if specified.
         m_writeTransformers = new ArrayList<WriteTransformerMetadata>();
         // Process all the write transformers first.
-        if (isAnnotationPresent(WriteTransformers.class)) {
-            for (Annotation transformer : (Annotation[]) MetadataHelper.invokeMethod("value", getAnnotation(WriteTransformers.class))) {
-                m_writeTransformers.add(new WriteTransformerMetadata(transformer, accessibleObject));
+        MetadataAnnotation writeTransformers = getAnnotation(WriteTransformers.class);
+        if (writeTransformers != null) {
+            for (Object transformer : (Object[]) writeTransformers.getAttributeArray("value")) {
+                m_writeTransformers.add(new WriteTransformerMetadata((MetadataAnnotation)transformer, accessibleObject));
             }
         }
         
         // Process the single write transformer second.
-        if (isAnnotationPresent(WriteTransformer.class)) {
-            m_writeTransformers.add(new WriteTransformerMetadata(getAnnotation(WriteTransformer.class), accessibleObject));
+        MetadataAnnotation writeTransformer = getAnnotation(WriteTransformer.class);
+        if (writeTransformer != null) {
+            m_writeTransformers.add(new WriteTransformerMetadata(writeTransformer, accessibleObject));
         }
         
         //TODO: ReturningPolicy

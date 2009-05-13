@@ -36,7 +36,7 @@ public class CascadeTypes extends ORMetadata {
     private boolean m_cascadeRemove;
     private boolean m_cascadeRefresh;
     
-    private List<Enum> m_types;
+    private List<String> m_types;
     
     /**
      * INTERNAL:
@@ -49,13 +49,13 @@ public class CascadeTypes extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public CascadeTypes(Enum[] cascadeTypes, MetadataAccessibleObject accessibleObject) {
+    public CascadeTypes(Object[] cascadeTypes, MetadataAccessibleObject accessibleObject) {
         super(null, accessibleObject);
         
-        m_types = new ArrayList<Enum>();
+        m_types = new ArrayList<String>();
         
-        for (Enum cascadeType : cascadeTypes) {
-            m_types.add(cascadeType);
+        for (Object cascadeType : cascadeTypes) {
+            m_types.add((String)cascadeType);
         }
     }
 
@@ -102,28 +102,28 @@ public class CascadeTypes extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public List<Enum> getTypes() {
+    public List<String> getTypes() {
         if (m_types == null) {
-            m_types = new ArrayList<Enum>();
+            m_types = new ArrayList<String>();
         
             if (isCascadeAll()) {
-                m_types.add(CascadeType.ALL);
+                m_types.add(CascadeType.ALL.name());
             }
         
             if (isCascadePersist()) {
-                m_types.add(CascadeType.PERSIST);
+                m_types.add(CascadeType.PERSIST.name());
             }
         
             if (isCascadeMerge()) {
-                m_types.add(CascadeType.MERGE);
+                m_types.add(CascadeType.MERGE.name());
             }
         
             if (isCascadeRemove()) {
-                m_types.add(CascadeType.REMOVE);
+                m_types.add(CascadeType.REMOVE.name());
             }
         
             if (isCascadeRefresh()) {
-                m_types.add(CascadeType.REFRESH);
+                m_types.add(CascadeType.REFRESH.name());
             }
         }
         

@@ -57,19 +57,21 @@ public class EntityClassListenerMetadata extends EntityListenerMetadata {
     /**
      * INTERNAL: 
      */
-    public void process(List<MappedSuperclassAccessor> mappedSuperclasses) {
+    public void process(List<MappedSuperclassAccessor> mappedSuperclasses, ClassLoader loader) {
         // Create the listener.
-        m_listener = new EntityClassListener(m_accessor.getJavaClass());
+        Class accessorClass = getClassForName(m_accessor.getJavaClass().getName(), loader);
+        m_listener = new EntityClassListener(accessorClass);
         
         // Process the callback methods as defined in XML or annotations on the 
         // entity class first.
-        processCallbackMethods(getDeclaredMethods(m_accessor.getJavaClass()), m_descriptor);
+        processCallbackMethods(getDeclaredMethods(accessorClass), m_descriptor);
         
         // Process the callback methods as defined in XML or annotations 
         // on the mapped superclasses if not excluded second. 
         if (! m_descriptor.excludeSuperclassListeners()) {
             for (MappedSuperclassAccessor mappedSuperclass : mappedSuperclasses) {
-                processCallbackMethods(getDeclaredMethods(mappedSuperclass.getJavaClass()), m_descriptor);
+                Class superClass = getClassForName(mappedSuperclass.getJavaClass().getName(), loader);
+                processCallbackMethods(getDeclaredMethods(superClass), m_descriptor);
             }
         }
         

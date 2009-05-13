@@ -22,8 +22,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
-import java.lang.annotation.Annotation;
-
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.Lob;
@@ -35,6 +33,7 @@ import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.converters.EnumeratedMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.converters.LobMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.TemporalMetadata;
 
@@ -48,7 +47,7 @@ import org.eclipse.persistence.internal.jpa.metadata.converters.TemporalMetadata
  */
 public abstract class DirectAccessor extends MappingAccessor {
     private Boolean m_optional;
-    private Enum m_fetch;
+    private String m_fetch;
     private EnumeratedMetadata m_enumerated;
     private LobMetadata m_lob;
     private String m_convert;
@@ -64,7 +63,7 @@ public abstract class DirectAccessor extends MappingAccessor {
     /**
      * INTERNAL:
      */
-    protected DirectAccessor(Annotation annotation, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
+    protected DirectAccessor(MetadataAnnotation annotation, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(annotation, accessibleObject, classAccessor);
         
         // Set the lob if one is present.
@@ -84,7 +83,7 @@ public abstract class DirectAccessor extends MappingAccessor {
         
         // Set the convert value if one is present.
         if (isAnnotationPresent(Convert.class)) {
-            m_convert = (String) MetadataHelper.invokeMethod("value", getAnnotation(Convert.class));
+            m_convert = (String) getAnnotation(Convert.class).getAttribute("value");
         }
     }
     
@@ -99,7 +98,7 @@ public abstract class DirectAccessor extends MappingAccessor {
     /**
      * INTERNAL:
      */
-    public abstract FetchType getDefaultFetchType();
+    public abstract String getDefaultFetchType();
     
     /**
      * INTERNAL:
@@ -122,7 +121,7 @@ public abstract class DirectAccessor extends MappingAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public Enum getFetch() {
+    public String getFetch() {
         return m_fetch;
     }
     
@@ -253,7 +252,7 @@ public abstract class DirectAccessor extends MappingAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setFetch(Enum fetch) {
+    public void setFetch(String fetch) {
         m_fetch = fetch;
     }
     
@@ -286,12 +285,12 @@ public abstract class DirectAccessor extends MappingAccessor {
      */
     @Override
     protected boolean usesIndirection() {
-        Enum fetchType = getFetch();
+        String fetchType = getFetch();
         
         if (fetchType == null) {
             fetchType = getDefaultFetchType();
         }
         
-        return fetchType.name().equals(FetchType.LAZY.name());
+        return fetchType.equals(FetchType.LAZY.name());
     }
 }

@@ -14,10 +14,9 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.sequencing;
 
-import java.lang.annotation.Annotation;
-
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
 /**
  * A wrapper class to the MetadataSequenceGenerator that holds onto a 
@@ -43,13 +42,13 @@ public class SequenceGeneratorMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public SequenceGeneratorMetadata(Annotation sequenceGenerator, MetadataAccessibleObject accessibleObject) {
+    public SequenceGeneratorMetadata(MetadataAnnotation sequenceGenerator, MetadataAccessibleObject accessibleObject) {
         super(sequenceGenerator, accessibleObject);
         
-        m_allocationSize = (Integer) MetadataHelper.invokeMethod("allocationSize", sequenceGenerator);
-        m_initialValue = (Integer) MetadataHelper.invokeMethod("initialValue", sequenceGenerator); 
-        m_name = (String) MetadataHelper.invokeMethod("name", sequenceGenerator); 
-        m_sequenceName = (String) MetadataHelper.invokeMethod("sequenceName", sequenceGenerator); 
+        m_allocationSize = (Integer) sequenceGenerator.getAttribute("allocationSize");
+        m_initialValue = (Integer) sequenceGenerator.getAttribute("initialValue"); 
+        m_name = (String) sequenceGenerator.getAttributeString("name"); 
+        m_sequenceName = (String) sequenceGenerator.getAttributeString("sequenceName"); 
     }
     
     /**

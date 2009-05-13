@@ -22,13 +22,13 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
-import java.lang.annotation.Annotation;
 import java.util.Map;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
@@ -60,12 +60,12 @@ public class OneToManyAccessor extends CollectionAccessor {
     /**
      * INTERNAL:
      */
-    public OneToManyAccessor(Annotation oneToMany, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
+    public OneToManyAccessor(MetadataAnnotation oneToMany, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(oneToMany, accessibleObject, classAccessor);
         
         // A one to many mapping can default.
         if (oneToMany != null) {
-            setOrphanRemoval((Boolean) MetadataHelper.invokeMethod("orphanRemoval", oneToMany));
+            setOrphanRemoval((Boolean) oneToMany.getAttribute("orphanRemoval"));
         }
     }
     

@@ -15,8 +15,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
-import java.lang.annotation.Annotation;
-
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectCollectionMapping;
 import org.eclipse.persistence.mappings.DirectMapMapping;
@@ -26,6 +24,8 @@ import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 
 /**
  * INTERNAL:
@@ -52,7 +52,7 @@ public abstract class MetadataConverter extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public MetadataConverter(Annotation converter, MetadataAccessibleObject accessibleObject) {
+    public MetadataConverter(MetadataAnnotation converter, MetadataAccessibleObject accessibleObject) {
         super(converter, accessibleObject);
     }
     
@@ -60,7 +60,7 @@ public abstract class MetadataConverter extends ORMetadata {
      * INTERNAL:
      * Every converter needs to be able to process themselves.
      */
-    public abstract void process(DatabaseMapping mapping, MappingAccessor accessor, Class referenceClass, boolean isForMapKey);
+    public abstract void process(DatabaseMapping mapping, MappingAccessor accessor, MetadataClass referenceClass, boolean isForMapKey);
     
     /**
      * INTERNAL:

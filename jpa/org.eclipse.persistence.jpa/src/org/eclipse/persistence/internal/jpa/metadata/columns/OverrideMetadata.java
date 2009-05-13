@@ -14,11 +14,10 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
-import java.lang.annotation.Annotation;
-
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
 /**
  * INTERNAL:
@@ -41,10 +40,10 @@ public abstract class OverrideMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
-    protected OverrideMetadata(Annotation annotation, MetadataAccessibleObject accessibleObject) {
+    protected OverrideMetadata(MetadataAnnotation annotation, MetadataAccessibleObject accessibleObject) {
         super(annotation, accessibleObject);
         
-        m_name = (String) MetadataHelper.invokeMethod("name", annotation);
+        m_name = (String) annotation.getAttribute("name");
     }
     
     /**

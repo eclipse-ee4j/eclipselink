@@ -16,11 +16,12 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
-import java.lang.annotation.Annotation;
 import java.util.Map;
 
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
@@ -31,7 +32,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class NamedNativeQueryMetadata extends NamedQueryMetadata {
-    private Class m_resultClass;
+    private MetadataClass m_resultClass;
     private String m_resultClassName;
     private String m_resultSetMapping;
     
@@ -53,11 +54,11 @@ public class NamedNativeQueryMetadata extends NamedQueryMetadata {
     /**
      * INTERNAL:
      */
-    public NamedNativeQueryMetadata(Annotation namedNativeQuery, MetadataAccessibleObject accessibleObject) {
+    public NamedNativeQueryMetadata(MetadataAnnotation namedNativeQuery, MetadataAccessibleObject accessibleObject) {
         super(namedNativeQuery, accessibleObject);
         
-        m_resultClass = (Class) MetadataHelper.invokeMethod("resultClass", namedNativeQuery); 
-        m_resultSetMapping = (String) MetadataHelper.invokeMethod("resultSetMapping", namedNativeQuery);
+        m_resultClass = getMetadataClass((String) namedNativeQuery.getAttributeString("resultClass")); 
+        m_resultSetMapping = (String) namedNativeQuery.getAttributeString("resultSetMapping");
     }
     
     /**
@@ -81,7 +82,7 @@ public class NamedNativeQueryMetadata extends NamedQueryMetadata {
     /**
      * INTERNAL:
      */
-    public Class getResultClass() {
+    public MetadataClass getResultClass() {
         return m_resultClass;
     }
     
@@ -126,7 +127,7 @@ public class NamedNativeQueryMetadata extends NamedQueryMetadata {
     public void process(AbstractSession session, ClassLoader loader) {
         Map<String, Object> hints = processQueryHints(session);
 
-        if (m_resultClass == void.class) {
+        if (m_resultClass.isVoid()) {
             if (hasResultSetMapping()) {
                 session.addQuery(getName(), EJBQueryImpl.buildSQLDatabaseQuery(m_resultSetMapping, getQuery(), hints, loader));
             } else {
@@ -141,7 +142,7 @@ public class NamedNativeQueryMetadata extends NamedQueryMetadata {
     /**
      * INTERNAL:
      */
-    public void setResultClass(Class resultClass) {
+    public void setResultClass(MetadataClass resultClass) {
         m_resultClass = resultClass;
     }
     

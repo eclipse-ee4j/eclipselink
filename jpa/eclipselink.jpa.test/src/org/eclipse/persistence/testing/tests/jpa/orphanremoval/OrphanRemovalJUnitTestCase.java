@@ -808,7 +808,6 @@ public class OrphanRemovalJUnitTestCase extends JUnitTestCase {
         try {
             // Step 1 - Create the objects.
             beginTransaction(em);
-            getServerSession().setLogLevel(0);
             Vehicle vehicle = new Vehicle("GT-X");
             Engine engine = new Engine(123456789l);
             vehicle.setEngine(engine);

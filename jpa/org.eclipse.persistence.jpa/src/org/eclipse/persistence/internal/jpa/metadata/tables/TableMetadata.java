@@ -14,13 +14,13 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.tables;
 
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 
 /**
@@ -54,16 +54,16 @@ public class TableMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public TableMetadata(Annotation table, MetadataAccessibleObject accessibleObject) {
+    public TableMetadata(MetadataAnnotation table, MetadataAccessibleObject accessibleObject) {
         super(table, accessibleObject);
         
         if (table != null) {
-            m_name = (String) MetadataHelper.invokeMethod("name", table); 
-            m_schema = (String) MetadataHelper.invokeMethod("schema", table); 
-            m_catalog = (String) MetadataHelper.invokeMethod("catalog", table);
+            m_name = (String) table.getAttribute("name"); 
+            m_schema = (String) table.getAttribute("schema"); 
+            m_catalog = (String) table.getAttribute("catalog");
             
-            for (Annotation uniqueConstraint : (Annotation[]) MetadataHelper.invokeMethod("uniqueConstraints", table)) {
-                m_uniqueConstraints.add(new UniqueConstraintMetadata(uniqueConstraint, accessibleObject));
+            for (Object uniqueConstraint : (Object[]) table.getAttributeArray("uniqueConstraints")) {
+                m_uniqueConstraints.add(new UniqueConstraintMetadata((MetadataAnnotation)uniqueConstraint, accessibleObject));
             }
         }
     }

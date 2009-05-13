@@ -28,10 +28,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,13 +53,14 @@ import org.eclipse.persistence.annotations.CacheInterceptor;
 import org.eclipse.persistence.annotations.PrimaryKey;
 import org.eclipse.persistence.annotations.QueryRedirectors;
 import org.eclipse.persistence.annotations.ExistenceChecking;
-import org.eclipse.persistence.annotations.ExistenceType;
 import org.eclipse.persistence.annotations.NamedStoredProcedureQueries;
 import org.eclipse.persistence.annotations.NamedStoredProcedureQuery;
 import org.eclipse.persistence.annotations.OptimisticLocking;
 import org.eclipse.persistence.annotations.ReadOnly;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataField;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataMethod;
 import org.eclipse.persistence.internal.jpa.metadata.cache.CacheInterceptorMetadata;
@@ -102,12 +99,12 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     private boolean m_excludeSuperclassListeners;
     
     private Boolean m_readOnly;
-    private Class m_idClass;
+    private MetadataClass m_idClass;
     private PrimaryKeyMetadata m_primaryKey;
     private CacheMetadata m_cache;
     private CacheInterceptorMetadata m_cacheInterceptor;
     private DefaultRedirectorsMetadata m_defaultRedirectors;
-    private ExistenceType m_existenceChecking;
+    private String m_existenceChecking;
     private List<EntityListenerMetadata> m_entityListeners = new ArrayList<EntityListenerMetadata>();
     private OptimisticLockingMetadata m_optimisticLocking;
     
@@ -139,14 +136,14 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     /**
      * INTERNAL:
      */
-    protected MappedSuperclassAccessor(Annotation annotation, Class cls, MetadataProject project) {
+    protected MappedSuperclassAccessor(MetadataAnnotation annotation, MetadataClass cls, MetadataProject project) {
         super(annotation, cls, project);
     }
     
     /**
      * INTERNAL:
      */
-    public MappedSuperclassAccessor(Annotation annotation, Class cls, MetadataDescriptor descriptor) {        
+    public MappedSuperclassAccessor(MetadataAnnotation annotation, MetadataClass cls, MetadataDescriptor descriptor) {        
         super(annotation, cls, descriptor);
     }
     
@@ -210,7 +207,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public ExistenceType getExistenceChecking() {
+    public String getExistenceChecking() {
         return m_existenceChecking;
     }
     
@@ -313,7 +310,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         if (m_idClass == null || m_idClass.equals(void.class)) {
             // Check for an IdClass annotation.
             if (isAnnotationPresent(IdClass.class)) {
-                m_idClass = (Class) MetadataHelper.invokeMethod("value", getAnnotation(IdClass.class));
+                m_idClass = getMetadataClass((String)getAnnotation(IdClass.class).getAttribute("value"));
             }
         } else {
             // We have an XML specification. Log a message if an annotation has also been defined.
@@ -370,7 +367,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         
         // Simple object merging.
         m_readOnly = (Boolean) mergeSimpleObjects(m_readOnly, accessor.getReadOnly(), accessor.getAccessibleObject(), "@read-only");
-        m_idClass = (Class) mergeSimpleObjects(m_idClass, accessor.getIdClassName(), accessor.getAccessibleObject(), "<id-class>");
+        m_idClass = (MetadataClass) mergeSimpleObjects(m_idClass, accessor.getIdClassName(), accessor.getAccessibleObject(), "<id-class>");
         m_prePersist = (String) mergeSimpleObjects(m_prePersist, accessor.getPrePersist(), accessor.getAccessibleObject(), "<pre-persist>");
         m_postPersist = (String) mergeSimpleObjects(m_postPersist, accessor.getPostPersist(), accessor.getAccessibleObject(), "<post-persist>");
         m_preRemove = (String) mergeSimpleObjects(m_preRemove, accessor.getPreRemove(), accessor.getAccessibleObject(), "<pre-remove>");
@@ -378,7 +375,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         m_preUpdate = (String) mergeSimpleObjects(m_preUpdate, accessor.getPreUpdate(), accessor.getAccessibleObject(), "<pre-update>");
         m_postUpdate = (String) mergeSimpleObjects(m_postUpdate, accessor.getPostUpdate(), accessor.getAccessibleObject(), "<post-update>");
         m_postLoad = (String) mergeSimpleObjects(m_postLoad, accessor.getPostLoad(), accessor.getAccessibleObject(), "<post-load>");
-        m_existenceChecking = (ExistenceType) mergeSimpleObjects(m_existenceChecking, accessor.getExistenceChecking(), accessor.getAccessibleObject(), "@existence-checking");
+        m_existenceChecking = (String) mergeSimpleObjects(m_existenceChecking, accessor.getExistenceChecking(), accessor.getAccessibleObject(), "@existence-checking");
         
         // ORMetadata object merging.
         m_cache = (CacheMetadata) mergeORObjects(m_cache, accessor.getCache());
@@ -444,15 +441,15 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     protected void processAssociationOverrides() {        
         // Process the association override annotations.
         // Look for an @AssociationOverrides.
-        Annotation associationOverrides = getAnnotation(AssociationOverrides.class);
+        MetadataAnnotation associationOverrides = getAnnotation(AssociationOverrides.class);
         if (associationOverrides != null) {
-            for (Object associationOverride : (Annotation[]) MetadataHelper.invokeMethod("value", associationOverrides)) {
-                processAssociationOverride(new AssociationOverrideMetadata((Annotation) associationOverride, getAccessibleObject()));
+            for (Object associationOverride : (Object[]) associationOverrides.getAttributeArray("value")) {
+                processAssociationOverride(new AssociationOverrideMetadata((MetadataAnnotation) associationOverride, getAccessibleObject()));
             }
         }
         
         // Look for an @AssociationOverride.
-        Annotation associationOverride = getAnnotation(AssociationOverride.class);
+        MetadataAnnotation associationOverride = getAnnotation(AssociationOverride.class);
         if (associationOverride != null) {
             processAssociationOverride(new AssociationOverrideMetadata(associationOverride, getAccessibleObject()));
         }
@@ -483,15 +480,15 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     protected void processAttributeOverrides() {        
         // Process the attribute override annotations.
         // Look for an @AttributeOverrides.
-        Annotation attributeOverrides = getAnnotation(AttributeOverrides.class);    
+        MetadataAnnotation attributeOverrides = getAnnotation(AttributeOverrides.class);    
         if (attributeOverrides != null) {
-            for (Annotation attributeOverride : (Annotation[]) MetadataHelper.invokeMethod("value", attributeOverrides)){ 
-                processAttributeOverride(new AttributeOverrideMetadata(attributeOverride, getAccessibleObject()));
+            for (Object attributeOverride : (Object[]) attributeOverrides.getAttribute("value")){ 
+                processAttributeOverride(new AttributeOverrideMetadata((MetadataAnnotation)attributeOverride, getAccessibleObject()));
             }
         }
         
         // Look for an @AttributeOverride.
-        Annotation attributeOverride = getAnnotation(AttributeOverride.class);
+        MetadataAnnotation attributeOverride = getAnnotation(AttributeOverride.class);
         if (attributeOverride != null) {
             processAttributeOverride(new AttributeOverrideMetadata(attributeOverride, getAccessibleObject()));
         }
@@ -646,11 +643,11 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     public void processEntityListeners(ClassLoader loader) {
         if (m_entityListeners.isEmpty()) {
             // Look for an annotation.
-            Annotation entityListeners = getAnnotation(EntityListeners.class);
+            MetadataAnnotation entityListeners = getAnnotation(EntityListeners.class);
             
             if (entityListeners != null) {
-                for (Class entityListenerClass : (Class[]) MetadataHelper.invokeMethod("value", entityListeners)) {
-                    EntityListenerMetadata listener = new EntityListenerMetadata(entityListeners, entityListenerClass, getAccessibleObject());
+                for (Object entityListenerClass : (Object[]) entityListeners.getAttribute("value")) {
+                    EntityListenerMetadata listener = new EntityListenerMetadata(entityListeners, getMetadataClass((String)entityListenerClass), getAccessibleObject());
                     listener.process(getDescriptor(), loader, false);
                 }
             }
@@ -701,7 +698,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * metadata-complete into consideration).
      */
     protected void processExistenceChecking() {
-        Annotation existenceChecking = getAnnotation(ExistenceChecking.class);
+        MetadataAnnotation existenceChecking = getAnnotation(ExistenceChecking.class);
         
         if (m_existenceChecking != null || existenceChecking != null) {
             if (getDescriptor().hasExistenceChecking()) {
@@ -710,7 +707,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
                 getLogger().logWarningMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_EXISTENCE_CHECKING, getDescriptor().getJavaClass(), getJavaClass());
             } else {
                 if (m_existenceChecking == null) {
-                    getDescriptor().setExistenceChecking((Enum) MetadataHelper.invokeMethod("value", existenceChecking));
+                    getDescriptor().setExistenceChecking((String) existenceChecking.getAttribute("value"));
                 } else {
                     if (existenceChecking != null) {
                         getLogger().logWarningMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, existenceChecking, getJavaClassName(), getLocation());
@@ -731,25 +728,21 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * type of the entity for which it is the primary key.
      */
     protected void processIdClass() {
-        if (m_idClass != null && ! m_idClass.equals(void.class)) {
+        if (m_idClass != null && !m_idClass.equals(void.class)) {
             getDescriptor().setPKClass(m_idClass);
             
             if (getDescriptor().usesDefaultPropertyAccess()) {
-                for (Method method : MetadataHelper.getDeclaredMethods(m_idClass)) {
-                    MetadataMethod metadataMethod = new MetadataMethod(method, getLogger());
-                
+                for (MetadataMethod method : m_idClass.getMethods().values()) {
                     // The is valid check will throw an exception if needed.
-                    if (metadataMethod.isValidPersistenceMethod(false, getDescriptor())) {
-                        getDescriptor().addPKClassId(metadataMethod.getAttributeName(), metadataMethod.getRelationType());
+                    if (method.isValidPersistenceMethod(false, getDescriptor())) {
+                        getDescriptor().addPKClassId(method.getAttributeName(), method.getType());
                     }
-                }    
+                }
             } else {
-                for (Field field : MetadataHelper.getDeclaredFields(m_idClass)) {
-                    MetadataField metadataField = new MetadataField(field, getLogger());
-                
+                for (MetadataField field : m_idClass.getFields().values()) {
                     // The is valid check will throw an exception if needed.
-                    if (metadataField.isValidPersistenceField(false, getDescriptor())) {
-                        getDescriptor().addPKClassId(field.getName(), field.getGenericType());
+                    if (field.isValidPersistenceField(false, getDescriptor())) {
+                        getDescriptor().addPKClassId(field.getName(), field.getType());
                     }
                 }
             }
@@ -764,15 +757,15 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     protected void processNamedNativeQueries() {
         // Process the named native query annotations.
         // Look for a @NamedNativeQueries.
-        Annotation namedNativeQueries = getAnnotation(NamedNativeQueries.class);
+        MetadataAnnotation namedNativeQueries = getAnnotation(NamedNativeQueries.class);
         if (namedNativeQueries != null) {
-            for (Annotation namedNativeQuery : (Annotation[]) MetadataHelper.invokeMethod("value", namedNativeQueries)) { 
-                getProject().addQuery(new NamedNativeQueryMetadata(namedNativeQuery, getAccessibleObject()));
+            for (Object namedNativeQuery : (Object[]) namedNativeQueries.getAttribute("value")) { 
+                getProject().addQuery(new NamedNativeQueryMetadata((MetadataAnnotation)namedNativeQuery, getAccessibleObject()));
             }
         }
         
         // Look for a @NamedNativeQuery.
-        Annotation namedNativeQuery = getAnnotation(NamedNativeQuery.class);
+        MetadataAnnotation namedNativeQuery = getAnnotation(NamedNativeQuery.class);
         if (namedNativeQuery != null) {
             getProject().addQuery(new NamedNativeQueryMetadata(namedNativeQuery, getAccessibleObject()));
         }
@@ -786,15 +779,15 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     protected void processNamedQueries() {        
         // Process the named query annotations.
         // Look for a @NamedQueries.
-        Annotation namedQueries = getAnnotation(NamedQueries.class);
+        MetadataAnnotation namedQueries = getAnnotation(NamedQueries.class);
         if (namedQueries != null) {
-            for (Annotation namedQuery : (Annotation[]) MetadataHelper.invokeMethod("value", namedQueries)) { 
-                getProject().addQuery(new NamedQueryMetadata(namedQuery, getAccessibleObject()));
+            for (Object namedQuery : (Object[]) namedQueries.getAttributeArray("value")) { 
+                getProject().addQuery(new NamedQueryMetadata((MetadataAnnotation)namedQuery, getAccessibleObject()));
             }
         }
         
         // Look for a @NamedQuery.
-        Annotation namedQuery = getAnnotation(NamedQuery.class);
+        MetadataAnnotation namedQuery = getAnnotation(NamedQuery.class);
         if (namedQuery != null) {
             getProject().addQuery(new NamedQueryMetadata(namedQuery, getAccessibleObject()));
         }
@@ -808,15 +801,15 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     protected void processNamedStoredProcedureQueries() {        
         // Process the named stored procedure query annotations.
         // Look for a @NamedStoredProcedureQueries.
-        Annotation namedStoredProcedureQueries = getAnnotation(NamedStoredProcedureQueries.class);
+        MetadataAnnotation namedStoredProcedureQueries = getAnnotation(NamedStoredProcedureQueries.class);
         if (namedStoredProcedureQueries != null) {
-            for (Annotation namedStoredProcedureQuery : (Annotation[]) MetadataHelper.invokeMethod("value", namedStoredProcedureQueries)) { 
-                getProject().addQuery(new NamedStoredProcedureQueryMetadata(namedStoredProcedureQuery, getAccessibleObject()));
+            for (Object namedStoredProcedureQuery : (Object[]) namedStoredProcedureQueries.getAttribute("value")) { 
+                getProject().addQuery(new NamedStoredProcedureQueryMetadata((MetadataAnnotation)namedStoredProcedureQuery, getAccessibleObject()));
             }
         }
         
         // Look for a @NamedStoredProcedureQuery.
-        Annotation namedStoredProcedureQuery = getAnnotation(NamedStoredProcedureQuery.class);
+        MetadataAnnotation namedStoredProcedureQuery = getAnnotation(NamedStoredProcedureQuery.class);
         if (namedStoredProcedureQuery != null) {
             getProject().addQuery(new NamedStoredProcedureQueryMetadata(namedStoredProcedureQuery, getAccessibleObject()));
         }
@@ -835,7 +828,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
                 getLogger().logWarningMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_OPTIMISTIC_LOCKING, getDescriptor().getJavaClass(), getJavaClass());
             }
         } else {
-            Annotation optimisticLocking = getAnnotation(OptimisticLocking.class);
+            MetadataAnnotation optimisticLocking = getAnnotation(OptimisticLocking.class);
             
             if (m_optimisticLocking == null) {
                 if (optimisticLocking != null) {
@@ -860,7 +853,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * Process a read only setting.
      */
     protected void processReadOnly() {
-        Annotation readOnly = getAnnotation(ReadOnly.class);
+        MetadataAnnotation readOnly = getAnnotation(ReadOnly.class);
         
         if (m_readOnly != null || readOnly != null) {
             if (getDescriptor().isInheritanceSubclass()) {
@@ -889,7 +882,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * Process the primary key annotation.
      */
     protected void processPrimaryKey() {
-        Annotation primaryKey = getAnnotation(PrimaryKey.class);
+        MetadataAnnotation primaryKey = getAnnotation(PrimaryKey.class);
         
         if (m_primaryKey == null) {
             if (primaryKey != null) {
@@ -928,15 +921,15 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     protected void processSqlResultSetMappings() {
         // Process the sql result set mapping query annotations.
         // Look for a @SqlResultSetMappings.
-        Annotation sqlResultSetMappings = getAnnotation(SqlResultSetMappings.class);
+        MetadataAnnotation sqlResultSetMappings = getAnnotation(SqlResultSetMappings.class);
 
         if (sqlResultSetMappings != null) {
-            for (Annotation sqlResultSetMapping : (Annotation[]) MetadataHelper.invokeMethod("value", sqlResultSetMappings)) {
-                getProject().addSQLResultSetMapping(new SQLResultSetMappingMetadata(sqlResultSetMapping, getAccessibleObject()));
+            for (Object sqlResultSetMapping : (Object[]) sqlResultSetMappings.getAttribute("value")) {
+                getProject().addSQLResultSetMapping(new SQLResultSetMappingMetadata((MetadataAnnotation)sqlResultSetMapping, getAccessibleObject()));
             }
         } else {
             // Look for a @SqlResultSetMapping.
-            Annotation sqlResultSetMapping = getAnnotation(SqlResultSetMapping.class);
+            MetadataAnnotation sqlResultSetMapping = getAnnotation(SqlResultSetMapping.class);
             
             if (sqlResultSetMapping != null) {
                 getProject().addSQLResultSetMapping(new SQLResultSetMappingMetadata(sqlResultSetMapping, getAccessibleObject()));
@@ -999,7 +992,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setExistenceChecking(ExistenceType checking) {
+    public void setExistenceChecking(String checking) {
         m_existenceChecking = checking;
     }
     

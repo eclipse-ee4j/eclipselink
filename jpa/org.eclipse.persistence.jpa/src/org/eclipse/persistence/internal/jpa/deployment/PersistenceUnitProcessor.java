@@ -12,7 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.deployment;
 
-import java.lang.annotation.Annotation;
 import java.net.URL;
 import java.net.URISyntaxException;
 import java.net.JarURLConnection;
@@ -44,6 +43,7 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataProcessor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 
 /**
@@ -210,15 +210,15 @@ public class PersistenceUnitProcessor {
     /**
      * Return if a given class is annotated with @Embeddable.
      */
-    public static Annotation getEmbeddableAnnotation(Class candidateClass){
-        return new MetadataClass(candidateClass).getAnnotation(javax.persistence.Embeddable.class);
+    public static MetadataAnnotation getEmbeddableAnnotation(MetadataClass candidateClass){
+        return candidateClass.getAnnotation(javax.persistence.Embeddable.class);
     }
     
     /**
      * Return if a given class is annotated with @Entity.
      */
-    public static Annotation getEntityAnnotation(Class candidateClass){
-        return new MetadataClass(candidateClass).getAnnotation(javax.persistence.Entity.class);
+    public static MetadataAnnotation getEntityAnnotation(MetadataClass candidateClass){
+        return candidateClass.getAnnotation(javax.persistence.Entity.class);
     }
     
     /**
@@ -234,15 +234,15 @@ public class PersistenceUnitProcessor {
     /**
      * Return if a given class is annotated with @Embeddable.
      */
-    public static boolean isEmbeddable(Class candidateClass) {
-        return new MetadataClass(candidateClass).isAnnotationPresent(javax.persistence.Embeddable.class);
+    public static boolean isEmbeddable(MetadataClass candidateClass) {
+        return candidateClass.isAnnotationPresent(javax.persistence.Embeddable.class);
     }
     
     /**
      * Return if a given class is annotated with @Entity.
      */
-    public static boolean isEntity(Class candidateClass){
-        return new MetadataClass(candidateClass).isAnnotationPresent(javax.persistence.Entity.class);
+    public static boolean isEntity(MetadataClass candidateClass){
+        return candidateClass.isAnnotationPresent(javax.persistence.Entity.class);
     }
     
     /**

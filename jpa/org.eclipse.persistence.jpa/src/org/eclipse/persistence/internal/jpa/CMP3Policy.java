@@ -37,7 +37,6 @@ import org.eclipse.persistence.internal.security.PrivilegedGetMethod;
 import org.eclipse.persistence.internal.security.PrivilegedGetValueFromField;
 import org.eclipse.persistence.internal.security.PrivilegedSetValueInField;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataMethod;
 
 /**
  * Defines primary key extraction code for use in JPA. A descriptor should have a CMP3Policy
@@ -383,15 +382,38 @@ public class CMP3Policy extends CMPPolicy {
                             fieldToAccessorMap.put(field, pkAttributes[i]);
                             noSuchElementException = null;
                         } catch (NoSuchFieldException ex) {
-                            // Try a property instead.
-                            try {
-                                pkAttributes[i] = new PropertyAccessor(getMethodFromFieldName(keyClass, fieldName), fieldName, field, mapping);
-                                fieldToAccessorMap.put(field, pkAttributes[i]);
-                                noSuchElementException = null;
-                            } catch (NoSuchMethodException exs) {
-                                // Not a field not a method, but a pk class is 
-                                // defined. Check for other mappings
-                                noSuchElementException = exs;
+                            if (mapping.getGetMethodName() != null) {
+                                // Must be a property.
+                                try {
+                                    Method getMethod = null;
+                                    if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                                        try {
+                                            getMethod = AccessController.doPrivileged(new PrivilegedGetMethod(keyClass, mapping.getGetMethodName(), new Class[] {}, true));
+                                        } catch (PrivilegedActionException exception) {
+                                            throw (NoSuchMethodException)exception.getException();
+                                        }
+                                    } else {
+                                        getMethod = PrivilegedAccessHelper.getMethod(keyClass, mapping.getGetMethodName(), new Class[] {}, true);
+                                    }
+                                    Method setMethod = null;
+                                    if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                                        try {
+                                            setMethod = AccessController.doPrivileged(new PrivilegedGetMethod(keyClass, mapping.getSetMethodName(), new Class[] {getMethod.getReturnType()}, true));
+                                        } catch (PrivilegedActionException exception) {
+                                            throw (NoSuchMethodException)exception.getException();
+                                        }
+                                    } else {
+                                        setMethod = PrivilegedAccessHelper.getMethod(keyClass, mapping.getSetMethodName(), new Class[] {getMethod.getReturnType()}, true);
+                                    }
+                                    pkAttributes[i] = new PropertyAccessor(getMethod, setMethod, fieldName, field, mapping);
+                                    this.fieldToAccessorMap.put(field, pkAttributes[i]);
+                                    noSuchElementException = null;
+                                } catch (NoSuchMethodException exs) {
+                                    // not a field not a method, but a pk class is defined.  Check for other mappings
+                                    noSuchElementException = exs;
+                                }
+                            } else {
+                                noSuchElementException = ex;
                             }
                         }
                     }
@@ -419,57 +441,21 @@ public class CMP3Policy extends CMPPolicy {
     protected KeyElementAccessor[] getKeyClassFields(Class clazz) {
         return this.keyClassFields;
     }
-
-    /**
-     * INTERNAL:
-     * @param cls
-     * @param methodName
-     * @return the method from the class with name equal to methodName.
-     * @throws NoSuchMethodException
-     */
-    protected Method getMethod(Class cls, String methodName) throws NoSuchMethodException {
-        Method method = null;
-        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-            try {
-                method = AccessController.doPrivileged(new PrivilegedGetMethod(cls, methodName, new Class[] {}, true));
-            } catch (PrivilegedActionException exception) {
-                throw (NoSuchMethodException)exception.getException();
-            }
-        } else {
-            method = PrivilegedAccessHelper.getMethod(cls, methodName, new Class[] {}, true);
-        }
-        
-        return method;
-    }
-
-    /**
-     * INTERNAL:
-     * @param cls
-     * @param fieldName
-     * @return Returns the getMethod for the given fieldName.
-     * @throws NoSuchMethodException
-     */
-    protected Method getMethodFromFieldName(Class cls, String fieldName) throws NoSuchMethodException {
-        StringBuffer buffer = new StringBuffer();
-        buffer.append("get");
-        buffer.append(fieldName.substring(0, 1).toUpperCase());
-        buffer.append(fieldName.substring(1));
-        
-        return getMethod(cls, buffer.toString());
-    }
     
     /**
      * INTERNAL:
      * This class is used when the key class element is a property
      */
     private class PropertyAccessor implements KeyElementAccessor {
-        protected Method method;
+        protected Method getMethod;
+        protected Method setMethod;
         protected String attributeName;
         protected DatabaseField databaseField;
         protected DatabaseMapping mapping;
 
-        public PropertyAccessor(Method method, String attributeName, DatabaseField field, DatabaseMapping mapping) {
-            this.method = method;
+        public PropertyAccessor(Method getMethod, Method setMethod, String attributeName, DatabaseField field, DatabaseMapping mapping) {
+            this.getMethod = getMethod;
+            this.setMethod = setMethod;
             this.attributeName = attributeName;
             this.databaseField = field;
             this.mapping = mapping;
@@ -491,7 +477,7 @@ public class CMP3Policy extends CMPPolicy {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        return AccessController.doPrivileged(new PrivilegedMethodInvoker(method, object, new Object[] {  }));
+                        return AccessController.doPrivileged(new PrivilegedMethodInvoker(this.getMethod, object, new Object[] {  }));
                     } catch (PrivilegedActionException exception) {
                         Exception throwableException = exception.getException();
                         if (throwableException instanceof IllegalAccessException) {
@@ -501,7 +487,7 @@ public class CMP3Policy extends CMPPolicy {
                         }
                     }
                 } else {
-                    return PrivilegedAccessHelper.invokeMethod(method, object, new Object[] {  });
+                    return PrivilegedAccessHelper.invokeMethod(this.getMethod, object, new Object[] {  });
                 }
             } catch (Exception ex) {
                 throw DescriptorException.errorUsingPrimaryKey(object, getDescriptor(), ex);
@@ -512,7 +498,7 @@ public class CMP3Policy extends CMPPolicy {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        AccessController.doPrivileged(new PrivilegedMethodInvoker(new MetadataMethod(method, object.getClass()).getSetMethod(), object, new Object[] {value}));
+                        AccessController.doPrivileged(new PrivilegedMethodInvoker(this.setMethod, object, new Object[] {value}));
                     } catch (PrivilegedActionException exception) {
                         Exception throwableException = exception.getException();
                         if (throwableException instanceof IllegalAccessException) {
@@ -522,7 +508,7 @@ public class CMP3Policy extends CMPPolicy {
                         }
                     }
                 } else {
-                    PrivilegedAccessHelper.invokeMethod(new MetadataMethod(method, object.getClass()).getSetMethod(), object, new Object[] {value});
+                    PrivilegedAccessHelper.invokeMethod(this.setMethod, object, new Object[] {value});
                 }
             } catch (Exception ex) {
                 throw DescriptorException.errorUsingPrimaryKey(object, getDescriptor(), ex);

@@ -14,11 +14,11 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.tables;
 
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
@@ -42,12 +42,12 @@ public class SecondaryTableMetadata extends TableMetadata {
     /**
      * INTERNAL:
      */
-    public SecondaryTableMetadata(Annotation secondaryTable, MetadataAccessibleObject accessibleObject) {
+    public SecondaryTableMetadata(MetadataAnnotation secondaryTable, MetadataAccessibleObject accessibleObject) {
         super(secondaryTable, accessibleObject);
        
         if (secondaryTable != null) {
-            for (Annotation primaryKeyJoinColumn : (Annotation[]) MetadataHelper.invokeMethod("pkJoinColumns", secondaryTable)) {
-                m_primaryKeyJoinColumns.add(new PrimaryKeyJoinColumnMetadata(primaryKeyJoinColumn, accessibleObject));
+            for (Object primaryKeyJoinColumn : (Object[]) secondaryTable.getAttributeArray("pkJoinColumns")) {
+                m_primaryKeyJoinColumns.add(new PrimaryKeyJoinColumnMetadata((MetadataAnnotation)primaryKeyJoinColumn, accessibleObject));
             }
         }
     }

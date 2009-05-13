@@ -35,9 +35,7 @@ import javax.persistence.EntityManager;
 
 import junit.framework.*;
 
-import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.inherited.Becks;
 import org.eclipse.persistence.testing.models.jpa.inherited.BecksTag;
@@ -240,9 +238,8 @@ public class InheritedModelJunitTest extends JUnitTestCase {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            
             closeEntityManager(em);
-            fail("An exception was caught during create operation: [" + e.getMessage() + "]");
+            throw e;
         }
         
         closeEntityManager(em);
@@ -278,9 +275,6 @@ public class InheritedModelJunitTest extends JUnitTestCase {
     public void testCreateNoviceBeerConsumer() {
         EntityManager em = createEntityManager();
         beginTransaction(em);
-        
-        ServerSession session = JUnitTestCase.getServerSession();
-        ClassDescriptor desc = session.getDescriptor(NoviceBeerConsumer.class);
         
         try {    
             NoviceBeerConsumer beerConsumer = new NoviceBeerConsumer();
@@ -552,7 +546,6 @@ public class InheritedModelJunitTest extends JUnitTestCase {
             em.persist(initialEBC);
             beerConsumerId = initialEBC.getId();
             
-            this.getServerSession().setLogLevel(0);
             commitTransaction(em);
         } catch (RuntimeException e) {
             e.printStackTrace();
@@ -660,7 +653,7 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         alpine.getBeerConsumer();
         Alpine clone = null;
         try{
-            clone = (Alpine)alpine.clone();
+            clone = alpine.clone();
         } catch (CloneNotSupportedException ex){
             fail("Caught CloneNotSupportedException " + ex);
         }
@@ -688,9 +681,9 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         closeEntityManager(em);
         em = createEntityManager();
         beginTransaction(em);
-        alpine = em.find(Alpine.class, clone.getId());
+        alpine = em.find(Alpine.class, alpineId);
         try{
-            clone = (Alpine)alpine.clone();
+            clone = alpine.clone();
         } catch (CloneNotSupportedException ex){
             fail("Caught CloneNotSupportedException " + ex);
         }

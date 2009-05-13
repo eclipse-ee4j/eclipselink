@@ -14,13 +14,14 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.persistence.annotations.Direction;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 
 /**
@@ -31,8 +32,8 @@ import org.eclipse.persistence.queries.StoredProcedureCall;
  * @since TopLink 11g
  */
 public class StoredProcedureParameterMetadata extends ORMetadata {
-    private Class m_type;
-    private Enum m_direction;
+    private MetadataClass m_type;
+    private String m_direction;
     private Integer m_jdbcType;
     private String m_jdbcTypeName;
     private String m_name;
@@ -50,15 +51,15 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public StoredProcedureParameterMetadata(Annotation storedProcedureParameter, MetadataAccessibleObject accessibleObject) {
+    public StoredProcedureParameterMetadata(MetadataAnnotation storedProcedureParameter, MetadataAccessibleObject accessibleObject) {
         super(storedProcedureParameter, accessibleObject);
         
-        m_direction = (Enum) MetadataHelper.invokeMethod("direction", storedProcedureParameter);
-        m_name = (String) MetadataHelper.invokeMethod("name", storedProcedureParameter);
-        m_queryParameter = (String) MetadataHelper.invokeMethod("queryParameter", storedProcedureParameter); 
-        m_type = (Class) MetadataHelper.invokeMethod("type", storedProcedureParameter);
-        m_jdbcType = (Integer) MetadataHelper.invokeMethod("jdbcType", storedProcedureParameter);
-        m_jdbcTypeName = (String) MetadataHelper.invokeMethod("jdbcTypeName", storedProcedureParameter);
+        m_direction = (String) storedProcedureParameter.getAttribute("direction");
+        m_name = (String) storedProcedureParameter.getAttribute("name");
+        m_queryParameter = (String) storedProcedureParameter.getAttribute("queryParameter"); 
+        m_type = getMetadataClass((String) storedProcedureParameter.getAttribute("type"));
+        m_jdbcType = (Integer) storedProcedureParameter.getAttribute("jdbcType");
+        m_jdbcTypeName = (String) storedProcedureParameter.getAttribute("jdbcTypeName");
     }
     
     /**
@@ -99,7 +100,7 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public Enum getDirection() {
+    public String getDirection() {
         return m_direction;
     }
     
@@ -138,7 +139,7 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public Class getType() {
+    public MetadataClass getType() {
         return m_type;
     }
     
@@ -168,7 +169,7 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
      * INTERNAL:
      */
     protected boolean hasType() {
-        return m_type != void.class;
+        return !m_type.isVoid();
     }
     
     /**
@@ -193,10 +194,10 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
         String procedureParameterName = m_name.equals("") ? m_queryParameter : m_name;
                         
         // Process the parameter direction
-        if (m_direction == null || m_direction.name().equals(Direction.IN.name())) {
+        if (m_direction == null || m_direction.equals(Direction.IN.name())) {
             // TODO: Log a defaulting message if m_direction is null.
             if (hasType()) {
-                call.addNamedArgument(procedureParameterName, m_queryParameter, m_type);
+                call.addNamedArgument(procedureParameterName, m_queryParameter, getJavaClass(m_type));
             } else if (hasJdbcType() && hasJdbcTypeName()) {
                 call.addNamedArgument(procedureParameterName, m_queryParameter, m_jdbcType, m_jdbcTypeName);
             } else if (hasJdbcType()) {
@@ -206,9 +207,9 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
             }
                             
             queryArguments.add(m_queryParameter);
-        } else if (m_direction.name().equals(Direction.OUT.name())) {
+        } else if (m_direction.equals(Direction.OUT.name())) {
             if (hasType()) {
-                call.addNamedOutputArgument(procedureParameterName, m_queryParameter, m_type);
+                call.addNamedOutputArgument(procedureParameterName, m_queryParameter, getJavaClass(m_type));
             } else if (hasJdbcType() && hasJdbcTypeName()) {
                 call.addNamedOutputArgument(procedureParameterName, m_queryParameter, m_jdbcType, m_jdbcTypeName);
             } else if (hasJdbcType()) {
@@ -216,9 +217,9 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
             } else {
                 call.addNamedOutputArgument(procedureParameterName, m_queryParameter);
             }
-        } else if (m_direction.name().equals(Direction.IN_OUT.name())) {
+        } else if (m_direction.equals(Direction.IN_OUT.name())) {
             if (hasType()) {
-                call.addNamedInOutputArgument(procedureParameterName, m_queryParameter, m_queryParameter, m_type);
+                call.addNamedInOutputArgument(procedureParameterName, m_queryParameter, m_queryParameter, getJavaClass(m_type));
             } else if (hasJdbcType() && hasJdbcTypeName()) {
                 call.addNamedInOutputArgument(procedureParameterName, m_queryParameter, m_queryParameter, m_jdbcType, m_jdbcTypeName);
             } else if (hasJdbcType()) {
@@ -228,7 +229,7 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
             }
                             
             queryArguments.add(m_queryParameter);
-        } else if (m_direction.name().equals(Direction.OUT_CURSOR.name())) {
+        } else if (m_direction.equals(Direction.OUT_CURSOR.name())) {
             call.useNamedCursorOutputAsResultSet(m_queryParameter);
         }
       
@@ -239,7 +240,7 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setDirection(Enum direction) {
+    public void setDirection(String direction) {
         m_direction = direction;
     }
     
@@ -278,7 +279,7 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public void setType(Class type) {
+    public void setType(MetadataClass type) {
         m_type = type;
     }
     

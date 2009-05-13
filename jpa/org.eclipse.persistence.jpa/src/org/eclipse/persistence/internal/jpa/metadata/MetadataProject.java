@@ -142,7 +142,7 @@ public class MetadataProject {
     private HashMap<String, SQLResultSetMappingMetadata> m_sqlResultSetMappings;
     
     // Sequencing metadata.
-    private HashMap<Class, GeneratedValueMetadata> m_generatedValues;
+    private HashMap<MetadataClass, GeneratedValueMetadata> m_generatedValues;
     private HashMap<String, TableGeneratorMetadata> m_tableGenerators;
     private HashMap<String, SequenceGeneratorMetadata> m_sequenceGenerators;
     
@@ -212,7 +212,7 @@ public class MetadataProject {
         m_embeddableMappingAccessors = new HashSet<MappingAccessor>();
         m_directCollectionAccessors = new HashSet<DirectCollectionAccessor>();
 
-        m_generatedValues = new HashMap<Class, GeneratedValueMetadata>();
+        m_generatedValues = new HashMap<MetadataClass, GeneratedValueMetadata>();
         m_tableGenerators = new HashMap<String, TableGeneratorMetadata>();
         m_sequenceGenerators = new HashMap<String, SequenceGeneratorMetadata>();
         
@@ -354,7 +354,7 @@ public class MetadataProject {
     /**
      * INTERNAL:
      */
-    public void addGeneratedValue(GeneratedValueMetadata generatedvalue, Class entityClass) {
+    public void addGeneratedValue(GeneratedValueMetadata generatedvalue, MetadataClass entityClass) {
         m_generatedValues.put(entityClass, generatedvalue);
     }
     
@@ -555,7 +555,7 @@ public class MetadataProject {
      * This method will attempt to look up the embeddable accessor for the
      * reference class provided. If no accessor is found, null is returned.
      */
-    public EmbeddableAccessor getEmbeddableAccessor(Class cls, boolean checkIsIdClass) {
+    public EmbeddableAccessor getEmbeddableAccessor(MetadataClass cls, boolean checkIsIdClass) {
         EmbeddableAccessor accessor = m_embeddableAccessors.get(cls.getName());
 
         if (accessor == null) {
@@ -575,9 +575,8 @@ public class MetadataProject {
             //
             // Callers to this method will have to handle the null case if they
             // so desire.
-            MetadataClass metadataClass = new MetadataClass(cls);
-            if (metadataClass.isAnnotationPresent(Embeddable.class) || (checkIsIdClass && isIdClass(cls))) {
-                accessor = new EmbeddableAccessor(metadataClass.getAnnotation(Embeddable.class), cls, this);
+            if (cls.isAnnotationPresent(Embeddable.class) || (checkIsIdClass && isIdClass(cls))) {
+                accessor = new EmbeddableAccessor(cls.getAnnotation(Embeddable.class), cls, this);
                 addEmbeddableAccessor(accessor);
             }
        } 
@@ -590,7 +589,7 @@ public class MetadataProject {
      * This method will attempt to look up the embeddable accessor for the
      * reference class provided. If no accessor is found, null is returned.
      */
-    public EmbeddableAccessor getEmbeddableAccessor(Class cls) {
+    public EmbeddableAccessor getEmbeddableAccessor(MetadataClass cls) {
         return getEmbeddableAccessor(cls, false);
     }
     
@@ -635,7 +634,7 @@ public class MetadataProject {
     /**
      * INTERNAL:
      */
-    public MappedSuperclassAccessor getMappedSuperclass(Class cls) {
+    public MappedSuperclassAccessor getMappedSuperclass(MetadataClass cls) {
         return m_mappedSuperclasses.get(cls.getName());
     }
     
@@ -697,35 +696,35 @@ public class MetadataProject {
     /**
      * INTERNAL:
      */
-    public boolean hasEmbeddable(Class cls) {
+    public boolean hasEmbeddable(MetadataClass cls) {
         return m_embeddableAccessors.containsKey(cls.getName());
     }
     
     /**
      * INTERNAL:
      */
-    public boolean hasEntity(Class cls) {
+    public boolean hasEntity(MetadataClass cls) {
         return m_entityAccessors.containsKey(cls.getName());
     }
     
     /**
      * INTERNAL:
      */
-    public boolean hasInterface(Class cls) {
+    public boolean hasInterface(MetadataClass cls) {
         return m_interfaceAccessors.containsKey(cls.getName());
     }
     
     /**
      * INTERNAL:
      */
-    public boolean hasMappedSuperclass(Class cls) {
+    public boolean hasMappedSuperclass(MetadataClass cls) {
         return m_mappedSuperclasses.containsKey(cls.getName());
     }
     
     /**
      * INTERNAL:
      */
-    public boolean isIdClass(Class idClass) {
+    public boolean isIdClass(MetadataClass idClass) {
         return m_idClasses.contains(idClass.getName());
     }
     
@@ -788,9 +787,9 @@ public class MetadataProject {
      */
     protected void processInterfaceAccessors() {
         for (EntityAccessor accessor : getEntityAccessors()) {
-            for (Class interfaceClass : accessor.getJavaClass().getInterfaces()) {
-                if (m_interfaceAccessors.containsKey(interfaceClass.getName())) {
-                    m_interfaceAccessors.get(interfaceClass.getName()).addEntityAccessor(accessor);
+            for (String interfaceClass : accessor.getJavaClass().getInterfaces()) {
+                if (m_interfaceAccessors.containsKey(interfaceClass)) {
+                    m_interfaceAccessors.get(interfaceClass).addEntityAccessor(accessor);
                 }
             }
         }
@@ -926,7 +925,7 @@ public class MetadataProject {
             // Finally loop through descriptors and set sequences as required 
             // into Descriptors and Login
             boolean usesAuto = false;
-            for (Class entityClass : m_generatedValues.keySet()) {
+            for (MetadataClass entityClass : m_generatedValues.keySet()) {
                 MetadataDescriptor descriptor = m_allAccessors.get(entityClass.getName()).getDescriptor();
                 GeneratedValueMetadata generatedValue = m_generatedValues.get(entityClass);
                 String generatorName = generatedValue.getGenerator();
@@ -943,26 +942,26 @@ public class MetadataProject {
                 }
                 
                 if (sequence == null) {
-                    Enum strategy = generatedValue.getStrategy();
+                    String strategy = generatedValue.getStrategy();
                     
                     // A null strategy will default to AUTO.
-                    if (strategy == null || strategy.name().equals(GenerationType.AUTO.name())) {
+                    if (strategy == null || strategy.equals(GenerationType.AUTO.name())) {
                         usesAuto = true;
-                    } else if (strategy.name().equals(GenerationType.TABLE.name())) {
+                    } else if (strategy.equals(GenerationType.TABLE.name())) {
                         if (generatorName.equals("")) {
                             sequence = defaultTableSequence;
                         } else {
                             sequence = (Sequence)defaultTableSequence.clone();
                             sequence.setName(generatorName);
                         }
-                    } else if (strategy.name().equals(GenerationType.SEQUENCE.name())) {
+                    } else if (strategy.equals(GenerationType.SEQUENCE.name())) {
                         if (generatorName.equals("")) {
                             sequence = defaultObjectNativeSequence;
                         } else {
                             sequence = (Sequence)defaultObjectNativeSequence.clone();
                             sequence.setName(generatorName);
                         }
-                    } else if (strategy.name().equals(GenerationType.IDENTITY.name())) {
+                    } else if (strategy.equals(GenerationType.IDENTITY.name())) {
                         if (generatorName.equals("")) {
                             sequence = defaultIdentityNativeSequence;
                         } else {

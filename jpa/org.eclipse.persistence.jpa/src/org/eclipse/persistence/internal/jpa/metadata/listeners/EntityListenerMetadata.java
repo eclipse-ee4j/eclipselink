@@ -16,7 +16,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.listeners;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 import java.security.AccessController;
@@ -38,6 +37,9 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataFactory;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataMethod;
 
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -54,7 +56,7 @@ import org.eclipse.persistence.internal.security.PrivilegedGetMethods;
  * @since TopLink 10.1.3/EJB 3.0 Preview
  */
 public class EntityListenerMetadata extends ORMetadata {
-    private Class m_entityListenerClass;
+    private MetadataClass m_entityListenerClass;
     
     protected EntityListener m_listener;
     
@@ -78,7 +80,7 @@ public class EntityListenerMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public EntityListenerMetadata(Annotation entityListeners, Class entityListenerClass, MetadataAccessibleObject accessibleObject) {
+    public EntityListenerMetadata(MetadataAnnotation entityListeners, MetadataClass entityListenerClass, MetadataAccessibleObject accessibleObject) {
         super(entityListeners, accessibleObject);
         
         m_entityListenerClass = entityListenerClass;
@@ -309,11 +311,13 @@ public class EntityListenerMetadata extends ORMetadata {
         // Make sure the entityListenerClass is initialized (default listeners
         // are cloned and m_entityListenerClass may be null)
         if (m_entityListenerClass == null) {
-            m_entityListenerClass = getClassForName(m_className, loader);
+            m_entityListenerClass = MetadataFactory.getClassMetadata(m_className);
         }
         
         // Initialize the listener class (reload the listener class)
-        m_listener = new EntityListener(getClassForName(m_entityListenerClass.getName(), loader), descriptor.getJavaClass());
+        m_listener = new EntityListener(
+                getClassForName(m_entityListenerClass.getName(), loader),
+                getClassForName(descriptor.getJavaClass().getName(), loader));
         
         // Process the callback methods defined from XML and annotations.
         processCallbackMethods(getCandidateCallbackMethodsForEntityListener(), descriptor);
@@ -362,8 +366,10 @@ public class EntityListenerMetadata extends ORMetadata {
         
         // 2 - Set any annotation defined methods second.
         for (Method method : methods) {
-            MetadataMethod metadataMethod = new MetadataMethod(method, descriptor.getLogger());
-            
+            MetadataMethod metadataMethod = getMetadataClass(method.getDeclaringClass()).getMethod(method.getName(), method.getParameterTypes());
+            if (metadataMethod == null) {
+                continue;
+            }
             if (metadataMethod.isAnnotationPresent(PostLoad.class, descriptor)) {
                 setPostLoad(method);
             }

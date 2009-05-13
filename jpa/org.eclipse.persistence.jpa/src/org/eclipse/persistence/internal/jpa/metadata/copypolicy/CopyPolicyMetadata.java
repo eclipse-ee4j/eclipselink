@@ -14,12 +14,11 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.copypolicy;
 
-import java.lang.annotation.Annotation;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.descriptors.copying.CopyPolicy;
 
 /**
@@ -45,7 +44,7 @@ public abstract class CopyPolicyMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
-    protected CopyPolicyMetadata(Annotation annotation, MetadataAccessibleObject accessibleObject) {
+    protected CopyPolicyMetadata(MetadataAnnotation annotation, MetadataAccessibleObject accessibleObject) {
         super(annotation, accessibleObject);
     }
     

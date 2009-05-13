@@ -22,13 +22,13 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
-import java.lang.annotation.Annotation;
-
 import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
 
 /**
@@ -54,19 +54,23 @@ public class BasicMapAccessor extends BasicCollectionAccessor {
     /**
      * INTERNAL:
      */
-    public BasicMapAccessor(Annotation basicMap, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
+    public BasicMapAccessor(MetadataAnnotation basicMap, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(basicMap, accessibleObject, classAccessor);
 
-        m_keyColumn = new ColumnMetadata((Annotation) MetadataHelper.invokeMethod("keyColumn", basicMap), accessibleObject, getAttributeName());
+        m_keyColumn = new ColumnMetadata((MetadataAnnotation) basicMap.getAttribute("keyColumn"), accessibleObject, getAttributeName());
 
-        Annotation keyConvert = (Annotation) MetadataHelper.invokeMethod("keyConverter", basicMap);
-        m_keyConverter = (String) MetadataHelper.invokeMethod("value", keyConvert);
+        MetadataAnnotation keyConvert = (MetadataAnnotation) basicMap.getAttribute("keyConverter");
+        if (keyConvert != null) {
+            m_keyConverter = (String) keyConvert.getAttribute("value");
+        }
 
-        Annotation valueConvert = (Annotation) MetadataHelper.invokeMethod("valueConverter", basicMap);
-        m_valueConverter = (String)MetadataHelper.invokeMethod("value", valueConvert);
+        MetadataAnnotation valueConvert = (MetadataAnnotation) basicMap.getAttribute("valueConverter");
+        if (valueConvert != null) {
+            m_valueConverter = (String)valueConvert.getAttribute("value");
+        }
         
-        setValueColumn(new ColumnMetadata((Annotation) MetadataHelper.invokeMethod("valueColumn", basicMap), accessibleObject, getAttributeName()));
-        setFetch((Enum) MetadataHelper.invokeMethod("fetch", basicMap));
+        setValueColumn(new ColumnMetadata((MetadataAnnotation) basicMap.getAttribute("valueColumn"), accessibleObject, getAttributeName()));
+        setFetch((String) basicMap.getAttribute("fetch"));
     }
    
     /**
@@ -115,7 +119,7 @@ public class BasicMapAccessor extends BasicCollectionAccessor {
      * Return the reference class for this accessor.
      */
     @Override
-    public Class getReferenceClass() {
+    public MetadataClass getReferenceClass() {
         return getReferenceClassFromGeneric();
     }
     

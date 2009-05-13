@@ -16,15 +16,15 @@
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
 import java.io.Serializable;
-import java.lang.annotation.Annotation;
 
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.SerializedObjectConverter;
 
 import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 
 /**
  * INTERNAL:
@@ -43,7 +43,7 @@ public class SerializedMetadata extends MetadataConverter {
     /**
      * INTERNAL:
      */
-    public SerializedMetadata(Annotation converter, MetadataAccessibleObject accessibleObject) {
+    public SerializedMetadata(MetadataAnnotation converter, MetadataAccessibleObject accessibleObject) {
         super(converter, accessibleObject);
     }
     
@@ -51,8 +51,10 @@ public class SerializedMetadata extends MetadataConverter {
      * INTERNAL:
      * Every converter needs to be able to process themselves.
      */
-    public void process(DatabaseMapping mapping, MappingAccessor accessor, Class referenceClass, boolean isForMapKey) {
-        if (Helper.classImplementsInterface(accessor.getReferenceClass(), Serializable.class)) {
+    public void process(DatabaseMapping mapping, MappingAccessor accessor, MetadataClass referenceClass, boolean isForMapKey) {
+        if (accessor.getReferenceClass().extendsInterface(Serializable.class)
+                || accessor.getReferenceClass().isArray()
+                || accessor.getReferenceClass().isInterface()) {
             setConverter(mapping, new SerializedObjectConverter(mapping), isForMapKey);
         } else {
             throw ValidationException.invalidTypeForSerializedAttribute(mapping.getAttributeName(), accessor.getReferenceClass(), accessor.getJavaClass());
@@ -63,12 +65,12 @@ public class SerializedMetadata extends MetadataConverter {
      * INTERNAL:
      * Every converter needs to be able to process themselves.
      */
-    public void process(DatabaseMapping mapping, MappingAccessor accessor, Class referenceClass, Class classification, boolean isForMapKey) {
+    public void process(DatabaseMapping mapping, MappingAccessor accessor, MetadataClass referenceClass, MetadataClass classification, boolean isForMapKey) {
         process(mapping, accessor, referenceClass, isForMapKey);
         
         // Set the specific classification provided.
         if (classification != null) {
-            setFieldClassification(mapping, classification, isForMapKey);
+            setFieldClassification(mapping, getJavaClass(classification), isForMapKey);
         }
     }
 }

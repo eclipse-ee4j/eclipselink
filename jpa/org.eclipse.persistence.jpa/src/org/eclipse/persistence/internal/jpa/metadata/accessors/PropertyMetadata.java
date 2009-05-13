@@ -15,11 +15,11 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
-import java.lang.annotation.Annotation;
-
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 
 /**
  * INTERNAL:
@@ -31,7 +31,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 public class PropertyMetadata extends ORMetadata {
     private String m_name;
     private String m_value;
-    private Class m_valueType;
+    private MetadataClass m_valueType;
     private String m_valueTypeName;
     
     /**
@@ -45,12 +45,12 @@ public class PropertyMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public PropertyMetadata(Annotation property, MetadataAccessibleObject accessibleObject) {
+    public PropertyMetadata(MetadataAnnotation property, MetadataAccessibleObject accessibleObject) {
         super(property, accessibleObject);
         
-        m_name = (String) MetadataHelper.invokeMethod("name", property);
-        m_value = (String) MetadataHelper.invokeMethod("value", property);
-        m_valueType = (Class) MetadataHelper.invokeMethod("valueType", property);
+        m_name = (String)property.getAttributeString("name");
+        m_value = (String)property.getAttributeString("value");
+        m_valueType = getMetadataClass((String)property.getAttributeString("valueType"));
     }
     
     /**
@@ -81,7 +81,7 @@ public class PropertyMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public Class getValueType() {
+    public MetadataClass getValueType() {
         return m_valueType;
     }
 
@@ -97,10 +97,10 @@ public class PropertyMetadata extends ORMetadata {
      * INTERNAL:
      */
     public Object getConvertedValue() {
-        if(m_valueType.equals(void.class) || m_valueType.equals(String.class)) {
+        if(m_valueType.isVoid() || m_valueType.equals(String.class)) {
             return m_value;
         } else {
-            return ConversionManager.getDefaultManager().convertObject(m_value, m_valueType);
+            return ConversionManager.getDefaultManager().convertObject(m_value, getJavaClass(m_valueType));
         }
     }
 
@@ -133,7 +133,7 @@ public class PropertyMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public void setValueType(Class valueType) {
+    public void setValueType(MetadataClass valueType) {
         m_valueType = valueType;
     }
     

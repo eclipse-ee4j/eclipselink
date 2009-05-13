@@ -14,7 +14,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -26,6 +25,7 @@ import org.eclipse.persistence.internal.jpa.JPAQuery;
 import org.eclipse.persistence.internal.jpa.QueryHintsHandler;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
@@ -36,7 +36,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class NamedQueryMetadata extends ORMetadata {
-    private Enum m_lockMode;
+    private String m_lockMode;
     private List<QueryHintMetadata> m_hints = new ArrayList<QueryHintMetadata>();
     private String m_name;
     private String m_query;
@@ -59,15 +59,15 @@ public class NamedQueryMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public NamedQueryMetadata(Annotation namedQuery, MetadataAccessibleObject accessibleObject) {
+    public NamedQueryMetadata(MetadataAnnotation namedQuery, MetadataAccessibleObject accessibleObject) {
         super(namedQuery, accessibleObject);
         
-        m_name = (String) MetadataHelper.invokeMethod("name", namedQuery);
-        m_query = (String) MetadataHelper.invokeMethod("query", namedQuery);
-        m_lockMode = (Enum) MetadataHelper.invokeMethod("lockMode", namedQuery);
+        m_name = (String) namedQuery.getAttribute("name");
+        m_query = (String) namedQuery.getAttribute("query");
+        m_lockMode = (String) namedQuery.getAttribute("lockMode");
         
-        for (Annotation hint : (Annotation[]) MetadataHelper.invokeMethod("hints", namedQuery)) {
-            m_hints.add(new QueryHintMetadata(hint, accessibleObject));
+        for (Object hint : (Object[]) namedQuery.getAttributeArray("hints")) {
+            m_hints.add(new QueryHintMetadata((MetadataAnnotation)hint, accessibleObject));
         }
     }
     
@@ -114,7 +114,7 @@ public class NamedQueryMetadata extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public Enum getLockMode() {
+    public String getLockMode() {
         return m_lockMode;
     }
     
@@ -187,7 +187,7 @@ public class NamedQueryMetadata extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setLockMode(Enum lockMode) {
+    public void setLockMode(String lockMode) {
         m_lockMode = lockMode;
     }
     

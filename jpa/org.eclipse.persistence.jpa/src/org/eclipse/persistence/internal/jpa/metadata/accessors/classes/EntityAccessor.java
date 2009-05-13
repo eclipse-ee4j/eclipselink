@@ -38,11 +38,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -66,6 +62,7 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.jpa.metadata.columns.AssociationOverrideMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.AttributeOverrideMetadata;
@@ -135,7 +132,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     /**
      * INTERNAL:
      */
-    public EntityAccessor(Annotation annotation, Class cls, MetadataProject project) {
+    public EntityAccessor(MetadataAnnotation annotation, MetadataClass cls, MetadataProject project) {
         super(annotation, cls, project);
     }
     
@@ -170,15 +167,14 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     /**
      * INTERNAL:
      */
-    protected void addPotentialMappedSuperclass(Class cls) {
+    protected void addPotentialMappedSuperclass(MetadataClass cls) {
         MappedSuperclassAccessor accessor = getProject().getMappedSuperclass(cls);
 
         // If the mapped superclass was not defined in XML then check 
         // for a MappedSuperclass annotation.
         if (accessor == null) {
-            MetadataClass metadataClass = new MetadataClass(cls);
-            if (metadataClass.isAnnotationPresent(MappedSuperclass.class)) {
-                m_mappedSuperclasses.add(new MappedSuperclassAccessor(metadataClass.getAnnotation(MappedSuperclass.class), cls, getDescriptor()));
+            if (cls.isAnnotationPresent(MappedSuperclass.class)) {
+                m_mappedSuperclasses.add(new MappedSuperclassAccessor(cls.getAnnotation(MappedSuperclass.class), cls, getDescriptor()));
             }
         } else {
             m_mappedSuperclasses.add(reloadMappedSuperclass(accessor, getDescriptor()));
@@ -224,13 +220,13 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         
         EntityAccessor lastAccessor = this;
         EntityAccessor currentAccessor = this;
-        Class parent = getJavaClass().getSuperclass();
-        Type genericParent = getJavaClass().getGenericSuperclass();
+        MetadataClass parent = getJavaClass().getSuperclass();
+        List<String> genericParent = getJavaClass().getGenericType();
         List<EntityAccessor> subclassAccessors = new ArrayList<EntityAccessor>();
         subclassAccessors.add(currentAccessor);
         
-        if (parent != Object.class) {
-            while (parent != Object.class) {
+        if ((parent != null) && !parent.isObject()) {
+            while ((parent != null) && !parent.isObject()) {
                 EntityAccessor parentAccessor = getProject().getEntityAccessor(parent.getName());
             
                 // We found a parent entity.
@@ -266,23 +262,23 @@ public class EntityAccessor extends MappedSuperclassAccessor {
                 
                     // Resolve any generic types from the generic parent onto the
                     // current descriptor.
-                    currentAccessor.resolveGenericTypes(genericParent, lastAccessor.getDescriptor());
+                    currentAccessor.resolveGenericTypes(genericParent, parent, lastAccessor.getDescriptor());                
                 } else {
                     // Might be a mapped superclass, check and add as needed.
                     currentAccessor.addPotentialMappedSuperclass(parent);
                 
                     // Resolve any generic types from the generic parent onto the
                     // current descriptor.
-                    currentAccessor.resolveGenericTypes(genericParent, currentAccessor.getDescriptor());
+                    currentAccessor.resolveGenericTypes(genericParent, parent, currentAccessor.getDescriptor());
                 }
             
                 // Get the next parent and keep processing ...
-                genericParent = parent.getGenericSuperclass();
+                genericParent = parent.getGenericType();
                 parent = parent.getSuperclass();
             }
         } else {
             // Resolve any generic types we have (we may be an inheritance root).
-            currentAccessor.resolveGenericTypes(genericParent, currentAccessor.getDescriptor());
+            currentAccessor.resolveGenericTypes(genericParent, parent, currentAccessor.getDescriptor());
         }
         
         // Set our root descriptor of the inheritance hierarchy on all the 
@@ -343,12 +339,12 @@ public class EntityAccessor extends MappedSuperclassAccessor {
             // Add the indicator to the inheritance root class' descriptor. The
             // default is the short class name.
             if (m_discriminatorValue == null) {
-                Annotation discriminatorValue = getAnnotation(DiscriminatorValue.class);
+                MetadataAnnotation discriminatorValue = getAnnotation(DiscriminatorValue.class);
                 
                 if (discriminatorValue == null) {
                     return Helper.getShortClassName(getJavaClassName());
                 } else {
-                    return (String) MetadataHelper.invokeMethod("value", discriminatorValue); 
+                    return (String) discriminatorValue.getAttribute("value"); 
                 }
             } else {
                 return m_discriminatorValue;
@@ -771,9 +767,9 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         if (defaultAccessType == null) {
             for (MappedSuperclassAccessor mappedSuperclass : m_mappedSuperclasses) {
                 if (! mappedSuperclass.hasAccess()) {
-                    if (havePersistenceAnnotationsDefined(MetadataHelper.getDeclaredFields(mappedSuperclass.getJavaClass()))) {
+                    if (havePersistenceFieldAnnotationsDefined(mappedSuperclass.getJavaClass().getFields().values())) {
                         defaultAccessType = MetadataConstants.FIELD;
-                    } else if (havePersistenceAnnotationsDefined(MetadataHelper.getDeclaredMethods(mappedSuperclass.getJavaClass()))) {
+                    } else if (havePersistenceMethodAnnotationsDefined(mappedSuperclass.getJavaClass().getMethods().values())) {
                         defaultAccessType = MetadataConstants.PROPERTY;
                     }
                         
@@ -785,9 +781,9 @@ public class EntityAccessor extends MappedSuperclassAccessor {
             // without an explicit access type. Check where the annotations are 
             // defined on this entity class. 
             if (defaultAccessType == null) {    
-                if (havePersistenceAnnotationsDefined(MetadataHelper.getDeclaredFields(getJavaClass()))) {
+                if (havePersistenceFieldAnnotationsDefined(getJavaClass().getFields().values())) {
                     defaultAccessType = MetadataConstants.FIELD;
-                } else if (havePersistenceAnnotationsDefined(MetadataHelper.getDeclaredMethods(getJavaClass()))) {
+                } else if (havePersistenceMethodAnnotationsDefined(getJavaClass().getMethods().values())) {
                     defaultAccessType = MetadataConstants.PROPERTY;
                 } else {
                     // 4 - If there are no annotations defined on either the
@@ -851,7 +847,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         
         // Process the entity name (alias) and default if necessary.
         if (m_entityName == null) {
-            m_entityName = (getAnnotation(Entity.class) == null) ? "" : (String) MetadataHelper.invokeMethod("name", getAnnotation(Entity.class));
+            m_entityName = (getAnnotation(Entity.class) == null) ? "" : (String) getAnnotation(Entity.class).getAttributeString("name");
         }
             
         if (m_entityName.equals("")) {
@@ -891,8 +887,8 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         
         if (m_primaryKeyJoinColumns.isEmpty()) {
             // Look for annotations.
-            Annotation primaryKeyJoinColumn = getAnnotation(PrimaryKeyJoinColumn.class);
-            Annotation primaryKeyJoinColumns = getAnnotation(PrimaryKeyJoinColumns.class);
+            MetadataAnnotation primaryKeyJoinColumn = getAnnotation(PrimaryKeyJoinColumn.class);
+            MetadataAnnotation primaryKeyJoinColumns = getAnnotation(PrimaryKeyJoinColumns.class);
                 
             pkJoinColumns = new PrimaryKeyJoinColumnsMetadata(primaryKeyJoinColumns, primaryKeyJoinColumn, getAccessibleObject());
         } else {
@@ -938,7 +934,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         
         // Step 3 - process the entity class for lifecycle callback methods. Go
         // through the mapped superclasses as well.
-        new EntityClassListenerMetadata(this).process(m_mappedSuperclasses);
+        new EntityClassListenerMetadata(this).process(m_mappedSuperclasses, loader);
     }
     
     /**
@@ -1010,14 +1006,14 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * Process secondary-table(s) for a given entity.
      */
     protected void processSecondaryTables() {
-        Annotation secondaryTable = getAnnotation(SecondaryTable.class);
-        Annotation secondaryTables = getAnnotation(SecondaryTables.class);
+        MetadataAnnotation secondaryTable = getAnnotation(SecondaryTable.class);
+        MetadataAnnotation secondaryTables = getAnnotation(SecondaryTables.class);
         
         if (m_secondaryTables.isEmpty()) {
             // Look for a SecondaryTables annotation.
             if (secondaryTables != null) {
-                for (Annotation table : (Annotation[]) MetadataHelper.invokeMethod("value", secondaryTables)) { 
-                    processSecondaryTable(new SecondaryTableMetadata(table, getAccessibleObject()));
+                for (Object table : (Object[]) secondaryTables.getAttributeArray("value")) { 
+                    processSecondaryTable(new SecondaryTableMetadata((MetadataAnnotation)table, getAccessibleObject()));
                 }
             } else {
                 // Look for a SecondaryTable annotation
@@ -1076,7 +1072,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * Process table information for the given metadata descriptor.
      */
     protected void processTable() {
-        Annotation table = getAnnotation(Table.class);
+        MetadataAnnotation table = getAnnotation(Table.class);
         
         if (m_table == null) {
             // Check for a table annotation. If no annotation is defined, the 
@@ -1178,30 +1174,37 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     /**
      * INTERNAL:
      */
-    protected void resolveGenericTypes(Type genericParent, MetadataDescriptor subDescriptor) {
+    protected void resolveGenericTypes(List<String> genericParent, MetadataClass parent, MetadataDescriptor subDescriptor) {
         // If we have a generic parent we need to grab our generic types
         // that may be used (and therefore need to be resolved) to map
         // accessors correctly.
-        if (genericParent instanceof ParameterizedType) {
-            Type[] actualTypeArguments = ((ParameterizedType) genericParent).getActualTypeArguments();
-            TypeVariable[] typeVariables = ((Class) ((ParameterizedType) genericParent).getRawType()).getTypeParameters();
-            
-            for (int i = 0; i < actualTypeArguments.length; i++) {
-                Type actualTypeArgument = actualTypeArguments[i];
-                TypeVariable variable = typeVariables[i];
-                
-                // We are building bottom up and need to link up any 
-                // TypeVariables with the actual class from the originating 
-                // entity. The subDescriptor will point to a sub-entities 
-                // descriptor if applicable, otherwise it will be this entities
-                // descriptor.
-                if (actualTypeArgument instanceof TypeVariable) {
-                    getDescriptor().addGenericType(variable.getName(), subDescriptor.getGenericType(((TypeVariable) actualTypeArgument).getName())); 
-                } else {
-                    getDescriptor().addGenericType(variable.getName(), actualTypeArgument);
+        if (genericParent != null) {
+            // This classes generic map to its parent generic types,
+            // the generics also include the superclass, and interfaces.
+            // The parent generics include the type and ":" and class.
+            List<String> parentGenerics = parent.getGenericType();
+            if (parentGenerics != null) {
+                List genericParentTemp = new java.util.ArrayList(genericParent);
+                genericParentTemp.removeAll(getJavaClass().getInterfaces());
+                int size = genericParentTemp.size();
+                int parentIndex = 0;
+                for (int index = genericParent.indexOf(parent.getName()) + 1; index < size; index++) {
+                    String actualTypeArgument = genericParent.get(index);
+                    String variable = parentGenerics.get(parentIndex);
+                    parentIndex = parentIndex + 3;
+                    // We are building bottom up and need to link up
+                    // any TypeVariables with the actual class from the
+                    // originating entity.
+                    if (actualTypeArgument.length() == 1) {
+                        index++;
+                        actualTypeArgument = genericParent.get(index);
+                        getDescriptor().addGenericType(variable, getDescriptor().getGenericType(actualTypeArgument));
+                    } else {
+                        getDescriptor().addGenericType(variable, actualTypeArgument);
+                    }
                 }
             }
-        }   
+        }
     }
     
     /**

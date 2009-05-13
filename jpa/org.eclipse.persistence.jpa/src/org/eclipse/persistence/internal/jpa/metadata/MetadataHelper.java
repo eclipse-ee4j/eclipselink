@@ -16,18 +16,13 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 
-import org.eclipse.persistence.exceptions.EntityManagerSetupException;
 import org.eclipse.persistence.exceptions.ValidationException;
 
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
-import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 
 /**
@@ -57,6 +52,22 @@ public class MetadataHelper {
                 return PrivilegedAccessHelper.getClassForName(classname, true, loader);
             }
         } catch (ClassNotFoundException exception) {
+            if (loader != org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataFactory.loader)
+            {
+                return getClassForName(classname, org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataFactory.loader);
+            } else {
+            if (classname.indexOf('$') != -1) {
+                String outer = classname.substring(0, classname.indexOf('$'));
+                Class outerClass = getClassForName(outer, loader);
+                for (int index = 0; index < outerClass.getClasses().length; index++)
+                {
+                    if (outerClass.getClasses()[index].getName().equals(classname))
+                    {
+                        return outerClass.getClasses()[index];
+                    }
+                }
+            }
+            }
             throw ValidationException.unableToLoadClass(classname, exception);
         }
     }
@@ -142,46 +153,6 @@ public class MetadataHelper {
         } else {
             // TODO: log a defaulting message
             return defaultValue;
-        }
-    }
-
-    /** 
-     * INTERNAL:
-     * Invoke the specified named method on the object, handling the necessary 
-     * exceptions.
-     */
-    static Object invokeMethod(String methodName, Object target) {
-        Method method = null;
-        
-        try {
-            method = Helper.getDeclaredMethod(target.getClass(), methodName);            
-        } catch (NoSuchMethodException e) {
-            EntityManagerSetupException.methodInvocationFailed(method, target,e);
-        }
-        
-        if (method != null) {
-             try {
-                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                     try {
-                         return AccessController.doPrivileged(new PrivilegedMethodInvoker(method, target));
-                     } catch (PrivilegedActionException exception) {
-                         Exception throwableException = exception.getException();
-                         if (throwableException instanceof IllegalAccessException) {
-                             throw EntityManagerSetupException.cannotAccessMethodOnObject(method, target);
-                         } else {
-                             throw EntityManagerSetupException.methodInvocationFailed(method, target, throwableException);
-                         }
-                     }
-                 } else {
-                     return PrivilegedAccessHelper.invokeMethod(method, target);
-                 }
-             } catch (IllegalAccessException ex1) {
-                 throw EntityManagerSetupException.cannotAccessMethodOnObject(method, target);
-             } catch (InvocationTargetException ex2) {
-                 throw EntityManagerSetupException.methodInvocationFailed(method, target, ex2);
-             }
-        } else {
-            return null;
         }
     }
 }

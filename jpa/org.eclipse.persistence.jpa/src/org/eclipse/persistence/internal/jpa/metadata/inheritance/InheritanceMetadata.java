@@ -17,7 +17,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.inheritance;
 
-import java.lang.annotation.Annotation;
 import javax.persistence.InheritanceType;
 
 import org.eclipse.persistence.descriptors.InheritancePolicy;
@@ -28,6 +27,7 @@ import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.MappedSuperclassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
 /**
  * Object to represent inheritance metadata. The processing of this metadata
@@ -37,7 +37,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
  * @since EclipseLink 1.0
  */
 public class InheritanceMetadata extends ORMetadata {
-    private Enum m_strategy;
+    private String m_strategy;
     
     /**
      * INTERNAL:
@@ -49,11 +49,11 @@ public class InheritanceMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public InheritanceMetadata(Annotation inheritance, MetadataAccessibleObject accessibleObject) {
+    public InheritanceMetadata(MetadataAnnotation inheritance, MetadataAccessibleObject accessibleObject) {
         super(inheritance, accessibleObject);
         
         if (inheritance != null) {
-            m_strategy = (Enum)MetadataHelper.invokeMethod("strategy", inheritance);
+            m_strategy = (String)inheritance.getAttribute("strategy");
         }
     }
     
@@ -73,7 +73,7 @@ public class InheritanceMetadata extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public Enum getStrategy() {
+    public String getStrategy() {
         return m_strategy;
     }
     
@@ -86,7 +86,7 @@ public class InheritanceMetadata extends ORMetadata {
         EntityAccessor accessor = (EntityAccessor) descriptor.getClassAccessor();
         
         // Set the correct inheritance policy.
-        if (m_strategy != null && m_strategy.name().equals(InheritanceType.TABLE_PER_CLASS.name())) {
+        if (m_strategy != null && m_strategy.equals(InheritanceType.TABLE_PER_CLASS.name())) {
             setTablePerClassInheritancePolicy(descriptor);
         } else {
             setInheritancePolicy(descriptor);
@@ -269,7 +269,7 @@ public class InheritanceMetadata extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setStrategy(Enum strategy) {
+    public void setStrategy(String strategy) {
         m_strategy = strategy;
     }
     
@@ -284,21 +284,21 @@ public class InheritanceMetadata extends ORMetadata {
      * INTERNAL:
      */
     public boolean usesJoinedStrategy() {
-        return m_strategy != null && m_strategy.name().equals(InheritanceType.JOINED.name()); 
+        return m_strategy != null && m_strategy.equals(InheritanceType.JOINED.name()); 
     }
     
     /**
      * INTERNAL:
      */
     public boolean usesSingleTableStrategy() {
-        return m_strategy == null || m_strategy.name().equals(InheritanceType.SINGLE_TABLE.name()); 
+        return m_strategy == null || m_strategy.equals(InheritanceType.SINGLE_TABLE.name()); 
     }
     
     /**
      * INTERNAL:
      */
     public boolean usesTablePerClassStrategy() {
-        return m_strategy != null && m_strategy.name().equals(InheritanceType.TABLE_PER_CLASS.name()); 
+        return m_strategy != null && m_strategy.equals(InheritanceType.TABLE_PER_CLASS.name()); 
     }
 }
     

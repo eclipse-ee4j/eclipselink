@@ -14,13 +14,13 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 
@@ -47,15 +47,15 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
     /**
      * INTERNAL:
      */
-    public NamedStoredProcedureQueryMetadata(Annotation namedStoredProcedureQuery, MetadataAccessibleObject accessibleObject) {
+    public NamedStoredProcedureQueryMetadata(MetadataAnnotation namedStoredProcedureQuery, MetadataAccessibleObject accessibleObject) {
         super(namedStoredProcedureQuery, accessibleObject);
          
-        for (Annotation storedProcedureParameter : (Annotation[]) MetadataHelper.invokeMethod("parameters", namedStoredProcedureQuery)) {
-           m_parameters.add(new StoredProcedureParameterMetadata(storedProcedureParameter, accessibleObject));
+        for (Object storedProcedureParameter : (Object[]) namedStoredProcedureQuery.getAttributeArray("parameters")) {
+           m_parameters.add(new StoredProcedureParameterMetadata((MetadataAnnotation)storedProcedureParameter, accessibleObject));
         }
         
-        m_procedureName = (String) MetadataHelper.invokeMethod("procedureName", namedStoredProcedureQuery);
-        m_returnsResultSet = (Boolean) MetadataHelper.invokeMethod("returnsResultSet", namedStoredProcedureQuery);
+        m_procedureName = (String) namedStoredProcedureQuery.getAttribute("procedureName");
+        m_returnsResultSet = (Boolean) namedStoredProcedureQuery.getAttribute("returnsResultSet");
     }
    
     /**
@@ -138,7 +138,7 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
         Map<String, Object> hints = processQueryHints(session);
         
         // Process the result class.
-        if (getResultClass() == void.class) {
+        if (getResultClass().isVoid()) {
             if (getResultSetMapping().equals("")) {
                 // Neither a resultClass or resultSetMapping is specified so place in a temp query on the session
                 session.addQuery(getName(), EJBQueryImpl.buildStoredProcedureQuery(call, queryArguments, hints, loader));

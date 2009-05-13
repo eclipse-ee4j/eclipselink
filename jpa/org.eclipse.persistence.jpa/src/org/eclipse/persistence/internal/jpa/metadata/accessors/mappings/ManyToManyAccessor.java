@@ -18,7 +18,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
-import java.lang.annotation.Annotation;
 import java.util.Vector;
 
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -27,6 +26,7 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
 import org.eclipse.persistence.mappings.ManyToManyMapping;
 
@@ -49,10 +49,10 @@ public class ManyToManyAccessor extends CollectionAccessor {
     /**
      * INTERNAL:
      */
-    public ManyToManyAccessor(Annotation manyToMany, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
+    public ManyToManyAccessor(MetadataAnnotation manyToMany, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(manyToMany, accessibleObject, classAccessor);
         
-        setMappedBy((String) MetadataHelper.invokeMethod("mappedBy", manyToMany));
+        setMappedBy((String) manyToMany.getAttribute("mappedBy"));
     }
     
     /**

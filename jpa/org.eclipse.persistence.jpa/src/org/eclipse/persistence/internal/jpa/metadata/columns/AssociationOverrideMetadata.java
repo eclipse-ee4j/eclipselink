@@ -16,12 +16,12 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.tables.JoinTableMetadata;
 
 /**
@@ -45,17 +45,17 @@ public class AssociationOverrideMetadata extends OverrideMetadata {
     /**
      * INTERNAL:
      */
-    public AssociationOverrideMetadata(Annotation associationOverride, MetadataAccessibleObject accessibleObject) {
+    public AssociationOverrideMetadata(MetadataAnnotation associationOverride, MetadataAccessibleObject accessibleObject) {
         super(associationOverride, accessibleObject);
         
         // Set the join columns.
         m_joinColumns = new ArrayList<JoinColumnMetadata>();
-        for (Annotation joinColumn : (Annotation[]) MetadataHelper.invokeMethod("joinColumns", associationOverride)) {
-            m_joinColumns.add(new JoinColumnMetadata(joinColumn, accessibleObject));
+        for (Object joinColumn : (Object[]) associationOverride.getAttributeArray("joinColumns")) {
+            m_joinColumns.add(new JoinColumnMetadata((MetadataAnnotation)joinColumn, accessibleObject));
         }
         
         // Set the join table.
-        m_joinTable = new JoinTableMetadata((Annotation) MetadataHelper.invokeMethod("joinTable", associationOverride), accessibleObject);
+        m_joinTable = new JoinTableMetadata((MetadataAnnotation) associationOverride.getAttribute("joinTable"), accessibleObject);
     }
     
     /**

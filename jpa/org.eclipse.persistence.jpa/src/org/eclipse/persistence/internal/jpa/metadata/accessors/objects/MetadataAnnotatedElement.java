@@ -27,19 +27,10 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Array;
-import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.persistence.Basic;
 import javax.persistence.ElementCollection;
@@ -81,46 +72,41 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     public static final String JPA_PERSISTENCE_PACKAGE_PREFIX = "javax.persistence";
     public static final String ECLIPSELINK_PERSISTENCE_PACKAGE_PREFIX = "org.eclipse.persistence.annotations";
     
+    /** The name of the element, i.e. class name, field name, method name. */
     private String m_name;
-    private Class m_rawClass;
-    private Type m_relationType;
+    /** Defines elements modifiers, i.e. private/static/transient. */
+    private int modifiers;
+    /** Used to cache the type metadata class, but cannot be cached in the case of generics. */
+    private MetadataClass m_rawClass;
+    /**
+     * Defines the generic types of the elements type.
+     * This is null if no generics are used.
+     * This is a list of class/type names from the class/field/method signature.
+     * The size of the list varries depending on how many generics are present,
+     * i.e.
+     * - Map<String, Long> -> ["java.util.Map", "java.lang.String", "java.lang.Long"]
+     * - Beverage<T> extends Object -> [T, :, java.lang.Object, java.lang.Object]
+     */
+    private List<String> genericType;
+    /** Defines the field type, or method return type class name. */
+    private String type;
+    /** Defines the attribute name of a field, or property name of a method. */
     private String m_attributeName;
-    private AnnotatedElement m_annotatedElement;
-    private HashMap<String, Annotation> m_annotations;
+    /** Stores any annotations defined for the element, keyed by annotation name. */
+    private Map<String, MetadataAnnotation> m_annotations = new HashMap<String, MetadataAnnotation>();
     
     /**
      * INTERNAL:
-     * Use this constructor when no logger is needed. That is, there is no
-     * need to override or merge ORMetadata. That is, this accessible object
-     * will not be tied to an ORMetadata object.
      */
-    protected MetadataAnnotatedElement(AnnotatedElement annotatedElement) {
-        super(annotatedElement, null);
-        setAnnotatedElement(annotatedElement);
+    public MetadataAnnotatedElement(MetadataLogger logger) {
+        super(logger);
     }
     
     /**
      * INTERNAL:
      */
-    public MetadataAnnotatedElement(AnnotatedElement annotatedElement, MetadataLogger logger) {
-        super(annotatedElement, logger);
-        setAnnotatedElement(annotatedElement);
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public MetadataAnnotatedElement(AnnotatedElement annotatedElement, XMLEntityMappings entityMappings) {
+    public MetadataAnnotatedElement(XMLEntityMappings entityMappings) {
         super(entityMappings.getMappingFile(), entityMappings);
-        setAnnotatedElement(annotatedElement);
-    }
-    
-    /**
-     * INTERNAL:
-     * Return the actual field or method.
-     */
-    public AnnotatedElement getAnnotatedElement() {
-        return m_annotatedElement;
     }
 
     /**
@@ -128,22 +114,28 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * Return the annotated element for this accessor. Note: This method does 
      * not check against a metadata complete.
      */
-    public <T extends Annotation> T getAnnotation(Class annotation) {
-        return (T) m_annotations.get(annotation.getName());
+    public MetadataAnnotation getAnnotation(Class annotation) {
+        if (m_annotations == null) {
+            return null;
+        }
+        return m_annotations.get(annotation.getName());
     }
     
     /**
      * INTERNAL:
      * Return the annotated element for this accessor.
      */
-    public <T extends Annotation> T getAnnotation(String annotationClassName, MetadataDescriptor descriptor) {
-        Annotation annotation = m_annotations.get(annotationClassName);
+    public MetadataAnnotation getAnnotation(String annotationClassName, MetadataDescriptor descriptor) {
+        if (m_annotations == null) {
+            return null;
+        }
+        MetadataAnnotation annotation = m_annotations.get(annotationClassName);
         
         if (annotation != null && descriptor.ignoreAnnotations()) {
-            getLogger().logWarningMessage(MetadataLogger.IGNORE_ANNOTATION, annotation, m_annotatedElement);
+            getLogger().logWarningMessage(MetadataLogger.IGNORE_ANNOTATION, annotation, this);
             return null;
         } else {
-            return (T) annotation;
+            return annotation;
         }
     }
     
@@ -151,7 +143,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * INTERNAL:
      * Return the annotations of this accessible object.
      */
-    public Map<String, Annotation> getAnnotations(){
+    public Map<String, MetadataAnnotation> getAnnotations(){
         return m_annotations;
     }
     
@@ -166,15 +158,10 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * INTERNAL:
      */
     protected int getDeclaredAnnotationsCount(MetadataDescriptor descriptor) {
-        return descriptor.ignoreAnnotations() ? 0 : m_annotations.size(); 
-    }
-    
-    /**
-     * INTERNAL:
-     * Return the element of this accessible object.
-     */
-    public Object getElement() {
-        return getAnnotatedElement();
+        if (descriptor.ignoreAnnotations() || (m_annotations == null)) {
+            return 0;
+        }
+        return m_annotations.size(); 
     }
     
     /**
@@ -182,18 +169,14 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * This should only be called for accessor's of type Map. It will return
      * the map key type if generics are used, null otherwise.
      */
-    public Class getMapKeyClass(MetadataDescriptor descriptor) {
+    public MetadataClass getMapKeyClass(MetadataDescriptor descriptor) {
         if (isGenericCollectionType()) {
-            // By default, the reference class is equal to the relation
-            // class. But if the relation class is a generic we need to 
-            // extract and return the actual reference class from the generic. 
-            Type referenceType = ((ParameterizedType) m_relationType).getActualTypeArguments()[0];
-            
-            if (referenceType instanceof Class) {
-                return (Class) referenceType;
-            } else {
-                return (Class) descriptor.getGenericType(((TypeVariable) referenceType).getName());
+            // The Map key may be a generic itself, or just the class value.
+            String type = descriptor.getGenericType(this.genericType.get(2));
+            if (type != null) {
+                return MetadataFactory.getClassMetadata(type);
             }
+            return MetadataFactory.getClassMetadata(this.genericType.get(1));
         } else {
             return null;
         }
@@ -213,20 +196,16 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * method will return java.util.Collection. 
      * @See getReferenceClassFromGeneric() to get Employee.class back.
      */
-    public Class getRawClass(MetadataDescriptor descriptor) {
+    public MetadataClass getRawClass(MetadataDescriptor descriptor) {
         if (m_rawClass == null) {
-            if (isGenericCollectionType()) {
-                // By default, the raw class is equal to the relation
-                // class. But if the relation class is a generic we need to 
-                // extract and set the actual raw class from the generic. 
-                return (Class)(((ParameterizedType) m_relationType).getRawType());
-            } else {
-                if (m_relationType instanceof Class) {
-                    return (Class) m_relationType;
-                } else {
-                    m_rawClass = (Class) descriptor.getGenericType(((TypeVariable) m_relationType).getName());
+            if (isGenericType()) {
+                String type = descriptor.getGenericType(getGenericType().get(0));
+                if (type == null) {
+                    return MetadataFactory.getClassMetadata("java.lang.String");
                 }
+                return MetadataFactory.getClassMetadata(type);
             }
+            return MetadataFactory.getClassMetadata(getType());
         }
         
         return m_rawClass;    
@@ -246,43 +225,32 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * 6 - public Collection<byte[]> getAudio() => byte[].class
      * TODO: we don't handle multiple levels of generics too well (or at all really :-( )
      */
-    public Class getReferenceClassFromGeneric(MetadataDescriptor descriptor) {
+    public MetadataClass getReferenceClassFromGeneric(MetadataDescriptor descriptor) {
         if (isGenericCollectionType()) {
-            ParameterizedType pType = (ParameterizedType) m_relationType;
-            
-            Type referenceType;
-            if (java.util.Map.class.isAssignableFrom((Class) pType.getRawType())) {
-                referenceType = pType.getActualTypeArguments()[1];
-            } else {
-                referenceType = pType.getActualTypeArguments()[0]; 
+            // TODO: This is guessing, need to be more logical.
+            // Collection<String> -> [Collection, String], get element class.
+            String elementClass = this.genericType.get(1);
+            // If size is greater than 4 then assume it is a double generic Map,
+            // Map<T, Phone> -> [Map, T, Z, T, X]
+            if (this.genericType.size() > 4) {
+                elementClass = this.genericType.get(4);
+            } else if (this.genericType.size() > 3) {
+                // If size is greater than 3 then assume it is a generic Map,
+                // Map<T, Phone> -> [Map, T, Z, Phone]
+                elementClass = this.genericType.get(3);
+            } else if (this.genericType.size() > 2) {
+                // If size is greater than 2 then assume it is a Map,
+                // Map<String, Phone> -> [Map, String, Phone]
+                elementClass = this.genericType.get(2);
             }
-            
-            if (referenceType instanceof Class) {
-                return (Class) referenceType;
-            } else if (referenceType instanceof TypeVariable) {
-                Type actualType = descriptor.getGenericType(((TypeVariable) referenceType).getName());
-                
-                if (actualType instanceof GenericArrayType) {
-                    return Array.newInstance((Class) ((GenericArrayType) actualType).getGenericComponentType(), 0).getClass();
-                } else {
-                    return (Class) actualType;
-                }
-            } else if (referenceType instanceof GenericArrayType) {
-                return Array.newInstance((Class) ((GenericArrayType) referenceType).getGenericComponentType(), 0).getClass();
-            } else {
-                return null;
-            }
+            if (elementClass.length() == 1) {
+                // Assume is a generic type variable, find real type.
+                elementClass = descriptor.getGenericType(elementClass);
+            }            
+            return MetadataFactory.getClassMetadata(elementClass);
         } else {
             return null;
         }
-    }
-    
-    /**
-     * INTERNAL:
-     * Return the relation type of this accessible object.
-     */
-    public Type getRelationType() {
-        return m_relationType;
     }
     
     /**
@@ -331,10 +299,10 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * for the given descriptor metadata. 
      */
     public boolean isAnnotationPresent(Class annotationClass, MetadataDescriptor descriptor) {
-        Annotation annotation = getAnnotation(annotationClass);
+        MetadataAnnotation annotation = getAnnotation(annotationClass);
         
         if (annotation != null && descriptor.ignoreAnnotations()) {
-            getLogger().logWarningMessage(MetadataLogger.IGNORE_ANNOTATION, annotation, m_annotatedElement);
+            getLogger().logWarningMessage(MetadataLogger.IGNORE_ANNOTATION, annotation, this);
             return false;
         } else {
             return annotation != null;
@@ -392,9 +360,8 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      */
     public boolean isEmbedded(MetadataDescriptor descriptor) {
         if (isAnnotationNotPresent(Embedded.class) && isAnnotationNotPresent(EmbeddedId.class)) {
-            Class rawClass = getRawClass(descriptor);
-            MetadataClass metadataClass = new MetadataClass(rawClass);
-            return (metadataClass.isAnnotationPresent(Embeddable.class) || descriptor.getProject().hasEmbeddable(rawClass));
+            MetadataClass rawClass = getRawClass(descriptor);
+            return (rawClass.isAnnotationPresent(Embeddable.class) || descriptor.getProject().hasEmbeddable(rawClass));
         } else {
             // Still need to make the call since we may need to ignore it
             // because of meta-data complete.
@@ -415,7 +382,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * Method to return whether a collection type is a generic.
      */
     public boolean isGenericCollectionType() {
-        return m_relationType instanceof ParameterizedType;
+        return (this.genericType != null) && (this.genericType.size() > 1);
     }
     
     /**
@@ -423,7 +390,9 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * Method to return whether a type is a generic.
      */
     public boolean isGenericType() {
-        return m_relationType instanceof TypeVariable;
+        return (this.genericType != null)
+                    && (this.genericType.size() > 1)
+                    && (this.genericType.get(0).length() == 1);
     }
     
     /**
@@ -465,7 +434,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     public boolean isOneToMany(MetadataDescriptor descriptor) {
         if (isAnnotationNotPresent(OneToMany.class) && ! descriptor.ignoreDefaultMappings()) {
             if (isGenericCollectionType() && isSupportedToManyCollectionClass(descriptor) && descriptor.getProject().hasEntity(getReferenceClassFromGeneric(descriptor))) {
-                getLogger().logConfigMessage(MetadataLogger.ONE_TO_MANY_MAPPING, m_annotatedElement);
+                getLogger().logConfigMessage(MetadataLogger.ONE_TO_MANY_MAPPING, this);
                 return true;
             }
             
@@ -484,7 +453,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     public boolean isOneToOne(MetadataDescriptor descriptor) {        
         if (isAnnotationNotPresent(OneToOne.class) && ! descriptor.ignoreDefaultMappings()) {    
             if (descriptor.getProject().hasEntity(getRawClass(descriptor)) && ! isEmbedded(descriptor)) {
-                getLogger().logConfigMessage(MetadataLogger.ONE_TO_ONE_MAPPING, m_annotatedElement);
+                getLogger().logConfigMessage(MetadataLogger.ONE_TO_ONE_MAPPING, this);
                 return true;
             } else {
                 return false;
@@ -503,11 +472,9 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * Map rather than strict equality.
      */
     public boolean isSupportedCollectionClass(MetadataDescriptor descriptor) {
-        Class rawClass = getRawClass(descriptor);
+        MetadataClass rawClass = getRawClass(descriptor);
         
-        return Collection.class.isAssignableFrom(rawClass) || 
-            Set.class.isAssignableFrom(rawClass) || 
-            List.class.isAssignableFrom(rawClass); 
+        return rawClass.isCollection();
     }
     
     /**
@@ -517,7 +484,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * List and Map rather than strict equality.
      */
     public boolean isSupportedMapClass(MetadataDescriptor descriptor) {
-        return Map.class.isAssignableFrom(getRawClass(descriptor)); 
+        return getRawClass(descriptor).isMap(); 
     }
     
     /**
@@ -547,15 +514,15 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      */
     protected boolean isValidPersistenceElement(boolean mustBeExplicit, String explicitType, MetadataDescriptor descriptor) {
         if (mustBeExplicit) {
-            Annotation annotation = getAnnotation(MetadataConstants.ACCESS_ANNOTATION, descriptor);
+            MetadataAnnotation annotation = getAnnotation(MetadataConstants.ACCESS_ANNOTATION, descriptor);
             
             if (annotation == null) {
                 return false;
             } else {
-                Enum access = (Enum) MetadataHelper.invokeMethod("value", annotation);
+                String access = (String)annotation.getAttribute("value");
                 
-                if (! access.name().equals(explicitType)) {
-                    throw ValidationException.invalidExplicitAccessTypeSpecified(getAnnotatedElement(), descriptor.getJavaClass(), explicitType);
+                if (! access.equals(explicitType)) {
+                    throw ValidationException.invalidExplicitAccessTypeSpecified(this, descriptor.getJavaClass(), explicitType);
                 }
             }
         }
@@ -582,10 +549,10 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     public boolean isVariableOneToOne(MetadataDescriptor descriptor) {
         if (isAnnotationNotPresent(VariableOneToOne.class) && ! descriptor.ignoreDefaultMappings()) {
             if (getRawClass(descriptor).isInterface() && 
-                    ! Map.class.isAssignableFrom(getRawClass(descriptor)) && 
-                    ! Collection.class.isAssignableFrom(getRawClass(descriptor)) &&
-                    ! ValueHolderInterface.class.isAssignableFrom(getRawClass(descriptor))) {
-                getLogger().logConfigMessage(MetadataLogger.VARIABLE_ONE_TO_ONE_MAPPING, m_annotatedElement);
+                    ! getRawClass(descriptor).isMap() && 
+                    ! getRawClass(descriptor).isCollection() &&
+                    ! getRawClass(descriptor).extendsInterface(ValueHolderInterface.class)) {
+                getLogger().logConfigMessage(MetadataLogger.VARIABLE_ONE_TO_ONE_MAPPING, this);
                 return true;
             }
             
@@ -607,28 +574,6 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     
     /**
      * INTERNAL:
-     * Set the annotated element for this accessible object.
-     * Once the class loader changes, we need to be able to update our
-     * classes.
-     */
-    public void setAnnotatedElement(AnnotatedElement annotatedElement) {
-        m_annotatedElement = annotatedElement;
-
-        // For bug210258, the getAnnotation and isAnnotationPresent method will 
-        // use the hashmap to determine declared annotation.
-        m_annotations = new HashMap<String, Annotation>();
-        
-        for (Annotation annotation : annotatedElement.getDeclaredAnnotations()) {
-            String annotationName = annotation.annotationType().getName();
-            if (annotationName.startsWith(JPA_PERSISTENCE_PACKAGE_PREFIX) || annotationName.startsWith(ECLIPSELINK_PERSISTENCE_PACKAGE_PREFIX)) {
-                String annotationShortName = annotation.toString().substring(1, annotation.toString().indexOf("("));
-                m_annotations.put(annotationShortName, annotation);
-            }
-        }
-    }
-    
-    /**
-     * INTERNAL:
      */
     protected void setAttributeName(String attributeName) {
         m_attributeName = attributeName;
@@ -640,12 +585,48 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     protected void setName(String name) {
         m_name = name;
     }
+
+    public int getModifiers() {
+        return modifiers;
+    }
+
+    public void setModifiers(int modifiers) {
+        this.modifiers = modifiers;
+    }
     
-    /**
-     * INTERNAL:
-     * Set the relation type of this accessible object.
-     */
-    protected void setRelationType(Type relationType) {
-        m_relationType = relationType;
+    public int hashCode() {
+        return getName().hashCode();
+    }
+    
+    public boolean equals(Object object) {
+        if (object == null) {
+            return false;
+        }
+        if (getName() == null) {
+            return ((MetadataAnnotatedElement)object).getName() == null;
+        }
+        return (object.getClass() == getClass())
+                && getName().equals(((MetadataAnnotatedElement)object).getName());
+    }
+    
+    public String toString() {
+        String className = getClass().getSimpleName();
+        return className.substring("Metadata".length(), className.length()).toLowerCase() + " " + getName();
+    }
+
+    public List<String> getGenericType() {
+        return genericType;
+    }
+
+    public void setGenericType(List<String> genericType) {
+        this.genericType = genericType;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

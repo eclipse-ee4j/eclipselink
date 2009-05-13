@@ -20,12 +20,11 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
-import java.lang.annotation.Annotation;
-
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
 import org.eclipse.persistence.mappings.OneToOneMapping;
 
@@ -47,7 +46,7 @@ public class ManyToOneAccessor extends ObjectAccessor {
     /**
      * INTERNAL:
      */
-    public ManyToOneAccessor(Annotation manyToOne, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
+    public ManyToOneAccessor(MetadataAnnotation manyToOne, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(manyToOne, accessibleObject, classAccessor);
     }
 

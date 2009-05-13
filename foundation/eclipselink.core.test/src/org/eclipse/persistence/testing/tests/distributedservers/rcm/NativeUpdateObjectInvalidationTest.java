@@ -66,6 +66,11 @@ public class NativeUpdateObjectInvalidationTest extends ConfigurableCacheSyncDis
         uow.commit();
         
         getSession().getIdentityMapAccessor().invalidateObject(employee, true);
+        try {
+            Thread.sleep(1000);
+        } catch (Exception exception) {
+            // Ignore.
+        }
     }
 
     public void verify() {

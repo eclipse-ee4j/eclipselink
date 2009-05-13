@@ -17,6 +17,7 @@ package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
 import java.util.List;
 
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.jpa.metadata.columns.AssociationOverrideMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.AttributeOverrideMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
@@ -50,7 +51,7 @@ public interface MappedKeyMapAccessor {
     /**
      * INTERNAL:
      */
-    public Class getMapKeyClass();
+    public MetadataClass getMapKeyClass();
     
     /**
      * INTERNAL:
@@ -70,5 +71,5 @@ public interface MappedKeyMapAccessor {
     /**
      * INTERNAL:
      */
-    public void setMapKeyClass(Class cls);
+    public void setMapKeyClass(MetadataClass cls);
 }

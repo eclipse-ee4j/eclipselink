@@ -20,8 +20,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
-import java.lang.annotation.Annotation;
-
 import org.eclipse.persistence.annotations.CollectionTable;
 import org.eclipse.persistence.exceptions.ValidationException;
 
@@ -31,6 +29,7 @@ import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
 import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnMetadata;
@@ -69,12 +68,12 @@ public class BasicCollectionAccessor extends DirectCollectionAccessor {
     /**
      * INTERNAL:
      */
-    public BasicCollectionAccessor(Annotation basicCollection, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
+    public BasicCollectionAccessor(MetadataAnnotation basicCollection, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(basicCollection, accessibleObject, classAccessor);
 
         // Must check, BasicMapAccessor calls this constructor ...
         if (basicCollection != null) {
-            m_valueColumn = new ColumnMetadata((Annotation) MetadataHelper.invokeMethod("valueColumn", basicCollection), accessibleObject, getAttributeName());
+            m_valueColumn = new ColumnMetadata((MetadataAnnotation) basicCollection.getAttribute("valueColumn"), accessibleObject, getAttributeName());
         }
         
         // Set the collection table if one is present.
@@ -110,9 +109,9 @@ public class BasicCollectionAccessor extends DirectCollectionAccessor {
         // field type.
         if (getAccessibleObject().isGenericCollectionType()) {
             if (loggingCtx.equals(MetadataLogger.MAP_KEY_COLUMN)) {
-                field.setType(getMapKeyReferenceClass());
+                field.setType(getJavaClass(getMapKeyReferenceClass()));
             } else {
-                field.setType(getReferenceClass());
+            field.setType(getJavaClass(getReferenceClass()));
             }
         }
                     

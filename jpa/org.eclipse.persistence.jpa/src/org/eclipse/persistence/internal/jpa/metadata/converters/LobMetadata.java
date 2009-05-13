@@ -16,16 +16,16 @@
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
 import java.io.Serializable;
-import java.lang.annotation.Annotation;
 
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.SerializedObjectConverter;
 import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
 
 import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 
 /**
  * INTERNAL:
@@ -46,7 +46,7 @@ public class LobMetadata extends MetadataConverter {
     /**
      * INTERNAL:
      */
-    public LobMetadata(Annotation lob, MetadataAccessibleObject accessibleObject) {
+    public LobMetadata(MetadataAnnotation lob, MetadataAccessibleObject accessibleObject) {
         super(lob, accessibleObject);
         
         // Nothing to read off a lob.
@@ -56,7 +56,7 @@ public class LobMetadata extends MetadataConverter {
      * INTERNAL:
      * Returns true if the given class is a valid blob type.
      */ 
-    public static boolean isValidBlobType(Class cls) {
+    public static boolean isValidBlobType(MetadataClass cls) {
         return cls.equals(byte[].class) ||
                cls.equals(Byte[].class) ||
                cls.equals(java.sql.Blob.class);
@@ -66,7 +66,7 @@ public class LobMetadata extends MetadataConverter {
      * INTERNAL:
      * Returns true if the given class is a valid clob type.
      */  
-    public static boolean isValidClobType(Class cls) {
+    public static boolean isValidClobType(MetadataClass cls) {
         return cls.equals(char[].class) ||
                cls.equals(String.class) ||
                cls.equals(Character[].class) ||
@@ -77,7 +77,7 @@ public class LobMetadata extends MetadataConverter {
      * INTERNAL:
      * Returns true if the given class is a valid lob type.
      */
-    public static boolean isValidLobType(Class cls) {
+    public static boolean isValidLobType(MetadataClass cls) {
         return isValidClobType(cls) || isValidBlobType(cls);
     }
     
@@ -85,7 +85,7 @@ public class LobMetadata extends MetadataConverter {
      * INTERNAL:
      * Every converter needs to be able to process themselves.
      */
-    public void process(DatabaseMapping mapping, MappingAccessor accessor, Class referenceClass, boolean isForMapKey) {
+    public void process(DatabaseMapping mapping, MappingAccessor accessor, MetadataClass referenceClass, boolean isForMapKey) {
         // Set the field classification type on the mapping based on the
         // referenceClass type.
         if (isValidClobType(referenceClass)) {
@@ -94,7 +94,7 @@ public class LobMetadata extends MetadataConverter {
         } else if (isValidBlobType(referenceClass)) {
             setFieldClassification(mapping, java.sql.Blob.class, isForMapKey);
             setConverter(mapping, new TypeConversionConverter(mapping), isForMapKey);
-        } else if (Helper.classImplementsInterface(referenceClass, Serializable.class)) {
+        } else if (referenceClass.extendsInterface(Serializable.class)) {
             setFieldClassification(mapping, java.sql.Blob.class, isForMapKey);
             setConverter(mapping, new SerializedObjectConverter(mapping), isForMapKey);
         } else {

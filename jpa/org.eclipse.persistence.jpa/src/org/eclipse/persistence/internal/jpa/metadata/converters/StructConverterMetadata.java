@@ -16,7 +16,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
-import java.lang.annotation.Annotation;
 import java.sql.Types;
 
 import org.eclipse.persistence.config.StructConverterType;
@@ -24,6 +23,8 @@ import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 
 
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -50,10 +51,10 @@ public class StructConverterMetadata extends AbstractConverterMetadata {
     /**
      * INTERNAL:
      */
-    public StructConverterMetadata(Annotation structConverter, MetadataAccessibleObject accessibleObject) {
+    public StructConverterMetadata(MetadataAnnotation structConverter, MetadataAccessibleObject accessibleObject) {
         super(structConverter, accessibleObject);
         
-        setConverter((String) MetadataHelper.invokeMethod("converter", structConverter));
+        setConverter((String) structConverter.getAttribute("converter"));
     }
     
     /**
@@ -104,7 +105,7 @@ public class StructConverterMetadata extends AbstractConverterMetadata {
     /**
      * INTERNAL: 
      */
-    public void process(DatabaseMapping mapping, MappingAccessor accessor, Class referenceClass, boolean isForMapKey) {
+    public void process(DatabaseMapping mapping, MappingAccessor accessor, MetadataClass referenceClass, boolean isForMapKey) {
         if (mapping.isAbstractDirectMapping()) {
             AbstractDirectMapping directMapping = ((AbstractDirectMapping)mapping); 
             directMapping.setFieldType(Types.STRUCT);

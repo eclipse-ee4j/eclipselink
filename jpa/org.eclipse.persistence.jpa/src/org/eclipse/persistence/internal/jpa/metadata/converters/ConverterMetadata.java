@@ -16,10 +16,10 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
-import java.lang.annotation.Annotation;
-
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 
 /**
@@ -43,10 +43,10 @@ public class ConverterMetadata extends AbstractConverterMetadata {
     /**
      * INTERNAL:
      */
-    public ConverterMetadata(Annotation converter, MetadataAccessibleObject accessibleObject) {
+    public ConverterMetadata(MetadataAnnotation converter, MetadataAccessibleObject accessibleObject) {
         super(converter, accessibleObject);
 
-        m_className = ((Class) MetadataHelper.invokeMethod("converterClass", converter)).getName();        
+        m_className = (String)converter.getAttribute("converterClass");        
     }
     
     /**
@@ -89,7 +89,7 @@ public class ConverterMetadata extends AbstractConverterMetadata {
      * INTERNAL:
      * Process this converter for the given mapping.
      */
-    public void process(DatabaseMapping mapping, MappingAccessor accessor, Class referenceClass, boolean isForMapKey) {
+    public void process(DatabaseMapping mapping, MappingAccessor accessor, MetadataClass referenceClass, boolean isForMapKey) {
         setConverterClassName(mapping, getClassName(), isForMapKey);
     }
     

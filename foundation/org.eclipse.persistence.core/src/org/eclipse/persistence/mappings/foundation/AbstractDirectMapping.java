@@ -108,7 +108,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
                 ((SQLSelectStatement)((DataReadQuery)selectionQuery).getSQLStatement()).addField((DatabaseField)getField().clone());
                 ((SQLSelectStatement)((DataReadQuery)selectionQuery).getSQLStatement()).addTable((DatabaseTable)getField().getTable().clone());
             } else {
-                ((SQLSelectStatement)((DataReadQuery)selectionQuery).getSQLStatement()).addField(baseExpression.getTable((DatabaseTable)getField().getTable()).getField(getField()));
+                ((SQLSelectStatement)((DataReadQuery)selectionQuery).getSQLStatement()).addField(baseExpression.getTable(getField().getTable()).getField(getField()));
             }
         }
     }
@@ -470,6 +470,25 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      */
     public void convertClassNamesToClasses(ClassLoader classLoader){
         super.convertClassNamesToClasses(classLoader);
+        
+        if (getAttributeClassificationName() != null) {
+            Class attributeClass = null;
+            try{
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                    try {
+                        attributeClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(getAttributeClassificationName(), true, classLoader));
+                    } catch (PrivilegedActionException exception) {
+                        throw ValidationException.classNotFoundWhileConvertingClassNames(getAttributeClassificationName(), exception.getException());
+                    }
+                } else {
+                    attributeClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(getAttributeClassificationName(), true, classLoader);
+                }
+            } catch (ClassNotFoundException exc){
+                throw ValidationException.classNotFoundWhileConvertingClassNames(getAttributeClassificationName(), exc);
+            }
+            setAttributeClassification(attributeClass);
+        }
+            
         if (converter != null) {
             if (converter instanceof TypeConversionConverter) {
                 ((TypeConversionConverter)converter).convertClassNamesToClasses(classLoader);
@@ -511,7 +530,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
             
             setConverter(converter);
         }
-    };
+    }
     
     /**
      * INTERNAL

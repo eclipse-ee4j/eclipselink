@@ -14,13 +14,12 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.copypolicy;
 
-import java.lang.annotation.Annotation;
-
 import org.eclipse.persistence.descriptors.copying.CopyPolicy;
 import org.eclipse.persistence.descriptors.copying.CloneCopyPolicy;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
 /**
  * INTERNAL:
@@ -45,11 +44,11 @@ public class CloneCopyPolicyMetadata extends CopyPolicyMetadata {
     /**
      * INTERNAL:
      */
-    public CloneCopyPolicyMetadata(Annotation copyPolicy, MetadataAccessibleObject accessibleObject) {
+    public CloneCopyPolicyMetadata(MetadataAnnotation copyPolicy, MetadataAccessibleObject accessibleObject) {
         super(copyPolicy, accessibleObject);
         
-        methodName = (String) MetadataHelper.invokeMethod("method", copyPolicy);      
-        workingCopyMethodName = (String) MetadataHelper.invokeMethod("workingCopyMethod", copyPolicy);
+        methodName = (String) copyPolicy.getAttribute("method");      
+        workingCopyMethodName = (String) copyPolicy.getAttribute("workingCopyMethod");
     }
     
     /**

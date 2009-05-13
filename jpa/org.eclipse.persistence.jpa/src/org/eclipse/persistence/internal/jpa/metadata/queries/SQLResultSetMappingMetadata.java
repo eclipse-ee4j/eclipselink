@@ -14,12 +14,12 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 import org.eclipse.persistence.queries.ColumnResult;
@@ -50,17 +50,17 @@ public class SQLResultSetMappingMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public SQLResultSetMappingMetadata(Annotation sqlResultSetMapping, MetadataAccessibleObject accessibleObject) {
+    public SQLResultSetMappingMetadata(MetadataAnnotation sqlResultSetMapping, MetadataAccessibleObject accessibleObject) {
         super(sqlResultSetMapping, accessibleObject);
         
-        m_name = (String) MetadataHelper.invokeMethod("name", sqlResultSetMapping);
+        m_name = (String) sqlResultSetMapping.getAttribute("name");
         
-        for (Annotation entityResult : (Annotation[]) MetadataHelper.invokeMethod("entities", sqlResultSetMapping)) {
-            m_entityResults.add(new EntityResultMetadata(entityResult, accessibleObject));
+        for (Object entityResult : (Object[]) sqlResultSetMapping.getAttributeArray("entities")) {
+            m_entityResults.add(new EntityResultMetadata((MetadataAnnotation)entityResult, accessibleObject));
         }
         
-        for (Object columnResult : (Annotation[]) MetadataHelper.invokeMethod("columns", sqlResultSetMapping)) {
-            m_columnResults.add((String)MetadataHelper.invokeMethod("name", columnResult));
+        for (Object columnResult : (Object[]) sqlResultSetMapping.getAttributeArray("columns")) {
+            m_columnResults.add((String)((MetadataAnnotation)columnResult).getAttribute("name"));
         }
     }
     

@@ -14,7 +14,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
-import java.lang.reflect.AnnotatedElement;
 import java.net.URL;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
@@ -41,8 +40,8 @@ public abstract class MetadataAccessibleObject {
     /**
      * INTERNAL:
      */
-    public MetadataAccessibleObject(AnnotatedElement annotatedElement, MetadataLogger logger) {
-        m_location = annotatedElement;
+    public MetadataAccessibleObject(MetadataLogger logger) {
+        m_location = this;
         m_logger = logger;
     }
     
@@ -61,19 +60,17 @@ public abstract class MetadataAccessibleObject {
     public XMLEntityMappings getEntityMappings() {
         return m_entityMappings;
     }
+
+    public void setEntityMappings(XMLEntityMappings entityMappings) {
+        m_entityMappings = entityMappings;
+    }
     
     /**
      * INTERNAL:
      * Return the attribute name of this accessible object.
      */
     public abstract String getAttributeName();
-    
-    /**
-     * INTERNAL:
-     * Return the element of this accessible object.
-     */
-    public abstract Object getElement();
-    
+       
     /**
      * INTERNAL:
      */

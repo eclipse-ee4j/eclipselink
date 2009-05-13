@@ -14,10 +14,9 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
-import java.lang.annotation.Annotation;
-
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
 /**
  * INTERNAL:
@@ -45,15 +44,15 @@ public class JoinColumnMetadata extends PrimaryKeyJoinColumnMetadata {
     /**
      * INTERNAL:
      */
-    public JoinColumnMetadata(Annotation joinColumn, MetadataAccessibleObject accessibleObject) {
+    public JoinColumnMetadata(MetadataAnnotation joinColumn, MetadataAccessibleObject accessibleObject) {
         super(joinColumn, accessibleObject);
         
         if (joinColumn != null) {
-            m_table = ((String) MetadataHelper.invokeMethod("table", joinColumn));
-            m_unique = ((Boolean) MetadataHelper.invokeMethod("unique", joinColumn));
-            m_nullable = ((Boolean) MetadataHelper.invokeMethod("nullable", joinColumn));
-            m_updatable = ((Boolean) MetadataHelper.invokeMethod("updatable", joinColumn));
-            m_insertable = ((Boolean) MetadataHelper.invokeMethod("insertable", joinColumn));
+            m_table = ((String) joinColumn.getAttribute("table"));
+            m_unique = ((Boolean) joinColumn.getAttribute("unique"));
+            m_nullable = ((Boolean) joinColumn.getAttribute("nullable"));
+            m_updatable = ((Boolean) joinColumn.getAttribute("updatable"));
+            m_insertable = ((Boolean) joinColumn.getAttribute("insertable"));
         }
     }
     

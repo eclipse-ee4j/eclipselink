@@ -14,12 +14,13 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
-import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.ArrayList;
 
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 
 /**
  * INTERNAL:
@@ -29,7 +30,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class EntityResultMetadata extends ORMetadata {
-    private Class m_entityClass; // Required in both XML and annotations.
+    private MetadataClass m_entityClass; // Required in both XML and annotations.
     private List<FieldResultMetadata> m_fieldResults = new ArrayList<FieldResultMetadata>();
     private String m_discriminatorColumn;
     private String m_entityClassName;
@@ -45,14 +46,14 @@ public class EntityResultMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public EntityResultMetadata(Annotation entityResult, MetadataAccessibleObject accessibleObject) {
+    public EntityResultMetadata(MetadataAnnotation entityResult, MetadataAccessibleObject accessibleObject) {
         super(entityResult, accessibleObject);
         
-        m_entityClass = (Class) MetadataHelper.invokeMethod("entityClass", entityResult); 
-        m_discriminatorColumn = (String) MetadataHelper.invokeMethod("discriminatorColumn", entityResult);
+        m_entityClass = getMetadataClass((String) entityResult.getAttribute("entityClass")); 
+        m_discriminatorColumn = (String) entityResult.getAttribute("discriminatorColumn");
         
-        for (Annotation fieldResult : (Annotation[]) MetadataHelper.invokeMethod("fields", entityResult)) {
-            m_fieldResults.add(new FieldResultMetadata(fieldResult, accessibleObject));
+        for (Object fieldResult : (Object[]) entityResult.getAttributeArray("fields")) {
+            m_fieldResults.add(new FieldResultMetadata((MetadataAnnotation)fieldResult, accessibleObject));
         }
     }
     
@@ -89,7 +90,7 @@ public class EntityResultMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public Class getEntityClass() {
+    public MetadataClass getEntityClass() {
         return m_entityClass;
     }
     
@@ -140,7 +141,7 @@ public class EntityResultMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public void setEntityClass(Class entityClass) {
+    public void setEntityClass(MetadataClass entityClass) {
         m_entityClass = entityClass;
     }
     

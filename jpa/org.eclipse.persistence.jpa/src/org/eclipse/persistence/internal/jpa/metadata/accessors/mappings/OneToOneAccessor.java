@@ -22,7 +22,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
-import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,6 +31,7 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
 import org.eclipse.persistence.mappings.OneToOneMapping;
 
@@ -56,13 +56,13 @@ public class OneToOneAccessor extends ObjectAccessor {
     /**
      * INTERNAL:
      */
-    public OneToOneAccessor(Annotation oneToOne, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
+    public OneToOneAccessor(MetadataAnnotation oneToOne, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(oneToOne, accessibleObject, classAccessor);
         
         // A one to one mapping can default.
         if (oneToOne != null) {
-            m_mappedBy = (String) MetadataHelper.invokeMethod("mappedBy", oneToOne);
-            setOrphanRemoval((Boolean) MetadataHelper.invokeMethod("orphanRemoval", oneToOne));
+            m_mappedBy = (String) oneToOne.getAttribute("mappedBy");
+            setOrphanRemoval((Boolean) oneToOne.getAttribute("orphanRemoval"));
         }
     }
     

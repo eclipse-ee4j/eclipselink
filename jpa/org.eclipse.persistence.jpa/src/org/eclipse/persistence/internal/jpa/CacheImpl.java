@@ -14,51 +14,50 @@ package org.eclipse.persistence.internal.jpa;
 
 import java.util.Vector;
 import javax.persistence.Cache;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.sessions.IdentityMapAccessor;
 import org.eclipse.persistence.sessions.server.ServerSession;
 
 /**
- *@inheritDoc
- *@author DaraniY
+ * Implements the JPA Cache interface using the EclipseLink cache API through IdentityMapAccessor.
+ * @author DaraniY
  */
 public class CacheImpl implements Cache {
 
-    private IdentityMapAccessor imap;
+    private IdentityMapAccessor accessor;
     private EntityManagerFactoryImpl emf;
     private ServerSession serversession;
 
-    public CacheImpl(EntityManagerFactoryImpl emf, IdentityMapAccessor imap) {
-        this.imap = imap;
+    public CacheImpl(EntityManagerFactoryImpl emf, IdentityMapAccessor accessor) {
+        this.accessor = accessor;
         this.emf = emf;
         this.serversession = emf.getServerSession();
     }
 
     public boolean contains(Class cls, Object primaryKey) {
-        emf.verifyOpen();
-        return imap.containsObjectInIdentityMap(createPKVector(cls, primaryKey), cls);
+        this.emf.verifyOpen();
+        return this.accessor.containsObjectInIdentityMap(createPKVector(cls, primaryKey), cls);
     }
 
     public void evict(Class cls, Object primaryKey) {
-        emf.verifyOpen();
-        imap.invalidateObject(createPKVector(cls, primaryKey), cls);
+        this.emf.verifyOpen();
+        this.accessor.invalidateObject(createPKVector(cls, primaryKey), cls);
     }
 
     public void evict(Class cls) {
-        emf.verifyOpen();
-        imap.invalidateClass(cls);
+        this.emf.verifyOpen();
+        this.accessor.invalidateClass(cls);
     }
 
     public void evictAll() {
-        emf.verifyOpen();
-        imap.invalidateAll();
+        this.emf.verifyOpen();
+        this.accessor.invalidateAll();
     }
 
     private Vector createPKVector(Class cls, Object primaryKey){
-        ClassDescriptor cdesc = serversession.getDescriptor(cls);
+        ClassDescriptor cdesc = this.serversession.getDescriptor(cls);
         CMP3Policy cmp = (CMP3Policy) (cdesc.getCMPPolicy());
-        Vector pk = cmp.createPkVectorFromKey(primaryKey, (AbstractSession) serversession);
+        Vector pk = cmp.createPkVectorFromKey(primaryKey, this.serversession);
         return pk;
     }
 }

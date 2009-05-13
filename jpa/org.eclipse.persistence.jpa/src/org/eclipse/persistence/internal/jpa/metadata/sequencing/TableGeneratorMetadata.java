@@ -14,11 +14,10 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.sequencing;
 
-import java.lang.annotation.Annotation;
-
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.tables.TableMetadata;
 
 /**
@@ -46,19 +45,19 @@ public class TableGeneratorMetadata extends TableMetadata {
     /**
      * INTERNAL:
      */
-    public TableGeneratorMetadata(Annotation tableGenerator, MetadataAccessibleObject accessibleObject) {
+    public TableGeneratorMetadata(MetadataAnnotation tableGenerator, MetadataAccessibleObject accessibleObject) {
         super(tableGenerator, accessibleObject);
         
         // Table will process 'name', but 'name' here is the generator name and 
         // the table name is 'table'. Set it correctly.
-        m_allocationSize = (Integer) MetadataHelper.invokeMethod("allocationSize", tableGenerator);
-        m_initialValue = (Integer) MetadataHelper.invokeMethod("initialValue", tableGenerator);
-        m_generatorName = (String) MetadataHelper.invokeMethod("name", tableGenerator); 
-        m_pkColumnName = (String) MetadataHelper.invokeMethod("pkColumnName", tableGenerator); 
-        m_pkColumnValue = (String) MetadataHelper.invokeMethod("pkColumnValue", tableGenerator);
-        m_valueColumnName = (String) MetadataHelper.invokeMethod("valueColumnName", tableGenerator);
+        m_allocationSize = (Integer) tableGenerator.getAttribute("allocationSize");
+        m_initialValue = (Integer) tableGenerator.getAttribute("initialValue");
+        m_generatorName = (String) tableGenerator.getAttributeString("name"); 
+        m_pkColumnName = (String) tableGenerator.getAttributeString("pkColumnName"); 
+        m_pkColumnValue = (String) tableGenerator.getAttributeString("pkColumnValue");
+        m_valueColumnName = (String) tableGenerator.getAttributeString("valueColumnName");
         
-        setName((String) MetadataHelper.invokeMethod("table", tableGenerator));
+        setName((String) tableGenerator.getAttribute("table"));
     }
     
     /**

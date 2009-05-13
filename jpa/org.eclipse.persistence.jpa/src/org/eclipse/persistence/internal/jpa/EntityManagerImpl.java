@@ -1959,7 +1959,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     public LockModeType getLockMode(Object entity) {
         try {
             verifyOpen();
-            UnitOfWorkImpl uowImpl = (UnitOfWorkImpl) getActivePersistenceContext(checkForTransaction(false));
+            UnitOfWorkImpl uowImpl = getActivePersistenceContext(checkForTransaction(false));
             LockModeType lockMode = LockModeType.NONE;
             if (!contains(entity, uowImpl)) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("cant_getLockMode_of_not_managed_object", new Object[] { entity }));

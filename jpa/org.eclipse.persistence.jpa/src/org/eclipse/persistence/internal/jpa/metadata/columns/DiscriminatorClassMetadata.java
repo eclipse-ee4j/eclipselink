@@ -15,11 +15,11 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
-import java.lang.annotation.Annotation;
-
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.mappings.VariableOneToOneMapping;
 
 /**
@@ -30,7 +30,7 @@ import org.eclipse.persistence.mappings.VariableOneToOneMapping;
  * @since EclipseLink 1.0
  */
 public class DiscriminatorClassMetadata extends ORMetadata {
-    private Class m_value;
+    private MetadataClass m_value;
     private String m_valueName;
     private String m_discriminator;
     
@@ -45,11 +45,11 @@ public class DiscriminatorClassMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public DiscriminatorClassMetadata(Annotation discriminatorClass, MetadataAccessibleObject accessibleObject) {
+    public DiscriminatorClassMetadata(MetadataAnnotation discriminatorClass, MetadataAccessibleObject accessibleObject) {
         super(discriminatorClass, accessibleObject);
         
-        setDiscriminator((String) MetadataHelper.invokeMethod("discriminator", discriminatorClass));
-        setValue((Class) MetadataHelper.invokeMethod("value", discriminatorClass));
+        setDiscriminator((String) discriminatorClass.getAttribute("discriminator"));
+        setValue(getMetadataClass((String) discriminatorClass.getAttribute("value")));
     }
     
     /**
@@ -63,7 +63,7 @@ public class DiscriminatorClassMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public Class getValue() {
+    public MetadataClass getValue() {
         return m_value;
     }
     
@@ -108,7 +108,7 @@ public class DiscriminatorClassMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public void setValue(Class value) {
+    public void setValue(MetadataClass value) {
         m_value = value;
     }
     

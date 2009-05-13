@@ -18,12 +18,11 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
-import java.lang.annotation.Annotation;
-
 import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
 /**
  * A relational accessor. A Basic annotation may or may not be present on the
@@ -43,7 +42,7 @@ public class IdAccessor extends BasicAccessor {
     /**
      * INTERNAL:
      */
-    public IdAccessor(Annotation id, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
+    public IdAccessor(MetadataAnnotation id, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(id, accessibleObject, classAccessor);
     }
     

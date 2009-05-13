@@ -15,8 +15,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
-import java.lang.annotation.Annotation;
-
 import javax.persistence.TemporalType;
 
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -25,6 +23,8 @@ import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 
 /**
  * INTERNAL:
@@ -35,7 +35,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
  * @since EclipseLink 2.0
  */
 public class TemporalMetadata extends MetadataConverter {
-    private Enum m_temporal;
+    private String m_temporal;
     
     /**
      * INTERNAL:
@@ -47,17 +47,17 @@ public class TemporalMetadata extends MetadataConverter {
     /**
      * INTERNAL:
      */
-    public TemporalMetadata(Annotation temporal, MetadataAccessibleObject accessibleObject) {
+    public TemporalMetadata(MetadataAnnotation temporal, MetadataAccessibleObject accessibleObject) {
         super(temporal, accessibleObject);
         
-        m_temporal = (Enum) MetadataHelper.invokeMethod("value", temporal);
+        m_temporal = (String) temporal.getAttribute("value");
     }
     
     /**
      * INTERNAL:
      * Used for OX mapping.
      */
-    public Enum getTemporal() {
+    public String getTemporal() {
         return m_temporal;
     }
     
@@ -66,7 +66,7 @@ public class TemporalMetadata extends MetadataConverter {
      * Returns true if the given class is a valid temporal type and must be
      * marked temporal.
      */
-    public static boolean isValidTemporalType(Class cls) {
+    public static boolean isValidTemporalType(MetadataClass cls) {
         return (cls.equals(java.util.Date.class) ||
                 cls.equals(java.util.Calendar.class) ||
                 cls.equals(java.util.GregorianCalendar.class));
@@ -76,12 +76,12 @@ public class TemporalMetadata extends MetadataConverter {
      * INTERNAL:
      * Every converter needs to be able to process themselves.
      */
-    public void process(DatabaseMapping mapping, MappingAccessor accessor, Class referenceClass, boolean isForMapKey) {
+    public void process(DatabaseMapping mapping, MappingAccessor accessor, MetadataClass referenceClass, boolean isForMapKey) {
         if (isValidTemporalType(referenceClass)) {
             // Set a TypeConversionConverter on the mapping.
-            if (m_temporal.name().equals(TemporalType.DATE.name())) {
+            if (m_temporal.equals(TemporalType.DATE.name())) {
                 setFieldClassification(mapping, java.sql.Date.class, isForMapKey);
-            } else if(m_temporal.name().equals(TemporalType.TIME.name())) {
+            } else if(m_temporal.equals(TemporalType.TIME.name())) {
                 setFieldClassification(mapping,java.sql.Time.class, isForMapKey);
             } else {
                 // Through annotation and XML validation, it must be 
@@ -99,7 +99,7 @@ public class TemporalMetadata extends MetadataConverter {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setTemporal(Enum temporalType) {
+    public void setTemporal(String temporalType) {
         m_temporal = temporalType;
     }
 }

@@ -17,6 +17,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.ClassInstanceConverter;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 
 /**
  * INTERNAL:
@@ -37,7 +38,7 @@ public class ClassInstanceMetadata extends MetadataConverter {
      * INTERNAL:
      * Every converter needs to be able to process themselves.
      */
-    public void process(DatabaseMapping mapping, MappingAccessor accessor, Class referenceClass, boolean isForMapKey) {
+    public void process(DatabaseMapping mapping, MappingAccessor accessor, MetadataClass referenceClass, boolean isForMapKey) {
         setConverter(mapping, new ClassInstanceConverter(), isForMapKey);
     }
 }

@@ -18,13 +18,10 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
-import java.lang.reflect.Field;
-
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
-import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
 /**
  * INTERNAL:
@@ -37,32 +34,10 @@ public class MetadataField extends MetadataAnnotatedElement {
     /**
      * INTERNAL:
      */
-    public MetadataField(Field field, MetadataLogger logger) {
-        super(field, logger);
+    public MetadataField(MetadataLogger logger) {
+        super(logger);
+    }
         
-        setName(field.getName());
-        setAttributeName(field.getName());
-        setRelationType(field.getGenericType());
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public MetadataField(Field field, XMLEntityMappings entityMappings) {
-        super(field, entityMappings);
-        
-        setName(field.getName());
-        setAttributeName(field.getName());
-        setRelationType(field.getGenericType());
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    protected Field getField() {
-        return (Field) getAnnotatedElement();
-    }
-    
     /**
      * INTERNAL:
      * Return true is this field is a valid persistence field. This method
@@ -86,9 +61,9 @@ public class MetadataField extends MetadataAnnotatedElement {
      * defined on it or that it was specified in XML.
      */
     public boolean isValidPersistenceField(MetadataDescriptor descriptor, boolean userDecorated) {
-        if (! isValidPersistenceElement(getField().getModifiers())) {
+        if (! isValidPersistenceElement(getModifiers())) {
             if (userDecorated) {
-                throw ValidationException.mappingMetadataAppliedToInvalidAttribute(getField(), descriptor.getJavaClass());
+                throw ValidationException.mappingMetadataAppliedToInvalidAttribute(this, descriptor.getJavaClass());
             }
             
             return false;

@@ -14,13 +14,13 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.cache;
 
-import java.lang.annotation.Annotation;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 
 /**
  * Object to hold onto cache interceptor metadata.
@@ -41,17 +41,17 @@ public class CacheInterceptorMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public CacheInterceptorMetadata(Annotation cacheInterceptor, MetadataAccessibleObject accessibleObject) {
+    public CacheInterceptorMetadata(MetadataAnnotation cacheInterceptor, MetadataAccessibleObject accessibleObject) {
         super(cacheInterceptor, accessibleObject);
         
-        m_interceptorClassName = ((Class)MetadataHelper.invokeMethod("value", cacheInterceptor)).getName();
+        m_interceptorClassName = (String)cacheInterceptor.getAttribute("value");
     }
     
     
     /**
      * INTERNAL:
      */
-    public void process(MetadataDescriptor descriptor, Class javaClass) {
+    public void process(MetadataDescriptor descriptor, MetadataClass javaClass) {
         // Set the cache flag on the metadata Descriptor.
         descriptor.setHasCacheInterceptor();
         

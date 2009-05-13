@@ -26,8 +26,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -41,6 +39,8 @@ import javax.persistence.PrimaryKeyJoinColumns;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 
 import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnsMetadata;
@@ -79,27 +79,35 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
     /**
      * INTERNAL:
      */
-    protected ObjectAccessor(Annotation annotation, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
+    protected ObjectAccessor(MetadataAnnotation annotation, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(annotation, accessibleObject, classAccessor);
         
-        m_isOptional = (annotation == null) ? true : (Boolean) MetadataHelper.invokeMethod("optional", annotation);
+        if (annotation != null) {
+            m_isOptional = (Boolean) annotation.getAttribute("optional");
+        }
         
         // Set the primary key join columns if some are present.
         // Process all the primary key join columns first.
-        if (isAnnotationPresent(PrimaryKeyJoinColumns.class)) {
-            for (Annotation primaryKeyJoinColumn : (Annotation[]) MetadataHelper.invokeMethod("value", getAnnotation(PrimaryKeyJoinColumns.class))) { 
-                m_primaryKeyJoinColumns.add(new PrimaryKeyJoinColumnMetadata(primaryKeyJoinColumn, accessibleObject));
+        MetadataAnnotation primaryKeyJoinColumns = getAnnotation(PrimaryKeyJoinColumns.class);
+        if (primaryKeyJoinColumns != null) {
+            for (Object primaryKeyJoinColumn : (Object[]) primaryKeyJoinColumns.getAttributeArray("value")) { 
+                m_primaryKeyJoinColumns.add(new PrimaryKeyJoinColumnMetadata((MetadataAnnotation)primaryKeyJoinColumn, accessibleObject));
             }
         }
         
         // Process the single primary key join column second.
-        if (isAnnotationPresent(PrimaryKeyJoinColumn.class)) {
-            m_primaryKeyJoinColumns.add(new PrimaryKeyJoinColumnMetadata(getAnnotation(PrimaryKeyJoinColumn.class), accessibleObject));
+        MetadataAnnotation primaryKeyJoinColumn = getAnnotation(PrimaryKeyJoinColumn.class);
+        if (primaryKeyJoinColumn != null) {
+            m_primaryKeyJoinColumns.add(new PrimaryKeyJoinColumnMetadata(primaryKeyJoinColumn, accessibleObject));
         }
         
         // Set the mapped by id if one is present.
         if (isAnnotationPresent(MappedById.class)) {
-            m_mappedById = (String) MetadataHelper.invokeMethod("value", getAnnotation(MappedById.class));
+            m_mappedById = (String) getAnnotation(MappedById.class).getAttribute("value");
+            // If the value is null a value still must be set, otherwise it will not be known to be there.
+            if (m_mappedById == null) {
+                m_mappedById = "";
+            }
         }
         
         // Set the derived id if one is specified.
@@ -110,8 +118,8 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
      * INTERNAL:
      * Return the default fetch type for an object mapping.
      */
-    public Enum getDefaultFetchType() {
-        return FetchType.valueOf("EAGER");
+    public String getDefaultFetchType() {
+        return FetchType.EAGER.name();
     }
     
     /**
@@ -151,11 +159,11 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
      * reference class, otherwise we will use the raw class.
      */
     @Override
-    public Class getReferenceClass() {
+    public MetadataClass getReferenceClass() {
         if (m_referenceClass == null) {
             m_referenceClass = getTargetEntity();
         
-            if (m_referenceClass == void.class) {
+            if (m_referenceClass.isVoid()) {
                 // Get the reference class from the accessible object and
                 // log the defaulting contextual reference class.
                 m_referenceClass = super.getReferenceClass();
@@ -170,7 +178,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
      * INTERNAL:
      * Used to process primary keys and DerivedIds.
      */
-    protected Class getSimplePKType(){
+    protected MetadataClass getSimplePKType(){
         MetadataDescriptor referenceDescriptor = getReferenceDescriptor();
         ClassAccessor referenceAccessor = referenceDescriptor.getClassAccessor();
         
@@ -266,7 +274,8 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
         
         // If weaving was disabled, and the class was not static weaved,
         // then disable indirection.
-        if (usesIndirection && (!getProject().isWeavingEnabled()) && (!ClassConstants.PersistenceWeavedLazy_Class.isAssignableFrom(getDescriptor().getJavaClass()))) {
+        if (usesIndirection && (!getProject().isWeavingEnabled())
+                && (!ClassConstants.PersistenceWeavedLazy_Class.isAssignableFrom(getJavaClass(getDescriptor().getJavaClass())))) {
             usesIndirection = false;
         }
         
@@ -312,7 +321,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
                 getOwningDescriptor().getPKClassIDs().clear();
             }
         } else {
-            Type type = null;
+            MetadataClass type = null;
             if (referenceAccessor.hasDerivedId()){
                 // Referenced object has a derived ID but no PK class defined,
                 // so it must be a simple pk type. Recurse through to get the 

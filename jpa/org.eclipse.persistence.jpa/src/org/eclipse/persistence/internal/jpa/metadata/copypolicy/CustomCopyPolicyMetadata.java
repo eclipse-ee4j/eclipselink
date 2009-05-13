@@ -14,11 +14,11 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.copypolicy;
 
-import java.lang.annotation.Annotation;
-
 import org.eclipse.persistence.descriptors.copying.CopyPolicy;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 
 /**
  * Used to store information about CopyPolicy as it is read from XML or 
@@ -29,7 +29,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
  */
 public class CustomCopyPolicyMetadata extends CopyPolicyMetadata {
     private String copyPolicyClassName;
-    private Class copyPolicyClass;
+    private MetadataClass copyPolicyClass;
     
     /**
      * INTERNAL:
@@ -42,10 +42,10 @@ public class CustomCopyPolicyMetadata extends CopyPolicyMetadata {
     /**
      * INTERNAL:
      */
-    public CustomCopyPolicyMetadata(Annotation copyPolicy, MetadataAccessibleObject accessibleObject) {
+    public CustomCopyPolicyMetadata(MetadataAnnotation copyPolicy, MetadataAccessibleObject accessibleObject) {
         super(copyPolicy, accessibleObject);
         
-        copyPolicyClass = (Class) MetadataHelper.invokeMethod("value", copyPolicy);
+        this.copyPolicyClass = getMetadataClass((String) copyPolicy.getAttribute("value"));
     }
     
     /**

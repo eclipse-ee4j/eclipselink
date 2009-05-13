@@ -14,11 +14,10 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
-import java.lang.annotation.Annotation;
-
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
 /**
  * INTERNAL:
@@ -40,10 +39,10 @@ public class AttributeOverrideMetadata extends OverrideMetadata {
     /**
      * INTERNAL:
      */
-    public AttributeOverrideMetadata(Annotation attributeOverride, MetadataAccessibleObject accessibleObject) {
+    public AttributeOverrideMetadata(MetadataAnnotation attributeOverride, MetadataAccessibleObject accessibleObject) {
         super(attributeOverride, accessibleObject);
 
-        m_column = new ColumnMetadata((Annotation) MetadataHelper.invokeMethod("column", attributeOverride), accessibleObject, getName());
+        m_column = new ColumnMetadata((MetadataAnnotation) attributeOverride.getAttribute("column"), accessibleObject, getName());
     }
 
     /**

@@ -14,8 +14,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.cache;
 
-import java.lang.annotation.Annotation;
-
 import org.eclipse.persistence.annotations.CacheType;
 import org.eclipse.persistence.annotations.CacheCoordinationType;
 
@@ -27,6 +25,8 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 
 /**
  * Object to hold onto cache metadata. This class should eventually be 
@@ -41,8 +41,8 @@ public class CacheMetadata extends ORMetadata {
     protected Boolean m_shared;
     protected Boolean m_refreshOnlyIfNewer;
     
-    protected Enum m_coordinationType;
-    protected Enum m_type;
+    protected String m_coordinationType;
+    protected String m_type;
     
     protected Integer m_expiry;
     protected Integer m_size;
@@ -59,24 +59,24 @@ public class CacheMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public CacheMetadata(Annotation cache, MetadataAccessibleObject accessibleObject) {
+    public CacheMetadata(MetadataAnnotation cache, MetadataAccessibleObject accessibleObject) {
         super(cache, accessibleObject);
         
-        m_alwaysRefresh = (Boolean) MetadataHelper.invokeMethod("alwaysRefresh", cache);
-        m_disableHits = (Boolean) MetadataHelper.invokeMethod("disableHits", cache);
-        m_coordinationType = (Enum) MetadataHelper.invokeMethod("coordinationType", cache);
-        m_expiry = (Integer) MetadataHelper.invokeMethod("expiry", cache);
+        m_alwaysRefresh = (Boolean) cache.getAttribute("alwaysRefresh");
+        m_disableHits = (Boolean) cache.getAttribute("disableHits");
+        m_coordinationType = (String) cache.getAttribute("coordinationType");
+        m_expiry = (Integer) cache.getAttribute("expiry");
 
-        Annotation expiryTimeOfDay = (Annotation) MetadataHelper.invokeMethod("expiryTimeOfDay", cache);
+        MetadataAnnotation expiryTimeOfDay = (MetadataAnnotation) cache.getAttribute("expiryTimeOfDay");
         
-        if ((Boolean) MetadataHelper.invokeMethod("specified", expiryTimeOfDay)) {
+        if (expiryTimeOfDay != null) {
             m_expiryTimeOfDay = new TimeOfDayMetadata(expiryTimeOfDay, accessibleObject);
         }
         
-        m_shared = (Boolean) MetadataHelper.invokeMethod("shared", cache);
-        m_size = (Integer) MetadataHelper.invokeMethod("size", cache);
-        m_type = (Enum) MetadataHelper.invokeMethod("type", cache);
-        m_refreshOnlyIfNewer = (Boolean) MetadataHelper.invokeMethod("refreshOnlyIfNewer", cache);
+        m_shared = (Boolean) cache.getAttribute("shared");
+        m_size = (Integer) cache.getAttribute("size");
+        m_type = (String) cache.getAttribute("type");
+        m_refreshOnlyIfNewer = (Boolean) cache.getAttribute("refreshOnlyIfNewer");
     }
     
     /**
@@ -91,7 +91,7 @@ public class CacheMetadata extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public Enum getCoordinationType() {
+    public String getCoordinationType() {
         return m_coordinationType; 
     }
     
@@ -147,14 +147,14 @@ public class CacheMetadata extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public Enum getType() {
+    public String getType() {
        return m_type;
     }
     
     /**
      * INTERNAL:
      */
-    public void process(MetadataDescriptor descriptor, Class javaClass) {
+    public void process(MetadataDescriptor descriptor, MetadataClass javaClass) {
         // Set the cache flag on the metadata Descriptor.
         descriptor.setHasCache();
         
@@ -162,19 +162,19 @@ public class CacheMetadata extends ORMetadata {
         ClassDescriptor classDescriptor = descriptor.getClassDescriptor();
         
         // Process type
-        if (m_type == null ||m_type.name().equals(CacheType.SOFT_WEAK.name())) {
+        if (m_type == null ||m_type.equals(CacheType.SOFT_WEAK.name())) {
             classDescriptor.useSoftCacheWeakIdentityMap();
-        } else if (m_type.name().equals(CacheType.FULL.name())) {
+        } else if (m_type.equals(CacheType.FULL.name())) {
             classDescriptor.useFullIdentityMap();
-        } else if (m_type.name().equals(CacheType.WEAK.name())) {
+        } else if (m_type.equals(CacheType.WEAK.name())) {
             classDescriptor.useWeakIdentityMap();
-        }  else if (m_type.name().equals(CacheType.SOFT.name())) {
+        }  else if (m_type.equals(CacheType.SOFT.name())) {
             classDescriptor.useSoftIdentityMap();
-        } else if (m_type.name().equals(CacheType.HARD_WEAK.name())) {
+        } else if (m_type.equals(CacheType.HARD_WEAK.name())) {
             classDescriptor.useHardCacheWeakIdentityMap();
-        } else if (m_type.name().equals(CacheType.CACHE.name())) {
+        } else if (m_type.equals(CacheType.CACHE.name())) {
             classDescriptor.useCacheIdentityMap();
-        } else if (m_type.name().equals(CacheType.NONE.name())) {
+        } else if (m_type.equals(CacheType.NONE.name())) {
             classDescriptor.useNoIdentityMap();
         }
         
@@ -210,13 +210,13 @@ public class CacheMetadata extends ORMetadata {
         classDescriptor.setShouldDisableCacheHits(m_disableHits == null ? false : m_disableHits);
         
         // Process coordination type.
-        if (m_coordinationType == null || m_coordinationType.name().equals(CacheCoordinationType.SEND_OBJECT_CHANGES.name())) {
+        if (m_coordinationType == null || m_coordinationType.equals(CacheCoordinationType.SEND_OBJECT_CHANGES.name())) {
             classDescriptor.setCacheSynchronizationType(ClassDescriptor.SEND_OBJECT_CHANGES);
-        } else if (m_coordinationType.name().equals(CacheCoordinationType.INVALIDATE_CHANGED_OBJECTS.name())) {
+        } else if (m_coordinationType.equals(CacheCoordinationType.INVALIDATE_CHANGED_OBJECTS.name())) {
             classDescriptor.setCacheSynchronizationType(ClassDescriptor.INVALIDATE_CHANGED_OBJECTS);
-        } else if (m_coordinationType.name().equals(CacheCoordinationType.SEND_NEW_OBJECTS_WITH_CHANGES.name())) {
+        } else if (m_coordinationType.equals(CacheCoordinationType.SEND_NEW_OBJECTS_WITH_CHANGES.name())) {
             classDescriptor.setCacheSynchronizationType(ClassDescriptor.SEND_NEW_OBJECTS_WITH_CHANGES);
-        } else if (m_coordinationType.name().equals(CacheCoordinationType.NONE.name())) {
+        } else if (m_coordinationType.equals(CacheCoordinationType.NONE.name())) {
             classDescriptor.setCacheSynchronizationType(ClassDescriptor.DO_NOT_SEND_CHANGES);
         }
     }
@@ -233,7 +233,7 @@ public class CacheMetadata extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setCoordinationType(Enum coordinationType) {
+    public void setCoordinationType(String coordinationType) {
         m_coordinationType = coordinationType; 
     }
     
@@ -289,7 +289,7 @@ public class CacheMetadata extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setType(Enum type) {
+    public void setType(String type) {
        m_type = type;
     }
 }

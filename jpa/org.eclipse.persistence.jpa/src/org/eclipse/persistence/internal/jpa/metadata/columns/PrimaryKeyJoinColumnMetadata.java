@@ -14,11 +14,10 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
-import java.lang.annotation.Annotation;
-
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
 /**
  * INTERNAL:
@@ -43,13 +42,13 @@ public class PrimaryKeyJoinColumnMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public PrimaryKeyJoinColumnMetadata(Annotation primaryKeyJoinColumn, MetadataAccessibleObject accessibleObject) {
+    public PrimaryKeyJoinColumnMetadata(MetadataAnnotation primaryKeyJoinColumn, MetadataAccessibleObject accessibleObject) {
         super(primaryKeyJoinColumn, accessibleObject);
         
         if (primaryKeyJoinColumn != null) {
-            m_name = ((String) MetadataHelper.invokeMethod("name", primaryKeyJoinColumn));
-            m_columnDefinition = ((String) MetadataHelper.invokeMethod("columnDefinition", primaryKeyJoinColumn));
-            m_referencedColumnName = ((String) MetadataHelper.invokeMethod("referencedColumnName", primaryKeyJoinColumn));
+            m_name = ((String) primaryKeyJoinColumn.getAttribute("name"));
+            m_columnDefinition = ((String) primaryKeyJoinColumn.getAttribute("columnDefinition"));
+            m_referencedColumnName = ((String) primaryKeyJoinColumn.getAttribute("referencedColumnName"));
         }
     }
 

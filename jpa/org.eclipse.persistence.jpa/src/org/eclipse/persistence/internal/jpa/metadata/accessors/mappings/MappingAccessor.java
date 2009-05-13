@@ -31,7 +31,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
-import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -62,6 +61,9 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAcce
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EmbeddableAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataFactory;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataMethod;
 import org.eclipse.persistence.internal.jpa.metadata.columns.AssociationOverrideMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.AttributeOverrideMetadata;
@@ -114,7 +116,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
     /**
      * INTERNAL:
      */
-    protected MappingAccessor(Annotation annotation, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
+    protected MappingAccessor(MetadataAnnotation annotation, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(annotation, accessibleObject, classAccessor.getDescriptor(), classAccessor.getProject());
         
         // We must keep a reference to the class accessors where this
@@ -353,8 +355,8 @@ public abstract class MappingAccessor extends MetadataAccessor {
     /**
      * INTERNAL:
      */
-    protected Enum getDefaultFetchType() {
-        return FetchType.valueOf("EAGER"); 
+    protected String getDefaultFetchType() {
+        return FetchType.EAGER.name(); 
     }
     
     /**
@@ -462,10 +464,10 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * INTERNAL:
      * Return the mapping join fetch type.
      */
-    protected int getMappingJoinFetchType(Enum joinFetchType) {
+    protected int getMappingJoinFetchType(String joinFetchType) {
         if (joinFetchType == null) {
             return ForeignReferenceMapping.NONE;
-        } else if (joinFetchType.name().equals(JoinFetchType.INNER.name())) {
+        } else if (joinFetchType.equals(JoinFetchType.INNER.name())) {
             return ForeignReferenceMapping.INNER_JOIN;
         }
 
@@ -480,9 +482,9 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * when processing JPA converters that can default (Enumerated and Temporal) 
      * based on the reference class.
      */
-    public Class getMapKeyReferenceClass() {
+    public MetadataClass getMapKeyReferenceClass() {
         if (isMapAccessor()) {
-            Class referenceClass = getAccessibleObject().getMapKeyClass(getDescriptor());
+            MetadataClass referenceClass = getAccessibleObject().getMapKeyClass(getDescriptor());
         
             if (referenceClass == null) {
                 throw ValidationException.unableToDetermineMapKeyClass(getAttributeName(), getJavaClass());
@@ -490,7 +492,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
         
             return referenceClass;
         } else {
-            return void.class;
+            return MetadataFactory.getClassMetadata(void.class.getName());
         }
     }
     
@@ -500,7 +502,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * Eg. For an accessor with a type of java.util.Collection<Employee>, this 
      * method will return java.util.Collection
      */
-    public Class getRawClass() {
+    public MetadataClass getRawClass() {
         return getAccessibleObject().getRawClass(getDescriptor());   
     }
     
@@ -519,7 +521,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * method to drill down further. That is, try to extract a reference class
      * from generics.
      */
-    public Class getReferenceClass() {
+    public MetadataClass getReferenceClass() {
         return getAccessibleObject().getRawClass(getDescriptor());
     }
     
@@ -528,7 +530,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * Attempts to return a reference class from a generic specification. Note,
      * this method may return null.
      */
-    public Class getReferenceClassFromGeneric() {
+    public MetadataClass getReferenceClassFromGeneric() {
         return getAccessibleObject().getReferenceClassFromGeneric(getDescriptor());
     }
 
@@ -786,7 +788,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * if the accessor's reference class is an enum or if enumerated metadata
      * exists.
      */
-    protected boolean isEnumerated(Class referenceClass, boolean isForMapKey) {
+    protected boolean isEnumerated(MetadataClass referenceClass, boolean isForMapKey) {
         if (hasConvert(isForMapKey)) {
             // If we have an @Enumerated with a @Convert, the @Convert takes
             // precedence and we will ignore the @Enumerated and log a message.
@@ -812,7 +814,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * INTERNAL:
      * Return true if this accessor represents a BLOB/CLOB mapping.
      */
-    protected boolean isLob(Class referenceClass, boolean isForMapKey) {
+    protected boolean isLob(MetadataClass referenceClass, boolean isForMapKey) {
         if (hasConvert(isForMapKey)) {
             // If we have a Lob specified with a Convert, the Convert takes 
             // precedence and we will ignore the Lob and log a message.
@@ -878,21 +880,15 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * INTERNAL:
      * Returns true is the given class is primitive wrapper type.
      */
-    protected boolean isPrimitiveWrapperClass(Class cls) {
-        return Long.class.isAssignableFrom(cls) ||
-               Short.class.isAssignableFrom(cls) ||
-               Float.class.isAssignableFrom(cls) ||
-               Byte.class.isAssignableFrom(cls) ||
-               Double.class.isAssignableFrom(cls) ||
-               Number.class.isAssignableFrom(cls) ||
-               Boolean.class.isAssignableFrom(cls) ||
-               Integer.class.isAssignableFrom(cls) ||
-               Character.class.isAssignableFrom(cls) ||
-               String.class.isAssignableFrom(cls) ||
-               java.math.BigInteger.class.isAssignableFrom(cls) ||
-               java.math.BigDecimal.class.isAssignableFrom(cls) ||
-               java.util.Date.class.isAssignableFrom(cls) ||
-               java.util.Calendar.class.isAssignableFrom(cls);
+    protected boolean isPrimitiveWrapperClass(MetadataClass cls) {
+        return cls.extendsClass(Number.class) ||
+            cls.equals(Boolean.class) ||
+            cls.equals(Character.class) ||
+            cls.equals(String.class) ||
+            cls.extendsClass(java.math.BigInteger.class) ||
+            cls.extendsClass(java.math.BigDecimal.class) ||
+            cls.extendsClass(java.util.Date.class) ||
+            cls.extendsClass(java.util.Calendar.class);
     }
     
     /**
@@ -917,7 +913,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * INTERNAL:
      * Return true if this accessor represents a serialized mapping.
      */
-    public boolean isSerialized(Class referenceClass, boolean isForMapKey) {
+    public boolean isSerialized(MetadataClass referenceClass, boolean isForMapKey) {
         if (hasConvert(isForMapKey)) {
             getLogger().logWarningMessage(MetadataLogger.IGNORE_SERIALIZED, getJavaClass(), getAnnotatedElement());
             return false;
@@ -930,7 +926,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * INTERNAL:
      * Return true if this represents a temporal type mapping.
      */
-    protected boolean isTemporal(Class referenceClass, boolean isForMapKey) {
+    protected boolean isTemporal(MetadataClass referenceClass, boolean isForMapKey) {
         if (hasConvert(isForMapKey)) {
             // If we have a Temporal specification with a Convert specification, 
             // the Convert takes precedence and we will ignore the Temporal and 
@@ -957,7 +953,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * INTERNAL:
      * Returns true if the given class is valid for SerializedObjectMapping.
      */
-    protected boolean isValidSerializedType(Class cls) {
+    protected boolean isValidSerializedType(MetadataClass cls) {
         if (cls.isPrimitive()) {
             return false;
         }
@@ -1083,7 +1079,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
         
         if (isMappedKeyMapAccessor()) {
             MappedKeyMapAccessor mapKeyMapAccessor = (MappedKeyMapAccessor) this;
-            Class mapKeyClass = mapKeyMapAccessor.getMapKeyClass();
+            MetadataClass mapKeyClass = mapKeyMapAccessor.getMapKeyClass();
             
             if (mapKeyClass != null && (getProject().hasEntity(mapKeyClass) || getProject().hasEmbeddable(mapKeyClass) || mapKeyMapAccessor.getMapKeyColumn() != null)) {
                 // TODO: if map key is specified we should throw an exception.
@@ -1107,7 +1103,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * EclipseLink converter (Converter, TypeConverter, ObjectTypeConverter) 
      * to the given mapping.
      */
-    protected void processConvert(DatabaseMapping mapping, String converterName, Class referenceClass, boolean isForMapKey) {
+    protected void processConvert(DatabaseMapping mapping, String converterName, MetadataClass referenceClass, boolean isForMapKey) {
         // There is no work to do if the converter's name is "none".
         if (! converterName.equals(CONVERT_NONE)) {
             if (converterName.equals(CONVERT_SERIALIZED)) {
@@ -1130,7 +1126,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
     /**
      * INTERNAL:
      */
-    protected DirectToFieldMapping processDirectMapKeyClass(Class mapKeyClass, MappedKeyMapAccessor mappedKeyMapAccessor) {
+    protected DirectToFieldMapping processDirectMapKeyClass(MetadataClass mapKeyClass, MappedKeyMapAccessor mappedKeyMapAccessor) {
         DirectToFieldMapping keyMapping = new DirectToFieldMapping();
 
         // Get the map key field, defaulting and looking for attribute 
@@ -1141,7 +1137,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
         // Process a convert key or jpa converter for the map key if specified.
         processMappingKeyConverter(keyMapping, mappedKeyMapAccessor.getMapKeyConvert(), mappedKeyMapAccessor.getMapKeyClass());
         
-        keyMapping.setAttributeClassification(getMapKeyReferenceClass());
+        keyMapping.setAttributeClassificationName(getMapKeyReferenceClass().getName());
         keyMapping.setDescriptor(getDescriptor().getClassDescriptor());
         
         return keyMapping;
@@ -1150,9 +1146,9 @@ public abstract class MappingAccessor extends MetadataAccessor {
     /**
      * INTERNAL:
      */
-    protected AggregateObjectMapping processEmbeddableMapKeyClass(Class mapKeyClass, MappedKeyMapAccessor mappedKeyMapAccessor) {
+    protected AggregateObjectMapping processEmbeddableMapKeyClass(MetadataClass mapKeyClass, MappedKeyMapAccessor mappedKeyMapAccessor) {
         AggregateObjectMapping keyMapping = new AggregateObjectMapping();
-        keyMapping.setReferenceClass(mapKeyClass);
+        keyMapping.setReferenceClassName(mapKeyClass.getName());
         
         // Tell the embeddable accessor to process itself it is hasn't already.
         EmbeddableAccessor mapKeyAccessor = getProject().getEmbeddableAccessor(mapKeyClass);
@@ -1178,10 +1174,10 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * INTERNAL:
      * Process the map key to be an entity class.
      */
-    protected OneToOneMapping processEntityMapKeyClass(Class mapKeyClass, MappedKeyMapAccessor mappedKeyMapAccessor) {
+    protected OneToOneMapping processEntityMapKeyClass(MetadataClass mapKeyClass, MappedKeyMapAccessor mappedKeyMapAccessor) {
         // Create the one to one map key mapping.
         OneToOneMapping keyMapping = new OneToOneMapping();
-        keyMapping.setReferenceClass(mapKeyClass);
+        keyMapping.setReferenceClassName(mapKeyClass.getName());
         keyMapping.dontUseIndirection();
         keyMapping.setDescriptor(getDescriptor().getClassDescriptor());
         
@@ -1210,7 +1206,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * Enumerated metadata has been specified but the accessor's reference 
      * class is a valid enumerated type.
      */
-    protected void processEnumerated(EnumeratedMetadata enumerated, DatabaseMapping mapping, Class referenceClass, boolean isForMapKey) {
+    protected void processEnumerated(EnumeratedMetadata enumerated, DatabaseMapping mapping, MetadataClass referenceClass, boolean isForMapKey) {
         if (enumerated == null) {
             // TODO: Log a defaulting message
             enumerated = new EnumeratedMetadata();
@@ -1226,7 +1222,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * converters can be applied to basics and to map keys/values of a map 
      * accessor.
      */
-    protected void processJPAConverters(DatabaseMapping mapping, Class referenceClass, boolean isForMapKey) {
+    protected void processJPAConverters(DatabaseMapping mapping, MetadataClass referenceClass, boolean isForMapKey) {
         // Check for an enum first since it will fall into a serializable 
         // mapping otherwise (Enums are serialized)
         if (isEnumerated(referenceClass, isForMapKey)) {
@@ -1245,7 +1241,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * Process a lob specification. The lob must be specified to process and 
      * create a lob type mapping.
      */
-    protected void processLob(LobMetadata lob, DatabaseMapping mapping, Class referenceClass, boolean isForMapKey) {
+    protected void processLob(LobMetadata lob, DatabaseMapping mapping, MetadataClass referenceClass, boolean isForMapKey) {
         lob.process(mapping, this, referenceClass, isForMapKey);
     }
     
@@ -1283,7 +1279,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * INTERNAL:
      * Process a map key class for the given map accessor.
      */
-    protected void processMapKeyClass(Class mapKeyClass, CollectionMapping mapping, MappedKeyMapAccessor mapAccessor) {
+    protected void processMapKeyClass(MetadataClass mapKeyClass, CollectionMapping mapping, MappedKeyMapAccessor mapAccessor) {
         MapKeyMapping keyMapping;
             
         if (getProject().hasEntity(mapKeyClass)) {
@@ -1314,7 +1310,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * Process a convert value which specifies the name of an EclipseLink
      * converter to process with this accessor's mapping.     
      */
-    protected void processMappingConverter(DatabaseMapping mapping, String convertValue, Class referenceClass, boolean isForMapKey) {
+    protected void processMappingConverter(DatabaseMapping mapping, String convertValue, MetadataClass referenceClass, boolean isForMapKey) {
         if (convertValue != null && ! convertValue.equals(CONVERT_NONE)) {
             processConvert(mapping, convertValue, referenceClass, isForMapKey);
         } 
@@ -1335,7 +1331,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * Process a convert value which specifies the name of an EclipseLink
      * converter to process with this accessor's mapping key.
      */
-    protected void processMappingKeyConverter(DatabaseMapping mapping, String convertValue, Class referenceClass) {
+    protected void processMappingKeyConverter(DatabaseMapping mapping, String convertValue, MetadataClass referenceClass) {
         processMappingConverter(mapping, convertValue, referenceClass, true); 
     }
     
@@ -1344,7 +1340,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * Process a convert value which specifies the name of an EclipseLink
      * converter to process with this accessor's mapping.
      */
-    protected void processMappingValueConverter(DatabaseMapping mapping, String convertValue, Class referenceClass) {
+    protected void processMappingValueConverter(DatabaseMapping mapping, String convertValue, MetadataClass referenceClass) {
         processMappingConverter(mapping, convertValue, referenceClass, false); 
     }
     
@@ -1394,14 +1390,14 @@ public abstract class MappingAccessor extends MetadataAccessor {
             }
         } else {
             // Look for annotations.
-            Annotation properties = getAnnotation(Properties.class);
+            MetadataAnnotation properties = getAnnotation(Properties.class);
             if (properties != null) {
-                for (Annotation property : (Annotation[]) MetadataHelper.invokeMethod("value", properties)) {
-                    processProperty(mapping, new PropertyMetadata(property, getAccessibleObject()));
+                for (Object property : (Object[]) properties.getAttribute("value")) {
+                    processProperty(mapping, new PropertyMetadata((MetadataAnnotation)property, getAccessibleObject()));
                 }
             }
             
-            Annotation property = getAnnotation(Property.class);
+            MetadataAnnotation property = getAnnotation(Property.class);
             if (property != null) {
                 processProperty(mapping, new PropertyMetadata(property, getAccessibleObject()));
             }    
@@ -1459,7 +1455,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * the Serializable interface then set a SerializedObjectConverter on 
      * the mapping.
      */
-    protected void processSerialized(DatabaseMapping mapping, Class referenceClass, boolean isForMapKey) {
+    protected void processSerialized(DatabaseMapping mapping, MetadataClass referenceClass, boolean isForMapKey) {
         new SerializedMetadata().process(mapping, this, referenceClass, isForMapKey);
     }
     
@@ -1469,7 +1465,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * the Serializable interface then set a SerializedObjectConverter on 
      * the mapping.
      */
-    protected void processSerialized(DatabaseMapping mapping, Class referenceClass, Class classification, boolean isForMapKey) {
+    protected void processSerialized(DatabaseMapping mapping, MetadataClass referenceClass, MetadataClass classification, boolean isForMapKey) {
         new SerializedMetadata().process(mapping, this, referenceClass, classification, isForMapKey);
     }
     
@@ -1477,7 +1473,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * INTERNAL:
      * Process a temporal type accessor.
      */
-    protected void processTemporal(TemporalMetadata temporal, DatabaseMapping mapping, Class referenceClass, boolean isForMapKey) {
+    protected void processTemporal(TemporalMetadata temporal, DatabaseMapping mapping, MetadataClass referenceClass, boolean isForMapKey) {
         if (temporal == null) {
             // We have a temporal type on either a basic mapping or the key to
             // a collection mapping. Since the temporal type was not specified, 
@@ -1521,21 +1517,21 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * calling this method.
      */
     protected void setIndirectionPolicy(CollectionMapping mapping, String mapKey, boolean usesIndirection) {
-        Class rawClass = getRawClass();
+        MetadataClass rawClass = getRawClass();
         
         if (usesIndirection) {            
-            if (rawClass == Map.class) { 
+            if (rawClass.equals(Map.class)) {
                 if (mapping.isDirectMapMapping()) {
                     ((DirectMapMapping) mapping).useTransparentMap();
                 } else {
                     mapping.useTransparentMap(mapKey);
                 }
-            } else if (rawClass == List.class) {
+            } else if (rawClass.equals(List.class)) {
                 mapping.useTransparentList();
-            } else if (rawClass == Collection.class) {
+            } else if (rawClass.equals(Collection.class)) {
                 mapping.useTransparentCollection();
                 mapping.setContainerPolicy(new CollectionContainerPolicy(ClassConstants.IndirectList_Class));
-            } else if (rawClass == Set.class) {
+            } else if (rawClass.equals(Set.class)) {
                 mapping.useTransparentSet();
             } else {
                 //bug221577: This should be supported when a transparent indirection class can be set through eclipseLink_orm.xml, or basic indirection is used
@@ -1544,29 +1540,29 @@ public abstract class MappingAccessor extends MetadataAccessor {
         } else {
             mapping.dontUseIndirection();
             
-            if (rawClass == Map.class) {
+            if (rawClass.equals(Map.class)) {
                 if (mapping.isDirectMapMapping()) {
                     ((DirectMapMapping) mapping).useMapClass(java.util.Hashtable.class);
                 } else {
                     mapping.useMapClass(java.util.Hashtable.class, mapKey);
                 }
-            } else if (rawClass == Set.class) {
+            } else if (rawClass.equals(Set.class)) {
                 // This will cause it to use a CollectionContainerPolicy type
                 mapping.useCollectionClass(java.util.HashSet.class);
-            } else if (rawClass == List.class) {
+            } else if (rawClass.equals(List.class)) {
                 // This will cause a ListContainerPolicy type to be used or 
                 // OrderedListContainerPolicy if ordering is specified.
                 mapping.useCollectionClass(java.util.Vector.class);
-            } else if (rawClass == Collection.class) {
+            } else if (rawClass.equals(Collection.class)) {
                 // Force CollectionContainerPolicy type to be used with a 
                 // collection implementation.
                 mapping.setContainerPolicy(new CollectionContainerPolicy(java.util.Vector.class));
             } else {
                 // Use the supplied collection class type if its not an interface
                 if (mapKey == null || mapKey.equals("")){
-                    mapping.useCollectionClass(rawClass);
+                    mapping.useCollectionClassName(rawClass.getName());
                 } else {
-                    mapping.useMapClass(rawClass, mapKey);
+                    mapping.useMapClassName(rawClass.getName(), mapKey);
                 }
             }
         }

@@ -28,10 +28,8 @@ import javax.persistence.EntityManager;
 
 import junit.framework.*;
 
-import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.sessions.server.ServerSession;
 
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.xml.inherited.Birthday;
@@ -211,7 +209,6 @@ public class EntityMappingsInheritedJUnitTestCase extends JUnitTestCase {
     }
     
     public void testCreateBeerConsumer() {
-        boolean exceptionCaught = false;
         EntityManager em = createEntityManager();
         try {
             beginTransaction(em);
@@ -353,9 +350,6 @@ public class EntityMappingsInheritedJUnitTestCase extends JUnitTestCase {
     public void testCreateNoviceBeerConsumer() {
         EntityManager em = createEntityManager();
         beginTransaction(em);
-        
-        ServerSession session = JUnitTestCase.getServerSession();
-        ClassDescriptor desc = session.getDescriptor(NoviceBeerConsumer.class);
         
         try {    
             NoviceBeerConsumer beerConsumer = new NoviceBeerConsumer();
@@ -501,7 +495,6 @@ public class EntityMappingsInheritedJUnitTestCase extends JUnitTestCase {
             em.persist(initialBC);
             beerConsumerId = initialBC.getId();
             
-            this.getServerSession().setLogLevel(0);
             commitTransaction(em);
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){

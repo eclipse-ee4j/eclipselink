@@ -14,13 +14,13 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
-import java.lang.annotation.Annotation;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 
 /**
  * Object to hold onto Default Redirector metadata.
@@ -53,23 +53,23 @@ public class DefaultRedirectorsMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public DefaultRedirectorsMetadata(Annotation redirectors, MetadataAccessibleObject accessibleObject) {
+    public DefaultRedirectorsMetadata(MetadataAnnotation redirectors, MetadataAccessibleObject accessibleObject) {
         super(redirectors, accessibleObject);
         
-        defaultQueryRedirector = ((Class)MetadataHelper.invokeMethod("allQueries", redirectors)).getName();
-        defaultReadAllQueryRedirector = ((Class)MetadataHelper.invokeMethod("readAll", redirectors)).getName();
-        defaultReadObjectQueryRedirector = ((Class)MetadataHelper.invokeMethod("readObject", redirectors)).getName();
-        defaultInsertObjectQueryRedirector = ((Class)MetadataHelper.invokeMethod("insert", redirectors)).getName();
-        defaultDeleteObjectQueryRedirector = ((Class)MetadataHelper.invokeMethod("delete", redirectors)).getName();
-        defaultUpdateObjectQueryRedirector = ((Class)MetadataHelper.invokeMethod("update", redirectors)).getName();
-        defaultReportQueryRedirector = ((Class)MetadataHelper.invokeMethod("report", redirectors)).getName();
+        defaultQueryRedirector = (String)redirectors.getAttribute("allQueries");
+        defaultReadAllQueryRedirector = (String)redirectors.getAttribute("readAll");
+        defaultReadObjectQueryRedirector = (String)redirectors.getAttribute("readObject");
+        defaultInsertObjectQueryRedirector = (String)redirectors.getAttribute("insert");
+        defaultDeleteObjectQueryRedirector = (String)redirectors.getAttribute("delete");
+        defaultUpdateObjectQueryRedirector = (String)redirectors.getAttribute("update");
+        defaultReportQueryRedirector = (String)redirectors.getAttribute("report");
     }
     
     
     /**
      * INTERNAL:
      */
-    public void process(MetadataDescriptor descriptor, Class javaClass) {
+    public void process(MetadataDescriptor descriptor, MetadataClass javaClass) {
         // Set the cache flag on the metadata Descriptor.
         descriptor.setHasDefaultRedirectors();
         

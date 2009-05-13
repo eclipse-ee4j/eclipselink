@@ -24,7 +24,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +36,7 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
 import org.eclipse.persistence.internal.jpa.metadata.columns.AssociationOverrideMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.AttributeOverrideMetadata;
@@ -75,35 +75,39 @@ public class EmbeddedAccessor extends MappingAccessor {
     /**
      * INTERNAL:
      */
-    public EmbeddedAccessor(Annotation embedded, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
+    public EmbeddedAccessor(MetadataAnnotation embedded, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(embedded, accessibleObject, classAccessor);
         
         // Set the attribute overrides if some are present.
         m_attributeOverrides = new ArrayList<AttributeOverrideMetadata>();
         // Process the attribute overrides first.
-        if (isAnnotationPresent(AttributeOverrides.class)) {
-            for (Annotation attributeOverride : (Annotation[]) MetadataHelper.invokeMethod("value", getAnnotation(AttributeOverrides.class))) {
-                m_attributeOverrides.add(new AttributeOverrideMetadata(attributeOverride, accessibleObject));
+        MetadataAnnotation attributeOverrides = getAnnotation(AttributeOverrides.class);
+        if (attributeOverrides != null) {
+            for (Object attributeOverride : (Object[]) attributeOverrides.getAttributeArray("value")) {
+                m_attributeOverrides.add(new AttributeOverrideMetadata((MetadataAnnotation)attributeOverride, accessibleObject));
             }
         }
         
         // Process the single attribute override second.  
-        if (isAnnotationPresent(AttributeOverride.class)) {
-            m_attributeOverrides.add(new AttributeOverrideMetadata(getAnnotation(AttributeOverride.class), accessibleObject));
+        MetadataAnnotation attributeOverride = getAnnotation(AttributeOverride.class);  
+        if (attributeOverride != null) {
+            m_attributeOverrides.add(new AttributeOverrideMetadata(attributeOverride, accessibleObject));
         }
         
         // Set the association overrides if some are present.
         m_associationOverrides = new ArrayList<AssociationOverrideMetadata>();
         // Process the attribute overrides first.
-        if (isAnnotationPresent(AssociationOverrides.class)) {
-            for (Annotation associationOverride : (Annotation[]) MetadataHelper.invokeMethod("value", getAnnotation(AssociationOverrides.class))) {
+        MetadataAnnotation associationOverrides = getAnnotation(AssociationOverrides.class);
+        if (associationOverrides != null) {
+            for (MetadataAnnotation associationOverride : (MetadataAnnotation[]) associationOverrides.getAttribute("value")) {
                 m_associationOverrides.add(new AssociationOverrideMetadata(associationOverride, accessibleObject));
             }
         }
         
-        // Process the single attribute override second.  
-        if (isAnnotationPresent(AssociationOverride.class)) {
-            m_associationOverrides.add(new AssociationOverrideMetadata(getAnnotation(AssociationOverride.class), accessibleObject));
+        // Process the single attribute override second.
+        MetadataAnnotation associationOverride = getAnnotation(AssociationOverride.class);  
+        if (associationOverride != null) {
+            m_associationOverrides.add(new AssociationOverrideMetadata(associationOverride, accessibleObject));
         }
     }
     

@@ -15,8 +15,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
-import java.lang.annotation.Annotation;
-
 import javax.persistence.EnumType;
 
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -25,6 +23,8 @@ import org.eclipse.persistence.mappings.converters.EnumTypeConverter;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 
 /**
  * INTERNAL:
@@ -35,14 +35,14 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
  * @since EclipseLink 2.0
  */
 public class EnumeratedMetadata extends MetadataConverter {
-    private Enum m_enumerated;
+    private String m_enumerated;
     
     /**
      * INTERNAL:
      * Used for defaulting case.
      */
     public EnumeratedMetadata() {
-        m_enumerated = EnumType.ORDINAL;
+        m_enumerated = EnumType.ORDINAL.name();
     }
     
     /**
@@ -55,17 +55,17 @@ public class EnumeratedMetadata extends MetadataConverter {
     /**
      * INTERNAL:
      */
-    public EnumeratedMetadata(Annotation enumerated, MetadataAccessibleObject accessibleObject) {
+    public EnumeratedMetadata(MetadataAnnotation enumerated, MetadataAccessibleObject accessibleObject) {
         super(enumerated, accessibleObject);
         
-        m_enumerated = (Enum) MetadataHelper.invokeMethod("value", enumerated);
+        m_enumerated = (String) enumerated.getAttribute("value");
     }
     
     /**
      * INTERNAL:
      * Used for OX mapping.
      */
-    public Enum getEnumerated() {
+    public String getEnumerated() {
         return m_enumerated;
     }
     
@@ -73,7 +73,7 @@ public class EnumeratedMetadata extends MetadataConverter {
      * INTERNAL:
      * Return true if the given class is a valid enum type.
      */
-    public static boolean isValidEnumeratedType(Class cls) {
+    public static boolean isValidEnumeratedType(MetadataClass cls) {
         return cls.isEnum();    
     }
     
@@ -81,20 +81,23 @@ public class EnumeratedMetadata extends MetadataConverter {
      * INTERNAL:
      * Every converter needs to be able to process themselves.
      */
-    public void process(DatabaseMapping mapping, MappingAccessor accessor, Class referenceClass, boolean isForMapKey) {
+    public void process(DatabaseMapping mapping, MappingAccessor accessor, MetadataClass referenceClass, boolean isForMapKey) {
         // Create an EnumTypeConverter and set it on the mapping.
         if (! EnumeratedMetadata.isValidEnumeratedType(referenceClass)) {
             throw ValidationException.invalidTypeForEnumeratedAttribute(mapping.getAttributeName(), referenceClass, accessor.getJavaClass());
         }
-            
-        setConverter(mapping, new EnumTypeConverter(mapping, referenceClass, m_enumerated.name().equals(EnumType.ORDINAL.name())), isForMapKey);
+        boolean isOrdinal = true;
+        if (m_enumerated != null) {
+            isOrdinal = m_enumerated.equals(EnumType.ORDINAL.name());
+        }
+        setConverter(mapping, new EnumTypeConverter(mapping, getJavaClass(referenceClass), isOrdinal), isForMapKey);
     }
     
     /**
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setEnumerated(Enum enumerated) {
+    public void setEnumerated(String enumerated) {
         m_enumerated = enumerated;
     }
 }

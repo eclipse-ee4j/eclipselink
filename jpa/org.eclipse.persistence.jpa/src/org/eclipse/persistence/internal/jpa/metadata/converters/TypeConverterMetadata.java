@@ -16,13 +16,13 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
-import java.lang.annotation.Annotation;
-
 import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
@@ -35,8 +35,8 @@ import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
  * @since TopLink 11g
  */
 public class TypeConverterMetadata extends AbstractConverterMetadata {
-    private Class m_dataType;
-    private Class m_objectType;
+    private MetadataClass m_dataType;
+    private MetadataClass m_objectType;
     private String m_dataTypeName;
     private String m_objectTypeName;
     
@@ -57,11 +57,11 @@ public class TypeConverterMetadata extends AbstractConverterMetadata {
     /**
      * INTERNAL:
      */
-    public TypeConverterMetadata(Annotation typeConverter, MetadataAccessibleObject accessibleObject) {
+    public TypeConverterMetadata(MetadataAnnotation typeConverter, MetadataAccessibleObject accessibleObject) {
         super(typeConverter, accessibleObject);
         
-        m_dataType = (Class) MetadataHelper.invokeMethod("dataType", typeConverter); 
-        m_objectType = (Class) MetadataHelper.invokeMethod("objectType", typeConverter); 
+        m_dataType = getMetadataClass((String)typeConverter.getAttributeString("dataType")); 
+        m_objectType = getMetadataClass((String)typeConverter.getAttributeString("objectType")); 
     }
     
     /**
@@ -89,15 +89,15 @@ public class TypeConverterMetadata extends AbstractConverterMetadata {
     /**
      * INTERNAL:
      */
-    public Class getDataType() {
+    public MetadataClass getDataType() {
         return m_dataType;
     }
     
     /**
      * INTERNAL:
      */
-    public Class getDataType(MappingAccessor accessor, Class referenceClass) {
-        if (m_dataType == void.class) {
+    public MetadataClass getDataType(MappingAccessor accessor, MetadataClass referenceClass) {
+        if (m_dataType.isVoid()) {
             if (referenceClass == null) {
                 throw ValidationException.noConverterDataTypeSpecified(accessor.getJavaClass(), accessor.getAttributeName(), getName());
             } else {
@@ -122,8 +122,8 @@ public class TypeConverterMetadata extends AbstractConverterMetadata {
     /**
      * INTERNAL:
      */
-    public Class getObjectType(MappingAccessor accessor, Class referenceClass) {
-        if (m_objectType == void.class) {
+    public MetadataClass getObjectType(MappingAccessor accessor, MetadataClass referenceClass) {
+        if (m_objectType.isVoid()) {
             if (referenceClass == null) {
                 throw ValidationException.noConverterObjectTypeSpecified(accessor.getJavaClass(), accessor.getAttributeName(), getName());
             } else {
@@ -140,7 +140,7 @@ public class TypeConverterMetadata extends AbstractConverterMetadata {
     /**
      * INTERNAL:
      */
-    public Class getObjectType() {
+    public MetadataClass getObjectType() {
         return m_objectType;
     }
     
@@ -166,7 +166,7 @@ public class TypeConverterMetadata extends AbstractConverterMetadata {
     /**
      * INTERNAL:
      */
-    public void process(DatabaseMapping mapping, MappingAccessor accessor, Class referenceClass, boolean isForMapKey) {
+    public void process(DatabaseMapping mapping, MappingAccessor accessor, MetadataClass referenceClass, boolean isForMapKey) {
         TypeConversionConverter converter = new TypeConversionConverter(mapping);
         
         // Process the data type and set the data class name.
@@ -179,13 +179,13 @@ public class TypeConverterMetadata extends AbstractConverterMetadata {
         setConverter(mapping, converter, isForMapKey);
         
         // Set the field classification.
-        setFieldClassification(mapping, m_dataType, isForMapKey);
+        setFieldClassification(mapping, getJavaClass(m_dataType), isForMapKey);
     }
     
     /**
      * INTERNAL:
      */
-    public void setDataType(Class dataType) {
+    public void setDataType(MetadataClass dataType) {
         m_dataType = dataType;
     }
     
@@ -200,7 +200,7 @@ public class TypeConverterMetadata extends AbstractConverterMetadata {
     /**
      * INTERNAL:
      */
-    public void setObjectType(Class objectType) {
+    public void setObjectType(MetadataClass objectType) {
         m_objectType = objectType;
     }
     

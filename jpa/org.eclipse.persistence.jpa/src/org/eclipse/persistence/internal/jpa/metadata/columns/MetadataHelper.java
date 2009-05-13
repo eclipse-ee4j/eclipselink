@@ -14,17 +14,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-
-import org.eclipse.persistence.exceptions.EntityManagerSetupException;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 
 /**
  * This class only contains the common helper methods that can be accessed at
@@ -65,45 +55,5 @@ final class MetadataHelper {
      */
     static String getValue(String value, String defaultValue) {
         return org.eclipse.persistence.internal.jpa.metadata.MetadataHelper.getValue(value, defaultValue);
-    }
-    
-    /** 
-     * INTERNAL:
-     * Invoke the specified named method on the object, handling the necessary 
-     * exceptions.
-     */
-    static Object invokeMethod(String methodName, Object target) {
-        Method method = null;
-        
-        try {
-            method = Helper.getDeclaredMethod(target.getClass(), methodName);            
-        } catch (NoSuchMethodException e) {
-            EntityManagerSetupException.methodInvocationFailed(method, target,e);
-        }
-        
-        if (method != null) {
-             try {
-                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                     try {
-                         return AccessController.doPrivileged(new PrivilegedMethodInvoker(method, target));
-                     } catch (PrivilegedActionException exception) {
-                         Exception throwableException = exception.getException();
-                         if (throwableException instanceof IllegalAccessException) {
-                             throw EntityManagerSetupException.cannotAccessMethodOnObject(method, target);
-                         } else {
-                             throw EntityManagerSetupException.methodInvocationFailed(method, target, throwableException);
-                         }
-                     }
-                 } else {
-                     return PrivilegedAccessHelper.invokeMethod(method, target);
-                 }
-             } catch (IllegalAccessException ex1) {
-                 throw EntityManagerSetupException.cannotAccessMethodOnObject(method, target);
-             } catch (InvocationTargetException ex2) {
-                 throw EntityManagerSetupException.methodInvocationFailed(method, target, ex2);
-             }
-        } else {
-            return null;
-        }
     }
 }
