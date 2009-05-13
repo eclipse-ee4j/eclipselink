@@ -62,6 +62,7 @@ import junit.framework.TestCase;
  */
 public class GenerateSingleSchemaTestCases extends GenerateSchemaTestCases {
     protected static final String MYNS = "myns:examplenamespace";
+    protected static final String MYEMPTYNS = "";
     protected static final String ELEMENT_FORM_QUALIFIED_RESOURCE = "org/eclipse/persistence/testing/oxm/schemamodelgenerator/eltFrmQualified.xsd";
     protected static final String ELEMENT_FORM_QUALIFIED_NO_CTX_RESOURCE = "org/eclipse/persistence/testing/oxm/schemamodelgenerator/eltFrmQualifiedNoCtx.xsd";
     protected static final String ELEMENT_FORM_QUALIFIED_NO_DRE_RESOURCE = "org/eclipse/persistence/testing/oxm/schemamodelgenerator/eltFrmQualifiedNoDRE.xsd";
@@ -90,11 +91,12 @@ public class GenerateSingleSchemaTestCases extends GenerateSchemaTestCases {
             SchemaModelGeneratorProperties props = new SchemaModelGeneratorProperties();
             props.addProperty(MYNS, SchemaModelGeneratorProperties.ELEMENT_FORM_QUALIFIED_KEY, true);
 
-            Project prj = new TestProject(setSchemaContext, setDefaultRootElement);
+            Project prj = new TestProject(setSchemaContext, setDefaultRootElement, MYNS);
             loginProject(prj);
             List<XMLDescriptor> descriptorsToProcess = setupDescriptorList(prj);
             Map<String, Schema> generatedSchemas = sg.generateSchemas(descriptorsToProcess, props);
             generatedSchema = generatedSchemas.get(MYNS);
+            assertNotNull("No schema was generated for namespace ["+MYNS+"]", generatedSchema);
             
             tDoc = getDocument(generatedSchema);
             cDoc = getDocument(ELEMENT_FORM_QUALIFIED_RESOURCE);
@@ -102,7 +104,6 @@ public class GenerateSingleSchemaTestCases extends GenerateSchemaTestCases {
             ex.printStackTrace();
             fail();
         }
-        assertNotNull("No schema was generated", generatedSchema);
         assertNotNull("Schema to Document conversion failed", tDoc);
         assertNotNull("A problem occurred loading the control schema", cDoc);
         assertTrue("Schema comparsion failed", comparer.isSchemaEqual(cDoc, tDoc));
@@ -125,11 +126,12 @@ public class GenerateSingleSchemaTestCases extends GenerateSchemaTestCases {
             SchemaModelGeneratorProperties props = new SchemaModelGeneratorProperties();
             props.addProperty(MYNS, SchemaModelGeneratorProperties.ELEMENT_FORM_QUALIFIED_KEY, true);
 
-            Project prj = new TestProject(setSchemaContext, setDefaultRootElement);
+            Project prj = new TestProject(setSchemaContext, setDefaultRootElement, MYNS);
             loginProject(prj);
             List<XMLDescriptor> descriptorsToProcess = setupDescriptorList(prj);
             Map<String, Schema> generatedSchemas = sg.generateSchemas(descriptorsToProcess, props);
             generatedSchema = generatedSchemas.get(MYNS);
+            assertNotNull("No schema was generated for namespace ["+MYNS+"]", generatedSchema);
             
             tDoc = getDocument(generatedSchema);
             cDoc = getDocument(ELEMENT_FORM_QUALIFIED_NO_CTX_RESOURCE);
@@ -137,7 +139,6 @@ public class GenerateSingleSchemaTestCases extends GenerateSchemaTestCases {
             ex.printStackTrace();
             fail();
         }
-        assertNotNull("No schema was generated", generatedSchema);
         assertNotNull("Schema to Document conversion failed", tDoc);
         assertNotNull("A problem occurred loading the control schema", cDoc);
         assertTrue("Schema comparsion failed", comparer.isSchemaEqual(cDoc, tDoc));
@@ -159,11 +160,12 @@ public class GenerateSingleSchemaTestCases extends GenerateSchemaTestCases {
             SchemaModelGeneratorProperties props = new SchemaModelGeneratorProperties();
             props.addProperty(MYNS, SchemaModelGeneratorProperties.ELEMENT_FORM_QUALIFIED_KEY, true);
 
-            Project prj = new TestProject(setSchemaContext, setDefaultRootElement);
+            Project prj = new TestProject(setSchemaContext, setDefaultRootElement, MYNS);
             loginProject(prj);
             List<XMLDescriptor> descriptorsToProcess = setupDescriptorList(prj);
             Map<String, Schema> generatedSchemas = sg.generateSchemas(descriptorsToProcess, props);
             generatedSchema = generatedSchemas.get(MYNS);
+            assertNotNull("No schema was generated for namespace ["+MYNS+"]", generatedSchema);
             
             tDoc = getDocument(generatedSchema);
             cDoc = getDocument(ELEMENT_FORM_QUALIFIED_NO_DRE_RESOURCE);
@@ -171,7 +173,6 @@ public class GenerateSingleSchemaTestCases extends GenerateSchemaTestCases {
             ex.printStackTrace();
             fail();
         }
-        assertNotNull("No schema was generated", generatedSchema);
         assertNotNull("Schema to Document conversion failed", tDoc);
         assertNotNull("A problem occurred loading the control schema", cDoc);
         assertTrue("Schema comparsion failed", comparer.isSchemaEqual(cDoc, tDoc));
@@ -190,7 +191,7 @@ public class GenerateSingleSchemaTestCases extends GenerateSchemaTestCases {
             SchemaModelGeneratorProperties props = new SchemaModelGeneratorProperties();
             props.addProperty(MYNS, SchemaModelGeneratorProperties.ELEMENT_FORM_QUALIFIED_KEY, false);
             
-            Project prj = new TestProject(setSchemaContext, setDefaultRootElement);
+            Project prj = new TestProject(setSchemaContext, setDefaultRootElement, MYNS);
             loginProject(prj);
             List<XMLDescriptor> descriptorsToProcess = setupDescriptorList(prj);
             Map<String, Schema> generatedSchemas = sg.generateSchemas(descriptorsToProcess, props);
@@ -221,10 +222,11 @@ public class GenerateSingleSchemaTestCases extends GenerateSchemaTestCases {
             List<XMLDescriptor> descriptorsToProcess = setupDescriptorList(prj);
 
             SchemaModelGeneratorProperties props = new SchemaModelGeneratorProperties();
-            props.addProperty(MYNS, SchemaModelGeneratorProperties.ELEMENT_FORM_QUALIFIED_KEY, false);
+            props.addProperty(MYEMPTYNS, SchemaModelGeneratorProperties.ELEMENT_FORM_QUALIFIED_KEY, false);
             
             Map<String, Schema> generatedSchemas = sg.generateSchemas(descriptorsToProcess, props);
-            generatedSchema = generatedSchemas.get(MYNS);
+            generatedSchema = generatedSchemas.get(MYEMPTYNS);
+            assertNotNull("No schema was generated for namespace ["+MYEMPTYNS+"]", generatedSchema);
             
             tDoc = getDocument(generatedSchema);
             cDoc = getDocument(ELEMENT_FORM_UNQUALIFIED_RESOURCE);
@@ -232,7 +234,6 @@ public class GenerateSingleSchemaTestCases extends GenerateSchemaTestCases {
             ex.printStackTrace();
             fail();
         }
-        assertNotNull("No schema was generated", generatedSchema);
         assertNotNull("Schema to Document conversion failed", tDoc);
         assertNotNull("A problem occurred loading the control schema", cDoc);
         assertTrue("Schema comparsion failed", comparer.isSchemaEqual(cDoc, tDoc));
@@ -254,13 +255,14 @@ public class GenerateSingleSchemaTestCases extends GenerateSchemaTestCases {
             boolean setDefaultRootElement = true;
 
             SchemaModelGeneratorProperties props = new SchemaModelGeneratorProperties();
-            props.addProperty(MYNS, SchemaModelGeneratorProperties.ELEMENT_FORM_QUALIFIED_KEY, false);
+            props.addProperty(MYEMPTYNS, SchemaModelGeneratorProperties.ELEMENT_FORM_QUALIFIED_KEY, false);
             
             Project prj = new TestProject(setSchemaContext, setDefaultRootElement);
             loginProject(prj);
             List<XMLDescriptor> descriptorsToProcess = setupDescriptorList(prj);
             Map<String, Schema> generatedSchemas = sg.generateSchemas(descriptorsToProcess, props);
-            generatedSchema = generatedSchemas.get(MYNS);
+            generatedSchema = generatedSchemas.get(MYEMPTYNS);
+            assertNotNull("No schema was generated for namespace ["+MYEMPTYNS+"]", generatedSchema);
             
             tDoc = getDocument(generatedSchema);
             cDoc = getDocument(ELEMENT_FORM_UNQUALIFIED_NO_CTX_RESOURCE);
@@ -268,7 +270,6 @@ public class GenerateSingleSchemaTestCases extends GenerateSchemaTestCases {
             ex.printStackTrace();
             fail();
         }
-        assertNotNull("No schema was generated", generatedSchema);
         assertNotNull("Schema to Document conversion failed", tDoc);
         assertNotNull("A problem occurred loading the control schema", cDoc);
         assertTrue("Schema comparsion failed", comparer.isSchemaEqual(cDoc, tDoc));
@@ -291,21 +292,21 @@ public class GenerateSingleSchemaTestCases extends GenerateSchemaTestCases {
             boolean setDefaultRootElement = false;
 
             SchemaModelGeneratorProperties props = new SchemaModelGeneratorProperties();
-            props.addProperty(MYNS, SchemaModelGeneratorProperties.ELEMENT_FORM_QUALIFIED_KEY, false);
+            props.addProperty(MYEMPTYNS, SchemaModelGeneratorProperties.ELEMENT_FORM_QUALIFIED_KEY, false);
             
             Project prj = new TestProject(setSchemaContext, setDefaultRootElement);
             loginProject(prj);
             List<XMLDescriptor> descriptorsToProcess = setupDescriptorList(prj);
             Map<String, Schema> generatedSchemas = sg.generateSchemas(descriptorsToProcess, props);
-            generatedSchema = generatedSchemas.get(MYNS);
-            
+            generatedSchema = generatedSchemas.get(MYEMPTYNS);
+            assertNotNull("No schema was generated for namespace ["+MYEMPTYNS+"]", generatedSchema);
+
             tDoc = getDocument(generatedSchema);
             cDoc = getDocument(ELEMENT_FORM_UNQUALIFIED_NO_DRE_RESOURCE);
         } catch (Exception ex) {
             ex.printStackTrace();
             fail();
         }
-        assertNotNull("No schema was generated", generatedSchema);
         assertNotNull("Schema to Document conversion failed", tDoc);
         assertNotNull("A problem occurred loading the control schema", cDoc);
         assertTrue("Schema comparsion failed", comparer.isSchemaEqual(cDoc, tDoc));
@@ -325,10 +326,10 @@ public class GenerateSingleSchemaTestCases extends GenerateSchemaTestCases {
             List<XMLDescriptor> descriptorsToProcess = setupDescriptorList(prj);
 
             SchemaModelGeneratorProperties props = new SchemaModelGeneratorProperties();
-            props.addProperty(MYNS, SchemaModelGeneratorProperties.ELEMENT_FORM_QUALIFIED_KEY, false);
+            props.addProperty(MYEMPTYNS, SchemaModelGeneratorProperties.ELEMENT_FORM_QUALIFIED_KEY, false);
             
             Map<String, Schema> generatedSchemas = sg.generateSchemas(descriptorsToProcess, props);
-            generatedSchema = generatedSchemas.get(MYNS);
+            generatedSchema = generatedSchemas.get(MYEMPTYNS);
         } catch (Exception ex) {
             ex.printStackTrace();
             fail();

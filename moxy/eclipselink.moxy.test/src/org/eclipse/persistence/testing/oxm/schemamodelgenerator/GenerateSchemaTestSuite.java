@@ -1,5 +1,7 @@
 package org.eclipse.persistence.testing.oxm.schemamodelgenerator;
 
+import org.eclipse.persistence.testing.oxm.schemamodelgenerator.mappings.pathbased.PathbasedMappingTestCases;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -17,6 +19,7 @@ public class GenerateSchemaTestSuite extends TestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite("Schema Model Generator Test Suite");
         suite.addTestSuite(GenerateSingleSchemaTestCases.class);
+        suite.addTestSuite(PathbasedMappingTestCases.class);
         return suite;
     }
 

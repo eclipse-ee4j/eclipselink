@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema targetNamespace="myns:examplenamespace" xmlns="myns:examplenamespace" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
    <xsd:complexType name="phone-number-type">
       <xsd:sequence>
          <xsd:element name="number" type="xsd:string" minOccurs="0"/>
@@ -20,14 +20,12 @@
    <xsd:complexType name="employee-type">
       <xsd:sequence>
          <xsd:element name="name" type="xsd:string" minOccurs="0"/>
-         <xsd:element ref="address" minOccurs="0"/>
-         <xsd:element ref="phone-numbers" minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:element name="address" type="address-type" minOccurs="0"/>
+         <xsd:element name="phone-numbers" type="phone-number-type" minOccurs="0" maxOccurs="unbounded"/>
          <xsd:element name="project-id" type="xsd:decimal" minOccurs="0" maxOccurs="unbounded"/>
          <xsd:any processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
          <xsd:element name="bill-address-city" type="xsd:string" minOccurs="0"/>
       </xsd:sequence>
       <xsd:attribute name="bill-address-id" type="xsd:int"/>
    </xsd:complexType>
-   <xsd:element name="phone-numbers" type="phone-number-type"/>
-   <xsd:element name="address" type="address-type"/>
 </xsd:schema>

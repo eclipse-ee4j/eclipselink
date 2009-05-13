@@ -41,7 +41,6 @@ public class TestProject extends Project {
     
     public TestProject() {
         nsr = new NamespaceResolver();
-        nsr.setDefaultNamespaceURI("myns:examplenamespace");
         setSchemaContext = true;
         setDefaultRootElement = true;
         addDescriptors();
@@ -49,7 +48,14 @@ public class TestProject extends Project {
     
     public TestProject(boolean setSchemaContext, boolean setDefaultRootElement) {
         nsr = new NamespaceResolver();
-        nsr.setDefaultNamespaceURI("myns:examplenamespace");
+        this.setSchemaContext = setSchemaContext;
+        this.setDefaultRootElement = setDefaultRootElement;
+        addDescriptors();
+    }
+
+    public TestProject(boolean setSchemaContext, boolean setDefaultRootElement, String defaultUri) {
+        nsr = new NamespaceResolver();
+        nsr.setDefaultNamespaceURI(defaultUri);
         this.setSchemaContext = setSchemaContext;
         this.setDefaultRootElement = setDefaultRootElement;
         addDescriptors();

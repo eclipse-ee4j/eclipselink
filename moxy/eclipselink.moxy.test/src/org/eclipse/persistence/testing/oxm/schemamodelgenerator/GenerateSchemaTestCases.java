@@ -52,10 +52,11 @@ public class GenerateSchemaTestCases extends TestCase {
     protected SchemaModelGenerator sg;
     protected DocumentBuilder parser;
     protected JAXBXMLComparer comparer;
-    protected static final String TMP_DIR = System.getenv("T_WORK");
+    protected static String TMP_DIR;
     
     public GenerateSchemaTestCases(String name) throws Exception {
         super(name);
+        TMP_DIR = (System.getenv("T_WORK") == null ? "" : (System.getenv("T_WORK") + "/"));
         sg = new SchemaModelGenerator();
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
         builderFactory.setIgnoringElementContentWhitespace(true);
@@ -98,7 +99,7 @@ public class GenerateSchemaTestCases extends TestCase {
             }
             XMLContext context = new XMLContext(p);
             XMLMarshaller marshaller = context.createMarshaller();
-            FileWriter generatedSchemaWriter = new FileWriter(new File(TMP_DIR + "/generatedSchema.xsd"));
+            FileWriter generatedSchemaWriter = new FileWriter(new File(TMP_DIR + "generatedSchema.xsd"));
             marshaller.marshal(generatedSchema, generatedSchemaWriter);
         } catch (Exception ex) {
             ex.printStackTrace();
