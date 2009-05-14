@@ -53,6 +53,7 @@ public class XMLDescriptor extends ClassDescriptor {
     private XMLField defaultRootElementField;
     private boolean sequencedObject = false;
     private boolean isWrapper = false;
+    private boolean resultAlwaysXMLRoot = false;
 
     /**
      * PUBLIC:
@@ -673,6 +674,9 @@ public class XMLDescriptor extends ClassDescriptor {
     }
 
     public boolean shouldWrapObject(Object object, String elementNamespaceUri, String elementLocalName, String elementPrefix) {
+        if(resultAlwaysXMLRoot){
+            return true;
+        }
         String defaultRootName = getDefaultRootElement();
 
         // if the descriptor's default root element is null, we want to 
@@ -748,5 +752,13 @@ public class XMLDescriptor extends ClassDescriptor {
 	public void setIsWrapper(boolean value) {
 		this.isWrapper = value;
 	}
+
+    public boolean isResultAlwaysXMLRoot() {
+        return resultAlwaysXMLRoot;
+    }
+
+    public void setResultAlwaysXMLRoot(boolean resultAlwaysXMLRoot) {
+        this.resultAlwaysXMLRoot = resultAlwaysXMLRoot;
+    }
     
 }

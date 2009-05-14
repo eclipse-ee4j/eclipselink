@@ -3546,6 +3546,7 @@
               <xsd:documentation>The location of the XML Schema.</xsd:documentation>
             </xsd:annotation>
           </xsd:element>
+          <xsd:element minOccurs="0" default="false" name="result-always-xml-root" type="xsd:boolean" />
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>

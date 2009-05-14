@@ -140,18 +140,22 @@ public class MappingsGenerator {
             return;
         }
         
+        XMLDescriptor descriptor = new XMLDescriptor();
+        
         XmlRootElement rootElem = (XmlRootElement) helper.getAnnotation(javaClass, XmlRootElement.class);
         if (rootElem == null) {
             elementName = Introspector.decapitalize(jClassName.substring(jClassName.lastIndexOf(".") + 1));
             namespace = packageNamespace;
+            descriptor.setResultAlwaysXMLRoot(true);
         } else {
             elementName = rootElem.name();
             if (elementName.equals("##default")) {
                 elementName = Introspector.decapitalize(jClassName.substring(jClassName.lastIndexOf(".") + 1));
             }
             namespace = rootElem.namespace();
+            descriptor.setResultAlwaysXMLRoot(false);
         }
-        XMLDescriptor descriptor = new XMLDescriptor();
+                
         descriptor.setJavaClassName(jClassName);
 
         if(info.getFactoryMethodName() != null) {
@@ -1228,10 +1232,10 @@ public class MappingsGenerator {
                 }
                 NamespaceInfo info = getNamespaceInfoForURI(namespaceUri);
                 
-                if(info != null) {
-                    NamespaceResolver resolver = info.getNamespaceResolver();
-                    String prefix = resolver.resolveNamespaceURI(namespaceUri);
-                    desc.setNamespaceResolver(resolver);
+    			if(info != null) {
+    				NamespaceResolver resolver = info.getNamespaceResolver();
+    				String prefix = resolver.resolveNamespaceURI(namespaceUri);
+    				desc.setNamespaceResolver(resolver);
                     desc.setDefaultRootElement(prefix + ":" + next.getLocalPart());
                 } else {
                     if(namespaceUri.equals("")) {
@@ -1242,8 +1246,8 @@ public class MappingsGenerator {
                         resolver.put(prefix, namespaceUri);
                         desc.setNamespaceResolver(resolver);
                         desc.setDefaultRootElement(prefix + ":" + next.getLocalPart());
-                    }
-                }
+    				}
+    			}
                 project.addDescriptor(desc);
             }else if(type != null && !type.isTransient()){
                 if(next.getNamespaceURI() == null || next.getNamespaceURI().equals("")) {

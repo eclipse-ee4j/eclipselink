@@ -17,6 +17,7 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import org.eclipse.persistence.testing.oxm.descriptor.rootelement.identifiedbyname.RootElementIdentifiedByNameTestCases;
 import org.eclipse.persistence.testing.oxm.descriptor.rootelement.identifiedbynamespace.RootElementIdentifiedByNamespaceTestCases;
+import org.eclipse.persistence.testing.oxm.descriptor.rootelement.multipleroots.MultipleRootsAlwaysWrapTestCases;
 import org.eclipse.persistence.testing.oxm.descriptor.rootelement.multipleroots.MultipleRootsTestCases;
 import org.eclipse.persistence.testing.oxm.descriptor.rootelement.multipleroots.MultipleRootsTestCases2;
 import org.eclipse.persistence.testing.oxm.descriptor.rootelement.multipleroots.MultipleRootsTestCases3;
@@ -29,6 +30,7 @@ public class RootElementTestSuite extends TestCase {
         suite.addTestSuite(MultipleRootsTestCases.class);
         suite.addTestSuite(MultipleRootsTestCases2.class);
         suite.addTestSuite(MultipleRootsTestCases3.class);
+        suite.addTestSuite(MultipleRootsAlwaysWrapTestCases.class);
         return suite;
     }
 

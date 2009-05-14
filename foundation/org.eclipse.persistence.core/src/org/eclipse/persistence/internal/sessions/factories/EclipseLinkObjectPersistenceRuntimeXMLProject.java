@@ -259,4 +259,18 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends ObjectPersist
         return descriptor;
     }
 
+    protected ClassDescriptor buildOXXMLDescriptorDescriptor() {
+    	ClassDescriptor descriptor = super.buildOXXMLDescriptorDescriptor();
+    	
+    	XMLDirectMapping alwaysXMLRootMapping = new XMLDirectMapping();
+    	alwaysXMLRootMapping.setAttributeName("resultAlwaysXMLRoot");        
+    	alwaysXMLRootMapping.setGetMethodName("isResultAlwaysXMLRoot");
+    	alwaysXMLRootMapping.setSetMethodName("setResultAlwaysXMLRoot");
+    	alwaysXMLRootMapping.setNullValue(Boolean.FALSE);
+    	alwaysXMLRootMapping.setXPath(getPrimaryNamespaceXPath() + "result-always-xml-root/text()");
+        descriptor.addMapping(alwaysXMLRootMapping);
+    	
+        return descriptor;
+    }
+    
 }
