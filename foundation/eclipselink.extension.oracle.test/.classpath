@@ -14,5 +14,6 @@
 	<classpathentry kind="var" path="XML_LIB"/>
 	<classpathentry kind="var" path="XMLPARSERV2_LIB"/>
 	<classpathentry kind="var" path="AQAPI_LIB"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/javax.persistence"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
