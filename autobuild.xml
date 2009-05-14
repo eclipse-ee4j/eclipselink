@@ -265,12 +265,11 @@
     </target>
 
     <target name="build" depends="get-dependencies">
-        <ant antfile="build.xml" dir="${build.root.dir}" target="build-all-but-ext"/>
+        <ant antfile="build.xml" dir="${build.root.dir}"          target="build-all-but-ext"/>
         <ant antfile="build.xml" dir="${build.root.dir}/features" target="build-features-sign-jars">
-            <property name="signing.script" value="sign"/>
-            <property name="signing.dir"    value="/opt/public/download-staging.priv/rt/eclipselink"/>
+            <property name="signing.script"  value="sign"/>
         </ant>
-        <ant antfile="build.xml" dir="${build.root.dir}" target="package-all"/>
+        <ant antfile="build.xml" dir="${build.root.dir}"          target="package-all"/>
     </target>
 
     <target name="build-no-javadoc" depends="get-dependencies">
@@ -333,6 +332,7 @@
     <target name="publish-build">
         <!-- New Publish Architecture -->
         <mkdir dir="${download.path}"/>
+        <copy file="${signing.dir}/signed-output/${eclipselink.install.prefix}-P2.zip"                 tofile="${download.path}/${eclipselink.install.prefix}-P2signed-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
         <copy file="${build.root.dir}/${eclipselink.install.prefix}${eclipselink.zip.suffix}"          tofile="${download.path}/${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
         <copy file="${build.root.dir}/${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"      tofile="${download.path}/${eclipselink.src.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
         <copy file="${build.root.dir}/${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}"          tofile="${download.path}/${eclipselink.tst.src.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
@@ -351,6 +351,9 @@
             <arg value="${build.root.dir}/${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"/>
         </exec>
         <ant antfile="uploadToMaven.xml" dir="${build.root.dir}" target="upload-maven-all"/>
+        <delete failonerror="false">
+            <fileset dir="${signing.dir}" includes="**/*.zip"/>
+        </delete>
     </target>
 
     <target name="publish-maven" depends="init">
