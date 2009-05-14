@@ -47,7 +47,7 @@
             depends="clean, build, test-lrg, publish-build, publish-results, test-for-errors"
     />
     <target name="build-milestone"  description="Trigger build, testing, and publishing of a milestone release ('release' is a milestone in this case)"
-            depends="create-tag, promote-build, publish-milestone"
+            depends="promote-init, extract-signed-artifacts, regen-archives, gen-build-for-maven, publish-milestone, create-tag"
     />
     <target name="build-continuous" description="Trigger an automated build and run the tests if source changes exist"
             depends="clean, build-no-javadoc, build-utils, test-srg"
@@ -415,62 +415,76 @@
 
     <target name="promote-init" depends="promote-pre-init, common-init">
         <property name="build.source.path" value="${eclipselink.download.path}/nightly/${release.version}/${build.date}"/>
+        <available file="${build.source.path}" type="dir" property="build.path.exist"/>
+        <fail unless="build.path.exist" message="${build.source.path} not found! Cannot promote it."/>
+        <property name="temp.rebuild.path" value="/tmp/EL${run.date}.${run.time}/${version.string}"/>
+        <delete dir="${temp.rebuild.path}" failonerror="false"/>
+        <mkdir dir="${temp.rebuild.path}"/>
     </target>
 
-    <target name="promote-build">
-        <!-- Promote to new P2 -->
-        <!-- ${build.source.path}/${eclipselink.install.prefix}-P2-${version.string}${eclipselink.zip.suffix}
-        -->
-        <echo message="promote-build..."/>
+    <target name="extract-signed-artifacts">
+        <echo message="Extracting signed jars from archive..."/>
+        <property name="signed.jar.path" value="${temp.rebuild.path}/signed"/>
+        <unzip dest="${signed.jar.path}" src="${build.source.path}/${eclipselink.install.prefix}-P2-${version.string}${eclipselink.zip.suffix}"/>
+    </target>
+       
+    <target name="regen-archives">
+        <echo message="Creating signed versions of archives..."/>
+        <!-- Copy original versions to working dir -->
+        <copy todir="${temp.rebuild.path}" file="${build.source.path}/${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}"         failonerror="false"/>
+        <copy todir="${temp.rebuild.path}" file="${build.source.path}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
+        <!-- Force overwrite of original content -->
+        <zip destfile="${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}" update="true">
+            <zipfileset dir="${signed.jar.path}" prefix="eclipselink/utils/dbws" includes="${dbws-util.jar.name}" />
+            <zipfileset dir="${signed.jar.path}" prefix="eclipselink/jlib"       includes="${eclipselink.jar.name}"/>
+        </zip> 
+        <zip destfile="${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}" update="true">
+            <zipfileset dir="${signed.jar.path}/plugins" includes="*.jar" />
+        </zip> 
+    </target>
+    
+    <target name="gen-build-for-maven">
+        <echo message="Prepare for Maven publishing"/>
+        <property name="tmp.maven.dir" value="${temp.rebuild.path}/maven"/>
+        <!-- need to setup a dir that contains the correct contents for maven to promote -->
+        <mkdir dir="${tmp.maven.dir}"/>
+        <!-- get eclipselink source zip -->
+        <copy file="${build.source.path}/${eclipselink.src.install.prefix}-${version.string}${eclipselink.zip.suffix}"     tofile="${tmp.maven.dir}/${eclipselink.src.install.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
+        <!-- get eclipselink.jar -->
+        <copy todir="${tmp.maven.dir}" file="${signed.jar.path}/${eclipselink.jar.name}"/>
+        <!-- get bundles -->
+        <copy todir="${tmp.maven.dir}/${plugins.dir}">
+            <fileset dir="${signed.jar.path}/${plugins.dir}">
+                <include name="org.eclipse.persistence.*.jar"/>
+            </fileset>
+        </copy>
+        <!-- get javax.persistence* -->
+        <copy todir="${tmp.maven.dir}/${eclipselink.jpa.base}/${plugins.dir}">
+            <fileset dir="${signed.jar.path}/${plugins.dir}">
+                <include name="javax.persistence*.jar"/>
+            </fileset>
+        </copy>
     </target>
 
     <target name="publish-milestone">
         <!-- Publish from nightly published location to Milestone dir -->
         <mkdir dir="${download.path}"/>
-        <copy file="${build.source.path}/${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}"         tofile="${download.path}/${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
-        <copy file="${build.source.path}/${eclipselink.src.install.prefix}-${version.string}${eclipselink.zip.suffix}"     tofile="${download.path}/${eclipselink.src.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
-        <copy file="${build.source.path}/${eclipselink.tst.src.prefix}-${version.string}${eclipselink.zip.suffix}"         tofile="${download.path}/${eclipselink.tst.src.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
-        <copy file="${build.source.path}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}" tofile="${download.path}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
-        <copy file="${build.source.path}/eclipselink-core-lrg-${version.string}.html"                                      tofile="${download.path}/eclipselink-core-lrg-${version.string}.html" failonerror="false"/>
-        <copy file="${build.source.path}/eclipselink-jpa-lrg-${version.string}.html"                                       tofile="${download.path}/eclipselink-jpa-lrg-${version.string}.html" failonerror="false"/>
-        <copy file="${build.source.path}/eclipselink-jaxb-lrg-${version.string}.html"                                      tofile="${download.path}/eclipselink-jaxb-lrg-${version.string}.html" failonerror="false"/>
-        <copy file="${build.source.path}/eclipselink-oxm-lrg-${version.string}.html"                                       tofile="${download.path}/eclipselink-oxm-lrg-${version.string}.html" failonerror="false"/>
-        <copy file="${build.source.path}/eclipselink-sdo-lrg-${version.string}.html"                                       tofile="${download.path}/eclipselink-sdo-lrg-${version.string}.html" failonerror="false"/>
-        <copy file="${build.source.path}/eclipselink-dbws-lrg-${version.string}.html"                                      tofile="${download.path}/eclipselink-dbws-lrg-${version.string}.html" failonerror="false"/>
-        <copy file="${build.source.path}/eclipselink-dbws-util-lrg-${version.string}.html"                                 tofile="${download.path}/eclipselink-dbws-util-lrg-${version.string}.html" failonerror="false"/>
+        <!-- From temp rebuild location -->
+        <copy todir="${download.path}" file="${temp.rebuild.path}/${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}"         failonerror="false"/>
+        <copy todir="${download.path}" file="${temp.rebuild.path}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
+        <!-- Populated directly from original build -->
+        <copy todir="${download.path}" file="${build.source.path}/${eclipselink.src.install.prefix}-${version.string}${eclipselink.zip.suffix}"     failonerror="false"/>
+        <copy todir="${download.path}" file="${build.source.path}/${eclipselink.tst.src.prefix}-${version.string}${eclipselink.zip.suffix}"         failonerror="false"/>
+        <copy todir="${download.path}" file="${build.source.path}/eclipselink-core-lrg-${version.string}.html"                                      failonerror="false"/>
+        <copy todir="${download.path}" file="${build.source.path}/eclipselink-jpa-lrg-${version.string}.html"                                       failonerror="false"/>
+        <copy todir="${download.path}" file="${build.source.path}/eclipselink-jaxb-lrg-${version.string}.html"                                      failonerror="false"/>
+        <copy todir="${download.path}" file="${build.source.path}/eclipselink-oxm-lrg-${version.string}.html"                                       failonerror="false"/>
+        <copy todir="${download.path}" file="${build.source.path}/eclipselink-sdo-lrg-${version.string}.html"                                       failonerror="false"/>
+        <copy todir="${download.path}" file="${build.source.path}/eclipselink-dbws-lrg-${version.string}.html"                                      failonerror="false"/>
+        <copy todir="${download.path}" file="${build.source.path}/eclipselink-dbws-util-lrg-${version.string}.html"                                 failonerror="false"/>
         <!-- copy P2 archive as well for safekeeping (in case rebuild needed) -->
-        <copy file="${build.source.path}/${eclipselink.install.prefix}-P2-${version.string}${eclipselink.zip.suffix}"      tofile="${download.path}/${eclipselink.install.prefix}-P2-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
-        <!-- need to setup a dir that contains the correct contents for maven to promote -->
-        <!-- extract bundles from -->
-        <unzip dest="${tmp.dir}" src="${build.source.path}/${eclipselink.install.prefix}-P2-${version.string}${eclipselink.zip.suffix}">
-            <patternset>
-                <include name="**/*.jar"/>
-            </patternset>
-        </unzip>
-        <!-- delete extra jars (features, and thirdparty jars) -->
-        <delete>
-            <fileset dir="${tmp.dir}">
-                <include name="**/*.jar"/>
-                <exclude name="**/org.eclipse.persistence.*.jar"/>
-                <exclude name="**/javax.persistence*1.99*.jar"/>
-                <exclude name="**/javax.persistence*2.0*.jar"/>
-            </fileset>
-        </delete>
-        <!-- move javax.persistence* -->
-        <move todir="${tmp.dir}/${eclipselink.jpa.base}/${plugins.dir}">
-            <fileset dir="${tmp.dir}/${plugins.dir}">
-                <include name="javax.persistence*.jar"/>
-            </fileset>
-        </move>
-        <!-- extract eclipselink.jar -->
-        <unzip dest="${tmp.dir}" src="${build.source.path}/${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}">
-            <patternset>
-                <include name="jlib/eclipselink.jar"/>
-            </patternset>
-        </unzip>
-        <!-- copy eclipselink.source.jar -->
-        <copy todir="${tmp.dir}" file="${build.source.path}/${eclipselink.src.install.prefix}-${version.string}${eclipselink.zip.suffix}"/>
-        <!-- ant antfile="uploadToMaven.xml" dir="${build.root.dir}" target="upload-maven-all"/>
-        <delete dir="${tmp.dir}"/ -->
+        <copy todir="${download.path}" file="${build.source.path}/${eclipselink.install.prefix}-P2-${version.string}${eclipselink.zip.suffix}"      failonerror="false"/>
+        <!-- ant antfile="uploadToMaven.xml" dir="${tmp.maven.dir}" target="upload-maven-all"/>
+        <delete dir="${temp.rebuild.path}" failonerror="false"/ -->
     </target>
 </project>

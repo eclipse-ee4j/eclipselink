@@ -70,8 +70,13 @@
     <property name="eclipselink.plugins.install.prefix" value="eclipselink-plugins"/>
     <property name="eclipselink.zip.suffix"             value=".zip"/>
     <property name="classes.dir"                        value="classes"/>
+    <property name="eclipselink.util.dbws"              value="utils/eclipselink.utils.dbws"/>
+    <property name="eclipselink.jpa.plugins"            value="jpa/plugins"/>
+    <!-- Helper definitions derived from Pre-set variables -->
     <property name="feature.build.dir"                  value="${classes.dir}/features"/>
     <property name="bundle.working.dir"                 value="${classes.dir}/plugins"/>
+    <property name="feature.2.util.dbws"                value="${feature.2.base.dir}/${eclipselink.utils.dbws}"/>
+    <property name="feature.2.jpa.plugins"              value="${feature.2.base.dir}/${eclipselink.jpa.plugins}"/>
 
     <!-- Tool definitions -->
     <property name="p2.SDK.install.dir" value="C:\eclipseSDK\eclipse"/>
@@ -96,13 +101,30 @@
     <echo message="feature.2.base.dir='${feature.2.base.dir}'"/>
     <echo message="feature.2.common.plugins.dir='${feature.2.common.plugins.dir}'"/>
     <echo message=" ---"/>
+    <echo message="release.version='${release.version}'"/>
+    <echo message="version.qualifier='${version.qualifier}'"/>
+    <echo message="version.string='${version.string}'"/>
+    <echo message="eclipselink.plugins.install.prefix='${eclipselink.plugins.install.prefix}'"/>
+    <echo message="eclipselink.zip.suffix='${eclipselink.zip.suffix}'"/>
+    <echo message="classes.dir='${classes.dir}'"/>
+    <echo message="eclipselink.util.dbws='${eclipselink.util.dbws}'"/>
+    <echo message="eclipselink.jpa.plugins='${eclipselink.jpa.plugins}'"/>
+    <echo message="feature.build.dir='${feature.build.dir}'"/>
+    <echo message="bundle.working.dir='${bundle.working.dir}'"/>
+    <echo message="feature.2.util.dbws='${feature.2.util.dbws}'"/>
+    <echo message="feature.2.jpa.plugins='${feature.2.jpa.plugins}'"/>
+    <echo message=" ---"/>
     <echo message="p2.SDK.install.dir='${p2.SDK.install.dir}'"/>
     <echo message="p2.generator.jar='${p2.generator.jar}'"/>
     <echo message="p2.launcher.jar='${p2.launcher.jar}'"/>
+    <echo message="signing.script='${signing.script}'"/>
+    <echo message="signing.dir='${signing.dir}'"/>
     <!-- echo message="p2.ant.tasks.classpath='${p2.ant.tasks.classpath}'"/ -->
     <echo message=" ---"/>
     <echo message="p2.feature.dir='${p2.feature.dir}'"/>
     <echo message="p2.bundle.dir='${p2.bundle.dir}'"/>
+    <echo message="bundle.install.file='${bundle.install.file}'"/>
+    <echo message="site.url='${site.url}'"/>
     <echo message="p2.repository.url='${p2.repository.url}'"/>
 
     <!-- Make sure necessary resources exist -->
@@ -114,9 +136,10 @@
          (so must copy from main plugins to new temp location). Also need to filter copy the feature xml
          files to "p2.base.dir/features" to substitute the actual version.qualifer string into it.
          Then can Generate P2.                                                                               -->
-    <target name="build-features-sign-jars" depends="clean, create-deployable-features, create-sign-zipfile,
-                                                     copy-and-queue-for-sign"/>
-    <target name="build"                    depends="clean, create-deployable-features, build-p2"/>
+    <target name="build"                    depends="build-features, build-p2"/>
+    <target name="build-features-sign-jars" depends="build-features, sign-jars"/>
+    <target name="build-features"           depends="clean, create-deployable-features"/>
+    <target name="sign-jars"                depends="create-sign-zipfile, copy-and-queue-for-sign"/>
     <target name="build-p2"                 depends="clear-repos, populate-repos-site, generate-p2-repos"/>
 
     <!-- Feature Targets -->
@@ -129,7 +152,7 @@
     </target>
 
     <!-- build feature jars -->
-    <target name="create-deployable-features" depends="create-eclipse-buildfile">
+    <target name="create-deployable-features">
         <mkdir dir="${classes.dir}"/>
         <mkdir dir="${feature.build.dir}"/>
         <filter token="VERSION"   value="${release.version}"/>
@@ -202,8 +225,11 @@
         </jar>
     </target>
 
+    <!-- Signing targets -->
     <target name="create-eclipse-buildfile">
         <echo message="update eclipselink.build for Galileo, and place in features dir for later check-in."/>
+        <filter token="VERSION"   value="${release.version}"/>
+        <filter token="QUALIFIER" value="${version.qualifier}"/>
         <copy todir="${classes.dir}" filtering="true">
             <fileset dir="${feature.2.base.dir}/buildsystem">
                 <include name="eclipselink.build"/>
@@ -211,16 +237,16 @@
         </copy>
     </target>
 
-    <target name="create-sign-zipfile">
+    <target name="create-sign-zipfile" depends="create-eclipse-buildfile">
         <delete file="eclipselink-P2.zip"/>
         <zip destfile="eclipselink-P2.zip">
-            <zipfileset dir=".."                                     includes="eclipselink*.jar"/>
-            <zipfileset dir="../utils/eclipselink.utils.dbws"        includes="eclipselink-dbwsutils*.jar"/>
-            <zipfileset dir="${classes.dir}"                         includes="eclipselink.build"/>
-            <zipfileset dir="${classes.dir}"                         includes="site.xml"/>
-            <zipfileset dir="${feature.build.dir}" prefix="features" includes="*.jar"/>
-            <zipfileset dir="../plugins"           prefix="plugins"  includes="org.eclipse.persistence*.jar"/>
-            <zipfileset dir="../jpa/plugins"       prefix="plugins"  includes="javax.persistence*.jar"/>
+            <zipfileset dir="${feature.2.base.dir}"                      includes="eclipselink*.jar"/>
+            <zipfileset dir="${feature.2.utils.dbws}"                    includes="eclipselink-dbwsutils*.jar"/>
+            <zipfileset dir="${classes.dir}"                             includes="eclipselink.build"/>
+            <zipfileset dir="${classes.dir}"                             includes="site.xml"/>
+            <zipfileset dir="${feature.build.dir}"     prefix="features" includes="*.jar"/>
+            <zipfileset dir="${feature.2.base.dir}"    prefix="plugins"  includes="org.eclipse.persistence*.jar"/>
+            <zipfileset dir="${feature.2.jpa.plugins}" prefix="plugins"  includes="javax.persistence*.jar"/>
         </zip>
     </target>
 
@@ -233,18 +259,8 @@
         </exec>
     </target>
 
-    <!-- P2 Targets -->
-    <!-- clean -->
-    <target name="test-ready-to-go" unless="bundle.installer.exist">
-        <echo message="Bundle Installer not found! Skipping P2 repos generation."/>
-    </target>
-
-    <target name="clear-repos" if="bundle.installer.exist" depends="test-ready-to-go">
-        <delete dir="${p2.base.dir}" failonerror="false"/>
-        <echo message="Test without cleaning repos first."/>
-    </target>
-
     <!-- Pack and Sign Targets -->
+    <!-- This generates packed archives for P2 update -->
     <target name="pack-and-sign">
         <condition property="sign" value="-sign ${signing.script}">
             <isset property="signing.script.exist" />
@@ -267,6 +283,17 @@
             <arg line=" -verbose" />
             <arg line=" -outputDir ${destination} ${target}" />
         </java>
+    </target>
+
+    <!-- P2 Targets -->
+    <!-- clean -->
+    <target name="test-ready-to-go" unless="bundle.installer.exist">
+        <echo message="Bundle Installer not found! Skipping P2 repos generation."/>
+    </target>
+
+    <target name="clear-repos" if="bundle.installer.exist" depends="test-ready-to-go">
+        <delete dir="${p2.base.dir}" failonerror="false"/>
+        <echo message="Test without cleaning repos first."/>
     </target>
 
     <target name="populate-repos-site" if="bundle.installer.exist">
