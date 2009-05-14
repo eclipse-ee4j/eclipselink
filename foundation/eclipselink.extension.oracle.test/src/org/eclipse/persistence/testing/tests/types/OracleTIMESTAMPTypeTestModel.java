@@ -148,8 +148,8 @@ public class OracleTIMESTAMPTypeTestModel extends org.eclipse.persistence.testin
         Enumeration examples = TIMESTAMPDirectToFieldTester.testInstances1().elements();
 
         String timeZone = getTimeZone(useDefaultTimeZone);
-        suite.setName("TIMESTAMP & TIMESTAMPTZ Types with binding Test Suite");
-        suite.setDescription("Tests the use of TIMESTAMP/TIMESTAMPTZ with binding with TopLink" + getTimeZoneInfo(timeZone));
+        suite.setName("TIMESTAMP & TIMESTAMPTZ Types with binding Test Suite" + getTimeZoneInfo(timeZone));
+        suite.setDescription("Tests the use of TIMESTAMP/TIMESTAMPTZ with binding with TopLink");
 
         while (examples.hasMoreElements()) {
             TIMESTAMPTester  tester = (TIMESTAMPTester)examples.nextElement();
@@ -163,9 +163,7 @@ public class OracleTIMESTAMPTypeTestModel extends org.eclipse.persistence.testin
 
     public static TestSuite getTIMESTAMPUsingNativeSQLTestSuite(boolean useDefaultTimeZone) {
         TestSuite suite = new TestSuite();
-        // Use testInstances3 since Oracle appears to have trouble with native SQL when
-        // using TZR TZD with dates 100 years in the future.
-        Enumeration examples = TIMESTAMPDirectToFieldTester.testInstances3().elements();
+        Enumeration examples = TIMESTAMPDirectToFieldTester.testInstances2().elements();
 
         String timeZone = getTimeZone(useDefaultTimeZone);
         suite.setName("TIMESTAMP & TIMESTAMPTZ Types using native sql Test Suite" + getTimeZoneInfo(timeZone));
