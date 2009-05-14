@@ -95,6 +95,10 @@ public abstract class RelationshipAccessor extends MappingAccessor {
         MetadataAnnotation joinFetch = getAnnotation(JoinFetch.class);            
         if (joinFetch != null) {
             m_joinFetch = (String) joinFetch.getAttribute("value");
+            // If the value is null a value still must be set, otherwise it will not be known to be there.
+            if (m_joinFetch == null) {
+                m_joinFetch = "";
+            }
         }
         
         // Set the private owned if one is present.

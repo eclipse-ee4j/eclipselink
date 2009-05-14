@@ -191,7 +191,10 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
         // Process the procedure parameter name, defaults to the 
         // argument field name.
         // TODO: Log a message when defaulting.
-        String procedureParameterName = m_name.equals("") ? m_queryParameter : m_name;
+        String procedureParameterName = m_name;
+        if (m_name == null || m_name.equals("")) {
+            procedureParameterName = m_queryParameter;
+        }
                         
         // Process the parameter direction
         if (m_direction == null || m_direction.equals(Direction.IN.name())) {
@@ -204,8 +207,7 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
                 call.addNamedArgument(procedureParameterName, m_queryParameter, m_jdbcType);
             } else {
                 call.addNamedArgument(procedureParameterName, m_queryParameter);
-            }
-                            
+            }                            
             queryArguments.add(m_queryParameter);
         } else if (m_direction.equals(Direction.OUT.name())) {
             if (hasType()) {

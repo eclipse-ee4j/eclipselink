@@ -119,6 +119,9 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
         // Set the order if one is present.
         if (isAnnotationPresent(OrderBy.class)) {
             m_orderBy = (String) getAnnotation(OrderBy.class).getAttribute("value");
+            if (m_orderBy == null) {
+                m_orderBy = "";
+            }
         }
         
         // Set the map key if one is present.

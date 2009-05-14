@@ -96,8 +96,15 @@ public class JPAQuery extends DatabaseQuery  {
      */
     public DatabaseQuery processJPQLQuery(Session session){
         ClassLoader classloader = session.getDatasourcePlatform().getConversionManager().getLoader();
+        LockModeType lockModeEnum = null;
+        // Must handle errors if a JPA 2.0 option is used in JPA 1.0.
+        try {
+            lockModeEnum = LockModeType.valueOf(lockMode);
+        } catch (Exception ignore) {
+            // Ignore JPA 2.0 in JPA 1.0, reverts to no lock.
+        }
         DatabaseQuery ejbquery = EJBQueryImpl.buildEJBQLDatabaseQuery(
-            this.getName(), this.jpqlString, session, LockModeType.valueOf(lockMode), this.hints, classloader);
+            this.getName(), this.jpqlString, session, lockModeEnum, this.hints, classloader);
         ejbquery.setName(this.getName());
         return ejbquery;
     }    

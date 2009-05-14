@@ -70,7 +70,6 @@ public class CacheImplJUnitTest extends JUnitTestCase {
      * Test of contains method, of class CacheImpl.
      */
     public void testContains() {
-        System.out.println("contains");
         EntityManager em1 = createEntityManager("default1");
         beginTransaction(em1);
         Employee e1 = new Employee();

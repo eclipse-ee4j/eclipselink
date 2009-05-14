@@ -162,7 +162,9 @@ public class CacheMetadata extends ORMetadata {
         ClassDescriptor classDescriptor = descriptor.getClassDescriptor();
         
         // Process type
-        if (m_type == null ||m_type.equals(CacheType.SOFT_WEAK.name())) {
+        if (m_type == null) {
+            // Leave as default.
+        } else if (m_type.equals(CacheType.SOFT_WEAK.name())) {
             classDescriptor.useSoftCacheWeakIdentityMap();
         } else if (m_type.equals(CacheType.FULL.name())) {
             classDescriptor.useFullIdentityMap();
@@ -179,10 +181,14 @@ public class CacheMetadata extends ORMetadata {
         }
         
         // Process size.
-        classDescriptor.setIdentityMapSize((m_size == null) ? 100 : m_size);
+        if (m_size != null) {
+            classDescriptor.setIdentityMapSize(m_size);
+        }
         
         // Process shared.
-        classDescriptor.setIsIsolated(m_shared == null ? false : ! m_shared);
+        if (m_shared != null) {
+            classDescriptor.setIsIsolated(!m_shared);
+        }
         
         // Process expiry or expiry time of day.
         if (m_expiryTimeOfDay == null) {
@@ -201,16 +207,24 @@ public class CacheMetadata extends ORMetadata {
         }
         
         // Process always refresh.
-        classDescriptor.setShouldAlwaysRefreshCache(m_alwaysRefresh == null ? false : m_alwaysRefresh);
+        if (m_alwaysRefresh != null) {
+            classDescriptor.setShouldAlwaysRefreshCache(m_alwaysRefresh);
+        }
         
         // Process refresh only if newer.
-        classDescriptor.setShouldOnlyRefreshCacheIfNewerVersion(m_refreshOnlyIfNewer == null ? false : m_refreshOnlyIfNewer);
+        if (m_refreshOnlyIfNewer != null) {
+            classDescriptor.setShouldOnlyRefreshCacheIfNewerVersion(m_refreshOnlyIfNewer);
+        }
         
         // Process disable hits.
-        classDescriptor.setShouldDisableCacheHits(m_disableHits == null ? false : m_disableHits);
+        if (m_disableHits != null) {
+            classDescriptor.setShouldDisableCacheHits(m_disableHits);
+        }
         
         // Process coordination type.
-        if (m_coordinationType == null || m_coordinationType.equals(CacheCoordinationType.SEND_OBJECT_CHANGES.name())) {
+        if (m_coordinationType == null) {
+            // Leave as default.
+        } else if (m_coordinationType.equals(CacheCoordinationType.SEND_OBJECT_CHANGES.name())) {
             classDescriptor.setCacheSynchronizationType(ClassDescriptor.SEND_OBJECT_CHANGES);
         } else if (m_coordinationType.equals(CacheCoordinationType.INVALIDATE_CHANGED_OBJECTS.name())) {
             classDescriptor.setCacheSynchronizationType(ClassDescriptor.INVALIDATE_CHANGED_OBJECTS);

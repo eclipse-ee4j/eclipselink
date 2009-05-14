@@ -160,6 +160,10 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
         // Set the order if one is present.
         if (isAnnotationPresent(OrderBy.class)) {
             m_orderBy = (String) getAnnotation(OrderBy.class).getAttribute("value");
+            // No value means default order-by.
+            if (m_orderBy == null) {
+                m_orderBy = "";
+            }
         }
         
         // Set the map key if one is defined.
