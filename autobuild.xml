@@ -409,14 +409,16 @@
         </tstamp>
         <property name="version.qualifier" value="v${build.date}-r${svn.revision}"/>
     </target>
+
     <target name="promote-init" depends="promote-pre-init, common-init">
-        <property name="build.source.path" value="${eclipselink.download.path}/nightly/${release.version}/${build.date}">
+        <property name="build.source.path" value="${eclipselink.download.path}/nightly/${release.version}/${build.date}"/>
     </target>
 
     <target name="promote-build">
         <!-- Promote to new P2 -->
-        ${build.source.path}/${eclipselink.install.prefix}-P2-${version.string}${eclipselink.zip.suffix}
-
+        <!-- ${build.source.path}/${eclipselink.install.prefix}-P2-${version.string}${eclipselink.zip.suffix}
+        -->
+        <echo message="promote-build..."/>
     </target>
 
     <target name="publish-milestone">
