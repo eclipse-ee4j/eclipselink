@@ -899,23 +899,14 @@ public class MappingsGenerator {
         }
     }
 
-    public void generateMappings(TypeInfo info, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
-        String[] propOrder = info.getPropOrder();
-        if (propOrder.length == 0 || propOrder[0].equals("")) {
-            ArrayList<String> propertyNames = info.getPropertyNames();
-            for (int i = 0; i < propertyNames.size(); i++) {
-                String nextPropertyKey = propertyNames.get(i);
-                Property next = info.getProperties().get(nextPropertyKey);                
-                generateMapping(next, descriptor, namespaceInfo);
+    public void generateMappings(TypeInfo info, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {    
+    	List<Property> propertiesInOrder = info.getNonTransientPropertiesInPropOrder();
+    	for (int i = 0; i < propertiesInOrder.size(); i++) {
+    		Property next = propertiesInOrder.get(i);
+    		if(next != null){
+            	generateMapping(next, descriptor, namespaceInfo);
             }
-        } else {
-            for (int i = 0; i < propOrder.length; i++) {
-                Property next = info.getProperties().get(propOrder[i]);
-                if (next != null) {
-                    generateMapping(next, descriptor, namespaceInfo);
-                }
-            }
-        }
+    	}
     }
 
     /**

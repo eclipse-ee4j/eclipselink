@@ -32,6 +32,8 @@ public class JAXBExceptionResource extends ListResourceBundle {
         {"50009", "The property or field {0} is annotated to be transient so can not be included in the proporder annotation."},
         {"50010", "The property or field {0} must be an attribute because another field or property is annotated with XmlValue."},
         {"50011", "The property or field {0} can not be annotated with XmlValue since it is a subclass of another XML-bound class."},
+        {"50012", "The property or field {0} was specified in propOrder but is not a valid property."},
+        {"50013", "The property or field {0} is required to be included in the propOrder element of the XMLType annotation."},
     };
     
     /**

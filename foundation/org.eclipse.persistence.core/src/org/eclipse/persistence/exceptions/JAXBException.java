@@ -40,6 +40,8 @@ public class JAXBException extends EclipseLinkException {
     public static final int TRANSIENT_IN_PROP_ORDER = 50009;
     public static final int XMLVALUE_ATTRIBUTE_CONFLICT = 50010;
     public static final int SUBCLASS_CANNOT_HAVE_XMLVALUE = 50011;
+    public static final int NON_EXISTENT_PROPERTY_IN_PROP_ORDER = 50012;
+    public static final int MISSING_PROPERTY_IN_PROP_ORDER = 50013;
     
     protected JAXBException(String message) {
         super(message);
@@ -119,6 +121,20 @@ public class JAXBException extends EclipseLinkException {
         exception.setErrorCode(TRANSIENT_IN_PROP_ORDER);
         return exception;
     }   
+    
+    public static JAXBException nonExistentPropertyInPropOrder(String fieldName) {
+        Object[] args = {fieldName};
+        JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, NON_EXISTENT_PROPERTY_IN_PROP_ORDER, args));
+        exception.setErrorCode(NON_EXISTENT_PROPERTY_IN_PROP_ORDER);
+        return exception;
+    } 
+    
+    public static JAXBException missingPropertyInPropOrder(String fieldName) {
+        Object[] args = {fieldName};
+        JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, MISSING_PROPERTY_IN_PROP_ORDER, args));
+        exception.setErrorCode(MISSING_PROPERTY_IN_PROP_ORDER);
+        return exception;
+    }     
     
     public static JAXBException propertyOrFieldShouldBeAnAttribute(String fieldName) {
         Object[] args = {fieldName};

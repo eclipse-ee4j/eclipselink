@@ -110,7 +110,9 @@ public class TypeInfo {
         	if(prefix != null && !prefix.equals("")){        		
         		schemaRef.setSchemaContext("/" + prefix + ":" + schemaTypeName);
         	}else{
-        		schemaRef.setSchemaContext("/" + schemaTypeName);
+                String generatedPrefix = desc.getNonNullNamespaceResolver().generatePrefix();
+                schemaRef.setSchemaContext("/" + generatedPrefix + ":" + schemaTypeName);
+                desc.getNonNullNamespaceResolver().put(generatedPrefix, classNamespace);
         	}
         	schemaRef.setSchemaContextAsQName(new QName(classNamespace, schemaTypeName));
         }
@@ -217,11 +219,6 @@ public class TypeInfo {
         properties.put(name, property);
         propertyNames.add(name);
         propertyList.add(property);
-        if(propOrder != null) {
-            if(property.isAttribute() && !propOrder.contains(property.getPropertyName())) {
-                propOrder.add(property.getPropertyName());
-            }
-        }
     }
     
     /**
@@ -361,6 +358,41 @@ public class TypeInfo {
 
     public void setTransient(boolean isTransient) {
         this.isTransient = isTransient;
+    }
+    
+    public java.util.List<Property> getNonTransientPropertiesInPropOrder(){
+    	java.util.List<Property> propertiesInOrder = new ArrayList<Property>();
+        String[] propOrder = getPropOrder();
+        if (propOrder.length == 0 || propOrder[0].equals("")) {
+            ArrayList<String> propertyNames = getPropertyNames();
+            for (int i = 0; i < propertyNames.size(); i++) {
+                String nextPropertyKey = propertyNames.get(i);                
+                Property next = getProperties().get(nextPropertyKey);
+                if(next != null && !next.isTransient()){
+                	propertiesInOrder.add(next);
+                }
+            }
+        }else{
+        	ArrayList<String> propertyNamesCopy = new ArrayList<String>(getPropertyNames());
+            for (int i = 0; i < propOrder.length; i++) {
+            	//generate mappings based on the propOrder.
+            	String propertyName = propOrder[i];            	
+                Property next = getProperties().get(propertyName);
+                if(next != null && !next.isTransient()){
+                	propertyNamesCopy.remove(propertyName);
+                	propertiesInOrder.add(next);                    
+                }
+            }
+            //attributes may not be in the prop order in which case we need to generate those mappings also            
+            for (int i = 0; i < propertyNamesCopy.size(); i++) {
+                String nextPropertyKey = propertyNamesCopy.get(i);
+                Property next = getProperties().get(nextPropertyKey);
+                if(next != null && !next.isTransient()){
+                	propertiesInOrder.add(next);
+                }
+            }
+        }
+    	return propertiesInOrder;
     }
    
 }

@@ -55,6 +55,7 @@ public class Property {
     private String setMethodName;
     private boolean isRequired = false;
     private boolean isNillable = false;
+    private boolean isTransient;
     
     public Property() {
     }
@@ -231,5 +232,12 @@ public class Property {
 
     public void setNillable(boolean isNillable) {
         this.isNillable = isNillable;
+    }
+    public boolean isTransient() {
+        return isTransient;
+    }
+
+    public void setTransient(boolean isTransient) {
+        this.isTransient = isTransient;
     }
 }

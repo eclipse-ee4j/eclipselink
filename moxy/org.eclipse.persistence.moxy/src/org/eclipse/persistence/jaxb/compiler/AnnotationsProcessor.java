@@ -392,6 +392,7 @@ public class AnnotationsProcessor {
                 if (element.type() != XmlElement.DEFAULT.class) {
                     propertyType = helper.getJavaClass(element.type());
                 }
+                validateElementIsInPropOrder(info, property.getPropertyName());
             }
             // handle @XmlID
             if (helper.isAnnotationPresent(property.getElement(), XmlID.class)) {
@@ -419,6 +420,7 @@ public class AnnotationsProcessor {
                 throw org.eclipse.persistence.exceptions.JAXBException.factoryMethodOrConstructorRequired(javaClass.getName());
             }
         }
+        validatePropOrderForInfo(info);
         return info;
     }
 
@@ -479,17 +481,19 @@ public class AnnotationsProcessor {
                         XmlElements xmlElements = (XmlElements)helper.getAnnotation(property.getElement(), XmlElements.class);
                         XmlElement[] elements = xmlElements.value();
                         ArrayList<Property> choiceProperties = new ArrayList<Property>(elements.length);
+                        validateElementIsInPropOrder(info, nextField.getName());
                         for(int i = 0; i < elements.length; i++) {
                             XmlElement next = elements[i];
                             Property choiceProp = new Property();
                             String name = next.name();
+                            
                             String namespace = next.namespace();
                             QName qName = null;
                             
                             if(name.equals("##default")) {
                                 name = nextField.getName();
                             }
-
+                            //validateElementIsInPropOrder(info, name);
                             if (!namespace.equals("##default")) {
                                 qName = new QName(namespace, name);
                             } else {
@@ -544,6 +548,7 @@ public class AnnotationsProcessor {
                             elementRefs = refs.value();
                             info.setHasElementRefs(true);
                         }
+                        validateElementIsInPropOrder(info, nextField.getName());
                         for(XmlElementRef nextRef:elementRefs) {
                             JavaClass type = nextField.getResolvedType();
                             String typeName = type.getQualifiedName();
@@ -657,6 +662,7 @@ public class AnnotationsProcessor {
                     	XmlElement xmlElement = (XmlElement) helper.getAnnotation(property.getElement(), XmlElement.class);
                         property.setIsRequired(xmlElement.required());
                         property.setNillable(xmlElement.nillable());
+                        validateElementIsInPropOrder(info, property.getPropertyName());
                     }                                                            
                                    
                     if (helper.isAnnotationPresent(property.getElement(), XmlValue.class)) {                    
@@ -741,6 +747,7 @@ public class AnnotationsProcessor {
         //keep track of property names to avoid processing the same property twice (for getter and setter)
         ArrayList<String> propertyNames = new ArrayList<String>();
         for (int i=0; i<propertyMethods.size(); i++) {
+            boolean isPropertyTransient = false;
             JavaMethod nextMethod = propertyMethods.get(i);
             String propertyName = "";
             
@@ -767,10 +774,14 @@ public class AnnotationsProcessor {
                     // use the set method if it exists and is annotated
                     if (!helper.isAnnotationPresent(setMethod, XmlTransient.class)) {
                         propertyMethod = setMethod;   
+                    }else{
+                    	isPropertyTransient = true;
                     }
                 } else {
                     if (!helper.isAnnotationPresent(getMethod, XmlTransient.class)) {
                         propertyMethod = getMethod;
+                    }else{
+                    	isPropertyTransient = true;
                     }
                 }
             } else {
@@ -789,10 +800,14 @@ public class AnnotationsProcessor {
                     // use the set method if it exists and is annotated
                     if (!helper.isAnnotationPresent(getMethod, XmlTransient.class)) {
                         propertyMethod = getMethod;   
+                    }else{
+                    	isPropertyTransient = true;
                     }
                 } else {
                     if (!helper.isAnnotationPresent(setMethod, XmlTransient.class)) {
                         propertyMethod = setMethod;
+                    }else{
+                    	isPropertyTransient = true;
                     }
                 }
                 propertyName = Character.toLowerCase(propertyName.charAt(0)) + propertyName.substring(1);
@@ -803,14 +818,17 @@ public class AnnotationsProcessor {
                 Property property = null;
                 if(helper.isAnnotationPresent(propertyMethod, XmlElements.class)) {
                     property = new ChoiceProperty(helper);
+                    validateElementIsInPropOrder(info, propertyName);
                 } else if (helper.isAnnotationPresent(propertyMethod, XmlAnyElement.class)) {
                     property = new AnyProperty(helper);
                 } else if (helper.isAnnotationPresent(propertyMethod, XmlElementRef.class) || helper.isAnnotationPresent(propertyMethod, XmlElementRefs.class)) {
                     property = new ReferenceProperty(helper);
+                    validateElementIsInPropOrder(info, propertyName);
                 } else {
                     property = new Property(helper);
                 }
                 
+                property.setTransient(isPropertyTransient);
                 //  Check for mixed context
                 if (helper.isAnnotationPresent(propertyMethod, XmlMixed.class)) {
                     info.setMixed(true);
@@ -911,6 +929,7 @@ public class AnnotationsProcessor {
                     XmlElements xmlElements = (XmlElements)helper.getAnnotation(property.getElement(), XmlElements.class);
                     XmlElement[] elements = xmlElements.value();
                     ArrayList<Property> choiceProperties = new ArrayList<Property>(elements.length);
+                    validateElementIsInPropOrder(info, propertyName);
                     for(int j = 0; j < elements.length; j++) {
                         XmlElement next = elements[j];
                         Property choiceProp = new Property();
@@ -920,6 +939,7 @@ public class AnnotationsProcessor {
                         if(name.equals("##defualt")) {
                             name = propertyName;
                         }
+                        //validateElementIsInPropOrder(info, propertyName);
                         if (!namespace.equals("##default")) {
                             qName = new QName(namespace, name);
                         } else {
@@ -950,6 +970,7 @@ public class AnnotationsProcessor {
                         elementRefs = refs.value();
                         info.setHasElementRefs(true);
                     }
+                    validateElementIsInPropOrder(info, propertyName);
                     for(XmlElementRef nextRef:elementRefs) {
                         JavaClass type = ptype;
                         String typeName = type.getQualifiedName();
@@ -1003,6 +1024,7 @@ public class AnnotationsProcessor {
                     if(propOrderList.contains(propertyName)){
                     	throw JAXBException.transientInProporder(propertyName);
                     }
+                    property.setTransient(true);
                 }                     
                    
                 // Check for XmlElement annotation and set required (a.k.a. minOccurs) accordingly
@@ -1010,8 +1032,10 @@ public class AnnotationsProcessor {
                 if (ptype.isPrimitive()) {
                     property.setIsRequired(true);
                 } else if (helper.isAnnotationPresent(property.getElement(), XmlElement.class)) {
-                    property.setIsRequired(((XmlElement) helper.getAnnotation(property.getElement(), XmlElement.class)).required());
-                    property.setNillable(((XmlElement) helper.getAnnotation(property.getElement(), XmlElement.class)).required());
+                    XmlElement element = (XmlElement) helper.getAnnotation(property.getElement(), XmlElement.class);
+                    property.setIsRequired(element.required());                    
+                    property.setNillable(element.nillable());
+                    validateElementIsInPropOrder(info, propertyName);
                 }                    
             }
         }
@@ -1566,8 +1590,7 @@ public class AnnotationsProcessor {
         if(referencedElement.getSubstitutableElements() != null && referencedElement.getSubstitutableElements().size() > 0) {
             for(ElementDeclaration substitutable:referencedElement.getSubstitutableElements()) {
                 addReferencedElement(property, substitutable);
-            }
-            
+            }            
         }
     }
     
@@ -1587,11 +1610,47 @@ public class AnnotationsProcessor {
                 || helper.isAnnotationPresent(elem, XmlSchemaType.class)
                 || helper.isAnnotationPresent(elem, XmlElementWrapper.class)
                 || helper.isAnnotationPresent(elem, XmlID.class)
+                || helper.isAnnotationPresent(elem, XmlList.class)
+                || helper.isAnnotationPresent(elem, XmlMimeType.class)
                 || helper.isAnnotationPresent(elem, XmlIDREF.class)) {
            
                 return true;
         }
         return false;
         
+    }
+    
+    private void validateElementIsInPropOrder (TypeInfo info, String name){
+    	if(info.isTransient()){
+    		return;
+    	}
+        //If a property is marked with XMLElement, XMLElements, XMLElementRef or XMLElementRefs and propOrder is not empty then it must be in the proporder list
+        String[] propOrder = info.getPropOrder();
+        if (propOrder.length > 0) {
+            if(propOrder.length == 1 && propOrder[0].equals("")){
+                return;
+            }
+            List<String> propOrderList = Arrays.asList(info.getPropOrder());    		
+            if(!propOrderList.contains(name)){
+                throw JAXBException.missingPropertyInPropOrder(name);
+            }
+        }
+    }
+        
+    private void validatePropOrderForInfo(TypeInfo info){
+    	if(info.isTransient()){
+            return;
+    	}
+        //Ensure that all properties in the propOrder list actually exist
+        String[] propOrder = info.getPropOrder();
+        int propOrderLength = propOrder.length;
+        if (propOrderLength > 0) {        
+            for(int i=1; i< propOrderLength; i++){
+                String nextPropName = propOrder[i];                
+                if(!nextPropName.equals("") && !info.getPropertyNames().contains(nextPropName)){
+                    throw JAXBException.nonExistentPropertyInPropOrder(nextPropName);
+                }
+            }
+        }
     }
 }

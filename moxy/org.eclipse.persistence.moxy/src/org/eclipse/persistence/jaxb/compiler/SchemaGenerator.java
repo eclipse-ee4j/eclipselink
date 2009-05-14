@@ -106,7 +106,6 @@ public class SchemaGenerator {
         info.setSchema(schema);
 
         String typeName = info.getSchemaTypeName();
-        String[] propOrder = info.getPropOrder();
         String pfx = "";
         
         Property valueField = null;
@@ -294,6 +293,7 @@ public class SchemaGenerator {
                 type.setComplexContent(content);
             }
             TypeDefParticle compositor = null;
+            String[] propOrder = info.getPropOrder();
             if (propOrder.length == 0) {
                 // TODO: needed to hack for TCK - spec requires an 'all' to be
                 // generated in cases where propOrder == 0, however, the TCK 
@@ -338,11 +338,10 @@ public class SchemaGenerator {
                 info.setComplexType(type);
                 info.setCompositor(compositor);
             }
-            info.setPropOrder(propOrder);            
         }
     }
     
-    public void addToSchemaType(ArrayList<Property> properties, TypeDefParticle compositor, ComplexType type, Schema schema) {
+    public void addToSchemaType(java.util.List<Property> properties, TypeDefParticle compositor, ComplexType type, Schema schema) {
         for (Property next : properties) {
             // TODO:  we seem to get a null property on occasion
             // need to look into this...
@@ -718,19 +717,8 @@ public class SchemaGenerator {
             String javaClassName = classNames.next();
             TypeInfo info = (TypeInfo)typeInfo.get(javaClassName);
             if (info.isComplexType()) {
-            	if(info.getSchema() != null){
-	                ComplexType type = info.getComplexType();
-	                TypeDefParticle compositor = info.getCompositor();
-	                String[] propOrder = info.getPropOrder();
-	                if (propOrder.length == 0 || propOrder[0].equals("")) {
-	                    propOrder = (String[])info.getPropertyNames().toArray(new String[info.getPropertyNames().size()]);
-	                }
-	                ArrayList<Property> properties = new ArrayList(propOrder.length); 
-	                for (int i = 0; i < propOrder.length; i++) {
-	                    Property next = info.getProperties().get(propOrder[i]);
-	                    properties.add(next);
-	                }
-	                addToSchemaType(properties, compositor, type, info.getSchema());
+            	if(info.getSchema() != null){	                     
+	                addToSchemaType(info.getNonTransientPropertiesInPropOrder(), info.getCompositor(), info.getComplexType(), info.getSchema());
             	}
             }
         }
