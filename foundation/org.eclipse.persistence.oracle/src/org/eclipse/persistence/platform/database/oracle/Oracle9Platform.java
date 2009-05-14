@@ -390,7 +390,8 @@ public class Oracle9Platform extends Oracle8Platform {
             return;
         }
         driverVersion = conn.getMetaData().getDriverVersion();
-        shouldPrintCalendar = driverVersion.startsWith("9.") || driverVersion.startsWith("10.");
+        // printCalendar for versions greater or equal 9 and less than 10.2.0.4
+        shouldPrintCalendar = Helper.compareVersions("9", driverVersion) <= 0 && Helper.compareVersions(driverVersion, "10.2.0.4") < 0;
         if(Helper.compareVersions(driverVersion, "11.1.0.7") < 0) {
             isTimestampInGmt = false;
         } else {
