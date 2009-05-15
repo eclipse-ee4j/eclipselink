@@ -76,7 +76,7 @@
     <!-- Helper definitions derived from Pre-set variables -->
     <property name="feature.build.dir"                  value="${classes.dir}/features"/>
     <property name="bundle.working.dir"                 value="${classes.dir}/plugins"/>
-    <property name="feature.2.util.dbws"                value="${feature.2.base.dir}/${eclipselink.utils.dbws}"/>
+    <property name="feature.2.util.dbws"                value="${feature.2.base.dir}/${eclipselink.util.dbws}"/>
     <property name="feature.2.jpa.plugins"              value="${feature.2.base.dir}/${eclipselink.jpa.plugins}"/>
 
     <!-- Tool definitions -->
