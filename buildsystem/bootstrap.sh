@@ -41,20 +41,42 @@ then
     MILESTONE=true
     if [ ! "${BRANCH}" = "" ]
     then
-        #temporarily store Name of Milestone in TARGET
-        #Syntax: ./bootstrap.sh milestone M4 [branch]
-        TARGET=${BRANCH}
-        BRANCH=$3
-        TARG_NM=${TARGET}
+        QUALIFIER=$3
+        if [ ! "${QUALIFIER}" = "" ]
+        then
+            #temporarily store Name of Milestone in TARGET
+            #Syntax: ./bootstrap.sh milestone M4 QUALIFIER [branch]
+            #  milestone - tells system that it will be promoting a build to a milestone
+            #  M4        - an example of the milestone. Used in dir storage, and maven. 
+            #              Also of note "release" is a special milestone value that tells
+            #              the system to promote build to the release for the version.
+            #  QUALIFIER - gives the system all the info it needs to identify the build 
+            #              to promote.              
+            TARGET=${BRANCH}
+            BRANCH=$4
+            TARG_NM=${TARGET}
+            if [ "${TARGET}" = "release" ]
+            then
+                RELEASE=true
+                TARGET=milestone
+            fi
+        else
+            echo "ERROR: Qualifier of the build must be specified in ARG3!"
+            echo "USAGE: ./boostrap.sh milestone M9 QUALIFIER [branch]"
+            echo "USAGE: ./boostrap.sh milestone release QUALIFIER [branch]"
+            exit
+        fi
     else
         echo "ERROR: Name of milestone must be specified in ARG2!"
-        echo "USAGE: ./boostrap.sh milestone M9 [branch]"
+        echo "USAGE: ./boostrap.sh milestone M9 QUALIFIER [branch]"
+        echo "USAGE: ./boostrap.sh milestone release QUALIFIER [branch]"
         exit
     fi
 fi
 if [ "${TARGET}" = "release" ]
 then
-    RELEASE=true
+    echo "Error: 'release' is not a valid initial target. Use 'milestone release'. Exiting..."
+    exit 2
 fi
 if [ "${TARGET}" = "uploadDeps" ]
 then
@@ -68,6 +90,8 @@ then
 fi
 
 ##-- Convert "BRANCH" to BRANCH_NM (version or trunk) and BRANCH (svn branch path)
+#    BRANCH_NM is used for reporting and naming purposes
+#    BRANCH    is used to quailify the actual Branch path
 if [ ! "${BRANCH}" = "" ]
 then
     BRANCH_NM=${BRANCH}
@@ -146,8 +170,7 @@ CreatePath() {
 }
 
 unset getPrevRevision
-getPrevRevision()
-{
+getPrevRevision() {
     ## find the revision of the last build
     ##
     for prev_log in `ls -1 ${LOG_DIR} | grep bsb-${BRANCH_NM}_${TARG_NM} | sort -t_ -k3 -r | grep -v ${LOGFILE_NAME}`
@@ -162,8 +185,7 @@ getPrevRevision()
 }
 
 unset genTestSummary
-genTestSummary()
-{
+genTestSummary() {
     infile=$1
     outfile=$2
 
@@ -225,8 +247,7 @@ genTestSummary()
 }
 
 unset cleanFailuresDir
-cleanFailuresDir()
-{
+cleanFailuresDir() {
     num_files=10
 
     # leave only the last 10 failed build logs on the download server
@@ -303,18 +324,34 @@ ANT_ARGS=" "
 ANT_OPTS="-Xmx512m"
 ANT_BASEARG="-f \"${BOOTSTRAP_BLDFILE}\" -Dbranch.name=\"${BRANCH}\""
 
-# May need to add "milestone" flag to alert build
+# Test for "milestone" flag to start a build promotion rather than a real build
 if [ "${MILESTONE}" = "true" ]
 then
-    ANT_BASEARG="${ANT_BASEARG} -Dbuild.type=${TARGET} -Dbuild_id=${TARGET}"
-    TARGET="milestone"
-fi
+    ## Parse $QUALIFIER for build date value
+    BLDDATE=`echo ${QUALIFIER} | cut -s -d'-' -f1 | cut -s -dv -f2`
+    if [ "${BLDDATE}" = "" ]
+    then
+        echo "BLDDATE Error: There is something wrong with QUALIFIER. ('$QUALIFIER' should be vDATE-rREV)!"
+        exit 2
+    fi
+    
+    ## Parse $QUALIFIER for SVN revision value
+    SVNREV=`echo ${QUALIFIER} | cut -s -d'-' -f2 | cut -s -dr -f2`
+    if [ "${SVNREV}" = "" ]
+    then
+        echo "SVNREV Error: There is something wrong with QUALIFIER. ('$QUALIFIER' should be vDATE-rREV)!"
+        exit 2
+    fi
 
-# May need to add "release" flag to alert build
-if [ "${RELEASE}" = "true" ]
-then
-    ANT_BASEARG="${ANT_BASEARG} -Dbuild.type=RELEASE -Dbuild_id= "
-    TARGET="milestone"
+    # Setup parameters for Ant build
+    ANT_BASEARG="${ANT_BASEARG} -Dsvn.revision=${SVNREV} -Dbuild.date=${BLDDATE}"
+    if [ "${RELEASE}" = "true" ]
+    then
+        ANT_BASEARG="${ANT_BASEARG} -Dbuild.type=RELEASE"
+    else
+        ANT_BASEARG="${ANT_BASEARG} -Dbuild.type=${TARGET}"
+    fi
+    TARGET=milestone
 fi
 
 if [ "${LOCAL_REPOS}" = "true" ]
@@ -364,7 +401,12 @@ ant ${ANT_BASEARG} -Ddb.user="${DB_USER}" -Ddb.pwd="${DB_PWD}" -Ddb.url="${DB_UR
 echo "Build completed at: `date`" >> ${DATED_LOG}
 echo "Build complete."
 
-##
+# If promoting a build just exit. there is no post-build processing
+if [ "${MILESTONE}" = "true" ]
+then
+    exit
+fi
+##  ---------------------------------------- ####### ------------------------------------  ##
 ## Post-build Processing
 ##
 MAIL_EXEC=/bin/mail

@@ -113,7 +113,7 @@
     </tstamp>
     <property name="build.type" value="SNAPSHOT"/>
     <property name="svn.revision" value="NA"/>
-    <condition property="version.qualifier" value="qualifier" 
+    <condition property="version.qualifier" value="qualifier"
                                             else="v${build.date}-r${svn.revision}">
         <equals arg1="${svn.revision}" arg2="NA"/>
     </condition>
@@ -146,16 +146,16 @@
     <target name="build-eclipselink-jar" depends="build-core, package-eclipselink-jar" description="build all EclipseLink distribution files except docs and tests"/>
 
     <!-- Default ant target, compiles all components and tests, builds eclipselink.jar. -->
-    <target name="build" depends="build-eclipselink-jar, build-core-test, build-util, build-util-test" description="build all EclipseLink distribution files except docs"/>
+    <target name="build" depends="build-eclipselink-jar, build-core-test" description="build all EclipseLink distribution files except docs"/>
 
     <!-- Compiles all components and tests (excluding extensions). -->
-    <target name="build-all-but-ext" depends="build"/> <!-- could remove now, but not certain if other processes use this target -->
+    <target name="build-all-but-ext" depends="build, build-util, build-util-test"/>
 
     <!-- Compiles core components, tests and extensions (excluding utilities). -->
     <target name="build-extensions" depends="build-core, build-core-test, build-oracle-extension"/>
 
     <!-- Builds and packages all jars, javadoc, and builds installer. -->
-    <target name="build-distribution" depends="build, package-all"/>
+    <target name="build-distribution" depends="build-all-but-ext, package-all"/>
 
 <!-- ================================================================================= -->
 
@@ -325,8 +325,9 @@
                 <include name="${readme-file}"/>
                 <include name="${license-files}"/>
             </zipfileset>
-            <zipfileset dir="${eclipselink.jpa.plugins}/" includes="javax.persistence*.jar"/>
-            <zipfileset dir="${eclipselink.sdo.plugins}/" includes="commonj.sdo*2.1.1*.jar"/>
+            <zipfileset dir="${eclipselink.jpa.plugins}/"  includes="javax.persistence*.jar"/>
+            <zipfileset dir="${eclipselink.moxy.plugins}/" includes="javax.xml.bind*.jar"/>
+            <zipfileset dir="${eclipselink.sdo.plugins}/"  includes="commonj.sdo*2.1.1*.jar"/>
         </zip>
     </target>
 
