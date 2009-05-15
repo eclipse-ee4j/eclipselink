@@ -494,7 +494,7 @@
         <copy todir="${download.path}" file="${build.source.path}/eclipselink-dbws-util-lrg-${version.string}.html"                                 failonerror="false"/>
         <!-- copy P2 archive as well for safekeeping (in case rebuild needed) -->
         <copy todir="${download.path}" file="${build.source.path}/${eclipselink.p2.archive.signed}"                                                 failonerror="false"/>
-        <ant antfile="uploadToMaven.xml" dir="${tmp.maven.dir}" target="upload-maven-all"/>
+        <ant antfile="${basedir}/uploadToMaven.xml" dir="${tmp.maven.dir}" target="upload-maven-all"/>
     </target>
 
     <target name="populate-p2-update-site">
