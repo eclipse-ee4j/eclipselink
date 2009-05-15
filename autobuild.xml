@@ -401,13 +401,13 @@
         <echo message="            ${svn.branch.url} \\"/>
         <echo message="            ${svn.base.url}/tags/${milestone.tag} \\"/>
         <echo message="            -m 'Create ${milestone.tag} Tag for ${version.string}'"/>
-        <!-- exec executable="${svn.exec}" failonerror="false" logError="true">
+        <exec executable="${svn.exec}" failonerror="false" logError="true">
             <arg line="copy"/>
             <arg line="-r ${svn.revision}"/>
             <arg line="${svn.branch.url}"/>
             <arg line="${svn.base.url}/tags/${milestone.tag}"/>
             <arg line="-m 'Create ${milestone.tag} Tag for ${version.string}'"/>
-        </exec -->
+        </exec>
     </target>
 
     <target name="promote-pre-init">
@@ -542,7 +542,7 @@
             <property name="p2.base.dir" value="${p2.repos.path}"/>
             <property name="site.dir" value="${signed.jar.path}"/>
         </ant>
-        <!-- delete dir="${temp.rebuild.path}" failonerror="false"/ -->
+        <delete dir="${temp.rebuild.path}" failonerror="false"/>
     </target>
 
 </project>
