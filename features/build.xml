@@ -243,7 +243,7 @@
         <delete file="${eclipselink.p2.archive.presigned}"/>
         <zip destfile="${eclipselink.p2.archive.presigned}">
             <zipfileset dir="${feature.2.base.dir}"                      includes="eclipselink*.jar"/>
-            <zipfileset dir="${feature.2.utils.dbws}"                    includes="eclipselink-dbwsutils*.jar"/>
+            <zipfileset dir="${feature.2.util.dbws}"                     includes="eclipselink-dbwsutils*.jar"/>
             <zipfileset dir="${classes.dir}"                             includes="eclipselink.build"/>
             <zipfileset dir="${classes.dir}"                             includes="site.xml"/>
             <zipfileset dir="${feature.build.dir}"     prefix="features" includes="*.jar"/>
