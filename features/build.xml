@@ -253,8 +253,10 @@
     </target>
 
     <target name="copy-and-queue-for-sign">
+        <delete file="${signing.dir}/${eclipselink.p2.archive.presigned}" failonerror="false"/>
+        <delete file="${signing.dir}/signed-output/${eclipselink.p2.archive.presigned}" failonerror="false"/>
         <copy file="${eclipselink.p2.archive.presigned}" todir="${signing.dir}"/>
-        <exec executable="${signing.script}" dir="${signing.dir}">
+        <exec executable="${signing.script}" dir="${signing.dir}"> <!-- failonerror= false? need to not stop if authority fails -->
             <arg value="${eclipselink.p2.archive.presigned}"/>
             <arg value="nomail"/>
             <arg value="signed-output/"/>
