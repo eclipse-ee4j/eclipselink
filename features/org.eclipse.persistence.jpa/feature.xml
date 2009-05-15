@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.persistence.jpa"
       label="EclipseLink JPA"
-      version="1.1.1.@QUALIFIER@"
+      version="@VERSION@.@QUALIFIER@"
       provider-name="EclipseLink Project">
 
    <description url="http://www.eclipse.org/eclipselink/project-info/description.html">
@@ -76,49 +76,49 @@ The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.
          id="org.eclipse.persistence.antlr"
          download-size="0"
          install-size="0"
-         version="1.1.1.@QUALIFIER@"
+         version="@VERSION@.@QUALIFIER@"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.persistence.asm"
          download-size="0"
          install-size="0"
-         version="1.1.1.@QUALIFIER@"
+         version="@VERSION@.@QUALIFIER@"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.persistence.core"
          download-size="0"
          install-size="0"
-         version="1.1.1.@QUALIFIER@"
+         version="@VERSION@.@QUALIFIER@"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.persistence.jpa"
          download-size="0"
          install-size="0"
-         version="1.1.1.@QUALIFIER@"
+         version="@VERSION@.@QUALIFIER@"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.persistence.jpa.equinox"
          download-size="0"
          install-size="0"
-         version="1.1.1.@QUALIFIER@"
+         version="@VERSION@.@QUALIFIER@"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.persistence.jpa.equinox.weaving"
          download-size="0"
          install-size="0"
-         version="1.1.1.@QUALIFIER@"
+         version="@VERSION@.@QUALIFIER@"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.persistence.oracle"
          download-size="0"
          install-size="0"
-         version="1.1.1.@QUALIFIER@"
+         version="@VERSION@.@QUALIFIER@"
          unpack="false"/>
 
 </feature>

@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.persistence.moxy"
       label="EclipseLink MOXy"
-      version="1.1.1.@QUALIFIER@"
+      version="@VERSION@.@QUALIFIER@"
       provider-name="EclipseLink Project">
 
    <description url="http://www.eclipse.org/eclipselink/project-info/description.html">
@@ -84,21 +84,21 @@
          id="org.eclipse.persistence.asm"
          download-size="0"
          install-size="0"
-         version="1.1.1.@QUALIFIER@"
+         version="@VERSION@.@QUALIFIER@"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.persistence.core"
          download-size="0"
          install-size="0"
-         version="1.1.1.@QUALIFIER@"
+         version="@VERSION@.@QUALIFIER@"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.persistence.moxy"
          download-size="0"
          install-size="0"
-         version="1.1.1.@QUALIFIER@"
+         version="@VERSION@.@QUALIFIER@"
          unpack="false"/>
 
 </feature>
