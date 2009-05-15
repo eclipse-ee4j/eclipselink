@@ -401,13 +401,13 @@
         <echo message="            ${svn.branch.url} \\"/>
         <echo message="            ${svn.base.url}/tags/${milestone.tag} \\"/>
         <echo message="            -m 'Create ${milestone.tag} Tag for ${version.string}'"/>
-        <!-- exec executable="${svn.exec}" failonerror="false" logError="true">
+        <exec executable="${svn.exec}" failonerror="false" logError="true">
             <arg value="copy"/>
             <arg value="-r ${svn.revision}"/>
             <arg value="${svn.branch.url}"/>
             <arg value="${svn.base.url}/tags/${milestone.tag}"/>
             <arg value="-m 'Create ${milestone.tag} Tag for ${version.string}'"/>
-        </exec -->
+        </exec>
     </target>
 
     <target name="promote-pre-init">
