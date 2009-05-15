@@ -1173,12 +1173,31 @@ public class AnnotationsProcessor {
         typeInfo.put(javaClass.getQualifiedName(), info);
     }      
     
+    private String decapitalize(String javaName){
+    	//return Introspector.decapitalize(name);  Spec Compliant
+    	//RI compliancy
+        char[] name = javaName.toCharArray();
+        int i = 0;
+        while(i < name.length && Character.isUpperCase(name[i])){
+            i++;
+        }	        
+        if(i > 0){
+            name[0] = Character.toLowerCase(name[0]);
+            for(int j=1; j<i-1; j++){
+                name[j] = Character.toLowerCase(name[j]);
+            }
+            return new String( name );
+        }else{
+            return javaName;
+        }  	    
+    }
+    
     public String getSchemaTypeNameForClassName(String className) {
         String typeName = "";
         if (className.indexOf('$') != -1) {
-            typeName = Introspector.decapitalize(className.substring(className.lastIndexOf('$') + 1));
+            typeName = decapitalize(className.substring(className.lastIndexOf('$') + 1));
         } else {
-            typeName = Introspector.decapitalize(className.substring(className.lastIndexOf('.') + 1));
+        	typeName = decapitalize(className.substring(className.lastIndexOf('.') + 1));
         }
         //now capitalize any characters that occur after a "break"
         boolean inBreak = false;

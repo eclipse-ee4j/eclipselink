@@ -70,6 +70,7 @@ public class Helper {
     public final static String DOUBLE = "java.lang.Double";
     public final static String FLOAT = "java.lang.Float";
     public final static String INTEGER = "java.lang.Integer";
+    public final static String UUID = "java.util.UUID";
     public final static String LONG = "java.lang.Long";
     public final static String SHORT = "java.lang.Short";
     public final static String UTIL_DATE = "java.util.Date";
@@ -125,6 +126,7 @@ public class Helper {
         javaTypes.put(UTIL_DATE, XMLConstants.DATE_TIME_QNAME);
         javaTypes.put(XMLGREGORIANCALENDAR, XMLConstants.ANY_SIMPLE_TYPE_QNAME);
         javaTypes.put(DURATION, XMLConstants.DURATION_QNAME);
+        javaTypes.put(UUID, XMLConstants.STRING_QNAME);
         return javaTypes;
     }
     

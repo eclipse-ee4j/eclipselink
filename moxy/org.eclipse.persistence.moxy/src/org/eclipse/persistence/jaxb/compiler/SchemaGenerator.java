@@ -361,7 +361,7 @@ public class SchemaGenerator {
                     }
 
                     wrapperElement.setName(name);
-                    wrapperElement.setMinOccurs("0");
+                    wrapperElement.setMinOccurs(Occurs.ZERO);
                     compositor.addElement(wrapperElement);
                     ComplexType wrapperType = new ComplexType();
                     Sequence wrapperSequence = new Sequence();
@@ -484,7 +484,7 @@ public class SchemaGenerator {
                     ArrayList<Property> choiceProperties = (ArrayList<Property>)((ChoiceProperty)next).getChoiceProperties();
                     addToSchemaType(choiceProperties, choice, parentType, schema);
                     if(isCollectionType(next)) {
-                        choice.setMaxOccurs("unbounded");
+                        choice.setMaxOccurs(Occurs.UNBOUNDED);
                     }
                     if(parentCompositor instanceof Sequence) {
                         ((Sequence)parentCompositor).addChoice(choice);
@@ -525,14 +525,14 @@ public class SchemaGenerator {
                 			element.setRef(prefix + ":" + localName);
                 		}
                 		if(isCollectionType(next)) {
-                			element.setMaxOccurs("unbounded");
+                			element.setMaxOccurs(Occurs.UNBOUNDED);
                 		}
                 		parentCompositor.addElement(element);
                 	} else {
                 		// otherwise, add a choice of referenced elements.
                 		Choice choice = new Choice();
                 		if(isCollectionType(next)) {
-                			choice.setMaxOccurs("unbounded");
+                			choice.setMaxOccurs(Occurs.UNBOUNDED);
                 		}
                 		for(ElementDeclaration elementDecl:referencedElements) {
                 			Element element = new Element();
@@ -559,11 +559,12 @@ public class SchemaGenerator {
                     Element element = new Element();
                     // Set minOccurs based on the 'required' flag
                     if (!(parentCompositor instanceof All)) {
-                        element.setMinOccurs(next.isRequired() ? "1" : "0");
+                        element.setMinOccurs(next.isRequired() ? Occurs.ONE : Occurs.ZERO);
                     }
                     QName elementName = next.getSchemaName();
                     JavaClass javaType = next.getType();
                     boolean isCollectionType = isCollectionType(next);
+                    boolean isMapType = isMapType(next);
                     if (isCollectionType) {
                         JavaClass gType = next.getGenericType();
                         if (gType != null && javaType.hasActualTypeArguments()) {
@@ -614,12 +615,14 @@ public class SchemaGenerator {
                         if (helper.isAnnotationPresent(next.getElement(), XmlID.class)) {
                             typeName = XMLConstants.SCHEMA_PREFIX + ":ID";
                         } else {
+                        	if(!isMapType){
                             QName schemaType = next.getSchemaType();
                             if (schemaType == null) {
                                 schemaType = getSchemaTypeFor(javaType);
                             }
                             if (schemaType != null) {
                                 typeName = XMLConstants.SCHEMA_PREFIX + ":" + schemaType.getLocalPart();
+	                            }
                             }
                         }
                     }
@@ -645,9 +648,60 @@ public class SchemaGenerator {
                             localSimpleType.setList(list);
                             element.setSimpleType(localSimpleType);
                         } else {
-                            element.setMaxOccurs("unbounded");
+                            element.setMaxOccurs(Occurs.UNBOUNDED);
                             element.setType(typeName);
                         }
+                    }else if(isMapType){ 
+                    	ComplexType mapComplexType = new ComplexType();
+                    	Sequence mapSequence = new Sequence();
+                    	
+                    	Element entryElement = new Element();
+                    	entryElement.setName("entry");
+                    	entryElement.setMinOccurs(Occurs.ZERO);
+                    	entryElement.setMaxOccurs(Occurs.UNBOUNDED);
+                    	
+                    	ComplexType entryComplexType = new ComplexType();
+                    	Sequence entrySequence = new Sequence();
+                    	
+                    	Element keyElement = new Element();
+                    	keyElement.setName("key");
+                    	keyElement.setMinOccurs(Occurs.ZERO);   
+                    	
+                    	JavaClass gType = next.getGenericType();
+                    	JavaClass keyType = javaType;
+                    	JavaClass valueType = javaType;
+
+                        if (gType != null && javaType.hasActualTypeArguments()) {
+                             Object[] params = javaType.getActualTypeArguments().toArray();
+                             keyType = (JavaClass) params[0];
+                             valueType  = (JavaClass) params[1];
+                        }
+                        QName keySchemaType = getSchemaTypeFor(keyType);                                            
+                        if (keySchemaType != null) {
+                        	typeName = XMLConstants.SCHEMA_PREFIX + ":" + keySchemaType.getLocalPart();
+                        	keyElement.setType(typeName);
+                        }
+                                            	
+                    	entrySequence.addElement(keyElement);                    	
+                    	
+                    	Element valueElement = new Element();
+                    	valueElement.setName("value");
+                    	valueElement.setMinOccurs(Occurs.ZERO);
+                    	QName valueSchemaType = getSchemaTypeFor(valueType);                                            
+                        if (valueSchemaType != null) {
+                        	typeName = XMLConstants.SCHEMA_PREFIX + ":" + valueSchemaType.getLocalPart();
+                        	valueElement.setType(typeName);     
+                        }
+                    	                    	               	
+                    	entrySequence.addElement(valueElement);
+                    	
+                    	entryComplexType.setSequence(entrySequence);
+                    	entryElement.setComplexType(entryComplexType);
+                    	
+                    	mapSequence.addElement(entryElement);
+                    	mapComplexType.setSequence(mapSequence);
+                        element.setComplexType(mapComplexType);                       
+                        
                     } else {
                         element.setType(typeName);
                     }
@@ -706,6 +760,9 @@ public class SchemaGenerator {
             }
         }
         if (schemaType == null) {
+            if(javaClass.getQualifiedName().equals("java.lang.Object")){
+                return XMLConstants.ANY_TYPE_QNAME;
+            }
             return XMLConstants.ANY_SIMPLE_TYPE_QNAME;
         }
         return schemaType;
@@ -758,6 +815,11 @@ public class SchemaGenerator {
                 || helper.getJavaClass(java.util.List.class).isAssignableFrom(type) 
                 || helper.getJavaClass(java.util.Set.class).isAssignableFrom(type)
                 || type.isArray());
+    } 
+    
+    public boolean isMapType(Property field){
+    	JavaClass type = field.getType();
+        return helper.getJavaClass(java.util.Map.class).isAssignableFrom(type);
     } 
     
     private Schema getSchemaForNamespace(String namespace) {
