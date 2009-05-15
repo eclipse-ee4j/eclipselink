@@ -247,7 +247,7 @@
             <zipfileset dir="${classes.dir}"                             includes="eclipselink.build"/>
             <zipfileset dir="${classes.dir}"                             includes="site.xml"/>
             <zipfileset dir="${feature.build.dir}"     prefix="features" includes="*.jar"/>
-            <zipfileset dir="${feature.2.base.dir}"    prefix="plugins"  includes="org.eclipse.persistence*.jar"/>
+            <zipfileset dir="${feature.2.plugins.dir}" prefix="plugins"  includes="org.eclipse.persistence*.jar"/>
             <zipfileset dir="${feature.2.jpa.plugins}" prefix="plugins"  includes="javax.persistence*.jar"/>
         </zip>
     </target>
