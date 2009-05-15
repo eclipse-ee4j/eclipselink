@@ -93,7 +93,9 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
             p.addDescriptor(ordt);
         }
         List<DatabaseQuery> queries = queryBuilder.getQueries();
-        p.getQueries().addAll(queries);
+        if (queries != null && queries.size() > 0) {
+            p.getQueries().addAll(queries);
+        }
         Document resultDoc = xmlPlatform.createDocument();
         XMLMarshaller marshaller = new XMLContext(writeObjectPersistenceProject).createMarshaller();
         marshaller.marshal(p, resultDoc);
@@ -171,8 +173,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
     @SuppressWarnings("unchecked")
     @Test
     public void echoRegion() throws InstantiationException, IllegalAccessException {
-        BaseEntityClassLoader becl = new BaseEntityClassLoader(this.getClass().getClassLoader());
-        DatabaseSession ds = fixUp(REGION_OR_PROJECT, becl);
+        DatabaseSession ds = fixUp(REGION_OR_PROJECT);
         Class regionClass = ds.getProject().getDescriptorForAlias("region").getJavaClass();
         ValueReadQuery vrq = (ValueReadQuery)ds.getQuery("echoRegion");
         BaseEntity regionEntity = (BaseEntity)regionClass.newInstance();
@@ -342,8 +343,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
     @SuppressWarnings("unchecked")
     @Test
     public void echoEmpAddress() throws InstantiationException, IllegalAccessException {
-        BaseEntityClassLoader becl = new BaseEntityClassLoader(this.getClass().getClassLoader());
-        DatabaseSession ds = fixUp(EMPADDRESS_OR_PROJECT, becl);
+        DatabaseSession ds = fixUp(EMPADDRESS_OR_PROJECT);
         ObjectRelationalDataTypeDescriptor regionDesc = 
             (ObjectRelationalDataTypeDescriptor)ds.getProject().getDescriptorForAlias("region");
         Class regionClass = regionDesc.getJavaClass();
@@ -411,7 +411,9 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
             p.addDescriptor(ordt);
         }
         List<DatabaseQuery> queries = queryBuilder.getQueries();
-        p.getQueries().addAll(queries);
+        if (queries != null && queries.size() > 0) {
+            p.getQueries().addAll(queries);
+        }
         Document resultDoc = xmlPlatform.createDocument();
         XMLMarshaller marshaller = new XMLContext(writeObjectPersistenceProject).createMarshaller();
         marshaller.marshal(p, resultDoc);
@@ -571,8 +573,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
     @SuppressWarnings("unchecked")
     @Test
     public void echoEmpObject() throws InstantiationException, IllegalAccessException {
-        BaseEntityClassLoader becl = new BaseEntityClassLoader(this.getClass().getClassLoader());
-        DatabaseSession ds = fixUp(EMPOBJECT_OR_PROJECT, becl);
+        DatabaseSession ds = fixUp(EMPOBJECT_OR_PROJECT);
         ObjectRelationalDataTypeDescriptor regionDesc = 
             (ObjectRelationalDataTypeDescriptor)ds.getProject().getDescriptorForAlias("region");
         Class regionClass = regionDesc.getJavaClass();
@@ -1162,8 +1163,516 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
        "</emp_objectType>";
 
     @SuppressWarnings("unchecked")
-    public static DatabaseSession fixUp(String projectString, ClassLoader classLoader) {
-        BaseEntityClassLoader becl = new BaseEntityClassLoader(classLoader);
+    @Test
+    public void buildEmpArray_OrPart() throws SQLException, PublisherException {
+        ProcedureOperationModel pModel = new ProcedureOperationModel();
+        pModel.setName("buildEmpArray");
+        pModel.setCatalogPattern("another_advanced_demo");
+        pModel.setSchemaPattern(username.toUpperCase());
+        pModel.setProcedurePattern("buildEmpArray");
+        pModel.setReturnType("emp_info_arrayType");
+        List<DbStoredProcedure> storedProcedures = 
+            OracleHelper.buildStoredProcedure(conn, username, ora11Platform, pModel); 
+        Map<DbStoredProcedure, DbStoredProcedureNameAndModel> dbStoredProcedure2QueryName = 
+            new HashMap<DbStoredProcedure, DbStoredProcedureNameAndModel>();
+        ArrayList<OperationModel> operations = new ArrayList<OperationModel>();
+        operations.add(pModel);
+        DBWSBuilder.buildDbStoredProcedure2QueryNameMap(dbStoredProcedure2QueryName,
+            storedProcedures, operations, true);     
+        AdvancedJDBCORDescriptorBuilder advJOrDescriptorBuilder = 
+            new AdvancedJDBCORDescriptorBuilder();
+        AdvancedJDBCQueryBuilder queryBuilder = 
+            new AdvancedJDBCQueryBuilder(storedProcedures, dbStoredProcedure2QueryName);
+        PublisherListenerChainAdapter listenerChainAdapter = new PublisherListenerChainAdapter();
+        listenerChainAdapter.addListener(advJOrDescriptorBuilder);
+        listenerChainAdapter.addListener(queryBuilder);
+        PublisherWalker walker = new PublisherWalker(listenerChainAdapter);
+        pModel.getJPubType().accept(walker);
+        List<ObjectRelationalDataTypeDescriptor> descriptors = 
+            advJOrDescriptorBuilder.getDescriptors();
+        Project p = new Project();
+        p.setName("empArray");
+        for (ObjectRelationalDataTypeDescriptor ordt : descriptors) { 
+            p.addDescriptor(ordt);
+        }
+        List<DatabaseQuery> queries = queryBuilder.getQueries();
+        if (queries != null && queries.size() > 0) {
+            p.getQueries().addAll(queries);
+        }
+        Document resultDoc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = new XMLContext(writeObjectPersistenceProject).createMarshaller();
+        marshaller.marshal(p, resultDoc);
+        Document empArrayOrProjectDoc = xmlParser.parse(new StringReader(EMP_ARRAY_OR_PROJECT));
+        assertTrue("control document not same as instance document",
+            comparer.isNodeEqual(resultDoc, empArrayOrProjectDoc));    
+        
+        DatabaseSession ds = fixUp(EMP_ARRAY_OR_PROJECT);
+        DatabaseQuery vrq = ds.getQuery("buildEmpArray");
+        Vector args = new NonSynchronizedVector();
+        args.add(Integer.valueOf(3));
+        Object o = ds.executeQuery(vrq, args);
+        assertTrue("return value not correct type", o instanceof BaseEntity);
+        BaseEntity returnValue = (BaseEntity)o;
+        Object o2 = returnValue.get(0);
+        assertTrue("return value array not correct type", o2 instanceof ArrayList);
+        ArrayList empInfo = (ArrayList)o2;
+        assertTrue("return value array wrong size", empInfo.size() == 3);
+        BaseEntity emp1 = (BaseEntity)empInfo.get(0);
+        assertTrue("return value array first element id wrong value",
+            emp1.get(0).equals(BigDecimal.valueOf(1)));
+        assertTrue("return value array first element name wrong value",
+            emp1.get(1).equals("entry 1"));
+        BaseEntity emp2 = (BaseEntity)empInfo.get(1);
+        assertTrue("return value array second element id wrong value",
+            emp2.get(0).equals(BigDecimal.valueOf(2)));
+        assertTrue("return value array second element name wrong value",
+            emp2.get(1).equals("entry 2"));
+        BaseEntity emp3 = (BaseEntity)empInfo.get(2);
+        assertTrue("return value array third element id wrong value",
+            emp3.get(0).equals(BigDecimal.valueOf(3)));
+        assertTrue("return value array second element name wrong value",
+            emp3.get(1).equals("entry 3"));
+    }
+    public static final String EMP_ARRAY_OR_PROJECT =
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+        "<object-persistence version=\"Eclipse Persistence Services - some version (some build date)\" xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:eclipselink=\"http://www.eclipse.org/eclipselink/xsds/persistence\">" +
+           "<name>empArray</name>" +
+           "<class-mapping-descriptors>" +
+              "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
+                 "<class>another_advanced_demo.emp_info</class>" +
+                 "<alias>emp_info</alias>" +
+                 "<events xsi:type=\"event-policy\"/>" +
+                 "<querying xsi:type=\"query-policy\"/>" +
+                 "<attribute-mappings>" +
+                    "<attribute-mapping xsi:type=\"direct-mapping\">" +
+                       "<attribute-name>id</attribute-name>" +
+                       "<field name=\"ID\" xsi:type=\"column\"/>" +
+                    "</attribute-mapping>" +
+                    "<attribute-mapping xsi:type=\"direct-mapping\">" +
+                       "<attribute-name>name</attribute-name>" +
+                       "<field name=\"NAME\" xsi:type=\"column\"/>" +
+                    "</attribute-mapping>" +
+                 "</attribute-mappings>" +
+                 "<descriptor-type>aggregate</descriptor-type>" +
+                 "<caching>" +
+                    "<cache-size>-1</cache-size>" +
+                 "</caching>" +
+                 "<remote-caching>" +
+                    "<cache-size>-1</cache-size>" +
+                 "</remote-caching>" +
+                 "<instantiation/>" +
+                 "<copying xsi:type=\"instantiation-copy-policy\"/>" +
+                 "<structure>EMP_INFO</structure>" +
+                 "<field-order>" +
+                    "<field name=\"ID\" xsi:type=\"column\"/>" +
+                    "<field name=\"NAME\" xsi:type=\"column\"/>" +
+                 "</field-order>" +
+              "</class-mapping-descriptor>" +
+              "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
+                 "<class>another_advanced_demo.emp_info_array_CollectionWrapper</class>" +
+                 "<alias>emp_info_array</alias>" +
+                 "<events xsi:type=\"event-policy\"/>" +
+                 "<querying xsi:type=\"query-policy\"/>" +
+                 "<attribute-mappings>" +
+                    "<attribute-mapping xsi:type=\"object-array-mapping\">" +
+                       "<attribute-name>items</attribute-name>" +
+                       "<reference-class>another_advanced_demo.emp_info</reference-class>" +
+                       "<field name=\"ITEMS\" xsi:type=\"object-relational-field\"/>" +
+                       "<container xsi:type=\"list-container-policy\">" +
+                          "<collection-type>java.util.Vector</collection-type>" +
+                       "</container>" +
+                       "<structure>EMP_INFO_ARRAY</structure>" +
+                    "</attribute-mapping>" +
+                 "</attribute-mappings>" +
+                 "<descriptor-type>aggregate</descriptor-type>" +
+                 "<caching>" +
+                    "<cache-size>-1</cache-size>" +
+                 "</caching>" +
+                 "<remote-caching>" +
+                    "<cache-size>-1</cache-size>" +
+                 "</remote-caching>" +
+                 "<instantiation/>" +
+                 "<copying xsi:type=\"instantiation-copy-policy\"/>" +
+              "</class-mapping-descriptor>" +
+           "</class-mapping-descriptors>" +
+           "<queries>" +
+              "<query name=\"buildEmpArray\" xsi:type=\"value-read-query\">" +
+                 "<arguments>" +
+                    "<argument name=\"NUM\">" +
+                       "<type>java.lang.Object</type>" +
+                    "</argument>" +
+                 "</arguments>" +
+                 "<maintain-cache>false</maintain-cache>" +
+                 "<bind-all-parameters>true</bind-all-parameters>" +
+                 "<call xsi:type=\"stored-function-call\">" +
+                    "<procedure-name>another_advanced_demo.BUILDEMPARRAY</procedure-name>" +
+                    "<cursor-output-procedure>false</cursor-output-procedure>" +
+                    "<arguments>" +
+                       "<argument xsi:type=\"procedure-argument\">" +
+                          "<procedure-argument-name>NUM</procedure-argument-name>" +
+                          "<argument-name>NUM</argument-name>" +
+                       "</argument>" +
+                    "</arguments>" +
+                    "<stored-function-result xsi:type=\"procedure-output-argument\">" +
+                       "<procedure-argument-type>another_advanced_demo.emp_info_array_CollectionWrapper</procedure-argument-type>" +
+                       "<procedure-argument-sqltype>2003</procedure-argument-sqltype>" +
+                       "<procedure-argument-sqltype-name>EMP_INFO_ARRAY</procedure-argument-sqltype-name>" +
+                       "<nested-type-field xsi:type=\"procedure-argument\">" +
+                          "<procedure-argument-type>another_advanced_demo.emp_info</procedure-argument-type>" +
+                          "<procedure-argument-sqltype>2002</procedure-argument-sqltype>" +
+                          "<procedure-argument-sqltype-name>EMP_INFO</procedure-argument-sqltype-name>" +
+                       "</nested-type-field>" +
+                    "</stored-function-result>" +
+                 "</call>" +
+              "</query>" +
+           "</queries>" +
+        "</object-persistence>";
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void buildEmpArray_OxPart() throws SQLException, PublisherException,
+        InstantiationException, IllegalAccessException {
+        ProcedureOperationModel pModel = new ProcedureOperationModel();
+        pModel.setName("buildEmpArray");
+        pModel.setCatalogPattern("another_advanced_demo");
+        pModel.setSchemaPattern(username.toUpperCase());
+        pModel.setProcedurePattern("buildEmpArray");
+        pModel.setReturnType("emp_info_arrayType");
+        List<DbStoredProcedure> storedProcedures = 
+            OracleHelper.buildStoredProcedure(conn, username, ora11Platform, pModel); 
+        Map<DbStoredProcedure, DbStoredProcedureNameAndModel> dbStoredProcedure2QueryName = 
+            new HashMap<DbStoredProcedure, DbStoredProcedureNameAndModel>();
+        ArrayList<OperationModel> operations = new ArrayList<OperationModel>();
+        operations.add(pModel);
+        DBWSBuilder.buildDbStoredProcedure2QueryNameMap(dbStoredProcedure2QueryName,
+            storedProcedures, operations, true);     
+        AdvancedJDBCOXDescriptorBuilder advJOxDescriptorBuilder = 
+            new AdvancedJDBCOXDescriptorBuilder("urn:empArray", new TypeSuffixTransformer());
+        PublisherWalker walker = new PublisherWalker(advJOxDescriptorBuilder);
+        pModel.getJPubType().accept(walker);
+        List<XMLDescriptor> descriptors = advJOxDescriptorBuilder.getDescriptors();
+        Project p = new Project();
+        p.setName("empArray");
+        for (XMLDescriptor xDesc : descriptors) { 
+            p.addDescriptor(xDesc);
+        }
+        Document resultDoc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = new XMLContext(writeObjectPersistenceProject).createMarshaller();
+        marshaller.marshal(p, resultDoc);
+        Document controlDoc = xmlParser.parse(new StringReader(EMPARRAY_OX_PROJECT));
+        assertTrue("control document not same as instance document",
+                comparer.isNodeEqual(controlDoc, resultDoc));
+        SchemaModelGenerator schemaGenerator = new SchemaModelGenerator();
+        SchemaModelGeneratorProperties sgProperties = new SchemaModelGeneratorProperties();
+        // set element form default to qualified for target namespace
+        sgProperties.addProperty("urn:empArray", ELEMENT_FORM_QUALIFIED_KEY, true);
+        Map schemaMap = schemaGenerator.generateSchemas(descriptors, sgProperties);
+        Schema s = (Schema)schemaMap.get("urn:empArray");
+        Document empArraySchema = xmlPlatform.createDocument();
+        XMLMarshaller schemaMarshaller = new XMLContext(new SchemaModelProject()).createMarshaller();
+        schemaMarshaller.marshal(s, empArraySchema);
+        Document controlempArraySchema = xmlParser.parse(new StringReader(EMPARRAY_SCHEMA));
+        assertTrue("control schema not same as instance schema",
+            comparer.isNodeEqual(controlempArraySchema, empArraySchema));
+    }
+    static final String EMPARRAY_OX_PROJECT =
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+        "<object-persistence version=\"Eclipse Persistence Services - some version (some build date)\" xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:eclipselink=\"http://www.eclipse.org/eclipselink/xsds/persistence\">" +
+           "<name>empArray</name>" +
+           "<class-mapping-descriptors>" +
+              "<class-mapping-descriptor xsi:type=\"xml-class-mapping-descriptor\">" +
+                 "<class>another_advanced_demo.emp_info</class>" +
+                 "<alias>emp_info</alias>" +
+                 "<events xsi:type=\"event-policy\"/>" +
+                 "<querying xsi:type=\"query-policy\"/>" +
+                 "<attribute-mappings>" +
+                    "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
+                       "<attribute-name>id</attribute-name>" +
+                       "<field name=\"id/text()\" xsi:type=\"node\">" +
+                          "<schema-type>{http://www.w3.org/2001/XMLSchema}decimal</schema-type>" +
+                       "</field>" +
+                       "<attribute-classification>java.math.BigDecimal</attribute-classification>" +
+                    "</attribute-mapping>" +
+                    "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
+                       "<attribute-name>name</attribute-name>" +
+                       "<field name=\"name/text()\" xsi:type=\"node\">" +
+                          "<schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>" +
+                       "</field>" +
+                       "<attribute-classification>java.lang.String</attribute-classification>" +
+                    "</attribute-mapping>" +
+                 "</attribute-mappings>" +
+                 "<descriptor-type>aggregate</descriptor-type>" +
+                 "<instantiation/>" +
+                 "<copying xsi:type=\"instantiation-copy-policy\"/>" +
+                 "<namespace-resolver>" +
+                    "<default-namespace-uri>urn:empArray</default-namespace-uri>" +
+                 "</namespace-resolver>" +
+                 "<schema xsi:type=\"schema-url-reference\">" +
+                    "<schema-context>/emp_infoType</schema-context>" +
+                    "<node-type>complex-type</node-type>" +
+                 "</schema>" +
+              "</class-mapping-descriptor>" +
+              "<class-mapping-descriptor xsi:type=\"xml-class-mapping-descriptor\">" +
+                 "<class>another_advanced_demo.emp_info_array_CollectionWrapper</class>" +
+                 "<alias>emp_info_array</alias>" +
+                 "<events xsi:type=\"event-policy\"/>" +
+                 "<querying xsi:type=\"query-policy\"/>" +
+                 "<attribute-mappings>" +
+                    "<attribute-mapping xsi:type=\"xml-composite-collection-mapping\">" +
+                       "<attribute-name>items</attribute-name>" +
+                       "<reference-class>another_advanced_demo.emp_info</reference-class>" +
+                       "<field name=\"item\" xsi:type=\"node\"/>" +
+                       "<container xsi:type=\"container-policy\">" +
+                          "<collection-type>java.util.ArrayList</collection-type>" +
+                       "</container>" +
+                    "</attribute-mapping>" +
+                 "</attribute-mappings>" +
+                 "<descriptor-type>aggregate</descriptor-type>" +
+                 "<instantiation/>" +
+                 "<copying xsi:type=\"instantiation-copy-policy\"/>" +
+                 "<default-root-element>emp_info_arrayType</default-root-element>" +
+                 "<default-root-element-field name=\"emp_info_arrayType\" xsi:type=\"node\"/>" +
+                 "<namespace-resolver>" +
+                    "<default-namespace-uri>urn:empArray</default-namespace-uri>" +
+                 "</namespace-resolver>" +
+                 "<schema xsi:type=\"schema-url-reference\">" +
+                    "<schema-context>/emp_info_arrayType</schema-context>" +
+                    "<node-type>complex-type</node-type>" +
+                 "</schema>" +
+              "</class-mapping-descriptor>" +
+           "</class-mapping-descriptors>" +
+        "</object-persistence>";
+    static final String EMPARRAY_SCHEMA = 
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+        "<xsd:schema targetNamespace=\"urn:empArray\" xmlns=\"urn:empArray\" elementFormDefault=\"qualified\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
+           "<xsd:complexType name=\"emp_infoType\">" +
+              "<xsd:sequence>" +
+                 "<xsd:element name=\"id\" type=\"xsd:decimal\" minOccurs=\"0\"/>" +
+                 "<xsd:element name=\"name\" type=\"xsd:string\" minOccurs=\"0\"/>" +
+              "</xsd:sequence>" +
+           "</xsd:complexType>" +
+           "<xsd:complexType name=\"emp_info_arrayType\">" +
+              "<xsd:sequence>" +
+                 "<xsd:element name=\"item\" type=\"emp_infoType\" minOccurs=\"0\" maxOccurs=\"unbounded\"/>" +
+              "</xsd:sequence>" +
+           "</xsd:complexType>" +
+           "<xsd:element name=\"emp_info_arrayType\" type=\"emp_info_arrayType\"/>" +
+       "</xsd:schema>";
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void sfTbl1_OrPart() {
+        ProcedureOperationModel pModel = new ProcedureOperationModel();
+        pModel.setName("sfTbl1");
+        pModel.setCatalogPattern("toplevel");
+        pModel.setSchemaPattern(username.toUpperCase());
+        pModel.setProcedurePattern("SF_TBL1");
+        pModel.setReturnType("somepackage_tbl1Type");
+        List<DbStoredProcedure> storedProcedures = 
+            OracleHelper.buildStoredProcedure(conn, username, ora11Platform, pModel); 
+        Map<DbStoredProcedure, DbStoredProcedureNameAndModel> dbStoredProcedure2QueryName = 
+            new HashMap<DbStoredProcedure, DbStoredProcedureNameAndModel>();
+        ArrayList<OperationModel> operations = new ArrayList<OperationModel>();
+        operations.add(pModel);
+        DBWSBuilder.buildDbStoredProcedure2QueryNameMap(dbStoredProcedure2QueryName,
+            storedProcedures, operations, true);     
+        AdvancedJDBCORDescriptorBuilder advJOrDescriptorBuilder = 
+            new AdvancedJDBCORDescriptorBuilder();
+        AdvancedJDBCQueryBuilder queryBuilder = 
+            new AdvancedJDBCQueryBuilder(storedProcedures, dbStoredProcedure2QueryName);
+        PublisherListenerChainAdapter listenerChainAdapter = new PublisherListenerChainAdapter();
+        listenerChainAdapter.addListener(advJOrDescriptorBuilder);
+        listenerChainAdapter.addListener(queryBuilder);
+        PublisherWalker walker = new PublisherWalker(listenerChainAdapter);
+        pModel.getJPubType().accept(walker);
+        List<ObjectRelationalDataTypeDescriptor> descriptors = 
+            advJOrDescriptorBuilder.getDescriptors();
+        Project p = new Project();
+        p.setName("sfTbl1");
+        for (ObjectRelationalDataTypeDescriptor ordt : descriptors) { 
+            p.addDescriptor(ordt);
+        }
+        List<DatabaseQuery> queries = queryBuilder.getQueries();
+        if (queries != null && queries.size() > 0) {
+            p.getQueries().addAll(queries);
+        }
+        Document resultDoc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = new XMLContext(writeObjectPersistenceProject).createMarshaller();
+        marshaller.marshal(p, resultDoc);
+        Document empArrayOrProjectDoc = xmlParser.parse(new StringReader(SF_TBL1_OR_PROJECT));
+        assertTrue("control document not same as instance document",
+            comparer.isNodeEqual(resultDoc, empArrayOrProjectDoc));
+
+        DatabaseSession ds = fixUp(SF_TBL1_OR_PROJECT);
+        DatabaseQuery vrq = ds.getQuery("sfTbl1");
+        Vector args = new NonSynchronizedVector();
+        args.add(Integer.valueOf(3));
+        Object o = ds.executeQuery(vrq, args);
+        assertTrue("return value not correct type", o instanceof BaseEntity);
+        BaseEntity returnValue = (BaseEntity)o;
+        ArrayList<String> strings = (ArrayList<String>)returnValue.get(0);
+        assertTrue("wrong number of returned strings", 3 == strings.size());
+        for (int i = 0, len = strings.size(); i < len; i++) {
+            assertTrue("wrong array element value", ("entry " + (i + 1)).equals(strings.get(i)));
+        }
+    }
+    public static final String SF_TBL1_OR_PROJECT = 
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+        "<object-persistence version=\"Eclipse Persistence Services - some version (some build date)\" xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:eclipselink=\"http://www.eclipse.org/eclipselink/xsds/persistence\">" +
+           "<name>sfTbl1</name>" +
+           "<class-mapping-descriptors>" +
+              "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
+                 "<class>toplevel.somepackage_tbl1_CollectionWrapper</class>" +
+                 "<alias>somepackage_tbl1</alias>" +
+                 "<events xsi:type=\"event-policy\"/>" +
+                 "<querying xsi:type=\"query-policy\"/>" +
+                 "<attribute-mappings>" +
+                    "<attribute-mapping xsi:type=\"array-mapping\">" +
+                       "<attribute-name>items</attribute-name>" +
+                       "<field name=\"items\" xsi:type=\"object-relational-field\"/>" +
+                       "<container xsi:type=\"list-container-policy\">" +
+                          "<collection-type>java.util.ArrayList</collection-type>" +
+                       "</container>" +
+                       "<structure>somepackage_tbl1</structure>" +
+                    "</attribute-mapping>" +
+                 "</attribute-mappings>" +
+                 "<descriptor-type>aggregate</descriptor-type>" +
+                 "<caching>" +
+                    "<cache-size>-1</cache-size>" +
+                 "</caching>" +
+                 "<remote-caching>" +
+                    "<cache-size>-1</cache-size>" +
+                 "</remote-caching>" +
+                 "<instantiation/>" +
+                 "<copying xsi:type=\"instantiation-copy-policy\"/>" +
+              "</class-mapping-descriptor>" +
+           "</class-mapping-descriptors>" +
+           "<queries>" +
+              "<query name=\"sfTbl1\" xsi:type=\"value-read-query\">" +
+                 "<arguments>" +
+                    "<argument name=\"NUM\">" +
+                       "<type>java.lang.Object</type>" +
+                    "</argument>" +
+                 "</arguments>" +
+                 "<maintain-cache>false</maintain-cache>" +
+                 "<bind-all-parameters>true</bind-all-parameters>" +
+                 "<call xsi:type=\"stored-function-call\">" +
+                    "<procedure-name>SF_TBL1</procedure-name>" +
+                    "<cursor-output-procedure>false</cursor-output-procedure>" +
+                    "<arguments>" +
+                       "<argument xsi:type=\"procedure-argument\">" +
+                          "<procedure-argument-name>NUM</procedure-argument-name>" +
+                          "<argument-name>NUM</argument-name>" +
+                       "</argument>" +
+                    "</arguments>" +
+                    "<stored-function-result xsi:type=\"procedure-output-argument\">" +
+                       "<procedure-argument-type>toplevel.somepackage_tbl1_CollectionWrapper</procedure-argument-type>" +
+                       "<procedure-argument-sqltype>2003</procedure-argument-sqltype>" +
+                       "<procedure-argument-sqltype-name>SOMEPACKAGE_TBL1</procedure-argument-sqltype-name>" +
+                    "</stored-function-result>" +
+                 "</call>" +
+              "</query>" +
+           "</queries>" +
+        "</object-persistence>";
+    public static final String SF_TBL1_OX_PROJECT = 
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+        "<object-persistence version=\"Eclipse Persistence Services - some version (some build date)\" xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:eclipselink=\"http://www.eclipse.org/eclipselink/xsds/persistence\">" +
+           "<name>sfTbl1</name>" +
+           "<class-mapping-descriptors>" +
+              "<class-mapping-descriptor xsi:type=\"xml-class-mapping-descriptor\">" +
+                 "<class>toplevel.somepackage_tbl1_CollectionWrapper</class>" +
+                 "<alias>somepackage_tbl1</alias>" +
+                 "<events xsi:type=\"event-policy\"/>" +
+                 "<querying xsi:type=\"query-policy\"/>" +
+                 "<attribute-mappings>" +
+                    "<attribute-mapping xsi:type=\"xml-composite-direct-collection-mapping\">" +
+                       "<attribute-name>items</attribute-name>" +
+                       "<field name=\"item/text()\" xsi:type=\"node\"/>" +
+                       "<value-converter xsi:type=\"type-conversion-converter\">" +
+                          "<object-class>java.lang.String</object-class>" +
+                       "</value-converter>" +
+                       "<container xsi:type=\"container-policy\">" +
+                          "<collection-type>java.util.ArrayList</collection-type>" +
+                       "</container>" +
+                    "</attribute-mapping>" +
+                 "</attribute-mappings>" +
+                 "<descriptor-type>aggregate</descriptor-type>" +
+                 "<instantiation/>" +
+                 "<copying xsi:type=\"instantiation-copy-policy\"/>" +
+                 "<default-root-element>somepackage_tbl1Type</default-root-element>" +
+                 "<default-root-element-field name=\"somepackage_tbl1Type\" xsi:type=\"node\"/>" +
+                 "<namespace-resolver>" +
+                    "<default-namespace-uri>urn:tbl1</default-namespace-uri>" +
+                 "</namespace-resolver>" +
+                 "<schema xsi:type=\"schema-url-reference\">" +
+                    "<schema-context>/somepackage_tbl1Type</schema-context>" +
+                    "<node-type>complex-type</node-type>" +
+                 "</schema>" +
+              "</class-mapping-descriptor>" +
+           "</class-mapping-descriptors>" +
+        "</object-persistence>";
+
+    public static final String SF_TBL1_SCHEMA = 
+        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +
+        "<xsd:schema xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns=\"urn:tbl1\" elementFormDefault=\"qualified\" targetNamespace=\"urn:tbl1\">" +
+            "<xsd:complexType name=\"somepackage_tbl1Type\">" +
+                "<xsd:sequence>" +
+                    "<xsd:element maxOccurs=\"unbounded\" minOccurs=\"0\" name=\"item\" type=\"xsd:string\"/>" +
+                "</xsd:sequence>" +
+            "</xsd:complexType>" +
+            "<xsd:element name=\"somepackage_tbl1Type\" type=\"somepackage_tbl1Type\"/>" +
+        "</xsd:schema>";
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void sfTbl1_OxPart() {
+        ProcedureOperationModel pModel = new ProcedureOperationModel();
+        pModel.setName("sfTbl1");
+        pModel.setCatalogPattern("toplevel");
+        pModel.setSchemaPattern(username.toUpperCase());
+        pModel.setProcedurePattern("SF_TBL1");
+        pModel.setReturnType("somepackage_tbl1Type");
+        List<DbStoredProcedure> storedProcedures = 
+            OracleHelper.buildStoredProcedure(conn, username, ora11Platform, pModel); 
+        Map<DbStoredProcedure, DbStoredProcedureNameAndModel> dbStoredProcedure2QueryName = 
+            new HashMap<DbStoredProcedure, DbStoredProcedureNameAndModel>();
+        ArrayList<OperationModel> operations = new ArrayList<OperationModel>();
+        operations.add(pModel);
+        DBWSBuilder.buildDbStoredProcedure2QueryNameMap(dbStoredProcedure2QueryName,
+            storedProcedures, operations, true);     
+        AdvancedJDBCOXDescriptorBuilder advJOxDescriptorBuilder = 
+            new AdvancedJDBCOXDescriptorBuilder("urn:tbl1", new TypeSuffixTransformer());
+        PublisherWalker walker = new PublisherWalker(advJOxDescriptorBuilder);
+        pModel.getJPubType().accept(walker);
+        List<XMLDescriptor> descriptors = advJOxDescriptorBuilder.getDescriptors();
+        Project p = new Project();
+        p.setName("sfTbl1");
+        for (XMLDescriptor xDesc : descriptors) { 
+            p.addDescriptor(xDesc);
+        }
+        Document resultDoc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = new XMLContext(writeObjectPersistenceProject).createMarshaller();
+        marshaller.marshal(p, resultDoc);
+        Document controlDoc = xmlParser.parse(new StringReader(SF_TBL1_OX_PROJECT));
+        assertTrue("control document not same as instance document",
+                comparer.isNodeEqual(controlDoc, resultDoc));
+        SchemaModelGenerator schemaGenerator = new SchemaModelGenerator();
+        SchemaModelGeneratorProperties sgProperties = new SchemaModelGeneratorProperties();
+        // set element form default to qualified for target namespace
+        sgProperties.addProperty("urn:tbl1", ELEMENT_FORM_QUALIFIED_KEY, true);
+        Map schemaMap = schemaGenerator.generateSchemas(descriptors, sgProperties);
+        Schema tbl1Schema = (Schema)schemaMap.get("urn:tbl1");
+        Document tbl1SchemaDoc = xmlPlatform.createDocument();
+        XMLMarshaller schemaMarshaller = new XMLContext(new SchemaModelProject()).createMarshaller();
+        schemaMarshaller.marshal(tbl1Schema, tbl1SchemaDoc);
+        Document controlTbl1SchemaDoc = xmlParser.parse(new StringReader(SF_TBL1_SCHEMA));
+        assertTrue("control schema not same as instance schema",
+            comparer.isNodeEqual(controlTbl1SchemaDoc, tbl1SchemaDoc));
+    }
+    
+    @SuppressWarnings("unchecked")
+    public DatabaseSession fixUp(String projectString) {
+        BaseEntityClassLoader becl = new BaseEntityClassLoader(this.getClass().getClassLoader());
         XMLContext xmlContext = new XMLContext(readObjectPersistenceProject, becl);
         Project project = (Project)xmlContext.createUnmarshaller().unmarshal(
             new StringReader(projectString));

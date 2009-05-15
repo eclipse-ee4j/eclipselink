@@ -55,7 +55,6 @@ import static org.eclipse.persistence.oxm.XMLConstants.STRING_QNAME;
 public class PLSQLOXDescriptorBuilder extends PublisherDefaultListener {
 
     public static final String ITEMS_MAPPING_ATTRIBUTE_NAME = "items";
-    public static final String ITEMS_MAPPING_FIELD_NAME = "ITEMS";
 
     protected String targetNamespace;
     protected Stack<ListenerHelper> stac = new Stack<ListenerHelper>();
@@ -275,10 +274,11 @@ public class PLSQLOXDescriptorBuilder extends PublisherDefaultListener {
                 if (helper instanceof SqltypeHelper) {
                     typeName = ((SqltypeHelper)helper).sqlTypeName();
                 }
-                if (typeName == null) {
-                    if (helper instanceof ObjectTypeHelper) {
-                        typeName = ((ObjectTypeHelper)helper).objectTypename();
-                    }
+                else if (helper instanceof ObjectTypeHelper) {
+                    typeName = ((ObjectTypeHelper)helper).objectTypename();
+                }
+                else if (helper instanceof SqlArrayTypeHelper) {
+                    typeName = ((SqlArrayTypeHelper)helper).arrayTypename();
                 }
             }
             if ("NUMBER".equals(typeName)) {

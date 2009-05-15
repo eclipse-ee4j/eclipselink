@@ -22,12 +22,18 @@ import java.util.Stack;
 //EclipseLink imports
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
+import org.eclipse.persistence.mappings.structures.ArrayMapping;
+import org.eclipse.persistence.mappings.structures.ObjectArrayMapping;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescriptor;
 import org.eclipse.persistence.mappings.structures.StructureMapping;
 import org.eclipse.persistence.platform.database.oracle.publisher.visit.PublisherDefaultListener;
+import static org.eclipse.persistence.internal.dynamicpersist.BaseEntityClassLoader.COLLECTION_WRAPPER_SUFFIX;
 
 public class AdvancedJDBCORDescriptorBuilder extends PublisherDefaultListener {
 
+    public static final String ITEMS_MAPPING_ATTRIBUTE_NAME = "items";
+    public static final String ITEMS_MAPPING_FIELD_NAME = "ITEMS";
+    
     protected Stack<ListenerHelper> stac = new Stack<ListenerHelper>();
     protected Map<String, ObjectRelationalDataTypeDescriptor> descriptorMap =
         new HashMap<String, ObjectRelationalDataTypeDescriptor>();
@@ -54,12 +60,15 @@ public class AdvancedJDBCORDescriptorBuilder extends PublisherDefaultListener {
     @Override
     public void beginPackage(String packageName) {
         if (this.packageName == null) {
-            // trim-off dotted-prefix
-            int dotIdx = packageName.indexOf('.');
-            if (dotIdx > -1) {
-                this.packageName = packageName.substring(dotIdx+1);
-            }
+           this.packageName = trimDotPrefix(packageName);
         }
+    }
+
+    @Override
+    public void handleMethodReturn(String returnTypeName) {
+        // trim-off dotted-prefix
+        String returnType = trimDotPrefix(returnTypeName);
+        stac.push(new ReturnArgHelper("", returnType));
     }
 
     @Override
@@ -90,7 +99,36 @@ public class AdvancedJDBCORDescriptorBuilder extends PublisherDefaultListener {
                         stac.pop();
                     }
                 }
-            }  
+                else if (listenerHelper2.isArray()) {
+                    SqlArrayTypeHelper sqlArrayTypeHelper = (SqlArrayTypeHelper)listenerHelper2;
+                    ObjectRelationalDataTypeDescriptor ordt = 
+                        descriptorMap.get(sqlArrayTypeHelper.arrayTypename());
+                    DatabaseMapping dm = ordt.getMappingForAttributeName(attributeName);
+                    if (dm == null) {
+                        ordt.addFieldOrdering(fieldName);
+                        ArrayMapping arrayMapping = new ArrayMapping();
+                        arrayMapping.setFieldName(fieldName);
+                        arrayMapping.setAttributeName(attributeName);
+                        arrayMapping.useCollectionClass(ArrayList.class);
+                        arrayMapping.setStructureName(sqlArrayTypeHelper.arrayTypename());
+                        ordt.addMapping(arrayMapping);
+                    }
+                }
+            }
+            else if (listenerHelper.isArray()) {
+                SqlArrayTypeHelper sqlArrayTypeHelper = (SqlArrayTypeHelper)listenerHelper;
+                ObjectRelationalDataTypeDescriptor ordt = 
+                    descriptorMap.get(sqlArrayTypeHelper.arrayTypename());
+                DatabaseMapping dm = ordt.getMappingForAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME);
+                if (dm == null) {
+                    ArrayMapping arrayMapping = new ArrayMapping();
+                    arrayMapping.setFieldName(ITEMS_MAPPING_ATTRIBUTE_NAME);
+                    arrayMapping.setAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME);
+                    arrayMapping.useCollectionClass(ArrayList.class);
+                    arrayMapping.setStructureName(sqlArrayTypeHelper.arrayTypename());
+                    ordt.addMapping(arrayMapping);
+                }
+            }
         }
     }
 
@@ -99,11 +137,7 @@ public class AdvancedJDBCORDescriptorBuilder extends PublisherDefaultListener {
         // JDBC Advanced type?
         if (numAttributes > 0) {
             // trim-off dotted-prefix, toLowerCase
-            String objectTypeNameAlias = objectTypeName;
-            int dotIdx = objectTypeName.indexOf('.');
-            if (dotIdx > -1) {
-                objectTypeNameAlias = objectTypeName.substring(dotIdx+1).toLowerCase();
-            }
+            String objectTypeNameAlias = trimDotPrefix(objectTypeName).toLowerCase();
             ObjectRelationalDataTypeDescriptor ordt = descriptorMap.get(objectTypeNameAlias);
             if (ordt == null) {
                 ordt = new ObjectRelationalDataTypeDescriptor();
@@ -146,6 +180,24 @@ public class AdvancedJDBCORDescriptorBuilder extends PublisherDefaultListener {
                         }
                     }
                 }
+                else if (listenerHelper.isArray()) {
+                    SqlArrayTypeHelper sqlArrayTypeHelper = (SqlArrayTypeHelper)stac.pop();
+                    String sqlArrayTypeNameAlias = sqlArrayTypeHelper.arrayTypename();
+                    ObjectRelationalDataTypeDescriptor ordt2 = 
+                        descriptorMap.get(sqlArrayTypeNameAlias);
+                    if (ordt2 != null) {
+                        DatabaseMapping dm = 
+                            ordt2.getMappingForAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME);
+                        if (dm == null) {
+                            ObjectArrayMapping arrayMapping = new ObjectArrayMapping();
+                            arrayMapping.setAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME);
+                            arrayMapping.setFieldName(ITEMS_MAPPING_FIELD_NAME);
+                            arrayMapping.setStructureName(sqlArrayTypeNameAlias.toUpperCase());
+                            arrayMapping.setReferenceClassName(ordt.getJavaClassName());
+                            ordt2.addMapping(arrayMapping);
+                        }
+                    }
+                }
             }
             stac.push(new ObjectTypeHelper(objectTypeNameAlias, targetTypeName, numAttributes));
         }
@@ -153,12 +205,41 @@ public class AdvancedJDBCORDescriptorBuilder extends PublisherDefaultListener {
 
     @Override
     public void handleSqlArrayType(String arrayTypename, String targetTypeName) {
-        // TODO
+        // trim-off dotted-prefix, toLowerCase
+        String arrayTypenameAlias = trimDotPrefix(arrayTypename).toLowerCase();
+        ObjectRelationalDataTypeDescriptor ordt = descriptorMap.get(arrayTypenameAlias);
+        if (ordt == null) {
+            ordt = new ObjectRelationalDataTypeDescriptor();
+            ordt.descriptorIsAggregate();
+            ordt.setAlias(arrayTypenameAlias);
+            ordt.setJavaClassName(packageName.toLowerCase() + "." + arrayTypenameAlias
+                + COLLECTION_WRAPPER_SUFFIX);
+            ordt.getQueryManager();
+            descriptorMap.put(arrayTypenameAlias, ordt);
+        }
+        // before we push the new ObjectTypeHelper, check stac to see if we are part
+        // of nested chain of object types
+        if (!stac.isEmpty()) {
+            // TBD ListenerHelper listenerHelper = stac.peek();
+        }
+        stac.push(new SqlArrayTypeHelper(arrayTypenameAlias, targetTypeName));
     }
 
     @Override
     public void handleSqlTableType(String tableTypeName, String targetTypeName) {
-        // TODO
+        // trim-off dotted-prefix, toLowerCase
+        String sqlTableTypeAlias = trimDotPrefix(tableTypeName).toLowerCase();
+        ObjectRelationalDataTypeDescriptor ordt = descriptorMap.get(sqlTableTypeAlias);
+        if (ordt == null) {
+            ordt = new ObjectRelationalDataTypeDescriptor();
+            ordt.descriptorIsAggregate();
+            ordt.setAlias(sqlTableTypeAlias);
+            ordt.setJavaClassName(packageName.toLowerCase() + "." + sqlTableTypeAlias
+                + COLLECTION_WRAPPER_SUFFIX);
+            ordt.getQueryManager();
+            descriptorMap.put(sqlTableTypeAlias, ordt);
+        }
+        stac.push(new SqlArrayTypeHelper(sqlTableTypeAlias, targetTypeName));
     }
 
     @Override

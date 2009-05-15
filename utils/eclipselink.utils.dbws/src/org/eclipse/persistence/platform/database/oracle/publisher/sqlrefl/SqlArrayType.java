@@ -12,6 +12,9 @@
  ******************************************************************************/
 package org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl;
 
+import org.eclipse.persistence.platform.database.oracle.publisher.visit.PublisherVisitor;
+import org.eclipse.persistence.platform.database.oracle.publisher.visit.PublisherWalker;
+
 public class SqlArrayType extends SqlCollectionType {
 
     public SqlArrayType(SqlName sqlName, boolean generateMe, SqlType parentType,
@@ -28,4 +31,7 @@ public class SqlArrayType extends SqlCollectionType {
         return true;
     }
 
+    public void accept(PublisherVisitor v) {
+        ((PublisherWalker)v).visit(this);
+    }
 }

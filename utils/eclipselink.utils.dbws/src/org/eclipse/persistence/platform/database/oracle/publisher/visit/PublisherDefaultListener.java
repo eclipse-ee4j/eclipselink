@@ -61,6 +61,15 @@ public class PublisherDefaultListener implements PublisherListener {
 
     public void handleAttributeField(String attributeFieldName) {
     }
+    
+    public String trimDotPrefix(String prefix) {
+        String trimmedPrefix = prefix;
+        int dotIdx = trimmedPrefix.indexOf('.');
+        if (dotIdx > -1) {
+            trimmedPrefix = trimmedPrefix.substring(dotIdx+1);
+        }
+        return trimmedPrefix;
+    }
 
     public static interface ListenerHelper {
         public String targetTypeName();
@@ -68,6 +77,7 @@ public class PublisherDefaultListener implements PublisherListener {
         public boolean isTable();
         public boolean isRecord();
         public boolean isObject();
+        public boolean isArray();
         public boolean isAttribute();
         public boolean isMethod();
         public boolean isMethodArg();
@@ -92,6 +102,9 @@ public class PublisherDefaultListener implements PublisherListener {
             return false;
         }
         public boolean isObject() {
+            return false;
+        }
+        public boolean isArray() {
             return false;
         }
         public boolean isAttribute() {
@@ -123,6 +136,27 @@ public class PublisherDefaultListener implements PublisherListener {
         @Override
         public String toString() {
             return "{" + sqlTypeName + "}";
+        }
+    }
+    public static class SqlArrayTypeHelper extends DefaultListenerHelper {
+        protected String arrayTypename;
+        public SqlArrayTypeHelper(String arrayTypename, String targetTypeName) {
+            super(targetTypeName);
+            this.arrayTypename = arrayTypename;
+        }
+        public String arrayTypename() {
+            return arrayTypename;
+        }
+        public void setArrayTypename(String arrayTypename) {
+            this.arrayTypename = arrayTypename;
+        }
+        @Override
+        public boolean isArray() {
+            return true;
+        }
+        @Override
+        public String toString() {
+            return "{" + arrayTypename + "}";
         }
     }
     
@@ -328,6 +362,11 @@ public class PublisherDefaultListener implements PublisherListener {
     public static class MethodArgHelper extends SqltypeHelper {
         String argName;
         String direction = null;
+        int typecode;
+        String typeName;
+        String nestedType = null;
+        int nestedTypecode;
+        String nestedTypeName;
         boolean isComplex = false;
         public MethodArgHelper(String argName, String sqlTypeName) {
             super(sqlTypeName);
@@ -341,6 +380,36 @@ public class PublisherDefaultListener implements PublisherListener {
         }
         public String direction() {
             return direction;
+        }
+        public int typecode() {
+            return typecode;
+        }
+        public void setTypecode(int typecode) {
+            this.typecode = typecode;
+        }
+        public String typeName() {
+            return typeName;
+        }
+        public void setTypeName(String typeName) {
+            this.typeName = typeName;
+        }
+        public void setNestedType(String nestedType) {
+            this.nestedType = nestedType;
+        }
+        public String nestedType() {
+            return nestedType;
+        }
+        public int nestedTypecode() {
+            return nestedTypecode;
+        }
+        public void setNestedTypecode(int nestedTypecode) {
+            this.nestedTypecode = nestedTypecode;
+        }
+        public String nestedTypeName() {
+            return nestedTypeName;
+        }
+        public void setNestedTypeName(String nestedTypeName) {
+            this.nestedTypeName = nestedTypeName;
         }
         @Override
         public boolean isComplex() {

@@ -12,6 +12,9 @@
  ******************************************************************************/
 package org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl;
 
+import org.eclipse.persistence.platform.database.oracle.publisher.visit.PublisherVisitor;
+import org.eclipse.persistence.platform.database.oracle.publisher.visit.PublisherWalker;
+
 public class SqlTableType extends SqlCollectionType {
 
     public SqlTableType(SqlName sqlName, boolean generateMe, SqlType parentType,
@@ -27,4 +30,7 @@ public class SqlTableType extends SqlCollectionType {
         return true;
     }
 
+    public void accept(PublisherVisitor v) {
+        ((PublisherWalker)v).visit(this);
+    }
 }

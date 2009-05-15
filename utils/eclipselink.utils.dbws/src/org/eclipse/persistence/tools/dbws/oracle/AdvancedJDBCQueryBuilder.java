@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Stack;
 
 //EclipseLink imports
+import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
 import org.eclipse.persistence.platform.database.oracle.publisher.visit.PublisherDefaultListener;
 import org.eclipse.persistence.queries.DataModifyQuery;
 import org.eclipse.persistence.queries.DataReadQuery;
@@ -30,6 +31,7 @@ import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.queries.ValueReadQuery;
 import org.eclipse.persistence.tools.dbws.DBWSBuilder.DbStoredProcedureNameAndModel;
 import org.eclipse.persistence.tools.dbws.jdbc.DbStoredProcedure;
+import static org.eclipse.persistence.internal.dynamicpersist.BaseEntityClassLoader.COLLECTION_WRAPPER_SUFFIX;
 import static org.eclipse.persistence.internal.helper.ClassConstants.OBJECT;
 import static org.eclipse.persistence.tools.dbws.Util.sqlMatch;
 
@@ -72,6 +74,10 @@ public class AdvancedJDBCQueryBuilder extends PublisherDefaultListener {
             if (dotIdx > -1) {
                 this.packageName = packageName.substring(dotIdx+1);
             }
+            else {
+                // toplevel 
+                this.packageName = packageName;
+            }
         }
     }
 
@@ -91,15 +97,7 @@ public class AdvancedJDBCQueryBuilder extends PublisherDefaultListener {
         if (dotIdx > -1) {
             returnType = returnTypeName.substring(dotIdx+1);
         }
-        if (!stac.isEmpty()) {
-            ListenerHelper helper = stac.peek();
-            if (helper.isMethod()) {
-                MethodHelper methodHelper =(MethodHelper)helper;
-                methodHelper.setFunc(true);
-                MethodArgHelper methodArgHelper = new MethodArgHelper("", returnType);
-                methodHelper.args().add(methodArgHelper);
-            }
-        }
+        stac.push(new ReturnArgHelper("", returnType));
     }
     
     @Override
@@ -141,10 +139,20 @@ public class AdvancedJDBCQueryBuilder extends PublisherDefaultListener {
                         startIdx = 1;
                         MethodArgHelper returnArg = args.get(0);
                         if (returnArg.isComplex()) {
-                            String javaClassName = 
-                                (packageName + "." + returnArg.sqlTypeName()).toLowerCase();
-                            spCall = new StoredFunctionCall(Types.STRUCT, returnArg.sqlTypeName(),
-                                javaClassName);
+                            String javaClassName = returnArg.typeName();
+                            if (returnArg.nestedType() != null) {
+                                ObjectRelationalDatabaseField nestedField = 
+                                    new ObjectRelationalDatabaseField("");
+                                nestedField.setSqlTypeName(returnArg.nestedType());
+                                nestedField.setSqlType(returnArg.nestedTypecode());
+                                nestedField.setTypeName(returnArg.nestedTypeName());
+                                spCall = new StoredFunctionCall(returnArg.typecode(),
+                                    returnArg.sqlTypeName(), javaClassName, nestedField);
+                            }
+                            else {
+                                spCall = new StoredFunctionCall(returnArg.typecode(),
+                                    returnArg.sqlTypeName(), javaClassName);
+                            }
                         }
                         else {
                             spCall = new StoredFunctionCall();
@@ -227,7 +235,33 @@ public class AdvancedJDBCQueryBuilder extends PublisherDefaultListener {
         }
         if (!stac.isEmpty()) {
             ListenerHelper helper = stac.peek();
-            if (helper.isMethod()) {
+            if (helper.isReturnArg() || helper.isArray()) {
+                stac.pop();
+                ListenerHelper helper2 = stac.peek();
+                if (helper2.isMethod()) {
+                    MethodHelper methodHelper2 = (MethodHelper)helper2;
+                    String javaClassName = null;
+                    javaClassName = (packageName + "." + objectType).toLowerCase();
+                    if (helper.isReturnArg()) {
+                        methodHelper2.setFunc(true);
+                    }
+                    int size = methodHelper2.args().size();
+                    if (size > 0) {
+                        MethodArgHelper methodArgHelper = methodHelper2.args().get(size-1);
+                        methodArgHelper.setNestedType(objectType);
+                        methodArgHelper.setNestedTypecode(Types.STRUCT);
+                        methodArgHelper.setNestedTypeName(javaClassName);
+                    }
+                    else {
+                        MethodArgHelper methodArgHelper = new MethodArgHelper("", objectType);
+                        methodArgHelper.setTypecode(Types.STRUCT);
+                        methodArgHelper.setTypeName(javaClassName);
+                        methodArgHelper.setIsComplex(true);
+                        methodHelper2.args().add(methodArgHelper);
+                    }
+                }
+            }
+            else if (helper.isMethod()) {
                 MethodHelper methodHelper = (MethodHelper)helper;
                 int size = methodHelper.args().size();
                 MethodArgHelper methodArgHelper = methodHelper.args().get(size-1);
@@ -252,7 +286,18 @@ public class AdvancedJDBCQueryBuilder extends PublisherDefaultListener {
         }
         if (!stac.isEmpty()) {
             ListenerHelper helper = stac.peek();
-            if (helper.isMethod()) {
+            if (helper.isReturnArg()) {
+                stac.pop();
+                MethodHelper methodHelper = (MethodHelper)stac.peek();
+                methodHelper.setFunc(true);
+                MethodArgHelper methodArgHelper = new MethodArgHelper("", arrayType);
+                methodArgHelper.setTypecode(Types.ARRAY);
+                methodArgHelper.setTypeName((packageName + "." + arrayType).toLowerCase() + 
+                    COLLECTION_WRAPPER_SUFFIX);
+                methodArgHelper.setIsComplex(true);
+                methodHelper.args().add(0, methodArgHelper);
+            }
+            else if (helper.isMethod()) {
                 MethodHelper methodHelper = (MethodHelper)helper;
                 int size = methodHelper.args().size();
                 MethodArgHelper methodArgHelper = methodHelper.args().get(size-1);
@@ -262,6 +307,7 @@ public class AdvancedJDBCQueryBuilder extends PublisherDefaultListener {
             else if (helper.isAttribute()) {
                 stac.pop();
             }
+            stac.push(new SqlArrayTypeHelper(arrayType, targetTypeName));
         }
     }
 
@@ -275,7 +321,18 @@ public class AdvancedJDBCQueryBuilder extends PublisherDefaultListener {
         }
         if (!stac.isEmpty()) {
             ListenerHelper helper = stac.peek();
-            if (helper.isMethod()) {
+            if (helper.isReturnArg()) {
+                stac.pop();
+                MethodHelper methodHelper = (MethodHelper)stac.peek();
+                methodHelper.setFunc(true);
+                MethodArgHelper methodArgHelper = new MethodArgHelper("", tableType);
+                methodArgHelper.setTypecode(Types.ARRAY);
+                methodArgHelper.setTypeName((packageName + "." + tableType).toLowerCase() + 
+                    COLLECTION_WRAPPER_SUFFIX);
+                methodArgHelper.setIsComplex(true);
+                methodHelper.args().add(0, methodArgHelper);
+            }
+            else if (helper.isMethod()) {
                 MethodHelper methodHelper = (MethodHelper)helper;
                 int size = methodHelper.args().size();
                 MethodArgHelper methodArgHelper = methodHelper.args().get(size-1);
@@ -296,7 +353,9 @@ public class AdvancedJDBCQueryBuilder extends PublisherDefaultListener {
                 MethodHelper methodHelper = (MethodHelper)helper;
                 int size = methodHelper.args().size();
                 MethodArgHelper methodArgHelper = methodHelper.args().get(size-1);
-                methodArgHelper.setSqlTypeName(sqlTypeName);
+                if (methodArgHelper.sqlTypeName() == null) {
+                    methodArgHelper.setSqlTypeName(sqlTypeName);
+                }
             }
             else if (helper.isAttribute()) {
                 stac.pop();

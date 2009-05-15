@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.platform.database.oracle.publisher.visit;
 
+//javase imports
+
 //EclipseLink imports
 import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.AttributeField;
 import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.ProcedureMethod;
@@ -74,6 +76,13 @@ public class PublisherWalker implements PublisherVisitor {
             targetTypeName = sqlArrayType.getTargetTypeName();
         }
         listener.handleSqlArrayType(sqlArrayType.getName(), targetTypeName);
+        try {
+            TypeClass componentType = sqlArrayType.getComponentType();
+            ((SqlType)componentType).accept(this);
+        }
+        catch (Exception e) {
+            // e.printStackTrace();
+        }
     }
 
     public void visit(SqlTableType sqlTableType) {
@@ -82,6 +91,13 @@ public class PublisherWalker implements PublisherVisitor {
             targetTypeName = sqlTableType.getTargetTypeName();
         }
         listener.handleSqlTableType(sqlTableType.getName(), targetTypeName);
+        try {
+            TypeClass componentType = sqlTableType.getComponentType();
+            ((SqlType)componentType).accept(this);
+        }
+        catch (Exception e) {
+            // e.printStackTrace();
+        }
     }
 
     public void visit(SqlPackageType sqlPackageType) {
@@ -99,6 +115,7 @@ public class PublisherWalker implements PublisherVisitor {
     }
     
     public void visit(SqlToplevelType sqlToplevelType) {
+        listener.beginPackage("toplevel");
         try {
             ProcedureMethod[] declaredMethods = sqlToplevelType.getDeclaredMethods();
             for (ProcedureMethod m : declaredMethods) {
@@ -108,6 +125,7 @@ public class PublisherWalker implements PublisherVisitor {
         catch (Exception e) {
             e.printStackTrace();
         }
+        listener.endPackage();
     }
     
     public void visit(PlsqlRecordType plsqlRecordType) {

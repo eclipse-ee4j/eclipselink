@@ -30,19 +30,25 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
+import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.oxm.schema.XMLSchemaURLReference;
 import org.eclipse.persistence.platform.database.oracle.publisher.visit.PublisherDefaultListener;
 import org.eclipse.persistence.tools.dbws.NamingConventionTransformer;
+import static org.eclipse.persistence.internal.dynamicpersist.BaseEntityClassLoader.COLLECTION_WRAPPER_SUFFIX;
 import static org.eclipse.persistence.internal.helper.ClassConstants.Object_Class;
 import static org.eclipse.persistence.oxm.XMLConstants.DATE_QNAME;
 import static org.eclipse.persistence.oxm.XMLConstants.SCHEMA_INSTANCE_PREFIX;
 import static org.eclipse.persistence.oxm.XMLConstants.SCHEMA_PREFIX;
+import static org.eclipse.persistence.tools.dbws.oracle.PLSQLOXDescriptorBuilder.attributeClassFromDatabaseType;
 import static org.eclipse.persistence.tools.dbws.oracle.PLSQLOXDescriptorBuilder.qnameFromDatabaseType;
 
 public class AdvancedJDBCOXDescriptorBuilder extends PublisherDefaultListener {
+
+    public static final String ITEMS_MAPPING_ATTRIBUTE_NAME = "items";
 
     protected String targetNamespace;
     protected NamingConventionTransformer nct;
@@ -75,17 +81,15 @@ public class AdvancedJDBCOXDescriptorBuilder extends PublisherDefaultListener {
     @Override
     public void beginPackage(String packageName) {
         if (this.packageName == null) {
-            // trim-off dotted-prefix
-            int dotIdx = packageName.indexOf('.');
-            if (dotIdx > -1) {
-                this.packageName = packageName.substring(dotIdx+1);
-            }
+            this.packageName = trimDotPrefix(packageName);
         }
     }
 
     @Override
     public void handleMethodReturn(String returnTypeName) {
-        stac.push(new ReturnArgHelper("", returnTypeName));
+        // trim-off dotted-prefix
+        String returnType = trimDotPrefix(returnTypeName);
+        stac.push(new ReturnArgHelper("", returnType));
     }
 
     @SuppressWarnings("unchecked")
@@ -135,7 +139,22 @@ public class AdvancedJDBCOXDescriptorBuilder extends PublisherDefaultListener {
                         stac.pop();
                     }
                 }
-            }  
+            }
+            else if (listenerHelper.isArray()) {
+                SqlArrayTypeHelper sqlArrayTypeHelper = (SqlArrayTypeHelper)listenerHelper;
+                XMLDescriptor xdesc = descriptorMap.get(sqlArrayTypeHelper.arrayTypename());
+                DatabaseMapping dm = xdesc.getMappingForAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME);
+                if (dm == null) {
+                    XMLCompositeDirectCollectionMapping itemsMapping = new XMLCompositeDirectCollectionMapping();
+                    itemsMapping.setAttributeElementClass(
+                        attributeClassFromDatabaseType((DefaultListenerHelper)new SqltypeHelper(sqlTypeName)));
+                    itemsMapping.setAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME);
+                    itemsMapping.setUsesSingleNode(true);
+                    itemsMapping.setXPath("item/text()");
+                    itemsMapping.useCollectionClassName("java.util.ArrayList");
+                    xdesc.addMapping(itemsMapping);
+                }
+            }
         }
     }
 
@@ -144,11 +163,7 @@ public class AdvancedJDBCOXDescriptorBuilder extends PublisherDefaultListener {
         // JDBC Advanced type?
         if (numAttributes > 0) {
             // trim-off dotted-prefix, toLowerCase
-            String objectTypeNameAlias = objectTypeName;
-            int dotIdx = objectTypeName.indexOf('.');
-            if (dotIdx > -1) {
-                objectTypeNameAlias = objectTypeName.substring(dotIdx+1).toLowerCase();
-            }
+            String objectTypeNameAlias = trimDotPrefix(objectTypeName).toLowerCase();
             XMLDescriptor xdesc = descriptorMap.get(objectTypeNameAlias);
             String userType = nct.generateSchemaAlias(objectTypeNameAlias);
             if (xdesc == null) {
@@ -198,6 +213,23 @@ public class AdvancedJDBCOXDescriptorBuilder extends PublisherDefaultListener {
                         }
                     }
                 }
+                else if (listenerHelper.isArray()) {
+                    SqlArrayTypeHelper sqlArrayTypeHelper = (SqlArrayTypeHelper)stac.pop();
+                    String sqlArrayTypeAlias = sqlArrayTypeHelper.arrayTypename();
+                    XMLDescriptor xdesc2 = descriptorMap.get(sqlArrayTypeAlias);
+                    if (xdesc2 != null) {
+                        boolean itemsMappingFound = 
+                            xdesc2.getMappingForAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME) == null ? false : true;
+                        if (!itemsMappingFound) {
+                            XMLCompositeCollectionMapping itemsMapping = new XMLCompositeCollectionMapping();
+                            itemsMapping.setAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME);
+                            itemsMapping.setXPath("item");
+                            itemsMapping.useCollectionClassName("java.util.ArrayList");
+                            itemsMapping.setReferenceClassName(xdesc.getJavaClassName());
+                            xdesc2.addMapping(itemsMapping);
+                        }
+                    }
+                }
                 else if (listenerHelper.isReturnArg()) {
                     //ReturnArgHelper returnArgHelper = (ReturnArgHelper)stac.pop();
                     stac.pop();
@@ -210,12 +242,66 @@ public class AdvancedJDBCOXDescriptorBuilder extends PublisherDefaultListener {
 
     @Override
     public void handleSqlArrayType(String arrayTypename, String targetTypeName) {
-        // TODO
+        // trim-off dotted-prefix, toLowerCase
+        String arrayTypenameAlias = trimDotPrefix(arrayTypename).toLowerCase();
+        String userType = nct.generateSchemaAlias(arrayTypenameAlias);
+        XMLDescriptor xdesc = descriptorMap.get(arrayTypenameAlias);
+        if (xdesc == null) {
+            xdesc = new XMLDescriptor();
+            xdesc.setAlias(arrayTypenameAlias);
+            xdesc.setJavaClassName(packageName.toLowerCase() + "." + 
+                arrayTypenameAlias + COLLECTION_WRAPPER_SUFFIX);
+            xdesc.getQueryManager();
+            XMLSchemaURLReference schemaReference = new XMLSchemaURLReference();
+            schemaReference.setSchemaContext("/" + userType);
+            schemaReference.setType(XMLSchemaReference.COMPLEX_TYPE);
+            xdesc.setSchemaReference(schemaReference);
+            NamespaceResolver nr = new NamespaceResolver();
+            nr.setDefaultNamespaceURI(targetNamespace);
+            xdesc.setNamespaceResolver(nr);
+            descriptorMap.put(arrayTypenameAlias, xdesc);
+        }
+        // before we push the new SqlArrayTypeHelper, check stac to see if we are part
+        // of nested chain of object types
+        if (!stac.isEmpty()) {
+            ListenerHelper listenerHelper = stac.peek();
+            if (listenerHelper.isReturnArg()) {
+                xdesc.setDefaultRootElement(userType);
+            }
+        }
+        stac.push(new SqlArrayTypeHelper(arrayTypenameAlias, targetTypeName));
     }
 
     @Override
     public void handleSqlTableType(String tableTypeName, String targetTypeName) {
-        // TODO
+        // trim-off dotted-prefix, toLowerCase
+        String tableTypeNameAlias = trimDotPrefix(tableTypeName).toLowerCase();
+        String userType = nct.generateSchemaAlias(tableTypeNameAlias);
+        XMLDescriptor xdesc = descriptorMap.get(tableTypeNameAlias);
+        if (xdesc == null) {
+            xdesc = new XMLDescriptor();
+            xdesc.setAlias(tableTypeNameAlias);
+            xdesc.setJavaClassName(packageName.toLowerCase() + "." + 
+                tableTypeNameAlias + COLLECTION_WRAPPER_SUFFIX);
+            xdesc.getQueryManager();
+            XMLSchemaURLReference schemaReference = new XMLSchemaURLReference();
+            schemaReference.setSchemaContext("/" + userType);
+            schemaReference.setType(XMLSchemaReference.COMPLEX_TYPE);
+            xdesc.setSchemaReference(schemaReference);
+            NamespaceResolver nr = new NamespaceResolver();
+            nr.setDefaultNamespaceURI(targetNamespace);
+            xdesc.setNamespaceResolver(nr);
+            descriptorMap.put(tableTypeNameAlias, xdesc);
+        }
+        // before we push the new SqlArrayTypeHelper, check stac to see if we are part
+        // of nested chain of object types
+        if (!stac.isEmpty()) {
+            ListenerHelper listenerHelper = stac.peek();
+            if (listenerHelper.isReturnArg()) {
+                xdesc.setDefaultRootElement(userType);
+            }
+        }
+        stac.push(new SqlArrayTypeHelper(tableTypeNameAlias, targetTypeName));
     }
 
     @Override

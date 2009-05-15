@@ -126,6 +126,38 @@ public class DBWSTestHelper {
     public static final String ADVJDBC_ECHO_EMPOBJECT_SERVICE_NAMESPACE = 
         "urn:echoEmpService";
     public static final String ADVJDBC_ECHO_EMPOBJECT_PORT = "echoEmpServicePort";
+
+    public static final String ADVJDBC_ANOTHER_PACKAGE_NAME = 
+        "ANOTHER_ADVANCED_DEMO";
+    public static final String ADVJDBC_BUILD_EMPARRAY =
+        "buildEmpArray";
+    public static final String ADVJDBC_BUILD_EMPARRAY_TEST = 
+        ADVJDBC_BUILD_EMPARRAY + "Test";
+    public static final String ADVJDBC_BUILD_EMPARRAY_SERVICE = 
+        ADVJDBC_BUILD_EMPARRAY + "Service";
+    public static final String ADVJDBC_BUILD_EMPARRAY_NAMESPACE = 
+        "urn:empArray";
+    public static final String ADVJDBC_BUILD_EMPARRAY_SERVICE_NAMESPACE = 
+        ADVJDBC_BUILD_EMPARRAY_NAMESPACE + "Service";
+    public static final String ADVJDBC_BUILD_EMPARRAY_PORT = ADVJDBC_BUILD_EMPARRAY_SERVICE +
+    		"Port";
+
+    public static final String ADVJDBC_TOPLEVEL_PACKAGE_NAME = 
+        "toplevel";
+    public static final String ADVJDBC_BUILD_TBL1 =
+        "SF_TBL1";
+    public static final String ADVJDBC_BUILDTBL1 =
+        "buildTbl1";
+    public static final String ADVJDBC_BUILD_TBL1_TEST = 
+        ADVJDBC_BUILDTBL1 + "Test";
+    public static final String ADVJDBC_BUILD_TBL1_SERVICE = 
+        ADVJDBC_BUILDTBL1 + "Service";
+    public static final String ADVJDBC_BUILD_TBL1_NAMESPACE = 
+        "urn:tbl1";
+    public static final String ADVJDBC_BUILD_TBL1_SERVICE_NAMESPACE = 
+        ADVJDBC_BUILD_TBL1_NAMESPACE + "Service";
+    public static final String ADVJDBC_BUILD_TBL1_PORT = ADVJDBC_BUILD_TBL1_SERVICE +
+            "Port";
     
     public static String documentToString(Document doc) {
         DOMSource domSource = new DOMSource(doc);
