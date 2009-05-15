@@ -107,6 +107,21 @@ public abstract class JUnitTestCase extends TestCase {
     }
     
     /**
+     * Return if the test is running against JPA 1.0. Any test that uses 2.0
+     * functionality should call this method to avoid been run against a 1.0
+     * container.
+     */
+    public static boolean isJPA10() {
+        try {
+            LockModeType.valueOf("NONE");
+        } catch (Exception e) {
+           return true;
+        }
+        
+        return false;
+    }
+    
+    /**
      * Return if the test is running on a JEE server, or in JSE.
      */
     public static boolean isOnServer() {

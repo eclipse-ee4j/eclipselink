@@ -479,10 +479,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     
     public void testRefreshPESSIMISTIC_READLock() {
         ServerSession session = JUnitTestCase.getServerSession();
-        Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", JUnitTestCase.getServerSession().getPlatform().isSybase());
+        Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", session.getPlatform().isSybase());
 
         // Cannot create parallel entity managers in the server.
-        if (! isOnServer() && ! session.getPlatform().isMySQL() && ! session.getPlatform().isTimesTen()) {
+        if (! isOnServer() && isSelectForUpateSupported()) {
             EntityManager em = createEntityManager();
             Department dept = null;
             
@@ -544,10 +544,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     
     public void testRefreshPESSIMISTIC_WRITELock() {
         ServerSession session = JUnitTestCase.getServerSession();
-        Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", JUnitTestCase.getServerSession().getPlatform().isSybase());
+        Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", session.getPlatform().isSybase());
 
         // Cannot create parallel entity managers in the server.
-        if (! isOnServer() && ! session.getPlatform().isMySQL() && ! session.getPlatform().isTimesTen()) {
+        if (! isOnServer() && isSelectForUpateSupported()) {
             EntityManager em = createEntityManager();
             Department dept = null;
             
@@ -1446,10 +1446,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     // This test issues a LOCK and a LOCK NOWAIT.
     public void testPESSIMISTIC_READLock() {
         ServerSession session = JUnitTestCase.getServerSession();
-        Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", JUnitTestCase.getServerSession().getPlatform().isSybase());
+        Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", session.getPlatform().isSybase());
         
         // Cannot create parallel entity managers in the server.
-        if (! isOnServer() && ! session.getPlatform().isMySQL() && ! session.getPlatform().isTimesTen()) {
+        if (! isOnServer() && isSelectForUpateSupported()) {
             EntityManager em = createEntityManager();
             Department dept = null;
             
@@ -1512,10 +1512,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     
     public void testPESSIMISTIC_WRITELock() {
         ServerSession session = JUnitTestCase.getServerSession();
-        Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", JUnitTestCase.getServerSession().getPlatform().isSybase());
+        Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", session.getPlatform().isSybase());
 
         // Cannot create parallel entity managers in the server.
-        if (! isOnServer() && ! session.getPlatform().isMySQL() && ! session.getPlatform().isTimesTen()) {
+        if (! isOnServer() && isSelectForUpateSupported()) {
             EntityManager em = createEntityManager();
             Department dept = null;
             
@@ -1576,138 +1576,153 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
     }
     
-    public void testPESSIMISTIC_FORCE_INCREMENTLock() {        
-        Employee employee = null;
-        Integer version1;
-        Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", JUnitTestCase.getServerSession().getPlatform().isSybase());
+    public void testPESSIMISTIC_FORCE_INCREMENTLock() {
+        ServerSession session = JUnitTestCase.getServerSession();
+        Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", session.getPlatform().isSybase());
+        
+        // Cannot create parallel entity managers in the server.
+        if (! isOnServer() && isSelectForUpateSupported()) {
+            Employee employee = null;
+            Integer version1;
 
-        EntityManager em = createEntityManager();
-        
-        try {
-            beginTransaction(em);
-            employee = new Employee();
-            employee.setFirstName("Guillaume");
-            employee.setLastName("Aujet");
-            em.persist(employee);
-            commitTransaction(em);
-        } catch (RuntimeException ex) {
-            if (isTransactionActive(em)) {
-                rollbackTransaction(em);
-            }
-         
-            closeEntityManager(em);
-            throw ex;
-        }
-        
-        version1 = employee.getVersion();
-        
-        try {
-            beginTransaction(em);
-            employee = em.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC_FORCE_INCREMENT);
-            commitTransaction(em);
+            EntityManager em = createEntityManager();
             
-            assertTrue("The version was not updated on the pessimistic lock.", version1.intValue() < employee.getVersion().intValue());
-        } catch (RuntimeException ex) {
-            if (isTransactionActive(em)) {
-                rollbackTransaction(em);
+            try {
+                beginTransaction(em);
+                employee = new Employee();
+                employee.setFirstName("Guillaume");
+                employee.setLastName("Aujet");
+                em.persist(employee);
+                commitTransaction(em);
+            } catch (RuntimeException ex) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+             
+                closeEntityManager(em);
+                throw ex;
             }
             
-            throw ex;
-        } finally {
-            closeEntityManager(em);
+            version1 = employee.getVersion();
+            
+            try {
+                beginTransaction(em);
+                employee = em.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC_FORCE_INCREMENT);
+                commitTransaction(em);
+                
+                assertTrue("The version was not updated on the pessimistic lock.", version1.intValue() < employee.getVersion().intValue());
+            } catch (RuntimeException ex) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+                
+                throw ex;
+            } finally {
+                closeEntityManager(em);
+            }
         }
     }
     
-    public void testPESSIMISTIC_READLockWithNoChanges() {        
-        Employee employee = null;
-        Integer version1;
-        Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", JUnitTestCase.getServerSession().getPlatform().isSybase());
+    public void testPESSIMISTIC_READLockWithNoChanges() {
+        ServerSession session = JUnitTestCase.getServerSession();
+        Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", session.getPlatform().isSybase());
+        
+        // Cannot create parallel entity managers in the server.
+        if (! isOnServer() && isSelectForUpateSupported()) {             
+            Employee employee = null;
+            Integer version1;
 
-        EntityManager em = createEntityManager();
-        
-        try {
-            beginTransaction(em);
-            employee = new Employee();
-            employee.setFirstName("Black");
-            employee.setLastName("Crappie");
-            em.persist(employee);
-            commitTransaction(em);
-        } catch (RuntimeException ex) {
-            if (isTransactionActive(em)) {
-                rollbackTransaction(em);
-            }
-         
-            closeEntityManager(em);
-            throw ex;
-        }
-        
-        version1 = employee.getVersion();
-        
-        try {
-            beginTransaction(em);
-            employee = em.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC_READ);
-            commitTransaction(em);
+            EntityManager em = createEntityManager();
             
-            assertTrue("The version was updated on the pessimistic lock.", version1.intValue() == employee.getVersion().intValue());
-        } catch (RuntimeException ex) {
-            if (isTransactionActive(em)) {
-                rollbackTransaction(em);
+            try {
+                beginTransaction(em);
+                employee = new Employee();
+                employee.setFirstName("Black");
+                employee.setLastName("Crappie");
+                em.persist(employee);
+                commitTransaction(em);
+            } catch (RuntimeException ex) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+             
+                closeEntityManager(em);
+                throw ex;
             }
             
-            throw ex;
-        } finally {
-            closeEntityManager(em);
+            version1 = employee.getVersion();
+            
+            try {
+                beginTransaction(em);
+                employee = em.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC_READ);
+                commitTransaction(em);
+                
+                assertTrue("The version was updated on the pessimistic lock.", version1.intValue() == employee.getVersion().intValue());
+            } catch (RuntimeException ex) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+                
+                throw ex;
+            } finally {
+                closeEntityManager(em);
+            }
         }
     }
     
-    public void testPESSIMISTIC_WRITELockWithNoChanges() {        
-        Employee employee = null;
-        Integer version1;
-        Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", JUnitTestCase.getServerSession().getPlatform().isSybase());
-
-        EntityManager em = createEntityManager();
+    public void testPESSIMISTIC_WRITELockWithNoChanges() {
+        ServerSession session = JUnitTestCase.getServerSession();
+        Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", session.getPlatform().isSybase());
         
-        try {
-            beginTransaction(em);
-            employee = new Employee();
-            employee.setFirstName("Black");
-            employee.setLastName("Crappie");
-            em.persist(employee);
-            commitTransaction(em);
-        } catch (RuntimeException ex) {
-            if (isTransactionActive(em)) {
-                rollbackTransaction(em);
-            }
-         
-            closeEntityManager(em);
-            throw ex;
-        }
-        
-        version1 = employee.getVersion();
-        
-        try {
-            beginTransaction(em);
-            employee = em.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC_WRITE);
-            commitTransaction(em);
+        // Cannot create parallel entity managers in the server.
+        if (! isOnServer() && isSelectForUpateSupported()) {
+            Employee employee = null;
+            Integer version1;
+    
+            EntityManager em = createEntityManager();
             
-            assertTrue("The version was updated on the pessimistic lock.", version1.intValue() == employee.getVersion().intValue());
-        } catch (RuntimeException ex) {
-            if (isTransactionActive(em)) {
-                rollbackTransaction(em);
+            try {
+                beginTransaction(em);
+                employee = new Employee();
+                employee.setFirstName("Black");
+                employee.setLastName("Crappie");
+                em.persist(employee);
+                commitTransaction(em);
+            } catch (RuntimeException ex) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+             
+                closeEntityManager(em);
+                throw ex;
             }
             
-            throw ex;
-        } finally {
-            closeEntityManager(em);
+            version1 = employee.getVersion();
+            
+            try {
+                beginTransaction(em);
+                employee = em.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC_WRITE);
+                commitTransaction(em);
+                
+                assertTrue("The version was updated on the pessimistic lock.", version1.intValue() == employee.getVersion().intValue());
+            } catch (RuntimeException ex) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+                
+                throw ex;
+            } finally {
+                closeEntityManager(em);
+            }
         }
     }
     
     public void testPESSIMISTIC_READ_TIMEOUTLock() {
         ServerSession session = JUnitTestCase.getServerSession();
-        Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", JUnitTestCase.getServerSession().getPlatform().isSybase());
+        Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", session.getPlatform().isSybase());
 
         // Cannot create parallel entity managers in the server.
-        if (! isOnServer() && ! session.getPlatform().isMySQL() && ! session.getPlatform().isTimesTen()) {
+        if (! isOnServer() && isSelectForUpateSupported()) {
             EntityManager em = createEntityManager();
             List result = em.createQuery("Select employee from Employee employee").getResultList();
             Employee employee = (Employee) result.get(0);
@@ -1754,10 +1769,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     
     public void testPESSIMISTIC_WRITE_TIMEOUTLock() {
         ServerSession session = JUnitTestCase.getServerSession();
-        Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", JUnitTestCase.getServerSession().getPlatform().isSybase());
+        Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", session.getPlatform().isSybase());
 
         // Cannot create parallel entity managers in the server.
-        if (! isOnServer() && ! session.getPlatform().isMySQL() && ! session.getPlatform().isTimesTen()) {
+        if (! isOnServer() && isSelectForUpateSupported()) {
             EntityManager em = createEntityManager();
             List result = em.createQuery("Select employee from Employee employee").getResultList();
             Employee employee = (Employee) result.get(0);
@@ -2008,45 +2023,51 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
 
     public void testDetachManagedObject() {
-        EntityManager em = createEntityManager();
+        // Don't run this test in a JPA 1.0 environment.
+        if (! isJPA10()) {
+            EntityManager em = createEntityManager();
 
-        // create test data
-        beginTransaction(em);
-        Employee emp = new Employee();
-        emp.setFirstName("beforePersist");
-        em.persist(emp);
-        Integer id = emp.getId();
-        commitTransaction(em);
-
-        // Test that 'detach()' removes 'emp' from the persistence context
-        beginTransaction(em);
-        em.detach(emp);
-        assertFalse("could not detach managed object", em.contains(emp));
-
-        // clean up 
-        emp = em.find(Employee.class, id);
-        em.remove(emp);
-        commitTransaction(em);
+            // create test data
+            beginTransaction(em);
+            Employee emp = new Employee();
+            emp.setFirstName("beforePersist");
+            em.persist(emp);
+            Integer id = emp.getId();
+            commitTransaction(em);
+    
+            // Test that 'detach()' removes 'emp' from the persistence context
+            beginTransaction(em);
+            em.detach(emp);
+            assertFalse("could not detach managed object", em.contains(emp));
+    
+            // clean up 
+            emp = em.find(Employee.class, id);
+            em.remove(emp);
+            commitTransaction(em);
+        }
     }
 
     //detaching an non-managed object should not throw any exception.
     public void testDetachNonManagedObject() {
-        EntityManager em = createEntityManager();
-
-        // Create test data
-        beginTransaction(em);
-        Employee emp = new Employee();
-        emp.setFirstName("beforePersist");
-        boolean caughtException = false;
-
-        // detach the object
-        em.detach(emp);
-        em.persist(emp);
-
-        // Deleting the object
-        em.remove(emp);
-        commitTransaction(em);
-        assertFalse("Cannot_detach_Object Exception was thrown for a non-managed Entity", caughtException);
+        // Don't run this test in a JPA 1.0 environment.
+        if (! isJPA10()) {
+            EntityManager em = createEntityManager();
+    
+            // Create test data
+            beginTransaction(em);
+            Employee emp = new Employee();
+            emp.setFirstName("beforePersist");
+            boolean caughtException = false;
+    
+            // detach the object
+            em.detach(emp);
+            em.persist(emp);
+    
+            // Deleting the object
+            em.remove(emp);
+            commitTransaction(em);
+            assertFalse("Cannot_detach_Object Exception was thrown for a non-managed Entity", caughtException);
+        }
     }
 
     // test for bug 4676587: 
@@ -2223,28 +2244,31 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
 
     public void testFindWithProperties(){
-        Employee employee = new Employee();
-        employee.setFirstName("Marc");
-        HashMap queryhints=new  HashMap();
-        EntityManager em = createEntityManager();
-        try {
-          beginTransaction(em);
-          em.persist(employee);
-          commitTransaction(em);
-          beginTransaction(em);
-          int empId=employee.getId();
-          Employee e1=em.find(Employee.class,empId);
-          e1.setFirstName("testfind");
-          queryhints.put(QueryHints.REFRESH, "TRUE");
-          Employee e2=em.find(Employee.class,empId ,queryhints);
-          assertFalse(e2.getFirstName().equals("testfind"));
-          commitTransaction(em);
-        } catch (IllegalArgumentException iae) {
-            return;
-        } catch (Exception e) {
-            fail("Wrong exception type thrown: " + e.getClass());
-        }finally{
-            closeEntityManager(em);
+        // find with properties not supported on 1.0
+        if (! isJPA10()) {
+            Employee employee = new Employee();
+            employee.setFirstName("Marc");
+            HashMap queryhints=new  HashMap();
+            EntityManager em = createEntityManager();
+            try {
+              beginTransaction(em);
+              em.persist(employee);
+              commitTransaction(em);
+              beginTransaction(em);
+              int empId=employee.getId();
+              Employee e1=em.find(Employee.class,empId);
+              e1.setFirstName("testfind");
+              queryhints.put(QueryHints.REFRESH, "TRUE");
+              Employee e2=em.find(Employee.class,empId ,queryhints);
+              assertFalse(e2.getFirstName().equals("testfind"));
+              commitTransaction(em);
+            } catch (IllegalArgumentException iae) {
+                return;
+            } catch (Exception e) {
+                fail("Wrong exception type thrown: " + e.getClass());
+            }finally{
+                closeEntityManager(em);
+            }
         }
       }
 
@@ -3629,20 +3653,22 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
 
     //detach(nonentity) throws illegalArgumentException
-    public void testDetachNonEntity()
-    {
-        boolean testPass = false;
-        Object nonEntity = new Object();
-        EntityManager em = createEntityManager();
-        beginTransaction(em);
-        try {
-            em.detach(nonEntity);
-        } catch (IllegalArgumentException e) {
-            testPass = true;
-        } finally {
-            rollbackTransaction(em);
+    public void testDetachNonEntity() {
+        // Don't run this test in a JPA 1.0 environment.
+        if (! isJPA10()) {
+            boolean testPass = false;
+            Object nonEntity = new Object();
+            EntityManager em = createEntityManager();
+            beginTransaction(em);
+            try {
+                em.detach(nonEntity);
+            } catch (IllegalArgumentException e) {
+                testPass = true;
+            } finally {
+                rollbackTransaction(em);
+            }
+            Assert.assertTrue(testPass);
         }
-        Assert.assertTrue(testPass);
     }
 
     public void testClose() {
@@ -3907,130 +3933,137 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
 
     public void testGetLockModeType() {
-
-        EntityManager em = createEntityManager();
-        try {
-            beginTransaction(em);
-            Employee emp = new Employee();
-            Employee emp1 = new Employee();
-            Employee emp2 = new Employee();
-            Employee emp3 = new Employee();
-            Employee emp4 = new Employee();
-            Employee emp5 = new Employee();
-            Employee emp6= new Employee();
-            Employee emp7= new Employee();
-            emp.setFirstName("Douglas");
-            emp.setLastName("McRae");
-            emp1.setFirstName("kaul");
-            emp1.setLastName("Jeet");
-            emp2.setFirstName("Schwatz");
-            emp2.setLastName("Jonathan");
-            emp3.setFirstName("Anil");
-            emp3.setLastName("Gadre");
-            emp4.setFirstName("Anil");
-            emp4.setLastName("Gaur");
-            emp5.setFirstName("Eliot");
-            emp5.setLastName("Morrison");
-            emp6.setFirstName("Edward");
-            emp6.setLastName("Bratt");
-            emp7.setFirstName("TJ");
-            emp7.setLastName("Thomas");
-            em.persist(emp);
-            em.persist(emp1);
-            em.persist(emp2);
-            em.persist(emp3);
-            em.persist(emp4);
-            em.persist(emp5);
-            em.persist(emp6);
-            em.persist(emp7);
-            commitTransaction(em);
-            beginTransaction(em);
-            em.lock(emp, LockModeType.OPTIMISTIC);
-            LockModeType lt = em.getLockMode(emp);
-            em.lock(emp1, LockModeType.OPTIMISTIC_FORCE_INCREMENT);
-            LockModeType lt1 = em.getLockMode(emp1);
-            em.lock(emp2, LockModeType.PESSIMISTIC_READ);
-            LockModeType lt2 = em.getLockMode(emp2);
-            em.lock(emp3, LockModeType.PESSIMISTIC_WRITE);
-            LockModeType lt3 = em.getLockMode(emp3);
-            em.lock(emp4, LockModeType.PESSIMISTIC_FORCE_INCREMENT);
-            LockModeType lt4 = em.getLockMode(emp4);
-            em.lock(emp5, LockModeType.READ);
-            LockModeType lt5 = em.getLockMode(emp5);
-            em.lock(emp6, LockModeType.WRITE);
-            LockModeType lt6 = em.getLockMode(emp6);
-            em.lock(emp7, LockModeType.NONE);
-            LockModeType lt7 = em.getLockMode(emp7);
-            assertEquals("Did not return correct LockModeType", LockModeType.OPTIMISTIC, lt);
-            assertEquals("Did not return correct LockModeType", LockModeType.OPTIMISTIC_FORCE_INCREMENT, lt1);
-
-            // Note: On some databases EclipseLink automatically upgrade LockModeType to PESSIMSITIC_WRITE
-            assertTrue("Did not return correct LockModeType", lt2 == LockModeType.PESSIMISTIC_WRITE || lt2 == LockModeType.PESSIMISTIC_READ);
-            
-            assertEquals("Did not return correct LockModeType", LockModeType.PESSIMISTIC_WRITE, lt3);
-            assertEquals("Did not return correct LockModeType", LockModeType.PESSIMISTIC_FORCE_INCREMENT, lt4);
-            assertEquals("Did not return correct LockModeType", LockModeType.OPTIMISTIC, lt5);
-            assertEquals("Did not return correct LockModeType", LockModeType.OPTIMISTIC_FORCE_INCREMENT, lt6);
-            assertEquals("Did not return correct LockModeType", LockModeType.NONE, lt7);
-        } catch (UnsupportedOperationException use) {
-            return;
-        } catch (Exception e) {
-            fail("Wrong exception type thrown: " + e.getClass());
-        } finally {
-            rollbackTransaction(em);
-            closeEntityManager(em);
+        // getLockModeType not supported on 1.0
+        if (! isJPA10()) {
+            EntityManager em = createEntityManager();
+            try {
+                beginTransaction(em);
+                Employee emp = new Employee();
+                Employee emp1 = new Employee();
+                Employee emp2 = new Employee();
+                Employee emp3 = new Employee();
+                Employee emp4 = new Employee();
+                Employee emp5 = new Employee();
+                Employee emp6= new Employee();
+                Employee emp7= new Employee();
+                emp.setFirstName("Douglas");
+                emp.setLastName("McRae");
+                emp1.setFirstName("kaul");
+                emp1.setLastName("Jeet");
+                emp2.setFirstName("Schwatz");
+                emp2.setLastName("Jonathan");
+                emp3.setFirstName("Anil");
+                emp3.setLastName("Gadre");
+                emp4.setFirstName("Anil");
+                emp4.setLastName("Gaur");
+                emp5.setFirstName("Eliot");
+                emp5.setLastName("Morrison");
+                emp6.setFirstName("Edward");
+                emp6.setLastName("Bratt");
+                emp7.setFirstName("TJ");
+                emp7.setLastName("Thomas");
+                em.persist(emp);
+                em.persist(emp1);
+                em.persist(emp2);
+                em.persist(emp3);
+                em.persist(emp4);
+                em.persist(emp5);
+                em.persist(emp6);
+                em.persist(emp7);
+                commitTransaction(em);
+                beginTransaction(em);
+                em.lock(emp, LockModeType.OPTIMISTIC);
+                LockModeType lt = em.getLockMode(emp);
+                em.lock(emp1, LockModeType.OPTIMISTIC_FORCE_INCREMENT);
+                LockModeType lt1 = em.getLockMode(emp1);
+                em.lock(emp2, LockModeType.PESSIMISTIC_READ);
+                LockModeType lt2 = em.getLockMode(emp2);
+                em.lock(emp3, LockModeType.PESSIMISTIC_WRITE);
+                LockModeType lt3 = em.getLockMode(emp3);
+                em.lock(emp4, LockModeType.PESSIMISTIC_FORCE_INCREMENT);
+                LockModeType lt4 = em.getLockMode(emp4);
+                em.lock(emp5, LockModeType.READ);
+                LockModeType lt5 = em.getLockMode(emp5);
+                em.lock(emp6, LockModeType.WRITE);
+                LockModeType lt6 = em.getLockMode(emp6);
+                em.lock(emp7, LockModeType.NONE);
+                LockModeType lt7 = em.getLockMode(emp7);
+                assertEquals("Did not return correct LockModeType", LockModeType.OPTIMISTIC, lt);
+                assertEquals("Did not return correct LockModeType", LockModeType.OPTIMISTIC_FORCE_INCREMENT, lt1);
+    
+                // Note: On some databases EclipseLink automatically upgrade LockModeType to PESSIMSITIC_WRITE
+                assertTrue("Did not return correct LockModeType", lt2 == LockModeType.PESSIMISTIC_WRITE || lt2 == LockModeType.PESSIMISTIC_READ);
+                
+                assertEquals("Did not return correct LockModeType", LockModeType.PESSIMISTIC_WRITE, lt3);
+                assertEquals("Did not return correct LockModeType", LockModeType.PESSIMISTIC_FORCE_INCREMENT, lt4);
+                assertEquals("Did not return correct LockModeType", LockModeType.OPTIMISTIC, lt5);
+                assertEquals("Did not return correct LockModeType", LockModeType.OPTIMISTIC_FORCE_INCREMENT, lt6);
+                assertEquals("Did not return correct LockModeType", LockModeType.NONE, lt7);
+            } catch (UnsupportedOperationException use) {
+                return;
+            } catch (Exception e) {
+                fail("Wrong exception type thrown: " + e.getClass());
+            } finally {
+                rollbackTransaction(em);
+                closeEntityManager(em);
+            }
         }
-
     }
 
     //'getProperties()' returns map that throws exception when tried to modify.
     public void testGetProperties() {
-        EntityManager em = createEntityManager();
-        beginTransaction(em);
-        try {
-            Map m1 = em.getProperties();
-            m1.remove("eclipselink.weaving");
-        } catch (UnsupportedOperationException use) {
-            return;
-        } catch (Exception e) {
-            fail("Wrong exception type thrown: " + e.getClass());
-        } finally {
-            rollbackTransaction(em);
-            closeEntityManager(em);
+        // getProperties not supported on 1.0
+        if (! isJPA10()) {
+            EntityManager em = createEntityManager();
+            beginTransaction(em);
+            try {
+                Map m1 = em.getProperties();
+                m1.remove("eclipselink.weaving");
+            } catch (UnsupportedOperationException use) {
+                return;
+            } catch (Exception e) {
+                fail("Wrong exception type thrown: " + e.getClass());
+            } finally {
+                rollbackTransaction(em);
+                closeEntityManager(em);
+            }
+            fail("No exception thrown when entityManager's properties are attempted to change.");
         }
-        fail("No exception thrown when entityManager's properties are attempted to change.");
     }
 
     public void testUnWrapClass() {
-        EntityManager em = createEntityManager();
-        EntityManagerImpl emi = (EntityManagerImpl) em;
-        ServerSession session = emi.getServerSession();
-        UnitOfWork uow = emi.getUnitOfWork();
-        UnitOfWorkImpl uowImpl = (UnitOfWorkImpl) uow;
-        JpaEntityManager jem = emi;
-        boolean caughtException = false;
-        try {
-            beginTransaction(em);
-            org.eclipse.persistence.sessions.server.ServerSession session1;
-            session1 = (ServerSession) em.unwrap(org.eclipse.persistence.sessions.Session.class);
-            assertEquals("Does not return server session", session, session1);
-            UnitOfWork uow1;
-            uow1 = em.unwrap(org.eclipse.persistence.sessions.UnitOfWork.class);
-            assertEquals("Does not return unit of work", uow, uow1);
-            JpaEntityManager jem1;
-            jem1 = em.unwrap(org.eclipse.persistence.jpa.JpaEntityManager.class);
-            assertEquals("Does not return underlying entitymanager", jem, jem1);
-            Connection conn1;
-            conn1 = em.unwrap(java.sql.Connection.class);
-            Connection conn = uowImpl.getAccessor().getConnection();
-            assertEquals("Does not return underlying connection", conn, conn1);
-        } catch (PersistenceException e) {
-            caughtException = true;
-        } finally {
-            rollbackTransaction(em);
-            closeEntityManager(em);
+        // unWrap not supported on 1.0
+        if (! isJPA10()) {
+            EntityManager em = createEntityManager();
+            EntityManagerImpl emi = (EntityManagerImpl) em;
+            ServerSession session = emi.getServerSession();
+            UnitOfWork uow = emi.getUnitOfWork();
+            UnitOfWorkImpl uowImpl = (UnitOfWorkImpl) uow;
+            JpaEntityManager jem = emi;
+            boolean caughtException = false;
+            try {
+                beginTransaction(em);
+                org.eclipse.persistence.sessions.server.ServerSession session1;
+                session1 = (ServerSession) em.unwrap(org.eclipse.persistence.sessions.Session.class);
+                assertEquals("Does not return server session", session, session1);
+                UnitOfWork uow1;
+                uow1 = em.unwrap(org.eclipse.persistence.sessions.UnitOfWork.class);
+                assertEquals("Does not return unit of work", uow, uow1);
+                JpaEntityManager jem1;
+                jem1 = em.unwrap(org.eclipse.persistence.jpa.JpaEntityManager.class);
+                assertEquals("Does not return underlying entitymanager", jem, jem1);
+                Connection conn1;
+                conn1 = em.unwrap(java.sql.Connection.class);
+                Connection conn = uowImpl.getAccessor().getConnection();
+                assertEquals("Does not return underlying connection", conn, conn1);
+            } catch (PersistenceException e) {
+                caughtException = true;
+            } finally {
+                rollbackTransaction(em);
+                closeEntityManager(em);
+            }
+            assertFalse("PersistenceException was thrown for the specified class.", caughtException);
         }
-        assertFalse("PersistenceException was thrown for the specified class.", caughtException);
     }
 
     public void testMultipleFactories() {
@@ -4655,73 +4688,83 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     // Test multiple items from a report query. Will verify the version on
     // only one of the results.
     public void testLockingLeftJoinOneToOneQuery() {
-        // Grab a copy of the results that we will lock then verify.
-        List<Object[]> results = createEntityManager().createQuery("SELECT m, e FROM Employee e LEFT JOIN e.manager m").getResultList();
+        ServerSession session = JUnitTestCase.getServerSession();
         
-        if (! results.isEmpty()) {
-            // Issuing the force increment locking query.
-            EntityManager em = createEntityManager();
-            beginTransaction(em);
-            em.createQuery("SELECT m, e FROM Employee e LEFT JOIN e.manager m").setLockMode(LockModeType.OPTIMISTIC_FORCE_INCREMENT).getResultList();
-            commitTransaction(em);
-        
-            // Verify the items of the result list all had a version increment.
-            beginTransaction(em);
-            try{
-                for (Object[] result : results) {
-                    Employee managerBefore = (Employee) result[0];
-                    if (managerBefore != null) {
-                        int managerVersionBefore = managerBefore.getVersion();
-                        Employee managerAfter = em.find(Employee.class, managerBefore.getId());
-                        int managerVersionAfter = managerAfter.getVersion();
-                        assertTrue("The manager version was not updated on the locking query.", (managerVersionAfter - managerVersionBefore) == 1);
+        // OPTIMISTIC_FORCE_INCREMENT lock not supported on 1.0
+        if (! isJPA10()) {
+            // Grab a copy of the results that we will lock then verify.
+            List<Object[]> results = createEntityManager().createQuery("SELECT m, e FROM Employee e LEFT JOIN e.manager m").getResultList();
+            
+            if (! results.isEmpty()) {
+                // Issuing the force increment locking query.
+                EntityManager em = createEntityManager();
+                beginTransaction(em);
+                em.createQuery("SELECT m, e FROM Employee e LEFT JOIN e.manager m").setLockMode(LockModeType.OPTIMISTIC_FORCE_INCREMENT).getResultList();
+                commitTransaction(em);
+            
+                // Verify the items of the result list all had a version increment.
+                beginTransaction(em);
+                try{
+                    for (Object[] result : results) {
+                        Employee managerBefore = (Employee) result[0];
+                        if (managerBefore != null) {
+                            int managerVersionBefore = managerBefore.getVersion();
+                            Employee managerAfter = em.find(Employee.class, managerBefore.getId());
+                            int managerVersionAfter = managerAfter.getVersion();
+                            assertTrue("The manager version was not updated on the locking query.", (managerVersionAfter - managerVersionBefore) == 1);
+                        }
+                        
+                        Employee employeeBefore = (Employee) result[1];
+                        if (employeeBefore != null) {
+                            int employeeVersionBefore = employeeBefore.getVersion();
+                            Employee employeeAfter = em.find(Employee.class, employeeBefore.getId());
+                            int employeeVersionAfter = employeeAfter.getVersion();
+                            assertTrue("The manager version was not updated on the locking query.", (employeeVersionAfter - employeeVersionBefore) == 1);
+                        }
                     }
-                    
-                    Employee employeeBefore = (Employee) result[1];
-                    if (employeeBefore != null) {
-                        int employeeVersionBefore = employeeBefore.getVersion();
-                        Employee employeeAfter = em.find(Employee.class, employeeBefore.getId());
-                        int employeeVersionAfter = employeeAfter.getVersion();
-                        assertTrue("The manager version was not updated on the locking query.", (employeeVersionAfter - employeeVersionBefore) == 1);
-                    }
+                } finally {
+                   if(this.isTransactionActive(em)) {
+                       rollbackTransaction(em);
+                      }
+                       closeEntityManager(em);
                 }
-            } finally {
-               if(this.isTransactionActive(em)) {
-                   rollbackTransaction(em);
-                  }
-                   closeEntityManager(em);
             }
-        }
+        }   
     }
     
     // Test single item from a report query.
     public void testLockingLeftJoinOneToOneQuery2() {
-        // Grab a copy of the results that we will lock then verify.
-        List<Address> results = createEntityManager().createQuery("SELECT a FROM Employee e LEFT JOIN e.address a").getResultList();
+        ServerSession session = JUnitTestCase.getServerSession();
         
-        if (results != null) {
-            // Issuing the force increment locking query.
-            EntityManager em = createEntityManager();
-            beginTransaction(em);
-            em.createQuery("SELECT a FROM Employee e LEFT JOIN e.address a").setLockMode(LockModeType.OPTIMISTIC_FORCE_INCREMENT).getResultList();
-            commitTransaction(em);
+        // OPTIMISTIC_FORCE_INCREMENT lock not supported on 1.0
+        if (! isJPA10()) {
+            // Grab a copy of the results that we will lock then verify.
+            List<Address> results = createEntityManager().createQuery("SELECT a FROM Employee e LEFT JOIN e.address a").getResultList();
             
-            // Verify the items of the result list all had a version increment.
-            beginTransaction(em);
-            try{
-                for (Address address : results) {
-                    if (address != null) {
-                        int versionBefore = address.getVersion();    
-                        Address addressAfter = em.find(Address.class, address.getId());
-                        int versionAfter = addressAfter.getVersion();
-                        assertTrue("The version on an address was not updated on the locking query.", (versionAfter - versionBefore) == 1);
+            if (results != null) {
+                // Issuing the force increment locking query.
+                EntityManager em = createEntityManager();
+                beginTransaction(em);
+                em.createQuery("SELECT a FROM Employee e LEFT JOIN e.address a").setLockMode(LockModeType.OPTIMISTIC_FORCE_INCREMENT).getResultList();
+                commitTransaction(em);
+                
+                // Verify the items of the result list all had a version increment.
+                beginTransaction(em);
+                try{
+                    for (Address address : results) {
+                        if (address != null) {
+                            int versionBefore = address.getVersion();    
+                            Address addressAfter = em.find(Address.class, address.getId());
+                            int versionAfter = addressAfter.getVersion();
+                            assertTrue("The version on an address was not updated on the locking query.", (versionAfter - versionBefore) == 1);
+                        }
                     }
+                } finally {
+                   if(this.isTransactionActive(em)) {
+                       rollbackTransaction(em);
+                      }
+                       closeEntityManager(em);
                 }
-            } finally {
-               if(this.isTransactionActive(em)) {
-                   rollbackTransaction(em);
-                  }
-                   closeEntityManager(em);
             }
         }
     }
@@ -4979,41 +5022,44 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     //checks whether an removed object is completely deleted from the
     //getDeletedObject()Map after 'detach(removedobject)' is invoked
     public void testDetachRemovedObject() {
-        //create an Employee
-        Employee emp = new Employee();
-        emp.setFirstName("testDetachRemovedObjectEmployee");
-        emp.setId(71);
-
-        //persist the Employee
-        EntityManager em = createEntityManager();
-        EntityManagerImpl em1=(EntityManagerImpl)em;
-        try{
+        // Don't run this test in a JPA 1.0 environment.
+        if (! isJPA10()) {
+            //create an Employee
+            Employee emp = new Employee();
+            emp.setFirstName("testDetachRemovedObjectEmployee");
+            emp.setId(71);
+    
+            //persist the Employee
+            EntityManager em = createEntityManager();
+            EntityManagerImpl em1=(EntityManagerImpl)em;
+            try{
+                beginTransaction(em);
+                em.persist(emp);
+                commitTransaction(em);
+                }catch (RuntimeException re){
+                if (isTransactionActive(em)){
+                    rollbackTransaction(em);
+                }
+                throw re;
+             }
+    
             beginTransaction(em);
-            em.persist(emp);
+            em.remove(emp); //attempt to remove the Employee
             commitTransaction(em);
-            }catch (RuntimeException re){
-            if (isTransactionActive(em)){
-                rollbackTransaction(em);
+            beginTransaction(em);
+            try{  
+                em.detach(emp);    //attempt to detach the Employee
+                UnitOfWork uow=em1.getUnitOfWork();
+                UnitOfWorkImpl uowImpl=(UnitOfWorkImpl)uow;
+                boolean afterClear=uowImpl.getDeletedObjects().containsKey(emp);
+                assertFalse("exception thrown when detaching a removed entity is attempted.",afterClear);
+            }catch (IllegalArgumentException iae){
+                return;
+            }catch (Exception e) {
+                fail("Wrong exception type thrown: " + e.getClass());
+            }finally {
+                closeEntityManager(em);
             }
-            throw re;
-         }
-
-        beginTransaction(em);
-        em.remove(emp); //attempt to remove the Employee
-        commitTransaction(em);
-        beginTransaction(em);
-        try{  
-            em.detach(emp);    //attempt to detach the Employee
-            UnitOfWork uow=em1.getUnitOfWork();
-            UnitOfWorkImpl uowImpl=(UnitOfWorkImpl)uow;
-            boolean afterClear=uowImpl.getDeletedObjects().containsKey(emp);
-            assertFalse("exception thrown when detaching a removed entity is attempted.",afterClear);
-        }catch (IllegalArgumentException iae){
-            return;
-        }catch (Exception e) {
-            fail("Wrong exception type thrown: " + e.getClass());
-        }finally {
-            closeEntityManager(em);
         }
     }
     
@@ -5173,19 +5219,22 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
     //detach(null) should throw IllegalArgumentException
     public void testDetachNull() {
-        EntityManager em = createEntityManager();
-        beginTransaction(em);
-        try {
-            em.detach(null);
-        } catch (IllegalArgumentException iae) {
-            return;
-        } catch (Exception e) {
-            fail("Wrong exception type thrown: " + e.getClass());
-        } finally {
-            rollbackTransaction(em);
-            closeEntityManager(em);
+        // Don't run this test in a JPA 1.0 environment.
+        if (! isJPA10()) {
+            EntityManager em = createEntityManager();
+            beginTransaction(em);
+            try {
+                em.detach(null);
+            } catch (IllegalArgumentException iae) {
+                return;
+            } catch (Exception e) {
+                fail("Wrong exception type thrown: " + e.getClass());
+            } finally {
+                rollbackTransaction(em);
+                closeEntityManager(em);
+            }
+            fail("No exception thrown when entityManager.detach(null) attempted.");
         }
-        fail("No exception thrown when entityManager.detach(null) attempted.");
     }
 
     //bug gf732 - removing null entity should throw an IllegalArgumentException
@@ -7117,22 +7166,26 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
      * an entity manager is closed.
      */
     public void testGetEntityManagerFactory() {
-        boolean testPass = false;
-        Employee emp = new Employee();
-        EntityManager em = createEntityManager();
-        EntityManagerFactory emf;
-        beginTransaction(em);
-        try {
-            emp.setFirstName("test");
-            em.persist(emp);
-            commitTransaction(em);
-            closeEntityManager(em);
-            emf=em.getEntityManagerFactory();
-        } catch (IllegalStateException e) {
-            testPass = true;
-        } 
-        Assert.assertTrue(testPass);
+        // getEntityManagerFactory not supported on 1.0
+        if (! isJPA10()) {
+            boolean testPass = false;
+            Employee emp = new Employee();
+            EntityManager em = createEntityManager();
+            EntityManagerFactory emf;
+            beginTransaction(em);
+            try {
+                emp.setFirstName("test");
+                em.persist(emp);
+                commitTransaction(em);
+                closeEntityManager(em);
+                emf=em.getEntityManagerFactory();
+            } catch (IllegalStateException e) {
+                testPass = true;
+            } 
+            Assert.assertTrue(testPass);
+        }   
     }
+    
     /**
      * Test getReference() API.
      */
