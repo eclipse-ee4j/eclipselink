@@ -491,7 +491,7 @@
     <target name="populate-p2-update-site">
         <!-- has to be run last, so it can be generic for nightly, or milestone builds -->
         <property name="p2.repos.path" value="${eclipselink.download.path}/incremental-updates/milestone"/>
-        <mkdir dir="${p2.repos.path"/>
+        <mkdir dir="${p2.repos.path}"/>
         <unzip dest="${p2.repos.path}/plugins" src="${download.path}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}">
             <patternset>
                 <include name="*.jar"/>
