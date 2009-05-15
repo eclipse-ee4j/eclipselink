@@ -47,7 +47,7 @@
             depends="clean, build, test-lrg, publish-build, publish-results, test-for-errors"
     />
     <target name="build-milestone"  description="Trigger build, testing, and publishing of a milestone release ('release' is a milestone in this case)"
-            depends="promote-init, extract-signed-artifacts, regen-archives, gen-build-for-maven, publish-milestone, create-tag"
+            depends="promote-init, extract-signed-artifacts, regen-archives, gen-build-for-maven, publish-milestone, populate-p2-update-site, create-tag"
     />
     <target name="build-continuous" description="Trigger an automated build and run the tests if source changes exist"
             depends="clean, build-no-javadoc, build-utils, test-srg"
@@ -332,7 +332,7 @@
     <target name="publish-build">
         <!-- New Publish Architecture -->
         <mkdir dir="${download.path}"/>
-        <copy file="${signing.dir}/signed-output/${eclipselink.install.prefix}-P2.zip"                 tofile="${download.path}/${eclipselink.install.prefix}-P2signed-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
+        <copy file="${signing.dir}/signed-output/${eclipselink.p2.archive.presigned}"                  tofile="${download.path}/${eclipselink.p2.archive.signed}" failonerror="false"/>
         <copy file="${build.root.dir}/${eclipselink.install.prefix}${eclipselink.zip.suffix}"          tofile="${download.path}/${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
         <copy file="${build.root.dir}/${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"      tofile="${download.path}/${eclipselink.src.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
         <copy file="${build.root.dir}/${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}"          tofile="${download.path}/${eclipselink.tst.src.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
@@ -424,7 +424,7 @@
     <target name="extract-signed-artifacts">
         <echo message="Extracting signed jars from archive..."/>
         <property name="signed.jar.path" value="${temp.rebuild.path}/signed"/>
-        <unzip dest="${signed.jar.path}" src="${build.source.path}/${eclipselink.install.prefix}-P2-${version.string}${eclipselink.zip.suffix}"/>
+        <unzip dest="${signed.jar.path}" src="${build.source.path}/${eclipselink.p2.archive.signed}"/>
     </target>
        
     <target name="regen-archives">
@@ -433,10 +433,12 @@
         <copy todir="${temp.rebuild.path}" file="${build.source.path}/${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}"         failonerror="false"/>
         <copy todir="${temp.rebuild.path}" file="${build.source.path}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
         <!-- Force overwrite of original content -->
+        <!-- EclipseLink Installer Zip -->
         <zip destfile="${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}" update="true">
             <zipfileset dir="${signed.jar.path}" prefix="eclipselink/utils/dbws" includes="${dbws-util.jar.name}" />
             <zipfileset dir="${signed.jar.path}" prefix="eclipselink/jlib"       includes="${eclipselink.jar.name}"/>
         </zip> 
+        <!-- EclipseLink Plugins Zip -->
         <zip destfile="${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}" update="true">
             <zipfileset dir="${signed.jar.path}/plugins" includes="*.jar" />
         </zip> 
@@ -448,7 +450,7 @@
         <!-- need to setup a dir that contains the correct contents for maven to promote -->
         <mkdir dir="${tmp.maven.dir}"/>
         <!-- get eclipselink source zip -->
-        <copy file="${build.source.path}/${eclipselink.src.install.prefix}-${version.string}${eclipselink.zip.suffix}"     tofile="${tmp.maven.dir}/${eclipselink.src.install.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
+        <copy file="${build.source.path}/${eclipselink.src.install.prefix}-${version.string}${eclipselink.zip.suffix}" tofile="${tmp.maven.dir}/${eclipselink.src.install.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
         <!-- get eclipselink.jar -->
         <copy todir="${tmp.maven.dir}" file="${signed.jar.path}/${eclipselink.jar.name}"/>
         <!-- get bundles -->
@@ -482,8 +484,37 @@
         <copy todir="${download.path}" file="${build.source.path}/eclipselink-dbws-lrg-${version.string}.html"                                      failonerror="false"/>
         <copy todir="${download.path}" file="${build.source.path}/eclipselink-dbws-util-lrg-${version.string}.html"                                 failonerror="false"/>
         <!-- copy P2 archive as well for safekeeping (in case rebuild needed) -->
-        <copy todir="${download.path}" file="${build.source.path}/${eclipselink.install.prefix}-P2-${version.string}${eclipselink.zip.suffix}"      failonerror="false"/>
-        <!-- ant antfile="uploadToMaven.xml" dir="${tmp.maven.dir}" target="upload-maven-all"/>
-        <delete dir="${temp.rebuild.path}" failonerror="false"/ -->
+        <copy todir="${download.path}" file="${build.source.path}/${eclipselink.p2.archive.signed}"                                                 failonerror="false"/>
+        <!-- ant antfile="uploadToMaven.xml" dir="${tmp.maven.dir}" target="upload-maven-all"/ -->
     </target>
+
+    <target name=populate-p2-update-site">
+        <!-- has to be run last, so it can be generic for nightly, or milestone builds -->
+        <property name="p2.repos.path" value="${eclipselink.download.path}/incremental-updates/milestone"/>
+        <mkdir dir="${p2.repos.path"/>
+        <unzip dest="${p2.repos.path}/plugins" src="${download.path}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}">
+            <patternset>
+                <include name="*.jar"/>
+            </patternset>
+        </unzip>
+        <!-- Remove unwanted jars -->
+        <delete>
+            <fileset dir="${p2.repos.path}/plugins" includes="*dbws*.jar, *servlet*.jar, *soap*.jar, *xml.ws*.jar"/>
+            <fileset dir="${p2.repos.path}"         includes="artifact*.*, content*.*"/>
+        </delete>
+        <!-- populate features -->
+        <copy todir="${p2.repos.path}\features failonerror="false">
+            <fileset dir="${temp.rebuild.path}\features" includes="features/*.jar"/>
+        </copy>
+        
+        <!-- Generate repository -->
+        <ant antfile="build.xml" dir="${build.root.dir}/features" target="generate-p2-repos">
+            <property name="bundle.installer.exist" value="true"/>
+            <property name="p2.SDK.install.dir" value="${build.deps.dir}/eclipse"/>
+            <property name="p2.base.dir" value="${p2.repos.path}"/>
+            <property name="site.dir" value="${signed.jar.path}"/>
+        </ant>
+        <!-- delete dir="${temp.rebuild.path}" failonerror="false"/ -->
+    </target>
+
 </project>

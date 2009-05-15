@@ -72,6 +72,7 @@
     <property name="classes.dir"                        value="classes"/>
     <property name="eclipselink.util.dbws"              value="utils/eclipselink.utils.dbws"/>
     <property name="eclipselink.jpa.plugins"            value="jpa/plugins"/>
+    <property name="eclipselink.p2.archive.presigned"   value="${eclipselink.install.prefix}-P2${eclipselink.zip.suffix}"/>
     <!-- Helper definitions derived from Pre-set variables -->
     <property name="feature.build.dir"                  value="${classes.dir}/features"/>
     <property name="bundle.working.dir"                 value="${classes.dir}/plugins"/>
@@ -92,7 +93,8 @@
     <property name="p2.feature.dir" value="${p2.base.dir}/features"/>
     <property name="p2.bundle.dir" value="${p2.base.dir}/plugins"/>
     <property name="bundle.install.file" value="${feature.2.base.dir}/${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}"/>
-    <property name="site.url" value="file:${feature.build.location}/${classes.dir}/site.xml"/>
+    <property name="site.dir" value="${feature.build.location}/${classes.dir}"/>
+    <property name="site.url" value="file:${site.dir}/site.xml"/>
     <!-- Output definitions -->
     <property name="p2.repository.url" value="file:/${p2.base.dir}"/>
 
@@ -238,8 +240,8 @@
     </target>
 
     <target name="create-sign-zipfile" depends="create-eclipse-buildfile">
-        <delete file="eclipselink-P2.zip"/>
-        <zip destfile="eclipselink-P2.zip">
+        <delete file="${eclipselink.p2.archive.presigned}"/>
+        <zip destfile="${eclipselink.p2.archive.presigned}">
             <zipfileset dir="${feature.2.base.dir}"                      includes="eclipselink*.jar"/>
             <zipfileset dir="${feature.2.utils.dbws}"                    includes="eclipselink-dbwsutils*.jar"/>
             <zipfileset dir="${classes.dir}"                             includes="eclipselink.build"/>
@@ -251,9 +253,9 @@
     </target>
 
     <target name="copy-and-queue-for-sign">
-        <copy file="eclipselink-P2.zip" todir="${signing.dir}"/>
+        <copy file="${eclipselink.p2.archive.presigned}" todir="${signing.dir}"/>
         <exec executable="${signing.script}" dir="${signing.dir}">
-            <arg value="eclipselink-P2.zip"/>
+            <arg value="${eclipselink.p2.archive.presigned}"/>
             <arg value="nomail"/>
             <arg value="signed-output/"/>
         </exec>
