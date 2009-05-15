@@ -488,7 +488,7 @@
         <!-- ant antfile="uploadToMaven.xml" dir="${tmp.maven.dir}" target="upload-maven-all"/ -->
     </target>
 
-    <target name=populate-p2-update-site">
+    <target name="populate-p2-update-site">
         <!-- has to be run last, so it can be generic for nightly, or milestone builds -->
         <property name="p2.repos.path" value="${eclipselink.download.path}/incremental-updates/milestone"/>
         <mkdir dir="${p2.repos.path"/>
@@ -503,7 +503,7 @@
             <fileset dir="${p2.repos.path}"         includes="artifact*.*, content*.*"/>
         </delete>
         <!-- populate features -->
-        <copy todir="${p2.repos.path}\features failonerror="false">
+        <copy todir="${p2.repos.path}\features" failonerror="false">
             <fileset dir="${temp.rebuild.path}\features" includes="features/*.jar"/>
         </copy>
         
