@@ -2,7 +2,7 @@
 set -x
 
 
-version=1.1.1
+version=1.1.2
 mavenVersion=${version}-SNAPSHOT
 BaseDownloadNFSDir="/home/data/httpd/download.eclipse.org/rt/eclipselink"
 buildir=/shared/rt/eclipselink
