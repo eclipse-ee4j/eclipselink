@@ -143,6 +143,15 @@
         </condition>
         <property name="download.path" value="${eclipselink.download.path}/milestones/${release.version}/${build.type}"/>
 
+        <!-- Set p2 repository path appropriately depending upon build target     -->
+        <condition property="p2.repos.path" value="${eclipselink.download.path}/incremental-updates/nightly">
+            <equals arg1="${build.type}" arg2="SNAPSHOT"/>
+        </condition>
+        <condition property="p2.repos.path" value="${eclipselink.download.path}/updates">
+            <equals arg1="${build.type}" arg2="RELEASE"/>
+        </condition>
+        <property name="p2.repos.path" value="${eclipselink.download.path}/incremental-updates/milestone"/>
+
         <!-- generate Release Designation string for manifest                     -->
         <condition property="release.designation" value="EclipseLink DeveloperBuild">
             <equals arg1="${svn.revision}" arg2="NA"/>
@@ -485,7 +494,7 @@
         <copy todir="${download.path}" file="${build.source.path}/eclipselink-dbws-util-lrg-${version.string}.html"                                 failonerror="false"/>
         <!-- copy P2 archive as well for safekeeping (in case rebuild needed) -->
         <copy todir="${download.path}" file="${build.source.path}/${eclipselink.p2.archive.signed}"                                                 failonerror="false"/>
-        <!-- ant antfile="uploadToMaven.xml" dir="${tmp.maven.dir}" target="upload-maven-all"/ -->
+        <ant antfile="uploadToMaven.xml" dir="${tmp.maven.dir}" target="upload-maven-all"/>
     </target>
 
     <target name="populate-p2-update-site">
@@ -508,9 +517,6 @@
                 <include name="features/*.jar"/>
             </patternset>
         </unzip>
-        <!-- copy todir="${p2.repos.path}\features" failonerror="false">
-            <fileset dir="${signed.jar.path}\features" includes="features/*.jar"/>
-        </copy -->
         
         <!-- Generate repository -->
         <ant antfile="build.xml" dir="${build.root.dir}/features" target="generate-p2-repos">
@@ -519,7 +525,7 @@
             <property name="p2.base.dir" value="${p2.repos.path}"/>
             <property name="site.dir" value="${signed.jar.path}"/>
         </ant>
-        <!-- delete dir="${temp.rebuild.path}" failonerror="false"/ -->
+        <delete dir="${temp.rebuild.path}" failonerror="false"/>
     </target>
 
 </project>
