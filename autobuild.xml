@@ -159,7 +159,7 @@
         <condition property="milestone.tag" value="${release.version}">
             <equals arg1="${build.type}" arg2="RELEASE"/>
         </condition>
-        <property name="milestone.tag" value="${release.version}${build.type}"/>
+        <property name="milestone.tag" value="${release.version}-${build.type}"/>
 
         <!-- Now that all our overrides are complete, pull in the rest of the build properties -->
         <property file="${build.root.dir}/build.properties"/>
@@ -503,9 +503,14 @@
             <fileset dir="${p2.repos.path}"         includes="artifact*.*, content*.*"/>
         </delete>
         <!-- populate features -->
-        <copy todir="${p2.repos.path}\features" failonerror="false">
-            <fileset dir="${temp.rebuild.path}\features" includes="features/*.jar"/>
-        </copy>
+        <unzip dest="${p2.repos.path}" src="${download.path}/${eclipselink.p2.archive.signed}">
+            <patternset>
+                <include name="features/*.jar"/>
+            </patternset>
+        </unzip>
+        <!-- copy todir="${p2.repos.path}\features" failonerror="false">
+            <fileset dir="${signed.jar.path}\features" includes="features/*.jar"/>
+        </copy -->
         
         <!-- Generate repository -->
         <ant antfile="build.xml" dir="${build.root.dir}/features" target="generate-p2-repos">
