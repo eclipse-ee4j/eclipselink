@@ -406,7 +406,6 @@
         <fail unless="build.date" message="build.date doesn't exist and it should before we reach this point!"/>
         <!-- build.type should be set to "M#" or "RELEASE" on the command-line for milestone or release builds  -->
         <fail unless="build.type" message="build.type doesn't exist and it should before we reach this point!"/>
-        <fail unless="build_id" message="build_id doesn't exist and it should before we reach this point!"/>
         <tstamp>
             <format property="promote.date" pattern="MMM dd, yyyy"/>
         </tstamp>

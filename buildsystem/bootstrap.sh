@@ -328,18 +328,18 @@ ANT_BASEARG="-f \"${BOOTSTRAP_BLDFILE}\" -Dbranch.name=\"${BRANCH}\""
 if [ "${MILESTONE}" = "true" ]
 then
     ## Parse $QUALIFIER for build date value
-    BLDDATE=`echo ${QUALIFIER} | cut -s -d_ -f1 | cut -s -dv -f2`
+    BLDDATE=`echo ${QUALIFIER} | cut -s -d'-' -f1 | cut -s -dv -f2`
     if [ "${BLDDATE}" = "" ]
     then
-        echo "Error: There is something wrong with QUALIFIER. (should be vDATE-rREV)!"
+        echo "BLDDATE Error: There is something wrong with QUALIFIER. ('$QUALIFIER' should be vDATE-rREV)!"
         exit 2
     fi
     
     ## Parse $QUALIFIER for SVN revision value
-    SVNREV=`echo ${QUALIFIER} | cut -s -d_ -f2 | cut -s -dr -f2`
+    SVNREV=`echo ${QUALIFIER} | cut -s -d'-' -f2 | cut -s -dr -f2`
     if [ "${SVNREV}" = "" ]
     then
-        echo "Error: There is something wrong with QUALIFIER. (should be vDATE-rREV)!"
+        echo "SVNREV Error: There is something wrong with QUALIFIER. ('$QUALIFIER' should be vDATE-rREV)!"
         exit 2
     fi
 
@@ -347,10 +347,11 @@ then
     ANT_BASEARG="${ANT_BASEARG} -Dsvn.revision=${SVNREV} -Dbuild.date=${BLDDATE}"
     if [ "${RELEASE}" = "true" ]
     then
-        ANT_BASEARG="${ANT_BASEARG} -Dbuild.type=RELEASE -Dbuild_id= "
+        ANT_BASEARG="${ANT_BASEARG} -Dbuild.type=RELEASE"
     else
-        ANT_BASEARG="${ANT_BASEARG} -Dbuild.type=${TARGET} -Dbuild_id=${TARGET} "
+        ANT_BASEARG="${ANT_BASEARG} -Dbuild.type=${TARGET}"
     fi
+    TARGET=milestone
 fi
 
 if [ "${LOCAL_REPOS}" = "true" ]
