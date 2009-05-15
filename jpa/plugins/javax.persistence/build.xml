@@ -105,7 +105,7 @@
             />
             <fileset dir="${jpaproto.resource.dir}"
                 includes="**"
-                excludes="MANIFEST.MF"
+                excludes="MANIFEST.MF*"
             />
         </jar>
         <jar jarfile="${package.dir}/${jpaproto.src.jar}" duplicate="preserve">
