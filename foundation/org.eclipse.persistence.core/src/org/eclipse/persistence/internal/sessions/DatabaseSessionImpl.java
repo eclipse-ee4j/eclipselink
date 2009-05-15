@@ -590,7 +590,9 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
                 getLogin().setPlatformClassName(platformName);
             } catch (EclipseLinkException classNotFound) {
                 if (platformName.indexOf("Oracle") != -1) {
-                    getLogin().setPlatform(new OraclePlatform());
+                    // If we are running against Oracle, it is possible that we are running in an environment where
+                    // the OracleXPlatform class can not be loaded. Try using OraclePlatform class before giving up
+                    getLogin().setPlatformClassName(OraclePlatform.class.getName());
                 } else {
                     throw classNotFound;
                 }
