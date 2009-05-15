@@ -21,7 +21,6 @@ public class Address {
     
     private String street;
     
-    private String city;
     
     private String country;
     
@@ -38,12 +37,12 @@ public class Address {
         this.street = street;
     }
     
-    public String getCity() {
-        return city;
+    public String getXCity() {
+        return null;
     }
     
-    public void setCity(String city) {
-        this.city = city;
+    @XmlSchemaType(name = "string")
+    public void setXCity(String city) {
     }
     
     public String getCountry() {

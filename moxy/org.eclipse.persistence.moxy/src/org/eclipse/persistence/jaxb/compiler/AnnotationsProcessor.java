@@ -352,8 +352,9 @@ public class AnnotationsProcessor {
         }
         
         info.setProperties(getPropertiesForClass(javaClass, info));
+        
         XmlAccessorOrder order = null;
-        if(helper.isAnnotationPresent(pack, XmlAccessorOrder.class)) {
+        if (helper.isAnnotationPresent(pack, XmlAccessorOrder.class)) {
             order = (XmlAccessorOrder) helper.getAnnotation(pack, XmlAccessorOrder.class);
         }
         
@@ -361,7 +362,7 @@ public class AnnotationsProcessor {
             order = (XmlAccessorOrder) helper.getAnnotation(javaClass, XmlAccessorOrder.class);
         }
         
-        if(order != null) {
+        if (order != null) {
             info.orderProperties(order.value());
         }
         
@@ -763,10 +764,10 @@ public class AnnotationsProcessor {
                     propertyName = nextMethod.getName().substring(2);
                 }
                 getMethod = nextMethod;
-                //make the first Character lowercase
                 String setMethodName = "set" + propertyName;
 
-                propertyName = Character.toLowerCase(propertyName.charAt(0)) + propertyName.substring(1);
+                // use the JavaBean API to correctly decapitalize the first character, if necessary
+                propertyName = Introspector.decapitalize(propertyName);
             
                 JavaClass[] paramTypes = { (JavaClass) getMethod.getReturnType() };
                 setMethod = cls.getDeclaredMethod(setMethodName, paramTypes);
@@ -810,7 +811,8 @@ public class AnnotationsProcessor {
                     	isPropertyTransient = true;
                     }
                 }
-                propertyName = Character.toLowerCase(propertyName.charAt(0)) + propertyName.substring(1);
+                // use the JavaBean API to correctly decapitalize the first character, if necessary
+                propertyName = Introspector.decapitalize(propertyName);
             }
             if(!propertyNames.contains(propertyName)) {
                 propertyNames.add(propertyName);

@@ -2,6 +2,7 @@
 <xsd:schema targetNamespace="examplenamespace" xmlns:x="examplenamespace" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
    <xsd:complexType name="address-type">
       <xsd:sequence>
+         <xsd:element name="XCity" type="xsd:string" minOccurs="0"/>
          <xsd:element name="country-name" type="xsd:string" minOccurs="0"/>
          <xsd:element name="street-name" type="xsd:string" minOccurs="0"/>
       </xsd:sequence>
