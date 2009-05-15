@@ -242,20 +242,20 @@
     <target name="create-sign-zipfile" depends="create-eclipse-buildfile">
         <delete file="${eclipselink.p2.archive.presigned}"/>
         <zip destfile="${eclipselink.p2.archive.presigned}">
-            <zipfileset dir="${feature.2.base.dir}"                      includes="eclipselink*.jar"/>
-            <zipfileset dir="${feature.2.util.dbws}"                     includes="eclipselink-dbwsutils*.jar"/>
-            <zipfileset dir="${classes.dir}"                             includes="eclipselink.build"/>
-            <zipfileset dir="${classes.dir}"                             includes="site.xml"/>
-            <zipfileset dir="${feature.build.dir}"     prefix="features" includes="*.jar"/>
-            <zipfileset dir="${feature.2.plugins.dir}" prefix="plugins"  includes="org.eclipse.persistence*.jar"/>
-            <zipfileset dir="${feature.2.jpa.plugins}" prefix="plugins"  includes="javax.persistence*.jar"/>
+            <zipfileset dir="${feature.2.base.dir}"                             includes="eclipselink*.jar"/>
+            <zipfileset dir="${feature.2.util.dbws}"                            includes="eclipselink-dbwsutils*.jar"/>
+            <zipfileset dir="${classes.dir}"                                    includes="eclipselink.build"/>
+            <zipfileset dir="${classes.dir}"                                    includes="site.xml"/>
+            <zipfileset dir="${feature.build.dir}"            prefix="features" includes="*.jar"/>
+            <zipfileset dir="${feature.2.common.plugins.dir}" prefix="plugins"  includes="org.eclipse.persistence*.jar"/>
+            <zipfileset dir="${feature.2.jpa.plugins}"        prefix="plugins"  includes="javax.persistence*.jar"/>
         </zip>
     </target>
 
     <target name="copy-and-queue-for-sign">
         <delete file="${signing.dir}/${eclipselink.p2.archive.presigned}" failonerror="false"/>
         <delete file="${signing.dir}/signed-output/${eclipselink.p2.archive.presigned}" failonerror="false"/>
-        <copy file="${eclipselink.p2.archive.presigned}" todir="${signing.dir}"/>
+        <copy file="${eclipselink.p2.archive.presigned}" todir="${signing.dir}"/> <!-- wait til cleared to avoid version confusion and overwriting? -->
         <exec executable="${signing.script}" dir="${signing.dir}"> <!-- failonerror= false? need to not stop if authority fails -->
             <arg value="${eclipselink.p2.archive.presigned}"/>
             <arg value="nomail"/>
