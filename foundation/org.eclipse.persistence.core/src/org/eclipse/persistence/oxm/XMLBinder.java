@@ -12,6 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.oxm;
 
+import javax.xml.validation.Schema;
+
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
@@ -47,10 +49,12 @@ import org.eclipse.persistence.oxm.record.DOMRecord;
 public class XMLBinder {
     SAXUnmarshaller saxUnmarshaller;
     XMLContext context;
+    XMLMarshaller marshaller;
     XMLUnmarshaller unmarshaller;
     DocumentPreservationPolicy documentPreservationPolicy;
     DOMReader reader;
     public XMLBinder(XMLContext context) {
+        marshaller = context.createMarshaller();
         unmarshaller = context.createUnmarshaller();
         saxUnmarshaller = new SAXUnmarshaller(unmarshaller);        
         this.context = context;
@@ -140,4 +144,29 @@ public class XMLBinder {
     public DocumentPreservationPolicy getDocumentPreservationPolicy() {
         return documentPreservationPolicy;
     }
+    
+    public XMLMarshaller getMarshaller() {
+        return marshaller;
+    }
+    
+    public void setMarshaller(XMLMarshaller marshaller) {
+        this.marshaller = marshaller;
+    }
+    
+    public XMLUnmarshaller getUnmarshaller() {
+        return unmarshaller;
+    }
+    
+    public void setUnmarshaller(XMLUnmarshaller unmarshaller) {
+        this.unmarshaller = unmarshaller;
+    }
+    
+    public void setSchema(Schema aSchema) {
+        this.unmarshaller.setSchema(aSchema);
+    }
+
+    public Schema getSchema() {
+        return this.unmarshaller.getSchema();
+    }
+
 }

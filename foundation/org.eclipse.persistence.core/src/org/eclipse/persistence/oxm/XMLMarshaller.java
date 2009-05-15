@@ -22,6 +22,8 @@ import javax.xml.transform.Result;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.validation.Schema;
+
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.descriptors.Namespace;
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -90,6 +92,7 @@ public class XMLMarshaller {
     private XMLMarshalListener marshalListener;
     private XMLAttachmentMarshaller attachmentMarshaller;
     private Properties marshalProperties;
+    private Schema schema;
 
     /**
     * Create a new XMLMarshaller based on the specified session
@@ -1131,5 +1134,13 @@ public class XMLMarshaller {
      */
     public XMLTransformer getTransformer() {
         return transformer;
+    }
+
+    public Schema getSchema() {
+        return schema;
+    }
+
+    public void setSchema(Schema schema) {
+        this.schema = schema;
     }
 }

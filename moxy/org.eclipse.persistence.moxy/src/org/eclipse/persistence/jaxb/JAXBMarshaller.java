@@ -166,12 +166,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
 	}
 
 	public Schema getSchema() {
-		try {
-            //TODO: Need to generate a proper schema and convert to Sun Schema model
-			return SchemaFactory.newInstance(XMLConstants.SCHEMA_URL).newSchema();
-		} catch (org.xml.sax.SAXException ex) {
-		}
-		return null;
+		return xmlMarshaller.getSchema();
 	}
 
 	public void marshal(Object object, ContentHandler contentHandler) throws JAXBException {
@@ -351,6 +346,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
 	}
 
 	public void setSchema(Schema schema) {
+	    this.xmlMarshaller.setSchema(schema);
 	}
 
 	public void setQNameToGeneratedClasses(HashMap<QName, Class> qNameToClass) {

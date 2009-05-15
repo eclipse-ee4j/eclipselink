@@ -14,7 +14,10 @@ package org.eclipse.persistence.jaxb;
 
 import javax.xml.bind.Binder;
 import javax.xml.bind.JAXBElement;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.PropertyException;
 import javax.xml.bind.ValidationEventHandler;
+import javax.xml.bind.helpers.DefaultValidationEventHandler;
 import javax.xml.namespace.QName;
 import javax.xml.validation.Schema;
 
@@ -37,13 +40,15 @@ import org.eclipse.persistence.oxm.XMLRoot;
  *  @see javax.xml.bind.Binder
  */
 public class JAXBBinder extends Binder {
+
     private XMLContext xmlContext;
     private XMLBinder xmlBinder;
-   
+    
     public JAXBBinder(XMLContext xmlContext) {
         this.xmlContext = xmlContext;
         this.xmlBinder = this.xmlContext.createBinder();        
         this.xmlBinder.getDocumentPreservationPolicy().setNodeOrderingPolicy(new org.eclipse.persistence.oxm.documentpreservation.IgnoreNewElementsOrderingPolicy());
+        this.xmlBinder.getUnmarshaller().setErrorHandler(new JAXBErrorHandler(new DefaultValidationEventHandler()));        
     }
     public void marshal(Object obj, Object xmlNode) {}
     
@@ -62,11 +67,11 @@ public class JAXBBinder extends Binder {
     }
     
     public void setSchema(Schema schema) {
-        
+        this.xmlBinder.setSchema(schema);
     }
     
     public Schema getSchema() {
-        return null;
+        return this.xmlBinder.getSchema();
     }
     
     public JAXBElement getJAXBNode(Object obj) {
@@ -75,11 +80,16 @@ public class JAXBBinder extends Binder {
     }
     
     public void setEventHandler(ValidationEventHandler handler) {
-        
+        if (null == handler) {
+            xmlBinder.getUnmarshaller().setErrorHandler(new JAXBErrorHandler(new DefaultValidationEventHandler()));
+        } else {
+            xmlBinder.getUnmarshaller().setErrorHandler(new JAXBErrorHandler(handler));
+        }
     }
     
     public ValidationEventHandler getEventHandler() {
-        return null;
+        JAXBErrorHandler jaxbErrorHandler = (JAXBErrorHandler) xmlBinder.getUnmarshaller().getErrorHandler();
+        return jaxbErrorHandler.getValidationEventHandler();
     }
     
     public Object updateJAXB(Object obj) {
@@ -90,11 +100,59 @@ public class JAXBBinder extends Binder {
         return xmlBinder.getObject((Node)obj);
     }
     
-    public Object getProperty(String propName) {
-        return null;
+    public Object getProperty(String propName) throws PropertyException {
+        if (null == propName) {
+            throw new IllegalArgumentException();
+        }
+
+        if (propName.equals(Marshaller.JAXB_ENCODING)) {
+            return this.xmlBinder.getMarshaller().getEncoding();
+        }
+        if (propName.equals(Marshaller.JAXB_FORMATTED_OUTPUT)) {
+            return this.xmlBinder.getMarshaller().isFormattedOutput();
+        }
+        if (propName.equals(Marshaller.JAXB_FRAGMENT)) {
+            return this.xmlBinder.getMarshaller().isFragment();
+        }
+        if (propName.equals(Marshaller.JAXB_SCHEMA_LOCATION)) {
+            return this.xmlBinder.getMarshaller().getSchemaLocation();
+        }
+        if (propName.equals(Marshaller.JAXB_NO_NAMESPACE_SCHEMA_LOCATION)) {
+            return this.xmlBinder.getMarshaller().getNoNamespaceSchemaLocation();
+        }
+        
+        throw new PropertyException(propName);
     }
     
-    public void setProperty(String propName, Object value) {
+    public void setProperty(String propName, Object value) throws PropertyException {
+        if (null == propName) {
+            throw new IllegalArgumentException(propName);
+        }
+        
+        String valueString = (value == null) ? null : value.toString();
+        
+        if (propName.equals(Marshaller.JAXB_ENCODING)) {
+            this.xmlBinder.getMarshaller().setEncoding(valueString);
+            return;
+        }
+        if (propName.equals(Marshaller.JAXB_FORMATTED_OUTPUT)) {
+            this.xmlBinder.getMarshaller().setFormattedOutput(Boolean.valueOf(valueString).booleanValue());
+            return;
+        }
+        if (propName.equals(Marshaller.JAXB_FRAGMENT)) {
+            this.xmlBinder.getMarshaller().setFragment(Boolean.valueOf(valueString).booleanValue());
+            return;
+        }
+        if (propName.equals(Marshaller.JAXB_SCHEMA_LOCATION)) {
+            this.xmlBinder.getMarshaller().setSchemaLocation(valueString);
+            return;
+        }
+        if (propName.equals(Marshaller.JAXB_NO_NAMESPACE_SCHEMA_LOCATION)) {
+            this.xmlBinder.getMarshaller().setNoNamespaceSchemaLocation(valueString);
+            return;
+        }
+
+        throw new PropertyException(propName);
     }
     
     public Object getXMLNode(Object obj) {
