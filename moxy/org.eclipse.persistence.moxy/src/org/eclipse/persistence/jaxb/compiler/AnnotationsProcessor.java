@@ -19,6 +19,8 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -1041,6 +1043,9 @@ public class AnnotationsProcessor {
                 }                    
             }
         }
+        // default to alphabetical ordering
+        //RI compliancy
+        Collections.sort(properties, new PropertyComparitor());
         return properties;
     }
     
@@ -1672,6 +1677,17 @@ public class AnnotationsProcessor {
                     throw JAXBException.nonExistentPropertyInPropOrder(nextPropName);
                 }
             }
+        }
+    }
+
+    /**
+     * Inner class used for ordering a list of Properties 
+     * alphabetically by property name.
+     *
+     */
+    class PropertyComparitor implements Comparator<Property> {
+        public int compare(Property p1, Property p2) {
+            return p1.getPropertyName().compareTo(p2.getPropertyName());
         }
     }
 }
