@@ -1722,7 +1722,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", session.getPlatform().isSybase());
 
         // Cannot create parallel entity managers in the server.
-        if (! isOnServer() && isSelectForUpateSupported()) {
+        if (! isOnServer() && isSelectForUpateSupported() && ! session.getPlatform().isMySQL()) {
             EntityManager em = createEntityManager();
             List result = em.createQuery("Select employee from Employee employee").getResultList();
             Employee employee = (Employee) result.get(0);
@@ -1772,7 +1772,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", session.getPlatform().isSybase());
 
         // Cannot create parallel entity managers in the server.
-        if (! isOnServer() && isSelectForUpateSupported()) {
+        if (! isOnServer() && isSelectForUpateSupported() && ! session.getPlatform().isMySQL()) {
             EntityManager em = createEntityManager();
             List result = em.createQuery("Select employee from Employee employee").getResultList();
             Employee employee = (Employee) result.get(0);
