@@ -19,39 +19,37 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
-import sun.misc.CompoundEnumeration;
-
 public class CompositeClassLoader extends ClassLoader {
-	private List<ClassLoader> classLoaders = new ArrayList<ClassLoader>();
-	
-	/**
-	 * Create a CompositeClassLoader with two class loaders.
-	 * 
-	 * @param loader1
-	 * @param loader2
-	 */
-	public CompositeClassLoader(ClassLoader loader1, ClassLoader loader2) {
-		classLoaders.add(loader1);
-		classLoaders.add(loader2);
-	}
+    private List<ClassLoader> classLoaders = new ArrayList<ClassLoader>();
+    
+    /**
+     * Create a CompositeClassLoader with two class loaders.
+     * 
+     * @param loader1
+     * @param loader2
+     */
+    public CompositeClassLoader(ClassLoader loader1, ClassLoader loader2) {
+        classLoaders.add(loader1);
+        classLoaders.add(loader2);
+    }
 
-	/**
-	 * Create a CompositeClassLoader from a list of class loaders.
-	 * 
-	 * @param loaders
-	 */
-	public CompositeClassLoader(List<ClassLoader> loaders) {
-		classLoaders.addAll(loaders);
-	}
+    /**
+     * Create a CompositeClassLoader from a list of class loaders.
+     * 
+     * @param loaders
+     */
+    public CompositeClassLoader(List<ClassLoader> loaders) {
+        classLoaders.addAll(loaders);
+    }
 
-	/**
-	 * Get the contained class loaders.
-	 * 
-	 * @return the list of the contained class loaders
-	 */
-	public List<ClassLoader> getClassLoaders() {
-		return classLoaders;
-	}
+    /**
+     * Get the contained class loaders.
+     * 
+     * @return the list of the contained class loaders
+     */
+    public List<ClassLoader> getClassLoaders() {
+        return classLoaders;
+    }
 
     /**
      * Sets the default assertion status for this class loader to
@@ -60,12 +58,12 @@ public class CompositeClassLoader extends ClassLoader {
      * 
      * @see  ClassLoader#clearAssertionStatus()
      */
-	@Override
-	public synchronized void clearAssertionStatus() {
-		for (ClassLoader classLoader : getClassLoaders()) {
-			classLoader.clearAssertionStatus();
-		}
-	}
+    @Override
+    public synchronized void clearAssertionStatus() {
+        for (ClassLoader classLoader : getClassLoaders()) {
+            classLoader.clearAssertionStatus();
+        }
+    }
 
     /**
      * Finds the resource with the given name.  Contained class 
@@ -74,16 +72,16 @@ public class CompositeClassLoader extends ClassLoader {
      * 
      * @see  ClassLoader#getResource(String)
      */
-	@Override
-	public URL getResource(String name) {
-		for (ClassLoader classLoader : getClassLoaders()) {
-			URL resource = classLoader.getResource(name);
-			if (resource != null) {
-				return resource;
-			}
-		}
-		return null;
-	}
+    @Override
+    public URL getResource(String name) {
+        for (ClassLoader classLoader : getClassLoaders()) {
+            URL resource = classLoader.getResource(name);
+            if (resource != null) {
+                return resource;
+            }
+        }
+        return null;
+    }
 
     /**
      * Returns an input stream for reading the specified resource.
@@ -92,16 +90,16 @@ public class CompositeClassLoader extends ClassLoader {
      * 
      * @see  ClassLoader#getResourceAsStream(String)
      */ 
-	@Override
-	public InputStream getResourceAsStream(String name) {
-		for (ClassLoader classLoader : getClassLoaders()) {
-			InputStream stream = classLoader.getResourceAsStream(name);
-			if (stream != null) {
-				return stream;
-			}
-		}
-		return null;
-	}
+    @Override
+    public InputStream getResourceAsStream(String name) {
+        for (ClassLoader classLoader : getClassLoaders()) {
+            InputStream stream = classLoader.getResourceAsStream(name);
+            if (stream != null) {
+                return stream;
+            }
+        }
+        return null;
+    }
 
     /**
      * Finds all the resources with the given name. Contained class 
@@ -113,14 +111,14 @@ public class CompositeClassLoader extends ClassLoader {
      *          
      * @see  ClassLoader#getResources(String)
      */
-	@Override
-	public Enumeration<URL> getResources(String name) throws IOException {
-		Enumeration<URL>[] enumerations = new Enumeration[getClassLoaders().size()];
-		for (int i = 0; i < getClassLoaders().size(); i++) {
-			enumerations[i] = getClassLoaders().get(i).getResources(name);
-		}
-		return  new CompoundEnumeration<URL>(enumerations); 
-	}
+    @Override
+    public Enumeration<URL> getResources(String name) throws IOException {
+        List<Enumeration<URL>> enumerations = new ArrayList(getClassLoaders().size());
+        for (int i = 0; i < getClassLoaders().size(); i++) {
+            enumerations.add(i, getClassLoaders().get(i).getResources(name));
+        }
+        return new CompositeEnumeration<URL>(enumerations); 
+    }
 
    /**
      * Loads the class with the specified <a href="#name">binary name</a>.
@@ -132,56 +130,56 @@ public class CompositeClassLoader extends ClassLoader {
      * @throws  ClassNotFoundException
      *          If the class was not found
      */
-	@Override
-	public Class<?> loadClass(String name) throws ClassNotFoundException {
-		for (ClassLoader classLoader : getClassLoaders()) {
-			try {
-				Class<?> aClass = classLoader.loadClass(name);
-				return aClass;
-			} catch (ClassNotFoundException e) {
-			}			
-		}
-		throw new ClassNotFoundException(name);
-	}
+    @Override
+    public Class<?> loadClass(String name) throws ClassNotFoundException {
+        for (ClassLoader classLoader : getClassLoaders()) {
+            try {
+                Class<?> aClass = classLoader.loadClass(name);
+                return aClass;
+            } catch (ClassNotFoundException e) {
+            }            
+        }
+        throw new ClassNotFoundException(name);
+    }
 
-	/** 
+    /** 
      * Sets the desired assertion status for the named top-level class.
      * 
      * @see  ClassLoader#setClassAssertionStatus(String, boolean)
      */
-	@Override
-	public synchronized void setClassAssertionStatus(String className,
-			boolean enabled) {
-		for (ClassLoader classLoader : getClassLoaders()) {
-			classLoader.setClassAssertionStatus(className, enabled);
-		}
-	}
+    @Override
+    public synchronized void setClassAssertionStatus(String className,
+            boolean enabled) {
+        for (ClassLoader classLoader : getClassLoaders()) {
+            classLoader.setClassAssertionStatus(className, enabled);
+        }
+    }
 
     /**
      * Sets the default assertion status for this class loader. 
      * 
      * @see  ClassLoader#setDefaultAssertionStatus(boolean)
      */
-	@Override
-	public synchronized void setDefaultAssertionStatus(boolean enabled) {
-		for (ClassLoader classLoader : getClassLoaders()) {
-			classLoader.setDefaultAssertionStatus(enabled);
-		}
-	}
+    @Override
+    public synchronized void setDefaultAssertionStatus(boolean enabled) {
+        for (ClassLoader classLoader : getClassLoaders()) {
+            classLoader.setDefaultAssertionStatus(enabled);
+        }
+    }
 
     /**
      * Sets the package default assertion status for the named package.
      * 
      * @see  ClassLoader#setPackageAssertionStatus(String,boolean)
      */
-	@Override
-	public synchronized void setPackageAssertionStatus(String packageName,
-			boolean enabled) {
-		for (ClassLoader classLoader : getClassLoaders()) {
-			classLoader.setPackageAssertionStatus(packageName, enabled);
-		}
-	}
-	
-	
-	
+    @Override
+    public synchronized void setPackageAssertionStatus(String packageName,
+            boolean enabled) {
+        for (ClassLoader classLoader : getClassLoaders()) {
+            classLoader.setPackageAssertionStatus(packageName, enabled);
+        }
+    }
+    
+    
+    
 }
