@@ -227,6 +227,23 @@ public abstract class MappingAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
+     * Return the attribute name for this accessor. This is typically the
+     * attribute name on the accessible object (i.e., field or property name),
+     * however, if access-methods have been specified, use the name attribute
+     * that was specified in XML. (e.g. basic name="sin") and not the property
+     * name of the get method from the access-methods specification.
+     */
+    @Override
+    public String getAttributeName() {
+        if (m_accessMethods == null) {
+            return getAccessibleObject().getAttributeName();
+        } else {
+            return getName();
+        }
+    }
+    
+    /**
+     * INTERNAL:
      * Return the attribute override for this accessor.
      */
     protected AttributeOverrideMetadata getAttributeOverride(String loggingCtx) {
