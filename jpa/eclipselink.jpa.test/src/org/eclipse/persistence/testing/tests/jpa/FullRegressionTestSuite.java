@@ -69,6 +69,7 @@ import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLValidationTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.xml.EntityMappingsJUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.ddlgeneration.DDLGenerationJUnitTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.deployment.CompositeEnumerationTest;
 
 public class FullRegressionTestSuite extends TestSuite{
     
@@ -191,6 +192,9 @@ public class FullRegressionTestSuite extends TestSuite{
         
         // Orphan removal model
         fullSuite.addTest(org.eclipse.persistence.testing.tests.jpa.orphanremoval.OrphanRemovalJUnitTestCase.suite());
+
+        // OSGi Deployment
+        fullSuite.addTestSuite(CompositeEnumerationTest.class);
 
         return fullSuite;
     }
