@@ -58,6 +58,8 @@ import org.eclipse.persistence.internal.jpa.metadata.sequencing.GeneratedValueMe
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.SequenceGeneratorMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.TableGeneratorMetadata;
 
+import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
+
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
 
@@ -218,8 +220,8 @@ public class BasicAccessor extends DirectAccessor {
      * INTERNAL:
      */
     @Override
-    public void initXMLObject(MetadataAccessibleObject accessibleObject) {
-        super.initXMLObject(accessibleObject);
+    public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
+        super.initXMLObject(accessibleObject, entityMappings);
 
         // Default a column if necessary.
         if (m_column == null) {

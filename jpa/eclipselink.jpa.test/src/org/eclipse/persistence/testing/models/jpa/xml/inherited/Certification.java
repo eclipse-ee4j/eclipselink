@@ -33,6 +33,11 @@ public class Certification  {
         return id;
     }
     
+    // Used as a map key (in xml) for certifications.
+    public Integer getMapKey() {
+        return getId();
+    }
+    
     public void setId(Integer id) {
         this.id = id;
     }
@@ -43,5 +48,9 @@ public class Certification  {
     
     public void setDescription(String description) {
         this.description = description;
+    }
+    
+    public void setMapKey(Integer mapKey) {
+        // just ignore it ...
     }
 }

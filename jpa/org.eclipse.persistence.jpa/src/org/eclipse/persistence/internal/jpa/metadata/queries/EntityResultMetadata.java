@@ -21,6 +21,7 @@ import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
+import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
 /**
  * INTERNAL:
@@ -121,8 +122,8 @@ public class EntityResultMetadata extends ORMetadata {
      * INTERNAL:
      */
     @Override
-    public void initXMLObject(MetadataAccessibleObject accessibleObject) {
-        super.initXMLObject(accessibleObject);
+    public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
+        super.initXMLObject(accessibleObject, entityMappings);
         
         // Initialize lists of ORMetadata objects.
         initXMLObjects(m_fieldResults, accessibleObject);

@@ -40,6 +40,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 
 import org.eclipse.persistence.internal.jpa.metadata.columns.AssociationOverrideMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.AttributeOverrideMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
 import org.eclipse.persistence.mappings.AggregateObjectMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
@@ -148,8 +149,8 @@ public class EmbeddedAccessor extends MappingAccessor {
      * INTERNAL:
      */
     @Override
-    public void initXMLObject(MetadataAccessibleObject accessibleObject) {
-        super.initXMLObject(accessibleObject);
+    public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
+        super.initXMLObject(accessibleObject, entityMappings);
     
         // Initialize lists of ORMetadata objects.
         initXMLObjects(m_attributeOverrides, accessibleObject);

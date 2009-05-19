@@ -16,9 +16,12 @@ package org.eclipse.persistence.internal.jpa.metadata.copypolicy;
 
 import org.eclipse.persistence.descriptors.copying.CopyPolicy;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
+
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
+
+import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
 /**
  * Used to store information about CopyPolicy as it is read from XML or 
@@ -68,8 +71,8 @@ public class CustomCopyPolicyMetadata extends CopyPolicyMetadata {
      * INTERNAL:
      */
     @Override
-    public void initXMLObject(MetadataAccessibleObject accessibleObject) {
-        super.initXMLObject(accessibleObject);
+    public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
+        super.initXMLObject(accessibleObject, entityMappings);
         
         copyPolicyClass = initXMLClassName(copyPolicyClassName);
     }

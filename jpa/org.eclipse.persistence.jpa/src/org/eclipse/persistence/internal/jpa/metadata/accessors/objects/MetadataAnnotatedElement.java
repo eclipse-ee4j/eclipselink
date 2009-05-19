@@ -58,7 +58,7 @@ import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
-import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
+//import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
 /**
  * INTERNAL:
@@ -105,9 +105,10 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     /**
      * INTERNAL:
      */
-    public MetadataAnnotatedElement(XMLEntityMappings entityMappings) {
-        super(entityMappings.getMappingFile(), entityMappings);
-    }
+    // Guy - unused constructor
+    //public MetadataAnnotatedElement(XMLEntityMappings entityMappings) {
+      //  super(entityMappings.getMappingFile(), entityMappings);
+    //}
 
     /**
      * INTERNAL:

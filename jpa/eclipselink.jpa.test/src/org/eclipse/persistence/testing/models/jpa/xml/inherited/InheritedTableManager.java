@@ -381,6 +381,16 @@ public class InheritedTableManager extends TableCreator {
         ID_field.setShouldAllowNull(false);
         table.addField(ID_field);
 
+        FieldDefinition MAP_KEY_field = new FieldDefinition();
+        MAP_KEY_field.setName("MAPKEY");
+        MAP_KEY_field.setTypeName("NUMERIC");
+        MAP_KEY_field.setSize(15);
+        MAP_KEY_field.setIsPrimaryKey(false);
+        MAP_KEY_field.setUnique(true);
+        MAP_KEY_field.setIsIdentity(false);
+        MAP_KEY_field.setShouldAllowNull(false);
+        table.addField(MAP_KEY_field);
+        
         FieldDefinition DESCRIPTION_field = new FieldDefinition();
         DESCRIPTION_field.setName("DESCRIPTION");
         DESCRIPTION_field.setTypeName("VARCHAR");

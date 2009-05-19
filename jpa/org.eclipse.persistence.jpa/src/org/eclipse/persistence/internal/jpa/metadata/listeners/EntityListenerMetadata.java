@@ -42,6 +42,8 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataC
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataFactory;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataMethod;
 
+import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
+
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredMethods;
@@ -298,8 +300,8 @@ public class EntityListenerMetadata extends ORMetadata {
      * INTERNAL:
      */
     @Override
-    public void initXMLObject(MetadataAccessibleObject accessibleObject) {
-        super.initXMLObject(accessibleObject);
+    public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
+        super.initXMLObject(accessibleObject, entityMappings);
     
         m_entityListenerClass = initXMLClassName(m_className);
     }

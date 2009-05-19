@@ -88,6 +88,7 @@ import org.eclipse.persistence.internal.jpa.metadata.sequencing.SequenceGenerato
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.TableGeneratorMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.tables.SecondaryTableMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.tables.TableMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
 /**
  * An entity accessor.
@@ -469,8 +470,8 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * INTERNAL:
      */
     @Override
-    public void initXMLObject(MetadataAccessibleObject accessibleObject) {
-        super.initXMLObject(accessibleObject);
+    public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
+        super.initXMLObject(accessibleObject, entityMappings);
         
         // Initialize single objects.
         initXMLObject(m_inheritance, accessibleObject);
@@ -509,8 +510,8 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         EntityAccessor accessor = (EntityAccessor) metadata;
         
         // Simple object merging.
-        m_entityName = (String) mergeSimpleObjects(m_entityName, accessor.getEntityName(), accessor.getAccessibleObject(), "@name");
-        m_discriminatorValue = (String) mergeSimpleObjects(m_discriminatorValue, accessor.getDiscriminatorValue(), accessor.getAccessibleObject(), "<discriminator-value>");
+        m_entityName = (String) mergeSimpleObjects(m_entityName, accessor.getEntityName(), accessor, "@name");
+        m_discriminatorValue = (String) mergeSimpleObjects(m_discriminatorValue, accessor.getDiscriminatorValue(), accessor, "<discriminator-value>");
         
         // ORMetadata object merging.
         m_discriminatorColumn = (DiscriminatorColumnMetadata) mergeORObjects(m_discriminatorColumn, accessor.getDiscriminatorColumn());

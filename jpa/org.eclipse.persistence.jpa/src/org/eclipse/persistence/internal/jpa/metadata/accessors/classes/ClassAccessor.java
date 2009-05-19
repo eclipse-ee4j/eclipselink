@@ -104,6 +104,8 @@ import org.eclipse.persistence.internal.jpa.metadata.copypolicy.CustomCopyPolicy
 import org.eclipse.persistence.internal.jpa.metadata.copypolicy.InstantiationCopyPolicyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.copypolicy.CloneCopyPolicyMetadata;
 
+import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
+
 import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
@@ -251,7 +253,6 @@ public abstract class ClassAccessor extends MetadataAccessor {
                         // accessibleObject isn't set first
                         String getMethodName = accessor.getAccessMethods().getGetMethodName();
                         MetadataMethod getMethod = getJavaClass().getMethod(getMethodName);
-                        getMethod.setEntityMappings(getEntityMappings());
                         String setMethodName = accessor.getAccessMethods().getSetMethodName();
                         MetadataMethod setMethod = getJavaClass().getMethod(setMethodName, Arrays.asList(new String[]{getMethod.getReturnType()}));
                         getMethod.setSetMethod(setMethod);
@@ -261,8 +262,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
 
                         if (method == null) {
                             throw ValidationException.invalidPropertyForClass(accessor.getName(), getJavaClass());
-                        } else {                  
-                            method.setEntityMappings(getEntityMappings());
+                        } else {
                             // True will force an exception to be thrown if it 
                             // is not a valid method. However, if it is a
                             // transient accessor, don't validate it and just 
@@ -278,7 +278,6 @@ public abstract class ClassAccessor extends MetadataAccessor {
                     if (field == null) {
                         throw ValidationException.invalidFieldForClass(accessor.getName(), getJavaClass());
                     } else {
-                        field.setEntityMappings(getEntityMappings());
                         // True will force an exception to be thrown if it is 
                         // not a valid field. However, if it is a transient 
                         // accessor, don't validate it and just let it through.
@@ -291,7 +290,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
                 // Initialize the accessor with its real accessible object now,
                 // that is a field or method since it will currently hold a 
                 // reference to its owning class' accessible object.
-                accessor.initXMLObject(accessibleObject);
+                accessor.initXMLObject(accessibleObject, getEntityMappings());
                 
                 // It's now safe to init the correct access type for this
                 // mapping accessor since we now have set the actual accessible
@@ -676,9 +675,9 @@ public abstract class ClassAccessor extends MetadataAccessor {
      * This method should be subclassed in those methods that need to do 
      * extra initialization.
      */
-    public void initXMLClassAccessor(MetadataAccessibleObject accessibleObject, MetadataDescriptor descriptor, MetadataProject project) {
+    public void initXMLClassAccessor(MetadataAccessibleObject accessibleObject, MetadataDescriptor descriptor, MetadataProject project, XMLEntityMappings entityMappings) {
         initXMLAccessor(descriptor, project);
-        initXMLObject(accessibleObject);
+        initXMLObject(accessibleObject, entityMappings);
         
         // Since the the descriptor, project and accessible object are all 
         // available at this point, it is now safe to initialize our access
@@ -690,8 +689,8 @@ public abstract class ClassAccessor extends MetadataAccessor {
      * INTERNAL:
      */
     @Override
-    public void initXMLObject(MetadataAccessibleObject accessibleObject) {
-        super.initXMLObject(accessibleObject);
+    public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
+        super.initXMLObject(accessibleObject, entityMappings);
         
         // Initialize single objects.
         initXMLObject(m_changeTracking, accessibleObject);
@@ -732,10 +731,10 @@ public abstract class ClassAccessor extends MetadataAccessor {
         ClassAccessor accessor = (ClassAccessor) metadata;
         
         // Simple object merging.
-        m_customizerClass = (MetadataClass) mergeSimpleObjects(m_customizerClass, accessor.getCustomizerClass(), accessor.getAccessibleObject(), "<customizer>");
-        m_description = (String) mergeSimpleObjects(m_description, accessor.getDescription(), accessor.getAccessibleObject(), "<description>");
-        m_metadataComplete = (Boolean) mergeSimpleObjects(m_metadataComplete, accessor.getMetadataComplete(), accessor.getAccessibleObject(), "@metadata-complete");
-        m_excludeDefaultMappings = (Boolean) mergeSimpleObjects(m_excludeDefaultMappings, accessor.getExcludeDefaultMappings(), accessor.getAccessibleObject(), "@exclude-default-mappings");
+        m_customizerClass = (MetadataClass) mergeSimpleObjects(m_customizerClass, accessor.getCustomizerClass(), accessor, "<customizer>");
+        m_description = (String) mergeSimpleObjects(m_description, accessor.getDescription(), accessor, "<description>");
+        m_metadataComplete = (Boolean) mergeSimpleObjects(m_metadataComplete, accessor.getMetadataComplete(), accessor, "@metadata-complete");
+        m_excludeDefaultMappings = (Boolean) mergeSimpleObjects(m_excludeDefaultMappings, accessor.getExcludeDefaultMappings(), accessor, "@exclude-default-mappings");
         
         // ORMetadata object merging.        
         m_cloneCopyPolicy = (CloneCopyPolicyMetadata) mergeORObjects(m_cloneCopyPolicy, accessor.getCloneCopyPolicy());

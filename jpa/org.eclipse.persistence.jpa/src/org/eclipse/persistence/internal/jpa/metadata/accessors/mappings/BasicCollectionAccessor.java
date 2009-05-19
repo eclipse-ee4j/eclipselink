@@ -36,6 +36,7 @@ import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColum
 import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnsMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.tables.CollectionTableMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DirectCollectionMapping;
@@ -152,8 +153,8 @@ public class BasicCollectionAccessor extends DirectCollectionAccessor {
      * INTERNAL:
      */
     @Override
-    public void initXMLObject(MetadataAccessibleObject accessibleObject) {
-        super.initXMLObject(accessibleObject);
+    public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
+        super.initXMLObject(accessibleObject, entityMappings);
     
         // Initialize single ORMetadata objects.
         initXMLObject(m_valueColumn, accessibleObject);

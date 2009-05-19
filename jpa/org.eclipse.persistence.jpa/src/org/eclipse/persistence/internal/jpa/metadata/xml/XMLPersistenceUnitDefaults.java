@@ -129,12 +129,12 @@ public class XMLPersistenceUnitDefaults extends ORMetadata {
         XMLPersistenceUnitDefaults persistenceUnitDefaults = (XMLPersistenceUnitDefaults) metadata;
         if (persistenceUnitDefaults != null) {
             // Primitive boolean merging.
-            mergePrimitiveBoolean(m_cascadePersist, persistenceUnitDefaults.isCascadePersist(), persistenceUnitDefaults.getAccessibleObject(), "cascade-persist");
+            mergePrimitiveBoolean(m_cascadePersist, persistenceUnitDefaults.isCascadePersist(), persistenceUnitDefaults, "cascade-persist");
         
             // Simple object merging.
-            m_access = (String) mergeSimpleObjects(m_access, persistenceUnitDefaults.getAccess(), persistenceUnitDefaults.getAccessibleObject(), "<access>");
-            m_catalog = (String) mergeSimpleObjects(m_catalog, persistenceUnitDefaults.getCatalog(), persistenceUnitDefaults.getAccessibleObject(), "<catalog>");
-            m_schema = (String) mergeSimpleObjects(m_schema, persistenceUnitDefaults.getSchema(),  persistenceUnitDefaults.getAccessibleObject(), "<schema>");
+            m_access = (String) mergeSimpleObjects(m_access, persistenceUnitDefaults.getAccess(), persistenceUnitDefaults, "<access>");
+            m_catalog = (String) mergeSimpleObjects(m_catalog, persistenceUnitDefaults.getCatalog(), persistenceUnitDefaults, "<catalog>");
+            m_schema = (String) mergeSimpleObjects(m_schema, persistenceUnitDefaults.getSchema(),  persistenceUnitDefaults, "<schema>");
         }
     }
     

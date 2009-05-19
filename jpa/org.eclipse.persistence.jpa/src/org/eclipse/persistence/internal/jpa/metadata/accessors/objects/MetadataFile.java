@@ -23,11 +23,14 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
  * @since EclipseLink 1.0
  */
 public class MetadataFile extends MetadataAccessibleObject {
+    XMLEntityMappings m_entityMappings;
+    
     /**
      * INTERNAL:
      */
     public MetadataFile(XMLEntityMappings entityMappings) {
-        super(entityMappings.getMappingFile(), entityMappings);
+        super(entityMappings.getLogger());
+        m_entityMappings = entityMappings;
     }
     
     /**
@@ -43,7 +46,7 @@ public class MetadataFile extends MetadataAccessibleObject {
      * reflect the new dependency).
      */
     public String getAttributeName() {
-        return getLocation().toString();
+        return m_entityMappings.getMappingFile().toString();
     }
     
     /**

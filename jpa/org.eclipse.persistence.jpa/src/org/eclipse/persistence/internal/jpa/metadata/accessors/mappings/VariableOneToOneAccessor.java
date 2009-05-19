@@ -36,6 +36,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 import org.eclipse.persistence.internal.jpa.metadata.columns.DiscriminatorClassMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.DiscriminatorColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
 import org.eclipse.persistence.mappings.VariableOneToOneMapping;
 
@@ -171,8 +172,8 @@ public class VariableOneToOneAccessor extends ObjectAccessor {
      * INTERNAL:
      */
     @Override
-    public void initXMLObject(MetadataAccessibleObject accessibleObject) {
-        super.initXMLObject(accessibleObject);
+    public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
+        super.initXMLObject(accessibleObject, entityMappings);
     
         // Init the single ORMetadata objects.
         initXMLObject(m_discriminatorColumn, accessibleObject);

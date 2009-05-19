@@ -56,6 +56,7 @@ import org.eclipse.persistence.internal.jpa.metadata.converters.StructConverterM
 import org.eclipse.persistence.internal.jpa.metadata.converters.TypeConverterMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.tables.TableMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
@@ -407,8 +408,8 @@ public abstract class MetadataAccessor extends ORMetadata {
      * INTERNAL:
      */
     @Override
-    public void initXMLObject(MetadataAccessibleObject accessibleObject) {
-        super.initXMLObject(accessibleObject);
+    public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
+        super.initXMLObject(accessibleObject, entityMappings);
         
         // Initialize lists of objects.
         initXMLObjects(m_converters, accessibleObject);
@@ -443,7 +444,7 @@ public abstract class MetadataAccessor extends ORMetadata {
         MetadataAccessor accessor = (MetadataAccessor) metadata;
         
         // Simple object merging.
-        m_access = (String) mergeSimpleObjects(m_access, accessor.getAccess(), accessor.getAccessibleObject(), "@access");
+        m_access = (String) mergeSimpleObjects(m_access, accessor.getAccess(), accessor, "@access");
         
         // ORMetadata list merging.
         m_converters = mergeORObjectLists(m_converters, accessor.getConverters());

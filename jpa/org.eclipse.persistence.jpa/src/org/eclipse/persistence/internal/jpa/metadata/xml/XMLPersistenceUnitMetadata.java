@@ -144,8 +144,8 @@ public class XMLPersistenceUnitMetadata extends ORMetadata {
         XMLPersistenceUnitMetadata persistenceUnitMetadata = (XMLPersistenceUnitMetadata) metadata;
         
         // Primitive boolean merging.
-        mergePrimitiveBoolean(m_xmlMappingMetadataComplete, persistenceUnitMetadata.isXMLMappingMetadataComplete(), persistenceUnitMetadata.getAccessibleObject(), "<xml-mapping-metadata-complete>");
-        mergePrimitiveBoolean(m_excludeDefaultMappings, persistenceUnitMetadata.excludeDefaultMappings(), persistenceUnitMetadata.getAccessibleObject(), "<exclude-default-mappings>");
+        mergePrimitiveBoolean(m_xmlMappingMetadataComplete, persistenceUnitMetadata.isXMLMappingMetadataComplete(), persistenceUnitMetadata, "<xml-mapping-metadata-complete>");
+        mergePrimitiveBoolean(m_excludeDefaultMappings, persistenceUnitMetadata.excludeDefaultMappings(), persistenceUnitMetadata, "<exclude-default-mappings>");
         
         // Merge the persistence unit defaults.
         m_persistenceUnitDefaults.merge(persistenceUnitMetadata.getPersistenceUnitDefaults());
@@ -155,8 +155,8 @@ public class XMLPersistenceUnitMetadata extends ORMetadata {
      * INTERNAL:
      */
     @Override
-    public void initXMLObject(MetadataAccessibleObject accessibleObject) {
-        super.initXMLObject(accessibleObject);
+    public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
+        super.initXMLObject(accessibleObject, entityMappings);
         
         initXMLObject(m_persistenceUnitDefaults, accessibleObject);
     }

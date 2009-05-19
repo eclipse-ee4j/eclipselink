@@ -219,7 +219,7 @@ public class MetadataProcessor {
             m_project.addEntityAccessor(entity);
             
             // This will override any global settings.
-            entity.getAccessibleObject().getEntityMappings().processEntityMappingsDefaults(entity);
+            entity.getEntityMappings().processEntityMappingsDefaults(entity);
         }
 
         // 3 - Iterate though all the XML embeddables and add them to the 
@@ -229,7 +229,7 @@ public class MetadataProcessor {
             m_project.addEmbeddableAccessor(embeddable);
             
             // This will override any global settings.
-            embeddable.getAccessibleObject().getEntityMappings().processEntityMappingsDefaults(embeddable);
+            embeddable.getEntityMappings().processEntityMappingsDefaults(embeddable);
         }
         
         // 4 - Iterate through the classes that are references from the

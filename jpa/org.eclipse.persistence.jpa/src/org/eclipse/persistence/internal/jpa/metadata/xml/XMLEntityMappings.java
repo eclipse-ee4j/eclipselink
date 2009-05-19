@@ -464,11 +464,10 @@ public class XMLEntityMappings extends ORMetadata {
         for (EntityAccessor entity : getEntities()) {
             // Initialize the class with the package from entity mappings.
             MetadataClass entityClass = getMetadataClass(getFullClassName(entity.getClassName()));
-            entityClass.setEntityMappings(this);
             
             // Initialize the entity with its metadata descriptor and 
             // project.
-            entity.initXMLClassAccessor(entityClass, new MetadataDescriptor(entityClass, entity), m_project);
+            entity.initXMLClassAccessor(entityClass, new MetadataDescriptor(entityClass, entity), m_project, this);
             
             if (allEntities.containsKey(entityClass.getName())) {
                 // Merge this entity with the existing one.
@@ -483,11 +482,10 @@ public class XMLEntityMappings extends ORMetadata {
         for (EmbeddableAccessor embeddable : getEmbeddables()) {
             // Initialize the class with the package from entity mappings.
             MetadataClass embeddableClass = getMetadataClass(getFullClassName(embeddable.getClassName()));
-            embeddableClass.setEntityMappings(this);
             
             // Initialize the embeddable with its metadata descriptor and
             // project.
-            embeddable.initXMLClassAccessor(embeddableClass, new MetadataDescriptor(embeddableClass, embeddable), m_project);
+            embeddable.initXMLClassAccessor(embeddableClass, new MetadataDescriptor(embeddableClass, embeddable), m_project, this);
             
             if (allEmbeddables.containsKey(embeddableClass.getName())) {
                 // Merge this embeddable with the existing one.
@@ -502,13 +500,13 @@ public class XMLEntityMappings extends ORMetadata {
         for (MappedSuperclassAccessor mappedSuperclass : getMappedSuperclasses()) {
             // Initialize the class with the package from entity mappings.
             MetadataClass mappedSuperclassClass = getMetadataClass(getFullClassName(mappedSuperclass.getClassName()));
-            mappedSuperclassClass.setEntityMappings(this);
             
             // Just set the accessible object on the mapped superclass for now.
             // Mapped superclasses are reloaded for each entity that inherits
             // from it. After each reload, the initXMLObjects is called and
             // ready to be processed there after.
             mappedSuperclass.setAccessibleObject(mappedSuperclassClass);
+            mappedSuperclass.setEntityMappings(this);
             
             // Add it to the project. This will merge it if necessary.
             m_project.addMappedSuperclass(mappedSuperclassClass.getName(), mappedSuperclass);
@@ -553,61 +551,61 @@ public class XMLEntityMappings extends ORMetadata {
     public void process() {
         // Add the XML converters to the project.
         for (ConverterMetadata converter : m_converters) {
-            converter.initXMLObject(m_file);
+            converter.initXMLObject(m_file, this);
             m_project.addConverter(converter);
         }
         
         // Add the XML type converters to the project.
         for (TypeConverterMetadata typeConverter : m_typeConverters) {
-            typeConverter.initXMLObject(m_file);
+            typeConverter.initXMLObject(m_file, this);
             m_project.addConverter(typeConverter);
         }
         
         // Add the XML object type converters to the project.
         for (TypeConverterMetadata objectTypeConverter : m_objectTypeConverters) {
-            objectTypeConverter.initXMLObject(m_file);
+            objectTypeConverter.initXMLObject(m_file, this);
             m_project.addConverter(objectTypeConverter);
         }
         
         // Add the XML struct converters to the project.
         for (StructConverterMetadata structConverter : m_structConverters) {
-            structConverter.initXMLObject(m_file);
+            structConverter.initXMLObject(m_file, this);
             m_project.addConverter(structConverter);
         }
         
         // Add the XML table generators to the project.
         for (TableGeneratorMetadata tableGenerator : m_tableGenerators) {
-            tableGenerator.initXMLObject(m_file);
+            tableGenerator.initXMLObject(m_file, this);
             m_project.addTableGenerator(tableGenerator, getDefaultCatalog(), getDefaultSchema());
         }
             
         // Add the XML sequence generators to the project.
         for (SequenceGeneratorMetadata sequenceGenerator : m_sequenceGenerators) {
-            sequenceGenerator.initXMLObject(m_file);
+            sequenceGenerator.initXMLObject(m_file, this);
             m_project.addSequenceGenerator(sequenceGenerator);
         }
             
         // Add the XML named queries to the project.
         for (NamedQueryMetadata namedQuery : m_namedQueries) {
-            namedQuery.initXMLObject(m_file);
+            namedQuery.initXMLObject(m_file, this);
             m_project.addQuery(namedQuery);
         }
         
         // Add the XML named native queries to the project.
         for (NamedNativeQueryMetadata namedNativeQuery : m_namedNativeQueries) {
-            namedNativeQuery.initXMLObject(m_file);
+            namedNativeQuery.initXMLObject(m_file, this);
                m_project.addQuery(namedNativeQuery);
            }
         
         // Add the XML named stored procedure queries to the project.
         for (NamedStoredProcedureQueryMetadata namedStoredProcedureQuery : m_namedStoredProcedureQueries) {
-            namedStoredProcedureQuery.initXMLObject(m_file);
+            namedStoredProcedureQuery.initXMLObject(m_file, this);
             m_project.addQuery(namedStoredProcedureQuery);
         }
             
         // Add the XML sql result set mappings to the project.
         for (SQLResultSetMappingMetadata sqlResultSetMapping : m_sqlResultSetMappings) {
-            sqlResultSetMapping.initXMLObject(m_file);
+            sqlResultSetMapping.initXMLObject(m_file, this);
             m_project.addSQLResultSetMapping(sqlResultSetMapping);
         }
     }
@@ -651,7 +649,7 @@ public class XMLEntityMappings extends ORMetadata {
         
         if (m_persistenceUnitMetadata != null) {
             // Set the accessible object for persistence unit metadata.
-            m_persistenceUnitMetadata.initXMLObject(m_file);
+            m_persistenceUnitMetadata.initXMLObject(m_file, this);
             
             // This method will take care of any merging that needs to happen
             // and/or throw any conflict exceptions.
@@ -685,9 +683,8 @@ public class XMLEntityMappings extends ORMetadata {
         // Initialize the newly loaded/built entity
         EntityAccessor entity = xmlEntityMappings.getEntities().get(0);
         MetadataClass metadataClass = MetadataFactory.getClassMetadata(entity.getClassName());
-        metadataClass.setEntityMappings(this);
-        entity.initXMLClassAccessor(metadataClass, descriptor, m_project);
-            
+        entity.initXMLClassAccessor(metadataClass, descriptor, m_project, this);
+        
         return entity;
     }
     
@@ -710,8 +707,8 @@ public class XMLEntityMappings extends ORMetadata {
         // Initialize the newly loaded/built mapped superclass
         MappedSuperclassAccessor mappedSuperclass = xmlEntityMappings.getMappedSuperclasses().get(0);
         MetadataClass metadataClass = MetadataFactory.getClassMetadata(mappedSuperclass.getClassName());
-        metadataClass.setEntityMappings(this);
-        mappedSuperclass.initXMLClassAccessor(metadataClass, descriptor, m_project);
+        mappedSuperclass.initXMLClassAccessor(metadataClass, descriptor, m_project, this);
+        
         
         return mappedSuperclass;
     }

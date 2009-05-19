@@ -64,6 +64,7 @@ import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.EnumeratedMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.TemporalMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 
@@ -433,8 +434,8 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
      * INTERNAL:
      */
     @Override
-    public void initXMLObject(MetadataAccessibleObject accessibleObject) {
-        super.initXMLObject(accessibleObject);
+    public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
+        super.initXMLObject(accessibleObject, entityMappings);
         
         // Init the list of ORMetadata objects.
         initXMLObjects(m_mapKeyJoinColumns, accessibleObject);
@@ -491,7 +492,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
         // map metadata for a map key value to set on the indirection policy.
         // ** Note the reference class or reference class name needs to be set 
         // on the mapping before setting the indirection policy.
-        processContainerPolicyAndIndirection(mapping);
+        processContainerPolicyAndIndirection(mapping, getMapKey());
         
         // Process a @ReturnInsert and @ReturnUpdate (to log a warning message)
         processReturnInsertAndUpdate();

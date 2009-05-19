@@ -38,6 +38,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.Transien
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.VariableOneToOneAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.VersionAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
 /**
  * Object to represent all the attributes of an XML defined entity,
@@ -227,15 +228,15 @@ public class XMLAttributes extends ORMetadata {
      * This is going to initialize the accessible objects.
      */
     @Override
-    public void initXMLObject(MetadataAccessibleObject accessibleObject) {
-        super.initXMLObject(accessibleObject);
+    public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
+        super.initXMLObject(accessibleObject, entityMappings);
         
         // For merging purposes we will initialize the accessors with the owning
         // classes accessible object. The actual accessible object (field or
         // method) for each accessor will be set during the actual metadata
         // processing stage.
         for (MappingAccessor accessor : getAccessors()) {
-            accessor.initXMLObject(accessibleObject);
+            accessor.initXMLObject(accessibleObject, entityMappings);
         }
     }
     

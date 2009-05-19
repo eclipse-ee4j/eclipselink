@@ -87,6 +87,8 @@ import org.eclipse.persistence.internal.jpa.metadata.queries.SQLResultSetMapping
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.SequenceGeneratorMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.TableGeneratorMetadata;
 
+import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
+
 /**
  * INTERNAL:
  * A mapped superclass accessor.
@@ -329,8 +331,8 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * INTERNAL:
      */
     @Override
-    public void initXMLObject(MetadataAccessibleObject accessibleObject) {
-        super.initXMLObject(accessibleObject);
+    public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
+        super.initXMLObject(accessibleObject, entityMappings);
         
         // Initialize single objects.
         initXMLObject(m_cache, accessibleObject);
@@ -362,20 +364,20 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         MappedSuperclassAccessor accessor = (MappedSuperclassAccessor) metadata;
         
         // Primitive boolean merging.
-        m_excludeDefaultListeners = mergePrimitiveBoolean(m_excludeDefaultListeners, accessor.excludeDefaultListeners(), accessor.getAccessibleObject(), "<exclude-default-listeners>");
-        m_excludeSuperclassListeners = mergePrimitiveBoolean(m_excludeSuperclassListeners, accessor.excludeSuperclassListeners(), accessor.getAccessibleObject(), "<exclude-superclass-listeners>");
+        m_excludeDefaultListeners = mergePrimitiveBoolean(m_excludeDefaultListeners, accessor.excludeDefaultListeners(), accessor, "<exclude-default-listeners>");
+        m_excludeSuperclassListeners = mergePrimitiveBoolean(m_excludeSuperclassListeners, accessor.excludeSuperclassListeners(), accessor, "<exclude-superclass-listeners>");
         
         // Simple object merging.
-        m_readOnly = (Boolean) mergeSimpleObjects(m_readOnly, accessor.getReadOnly(), accessor.getAccessibleObject(), "@read-only");
-        m_idClass = (MetadataClass) mergeSimpleObjects(m_idClass, accessor.getIdClassName(), accessor.getAccessibleObject(), "<id-class>");
-        m_prePersist = (String) mergeSimpleObjects(m_prePersist, accessor.getPrePersist(), accessor.getAccessibleObject(), "<pre-persist>");
-        m_postPersist = (String) mergeSimpleObjects(m_postPersist, accessor.getPostPersist(), accessor.getAccessibleObject(), "<post-persist>");
-        m_preRemove = (String) mergeSimpleObjects(m_preRemove, accessor.getPreRemove(), accessor.getAccessibleObject(), "<pre-remove>");
-        m_postRemove = (String) mergeSimpleObjects(m_postRemove, accessor.getPostRemove(), accessor.getAccessibleObject(), "<post-remove>");
-        m_preUpdate = (String) mergeSimpleObjects(m_preUpdate, accessor.getPreUpdate(), accessor.getAccessibleObject(), "<pre-update>");
-        m_postUpdate = (String) mergeSimpleObjects(m_postUpdate, accessor.getPostUpdate(), accessor.getAccessibleObject(), "<post-update>");
-        m_postLoad = (String) mergeSimpleObjects(m_postLoad, accessor.getPostLoad(), accessor.getAccessibleObject(), "<post-load>");
-        m_existenceChecking = (String) mergeSimpleObjects(m_existenceChecking, accessor.getExistenceChecking(), accessor.getAccessibleObject(), "@existence-checking");
+        m_readOnly = (Boolean) mergeSimpleObjects(m_readOnly, accessor.getReadOnly(), accessor, "@read-only");
+        m_idClass = (MetadataClass) mergeSimpleObjects(m_idClass, accessor.getIdClassName(), accessor, "<id-class>");
+        m_prePersist = (String) mergeSimpleObjects(m_prePersist, accessor.getPrePersist(), accessor, "<pre-persist>");
+        m_postPersist = (String) mergeSimpleObjects(m_postPersist, accessor.getPostPersist(), accessor, "<post-persist>");
+        m_preRemove = (String) mergeSimpleObjects(m_preRemove, accessor.getPreRemove(), accessor, "<pre-remove>");
+        m_postRemove = (String) mergeSimpleObjects(m_postRemove, accessor.getPostRemove(), accessor, "<post-remove>");
+        m_preUpdate = (String) mergeSimpleObjects(m_preUpdate, accessor.getPreUpdate(), accessor, "<pre-update>");
+        m_postUpdate = (String) mergeSimpleObjects(m_postUpdate, accessor.getPostUpdate(), accessor, "<post-update>");
+        m_postLoad = (String) mergeSimpleObjects(m_postLoad, accessor.getPostLoad(), accessor, "<post-load>");
+        m_existenceChecking = (String) mergeSimpleObjects(m_existenceChecking, accessor.getExistenceChecking(), accessor, "@existence-checking");
         
         // ORMetadata object merging.
         m_cache = (CacheMetadata) mergeORObjects(m_cache, accessor.getCache());

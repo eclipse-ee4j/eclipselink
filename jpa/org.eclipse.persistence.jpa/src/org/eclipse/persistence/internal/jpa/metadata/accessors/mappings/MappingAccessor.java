@@ -75,6 +75,7 @@ import org.eclipse.persistence.internal.jpa.metadata.converters.EnumeratedMetada
 import org.eclipse.persistence.internal.jpa.metadata.converters.LobMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.SerializedMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.TemporalMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
 import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
 
@@ -683,7 +684,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      */
     public void initXMLMappingAccessor(ClassAccessor classAccessor) {
         m_classAccessor = classAccessor;
-        
+        setEntityMappings(classAccessor.getEntityMappings());
         initXMLAccessor(classAccessor.getDescriptor(), classAccessor.getProject());   
     }
     
@@ -691,8 +692,8 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * INTERNAL:
      */
     @Override
-    public void initXMLObject(MetadataAccessibleObject accessibleObject) {
-        super.initXMLObject(accessibleObject);
+    public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
+        super.initXMLObject(accessibleObject, entityMappings);
         
         // Initialize single objects.
         initXMLObject(m_accessMethods, accessibleObject);
@@ -1074,9 +1075,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * @see CollectionAccessor
      * @see ElementCollectionAccessor
      */
-    protected void processContainerPolicyAndIndirection(CollectionMapping mapping) {
-        String mapKey = null;
-        
+    protected void processContainerPolicyAndIndirection(CollectionMapping mapping, String mapKey) {
         if (isMappedKeyMapAccessor()) {
             MappedKeyMapAccessor mapKeyMapAccessor = (MappedKeyMapAccessor) this;
             MetadataClass mapKeyClass = mapKeyMapAccessor.getMapKeyClass();
@@ -1085,7 +1084,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
                 // TODO: if map key is specified we should throw an exception.
                 processMapKeyClass(mapKeyClass, mapping, mapKeyMapAccessor);
             } else {
-                // Set the indirection policy on the mapping.
+                // Set the indirection policy on the mapping
                 setIndirectionPolicy(mapping, processMapKey(mapKey, mapping), usesIndirection());
             }
         } else if (isMapAccessor()) {

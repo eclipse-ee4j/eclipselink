@@ -14,10 +14,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
-import java.net.URL;
-
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
-import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
 /**
  * INTERNAL:
@@ -30,39 +27,11 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 public abstract class MetadataAccessibleObject {
     private MetadataLogger m_logger;
     
-    // Location could be 2 things:
-    // 1 - URL to a mapping file
-    // 2 - Annotated element (Class, Method or Field)
-    private Object m_location;
-    
-    private XMLEntityMappings m_entityMappings;
-    
     /**
      * INTERNAL:
      */
     public MetadataAccessibleObject(MetadataLogger logger) {
-        m_location = this;
         m_logger = logger;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public MetadataAccessibleObject(URL mappingFile, XMLEntityMappings entityMappings) {
-        m_location = mappingFile;
-        m_logger = entityMappings.getLogger();
-        m_entityMappings = entityMappings;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public XMLEntityMappings getEntityMappings() {
-        return m_entityMappings;
-    }
-
-    public void setEntityMappings(XMLEntityMappings entityMappings) {
-        m_entityMappings = entityMappings;
     }
     
     /**
@@ -70,28 +39,11 @@ public abstract class MetadataAccessibleObject {
      * Return the attribute name of this accessible object.
      */
     public abstract String getAttributeName();
-       
-    /**
-     * INTERNAL:
-     */
-    public Object getLocation() {
-        return m_location;
-    }
     
     /**
      * INTERNAL:
      */
     public MetadataLogger getLogger() {
         return m_logger;
-    }
-    
-    /**
-     * INTERNAL:
-     * Set the location if one is not already set.
-     */
-    public void setLocation(Object location) {
-        if (m_location == null) {
-            m_location = location;
-        }
     }
 }

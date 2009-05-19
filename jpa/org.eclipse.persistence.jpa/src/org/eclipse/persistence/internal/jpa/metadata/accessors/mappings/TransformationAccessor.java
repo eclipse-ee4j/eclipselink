@@ -32,6 +32,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 
 import org.eclipse.persistence.internal.jpa.metadata.transformers.ReadTransformerMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.transformers.WriteTransformerMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
 import org.eclipse.persistence.mappings.TransformationMapping;
 
@@ -109,8 +110,8 @@ public class TransformationAccessor extends BasicAccessor {
      * INTERNAL:
      */
     @Override
-    public void initXMLObject(MetadataAccessibleObject accessibleObject) {
-        super.initXMLObject(accessibleObject);
+    public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
+        super.initXMLObject(accessibleObject, entityMappings);
         
         // Init the ORMetadata objects.
         initXMLObject(m_readTransformer, accessibleObject);

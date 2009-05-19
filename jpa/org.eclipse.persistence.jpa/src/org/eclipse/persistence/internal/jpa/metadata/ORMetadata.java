@@ -60,6 +60,13 @@ public abstract class ORMetadata {
     // The accessible object this metadata is tied to.
     private MetadataAccessibleObject m_accessibleObject;
     
+    // Location could be 2 things:
+    // 1 - URL to a mapping file
+    // 2 - Annotated element (Class, Method or Field)
+    private Object m_location;
+    
+    private XMLEntityMappings m_entityMappings;
+    
     // The tag name of the XML element. Used in logging messages and validation
     // exceptions.
     private String m_xmlElement;
@@ -83,6 +90,7 @@ public abstract class ORMetadata {
      * Used for Annotation loading.
      */
     public ORMetadata(MetadataAnnotation annotation, MetadataAccessibleObject accessibleObject) {
+        m_location = accessibleObject;
         m_annotation = annotation;
         m_accessibleObject = accessibleObject;
     }
@@ -125,8 +133,8 @@ public abstract class ORMetadata {
      * The loader is the temp loader during predeploy, and the app loader during deploy.
      */
     public Class getJavaClass(String className) {
-        if ((getAccessibleObject() != null) && (getAccessibleObject().getEntityMappings() != null)) {
-            return getAccessibleObject().getEntityMappings().getClassForName(className);
+        if (getEntityMappings() != null) {
+            return getEntityMappings().getClassForName(className);
         }
         
         if (className == null || className.equals("") || className.equals("void")) {
@@ -172,8 +180,8 @@ public abstract class ORMetadata {
     /**
      * INTERNAL:
      */
-    protected XMLEntityMappings getEntityMappings() {
-        return m_accessibleObject.getEntityMappings();
+    public XMLEntityMappings getEntityMappings() {
+        return m_entityMappings;
     }
     
     /**
@@ -193,8 +201,8 @@ public abstract class ORMetadata {
     /**
      * INTERNAL:
      */
-    protected Object getLocation() {
-        return m_accessibleObject.getLocation();
+    public Object getLocation() {
+        return m_location;
     }
     
     /**
@@ -220,7 +228,7 @@ public abstract class ORMetadata {
      * here is that an entity mappings object will be available. 
      */
     protected MetadataClass initXMLClassName(String className) {
-        return MetadataFactory.getClassMetadata(m_accessibleObject.getEntityMappings().getFullClassName(className));
+        return MetadataFactory.getClassMetadata(getEntityMappings().getFullClassName(className));
     }
     
     /**
@@ -228,8 +236,9 @@ public abstract class ORMetadata {
      * Any subclass that cares to do any more initialization (e.g. initialize a
      * class) should override this method. 
      */
-    public void initXMLObject(MetadataAccessibleObject accessibleObject) {
+    public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
         m_accessibleObject = accessibleObject;
+        setEntityMappings(entityMappings);
     }
     
     /**
@@ -237,7 +246,7 @@ public abstract class ORMetadata {
      */
     protected void initXMLObject(ORMetadata metadata, MetadataAccessibleObject accessibleObject) {
         if (metadata != null) {
-            metadata.initXMLObject(accessibleObject);
+            metadata.initXMLObject(accessibleObject, m_entityMappings);
         }
     }
     
@@ -247,7 +256,7 @@ public abstract class ORMetadata {
      */
     protected void initXMLObjects(List metadatas, MetadataAccessibleObject accessibleObject) {
         for (ORMetadata metadata : (List<ORMetadata>) metadatas) {
-            metadata.initXMLObject(accessibleObject);
+            metadata.initXMLObject(accessibleObject, m_entityMappings);
         }
     }
     
@@ -256,7 +265,7 @@ public abstract class ORMetadata {
      * Note: That annotations can default so the annotation may be null.
      */
     protected boolean loadedFromAnnotation() {
-        return m_annotation != null || !(m_accessibleObject.getLocation() instanceof URL);
+        return m_annotation != null || !(getLocation() instanceof URL);
     }
     
     /**
@@ -264,7 +273,7 @@ public abstract class ORMetadata {
      */
     protected boolean loadedFromEclipseLinkXML() {
         if (loadedFromXML()) {
-            return m_accessibleObject.getLocation().toString().contains(MetadataHelper.ECLIPSELINK_ORM_FILE);
+            return getLocation().toString().contains(MetadataHelper.ECLIPSELINK_ORM_FILE);
         }
         
         return false; 
@@ -274,7 +283,9 @@ public abstract class ORMetadata {
      * INTERNAL:
      */
     protected boolean loadedFromXML() {
-        return m_xmlElement != null; 
+        // This is a better check
+        return m_entityMappings != null;
+        //return m_xmlElement != null; 
     }
     
     /**
@@ -363,14 +374,14 @@ public abstract class ORMetadata {
      * EclipseLink ORM file. (false being the default for boolean and meaning
      * the element was not specified)
      */
-    protected boolean mergePrimitiveBoolean(boolean value1, boolean value2, MetadataAccessibleObject accessibleObject, String xmlElement) {
+    protected boolean mergePrimitiveBoolean(boolean value1, boolean value2, ORMetadata otherMetadata, String xmlElement) {    
         Boolean bool1 = (value1) ? new Boolean(true) : null;
         Boolean bool2 = (value2) ? new Boolean(true) : null;
         
         if (bool1 == null && bool2 == null) {
             return false;
         } else {
-            return ((Boolean) mergeSimpleObjects(bool1, bool2, accessibleObject, xmlElement)).booleanValue();
+            return ((Boolean) mergeSimpleObjects(bool1, bool2, otherMetadata, xmlElement)).booleanValue();
         }
     }
     
@@ -380,12 +391,13 @@ public abstract class ORMetadata {
      * merge is complete. If value2 is specified it will override value1, 
      * otherwise, value1 does not.
      */
-    protected Object mergeSimpleObjects(Object obj1, Object obj2, MetadataAccessibleObject accessibleObject, String xmlElement) {
+    protected Object mergeSimpleObjects(Object obj1, Object obj2, ORMetadata otherMetadata, String xmlElement) {
+
         if (obj1 == null && obj2 == null) {
             return null;
         } else {
-            SimpleORMetadata object1 = (obj1 == null) ? null : new SimpleORMetadata(obj1, getAccessibleObject(), xmlElement);
-            SimpleORMetadata object2 = (obj2 == null) ? null : new SimpleORMetadata(obj2, accessibleObject, xmlElement);
+            SimpleORMetadata object1 = (obj1 == null) ? null : new SimpleORMetadata(obj1, getAccessibleObject(), getEntityMappings(), xmlElement);
+            SimpleORMetadata object2 = (obj2 == null) ? null : new SimpleORMetadata(obj2, otherMetadata.getAccessibleObject(), otherMetadata.getEntityMappings(), xmlElement);
                     
             // After this call return the value from the returned simple object.
             return ((SimpleORMetadata) mergeORObjects(object1, object2)).getValue();
@@ -402,7 +414,7 @@ public abstract class ORMetadata {
      * with the subclasses context (that is, the descriptor we are given).
      */
     protected EntityAccessor reloadEntity(EntityAccessor entity, MetadataDescriptor descriptor) {
-        if (m_accessibleObject.getEntityMappings() == null) {
+        if (getEntityMappings() == null) {
             // Create a new EntityAccesor.
             EntityAccessor entityAccessor = new EntityAccessor(entity.getAnnotation(), entity.getJavaClass(), entity.getProject());
             // Things we care about ...
@@ -410,7 +422,7 @@ public abstract class ORMetadata {
             entityAccessor.setDescriptor(descriptor);
             return entityAccessor;            
         } else {
-            return m_accessibleObject.getEntityMappings().reloadEntity(entity, descriptor);
+            return getEntityMappings().reloadEntity(entity, descriptor);
         }
     }
     
@@ -422,14 +434,14 @@ public abstract class ORMetadata {
      * entity accessor's mapped superclass list. 
      */
     protected MappedSuperclassAccessor reloadMappedSuperclass(MappedSuperclassAccessor mappedSuperclass, MetadataDescriptor descriptor) {
-        if (m_accessibleObject.getEntityMappings() == null) {
+        if (getEntityMappings() == null) {
             // TODO: Just changing the descriptor on the mapped superclass should
             // work .. in theory .. since we are just going to go through its
             // accessor list.
             MappedSuperclassAccessor mappedSuperclassAccessor = new MappedSuperclassAccessor(mappedSuperclass.getAnnotation(), mappedSuperclass.getJavaClass(), descriptor);
             return mappedSuperclassAccessor;
         } else {
-            return m_accessibleObject.getEntityMappings().reloadMappedSuperclass(mappedSuperclass, descriptor);
+            return getEntityMappings().reloadMappedSuperclass(mappedSuperclass, descriptor);
         }
     }
     
@@ -439,6 +451,15 @@ public abstract class ORMetadata {
      */
     public void setAccessibleObject(MetadataAccessibleObject accessibleObject) {
         m_accessibleObject = accessibleObject;
+    }
+    
+    /**
+     * INTERNAL:
+     * Set the entity mappings (mapping file) for this OR object.
+     */
+    public void setEntityMappings(XMLEntityMappings entityMappings) {
+        m_entityMappings = entityMappings;
+        m_location = entityMappings.getMappingFile();
     }
     
     /**
@@ -561,10 +582,11 @@ public abstract class ORMetadata {
         /**
          * INTERNAL:
          */
-        public SimpleORMetadata(Object value, MetadataAccessibleObject accessibleObject, String xmlElement) {
+        public SimpleORMetadata(Object value, MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings, String xmlElement) {
             super(xmlElement);
             
             setAccessibleObject(accessibleObject);
+            setEntityMappings(entityMappings);
             m_value = value;
         }
         

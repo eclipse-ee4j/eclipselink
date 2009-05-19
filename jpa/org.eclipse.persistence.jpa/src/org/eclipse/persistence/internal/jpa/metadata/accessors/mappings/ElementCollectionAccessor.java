@@ -56,6 +56,7 @@ import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.EnumeratedMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.TemporalMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.tables.CollectionTableMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.mappings.AggregateCollectionMapping;
 import org.eclipse.persistence.mappings.AggregateObjectMapping;
 import org.eclipse.persistence.mappings.CollectionMapping;
@@ -533,8 +534,8 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
      * INTERNAL:
      */
     @Override
-    public void initXMLObject(MetadataAccessibleObject accessibleObject) {
-        super.initXMLObject(accessibleObject);
+    public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
+        super.initXMLObject(accessibleObject, entityMappings);
         
         // Initialize lists of ORMetadata objects.
         initXMLObjects(m_attributeOverrides, accessibleObject);
@@ -633,7 +634,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
         mapping.setReferenceClassName(getReferenceClassName());
         
         // Process the fetch type and set the correct indirection on the mapping.
-        processContainerPolicyAndIndirection(mapping);
+        processContainerPolicyAndIndirection(mapping, getMapKey());
         
         // Make sure to mark the descriptor as an embeddable collection descriptor.
         referenceDescriptor.setIsEmbeddableCollection();

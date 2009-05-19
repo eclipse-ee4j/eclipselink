@@ -81,7 +81,7 @@
             </id>
             <basic name="name"/>
             <one-to-many name="certifications" mapped-by="beerConsumer" target-entity="org.eclipse.persistence.testing.models.jpa.xml.inherited.Certification">
-                <map-key name="id"/>
+                <map-key name="mapKey"/>
                 <cascade>
                     <cascade-all/>
                 </cascade>

@@ -31,6 +31,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataFactory;
 import org.eclipse.persistence.internal.jpa.metadata.tables.CollectionTableMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DirectCollectionMapping;
 import org.eclipse.persistence.mappings.DirectMapMapping;
@@ -181,8 +182,8 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
      * INTERNAL:
      */
     @Override
-    public void initXMLObject(MetadataAccessibleObject accessibleObject) {
-        super.initXMLObject(accessibleObject);
+    public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
+        super.initXMLObject(accessibleObject, entityMappings);
         
         // Initialize single objects.
         initXMLObject(m_collectionTable, accessibleObject);
@@ -274,7 +275,7 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
         process(mapping);
         
         // Process the container and indirection policies.
-        processContainerPolicyAndIndirection(mapping);
+        processContainerPolicyAndIndirection(mapping, null);
         
         // Process the value column (we must process this field before the 
         // call to processConverter, since it may set a field classification)
@@ -298,7 +299,7 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
         process(mapping);
         
         // Process the container and indirection policies.
-        processContainerPolicyAndIndirection(mapping);
+        processContainerPolicyAndIndirection(mapping, null);
         
         // Process the key column (we must process this field before the 
         // call to processConverter, since it may set a field classification)
