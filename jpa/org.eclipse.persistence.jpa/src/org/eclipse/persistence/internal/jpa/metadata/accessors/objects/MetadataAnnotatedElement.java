@@ -101,14 +101,6 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     public MetadataAnnotatedElement(MetadataLogger logger) {
         super(logger);
     }
-    
-    /**
-     * INTERNAL:
-     */
-    // Guy - unused constructor
-    //public MetadataAnnotatedElement(XMLEntityMappings entityMappings) {
-      //  super(entityMappings.getMappingFile(), entityMappings);
-    //}
 
     /**
      * INTERNAL:
