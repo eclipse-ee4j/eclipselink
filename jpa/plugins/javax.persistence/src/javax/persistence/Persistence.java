@@ -31,7 +31,8 @@ package javax.persistence;
 // J2SE imports
 import java.util.List;
 import java.util.Map;
-
+import java.util.Set;
+import java.util.HashSet;
 import javax.persistence.spi.PersistenceProvider;
 import javax.persistence.spi.PersistenceProviderResolver;
 import javax.persistence.spi.PersistenceProviderResolverHolder;
@@ -43,7 +44,16 @@ import javax.persistence.spi.PersistenceUtil;
  * @since Java Persistence 1.0
  */
 public class Persistence {
+    /**
+     * This final String is deprecated and should be removed and is only here for TCK backward compatibility
+     */
+    public static final String PERSISTENCE_PROVIDER = "javax.persistence.spi.PeristenceProvider";
+    /**
+     * This instance variable is deprecated and should be removed and is only here for TCK backward compatibility
+     */
 
+    protected static final Set<PersistenceProvider> providers = new HashSet<PersistenceProvider>();
+    
     /**
      * Create and return an EntityManagerFactory for the named persistence unit.
      * 
