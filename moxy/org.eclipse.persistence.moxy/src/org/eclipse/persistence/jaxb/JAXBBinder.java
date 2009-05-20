@@ -1,21 +1,23 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2008 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.jaxb;
 
 import javax.xml.bind.Binder;
 import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.PropertyException;
+import javax.xml.bind.UnmarshalException;
 import javax.xml.bind.ValidationEventHandler;
 import javax.xml.bind.helpers.DefaultValidationEventHandler;
 import javax.xml.namespace.QName;
@@ -27,79 +29,105 @@ import org.w3c.dom.Node;
 import org.eclipse.persistence.oxm.XMLBinder;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLRoot;
+import org.eclipse.persistence.oxm.documentpreservation.IgnoreNewElementsOrderingPolicy;
 
 /**
  * INTERNAL
- *  <p><b>Purpose:</b>Provide a TopLink implementation of the javax.xml.bind.Binder interface
- *  <p><b>Responsibilities:</b><ul>
- *  <li>Provide an implementation of Binder</li>
- *  <li>Provide a means to preserve unmapped XML Data</li>
- *  
- *  @author  mmacivor
- *  @since   Oracle TopLink 11.1.1.0.0
- *  @see javax.xml.bind.Binder
+ * <p><b>Purpose:</b> Provide a TopLink implementation of the javax.xml.bind.Binder interface</p>
+ * <p><b>Responsibilities:</b>
+ * <ul>
+ * <li>Provide an implementation of Binder</li>
+ * <li>Provide a means to preserve unmapped XML Data</li>
+ * </ul></p>
+ *
+ * @author      mmacivor
+ * @since       Oracle TopLink 11.1.1.0.0
+ * @see         javax.xml.bind.Binder
  */
 public class JAXBBinder extends Binder {
 
     private XMLContext xmlContext;
     private XMLBinder xmlBinder;
-    
+
     public JAXBBinder(XMLContext xmlContext) {
         this.xmlContext = xmlContext;
-        this.xmlBinder = this.xmlContext.createBinder();        
-        this.xmlBinder.getDocumentPreservationPolicy().setNodeOrderingPolicy(new org.eclipse.persistence.oxm.documentpreservation.IgnoreNewElementsOrderingPolicy());
-        this.xmlBinder.getUnmarshaller().setErrorHandler(new JAXBErrorHandler(new DefaultValidationEventHandler()));        
+        this.xmlBinder = this.xmlContext.createBinder();
+        this.xmlBinder.getDocumentPreservationPolicy().setNodeOrderingPolicy(new IgnoreNewElementsOrderingPolicy());
+        this.xmlBinder.setErrorHandler(new JAXBErrorHandler(new DefaultValidationEventHandler()));
     }
-    public void marshal(Object obj, Object xmlNode) {}
-    
+
+    public void marshal(Object obj, Object xmlNode) throws JAXBException {
+        if (null == obj || null == xmlNode) {
+            throw new IllegalArgumentException();
+        }
+    }
+
     public Object updateXML(Object obj) {
+        if (null == obj) {
+            throw new IllegalArgumentException();
+        }
+
         this.xmlBinder.updateXML(obj);
         return xmlBinder.getXMLNode(obj);
     }
 
     public Object updateXML(Object obj, Object xmlNode) {
-        if(!(xmlNode instanceof org.w3c.dom.Node)) {
+        if (!(xmlNode instanceof Node)) {
             return null;
         } else {
-            xmlBinder.updateXML(obj, ((Element)xmlNode));
+            xmlBinder.updateXML(obj, ((Element) xmlNode));
             return xmlNode;
         }
     }
-    
+
     public void setSchema(Schema schema) {
         this.xmlBinder.setSchema(schema);
     }
-    
+
     public Schema getSchema() {
         return this.xmlBinder.getSchema();
     }
-    
+
     public JAXBElement getJAXBNode(Object obj) {
-        Element elem = (Element)xmlBinder.getXMLNode(obj);
-        return new JAXBElement(new QName(elem.getNamespaceURI(), elem.getLocalName()), obj.getClass(), obj);
-    }
-    
-    public void setEventHandler(ValidationEventHandler handler) {
-        if (null == handler) {
-            xmlBinder.getUnmarshaller().setErrorHandler(new JAXBErrorHandler(new DefaultValidationEventHandler()));
-        } else {
-            xmlBinder.getUnmarshaller().setErrorHandler(new JAXBErrorHandler(handler));
+        if (null == obj) {
+            throw new IllegalArgumentException();
         }
-    }
-    
-    public ValidationEventHandler getEventHandler() {
-        JAXBErrorHandler jaxbErrorHandler = (JAXBErrorHandler) xmlBinder.getUnmarshaller().getErrorHandler();
-        return jaxbErrorHandler.getValidationEventHandler();
-    }
-    
-    public Object updateJAXB(Object obj) {
-        if(!(obj instanceof Node)) {
+
+        Element elem = (Element) xmlBinder.getXMLNode(obj);
+
+        if (null == elem) {
             return null;
         }
-        xmlBinder.updateObject((Node)obj);
-        return xmlBinder.getObject((Node)obj);
+
+        return new JAXBElement(new QName(elem.getNamespaceURI(), elem.getLocalName()), obj.getClass(), obj);
     }
-    
+
+    public void setEventHandler(ValidationEventHandler handler) {
+        if (null == handler) {
+            xmlBinder.setErrorHandler(new JAXBErrorHandler(new DefaultValidationEventHandler()));
+        } else {
+            xmlBinder.setErrorHandler(new JAXBErrorHandler(handler));
+        }
+    }
+
+    public ValidationEventHandler getEventHandler() {
+        JAXBErrorHandler jaxbErrorHandler = (JAXBErrorHandler) xmlBinder.getErrorHandler();
+        return jaxbErrorHandler.getValidationEventHandler();
+    }
+
+    public Object updateJAXB(Object obj) {
+        if (null == obj) {
+            throw new IllegalArgumentException();
+        }
+
+        if (!(obj instanceof Node)) {
+            return null;
+        }
+
+        xmlBinder.updateObject((Node) obj);
+        return xmlBinder.getObject((Node) obj);
+    }
+
     public Object getProperty(String propName) throws PropertyException {
         if (null == propName) {
             throw new IllegalArgumentException();
@@ -120,17 +148,17 @@ public class JAXBBinder extends Binder {
         if (propName.equals(Marshaller.JAXB_NO_NAMESPACE_SCHEMA_LOCATION)) {
             return this.xmlBinder.getMarshaller().getNoNamespaceSchemaLocation();
         }
-        
+
         throw new PropertyException(propName);
     }
-    
+
     public void setProperty(String propName, Object value) throws PropertyException {
         if (null == propName) {
             throw new IllegalArgumentException(propName);
         }
-        
+
         String valueString = (value == null) ? null : value.toString();
-        
+
         if (propName.equals(Marshaller.JAXB_ENCODING)) {
             this.xmlBinder.getMarshaller().setEncoding(valueString);
             return;
@@ -154,23 +182,43 @@ public class JAXBBinder extends Binder {
 
         throw new PropertyException(propName);
     }
-    
+
     public Object getXMLNode(Object obj) {
         return null;
     }
-    
-    public Object unmarshal(Object obj) {
-        if(!(obj instanceof Node)) {
+
+    public Object unmarshal(Object obj) throws JAXBException {
+        if (null == obj) {
+            throw new IllegalArgumentException();
+        }
+
+        if (!(obj instanceof Node)) {
             return null;
         }
-        return xmlBinder.unmarshal((Node)obj);
+
+        try {
+            XMLRoot xmlRoot = (XMLRoot) xmlBinder.unmarshal((Node) obj);
+            return new JAXBElement(new QName(xmlRoot.getNamespaceURI(), xmlRoot.getLocalName()), xmlRoot.getObject().getClass(), xmlRoot.getObject());
+        } catch (Exception e) {
+            throw new UnmarshalException(e);
+        }
     }
-    
-    public JAXBElement unmarshal(Object obj, Class javaClass) {
-        if(!(obj instanceof Node)) {
+
+    public JAXBElement unmarshal(Object obj, Class javaClass) throws JAXBException  {
+        if (null == obj || null == javaClass) {
+            throw new IllegalArgumentException();
+        }
+
+        if (!(obj instanceof Node)) {
             return null;
         }
-        XMLRoot xmlRoot = (XMLRoot)xmlBinder.unmarshal((Node)obj, javaClass);
-        return new JAXBElement(new QName(xmlRoot.getNamespaceURI(), xmlRoot.getLocalName()), javaClass, xmlRoot.getObject());
+
+        try {
+            XMLRoot xmlRoot = (XMLRoot) xmlBinder.unmarshal((Node) obj, javaClass);
+            return new JAXBElement(new QName(xmlRoot.getNamespaceURI(), xmlRoot.getLocalName()), javaClass, xmlRoot.getObject());
+        } catch (Exception e) {
+            throw new UnmarshalException(e);
+        }
     }
+
 }
