@@ -14,8 +14,9 @@
  *
  * Contributors:
  *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
- *     			 Specification and licensing terms available from
- *     		   	 http://jcp.org/en/jsr/detail?id=317
+ *               Specification and licensing terms available from
+ *               http://jcp.org/en/jsr/detail?id=317
+ *     gyorke  - Post PFD updates
  *
  * EARLY ACCESS - PUBLIC DRAFT
  * This is an implementation of an early-draft specification developed under the 
@@ -23,7 +24,10 @@
  * purposes only. The code is not compatible with any specification of the JCP.
  ******************************************************************************/
 package javax.persistence.criteria;
+
 import java.util.Collection;
+import javax.persistence.metamodel.CollectionAttribute;
+
 /**
 * The interface CollectionJoin is the type of the result of
 * joining to a collection over an association or element
@@ -33,11 +37,11 @@ import java.util.Collection;
 * @param <E> The element type of the target Collection
 */
 public interface CollectionJoin<Z, E>
-extends AbstractCollectionJoin<Z, Collection<E>, E> {
+		extends PluralJoin<Z, Collection<E>, E> {
 /**
 * Return the metamodel representation for the collection.
 * @return metamodel type representing the Collection that is
 * the target of the join
 */
-javax.persistence.metamodel.Collection<? super Z, E> getModel();
+CollectionAttribute<? super Z, E> getModel();
 }

@@ -14,8 +14,9 @@
  *
  * Contributors:
  *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
- *     			 Specification and licensing terms available from
- *     		   	 http://jcp.org/en/jsr/detail?id=317
+ *               Specification and licensing terms available from
+ *               http://jcp.org/en/jsr/detail?id=317
+ *     gyorke  - Post PFD updates
  *
  * EARLY ACCESS - PUBLIC DRAFT
  * This is an implementation of an early-draft specification developed under the 
@@ -24,6 +25,7 @@
  ******************************************************************************/
 package javax.persistence.criteria;
 import java.util.Set;
+import javax.persistence.metamodel.SetAttribute;
 /**
 * The interface SetJoin is the type of the result of
 * joining to a collection over an association or element
@@ -32,12 +34,12 @@ import java.util.Set;
 * @param <Z> The source type of the join
 * @param <E> The element type of the target Set
 */
-public interface SetJoin<Z, E>
-extends AbstractCollectionJoin<Z, Set<E>, E> {
-/**
-* Return the metamodel representation for the set.
-* @return metamodel type representing the Set that is
-* the target of the join
-*/
-javax.persistence.metamodel.Set<? super Z, E> getModel();
+public interface SetJoin<Z, E> extends PluralJoin<Z, Set<E>, E> {
+
+    /**
+     * Return the metamodel representation for the set.
+     * @return metamodel type representing the Set that is
+     *         the target of the join
+     */
+    SetAttribute<? super Z, E> getModel();
 }

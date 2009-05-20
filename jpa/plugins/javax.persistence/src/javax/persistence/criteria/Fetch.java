@@ -14,8 +14,9 @@
  *
  * Contributors:
  *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
- *     			 Specification and licensing terms available from
- *     		   	 http://jcp.org/en/jsr/detail?id=317
+ *               Specification and licensing terms available from
+ *               http://jcp.org/en/jsr/detail?id=317
+ *     gyorke  - Post PFD updates
  *
  * EARLY ACCESS - PUBLIC DRAFT
  * This is an implementation of an early-draft specification developed under the 
@@ -24,7 +25,7 @@
  ******************************************************************************/
 package javax.persistence.criteria;
 
-import javax.persistence.metamodel.Member;
+import javax.persistence.metamodel.Attribute;
 
 /**
  * Represents a join-fetched association or attribute.
@@ -34,11 +35,11 @@ import javax.persistence.metamodel.Member;
  */
 public interface Fetch<Z, X> extends FetchParent<Z, X> {
     /**
-     * Return the metamodel member corresponding to the fetch join.
+     * Return the metamodel attribute corresponding to the fetch join.
      * 
-     * @return metamodel member type for the join
+     * @return metamodel attribute type for the join
      */
-    Member<? extends Z, X> getMember();
+    Attribute<? extends Z, X> getAttribute();
 
     /**
      * Return the parent of the fetched item.

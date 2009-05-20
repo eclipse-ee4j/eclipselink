@@ -14,8 +14,9 @@
  *
  * Contributors:
  *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
- *     			 Specification and licensing terms available from
- *     		   	 http://jcp.org/en/jsr/detail?id=317
+ *               Specification and licensing terms available from
+ *               http://jcp.org/en/jsr/detail?id=317
+ *     gyorke  - Post PFD updates
  *
  * EARLY ACCESS - PUBLIC DRAFT
  * This is an implementation of an early-draft specification developed under the 
@@ -38,14 +39,15 @@ import java.util.Map;
  * @param <V>
  *            The type of the target Map value
  */
-public interface MapJoin<Z, K, V> extends AbstractCollectionJoin<Z, Map<K, V>, V> {
+public interface MapJoin<Z, K, V> 
+		extends PluralJoin<Z, Map<K, V>, V> {
     /**
      * Return the metamodel representation for the map.
      * 
      * @return metamodel type representing the Map that is the target of the
      *         join
      */
-    javax.persistence.metamodel.Map<? super Z, K, V> getModel();
+    javax.persistence.metamodel.MapAttribute<? super Z, K, V> getModel();
 
     /**
      * Specify an innerjoin over the map key.

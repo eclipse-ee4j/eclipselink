@@ -14,8 +14,9 @@
  *
  * Contributors:
  *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
- *     			 Specification and licensing terms available from
- *     		   	 http://jcp.org/en/jsr/detail?id=317
+ *               Specification and licensing terms available from
+ *               http://jcp.org/en/jsr/detail?id=317
+ *     gyorke  - Post PFD updates
  *
  * EARLY ACCESS - PUBLIC DRAFT
  * This is an implementation of an early-draft specification developed under the 
@@ -25,6 +26,7 @@
 package javax.persistence.criteria;
 
 import java.util.List;
+import javax.persistence.metamodel.ListAttribute;
 
 /**
  * The interface ListJoin is the type of the result of joining to a collection
@@ -36,14 +38,15 @@ import java.util.List;
  * @param <E>
  *            The element type of the target List
  */
-public interface ListJoin<Z, E> extends AbstractCollectionJoin<Z, List<E>, E> {
+public interface ListJoin<Z, E> 
+		extends PluralJoin<Z, List<E>, E> {
     /**
      * Return the metamodel representation for the list.
      * 
      * @return metamodel type representing the List that is the target of the
      *         join
      */
-    javax.persistence.metamodel.List<? super Z, E> getModel();
+    ListAttribute<? super Z, E> getModel();
 
     /**
      * Return an expression that corresponds to the index of the object in the

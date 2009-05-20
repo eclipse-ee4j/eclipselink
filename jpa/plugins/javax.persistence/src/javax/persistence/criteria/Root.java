@@ -14,8 +14,9 @@
  *
  * Contributors:
  *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
- *     			 Specification and licensing terms available from
- *     		   	 http://jcp.org/en/jsr/detail?id=317
+ *               Specification and licensing terms available from
+ *               http://jcp.org/en/jsr/detail?id=317
+ *     gyorke  - Post PFD updates
  *
  * EARLY ACCESS - PUBLIC DRAFT
  * This is an implementation of an early-draft specification developed under the 
@@ -24,7 +25,7 @@
  ******************************************************************************/
 package javax.persistence.criteria;
 
-import javax.persistence.metamodel.Entity;
+import javax.persistence.metamodel.EntityType;
 
 /**
  * A root type in the from clause. Query roots always reference entities.
@@ -38,5 +39,5 @@ public interface Root<X> extends From<X, X> {
      * 
      * @return metamodel entity corresponding to the root
      */
-    Entity<X> getModel();
+    EntityType<X> getModel();
 }

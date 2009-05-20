@@ -16,6 +16,7 @@
  *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
  *               Specification and licensing terms available from
  *               http://jcp.org/en/jsr/detail?id=317
+ *     gyorke  - Post PFD updates
  *
  * EARLY ACCESS - PUBLIC DRAFT
  * This is an implementation of an early-draft specification developed under the 
@@ -25,27 +26,26 @@
 package javax.persistence.metamodel;
 
 /**
- * Instances of the type Type represent persistent object or attribute types.
- * 
- * @param <X>
- *            The type of the represented object or attribute
+ * Instances of the type Type represent persistent object 
+ * or attribute types.
+ *
+ * @param <X>  The type of the represented object or attribute
  */
 public interface Type<X> {
-    public static enum PersistenceType {
-        ENTITY, EMBEDDABLE, MAPPED_SUPERCLASS, BASIC
-    }
-
+	
+	public static enum PersistenceType {
+		ENTITY, EMBEDDABLE, MAPPED_SUPERCLASS, BASIC
+	}
+	
     /**
-     * Return the persistence type.
-     * 
-     * @return persistence type
-     */
+     *  Return the persistence type.
+     *  @return persistence type
+     */	
     PersistenceType getPersistenceType();
-
+	
     /**
-     * Return the represented Java type.
-     * 
-     * @return Java type
+     *  Return the represented Java type.
+     *  @return Java type
      */
     Class<X> getJavaType();
 }

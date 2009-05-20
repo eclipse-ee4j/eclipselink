@@ -16,6 +16,7 @@
  *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
  *               Specification and licensing terms available from
  *               http://jcp.org/en/jsr/detail?id=317
+ *     gyorke  - Post PFD updates
  *
  * EARLY ACCESS - PUBLIC DRAFT
  * This is an implementation of an early-draft specification developed under the 
@@ -25,11 +26,11 @@
 package javax.persistence.metamodel;
 
 /**
- * Instances of the type Basic represent basic types (including temporal and
- * enumerated types).
- * 
- * @param <X>
- *            The type of the represented basic type
+ * Instances of the type CollectionAttribute represent persistent 
+ * Collection-valued attributes.
+ *
+ * @param <X> The type the represented Collection belongs to
+ * @param <E> The element type of the represented Collection
  */
-public interface Basic<X> extends Type<X> {
-}
+public interface CollectionAttribute<X, E> 
+	extends PluralAttribute<X, java.util.Collection<E>, E> {}

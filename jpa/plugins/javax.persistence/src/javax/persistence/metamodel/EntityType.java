@@ -16,6 +16,7 @@
  *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
  *               Specification and licensing terms available from
  *               http://jcp.org/en/jsr/detail?id=317
+ *     gyorke  - Post PFD updates
  *
  * EARLY ACCESS - PUBLIC DRAFT
  * This is an implementation of an early-draft specification developed under the 
@@ -25,43 +26,16 @@
 package javax.persistence.metamodel;
 
 /**
- * Instances of the type AbstractionCollection represent persistent
- * collection-valued attributes.
- * 
- * @param <X>
- *            The type the represented collection belongs to
- * @param <C>
- *            The type of the represented collection
- * @param <E>
- *            The element type of the represented collection
+ *  Instances of the type EntityType represent entity types.
+ *
+ *  @param <X> The represented entity type.
  */
-public interface AbstractCollection<X, C, E> extends Member<X, C>, Bindable<E> {
-    public static enum CollectionType {
-        COLLECTION, SET, LIST, MAP
-    }
-
-    public static enum Multiplicity {
-        MANY_TO_MANY, ONE_TO_MANY, ELEMENT_COLLECTION
-    }
+public interface EntityType<X> 
+	extends IdentifiableType<X>, Bindable<X>{
 
     /**
-     * Return the collection type.
-     * 
-     * @return collection type
+     *  Return the entity name
+     *  @return entity name
      */
-    CollectionType getCollectionType();
-
-    /**
-     * Return the multiplicity.
-     * 
-     * @return multiplicity
-     */
-    Multiplicity getMultiplicity();
-
-    /**
-     * Return the type representing the element type of the collection.
-     * 
-     * @return element type
-     */
-    Type<E> getElementType();
+    String getName();
 }

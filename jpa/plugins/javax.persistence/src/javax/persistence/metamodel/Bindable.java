@@ -16,6 +16,7 @@
  *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
  *               Specification and licensing terms available from
  *               http://jcp.org/en/jsr/detail?id=317
+ *     gyorke  - Post PFD updates
  *
  * EARLY ACCESS - PUBLIC DRAFT
  * This is an implementation of an early-draft specification developed under the 
@@ -25,28 +26,30 @@
 package javax.persistence.metamodel;
 
 /**
- * Instances of the type Bindable represent object or attribute types that can
- * be bound into the from clause.
- * 
- * @param <T>
- *            The type of the represented object or attribute
+ * Instances of the type Bindable represent object or attribute types 
+ * that can be bound into a Path.
+ *
+ * @param <T>  The type of the represented object or attribute
  */
 public interface Bindable<T> {
-    public static enum BindableType {
-        ATTRIBUTE, COLLECTION, MANAGED_TYPE
-    }
+	
+	public static enum BindableType { 
+		SINGULAR_ATTRIBUTE, PLURAL_ATTRIBUTE, ENTITY_TYPE
+	}
 
     /**
-     * Return the bindable type of the represented object.
-     * 
-     * @return bindable type
-     */
+     *  Return the bindable type of the represented object.
+     *  @return bindable type
+     */	
     BindableType getBindableType();
-
+	
     /**
      * Return the Java type of the represented object.
-     * 
+     * If the bindable type of the object is COLLECTION_ATTRIBUTE,
+     * the Java element type is returned. If the bindable type is
+     * SINGLE_ATTRIBUTE or ENTITY_TYPE, the Java type of the
+     * represented entity or attribute is returned.
      * @return Java type
      */
-    Class<T> getJavaType();
+    Class<T> getBindableJavaType();
 }

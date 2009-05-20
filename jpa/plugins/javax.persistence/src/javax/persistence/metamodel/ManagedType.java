@@ -25,324 +25,287 @@
 package javax.persistence.metamodel;
 
 /**
- * Instances of the type ManagedType represent entity, mapped superclass, and
- * embeddable types.
- * 
- * @param <X>
- *            The represented type.
+ *  Instances of the type ManagedType represent entity, mapped 
+ *  superclass, and embeddable types.
+ *
+ *  @param <X> The represented type.
  */
-public interface ManagedType<X> extends Type<X>, Bindable<X> {
-    /**
-     * Return the non-collection-valued attribute of the managed type that
-     * corresponds to the specified name and Java type in the represented type.
-     * 
-     * @param name
-     *            the name of the represented attribute
-     * @param type
-     *            the type of the represented attribute
-     * @return non-collection attribute with given name and type
-     * @throws IllegalArgumentException
-     *             if attribute of the given name and type is not present in the
-     *             managed type
-     */
-    <Y> Attribute<? super X, Y> getAttribute(String name, Class<Y> type);
+public interface ManagedType<X> extends Type<X> {
 
     /**
-     * Return the declared non-collection-valued attribute of the managed type
-     * that corresponds to the specified name and Java type in the represented
-     * type.
-     * 
-     * @param name
-     *            the name of the represented attribute
-     * @param type
-     *            the type of the represented attribute
-     * @return declared non-collection attribute of the given name and type
-     * @throws IllegalArgumentException
-     *             if attribute of the given name and type is not present in the
-     *             managed type
+     *  Return the attributes of the managed type.
      */
-    <Y> Attribute<X, Y> getDeclaredAttribute(String name, Class<Y> type);
+     java.util.Set<Attribute<? super X, ?>> getAttributes();
 
     /**
-     * Return the non-collection-valued attributes of the managed type.
-     * 
-     * @return non-collection attributes
+     *  Return the attributes declared by the managed type.
      */
-    java.util.Set<Attribute<? super X, ?>> getAttributes();
+     java.util.Set<Attribute<X, ?>> getDeclaredAttributes();
 
     /**
-     * Return the non-collection-valued attributes declared by the managed type.
-     * 
-     * @return declared non-collection attributes
+     *  Return the single-valued attribute of the managed 
+     *  type that corresponds to the specified name and Java type 
+     *  in the represented type.
+     *  @param name  the name of the represented attribute
+     *  @param type  the type of the represented attribute
+     *  @return single-valued attribute with given name and type
+     *  @throws IllegalArgumentException if attribute of the given
+     *          name and type is not present in the managed type
      */
-    java.util.Set<Attribute<X, ?>> getDeclaredAttributes();
+    <Y> SingularAttribute<? super X, Y> getSingularAttribute(String name, Class<Y> type);
 
     /**
-     * Return the Collection-valued attribute of the managed type that
-     * corresponds to the specified name and Java element type.
-     * 
-     * @param name
-     *            the name of the represented attribute
-     * @param elementType
-     *            the element type of the represented attribute
-     * @return Collection attribute of the given name and element type
-     * @throws IllegalArgumentException
-     *             if attribute of the given name and type is not present in the
-     *             managed type
+     *  Return the declared single-valued attribute of the 
+     *  managed type that corresponds to the specified name and Java 
+     *  type in the represented type.
+     *  @param name  the name of the represented attribute
+     *  @param type  the type of the represented attribute
+     *  @return declared single-valued attribute of the given 
+     *          name and type
+     *  @throws IllegalArgumentException if attribute of the given
+     *          name and type is not present in the managed type
      */
-    <E> Collection<? super X, E> getCollection(String name, Class<E> elementType);
+    <Y> SingularAttribute<X, Y> getDeclaredSingularAttribute(String name, 
+                                             Class<Y> type);
+	
+    /**
+     *  Return the single-valued attributes of the managed type.
+     *  @return single-valued attributes
+     */
+    java.util.Set<SingularAttribute<? super X, ?>> getSingularAttributes();
 
     /**
-     * Return the Set-valued attribute of the managed type that corresponds to
-     * the specified name and Java element type.
-     * 
-     * @param name
-     *            the name of the represented attribute
-     * @param elementType
-     *            the element type of the represented attribute
-     * @return Set attribute of the given name and element type
-     * @throws IllegalArgumentException
-     *             if attribute of the given name and type is not present in the
-     *             managed type
+     *  Return the single-valued attributes declared by the managed
+     *  type.
+     *  @return declared single-valued attributes
      */
-    <E> Set<? super X, E> getSet(String name, Class<E> elementType);
+    java.util.Set<SingularAttribute<X, ?>> getDeclaredSingularAttributes();
+	
+    /**
+     *  Return the Collection-valued attribute of the managed type 
+     *  that corresponds to the specified name and Java element type.
+     *  @param name  the name of the represented attribute
+     *  @param elementType  the element type of the represented 
+     *                      attribute
+     *  @return CollectionAttribute of the given name and element
+     *          type
+     *  @throws IllegalArgumentException if attribute of the given
+     *          name and type is not present in the managed type
+     */    
+    <E> CollectionAttribute<? super X, E> getCollection(String name, 
+                                               Class<E> elementType);
 
     /**
-     * Return the List-valued attribute of the managed type that corresponds to
-     * the specified name and Java element type.
-     * 
-     * @param name
-     *            the name of the represented attribute
-     * @param elementType
-     *            the element type of the represented attribute
-     * @return List attribute of the given name and element type
-     * @throws IllegalArgumentException
-     *             if attribute of the given name and type is not present in the
-     *             managed type
+     *  Return the Set-valued attribute of the managed type that
+     *  corresponds to the specified name and Java element type.
+     *  @param name  the name of the represented attribute
+     *  @param elementType  the element type of the represented 
+     *                      attribute
+     *  @return SetAttribute of the given name and element type
+     *  @throws IllegalArgumentException if attribute of the given
+     *          name and type is not present in the managed type
      */
-    <E> List<? super X, E> getList(String name, Class<E> elementType);
+    <E> SetAttribute<? super X, E> getSet(String name, Class<E> elementType);
 
     /**
-     * Return the Map-valued attribute of the managed type that corresponds to
-     * the specified name and Java key and value types.
-     * 
-     * @param name
-     *            the name of the represented attribute
-     * @param keyType
-     *            the key type of the represented attribute
-     * @param valueType
-     *            the value type of the represented attribute
-     * @return Map attribute of the given name and key and value types
-     * @throws IllegalArgumentException
-     *             if attribute of the given name and type is not present in the
-     *             managed type
+     *  Return the List-valued attribute of the managed type that
+     *  corresponds to the specified name and Java element type.
+     *  @param name  the name of the represented attribute
+     *  @param elementType  the element type of the represented 
+     *                      attribute
+     *  @return ListAttribute of the given name and element type
+     *  @throws IllegalArgumentException if attribute of the given
+     *          name and type is not present in the managed type
      */
-    <K, V> Map<? super X, K, V> getMap(String name, Class<K> keyType, Class<V> valueType);
+    <E> ListAttribute<? super X, E> getList(String name, Class<E> elementType);
 
     /**
-     * Return the Collection-valued attribute declared by the managed type that
-     * corresponds to the specified name and Java element type.
-     * 
-     * @param name
-     *            the name of the represented attribute
-     * @param elementType
-     *            the element type of the represented attribute
-     * @return declared Collection attribute of the given name and element type
-     * @throws IllegalArgumentException
-     *             if attribute of the given name and type is not present in the
-     *             managed type
+     *  Return the Map-valued attribute of the managed type that
+     *  corresponds to the specified name and Java key and value
+     *  types.
+     *  @param name  the name of the represented attribute
+     *  @param keyType  the key type of the represented attribute
+     *  @param valueType  the value type of the represented attribute
+     *  @return MapAttribute of the given name and key and value
+     *  types
+     *  @throws IllegalArgumentException if attribute of the given
+     *          name and type is not present in the managed type
      */
-    <E> Collection<X, E> getDeclaredCollection(String name, Class<E> elementType);
+    <K, V> MapAttribute<? super X, K, V> getMap(String name, 
+                                                Class<K> keyType, 
+                                                Class<V> valueType);
 
     /**
-     * Return the Set-valued attribute declared by the managed type that
-     * corresponds to the specified name and Java element type.
-     * 
-     * @param name
-     *            the name of the represented attribute
-     * @param elementType
-     *            the element type of the represented attribute
-     * @return declared Set attribute of the given name and element type
-     * @throws IllegalArgumentException
-     *             if attribute of the given name and type is not present in the
-     *             managed type
+     *  Return the Collection-valued attribute declared by the 
+     *  managed type that corresponds to the specified name and Java 
+     *  element type.
+     *  @param name  the name of the represented attribute
+     *  @param elementType  the element type of the represented 
+     *                      attribute
+     *  @return declared CollectionAttribute of the given name and 
+     *          element type
+     *  @throws IllegalArgumentException if attribute of the given
+     *          name and type is not present in the managed type
      */
-    <E> Set<X, E> getDeclaredSet(String name, Class<E> elementType);
+    <E> CollectionAttribute<X, E> getDeclaredCollection(String name, 
+                                               Class<E> elementType);
+    /**
+     *  Return the Set-valued attribute declared by the managed type 
+     *  that corresponds to the specified name and Java element type.
+     *  @param name  the name of the represented attribute
+     *  @param elementType  the element type of the represented 
+     *                      attribute
+     *  @return declared SetAttribute of the given name and 
+     *          element type
+     *  @throws IllegalArgumentException if attribute of the given
+     *          name and type is not present in the managed type
+     */
+    <E> SetAttribute<X, E> getDeclaredSet(String name, Class<E> elementType);
 
     /**
-     * Return the List-valued attribute declared by the managed type that
-     * corresponds to the specified name and Java element type.
-     * 
-     * @param name
-     *            the name of the represented attribute
-     * @param elementType
-     *            the element type of the represented attribute
-     * @return declared List attribute of the given name and element type
-     * @throws IllegalArgumentException
-     *             if attribute of the given name and type is not present in the
-     *             managed type
+     *  Return the List-valued attribute declared by the managed 
+     *  type that corresponds to the specified name and Java 
+     *  element type.
+     *  @param name  the name of the represented attribute
+     *  @param elementType  the element type of the represented 
+     *                      attribute
+     *  @return declared ListAttribute of the given name and 
+     *          element type
+     *  @throws IllegalArgumentException if attribute of the given
+     *          name and type is not present in the managed type
      */
-    <E> List<X, E> getDeclaredList(String name, Class<E> elementType);
+    <E> ListAttribute<X, E> getDeclaredList(String name, Class<E> elementType);
 
     /**
-     * Return the Map-valued attribute declared by the managed type that
-     * corresponds to the specified name and Java key and value types.
-     * 
-     * @param name
-     *            the name of the represented attribute
-     * @param keyType
-     *            the key type of the represented attribute
-     * @param valueType
-     *            the value type of the represented attribute
-     * @return declared Map attribute of the given name and key and value types
-     * @throws IllegalArgumentException
-     *             if attribute of the given name and type is not present in the
-     *             managed type
+     *  Return the Map-valued attribute declared by the managed 
+     *  type that corresponds to the specified name and Java key 
+     *  and value types.
+     *  @param name  the name of the represented attribute
+     *  @param keyType  the key type of the represented attribute
+     *  @param valueType  the value type of the represented attribute
+     *  @return declared MapAttribute of the given name and key 
+     *          and value types
+     *  @throws IllegalArgumentException if attribute of the given
+     *          name and type is not present in the managed type
      */
-    <K, V> Map<X, K, V> getDeclaredMap(String name, Class<K> keyType, Class<V> valueType);
+    <K, V> MapAttribute<X, K, V> getDeclaredMap(String name, 
+                                                Class<K> keyType, 
+                                                Class<V> valueType);
+    
+    /**
+     *  Return all collection-valued attributes of the managed type.
+     *  @return collection valued attributes
+     */
+    java.util.Set<PluralAttribute<? super X, ?, ?>> getCollections();
 
     /**
-     * Return all collection-valued attributes of the managed type.
-     * 
-     * @return collection valued attributes
+     *  Return all collection-valued attributes declared by the 
+     *  managed type.
+     *  @return declared collection valued attributes
      */
-    java.util.Set<AbstractCollection<? super X, ?, ?>> getCollections();
+    java.util.Set<PluralAttribute<X, ?, ?>> getDeclaredCollections();
+
+//String-based:
 
     /**
-     * Return all collection-valued attributes declared by the managed type.
-     * 
-     * @return declared collection valued attributes
+     *  Return the single-valued attribute of the managed type that
+     *  corresponds to the specified name in the represented type.
+     *  @param name  the name of the represented attribute
+     *  @return single-valued attribute with the given name
+     *  @throws IllegalArgumentException if attribute of the given
+     *          name is not present in the managed type
      */
-    java.util.Set<AbstractCollection<X, ?, ?>> getDeclaredCollections();
-
-    // String-based:
-    /**
-     * Return the non-collection-valued attribute of the managed type that
-     * corresponds to the specified name in the represented type.
-     * 
-     * @param name
-     *            the name of the represented attribute
-     * @return non-collection attribute with the given name
-     * @throws IllegalArgumentException
-     *             if attribute of the given name is not present in the managed
-     *             type
-     */
-    Attribute<? super X, ?> getAttribute(String name);
+    SingularAttribute<? super X, ?> getSingularAttribute(String name);
 
     /**
-     * Return the declared non-collection-valued attribute of the managed type
-     * that corresponds to the specified name in the represented type.
-     * 
-     * @param name
-     *            the name of the represented attribute
-     * @return declared non-collection attribute of the given name
-     * @throws IllegalArgumentException
-     *             if attribute of the given name is not present in the managed
-     *             type
+     *  Return the declared single-valued attribute of the managed
+     *  type that corresponds to the specified name in the
+     *  represented type.
+     *  @param name  the name of the represented attribute
+     *  @return declared single-valued attribute of the given 
+     *          name
+     *  @throws IllegalArgumentException if attribute of the given
+     *          name is not present in the managed type
      */
-    Attribute<X, ?> getDeclaredAttribute(String name);
+    SingularAttribute<X, ?> getDeclaredSingularAttribute(String name);
 
     /**
-     * Return the Collection-valued attribute of the managed type that
-     * corresponds to the specified name.
-     * 
-     * @param name
-     *            the name of the represented attribute
-     * @return Collection attribute of the given name
-     * @throws IllegalArgumentException
-     *             if attribute of the given name is not present in the managed
-     *             type
-     */
-    Collection<? super X, ?> getCollection(String name);
+     *  Return the Collection-valued attribute of the managed type 
+     *  that corresponds to the specified name.
+     *  @param name  the name of the represented attribute
+     *  @return CollectionAttribute of the given name
+     *  @throws IllegalArgumentException if attribute of the given
+     *          name is not present in the managed type
+     */    
+    CollectionAttribute<? super X, ?> getCollection(String name); 
 
     /**
-     * Return the Set-valued attribute of the managed type that corresponds to
-     * the specified name.
-     * 
-     * @param name
-     *            the name of the represented attribute
-     * @return Set attribute of the given name
-     * @throws IllegalArgumentException
-     *             if attribute of the given name is not present in the managed
-     *             type
+     *  Return the Set-valued attribute of the managed type that
+     *  corresponds to the specified name.
+     *  @param name  the name of the represented attribute
+     *  @return SetAttribute of the given name
+     *  @throws IllegalArgumentException if attribute of the given
+     *          name is not present in the managed type
      */
-    Set<? super X, ?> getSet(String name);
+    SetAttribute<? super X, ?> getSet(String name);
 
     /**
-     * Return the List-valued attribute of the managed type that corresponds to
-     * the specified name.
-     * 
-     * @param name
-     *            the name of the represented attribute
-     * @return List attribute of the given name
-     * @throws IllegalArgumentException
-     *             if attribute of the given name is not present in the managed
-     *             type
+     *  Return the List-valued attribute of the managed type that
+     *  corresponds to the specified name.
+     *  @param name  the name of the represented attribute
+     *  @return ListAttribute of the given name
+     *  @throws IllegalArgumentException if attribute of the given
+     *          name is not present in the managed type
      */
-    List<? super X, ?> getList(String name);
+    ListAttribute<? super X, ?> getList(String name);
 
     /**
-     * Return the Map-valued attribute of the managed type that corresponds to
-     * the specified name.
-     * 
-     * @param name
-     *            the name of the represented attribute
-     * @return Map attribute of the given name
-     * @throws IllegalArgumentException
-     *             if attribute of the given name is not present in the managed
-     *             type
+     *  Return the Map-valued attribute of the managed type that
+     *  corresponds to the specified name.
+     *  @param name  the name of the represented attribute
+     *  @return MapAttribute of the given name
+     *  @throws IllegalArgumentException if attribute of the given
+     *          name is not present in the managed type
      */
-    Map<? super X, ?, ?> getMap(String name);
+    MapAttribute<? super X, ?, ?> getMap(String name); 
 
     /**
-     * Return the Collection-valued attribute declared by the managed type that
-     * corresponds to the specified name.
-     * 
-     * @param name
-     *            the name of the represented attribute
-     * @return declared Collection attribute of the given name
-     * @throws IllegalArgumentException
-     *             if attribute of the given name is not present in the managed
-     *             type
+     *  Return the Collection-valued attribute declared by the 
+     *  managed type that corresponds to the specified name.
+     *  @param name  the name of the represented attribute
+     *  @return declared CollectionAttribute of the given name
+     *  @throws IllegalArgumentException if attribute of the given
+     *          name is not present in the managed type
      */
-    Collection<X, ?> getDeclaredCollection(String name);
+    CollectionAttribute<X, ?> getDeclaredCollection(String name); 
 
     /**
-     * Return the Set-valued attribute declared by the managed type that
-     * corresponds to the specified name.
-     * 
-     * @param name
-     *            the name of the represented attribute
-     * @return declared Set attribute of the given name
-     * @throws IllegalArgumentException
-     *             if attribute of the given name is not present in the managed
-     *             type
+     *  Return the Set-valued attribute declared by the managed type 
+     *  that corresponds to the specified name.
+     *  @param name  the name of the represented attribute
+     *  @return declared SetAttribute of the given name
+     *  @throws IllegalArgumentException if attribute of the given
+     *          name is not present in the managed type
      */
-    Set<X, ?> getDeclaredSet(String name);
+    SetAttribute<X, ?> getDeclaredSet(String name);
 
     /**
-     * Return the List-valued attribute declared by the managed type that
-     * corresponds to the specified name.
-     * 
-     * @param name
-     *            the name of the represented attribute
-     * @return declared List attribute of the given name
-     * @throws IllegalArgumentException
-     *             if attribute of the given name is not present in the managed
-     *             type
+     *  Return the List-valued attribute declared by the managed 
+     *  type that corresponds to the specified name.
+     *  @param name  the name of the represented attribute
+     *  @return declared ListAttribute of the given name
+     *  @throws IllegalArgumentException if attribute of the given
+     *          name is not present in the managed type
      */
-    List<X, ?> getDeclaredList(String name);
+    ListAttribute<X, ?> getDeclaredList(String name);
 
     /**
-     * Return the Map-valued attribute declared by the managed type that
-     * corresponds to the specified name.
-     * 
-     * @param name
-     *            the name of the represented attribute
-     * @return declared Map attribute of the given name
-     * @throws IllegalArgumentException
-     *             if attribute of the given name is not present in the managed
-     *             type
+     *  Return the Map-valued attribute declared by the managed 
+     *  type that corresponds to the specified name.
+     *  @param name  the name of the represented attribute
+     *  @return declared MapAttribute of the given name
+     *  @throws IllegalArgumentException if attribute of the given
+     *          name is not present in the managed type
      */
-    Map<X, ?, ?> getDeclaredMap(String name);
+    MapAttribute<X, ?, ?> getDeclaredMap(String name);
 }

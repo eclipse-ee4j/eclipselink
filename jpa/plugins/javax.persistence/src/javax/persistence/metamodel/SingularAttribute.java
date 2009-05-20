@@ -16,60 +16,48 @@
  *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
  *               Specification and licensing terms available from
  *               http://jcp.org/en/jsr/detail?id=317
+ *     gyorke  - Post PFD updates
  *
  * EARLY ACCESS - PUBLIC DRAFT
  * This is an implementation of an early-draft specification developed under the 
  * Java Community Process (JCP) and is made available for testing and evaluation 
  * purposes only. The code is not compatible with any specification of the JCP.
  ******************************************************************************/
+
 package javax.persistence.metamodel;
 
 /**
- * Instances of the type Attribute represents persistent non-collection-valued
- * properties or fields.
- * 
- * @param <X>
- *            The type containing the represented attribute
- * @param <T>
- *            The type of the represented attribute
+ * Instances of the type SingularAttribute represents persistent 
+ * single-valued properties or fields.
+ *
+ * @param <X> The type containing the represented attribute
+ * @param <T> The type of the represented attribute
  */
-public interface Attribute<X, T> extends Member<X, T>, Bindable<T> {
-    public static enum Multiplicity {
-        MANY_TO_ONE, ONE_TO_ONE, EMBEDDED, BASIC
-    }
-
+public interface SingularAttribute<X, T> 
+		extends Attribute<X, T>, Bindable<T> {
+	
     /**
-     * Return the multiplicity of the attribute.
-     * 
-     * @return multiplicity
-     */
-    Multiplicity getMultiplicity();
-
-    /**
-     * Is the attribute an id attribute.
-     * 
-     * @return boolean indicating whether or not an id
+     *  Is the attribute an id attribute.
+     *  @return boolean indicating whether or not an id
      */
     boolean isId();
 
     /**
-     * Is the attribute a version attribute.
-     * 
-     * @return boolean indicating whether or not a version attribute
+     *  Is the attribute a version attribute.
+     *  @return boolean indicating whether or not a version attribute
      */
     boolean isVersion();
 
-    /**
-     * Can the attribute be null.
-     * 
-     * @return boolean indicating whether or not the attribute can be null
+    /** 
+     *  Can the attribute be null.
+     *  @return boolean indicating whether or not the attribute can
+     * 				be null
      */
     boolean isOptional();
 
     /**
      * Return the type that represents the type of the attribute.
-     * 
      * @return type of attribute
      */
-    Type<T> getAttributeType();
+    Type<T> getType();
 }

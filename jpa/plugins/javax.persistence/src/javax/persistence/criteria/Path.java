@@ -14,8 +14,9 @@
  *
  * Contributors:
  *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
- *     			 Specification and licensing terms available from
- *     		   	 http://jcp.org/en/jsr/detail?id=317
+ *               Specification and licensing terms available from
+ *               http://jcp.org/en/jsr/detail?id=317
+ *     gyorke  - Post PFD updates
  *
  * EARLY ACCESS - PUBLIC DRAFT
  * This is an implementation of an early-draft specification developed under the 
@@ -24,10 +25,10 @@
  ******************************************************************************/
 package javax.persistence.criteria;
 
-import javax.persistence.metamodel.AbstractCollection;
-import javax.persistence.metamodel.Attribute;
+import javax.persistence.metamodel.PluralAttribute;
+import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.Bindable;
-import javax.persistence.metamodel.Map;
+import javax.persistence.metamodel.MapAttribute;
 
 /**
  * Represents a simple or compound attribute path from a bound type or
@@ -59,7 +60,7 @@ public interface Path<X> extends Expression<X> {
      *            attribute
      * @return path corresponding to the referenced attribute
      */
-    <Y> Path<Y> get(Attribute<? super X, Y> model);
+    <Y> Path<Y> get(SingularAttribute<? super X, Y> att);
 
     /**
      * Return the path corresponding to the referenced collection-valued
@@ -69,7 +70,7 @@ public interface Path<X> extends Expression<X> {
      *            collection-valued attribute
      * @return expression corresponding to the referenced attribute
      */
-    <E, C extends java.util.Collection<E>> Expression<C> get(AbstractCollection<X, C, E> collection);
+    <E, C extends java.util.Collection<E>> Expression<C> get(PluralAttribute<X, C, E> collection);
 
     /**
      * Return the path corresponding to the referenced map-valued attribute.
@@ -78,7 +79,7 @@ public interface Path<X> extends Expression<X> {
      *            map-valued attribute
      * @return expression corresponding to the referenced attribute
      */
-    <K, V, M extends java.util.Map<K, V>> Expression<M> get(Map<X, K, V> collection);
+    <K, V, M extends java.util.Map<K, V>> Expression<M> get(MapAttribute<X, K, V> map);
 
     /**
      * Return an expression corresponding to the type of the path.

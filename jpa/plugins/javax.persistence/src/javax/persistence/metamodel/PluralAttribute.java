@@ -16,22 +16,41 @@
  *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
  *               Specification and licensing terms available from
  *               http://jcp.org/en/jsr/detail?id=317
+ *     gyorke  - Post PFD updates
  *
  * EARLY ACCESS - PUBLIC DRAFT
  * This is an implementation of an early-draft specification developed under the 
  * Java Community Process (JCP) and is made available for testing and evaluation 
  * purposes only. The code is not compatible with any specification of the JCP.
  ******************************************************************************/
+
 package javax.persistence.metamodel;
 
 /**
- * Instances of the type Collection represent persistent Collection-valued
- * attributes.
- * 
- * @param <X>
- *            The type the represented Collection belongs to
- * @param <E>
- *            The element type of the represented Collection
+ * Instances of the type PluralAttribute represent 
+ * persistent collection-valued attributes.
+ *
+ * @param <X> The type the represented collection belongs to
+ * @param <C> The type of the represented collection
+ * @param <E> The element type of the represented collection
  */
-public interface Collection<X, E> extends AbstractCollection<X, java.util.Collection<E>, E> {
+public interface PluralAttribute<X, C, E> 
+		extends Attribute<X, C>, Bindable<E> {
+	
+	public static enum CollectionType {
+		COLLECTION, SET, LIST, MAP
+	}
+		
+    /**
+     * Return the collection type.
+     * @return collection type
+     */
+    CollectionType getCollectionType();
+
+    /**
+     * Return the type representing the element type of the 
+     * collection.
+     * @return element type
+     */
+    Type<E> getElementType();
 }

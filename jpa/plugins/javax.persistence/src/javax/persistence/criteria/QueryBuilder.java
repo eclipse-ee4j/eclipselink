@@ -16,6 +16,7 @@
  *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
  *               Specification and licensing terms available from
  *               http://jcp.org/en/jsr/detail?id=317
+ *     gyorke  - Post PFD updates
  *
  * EARLY ACCESS - PUBLIC DRAFT
  * This is an implementation of an early-draft specification developed under the 
@@ -55,7 +56,7 @@ public interface QueryBuilder {
      *            arguments to the constructor
      * @return selection item
      */
-    <Y> Selection<Y> select(Class<Y> result, Selection<?>... selections);
+    <Y> Selection<Y> construct(Class<Y> result, Selection<?>... selections);
 
     // ordering:
     /**

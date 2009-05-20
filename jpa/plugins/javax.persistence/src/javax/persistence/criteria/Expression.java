@@ -24,6 +24,8 @@
  ******************************************************************************/
 package javax.persistence.criteria;
 
+import java.util.Collection;
+
 /**
  * Type for query expressions.
  * 
@@ -31,16 +33,15 @@ package javax.persistence.criteria;
  *            the type of the expression
  */
 public interface Expression<T> extends Selection<T> {
+
     /**
      * Return the Java type of the expression.
-     * 
      * @return the Java type of the expression
      */
     Class<T> getJavaType();
 
     /**
-     * Apply a predicate to test whether the expression is null.
-     * 
+     *  Apply a predicate to test whether the expression is null.
      * @return predicate testing whether the expression is null
      */
     Predicate isNull();
@@ -62,10 +63,33 @@ public interface Expression<T> extends Selection<T> {
     Predicate in(Object... values);
 
     /**
-     * Perform a typecast upon the expression. Warning: may result in a runtime
-     * failure.
-     * 
-     * @param type
+     * Apply a predicate to test whether the expression is a member
+     * of the argument list.
+     * @param values
+     * @return predicate testing for membership
+     */
+    Predicate in(Expression<?>... values);
+
+    /**
+     * Apply a predicate to test whether the expression is a member
+     * of the collection.
+     * @param values collection
+     * @return predicate testing for membership
+     */
+    Predicate in(Collection<?> values);
+
+    /**
+     * Apply a predicate to test whether the expression is a member
+     * of the collection.
+     * @param values expression corresponding to collection
+     * @return predicate testing for membership
+     */
+    Predicate in(Expression<Collection<?>> values);
+
+    /**
+     * Perform a typecast upon the expression.
+     * Warning: may result in a runtime failure.
+     * @param type 
      * @return expression
      */
     <X> Expression<X> as(Class<X> type);

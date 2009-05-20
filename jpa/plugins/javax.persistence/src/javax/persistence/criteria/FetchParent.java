@@ -14,8 +14,9 @@
  *
  * Contributors:
  *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
- *     			 Specification and licensing terms available from
- *     		   	 http://jcp.org/en/jsr/detail?id=317
+ *               Specification and licensing terms available from
+ *               http://jcp.org/en/jsr/detail?id=317
+ *     gyorke  - Post PFD updates
  *
  * EARLY ACCESS - PUBLIC DRAFT
  * This is an implementation of an early-draft specification developed under the 
@@ -24,8 +25,8 @@
  ******************************************************************************/
 package javax.persistence.criteria;
 
-import javax.persistence.metamodel.AbstractCollection;
-import javax.persistence.metamodel.Attribute;
+import javax.persistence.metamodel.PluralAttribute;
+import javax.persistence.metamodel.SingularAttribute;
 
 /**
  * Represents an element of the from clause which may function as the parent of
@@ -49,7 +50,7 @@ public interface FetchParent<Z, X> {
      *            target of the join
      * @return the resulting fetch join
      */
-    <Y> Fetch<X, Y> fetch(Attribute<? super X, Y> assoc);
+    <Y> Fetch<X, Y> fetch(SingularAttribute<? super X, Y> assoc);
 
     /**
      * Fetch join to the specified attribute using the given join type.
@@ -60,7 +61,7 @@ public interface FetchParent<Z, X> {
      *            join type
      * @return the resulting fetch join
      */
-    <Y> Fetch<X, Y> fetch(Attribute<? super X, Y> assoc, JoinType jt);
+    <Y> Fetch<X, Y> fetch(SingularAttribute<? super X, Y> assoc, JoinType jt);
 
     /**
      * Fetch join to the specified collection using an inner join.
@@ -69,7 +70,7 @@ public interface FetchParent<Z, X> {
      *            target of the join
      * @return the resulting join
      */
-    <Y> Fetch<X, Y> fetch(AbstractCollection<? super X, ?, Y> assoc);
+    <Y> Fetch<X, Y> fetch(PluralAttribute<? super X, ?, Y> assoc);
 
     /**
      * Fetch join to the specified collection using the given join type.
@@ -80,7 +81,7 @@ public interface FetchParent<Z, X> {
      *            join type
      * @return the resulting join
      */
-    <Y> Fetch<X, Y> fetch(AbstractCollection<? super X, ?, Y> assoc, JoinType jt);
+    <Y> Fetch<X, Y> fetch(PluralAttribute<? super X, ?, Y> assoc, JoinType jt);
 
     // String-based:
     /**

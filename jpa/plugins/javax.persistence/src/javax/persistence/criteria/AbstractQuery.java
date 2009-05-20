@@ -14,8 +14,9 @@
  *
  * Contributors:
  *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
- *     			 Specification and licensing terms available from
- *     		   	 http://jcp.org/en/jsr/detail?id=317
+ *               Specification and licensing terms available from
+ *               http://jcp.org/en/jsr/detail?id=317
+ *     gyorke  - Post PFD updates
  *
  * EARLY ACCESS - PUBLIC DRAFT
  * This is an implementation of an early-draft specification developed under the 
@@ -26,17 +27,21 @@ package javax.persistence.criteria;
 
 import java.util.List;
 import java.util.Set;
-import javax.persistence.metamodel.Entity;
+
+import javax.persistence.metamodel.EntityType;
 
 /**
- * The interface AbstractQuery defines functionality that is common to both
- * top-level queries and subqueries. It is not intended to be used directly in
- * query construction.
- * 
- * All queries must have: a set of root entities (which may in turn own joins)
- * All queries may have: a conjunction of restrictions
+ * The AbstractQuery interface defines functionality that is common
+ * to both top-level queries and subqueries.
+ * It is not intended to be used directly in query construction.
+ *
+ * All queries must have:
+ *         a set of root entities (which may in turn own joins)
+ * All queries may have:
+ *         a conjunction of restrictions
  */
 public interface AbstractQuery {
+
     /**
      * Add a query root corresponding to the given entity, forming a cartesian
      * product with any existing roots.
@@ -45,7 +50,7 @@ public interface AbstractQuery {
      *            metamodel entity representing the entity of type X
      * @return query root corresponding to the given entity
      */
-    <X> Root<X> from(Entity<X> entity);
+    <X> Root<X> from(EntityType<X> entity);
 
     /**
      * Add a query root corresponding to the given entity, forming a cartesian

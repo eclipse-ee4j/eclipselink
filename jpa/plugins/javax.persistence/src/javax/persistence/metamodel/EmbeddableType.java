@@ -16,6 +16,7 @@
  *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
  *               Specification and licensing terms available from
  *               http://jcp.org/en/jsr/detail?id=317
+ *     gyorke  - Post PFD updates
  *
  * EARLY ACCESS - PUBLIC DRAFT
  * This is an implementation of an early-draft specification developed under the 
@@ -25,54 +26,8 @@
 package javax.persistence.metamodel;
 
 /**
- * A member of a Java type
- * 
- * @param <X>
- *            The represented type that contains the member
- * @param <Y>
- *            The type of the represented member
+ *  Instances of the type EmbeddableType represent embeddable types.
+ *
+ *  @param <X> The represented type.
  */
-public interface Member<X, Y> {
-    /**
-     * Return the name of the member.
-     * 
-     * @return name
-     */
-    String getName();
-
-    /**
-     * Return the managed type representing the type in which the member was
-     * declared.
-     * 
-     * @return declaring type
-     */
-    ManagedType<X> getDeclaringType();
-
-    /**
-     * Return the Java type of the represented member.
-     * 
-     * @return Java type
-     */
-    Class<Y> getMemberJavaType();
-
-    /**
-     * Return the java.lang.reflect.Member for the represented member.
-     * 
-     * @return corresponding java.lang.reflect.Member
-     */
-    java.lang.reflect.Member getJavaMember();
-
-    /**
-     * Is the member an association.
-     * 
-     * @return whether an association
-     */
-    boolean isAssociation();
-
-    /**
-     * Is the member collection-valued.
-     * 
-     * @return whether a collection
-     */
-    boolean isCollection();
-}
+public interface EmbeddableType<X> extends ManagedType<X> {}

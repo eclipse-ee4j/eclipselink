@@ -16,6 +16,7 @@
  *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
  *               Specification and licensing terms available from
  *               http://jcp.org/en/jsr/detail?id=317
+ *     gyorke  - Post PFD updates
  *
  * EARLY ACCESS - PUBLIC DRAFT
  * This is an implementation of an early-draft specification developed under the 
@@ -25,12 +26,9 @@
 package javax.persistence.metamodel;
 
 /**
- * Instances of the type Set represent persistent Set-valued attributes.
- * 
- * @param <X>
- *            The type the represented Set belongs to
- * @param <E>
- *            The element type of the represented Set
+ * Instances of the type BasicType represent basic types (including
+ * temporal and enumerated types).
+ *
+ * @param <X> The type of the represented basic type
  */
-public interface Set<X, E> extends AbstractCollection<X, java.util.Set<E>, E> {
-}
+public interface BasicType<X> extends Type<X> {}

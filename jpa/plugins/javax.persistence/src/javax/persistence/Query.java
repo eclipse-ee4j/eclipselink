@@ -213,19 +213,6 @@ public interface Query {
     Set<String> getSupportedHints();
 
     /**
-     * Bind the value of a Parameter object.
-     * 
-     * @param param
-     *            parameter to be set
-     * @param value
-     *            parameter value
-     * @return query instance
-     * @throws IllegalArgumentException
-     *             if parameter does not correspond to a parameter of the query
-     */
-    <T> Query setParameter(javax.persistence.Parameter<T> param, T value);
-
-    /**
      * Bind an argument to a named parameter.
      * 
      * @param name
@@ -263,6 +250,17 @@ public interface Query {
      *             query
      */
     Query setParameter(String name, Calendar value, TemporalType temporalType);
+
+    /**
+     * Set the value of a Parameter object.
+     * @param param  parameter to be set
+     * @param value  parameter value
+     * @return query instance
+     * @throws IllegalArgumentException if parameter
+     *         does not correspond to a parameter of the
+     *         query
+     */
+    <T> Query setParameter(Parameter<T> param, T value);
 
     /**
      * Bind an argument to a positional parameter.

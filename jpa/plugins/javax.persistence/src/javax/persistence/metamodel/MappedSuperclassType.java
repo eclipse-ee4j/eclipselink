@@ -16,6 +16,7 @@
  *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
  *               Specification and licensing terms available from
  *               http://jcp.org/en/jsr/detail?id=317
+ *     gyorke  - Post PFD updates
  *
  * EARLY ACCESS - PUBLIC DRAFT
  * This is an implementation of an early-draft specification developed under the 
@@ -25,12 +26,9 @@
 package javax.persistence.metamodel;
 
 /**
- * Instances of the type List represent persistent List-valued attributes.
- * 
- * @param <X>
- *            The type the represented List belongs to
- * @param <E>
- *            The element type of the represented List
+ *  Instances of the type MappedSuperclassType represent mapped
+ *  superclass types.
+ *
+ *  @param <X> The represented entity type
  */
-public interface List<X, E> extends AbstractCollection<X, java.util.List<E>, E> {
-}
+public interface MappedSuperclassType<X> extends IdentifiableType<X> {}

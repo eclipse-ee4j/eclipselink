@@ -14,31 +14,23 @@
  *
  * Contributors:
  *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
- *     			 Specification and licensing terms available from
- *     		   	 http://jcp.org/en/jsr/detail?id=317
+ *               Specification and licensing terms available from
+ *               http://jcp.org/en/jsr/detail?id=317
+ *     gyorke  - Post PFD updates
  *
  * EARLY ACCESS - PUBLIC DRAFT
  * This is an implementation of an early-draft specification developed under the 
  * Java Community Process (JCP) and is made available for testing and evaluation 
  * purposes only. The code is not compatible with any specification of the JCP.
  ******************************************************************************/
-package javax.persistence.criteria;
-import javax.persistence.metamodel.AbstractCollection;
+package javax.persistence.metamodel;
+
 /**
-* The interface AbstractCollectionJoin defines functionality
-* that is common to joins to all collection types. It is
-* not intended to be used directly in query construction.
-*
-* @param <Z> The source type
-* @param <C> The collection type
-* @param <E> The element type of the collection
-*/
-public interface AbstractCollectionJoin<Z, C, E>
-extends Join<Z, E> {
-/**
-* Return the metamodel representation for the collection.
-* @return metamodel type representing the collection that is
-* the target of the join
-*/
-AbstractCollection<? super Z, C, E> getModel();
-}
+ * Instances of the type ListAttribute represent persistent 
+ * List-valued attributes.
+ *
+ * @param <X> The type the represented List belongs to
+ * @param <E> The element type of the represented List
+ */
+public interface ListAttribute<X, E> 
+		extends PluralAttribute<X, java.util.List<E>, E> {}

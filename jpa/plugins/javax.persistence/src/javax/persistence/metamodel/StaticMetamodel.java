@@ -16,36 +16,29 @@
  *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
  *               Specification and licensing terms available from
  *               http://jcp.org/en/jsr/detail?id=317
+ *     gyorke  - Post PFD updates
  *
  * EARLY ACCESS - PUBLIC DRAFT
  * This is an implementation of an early-draft specification developed under the 
  * Java Community Process (JCP) and is made available for testing and evaluation 
  * purposes only. The code is not compatible with any specification of the JCP.
  ******************************************************************************/
+
 package javax.persistence.metamodel;
 
-/**
- * Instances of the type Map represent persistent Map-valued attributes.
- * 
- * @param <X>
- *            The type the represented Map belongs to
- * @param <K>
- *            The type of the key of the represented Map
- * @param <V>
- *            The type of the value of the represented Map
- */
-public interface Map<X, K, V> extends AbstractCollection<X, java.util.Map<K, V>, V> {
-    /**
-     * Return the Java type of the map key.
-     * 
-     * @return Java key type
-     */
-    Class<K> getKeyJavaType();
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-    /**
-     * Return the type representing the key type of the map.
-     * 
-     * @return type representing key type
-     */
-    Type<K> getKeyType();
+/**
+ * The StaticMetamodel annotation specifies that the class
+ * is a metamodel class that represents the entity, mapped 
+ * superclass, or embeddable class designated by the value
+ * element.
+ */
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface StaticMetamodel {
+    Class<?> value();
 }
