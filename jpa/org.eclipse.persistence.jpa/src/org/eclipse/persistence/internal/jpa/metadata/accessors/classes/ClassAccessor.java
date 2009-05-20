@@ -252,7 +252,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
                         // methods as they could result in NPE if 
                         // accessibleObject isn't set first
                         String getMethodName = accessor.getAccessMethods().getGetMethodName();
-                        MetadataMethod getMethod = getJavaClass().getMethod(getMethodName);
+                        MetadataMethod getMethod = getJavaClass().getMethod(getMethodName, new String[]{});
                         String setMethodName = accessor.getAccessMethods().getSetMethodName();
                         MetadataMethod setMethod = getJavaClass().getMethod(setMethodName, Arrays.asList(new String[]{getMethod.getReturnType()}));
                         getMethod.setSetMethod(setMethod);

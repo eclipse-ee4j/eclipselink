@@ -16,6 +16,7 @@ package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -89,26 +90,26 @@ public class MetadataClass extends MetadataAnnotatedElement {
     /**
      * Return the method with the name and no arguments.
      */
-    public MetadataMethod getMethod(String name) {
+    protected MetadataMethod getMethod(String name) {
         return this.methods.get(name);
     }
 
     /**
-     * Return the method with the name and argument types .
+     * Return the method with the name and argument types.
      */
     public MetadataMethod getMethod(String name, Class[] arguments) {
         List<String> argumentNames = new ArrayList<String>(arguments.length);
         for (int index = 0; index < arguments.length; index++) {
             argumentNames.add(arguments[index].getName());
         }
-        MetadataMethod method = getMethod(name, argumentNames);
-        if (method != null) {
-            return method;
-        }
-        if (getSuperclassName() != null) {
-            return getSuperclass().getMethod(name, arguments);
-        }
-        return null;
+        return getMethod(name, argumentNames);
+    }
+
+    /**
+     * Return the method with the name and argument types (class names).
+     */
+    public MetadataMethod getMethod(String name, String[] arguments) {
+        return getMethod(name, Arrays.asList(arguments));
     }
 
     /**
@@ -116,14 +117,11 @@ public class MetadataClass extends MetadataAnnotatedElement {
      */
     public MetadataMethod getMethod(String name, List<String> arguments) {
         MetadataMethod method = this.methods.get(name);
-        if (method == null) {
-            return null;
-        }
-        while (!method.getParameters().equals(arguments)) {
+        while ((method != null) && !method.getParameters().equals(arguments)) {
             method = method.getNext();
-            if (method == null) {
-                return null;
-            }
+        }
+        if ((method == null) && (getSuperclassName() != null)) {
+            return getSuperclass().getMethod(name, arguments);
         }
         return method;
     }
@@ -138,11 +136,11 @@ public class MetadataClass extends MetadataAnnotatedElement {
         String restOfName = propertyName.substring(1);
         
         // Look for a getPropertyName() method
-        method = getMethod(MetadataMethod.GET_PROPERTY_METHOD_PREFIX.concat(leadingChar).concat(restOfName));
+        method = getMethod(MetadataMethod.GET_PROPERTY_METHOD_PREFIX.concat(leadingChar).concat(restOfName), new String[]{});
         
         if (method == null) {
             // Look for an isPropertyName() method
-            method = getMethod(MetadataMethod.IS_PROPERTY_METHOD_PREFIX.concat(leadingChar).concat(restOfName));
+            method = getMethod(MetadataMethod.IS_PROPERTY_METHOD_PREFIX.concat(leadingChar).concat(restOfName), new String[]{});
         }
         
         if (method != null) {
