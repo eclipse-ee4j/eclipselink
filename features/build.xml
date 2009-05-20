@@ -72,7 +72,7 @@
     <property name="classes.dir"                        value="classes"/>
     <property name="eclipselink.util.dbws"              value="utils/eclipselink.utils.dbws"/>
     <property name="eclipselink.jpa.plugins"            value="jpa/plugins"/>
-    <property name="eclipselink.p2.archive.presigned"   value="${eclipselink.install.prefix}-P2${eclipselink.zip.suffix}"/>
+    <property name="eclipselink.p2.archive.presigned"   value="${eclipselink.install.prefix}-${release.version}-P2${eclipselink.zip.suffix}"/>
     <!-- Helper definitions derived from Pre-set variables -->
     <property name="feature.build.dir"                  value="${classes.dir}/features"/>
     <property name="bundle.working.dir"                 value="${classes.dir}/plugins"/>
@@ -89,14 +89,16 @@
     <!-- property name="p2.ant.tasks.classpath" value="${p2.SDK.plugin.dir}\${p2.generator.jar}" / -->
 
     <!-- Input definitions -->
-    <property name="p2.base.dir" value="C:\__EL-RepositorySite"/>
-    <property name="p2.feature.dir" value="${p2.base.dir}/features"/>
-    <property name="p2.bundle.dir" value="${p2.base.dir}/plugins"/>
+    <property name="p2.base.dir"         value="C:\__EL-RepositorySite"/>
+    <property name="p2.feature.dir"      value="${p2.base.dir}/features"/>
+    <property name="p2.bundle.dir"       value="${p2.base.dir}/plugins"/>
     <property name="bundle.install.file" value="${feature.2.base.dir}/${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}"/>
-    <property name="site.dir" value="${feature.build.location}/${classes.dir}"/>
-    <property name="site.url" value="file:${site.dir}/site.xml"/>
+    <property name="site.dir"            value="${feature.build.location}/${classes.dir}"/>
+    <property name="site.url"            value="file:${site.dir}/site.xml"/>
     <!-- Output definitions -->
-    <property name="p2.repository.url" value="file:/${p2.base.dir}"/>
+    <property name="p2.repository.url"   value="file:/${p2.base.dir}"/>
+    <property name="metadata.repos.name" value="&quot;EclipseLink Repository&quot;"/>
+    <property name="artifact.repos.name" value="&quot;EclipseLink Artifacts&quot;"/>
 
     <echo message="ant.project.name='${ant.project.name}'"/>
     <echo message="feature.build.location='${feature.build.location}'"/>
@@ -242,8 +244,8 @@
     <target name="create-sign-zipfile" depends="create-eclipse-buildfile">
         <delete file="${eclipselink.p2.archive.presigned}"/>
         <zip destfile="${eclipselink.p2.archive.presigned}">
-            <zipfileset dir="${feature.2.base.dir}"                             includes="eclipselink*.jar"/>
-            <zipfileset dir="${feature.2.util.dbws}"                            includes="eclipselink-dbwsutils*.jar"/>
+            <!-- zipfileset dir="${feature.2.base.dir}"                             includes="eclipselink*.jar"/ -->
+            <!-- zipfileset dir="${feature.2.util.dbws}"                            includes="eclipselink-dbwsutils*.jar"/ -->
             <zipfileset dir="${classes.dir}"                                    includes="eclipselink.build"/>
             <zipfileset dir="${classes.dir}"                                    includes="site.xml"/>
             <zipfileset dir="${feature.build.dir}"            prefix="features" includes="*.jar"/>
@@ -261,6 +263,15 @@
             <arg value="nomail"/>
             <arg value="signed-output/"/>
         </exec>
+    </target>
+    
+    <target name="wait-for-sign-jar">
+        <!-- With nightly builds taking anywhere from 85 to 120 minutes to complete, max wait-time can  -->
+        <!-- only be roughly 100 minutes since the build starts at 2:35am and MUST finish before the    -->
+        <!-- first continuous build at 6:30 (that leaves roughly a 15 minute window)                    -->
+        <waitfor maxwait="100" maxwaitunit="minutes" checkevery="15" checkeveryunit="seconds" timeoutproperty="signing.time.limit.exceeded">
+            <available file="${signing.dir}/signed-output/${eclipselink.p2.archive.presigned}"/>
+        </waitfor>
     </target>
 
     <!-- Pack and Sign Targets -->
@@ -374,8 +385,8 @@
             <arg line=" -updateSite ${p2.base.dir}/" />
             <arg line=" -site ${site.url}" />
             <arg line=" -source ${p2.base.dir}/" />
-            <arg line=" -metadataRepository ${p2.repository.url}/ -metadataRepositoryName &quot;EclipseLink Repository&quot;" />
-            <arg line=" -artifactRepository ${p2.repository.url}/ -artifactRepositoryName &quot;EclipseLink Artifacts&quot;" />
+            <arg line=" -metadataRepository ${p2.repository.url}/ -metadataRepositoryName ${metadata.repos.name}" />
+            <arg line=" -artifactRepository ${p2.repository.url}/ -artifactRepositoryName ${artifact.repos.name}" />
             <arg line=" -compress -reusePack200Files" />
         </java>
     </target>

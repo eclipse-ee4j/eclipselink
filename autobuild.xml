@@ -153,17 +153,25 @@
         <property name="p2.repos.path" value="${eclipselink.download.path}/incremental-updates/milestone"/>
 
         <!-- generate Release Designation string for manifest                     -->
-        <condition property="release.designation" value="EclipseLink DeveloperBuild">
-            <equals arg1="${svn.revision}" arg2="NA"/>
-        </condition>
-        <condition property="release.designation" value="EclipseLink Daily Build">
+        <property name="release.designation" value="EclipseLink ${release.version}"/>
+
+        <!-- generate P2 repository labels                                        -->
+        <condition property="metadata.repos.name" value="&quot;EclipseLink Nightly Build Repository&quot;">
             <equals arg1="${build.type}" arg2="SNAPSHOT"/>
         </condition>
-        <condition property="release.designation" value="EclipseLink Release ${release.version}">
+        <condition property="metadata.repos.name" value="&quot;EclipseLink Release Repository&quot;">
             <equals arg1="${build.type}" arg2="RELEASE"/>
         </condition>
-        <property name="release.designation" value="EclipseLink ${build.type}"/>
+        <property name="metadata.repos.name" value="&quot;EclipseLink Milestone Repository&quot;"/>
 
+        <condition property="artifact.repos.name" value="&quot;EclipseLink Incremental Artifacts&quot;">
+            <equals arg1="${build.type}" arg2="SNAPSHOT"/>
+        </condition>
+        <condition property="artifact.repos.name" value="&quot;EclipseLink Release Artifacts&quot;">
+            <equals arg1="${build.type}" arg2="RELEASE"/>
+        </condition>
+        <property name="artifact.repos.name" value="&quot;EclipseLink Milestone Artifacts&quot;"/>
+        
         <!-- generate string for tag creation (only used if milestone, or release build)  -->
         <condition property="milestone.tag" value="${release.version}">
             <equals arg1="${build.type}" arg2="RELEASE"/>
