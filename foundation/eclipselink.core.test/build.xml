@@ -52,6 +52,7 @@
         <pathelement path="${eclipselink.plugins}/${antlr}"/>
         <pathelement path="${eclipselink.plugins}/${asm}"/>
         <pathelement path="${junit.lib}"/>
+        <pathelement path="${eclipselink.plugins}/${persistence.jar.testing}"/>
         <fileset
             dir="${eclipselink.plugins}"
             includes="${eclipselink.core.depend}"/>

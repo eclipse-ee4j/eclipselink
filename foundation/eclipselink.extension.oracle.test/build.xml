@@ -86,6 +86,7 @@
         <pathelement path="${oracle_test.plugins.dir}/org.eclipse.persistence.oracle.jar"/>
         <pathelement path="${oracle_test.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
         <pathelement path="${oracle_test.2.common.plugins.dir}/org.eclipse.persistence.jpa_${version.string}.jar"/>
+        <pathelement path="${oracle_test.2.common.plugins.dir}/${persistence.jar.testing}"/>
         <fileset
             dir="${oracle_test.2.common.plugins.dir}"
                 includes="${eclipselink.core.depend}"/>

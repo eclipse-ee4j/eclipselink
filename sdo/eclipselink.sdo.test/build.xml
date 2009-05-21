@@ -80,6 +80,7 @@
     </path>
     <!-- compile path without product components -->
     <path id="sdotest.thirdparty.compile.path">
+        <pathelement path="${sdotest.2.common.plugins.dir}/${persistence.jar.testing}"/>
         <fileset
             dir="${sdotest.2.common.plugins.dir}"
             includes="

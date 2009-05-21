@@ -61,6 +61,7 @@
         <fileset
             dir="../${plugins.dir}"
             includes="${eclipselink.jpa.depend}"/>
+        <pathelement path="${jpa.2.common.plugins.dir}/${persistence.jar}"/>
         <fileset
             dir="${jpa.2.common.plugins.dir}"
             includes="${eclipselink.core.depend}"/>

@@ -67,6 +67,7 @@
     <!-- Need multiple extensions dir includes because different systems are defaulting to different locations -->
     <path id="oracle.compile.path">
         <pathelement path="${oracle.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
+        <pathelement path="${oracle.2.common.plugins.dir}/${persistence.jar}"/>
         <fileset
             dir="${oracle.2.common.plugins.dir}"
             includes="${eclipselink.core.depend}"/>

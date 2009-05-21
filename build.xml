@@ -126,9 +126,11 @@
         <pathelement path="${eclipselink.plugins}/${antlr}"/>
         <pathelement path="${eclipselink.plugins}/${asm}"/>
         <pathelement path="${jaxb-api.lib}"/>
+        <pathelement path="${eclipselink.plugins}/${persistence.jar}"/>
         <fileset
             dir="${eclipselink.plugins}"
             includes="${eclipselink.core.depend}"/>
+        <pathelement path="${eclipselink.plugins}/${persistence.jar}"/>
     </path>
 
 <!-- ================================================================================= -->
