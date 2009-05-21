@@ -33,16 +33,23 @@ import javax.wsdl.PortType;
 import javax.wsdl.Service;
 import javax.wsdl.Types;
 import javax.wsdl.WSDLException;
+import javax.wsdl.extensions.ExtensibilityElement;
 import javax.wsdl.extensions.ExtensionRegistry;
 import javax.wsdl.extensions.soap.SOAPAddress;
 import javax.wsdl.extensions.soap.SOAPBinding;
 import javax.wsdl.extensions.soap.SOAPBody;
 import javax.wsdl.extensions.soap.SOAPFault;
 import javax.wsdl.extensions.soap.SOAPOperation;
+import javax.wsdl.extensions.soap12.SOAP12Address;
+import javax.wsdl.extensions.soap12.SOAP12Binding;
+import javax.wsdl.extensions.soap12.SOAP12Body;
+import javax.wsdl.extensions.soap12.SOAP12Fault;
+import javax.wsdl.extensions.soap12.SOAP12Operation;
 import javax.wsdl.factory.WSDLFactory;
 import javax.wsdl.xml.WSDLWriter;
 import javax.xml.namespace.QName;
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
+//import static 
 
 //EclipseLink imports
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelProject;
@@ -77,13 +84,16 @@ public class WSDLGenerator {
     public static final String FAULT_SUFFIX = "Fault";
     public static final String NS_SCHEMA_PREFIX = "xsd";
     public static final String NS_TNS_PREFIX = "tns";
-    public static final String NS_WSDL_SOAP = "http://schemas.xmlsoap.org/wsdl/soap/";
-    public static final String NS_WSDL_SOAP_PREFIX = "soap";
+    public static final String SOAP_11_NAMESPACE_URI = "http://schemas.xmlsoap.org/wsdl/soap/";
+    public static final String SOAP_11_NAMESPACE_PREFIX = "soap";
+    public static final String SOAP_12_NAMESPACE_URI = "http://schemas.xmlsoap.org/wsdl/soap12/";
+    public static final String SOAP_12_NAMESPACE_PREFIX = "soap12";
     public static final String PORT_SUFFIX = "_Interface";
     public static final String REQUEST_SUFFIX = "Request";
     public static final String RESPONSE_SUFFIX = "Response";
     public static final String SOAP_STYLE = "document";
-    public static final String SOAP_TRANSPORT = "http://schemas.xmlsoap.org/soap/http";
+    public static final String SOAP11_HTTP_TRANSPORT = "http://schemas.xmlsoap.org/soap/http";
+    public static final String SOAP12_HTTP_TRANSPORT = "http://www.w3.org/2003/05/soap/bindings/HTTP/";
     public static final String SOAP_USE = "literal";
     public static final String TAG_SCHEMA = "schema";
     public static final String TAG_SOAP_ADDRESS = "address";
@@ -116,20 +126,29 @@ public class WSDLGenerator {
     }
 
     public Definition generateWSDL() throws WSDLException {
+        return generateWSDL(false);
+    }
+    
+    public Definition generateWSDL(boolean useSOAP12) throws WSDLException {
         WSDLFactory factory = WSDLFactory.newInstance();
         ExtensionRegistry registry = factory.newPopulatedExtensionRegistry();
 
         Definition def = factory.newDefinition();
+        if (useSOAP12) {
+            def.addNamespace(SOAP_12_NAMESPACE_PREFIX, SOAP_12_NAMESPACE_URI);
+        }
+        else {
+            def.addNamespace(SOAP_11_NAMESPACE_PREFIX, SOAP_11_NAMESPACE_URI);
+        }
         def.setTargetNamespace(serviceNameSpace);
         def.setQName(new QName(serviceNameSpace, serviceName));
         def.addNamespace(NS_TNS_PREFIX, serviceNameSpace);
         def.addNamespace(TARGET_NAMESPACE_PREFIX, importedSchemaNameSpace);
         def.addNamespace(NS_SCHEMA_PREFIX, W3C_XML_SCHEMA_NS_URI);
-        def.addNamespace(NS_WSDL_SOAP_PREFIX, NS_WSDL_SOAP);
 
         Types types = def.createTypes();
         javax.wsdl.extensions.schema.Schema schema =
-            (javax.wsdl.extensions.schema.Schema) registry.createExtension(Types.class, new QName(
+            (javax.wsdl.extensions.schema.Schema)registry.createExtension(Types.class, new QName(
                 W3C_XML_SCHEMA_NS_URI, TAG_SCHEMA));
         schema.setElement(createInlineSchema());
         types.addExtensibilityElement(schema);
@@ -140,27 +159,42 @@ public class WSDLGenerator {
         portType.setQName(new QName(serviceNameSpace, serviceName + PORT_SUFFIX));
         def.addPortType(portType);
 
+        ExtensibilityElement soap = null;
+        if (useSOAP12) {
+            soap = registry.createExtension(Binding.class, new QName(
+                SOAP_12_NAMESPACE_URI, TAG_SOAP_BINDING));
+            ((SOAP12Binding)soap).setStyle(SOAP_STYLE);
+            ((SOAP12Binding)soap).setTransportURI(SOAP12_HTTP_TRANSPORT);
+        }
+        else {
+            soap = registry.createExtension(Binding.class, new QName(SOAP_11_NAMESPACE_URI,
+                TAG_SOAP_BINDING));
+            ((SOAPBinding)soap).setStyle(SOAP_STYLE);
+            ((SOAPBinding)soap).setTransportURI(SOAP11_HTTP_TRANSPORT);
+        }
         Binding binding = def.createBinding();
         binding.setUndefined(false);
         binding.setQName(new QName(serviceNameSpace, serviceName + BINDING_SUFFIX));
         binding.setPortType(portType);
-        SOAPBinding soap =
-            (SOAPBinding) registry.createExtension(Binding.class, new QName(NS_WSDL_SOAP,
-                TAG_SOAP_BINDING));
-        soap.setStyle(SOAP_STYLE);
-        soap.setTransportURI(SOAP_TRANSPORT);
         binding.addExtensibilityElement(soap);
         def.addBinding(binding);
 
+        ExtensibilityElement sa = null;
+        if (useSOAP12) {
+            sa = registry.createExtension(Port.class, new QName(SOAP_12_NAMESPACE_URI,
+                TAG_SOAP_ADDRESS));
+            ((SOAP12Address)sa).setLocationURI(wsdlLocationURI);
+        }
+        else {
+            sa = registry.createExtension(Port.class, new QName(SOAP_11_NAMESPACE_URI,
+                TAG_SOAP_ADDRESS));
+            ((SOAPAddress)sa).setLocationURI(wsdlLocationURI);
+        }
         Service ws = def.createService();
         ws.setQName(new QName(serviceNameSpace, serviceName));
         Port port = def.createPort();
         port.setName(serviceName + "Port");
         port.setBinding(binding);
-        SOAPAddress sa =
-            (SOAPAddress) registry.createExtension(Port.class, new QName(NS_WSDL_SOAP,
-                TAG_SOAP_ADDRESS));
-        sa.setLocationURI(wsdlLocationURI);
         port.addExtensibilityElement(sa);
         ws.addPort(port);
         def.addService(ws);
@@ -203,7 +237,7 @@ public class WSDLGenerator {
             def.addMessage(faultMessage);
         }
         for (Operation op : xrServiceModel.getOperationsList()) {
-            createMethodDefinition(factory, registry, def, op);
+            createMethodDefinition(factory, registry, def, op, useSOAP12);
         }
 
         if (os != null) {
@@ -214,7 +248,7 @@ public class WSDLGenerator {
     }
 
     private void createMethodDefinition(WSDLFactory factory, ExtensionRegistry registry,
-        Definition def, Operation operation) throws WSDLException {
+        Definition def, Operation operation, boolean useSOAP12) throws WSDLException {
         Message requestMessage = def.createMessage();
         requestMessage.setUndefined(false);
         requestMessage.setQName(new QName(serviceNameSpace, operation.getName() + REQUEST_SUFFIX));
@@ -257,25 +291,46 @@ public class WSDLGenerator {
             def.getBinding(new QName(serviceNameSpace, serviceName + BINDING_SUFFIX));
         BindingOperation bop = def.createBindingOperation();
         bop.setName(operation.getName());
-        SOAPOperation so =
-            (SOAPOperation) registry.createExtension(BindingOperation.class, new QName(
-                NS_WSDL_SOAP, TAG_SOAP_OPERATION));
-        so.setSoapActionURI(serviceNameSpace + ":" + op.getName());
+        ExtensibilityElement so = null;
+        if (useSOAP12) {
+            so = registry.createExtension(BindingOperation.class, new QName(
+                SOAP_12_NAMESPACE_URI, TAG_SOAP_OPERATION));
+            ((SOAP12Operation)so).setSoapActionURI(serviceNameSpace + ":" + op.getName());
+        }
+        else {
+            so = registry.createExtension(BindingOperation.class, new QName(
+                SOAP_11_NAMESPACE_URI, TAG_SOAP_OPERATION));
+            ((SOAPOperation)so).setSoapActionURI(serviceNameSpace + ":" + op.getName());
+        }
         bop.addExtensibilityElement(so);
         BindingInput bi = def.createBindingInput();
-        SOAPBody soapInputBody =
-            (SOAPBody) registry.createExtension(BindingInput.class, new QName(NS_WSDL_SOAP,
-                TAG_SOAP_BODY));
-        soapInputBody.setUse(SOAP_USE);
+        ExtensibilityElement soapInputBody = null;
+        if (useSOAP12) {
+            soapInputBody = registry.createExtension(BindingInput.class, new QName(
+                SOAP_12_NAMESPACE_URI, TAG_SOAP_BODY));
+            ((SOAP12Body)soapInputBody).setUse(SOAP_USE);
+        }
+        else {
+            soapInputBody = registry.createExtension(BindingInput.class, new QName(
+                SOAP_11_NAMESPACE_URI, TAG_SOAP_BODY));
+            ((SOAPBody)soapInputBody).setUse(SOAP_USE);
+        }
         bi.addExtensibilityElement(soapInputBody);
         bop.setBindingInput(bi);
 
         if (operation.hasResponse()) {
             BindingOutput bo = def.createBindingOutput();
-            SOAPBody soapOutputBody =
-                (SOAPBody) registry.createExtension(BindingOutput.class, new QName(NS_WSDL_SOAP,
-                    TAG_SOAP_BODY));
-            soapOutputBody.setUse(SOAP_USE);
+            ExtensibilityElement soapOutputBody = null;
+            if (useSOAP12) {
+                soapOutputBody = registry.createExtension(BindingOutput.class, new QName(
+                    SOAP_12_NAMESPACE_URI, TAG_SOAP_BODY));
+                ((SOAP12Body)soapOutputBody).setUse(SOAP_USE);
+            }
+            else {
+                soapOutputBody = registry.createExtension(BindingOutput.class, new QName(
+                    SOAP_11_NAMESPACE_URI, TAG_SOAP_BODY));
+                ((SOAPBody)soapOutputBody).setUse(SOAP_USE);
+            }
             bo.addExtensibilityElement(soapOutputBody);
             bop.setBindingOutput(bo);
         }
@@ -283,21 +338,36 @@ public class WSDLGenerator {
             // non-QueryOperations don't have Responses, but the fault requirements
             // mean we have to create 'dummy' WSDL outputs
             BindingOutput bo = def.createBindingOutput();
-            SOAPBody soapOutputBody =
-                (SOAPBody) registry.createExtension(BindingOutput.class, new QName(NS_WSDL_SOAP,
-                    TAG_SOAP_BODY));
-            soapOutputBody.setUse(SOAP_USE);
+            ExtensibilityElement soapOutputBody = null;
+            if (useSOAP12) {
+                soapOutputBody = registry.createExtension(BindingOutput.class, new QName(
+                    SOAP_12_NAMESPACE_URI, TAG_SOAP_BODY));
+                ((SOAP12Body)soapOutputBody).setUse(SOAP_USE);
+            }
+            else {
+                soapOutputBody = registry.createExtension(BindingOutput.class, new QName(
+                    SOAP_11_NAMESPACE_URI, TAG_SOAP_BODY));
+                ((SOAPBody)soapOutputBody).setUse(SOAP_USE);
+            }
             bo.addExtensibilityElement(soapOutputBody);
             bop.setBindingOutput(bo);
             // add WSDL fault to binding operations
             BindingFault bindingFault = def.createBindingFault();
             String exceptionName = FAULT_SUFFIX + EXCEPTION_SUFFIX;
             bindingFault.setName(exceptionName);
-            SOAPFault soapFaultBody =
-                (SOAPFault) registry.createExtension(BindingFault.class, new QName(NS_WSDL_SOAP,
-                    TAG_SOAP_FAULT));
-            soapFaultBody.setUse(SOAP_USE);
-            soapFaultBody.setName(exceptionName);
+            ExtensibilityElement soapFaultBody = null;
+            if (useSOAP12) {
+                soapFaultBody = registry.createExtension(BindingFault.class, new QName(
+                    SOAP_12_NAMESPACE_URI, TAG_SOAP_FAULT));
+                ((SOAP12Fault)soapFaultBody).setUse(SOAP_USE);
+                ((SOAP12Fault)soapFaultBody).setName(exceptionName);
+            }
+            else {
+                soapFaultBody = registry.createExtension(BindingFault.class, new QName(
+                    SOAP_11_NAMESPACE_URI, TAG_SOAP_FAULT));
+                ((SOAPFault)soapFaultBody).setUse(SOAP_USE);
+                ((SOAPFault)soapFaultBody).setName(exceptionName);
+            }
             bindingFault.addExtensibilityElement(soapFaultBody);
             bop.addBindingFault(bindingFault);
             Message emptyResponseMessage = def.getMessage(new QName(serviceNameSpace, EMPTY_RESPONSE));

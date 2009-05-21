@@ -24,7 +24,7 @@ import javax.xml.ws.Endpoint;
 import javax.xml.ws.Service;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.WebServiceProvider;
-import static javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING;
+import static javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING;
 
 //JUnit4 imports
 import org.junit.AfterClass;
@@ -76,7 +76,7 @@ import static org.eclipse.persistence.tools.dbws.DBWSBuilder.SESSIONS_FILENAME_K
 import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.noArchive;
 import static org.eclipse.persistence.tools.dbws.XRPackager.__nullStream;
 
-public class WebServiceTestSuite extends ProviderHelper {
+public class WebServiceSOAP12TestSuite extends ProviderHelper {
 
     public static final String DATABASE_USERNAME_KEY = "db.user";
     public static final String DATABASE_PASSWORD_KEY = "db.pwd";
@@ -103,9 +103,10 @@ public class WebServiceTestSuite extends ProviderHelper {
     public static ByteArrayOutputStream DBWS_OX_STREAM = new ByteArrayOutputStream();
     public static ByteArrayOutputStream DBWS_WSDL_STREAM = new ByteArrayOutputStream();
     
-    public static void serviceSetup(String endPointAddress, WebServiceTestSuite endPoint)
+    public static void serviceSetup(String endPointAddress, WebServiceSOAP12TestSuite endPoint)
         throws WSDLException {
         builder.quiet = true;
+        builder.useSOAP12();
         builder.setLogLevel(SessionLog.FINE_LABEL);
         builder.setDriver(DEFAULT_DATABASE_DRIVER);
         builder.setPlatformClassname(DEFAULT_DATABASE_PLATFORM);
@@ -132,7 +133,7 @@ public class WebServiceTestSuite extends ProviderHelper {
         });
         builder.build(DBWS_SCHEMA_STREAM, __nullStream, DBWS_SERVICE_STREAM, DBWS_OR_STREAM, DBWS_OX_STREAM,
             __nullStream, __nullStream, DBWS_WSDL_STREAM, __nullStream, __nullStream, null);
-        endpoint = Endpoint.create(endPoint);
+        endpoint = Endpoint.create(SOAP12HTTP_BINDING, endPoint);
         endpoint.publish(endPointAddress);
         WebServiceProvider testProvider = endPoint.getClass().getAnnotation(WebServiceProvider.class);
         String serviceNamespace = testProvider.targetNamespace();
@@ -141,7 +142,7 @@ public class WebServiceTestSuite extends ProviderHelper {
         QName serviceQName = new QName(serviceNamespace, serviceName);
         portQName = new QName(serviceNamespace, portName);
         testService = Service.create(serviceQName);
-        testService.addPort(portQName, SOAP11HTTP_BINDING, endPointAddress);
+        testService.addPort(portQName, SOAP12HTTP_BINDING, endPointAddress);
     }
     
     @AfterClass

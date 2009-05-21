@@ -27,8 +27,10 @@ import org.w3c.dom.NodeList;
 // Java extension imports
 import javax.servlet.ServletContext;
 import javax.xml.namespace.QName;
+import javax.xml.soap.MimeHeader;
 import javax.xml.soap.SOAPBodyElement;
 import javax.xml.soap.SOAPElement;
+import javax.xml.soap.SOAPEnvelope;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPFactory;
 import javax.xml.soap.SOAPFault;
@@ -39,7 +41,9 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.soap.SOAPFaultException;
+import static javax.xml.soap.SOAPConstants.SOAP_1_2_PROTOCOL;
 import static javax.xml.soap.SOAPConstants.URI_NS_SOAP_1_1_ENVELOPE;
+import static javax.xml.soap.SOAPConstants.URI_NS_SOAP_1_2_ENVELOPE;
 
 // EclipseLink imports
 import org.eclipse.persistence.dbws.DBWSModelProject;
@@ -122,6 +126,7 @@ public class ProviderHelper extends XRServiceFactory {
       "<xsl:stylesheet " +
         "xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" version=\"1.0\" " +
         "xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" " +
+        "xmlns:wsdl=\"http://schemas.xmlsoap.org/wsdl/\" " +
         "> " +
       "<xsl:output method=\"xml\" encoding=\"UTF-8\"/> ";
     protected static final String XSL_POSTSCRIPT = "</xsl:stylesheet>";
@@ -365,7 +370,7 @@ public class ProviderHelper extends XRServiceFactory {
         ((DatabaseSessionImpl)dbwsAdapter.getOXSession()).initializeDescriptorIfSessionAlive(invocationDescriptor);
         dbwsAdapter.getXMLContext().storeXMLDescriptorByQName(invocationDescriptor);
 
-        // create SOAP message response handler
+        // create SOAP message response handler of appropriate version
         responseWriter = new SOAPResponseWriter(dbwsAdapter);
         responseWriter.initialize();
     }
@@ -373,11 +378,36 @@ public class ProviderHelper extends XRServiceFactory {
     @SuppressWarnings("unchecked")
     public SOAPMessage invoke(SOAPMessage request) {
         SOAPMessage response = null;
+        boolean usesSOAP12 = false;
         DBWSAdapter dbwsAdapter = (DBWSAdapter)xrService;
 
+        boolean usesSOAP12IThink = false;
+        // check Content-Type
+        for (Iterator<MimeHeader> i = request.getMimeHeaders().getAllHeaders(); i.hasNext();) {
+            MimeHeader header =  i.next();
+            if (header.getName().toLowerCase().equals("content-type")) {
+                if (header.getValue().toLowerCase().startsWith("application/soap+xml")) {
+                    usesSOAP12IThink = true;
+                    break;
+                }
+            }
+        }
+        SOAPEnvelope envelope = null;
+        try {
+            envelope = request.getSOAPPart().getEnvelope();
+        }
+        catch (SOAPException se) {
+            throw new WebServiceException(se.getMessage());
+        }
+        if (usesSOAP12IThink) {
+            // check soap 1.2 Namespace in envelope
+            String namespaceURI = envelope.getNamespaceURI();
+            usesSOAP12 = namespaceURI.equals(URI_NS_SOAP_1_2_ENVELOPE);
+        }
+        
         SOAPElement body;
         try {
-            body = getSOAPBodyElement(request);
+            body = getSOAPBodyElement(envelope);
         }
         catch (SOAPException se) {
             throw new WebServiceException(se.getMessage());
@@ -386,9 +416,23 @@ public class ProviderHelper extends XRServiceFactory {
         if (body == null) {
             SOAPFault soapFault = null;
             try {
-                soapFault = getSOAPFactory().createFault(
-                    "SOAPMessage request format error - missing body element",
-                    new QName(URI_NS_SOAP_1_1_ENVELOPE, "Client"));
+                SOAPFactory soapFactory = null;
+                if (usesSOAP12) {
+                    soapFactory = SOAPFactory.newInstance(SOAP_1_2_PROTOCOL);
+                }
+                else {
+                    soapFactory = SOAPFactory.newInstance();
+                }
+                QName clientQName = null;
+                if (usesSOAP12) {
+                    clientQName = new QName(URI_NS_SOAP_1_2_ENVELOPE, "Client");
+                }
+                else {
+                    clientQName = new QName(URI_NS_SOAP_1_1_ENVELOPE, "Client");
+                }
+                soapFault =
+                    soapFactory.createFault("SOAPMessage request format error - missing body element",
+                        clientQName);
             }
             catch (SOAPException se) {
                 /* safe to ignore */
@@ -405,8 +449,22 @@ public class ProviderHelper extends XRServiceFactory {
         catch (XMLMarshalException e) {
             SOAPFault soapFault = null;
             try {
-                soapFault = getSOAPFactory().createFault("SOAPMessage request format error - " +
-                    e.getMessage(),new QName(URI_NS_SOAP_1_1_ENVELOPE, "Client"));
+                SOAPFactory soapFactory = null;
+                if (usesSOAP12) {
+                    soapFactory = SOAPFactory.newInstance(SOAP_1_2_PROTOCOL);
+                }
+                else {
+                    soapFactory = SOAPFactory.newInstance();
+                }
+                QName clientQName = null;
+                if (usesSOAP12) {
+                    clientQName = new QName(URI_NS_SOAP_1_2_ENVELOPE, "Client");
+                }
+                else {
+                    clientQName = new QName(URI_NS_SOAP_1_1_ENVELOPE, "Client");
+                }
+                soapFault = soapFactory.createFault("SOAPMessage request format error - " +
+                    e.getMessage(), clientQName);
             }
             catch (SOAPException se) {
                 // ignore
@@ -474,13 +532,27 @@ public class ProviderHelper extends XRServiceFactory {
         }
         catch (EclipseLinkException ele) {
             try {
-                response = responseWriter.generateResponse(op, ele);
+                response = responseWriter.generateResponse(op, usesSOAP12, ele);
             }
             catch (SOAPException e) {
                 SOAPFault soapFault = null;
                 try {
-                    soapFault = getSOAPFactory().createFault("SOAPMessage response error - " + 
-                        e.getMessage(), new QName(URI_NS_SOAP_1_1_ENVELOPE, "Server"));
+                    SOAPFactory soapFactory = null;
+                    if (usesSOAP12) {
+                        soapFactory = SOAPFactory.newInstance(SOAP_1_2_PROTOCOL);
+                    }
+                    else {
+                        soapFactory = SOAPFactory.newInstance();
+                    }
+                    QName serverQName = null;
+                    if (usesSOAP12) {
+                        serverQName = new QName(URI_NS_SOAP_1_2_ENVELOPE, "Server");
+                    }
+                    else {
+                        serverQName = new QName(URI_NS_SOAP_1_1_ENVELOPE, "Server");
+                    }
+                    soapFault = soapFactory.createFault("SOAPMessage response error - " + 
+                        e.getMessage(), serverQName);
                 }
                 catch (SOAPException se) {
                     // ignore
@@ -489,13 +561,27 @@ public class ProviderHelper extends XRServiceFactory {
             }
         }
         try {
-            response = responseWriter.generateResponse(op, result);
+            response = responseWriter.generateResponse(op, usesSOAP12, result);
         }
         catch (Exception e) {
             SOAPFault soapFault = null;
             try {
-                soapFault = getSOAPFactory().createFault("SOAPMessage response format error - " + 
-                    e.getMessage(), new QName(URI_NS_SOAP_1_1_ENVELOPE, "Server"));
+                SOAPFactory soapFactory = null;
+                if (usesSOAP12) {
+                    soapFactory = SOAPFactory.newInstance(SOAP_1_2_PROTOCOL);
+                }
+                else {
+                    soapFactory = SOAPFactory.newInstance();
+                }
+                QName serverQName = null;
+                if (usesSOAP12) {
+                    serverQName = new QName(URI_NS_SOAP_1_2_ENVELOPE, "Server");
+                }
+                else {
+                    serverQName = new QName(URI_NS_SOAP_1_1_ENVELOPE, "Server");
+                }
+                soapFault = soapFactory.createFault("SOAPMessage response format error - " + 
+                    e.getMessage(), serverQName);
             }
             catch (SOAPException se) {
                 /* safe to ignore */
@@ -531,8 +617,8 @@ public class ProviderHelper extends XRServiceFactory {
         return dbws;
     }
 
-    public static SOAPElement getSOAPBodyElement(SOAPMessage message) throws SOAPException {
-        NodeList nodes = message.getSOAPPart().getEnvelope().getBody().getChildNodes();
+    public static SOAPElement getSOAPBodyElement(SOAPEnvelope envelope) throws SOAPException {
+        NodeList nodes = envelope.getBody().getChildNodes();
         for (int i = 0; i < nodes.getLength(); i++) {
             Node node = nodes.item(i);
             if (node instanceof SOAPBodyElement) {
@@ -541,26 +627,5 @@ public class ProviderHelper extends XRServiceFactory {
         }
         return null;
     }
-    
-    // thread-safe way of lazy-initializing a static singleton - please see
-    // http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html
-    // for more details
-    private static class LazySOAPFactorySingleton {
-        // little more complicated 'cause SOAPFactory.newInstance() throws a checked exception
-        static SOAPFactory sf = null;
-        static {
-            try {
-                sf = SOAPFactory.newInstance();
-            }
-            catch (SOAPException e) {
-                /* safe to ignore */
-            }
-        }
-        static SOAPFactory getInstance() {
-            return sf;
-        }
-    }
-    public static SOAPFactory getSOAPFactory() {
-        return LazySOAPFactorySingleton.getInstance();
-    }
+
 }

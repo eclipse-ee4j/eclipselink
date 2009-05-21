@@ -250,6 +250,7 @@ public class DBWSBuilder extends DBWSBuilderModel {
     protected Map<DbStoredProcedure, DbStoredProcedureNameAndModel> dbStoredProcedure2QueryName = 
         new HashMap<DbStoredProcedure, DbStoredProcedureNameAndModel>();
     protected NamingConventionTransformer topTransformer;
+    protected boolean useSOAP12;
 
     public DBWSBuilder() {
         super();
@@ -1323,7 +1324,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
             logMessage(FINEST, "building " + DBWS_WSDL);
             wsdlGenerator = new WSDLGenerator(xrServiceModel, nct, getWsdlLocationURI(),
                 packager.hasAttachments(), getTargetNamespace(), wsdlStream);
-            wsdlGenerator.generateWSDL();
+            wsdlGenerator.generateWSDL(useSOAP12);
             packager.closeWSDLStream(wsdlStream);
         }
     }
@@ -1649,6 +1650,13 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         return targetNamespace;
     }
 
+    public void useSOAP12() {
+       this.useSOAP12 = true;
+    }
+    public boolean usesSOAP12() {
+       return useSOAP12;
+    }
+    
     public void setTargetNamespace(String targetNamespace) {
         properties.put(TARGET_NAMESPACE_KEY, targetNamespace);
     }

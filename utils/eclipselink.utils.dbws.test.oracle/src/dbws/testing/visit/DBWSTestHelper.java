@@ -158,6 +158,18 @@ public class DBWSTestHelper {
         ADVJDBC_BUILD_TBL1_NAMESPACE + "Service";
     public static final String ADVJDBC_BUILD_TBL1_PORT = ADVJDBC_BUILD_TBL1_SERVICE +
             "Port";
+    public static final String ADVJDBC_BUILD_TBL2 =
+        "buildTbl2";
+    public static final String ADVJDBC_BUILD_TBL2_TEST = 
+        ADVJDBC_BUILD_TBL2 + "Test";
+    public static final String ADVJDBC_BUILD_TBL2_SERVICE = 
+        ADVJDBC_BUILD_TBL2 + "Service";
+    public static final String ADVJDBC_BUILD_TBL2_NAMESPACE = 
+        "urn:tbl2";
+    public static final String ADVJDBC_BUILD_TBL2_SERVICE_NAMESPACE = 
+        ADVJDBC_BUILD_TBL2_NAMESPACE + "Service";
+    public static final String ADVJDBC_BUILD_TBL2_PORT = ADVJDBC_BUILD_TBL2_SERVICE +
+            "Port";
     
     public static String documentToString(Document doc) {
         DOMSource domSource = new DOMSource(doc);

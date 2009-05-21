@@ -27,7 +27,9 @@ import javax.xml.soap.MessageFactory;
 import javax.xml.soap.SOAPBody;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
+import static javax.xml.soap.SOAPConstants.SOAP_1_2_PROTOCOL;
 import static javax.xml.soap.SOAPConstants.URI_NS_SOAP_1_1_ENVELOPE;
+import static javax.xml.soap.SOAPConstants.URI_NS_SOAP_1_2_ENVELOPE;
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 
 // EclipseLink imports
@@ -54,15 +56,9 @@ public class SOAPResponseWriter {
 
     protected DBWSAdapter dbwsAdapter;
     protected Map<String, XMLDescriptor> resultDescriptors = new HashMap<String, XMLDescriptor>();
-    protected MessageFactory messageFactory;
 
     public SOAPResponseWriter(DBWSAdapter dbwsAdapter) {
         this.dbwsAdapter = dbwsAdapter;
-        try {
-            messageFactory = MessageFactory.newInstance();
-        } catch (SOAPException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @SuppressWarnings("unchecked")
@@ -167,15 +163,36 @@ public class SOAPResponseWriter {
         }
     }
 
-    public SOAPMessage generateResponse(Operation op, EclipseLinkException ele) throws SOAPException {
+    public SOAPMessage generateResponse(Operation op, boolean useSOAP12, EclipseLinkException ele)
+    throws SOAPException {
+        MessageFactory messageFactory = null;
+        if (useSOAP12) {
+            messageFactory = MessageFactory.newInstance(SOAP_1_2_PROTOCOL);
+        }
+        else {
+            messageFactory = MessageFactory.newInstance();
+        }
         SOAPMessage message = messageFactory.createMessage();
         SOAPBody body = message.getSOAPPart().getEnvelope().getBody();
-        body.addFault(new QName(URI_NS_SOAP_1_1_ENVELOPE, "Server"),
-            op.getName() + " failed: " + ele.getMessage());
+        QName serverQName = null;
+        if (useSOAP12) {
+            serverQName = new QName(URI_NS_SOAP_1_2_ENVELOPE, "Server");
+        }
+        else {
+            serverQName = new QName(URI_NS_SOAP_1_1_ENVELOPE, "Server");
+        }
+        body.addFault(serverQName, op.getName() + " failed: " + ele.getMessage());
         return message;
     }
 
-    public SOAPMessage generateResponse(Operation op, Object result) throws SOAPException {
+    public SOAPMessage generateResponse(Operation op, boolean useSOAP12, Object result) throws SOAPException {
+        MessageFactory messageFactory = null;
+        if (useSOAP12) {
+            messageFactory = MessageFactory.newInstance(SOAP_1_2_PROTOCOL);
+        }
+        else {
+            messageFactory = MessageFactory.newInstance();
+        }
         SOAPMessage message = messageFactory.createMessage();
         SOAPBody body = message.getSOAPPart().getEnvelope().getBody();
 

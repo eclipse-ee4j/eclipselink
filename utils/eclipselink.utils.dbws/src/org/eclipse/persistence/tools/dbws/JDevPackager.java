@@ -85,9 +85,11 @@ public class JDevPackager extends WeblogicPackager {
         "import javax.annotation.PreDestroy;\n" +
         "import javax.servlet.ServletContext;\n" +
         "import javax.xml.soap.SOAPMessage;\n" +
+        "import javax.xml.ws.BindingType;\n" +
         "import javax.xml.ws.Provider;\n" +
         "import javax.xml.ws.ServiceMode;\n" +
         "import javax.xml.ws.WebServiceProvider;\n" +
+        "import javax.xml.ws.soap.SOAPBinding;\n" +
         "import static javax.xml.ws.Service.Mode.MESSAGE;\n" +
         "\n//EclipseLink imports\n" +
         "import " + ProviderHelper.class.getName() + ";\n" +
@@ -100,7 +102,9 @@ public class JDevPackager extends WeblogicPackager {
     public static final String DBWS_PROVIDER_SOURCE_TARGET_NAMESPACE =
         "\",\n    targetNamespace = \"";
     public static final String DBWS_PROVIDER_SOURCE_SUFFIX =
-        "\"\n)\n@ServiceMode(MESSAGE)\n" +
+        "\"\n)\n@ServiceMode(MESSAGE)\n";
+
+    public static final String DBWS_PROVIDER_SOURCE_CLASSDEF =
         "public class DBWSProvider extends ProviderHelper implements Provider<SOAPMessage> {\n" +
         "    public  DBWSProvider() {\n" +
         "        super();\n" +
@@ -310,6 +314,10 @@ public class JDevPackager extends WeblogicPackager {
         sb.append(DBWS_PROVIDER_SOURCE_TARGET_NAMESPACE);
         sb.append(builder.getWSDLGenerator().getServiceNameSpace());
         sb.append(DBWS_PROVIDER_SOURCE_SUFFIX);
+        if (builder.usesSOAP12()) {
+            sb.append("@BindingType(SOAPBinding.SOAP12HTTP_BINDING)\n");
+        }
+        sb.append(DBWS_PROVIDER_SOURCE_CLASSDEF);
         OutputStreamWriter osw =
             new OutputStreamWriter(new BufferedOutputStream(sourceProviderStream));
         try {

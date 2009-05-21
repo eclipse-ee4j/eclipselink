@@ -25,6 +25,8 @@ import javax.xml.ws.Service;
 import javax.xml.ws.ServiceMode;
 import javax.xml.ws.WebServiceProvider;
 import static javax.xml.ws.Service.Mode.MESSAGE;
+import static javax.xml.soap.SOAPConstants.URI_NS_SOAP_1_2_ENVELOPE;
+import static javax.xml.soap.SOAPConstants.SOAP_1_2_PROTOCOL;
 
 //JUnit4 imports
 import org.junit.BeforeClass;
@@ -35,35 +37,35 @@ import static org.junit.Assert.assertTrue;
 import org.eclipse.persistence.tools.dbws.ProcedureOperationModel;
 
 // test imports
-import static dbws.testing.visit.DBWSTestHelper.ADVJDBC_BUILD_TBL1;
-import static dbws.testing.visit.DBWSTestHelper.ADVJDBC_BUILD_TBL1_NAMESPACE;
-import static dbws.testing.visit.DBWSTestHelper.ADVJDBC_BUILD_TBL1_PORT;
-import static dbws.testing.visit.DBWSTestHelper.ADVJDBC_BUILD_TBL1_SERVICE;
-import static dbws.testing.visit.DBWSTestHelper.ADVJDBC_BUILD_TBL1_SERVICE_NAMESPACE;
-import static dbws.testing.visit.DBWSTestHelper.ADVJDBC_BUILD_TBL1_TEST;
+import static dbws.testing.visit.DBWSTestHelper.ADVJDBC_BUILD_TBL2;
+import static dbws.testing.visit.DBWSTestHelper.ADVJDBC_BUILD_TBL2_NAMESPACE;
+import static dbws.testing.visit.DBWSTestHelper.ADVJDBC_BUILD_TBL2_PORT;
+import static dbws.testing.visit.DBWSTestHelper.ADVJDBC_BUILD_TBL2_SERVICE;
+import static dbws.testing.visit.DBWSTestHelper.ADVJDBC_BUILD_TBL2_SERVICE_NAMESPACE;
+import static dbws.testing.visit.DBWSTestHelper.ADVJDBC_BUILD_TBL2_TEST;
 import static dbws.testing.visit.DBWSTestHelper.ADVJDBC_TOPLEVEL_PACKAGE_NAME;
 
 @WebServiceProvider(
-    targetNamespace = ADVJDBC_BUILD_TBL1_SERVICE_NAMESPACE,
-    serviceName = ADVJDBC_BUILD_TBL1_SERVICE,
-    portName = ADVJDBC_BUILD_TBL1_PORT
+    targetNamespace = ADVJDBC_BUILD_TBL2_SERVICE_NAMESPACE,
+    serviceName = ADVJDBC_BUILD_TBL2_SERVICE,
+    portName = ADVJDBC_BUILD_TBL2_PORT
 )
 @ServiceMode(MESSAGE)
-public class BuildTbl1TestWebServiceSuite extends WebServiceTestSuite implements Provider<SOAPMessage> {
+public class BuildTbl2TestWebServiceSuite extends WebServiceSOAP12TestSuite implements Provider<SOAPMessage> {
 
-    static final String ENDPOINT_ADDRESS = "http://localhost:9999/" + ADVJDBC_BUILD_TBL1_TEST;
+    static final String ENDPOINT_ADDRESS = "http://localhost:9999/" + ADVJDBC_BUILD_TBL2_TEST;
 
     @BeforeClass
     public static void setUp() throws WSDLException {
-        builder.setProjectName(ADVJDBC_BUILD_TBL1);
-        builder.setTargetNamespace(ADVJDBC_BUILD_TBL1_NAMESPACE);
+        builder.setProjectName(ADVJDBC_BUILD_TBL2);
+        builder.setTargetNamespace(ADVJDBC_BUILD_TBL2_NAMESPACE);
         ProcedureOperationModel pModel = new ProcedureOperationModel();
-        pModel.setName(ADVJDBC_BUILD_TBL1_TEST);
+        pModel.setName(ADVJDBC_BUILD_TBL2_TEST);
         pModel.setCatalogPattern(ADVJDBC_TOPLEVEL_PACKAGE_NAME);
-        pModel.setProcedurePattern(ADVJDBC_BUILD_TBL1);
-        pModel.setReturnType("somepackage_tbl1Type");
+        pModel.setProcedurePattern(ADVJDBC_BUILD_TBL2);
+        pModel.setReturnType("somepackage_tbl2Type");
         builder.getOperations().add(pModel);
-        serviceSetup(ENDPOINT_ADDRESS, new BuildTbl1TestWebServiceSuite());
+        serviceSetup(ENDPOINT_ADDRESS, new BuildTbl2TestWebServiceSuite());
     }
 
     @PostConstruct
@@ -72,20 +74,20 @@ public class BuildTbl1TestWebServiceSuite extends WebServiceTestSuite implements
     }
 
     static final String REQUEST_MSG = 
-        "<env:Envelope xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
+        "<env:Envelope xmlns:env=\"" + URI_NS_SOAP_1_2_ENVELOPE + "\">" +
           "<env:Header/>" +
           "<env:Body>" +
-            "<srvc:" + ADVJDBC_BUILD_TBL1_TEST + " xmlns:srvc=\"" + 
-                ADVJDBC_BUILD_TBL1_SERVICE_NAMESPACE + 
-                "\" xmlns=\"" + ADVJDBC_BUILD_TBL1_NAMESPACE + "\">" +
+            "<srvc:" + ADVJDBC_BUILD_TBL2_TEST + " xmlns:srvc=\"" + 
+                ADVJDBC_BUILD_TBL2_SERVICE_NAMESPACE + 
+                "\" xmlns=\"" + ADVJDBC_BUILD_TBL2_SERVICE_NAMESPACE + "\">" +
               "<srvc:NUM>3</srvc:NUM>" +
-            "</srvc:" + ADVJDBC_BUILD_TBL1_TEST + ">" +
+            "</srvc:" + ADVJDBC_BUILD_TBL2_TEST + ">" +
           "</env:Body>" +
         "</env:Envelope>";
     @Test
-    public void buildTbl1Test() throws SOAPException, IOException, SAXException,
+    public void buildTbl2Test() throws SOAPException, IOException, SAXException,
         ParserConfigurationException, TransformerException {
-        MessageFactory factory = MessageFactory.newInstance();
+        MessageFactory factory = MessageFactory.newInstance(SOAP_1_2_PROTOCOL);
         SOAPMessage request = factory.createMessage();
         SOAPPart part = request.getSOAPPart(); 
         DOMSource domSource = new DOMSource(getDocumentBuilder().parse(
@@ -112,18 +114,18 @@ public class BuildTbl1TestWebServiceSuite extends WebServiceTestSuite implements
     }
 
     static final String TEST_RESPONSE = 
-        "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
-          "<SOAP-ENV:Header/>" +
-          "<SOAP-ENV:Body>" +          
-             "<srvc:" + ADVJDBC_BUILD_TBL1_TEST + "Response xmlns=\"" + ADVJDBC_BUILD_TBL1_NAMESPACE +"\" xmlns:srvc=\"" + ADVJDBC_BUILD_TBL1_SERVICE_NAMESPACE + "\">" +
+        "<env:Envelope xmlns:env=\"" + URI_NS_SOAP_1_2_ENVELOPE + "\">" +
+          "<env:Header/>" +
+          "<env:Body>" +          
+             "<srvc:" + ADVJDBC_BUILD_TBL2_TEST + "Response xmlns=\"" + ADVJDBC_BUILD_TBL2_NAMESPACE +"\" xmlns:srvc=\"" + ADVJDBC_BUILD_TBL2_SERVICE_NAMESPACE + "\">" +
                  "<srvc:result>" +
-                     "<somepackage_tbl1Type>" +
-                        "<item>entry 1</item>" +
-                        "<item>entry 2</item>" +
-                        "<item>entry 3</item>" +
-                     "</somepackage_tbl1Type>" +
+                     "<somepackage_tbl2Type>" +
+                        "<item>1</item>" +
+                        "<item>2</item>" +
+                        "<item>3</item>" +
+                     "</somepackage_tbl2Type>" +
                  "</srvc:result>" +
-             "</srvc:" + ADVJDBC_BUILD_TBL1_TEST + "Response>" +
-          "</SOAP-ENV:Body>" +
-        "</SOAP-ENV:Envelope>";
+             "</srvc:" + ADVJDBC_BUILD_TBL2_TEST + "Response>" +
+          "</env:Body>" +
+        "</env:Envelope>";
 }

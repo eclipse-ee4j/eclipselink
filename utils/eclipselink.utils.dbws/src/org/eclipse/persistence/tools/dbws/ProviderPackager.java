@@ -18,7 +18,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import javax.xml.ws.Provider;
+
+//java eXtension imports
+import static javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING;
 
 //EclipseLink imports
 import org.eclipse.persistence.internal.dbws.ProviderHelper;
@@ -90,6 +92,10 @@ public class ProviderPackager extends XRPackager {
         "javax/xml/ws/Service";
     public static final String ASMIFIED_SOAP_MESSAGE =
         "javax/xml/soap/SOAPMessage";
+    public static final String ASMIFIED_JAX_WS_BINDINGTYPE =
+        "javax/xml/ws/BindingType";
+    public static final String ASMIFIED_SOAP12_BINDING =
+        "javax/xml/ws/soap/SOAPBinding";
 
     public ProviderPackager() {
         this(new WarArchiver(),"provider", noArchive);
@@ -282,6 +288,12 @@ public class ProviderPackager extends XRPackager {
         attrann1.add("value", new Annotation.EnumConstValue(
             "L" + ASMIFIED_JAX_WS_SERVICE + "$Mode;", "MESSAGE"));
         classAttr.annotations.add(attrann1);
+        
+        if (builder.usesSOAP12()) {
+            Annotation attrann2 = new Annotation("L" + ASMIFIED_JAX_WS_BINDINGTYPE + ";");
+            attrann2.add("value", SOAP12HTTP_BINDING);
+            classAttr.annotations.add(attrann2);
+        }
         cw.visitAttribute(classAttr);
         cv.visitMaxs(0, 0);
 
