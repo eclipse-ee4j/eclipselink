@@ -356,19 +356,36 @@ public class SchemaGenerator {
                     XmlElementWrapper wrapper = (XmlElementWrapper) helper.getAnnotation(next.getElement(), XmlElementWrapper.class);
                     Element wrapperElement = new Element();
                     String name = wrapper.name();
-                    if(name.equals("##default")) {
+                    if (name.equals("##default")) {
                         name = next.getPropertyName();
                     }
-
-                    wrapperElement.setName(name);
-                    wrapperElement.setMinOccurs(Occurs.ZERO);
-                    compositor.addElement(wrapperElement);
-                    ComplexType wrapperType = new ComplexType();
-                    Sequence wrapperSequence = new Sequence();
-                    wrapperType.setSequence(wrapperSequence);
-                    wrapperElement.setComplexType(wrapperType);
-                    parentType = wrapperType;
-                    parentCompositor = wrapperSequence;
+                    // namespace in not the target or ##default, create a ref with min/max = 1
+                    String wrapperNS = wrapper.namespace();
+                    if (!wrapperNS.equals("##default") && !wrapperNS.equals(schema.getTargetNamespace())) {
+                        wrapperElement.setMinOccurs(Occurs.ONE);
+                        wrapperElement.setMaxOccurs(Occurs.ONE);
+                        
+                        String prefix = getPrefixForNamespace(wrapperNS, schema.getNamespaceResolver());
+                        // need a prefix in this case; if it's null, generate one
+                        if (prefix == null) {
+                            prefix = schema.getNamespaceResolver().generatePrefix();
+                            schema.getNamespaceResolver().put(prefix, wrapperNS);
+                        }
+                        wrapperElement.setRef(prefix + ":" + name);
+                        compositor.addElement(wrapperElement);
+                        // assume that the element exists and does not need to be created
+                        continue;
+                    } else {
+                        wrapperElement.setName(name);
+                        wrapperElement.setMinOccurs(Occurs.ZERO);
+                        compositor.addElement(wrapperElement);
+                        ComplexType wrapperType = new ComplexType();
+                        Sequence wrapperSequence = new Sequence();
+                        wrapperType.setSequence(wrapperSequence);
+                        wrapperElement.setComplexType(wrapperType);
+                        parentType = wrapperType;
+                        parentCompositor = wrapperSequence;
+                    }
                 }
                 if (helper.isAnnotationPresent(next.getElement(), XmlAttribute.class)) {
                     Attribute attribute = new Attribute();
