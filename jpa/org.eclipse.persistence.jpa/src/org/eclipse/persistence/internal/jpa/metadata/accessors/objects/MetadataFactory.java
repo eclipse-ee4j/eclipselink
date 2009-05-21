@@ -13,8 +13,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
-import java.io.IOException;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -347,18 +345,16 @@ public class MetadataFactory {
      * codes.
      */
     public static void buildClassMetadata(String className) {
+        ClassMetadataVisitor visitor = new ClassMetadataVisitor();
         try {
-            ClassMetadataVisitor visitor = new ClassMetadataVisitor();
-            try {
-                ClassReader reader = new ClassReader(loader.getResourceAsStream(className.replace('.', '/') + ".class"));
-                Attribute[] attributes = new Attribute[] { new RuntimeVisibleAnnotations(), new RuntimeVisibleParameterAnnotations(), new SignatureAttribute() };
-                reader.accept(visitor, attributes, false);
-            } catch (IOException exception) {
-                // Some basic types can't be found, so can just be registered (i.e. arrays).
-                metadata.put(className, new MetadataClass(className));
-            }
-        } catch (Exception temp) {
-            throw new Error(temp);
+            ClassReader reader = new ClassReader(loader.getResourceAsStream(className.replace('.', '/') + ".class"));
+            Attribute[] attributes = new Attribute[] { new RuntimeVisibleAnnotations(), new RuntimeVisibleParameterAnnotations(), new SignatureAttribute() };
+            reader.accept(visitor, attributes, false);
+        } catch (Exception exception) {
+            System.out.println("buildClassMetadata:" + className);
+            exception.printStackTrace();
+            // Some basic types can't be found, so can just be registered (i.e. arrays).
+            metadata.put(className, new MetadataClass(className));
         }
     }
 }
