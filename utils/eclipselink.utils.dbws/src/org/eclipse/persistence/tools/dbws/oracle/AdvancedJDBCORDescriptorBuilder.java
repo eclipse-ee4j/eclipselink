@@ -20,11 +20,13 @@ import java.util.Map;
 import java.util.Stack;
 
 //EclipseLink imports
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.mappings.structures.ArrayMapping;
 import org.eclipse.persistence.mappings.structures.ObjectArrayMapping;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescriptor;
+import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
 import org.eclipse.persistence.mappings.structures.StructureMapping;
 import org.eclipse.persistence.platform.database.oracle.publisher.visit.PublisherDefaultListener;
 import static org.eclipse.persistence.internal.dynamicpersist.BaseEntityClassLoader.COLLECTION_WRAPPER_SUFFIX;
@@ -111,6 +113,12 @@ public class AdvancedJDBCORDescriptorBuilder extends PublisherDefaultListener {
                         arrayMapping.setAttributeName(attributeName);
                         arrayMapping.useCollectionClass(ArrayList.class);
                         arrayMapping.setStructureName(sqlArrayTypeHelper.arrayTypename());
+                        DatabaseField nestedField = new DatabaseField("");
+                        nestedField.setSqlType(typecode);
+                        nestedField.setColumnDefinition(sqlTypeName);
+                        ObjectRelationalDatabaseField field = 
+                            (ObjectRelationalDatabaseField)arrayMapping.getField();
+                        field.setNestedTypeField(nestedField);
                         ordt.addMapping(arrayMapping);
                     }
                 }
@@ -126,6 +134,12 @@ public class AdvancedJDBCORDescriptorBuilder extends PublisherDefaultListener {
                     arrayMapping.setAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME);
                     arrayMapping.useCollectionClass(ArrayList.class);
                     arrayMapping.setStructureName(sqlArrayTypeHelper.arrayTypename());
+                    DatabaseField nestedField = new DatabaseField("");
+                    nestedField.setSqlType(typecode);
+                    nestedField.setColumnDefinition(sqlTypeName);
+                    ObjectRelationalDatabaseField field = 
+                        (ObjectRelationalDatabaseField)arrayMapping.getField();
+                    field.setNestedTypeField(nestedField);
                     ordt.addMapping(arrayMapping);
                 }
             }

@@ -1529,7 +1529,9 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                  "<attribute-mappings>" +
                     "<attribute-mapping xsi:type=\"array-mapping\">" +
                        "<attribute-name>items</attribute-name>" +
-                       "<field name=\"items\" xsi:type=\"object-relational-field\"/>" +
+                       "<field name=\"items\" xsi:type=\"object-relational-field\">" +
+                          "<nested-type-field name=\"\" sql-typecode=\"12\" column-definition=\"VARCHAR2\" xsi:type=\"column\"/>" +
+                       "</field>" +                       
                        "<container xsi:type=\"list-container-policy\">" +
                           "<collection-type>java.util.ArrayList</collection-type>" +
                        "</container>" +
@@ -1669,6 +1671,122 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         assertTrue("control schema not same as instance schema",
             comparer.isNodeEqual(controlTbl1SchemaDoc, tbl1SchemaDoc));
     }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void tbl5_OrPart() {
+        ProcedureOperationModel pModel = new ProcedureOperationModel();
+        pModel.setName("tbl5");
+        pModel.setCatalogPattern("toplevel");
+        pModel.setSchemaPattern(username.toUpperCase());
+        pModel.setProcedurePattern("BuildTbl5");
+        pModel.setReturnType("somepackage_tbl5Type");
+        List<DbStoredProcedure> storedProcedures = 
+            OracleHelper.buildStoredProcedure(conn, username, ora11Platform, pModel); 
+        Map<DbStoredProcedure, DbStoredProcedureNameAndModel> dbStoredProcedure2QueryName = 
+            new HashMap<DbStoredProcedure, DbStoredProcedureNameAndModel>();
+        ArrayList<OperationModel> operations = new ArrayList<OperationModel>();
+        operations.add(pModel);
+        DBWSBuilder.buildDbStoredProcedure2QueryNameMap(dbStoredProcedure2QueryName,
+            storedProcedures, operations, true);     
+        AdvancedJDBCORDescriptorBuilder advJOrDescriptorBuilder = 
+            new AdvancedJDBCORDescriptorBuilder();
+        AdvancedJDBCQueryBuilder queryBuilder = 
+            new AdvancedJDBCQueryBuilder(storedProcedures, dbStoredProcedure2QueryName);
+        PublisherListenerChainAdapter listenerChainAdapter = new PublisherListenerChainAdapter();
+        listenerChainAdapter.addListener(advJOrDescriptorBuilder);
+        listenerChainAdapter.addListener(queryBuilder);
+        PublisherWalker walker = new PublisherWalker(listenerChainAdapter);
+        pModel.getJPubType().accept(walker);
+        List<ObjectRelationalDataTypeDescriptor> descriptors = 
+            advJOrDescriptorBuilder.getDescriptors();
+        Project p = new Project();
+        p.setName("tbl5");
+        for (ObjectRelationalDataTypeDescriptor ordt : descriptors) { 
+            p.addDescriptor(ordt);
+        }
+        List<DatabaseQuery> queries = queryBuilder.getQueries();
+        if (queries != null && queries.size() > 0) {
+            p.getQueries().addAll(queries);
+        }
+        Document resultDoc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = new XMLContext(writeObjectPersistenceProject).createMarshaller();
+        marshaller.marshal(p, resultDoc);
+        Document empArrayOrProjectDoc = xmlParser.parse(new StringReader(TBL5_OR_PROJECT));
+        assertTrue("control document not same as instance document",
+            comparer.isNodeEqual(resultDoc, empArrayOrProjectDoc));
+
+        DatabaseSession ds = fixUp(TBL5_OR_PROJECT);
+        DatabaseQuery vrq = ds.getQuery("tbl5");
+        Vector args = new NonSynchronizedVector();
+        args.add(Integer.valueOf(3));
+        Object o = ds.executeQuery(vrq, args);
+        assertTrue("return value not correct type", o instanceof BaseEntity);
+        BaseEntity returnValue = (BaseEntity)o;
+        ArrayList<java.sql.Date> dates = (ArrayList<java.sql.Date>)returnValue.get(0);
+        assertTrue("wrong number of returned dates", 3 == dates.size());
+    }
+    public static final String TBL5_OR_PROJECT = 
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+        "<object-persistence version=\"Eclipse Persistence Services - some version (some build date)\" xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:eclipselink=\"http://www.eclipse.org/eclipselink/xsds/persistence\">" +
+           "<name>tbl5</name>" +
+           "<class-mapping-descriptors>" +
+              "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
+                 "<class>toplevel.somepackage_tbl5_CollectionWrapper</class>" +
+                 "<alias>somepackage_tbl5</alias>" +
+                 "<events xsi:type=\"event-policy\"/>" +
+                 "<querying xsi:type=\"query-policy\"/>" +
+                 "<attribute-mappings>" +
+                    "<attribute-mapping xsi:type=\"array-mapping\">" +
+                       "<attribute-name>items</attribute-name>" +
+                       "<field name=\"items\" xsi:type=\"object-relational-field\">" +
+                          "<nested-type-field name=\"\" sql-typecode=\"91\" column-definition=\"DATE\" xsi:type=\"column\"/>" +
+                       "</field>" +
+                       "<container xsi:type=\"list-container-policy\">" +
+                          "<collection-type>java.util.ArrayList</collection-type>" +
+                       "</container>" +
+                       "<structure>somepackage_tbl5</structure>" +
+                    "</attribute-mapping>" +
+                 "</attribute-mappings>" +
+                 "<descriptor-type>aggregate</descriptor-type>" +
+                 "<caching>" +
+                    "<cache-size>-1</cache-size>" +
+                 "</caching>" +
+                 "<remote-caching>" +
+                    "<cache-size>-1</cache-size>" +
+                 "</remote-caching>" +
+                 "<instantiation/>" +
+                 "<copying xsi:type=\"instantiation-copy-policy\"/>" +
+              "</class-mapping-descriptor>" +
+           "</class-mapping-descriptors>" +
+           "<queries>" +
+              "<query name=\"tbl5\" xsi:type=\"value-read-query\">" +
+                 "<arguments>" +
+                    "<argument name=\"NUM\">" +
+                       "<type>java.lang.Object</type>" +
+                    "</argument>" +
+                 "</arguments>" +
+                 "<maintain-cache>false</maintain-cache>" +
+                 "<bind-all-parameters>true</bind-all-parameters>" +
+                 "<call xsi:type=\"stored-function-call\">" +
+                    "<procedure-name>BUILDTBL5</procedure-name>" +
+                    "<cursor-output-procedure>false</cursor-output-procedure>" +
+                    "<arguments>" +
+                       "<argument xsi:type=\"procedure-argument\">" +
+                          "<procedure-argument-name>NUM</procedure-argument-name>" +
+                          "<argument-name>NUM</argument-name>" +
+                       "</argument>" +
+                    "</arguments>" +
+                    "<stored-function-result xsi:type=\"procedure-output-argument\">" +
+                       "<procedure-argument-type>toplevel.somepackage_tbl5_CollectionWrapper</procedure-argument-type>" +
+                       "<procedure-argument-sqltype>2003</procedure-argument-sqltype>" +
+                       "<procedure-argument-sqltype-name>SOMEPACKAGE_TBL5</procedure-argument-sqltype-name>" +
+                    "</stored-function-result>" +
+                 "</call>" +
+              "</query>" +
+           "</queries>" +
+        "</object-persistence>";
+
     
     @SuppressWarnings("unchecked")
     public DatabaseSession fixUp(String projectString) {

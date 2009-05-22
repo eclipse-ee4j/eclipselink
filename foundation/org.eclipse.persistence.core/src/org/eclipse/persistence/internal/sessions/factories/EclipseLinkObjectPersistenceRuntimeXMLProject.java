@@ -16,6 +16,7 @@ package org.eclipse.persistence.internal.sessions.factories;
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI;
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 
+//EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.mappings.converters.Converter;
@@ -28,9 +29,11 @@ import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.oxm.mappings.converters.XMLListConverter;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
 import org.eclipse.persistence.oxm.schema.XMLSchemaClassPathReference;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.sessions.DatabaseLogin;
+import static org.eclipse.persistence.internal.helper.DatabaseField.NULL_SQL_TYPE;
 import static org.eclipse.persistence.sessions.factories.XMLProjectReader.ECLIPSELINK_SCHEMA;
 import static org.eclipse.persistence.sessions.factories.XMLProjectReader.SCHEMA_DIR;
 
@@ -272,5 +275,35 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends ObjectPersist
     	
         return descriptor;
     }
-    
+
+    @Override
+    protected ClassDescriptor buildDatabaseFieldDescriptor() {
+        XMLDescriptor descriptor = (XMLDescriptor)super.buildDatabaseFieldDescriptor();
+
+        XMLDirectMapping sqlTypeMapping = new XMLDirectMapping();
+        sqlTypeMapping.setAttributeName("sqlType");
+        sqlTypeMapping.setGetMethodName("getSqlType");
+        sqlTypeMapping.setSetMethodName("setSqlType");
+        sqlTypeMapping.setXPath(getPrimaryNamespaceXPath() + "@sql-typecode");
+        sqlTypeMapping.setNullValue(Integer.valueOf(NULL_SQL_TYPE));
+        NullPolicy nullPolicy = new NullPolicy();
+        nullPolicy.setNullRepresentedByEmptyNode(false);
+        nullPolicy.setNullRepresentedByXsiNil(false);
+        nullPolicy.setSetPerformedForAbsentNode(false);
+        nullPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.ABSENT_NODE);
+        sqlTypeMapping.setNullPolicy(nullPolicy);
+        //NULL_SQL_TYPE
+        descriptor.addMapping(sqlTypeMapping);
+
+        XMLDirectMapping colDefMapping = new XMLDirectMapping();
+        colDefMapping.setAttributeName("columnDefinition");
+        colDefMapping.setGetMethodName("getColumnDefinition");
+        colDefMapping.setSetMethodName("setColumnDefinition");
+        colDefMapping.setXPath(getPrimaryNamespaceXPath() + "@column-definition");
+        colDefMapping.setNullValue("");
+        colDefMapping.setNullPolicy(nullPolicy);
+        //NULL_SQL_TYPE
+        descriptor.addMapping(colDefMapping);
+        return descriptor;
+    } 
 }

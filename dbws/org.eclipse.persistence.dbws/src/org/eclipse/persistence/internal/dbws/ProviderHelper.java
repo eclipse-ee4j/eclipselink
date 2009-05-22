@@ -381,6 +381,7 @@ public class ProviderHelper extends XRServiceFactory {
         boolean usesSOAP12 = false;
         DBWSAdapter dbwsAdapter = (DBWSAdapter)xrService;
 
+        /*
         boolean usesSOAP12IThink = false;
         // check Content-Type
         for (Iterator<MimeHeader> i = request.getMimeHeaders().getAllHeaders(); i.hasNext();) {
@@ -392,6 +393,7 @@ public class ProviderHelper extends XRServiceFactory {
                 }
             }
         }
+        */
         SOAPEnvelope envelope = null;
         try {
             envelope = request.getSOAPPart().getEnvelope();
@@ -399,11 +401,11 @@ public class ProviderHelper extends XRServiceFactory {
         catch (SOAPException se) {
             throw new WebServiceException(se.getMessage());
         }
-        if (usesSOAP12IThink) {
+        //if (usesSOAP12IThink) {
             // check soap 1.2 Namespace in envelope
             String namespaceURI = envelope.getNamespaceURI();
             usesSOAP12 = namespaceURI.equals(URI_NS_SOAP_1_2_ENVELOPE);
-        }
+        //}
         
         SOAPElement body;
         try {

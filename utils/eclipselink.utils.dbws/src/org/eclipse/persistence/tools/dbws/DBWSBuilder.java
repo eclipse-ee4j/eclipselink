@@ -218,6 +218,7 @@ public class DBWSBuilder extends DBWSBuilderModel {
     public static final String WSDL_URI_KEY = "wsdlLocationURI";
     public static final String LOG_LEVEL_KEY = "logLevel";
     public static final String TARGET_NAMESPACE_KEY = "targetNamespace";
+    public static final String USE_SOAP12_KEY = "useSOAP12";
     public static final String WSI_SWAREF_XSD =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?> \n" +
         "<xsd:schema targetNamespace=\"" + WSI_SWAREF_URI + "\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"> \n" +
@@ -250,7 +251,6 @@ public class DBWSBuilder extends DBWSBuilderModel {
     protected Map<DbStoredProcedure, DbStoredProcedureNameAndModel> dbStoredProcedure2QueryName = 
         new HashMap<DbStoredProcedure, DbStoredProcedureNameAndModel>();
     protected NamingConventionTransformer topTransformer;
-    protected boolean useSOAP12;
 
     public DBWSBuilder() {
         super();
@@ -1324,7 +1324,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
             logMessage(FINEST, "building " + DBWS_WSDL);
             wsdlGenerator = new WSDLGenerator(xrServiceModel, nct, getWsdlLocationURI(),
                 packager.hasAttachments(), getTargetNamespace(), wsdlStream);
-            wsdlGenerator.generateWSDL(useSOAP12);
+            wsdlGenerator.generateWSDL(usesSOAP12());
             packager.closeWSDLStream(wsdlStream);
         }
     }
@@ -1651,10 +1651,16 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
     }
 
     public void useSOAP12() {
-       this.useSOAP12 = true;
+        properties.put(USE_SOAP12_KEY, "true");
+       
     }
     public boolean usesSOAP12() {
-       return useSOAP12;
+        boolean useSOAP12 = false;
+        String s = properties.get(USE_SOAP12_KEY);
+        if (s != null) {
+            useSOAP12 = s.toLowerCase().equals("true");
+        }
+        return useSOAP12;
     }
     
     public void setTargetNamespace(String targetNamespace) {

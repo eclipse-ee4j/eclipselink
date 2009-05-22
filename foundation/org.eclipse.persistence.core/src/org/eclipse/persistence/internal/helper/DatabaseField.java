@@ -12,8 +12,12 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.helper;
 
-import java.io.*;
-import org.eclipse.persistence.internal.databaseaccess.*;
+//javase imports
+import java.io.Serializable;
+import static java.lang.Integer.MIN_VALUE;
+
+//EclipseLink imports
+import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 
 /**
  * INTERNAL:
@@ -67,7 +71,7 @@ public class DatabaseField implements Cloneable, Serializable {
     /**
      * used to represent the value when it has not being defined
      */
-    public static final int NULL_SQL_TYPE = -1;
+    public static final int NULL_SQL_TYPE = MIN_VALUE;
 
     public DatabaseField() {
         this("", new DatabaseTable());
