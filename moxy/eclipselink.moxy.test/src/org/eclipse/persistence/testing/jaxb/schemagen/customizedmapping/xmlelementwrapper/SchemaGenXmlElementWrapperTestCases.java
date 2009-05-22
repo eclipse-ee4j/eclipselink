@@ -40,17 +40,19 @@ public class SchemaGenXmlElementWrapperTestCases  extends TestCase {
     }
     
     public void testElementWrapper() {
-        String msg = "";
-        boolean exception = false;
+        MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
         try {
-            MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
             Class[] classes = new Class[]{ MyClassThree.class }; 
             JAXBContext context = (org.eclipse.persistence.jaxb.JAXBContext) org.eclipse.persistence.jaxb.JAXBContextFactory.createContext(classes, null);
             context.generateSchema(outputResolver);
+        } catch (Exception ex) {
+            fail("Schema generation failed unexpectedly: " + ex.toString());
+        }
 
-            assertTrue("No schemas were generated", outputResolver.schemaFiles.size() > 0);
-            assertTrue("More than one shcema was generated unxepectedly", outputResolver.schemaFiles.size() == 1);
-            
+        assertTrue("No schemas were generated", outputResolver.schemaFiles.size() > 0);
+        assertTrue("More than one shcema was generated unxepectedly", outputResolver.schemaFiles.size() == 1);
+
+        try {
             SchemaFactory sFact = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
             Schema theSchema = sFact.newSchema(outputResolver.schemaFiles.get(0));
             Validator validator = theSchema.newValidator();
@@ -58,10 +60,8 @@ public class SchemaGenXmlElementWrapperTestCases  extends TestCase {
             StreamSource ss = new StreamSource(new File(src)); 
             validator.validate(ss);
         } catch (Exception ex) {
-            exception = true;
-            msg = ex.toString();
+            fail("Schema validation failed unexpectedly: " + ex.toString());
         }
-        assertFalse("Schema validation failed unexpectedly: " + msg, exception);
     }
 
     /**
@@ -69,28 +69,37 @@ public class SchemaGenXmlElementWrapperTestCases  extends TestCase {
      * namespace an element reference should generated 
      */
     public void testElementWrapperRef() {
-        String msg = "";
-        boolean exception = false;
+        MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
+        SchemaFactory sFact = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
+        Schema theSchema;
+        Validator validator;
+        String src = "org/eclipse/persistence/testing/jaxb/schemagen/customizedmapping/xmlelementwrapper/root.xml";
+        StreamSource ss = new StreamSource(new File(src)); 
         try {
-            MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
             Class[] classes = new Class[]{ MyClassOne.class, MyClassTwo.class }; 
             JAXBContext context = (org.eclipse.persistence.jaxb.JAXBContext) org.eclipse.persistence.jaxb.JAXBContextFactory.createContext(classes, null);
             context.generateSchema(outputResolver);
+        } catch (Exception ex) {
+            fail("Schema generation failed unexpectedly: " + ex.toString());
+        }
 
-            assertTrue("No schemas were generated", outputResolver.schemaFiles.size() > 0);
-            assertTrue("More than two schemas were generated unxepectedly", outputResolver.schemaFiles.size() == 2);
-            
-            SchemaFactory sFact = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
-            Schema theSchema = sFact.newSchema(outputResolver.schemaFiles.get(0));
-            Validator validator = theSchema.newValidator();
-            String src = "org/eclipse/persistence/testing/jaxb/schemagen/customizedmapping/xmlelementwrapper/root.xml";
-            StreamSource ss = new StreamSource(new File(src)); 
+        assertTrue("No schemas were generated", outputResolver.schemaFiles.size() > 0);
+        assertTrue("More than two schemas were generated unxepectedly", outputResolver.schemaFiles.size() == 2);
+        
+        try {
+            theSchema = sFact.newSchema(outputResolver.schemaFiles.get(0));
+            validator = theSchema.newValidator();
             validator.validate(ss);
         } catch (Exception ex) {
-            exception = true;
-            msg = ex.toString();
+            // validation may have failed due to map ordering differences between VMs
+            try {
+                theSchema = sFact.newSchema(outputResolver.schemaFiles.get(1));
+                validator = theSchema.newValidator();
+                validator.validate(ss);
+            } catch (Exception x) {
+                fail("Schema validation failed unexpectedly: " + ex.toString() + ";" + x.toString());
+            }
         }
-        assertFalse("Schema validation failed unexpectedly: " + msg, exception);
     }
 
     class MySchemaOutputResolver extends SchemaOutputResolver {
