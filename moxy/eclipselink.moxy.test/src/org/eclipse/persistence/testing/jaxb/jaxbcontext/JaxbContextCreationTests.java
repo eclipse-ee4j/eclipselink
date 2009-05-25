@@ -52,6 +52,18 @@ public class JaxbContextCreationTests extends junit.framework.TestCase {
             assertTrue(((org.eclipse.persistence.exceptions.JAXBException)ex.getLinkedException()).getInternalException() instanceof SessionLoaderException);
         }
     }
-    
+
+    public void testCreateContextWithStringClass() throws JAXBException {
+        Class[] classes = new Class[1];
+        classes[0] = String.class;
+        JAXBContextFactory.createContext(classes, null);
+    }
+
+    public void testCreateContextWithIntArrayClass() throws JAXBException {
+        Class[] classes = new Class[1];
+        int[] ints = new int[1];
+        classes[0] = ints.getClass();
+        JAXBContextFactory.createContext(classes, null);
+    }
 
 }

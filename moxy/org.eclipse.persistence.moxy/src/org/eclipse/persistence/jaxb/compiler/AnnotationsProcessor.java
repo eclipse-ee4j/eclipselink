@@ -98,43 +98,44 @@ public class AnnotationsProcessor {
         ArrayList<JavaClass> classesToProcess = new ArrayList<JavaClass>();
         //check for ObjectFactories and process them
         for(JavaClass javaClass:classes) {
-        	if(helper.isAnnotationPresent(javaClass, XmlRegistry.class)) {
-        		this.processObjectFactory(javaClass, classesToProcess);
-        	} else {        	
-        		classesToProcess.add(javaClass);
-        		//reflectively load XmlSeeAlso class to avoid dependency
-        		Class xmlSeeAlsoClass = null;
-        		Method valueMethod = null;
-        		try {
-        		    xmlSeeAlsoClass = PrivilegedAccessHelper.getClassForName("javax.xml.bind.annotation.XmlSeeAlso");
-        		    valueMethod = PrivilegedAccessHelper.getDeclaredMethod(xmlSeeAlsoClass, "value", new Class[]{});
-        		} catch(ClassNotFoundException ex) {
-        		    //Ignore this exception. If SeeAlso isn't available, don't try to process
-        		} catch(NoSuchMethodException ex) {
-        		    
-        		}
-        		if(xmlSeeAlsoClass != null && helper.isAnnotationPresent(javaClass, xmlSeeAlsoClass)) {
-        		    Object seeAlso = helper.getAnnotation(javaClass, xmlSeeAlsoClass);
-        		    Class[] values = null;
-        		    try {
-        		        values = (Class[])PrivilegedAccessHelper.invokeMethod(valueMethod, seeAlso, new Object[]{});
-        		    } catch(Exception ex) {}
-        		    for(Class next:values) {
-        		        classesToProcess.add(helper.getJavaClass(next));
-        		    }
-        		}
-        		//handle inner classes
-                for (Iterator<JavaClass> jClassIt = javaClass.getDeclaredClasses().iterator(); jClassIt.hasNext(); ) {
-                    JavaClass innerClass = jClassIt.next();
-                    if (shouldGenerateTypeInfo(innerClass)) {
-                        if(!(helper.isAnnotationPresent(innerClass, XmlTransient.class))) {
-                            classesToProcess.add(innerClass);
+            if(shouldGenerateTypeInfo(javaClass)) {
+            	if(helper.isAnnotationPresent(javaClass, XmlRegistry.class)) {
+            		this.processObjectFactory(javaClass, classesToProcess);
+            	} else {
+            		classesToProcess.add(javaClass);
+            		//reflectively load XmlSeeAlso class to avoid dependency
+            		Class xmlSeeAlsoClass = null;
+            		Method valueMethod = null;
+            		try {
+            		    xmlSeeAlsoClass = PrivilegedAccessHelper.getClassForName("javax.xml.bind.annotation.XmlSeeAlso");
+            		    valueMethod = PrivilegedAccessHelper.getDeclaredMethod(xmlSeeAlsoClass, "value", new Class[]{});
+            		} catch(ClassNotFoundException ex) {
+            		    //Ignore this exception. If SeeAlso isn't available, don't try to process
+            		} catch(NoSuchMethodException ex) {
+            		    
+            		}
+            		if(xmlSeeAlsoClass != null && helper.isAnnotationPresent(javaClass, xmlSeeAlsoClass)) {
+            		    Object seeAlso = helper.getAnnotation(javaClass, xmlSeeAlsoClass);
+            		    Class[] values = null;
+            		    try {
+            		        values = (Class[])PrivilegedAccessHelper.invokeMethod(valueMethod, seeAlso, new Object[]{});
+            		    } catch(Exception ex) {}
+            		    for(Class next:values) {
+            		        classesToProcess.add(helper.getJavaClass(next));
+            		    }
+            		}
+            		//handle inner classes
+                    for (Iterator<JavaClass> jClassIt = javaClass.getDeclaredClasses().iterator(); jClassIt.hasNext(); ) {
+                        JavaClass innerClass = jClassIt.next();
+                        if (shouldGenerateTypeInfo(innerClass)) {
+                            if(!(helper.isAnnotationPresent(innerClass, XmlTransient.class))) {
+                                classesToProcess.add(innerClass);
+                            }
                         }
                     }
                 }
-        		
-        	}
-        	
+            }
+
         }
         
         updateGlobalElements(classesToProcess);
