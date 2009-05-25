@@ -128,12 +128,15 @@
     </target>
 
     <target name="common-init">
+        <property file="${basedir}/autobuild.properties"/>
+        
         <!-- Set version.string appropriately. variable should only be used for   -->
         <!--    uploaded filenames  or manifest entries.                          -->
         <property name="version.string" value="${release.version}.${version.qualifier}"/>
 
         <!-- For signed archive name need "version.string" defined first -->
-        <property file="${basedir}/autobuild.properties"/>
+        <property name="eclipselink.p2.archive.presigned" value="eclipselink-P2-${release.version}.zip"/>
+        <property name="eclipselink.p2.archive.signed"    value="eclipselink-P2signed-${version.string}.zip"/>
 
         <!-- Set download.path appropriately depending upon build target          -->
         <condition property="download.path" value="${eclipselink.download.path}/nightly/${release.version}/${build.date}">
