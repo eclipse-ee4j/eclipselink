@@ -351,8 +351,6 @@ public class MetadataFactory {
             Attribute[] attributes = new Attribute[] { new RuntimeVisibleAnnotations(), new RuntimeVisibleParameterAnnotations(), new SignatureAttribute() };
             reader.accept(visitor, attributes, false);
         } catch (Exception exception) {
-            System.out.println("buildClassMetadata:" + className);
-            exception.printStackTrace();
             // Some basic types can't be found, so can just be registered (i.e. arrays).
             metadata.put(className, new MetadataClass(className));
         }

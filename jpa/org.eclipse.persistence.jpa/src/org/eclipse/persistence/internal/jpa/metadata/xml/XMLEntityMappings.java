@@ -682,7 +682,7 @@ public class XMLEntityMappings extends ORMetadata {
             
         // Initialize the newly loaded/built entity
         EntityAccessor entity = xmlEntityMappings.getEntities().get(0);
-        MetadataClass metadataClass = MetadataFactory.getClassMetadata(entity.getClassName());
+        MetadataClass metadataClass = MetadataFactory.getClassMetadata(getFullClassName(entity.getClassName()));
         entity.initXMLClassAccessor(metadataClass, descriptor, m_project, this);
         
         return entity;
@@ -706,7 +706,7 @@ public class XMLEntityMappings extends ORMetadata {
         
         // Initialize the newly loaded/built mapped superclass
         MappedSuperclassAccessor mappedSuperclass = xmlEntityMappings.getMappedSuperclasses().get(0);
-        MetadataClass metadataClass = MetadataFactory.getClassMetadata(mappedSuperclass.getClassName());
+        MetadataClass metadataClass = MetadataFactory.getClassMetadata(getFullClassName(mappedSuperclass.getClassName()));
         mappedSuperclass.initXMLClassAccessor(metadataClass, descriptor, m_project, this);
         
         
