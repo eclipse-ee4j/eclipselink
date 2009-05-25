@@ -128,11 +128,12 @@
     </target>
 
     <target name="common-init">
-        <property file="${basedir}/autobuild.properties"/>
-
         <!-- Set version.string appropriately. variable should only be used for   -->
         <!--    uploaded filenames  or manifest entries.                          -->
         <property name="version.string" value="${release.version}.${version.qualifier}"/>
+
+        <!-- For signed archive name need "version.string" defined first -->
+        <property file="${basedir}/autobuild.properties"/>
 
         <!-- Set download.path appropriately depending upon build target          -->
         <condition property="download.path" value="${eclipselink.download.path}/nightly/${release.version}/${build.date}">
@@ -356,6 +357,7 @@
     </target>
 
     <target name="wait-for-sign-jar">
+        <echo message="Waiting for ${signing.dir}/signed-output/${eclipselink.p2.archive.presigned}"/>
         <!-- With nightly builds taking anywhere from 85 to 120 minutes to complete, max wait-time can  -->
         <!-- only be roughly 100 minutes since the build starts at 2:35am and MUST finish before the    -->
         <!-- first continuous build at 6:30 (that leaves roughly a 15 minute window)                    -->
