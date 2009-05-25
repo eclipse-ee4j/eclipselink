@@ -15,6 +15,7 @@ package org.eclipse.persistence.jaxb;
 import javax.xml.bind.Binder;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.MarshalException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.PropertyException;
 import javax.xml.bind.UnmarshalException;
@@ -30,6 +31,7 @@ import org.eclipse.persistence.oxm.XMLBinder;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.documentpreservation.IgnoreNewElementsOrderingPolicy;
+import org.eclipse.persistence.oxm.documentpreservation.RelativePositionOrderingPolicy;
 
 /**
  * INTERNAL
@@ -52,13 +54,32 @@ public class JAXBBinder extends Binder {
     public JAXBBinder(XMLContext xmlContext) {
         this.xmlContext = xmlContext;
         this.xmlBinder = this.xmlContext.createBinder();
-        this.xmlBinder.getDocumentPreservationPolicy().setNodeOrderingPolicy(new IgnoreNewElementsOrderingPolicy());
+        this.xmlBinder.getDocumentPreservationPolicy().setNodeOrderingPolicy(new RelativePositionOrderingPolicy());
         this.xmlBinder.setErrorHandler(new JAXBErrorHandler(new DefaultValidationEventHandler()));
     }
 
-    public void marshal(Object obj, Object xmlNode) throws JAXBException {
+    public void marshal(Object obj, Object xmlNode) throws MarshalException {
         if (null == obj || null == xmlNode) {
             throw new IllegalArgumentException();
+        }
+        
+        if (!(xmlNode instanceof Node)) {
+            return;
+        }
+        
+        try {
+            if (obj instanceof JAXBElement) {
+                JAXBElement jaxbElem = (JAXBElement) obj;
+                XMLRoot xmlRoot = new XMLRoot();
+                xmlRoot.setObject(jaxbElem.getValue());
+                xmlRoot.setLocalName(jaxbElem.getName().getLocalPart());
+                xmlRoot.setNamespaceURI(jaxbElem.getName().getNamespaceURI());
+                xmlBinder.marshal(xmlRoot, (Node) xmlNode);
+            } else {
+                xmlBinder.marshal(obj, (Node) xmlNode);
+            }
+        } catch (Exception e) {
+            throw new MarshalException(e);
         }
     }
 
@@ -67,6 +88,14 @@ public class JAXBBinder extends Binder {
             throw new IllegalArgumentException();
         }
 
+        if (obj instanceof JAXBElement) {
+            JAXBElement elem = (JAXBElement) obj;
+            XMLRoot xmlRoot = new XMLRoot();
+            xmlRoot.setObject(elem.getValue());
+            xmlRoot.setLocalName(elem.getName().getLocalPart());
+            xmlRoot.setNamespaceURI(elem.getName().getNamespaceURI());
+        }
+        
         this.xmlBinder.updateXML(obj);
         return xmlBinder.getXMLNode(obj);
     }
@@ -84,10 +113,12 @@ public class JAXBBinder extends Binder {
         this.xmlBinder.setSchema(schema);
     }
 
+    
     public Schema getSchema() {
         return this.xmlBinder.getSchema();
     }
 
+    
     public JAXBElement getJAXBNode(Object obj) {
         if (null == obj) {
             throw new IllegalArgumentException();
@@ -110,11 +141,13 @@ public class JAXBBinder extends Binder {
         }
     }
 
+    
     public ValidationEventHandler getEventHandler() {
         JAXBErrorHandler jaxbErrorHandler = (JAXBErrorHandler) xmlBinder.getErrorHandler();
         return jaxbErrorHandler.getValidationEventHandler();
     }
 
+    
     public Object updateJAXB(Object obj) {
         if (null == obj) {
             throw new IllegalArgumentException();
@@ -152,6 +185,7 @@ public class JAXBBinder extends Binder {
         throw new PropertyException(propName);
     }
 
+    
     public void setProperty(String propName, Object value) throws PropertyException {
         if (null == propName) {
             throw new IllegalArgumentException(propName);
@@ -183,8 +217,9 @@ public class JAXBBinder extends Binder {
         throw new PropertyException(propName);
     }
 
+
     public Object getXMLNode(Object obj) {
-        return null;
+        return xmlBinder.getXMLNode(obj);
     }
 
     public Object unmarshal(Object obj) throws JAXBException {
@@ -197,8 +232,13 @@ public class JAXBBinder extends Binder {
         }
 
         try {
-            XMLRoot xmlRoot = (XMLRoot) xmlBinder.unmarshal((Node) obj);
-            return new JAXBElement(new QName(xmlRoot.getNamespaceURI(), xmlRoot.getLocalName()), xmlRoot.getObject().getClass(), xmlRoot.getObject());
+            Object returnValue = xmlBinder.unmarshal((Node) obj);
+            if (returnValue instanceof XMLRoot) {
+                XMLRoot xmlRoot = (XMLRoot) xmlBinder.unmarshal((Node) obj);
+                return new JAXBElement(new QName(xmlRoot.getNamespaceURI(), xmlRoot.getLocalName()), xmlRoot.getObject().getClass(), xmlRoot.getObject());
+            } else {
+                return returnValue;                
+            }
         } catch (Exception e) {
             throw new UnmarshalException(e);
         }

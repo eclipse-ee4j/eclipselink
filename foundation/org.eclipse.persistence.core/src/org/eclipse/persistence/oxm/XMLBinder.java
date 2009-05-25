@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.oxm;
 
+import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.Validator;
@@ -28,6 +29,7 @@ import org.eclipse.persistence.internal.oxm.record.SAXUnmarshaller;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.documentpreservation.DocumentPreservationPolicy;
 import org.eclipse.persistence.oxm.record.DOMRecord;
+import org.eclipse.persistence.platform.xml.XMLTransformer;
 
 /**
  * PUBLIC:
@@ -75,22 +77,14 @@ public class XMLBinder {
      * @return The root object unmarshalled from the provided node.
      */
     public Object unmarshal(org.w3c.dom.Node node) {
-        if (getSchema() != null) {
-            Validator validator = getSchema().newValidator();
-            validator.setErrorHandler(getErrorHandler());
-            try {
-                validator.validate(new DOMSource(node));
-            } catch (Exception e) {
-                throw XMLMarshalException.validateException(e);
-            }
-        }
-
+        validateNode(node);
+        
         reader.setDocPresPolicy(documentPreservationPolicy);
         Object toReturn = saxUnmarshaller.unmarshal(reader, node);
         return toReturn;
     }
 
-    public XMLRoot unmarshal(org.w3c.dom.Node node, Class javaClass) {
+    private void validateNode(org.w3c.dom.Node node) {
         if (getSchema() != null) {
             Validator validator = getSchema().newValidator();
             validator.setErrorHandler(getErrorHandler());
@@ -100,6 +94,10 @@ public class XMLBinder {
                 throw XMLMarshalException.validateException(e);
             }
         }
+    }
+    
+    public XMLRoot unmarshal(org.w3c.dom.Node node, Class javaClass) {
+        validateNode(node);
 
         XMLRoot root = null;
         reader.setDocPresPolicy(documentPreservationPolicy);
@@ -121,6 +119,45 @@ public class XMLBinder {
             return;
         }
         updateXML(obj, associatedNode);
+    }
+    
+    public void marshal(Object obj, Node node) {
+        XMLDescriptor desc = null;
+        boolean isXMLRoot = obj instanceof XMLRoot;
+        if (isXMLRoot) {
+            Object o = ((XMLRoot) obj).getObject();
+            desc = (XMLDescriptor) context.getSession(o).getDescriptor(o);
+        } else {
+            desc = (XMLDescriptor) context.getSession(obj).getDescriptor(obj);
+        }
+        
+        DOMRecord domRecord = null;
+        if (!isXMLRoot) {
+            domRecord = new DOMRecord(desc.getDefaultRootElement(), desc.getNamespaceResolver());
+            domRecord.setDocPresPolicy(getDocumentPreservationPolicy());
+        }
+        Node n = this.marshaller.objectToXML(obj, node, desc, domRecord, isXMLRoot, this.getDocumentPreservationPolicy());
+
+        validateNode(n);
+        
+        DOMResult result = new DOMResult(node);
+        XMLTransformer transformer = marshaller.getTransformer();
+        if (isXMLRoot) {
+            String oldEncoding = transformer.getEncoding();
+            String oldVersion = transformer.getVersion();
+            if (((XMLRoot) obj).getEncoding() != null) {
+                transformer.setEncoding(((XMLRoot) obj).getEncoding());
+            }
+            if (((XMLRoot) obj).getXMLVersion() != null) {
+                transformer.setVersion(((XMLRoot) obj).getXMLVersion());
+            }
+            transformer.transform(n, result);
+            transformer.setEncoding(oldEncoding);
+            transformer.setVersion(oldVersion);
+        } else {
+            transformer.transform(n, result);
+           
+        }
     }
 
     public void updateXML(Object obj, Node associatedNode) {

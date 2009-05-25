@@ -598,6 +598,9 @@ public class XMLContext {
      * @return
      */
     public DocumentPreservationPolicy getDocumentPreservationPolicy(AbstractSession session) {
+        if (session == null) {
+            return null;
+        }
         XMLLogin login = (XMLLogin) session.getDatasourceLogin();
         return login.getDocumentPreservationPolicy();
     }

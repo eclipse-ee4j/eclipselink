@@ -39,6 +39,7 @@ import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.attachment.*;
+import org.eclipse.persistence.oxm.documentpreservation.DocumentPreservationPolicy;
 import org.eclipse.persistence.oxm.record.ContentHandlerRecord;
 import org.eclipse.persistence.oxm.record.FormattedWriterRecord;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
@@ -780,14 +781,15 @@ public class XMLMarshaller {
     */
     protected Document objectToXML(Object object, XMLDescriptor descriptor, boolean isXMLRoot) throws XMLMarshalException {
         AbstractSession session = xmlContext.getSession(descriptor);
-        if ((session != null) && xmlContext.getDocumentPreservationPolicy(session).shouldPreserveDocument()) {
+        DocumentPreservationPolicy docPresPolicy = xmlContext.getDocumentPreservationPolicy(session);
+        if (docPresPolicy != null && docPresPolicy.shouldPreserveDocument()) {
             XMLRecord xmlRow = null;
             if (!isXMLRoot) {
                 xmlRow = (XMLRecord) ((XMLObjectBuilder) descriptor.getObjectBuilder()).createRecordFor(object, xmlContext.getDocumentPreservationPolicy(session));
                 xmlRow.setMarshaller(this);
                 addDescriptorNamespacesToXMLRecord(descriptor, xmlRow);
             }
-            return objectToXML(object, descriptor, xmlRow, isXMLRoot);
+            return objectToXML(object, descriptor, xmlRow, isXMLRoot, docPresPolicy);
         }
         MarshalRecord marshalRecord = new NodeRecord();
         marshalRecord.setMarshaller(this);
@@ -806,7 +808,8 @@ public class XMLMarshaller {
 
     protected Node objectToXMLNode(Object object, Node rootNode, XMLDescriptor descriptor, boolean isXMLRoot) throws XMLMarshalException {
         AbstractSession session = xmlContext.getSession(descriptor);
-        if ((session != null) && xmlContext.getDocumentPreservationPolicy(session).shouldPreserveDocument()) {
+        DocumentPreservationPolicy docPresPolicy = xmlContext.getDocumentPreservationPolicy(session);
+        if (docPresPolicy != null && docPresPolicy.shouldPreserveDocument()) {
             XMLRecord xmlRow = null;
             if (!isXMLRoot) {
                 xmlRow = (XMLRecord) ((XMLObjectBuilder) descriptor.getObjectBuilder()).createRecordFor(object, xmlContext.getDocumentPreservationPolicy(session));
@@ -815,7 +818,7 @@ public class XMLMarshaller {
                     addDescriptorNamespacesToXMLRecord(descriptor, xmlRow);
                 }
             }
-            Document doc = objectToXML(object, rootNode, descriptor, xmlRow, isXMLRoot);
+            Document doc = objectToXML(object, rootNode, descriptor, xmlRow, isXMLRoot, docPresPolicy);
             if ((xmlRow != null) && (xmlRow.getDOM().getNodeType() == Node.DOCUMENT_FRAGMENT_NODE)) {
                 return xmlRow.getDOM();
             } else {
@@ -857,6 +860,10 @@ public class XMLMarshaller {
     * @deprecated
     */
     public Document objectToXML(Object object, Node parent) throws XMLMarshalException {
+        return objectToXML(object, parent, null);
+    }
+    
+    public Document objectToXML(Object object, Node parent, DocumentPreservationPolicy docPresPolicy) {
         boolean isXMLRoot = (object instanceof XMLRoot);
         XMLDescriptor descriptor = getDescriptor(object, isXMLRoot);
 
@@ -866,26 +873,30 @@ public class XMLMarshaller {
         }
 
         AbstractSession session = xmlContext.getSession(descriptor);
-        if ((session != null) && xmlContext.getDocumentPreservationPolicy(session).shouldPreserveDocument()) {
+        if(docPresPolicy == null) {
+            docPresPolicy = xmlContext.getDocumentPreservationPolicy(session);
+        }
+        if (docPresPolicy != null && docPresPolicy.shouldPreserveDocument()) {
             XMLRecord xmlRow = (XMLRecord) ((XMLObjectBuilder) descriptor.getObjectBuilder()).createRecord(localRootName, parent, session);
             xmlRow.setMarshaller(this);
-            return objectToXML(object, descriptor, xmlRow, isXMLRoot);
+            return objectToXML(object, descriptor, xmlRow, isXMLRoot, docPresPolicy);
         }
         MarshalRecord marshalRecord = new NodeRecord(localRootName, parent);
         marshalRecord.setMarshaller(this);
         marshal(object, marshalRecord, descriptor, isXMLRoot);
         return marshalRecord.getDocument();
+        
     }
 
     /**
     * INTERNAL:
     * Convert the given object to an XML Document
     */
-    public Document objectToXML(Object object, XMLDescriptor descriptor, XMLRecord xmlRow, boolean isXMLRoot) {
-        return objectToXML(object, null, descriptor, xmlRow, isXMLRoot);
+    public Document objectToXML(Object object, XMLDescriptor descriptor, XMLRecord xmlRow, boolean isXMLRoot, DocumentPreservationPolicy docPresPolicy) {
+        return objectToXML(object, null, descriptor, xmlRow, isXMLRoot, docPresPolicy);
     }
 
-    private Document objectToXML(Object object, Node rootNode, XMLDescriptor descriptor, XMLRecord xmlRow, boolean isXMLRoot) {
+    public Document objectToXML(Object object, Node rootNode, XMLDescriptor descriptor, XMLRecord xmlRow, boolean isXMLRoot, DocumentPreservationPolicy docPresPolicy) {
         if(null != rootNode) {
             int rootNodeType = rootNode.getNodeType();
             if(rootNodeType != Node.DOCUMENT_NODE && rootNodeType != Node.ELEMENT_NODE && rootNodeType != Node.DOCUMENT_FRAGMENT_NODE ) {
@@ -918,7 +929,7 @@ public class XMLMarshaller {
                         recordName = xmlRootPrefix + ":" + recordName;
                     }
                 }
-                xmlRow = (XMLRecord) ((XMLObjectBuilder) descriptor.getObjectBuilder()).createRecordFor(((XMLRoot) object).getObject(), xmlContext.getDocumentPreservationPolicy(session), recordName, xmlRootUri);
+                xmlRow = (XMLRecord) ((XMLObjectBuilder) descriptor.getObjectBuilder()).createRecordFor(((XMLRoot) object).getObject(), docPresPolicy, recordName, xmlRootUri);
                 xmlRow.setMarshaller(this);
                 if (!isRootDocumentFragment) {
                     if (shouldCallSetAttributeNS) {
