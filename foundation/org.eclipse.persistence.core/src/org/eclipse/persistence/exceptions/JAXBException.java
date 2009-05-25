@@ -42,6 +42,7 @@ public class JAXBException extends EclipseLinkException {
     public static final int SUBCLASS_CANNOT_HAVE_XMLVALUE = 50011;
     public static final int NON_EXISTENT_PROPERTY_IN_PROP_ORDER = 50012;
     public static final int MISSING_PROPERTY_IN_PROP_ORDER = 50013;
+    public static final int INVALID_TYPE_FOR_XMLVALUE_PROPERTY = 50014;
     
     protected JAXBException(String message) {
         super(message);
@@ -146,6 +147,13 @@ public class JAXBException extends EclipseLinkException {
         Object[] args = {fieldName};
         JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, SUBCLASS_CANNOT_HAVE_XMLVALUE, args));
         exception.setErrorCode(SUBCLASS_CANNOT_HAVE_XMLVALUE);
+        return exception;
+    }  
+    
+    public static JAXBException invalidTypeForXmlValueField(String fieldName) {
+        Object[] args = {fieldName};
+        JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, INVALID_TYPE_FOR_XMLVALUE_PROPERTY, args));
+        exception.setErrorCode(INVALID_TYPE_FOR_XMLVALUE_PROPERTY);
         return exception;
     }  
 }

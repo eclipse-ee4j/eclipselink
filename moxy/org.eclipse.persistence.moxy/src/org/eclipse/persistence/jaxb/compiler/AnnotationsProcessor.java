@@ -667,17 +667,10 @@ public class AnnotationsProcessor {
                         property.setNillable(xmlElement.nillable());
                         validateElementIsInPropOrder(info, property.getPropertyName());
                     }                                                            
-                                   
+ 
                     if (helper.isAnnotationPresent(property.getElement(), XmlValue.class)) {                    
                     	info.setXmlValueProperty(property);
-                    	                    	
-                    	JavaClass parent = cls.getSuperclass();                    	                    	
-                        while (parent != null && !(parent.getQualifiedName().equals("java.lang.Object"))) {
-                        	if(typeInfo.get(parent.getQualifiedName())!= null ){
-                        		throw JAXBException.propertyOrFieldCannotBeXmlValue(nextField.getName());
-                        	}
-                        	parent = parent.getSuperclass();
-                        }
+                        validateXmlValueFieldOrProperty(cls, property, ptype, nextField.getName());                    	
                     }                    
                                         
                     // Figure out schema name and namesapce
@@ -1009,15 +1002,8 @@ public class AnnotationsProcessor {
                 }           
                 
                 if (helper.isAnnotationPresent(property.getElement(), XmlValue.class)) {
-                	info.setXmlValueProperty(property);
-                	
-                	JavaClass parent = cls.getSuperclass();
-                	while (parent != null && !(parent.getQualifiedName().equals("java.lang.Object"))) {                
-                    	if(typeInfo.get(parent.getQualifiedName())!=null ){
-                    		throw JAXBException.propertyOrFieldCannotBeXmlValue(propertyName);
-                    	}
-                    	parent = parent.getSuperclass();
-                    }
+                    info.setXmlValueProperty(property);
+                    validateXmlValueFieldOrProperty(cls, property, ptype, propertyName);                
                 }
     
                 if (!helper.isAnnotationPresent(property.getElement(), XmlTransient.class)) {
@@ -1163,6 +1149,9 @@ public class AnnotationsProcessor {
         QName restrictionBase = getSchemaTypeFor(helper.getJavaClass(restrictionClass));
         info.setRestrictionBase(restrictionBase);
 
+        typeInfoClasses.add(javaClass);
+        typeInfo.put(javaClass.getQualifiedName(), info);
+        
         for (Iterator<JavaField> fieldIt = javaClass.getDeclaredFields().iterator(); fieldIt.hasNext(); ) {
             JavaField field = fieldIt.next();
             if (field.isEnumConstant()) {
@@ -1173,9 +1162,7 @@ public class AnnotationsProcessor {
                 }                
                 info.addObjectToFieldValuePair(field.getName(), fieldValue);
             }
-        }
-        typeInfoClasses.add(javaClass);
-        typeInfo.put(javaClass.getQualifiedName(), info);
+        }        
     }      
     
     private String decapitalize(String javaName){
@@ -1225,14 +1212,19 @@ public class AnnotationsProcessor {
         return toReturn.toString();
     }
     
-    public QName getSchemaTypeFor(JavaClass javaClass) {
+    public QName getSchemaTypeOrNullFor(JavaClass javaClass) {
         if (javaClass == null) { return null; }
         
-        // check user defined types first
+        //check user defined types first
         QName schemaType = (QName)userDefinedSchemaTypes.get(javaClass.getQualifiedName());
-        if (schemaType == null) {
-            schemaType = (QName) helper.getXMLToJavaTypeMap().get(javaClass.getRawName());
+        if (schemaType == null) {            
+            schemaType = (QName) helper.getXMLToJavaTypeMap().get(javaClass.getRawName());            
         }
+        return schemaType;
+    }
+    
+    public QName getSchemaTypeFor(JavaClass javaClass) {
+    	QName schemaType = getSchemaTypeOrNullFor(javaClass);
         if (schemaType == null) {
             return XMLConstants.ANY_SIMPLE_TYPE_QNAME;
         }
@@ -1679,6 +1671,39 @@ public class AnnotationsProcessor {
             }
         }
     }
+    
+    private void validateXmlValueFieldOrProperty(JavaClass cls, Property property, JavaClass ptype, String propName){
+        JavaClass parent = cls.getSuperclass();                    	                    	
+        while (parent != null && !(parent.getQualifiedName().equals("java.lang.Object"))) {
+            TypeInfo parentTypeInfo = typeInfo.get(parent.getQualifiedName());
+            if(parentTypeInfo ==null && shouldGenerateTypeInfo(parent)){
+                parentTypeInfo = createTypeInfoFor(parent);
+            }
+            if(parentTypeInfo!= null ){                        		
+                throw JAXBException.propertyOrFieldCannotBeXmlValue(propName);
+            }
+            parent = parent.getSuperclass();
+        }         
+        JavaClass theClass;
+        if(isCollectionType(property)){                        	
+            theClass = property.getGenericType();
+        }else if (ptype.isArray()){
+            theClass = ptype.getComponentType();
+        }else{
+            theClass = ptype;
+        }
+        QName schemaQName = getSchemaTypeOrNullFor(theClass);
+        if(schemaQName == null){
+            String rawName = theClass.getRawName();                                          
+            TypeInfo refInfo = typeInfo.get(rawName);                        	
+            if(refInfo == null && shouldGenerateTypeInfo(theClass)){                        		
+                refInfo = createTypeInfoFor(theClass);
+            }
+            if(refInfo !=null && refInfo.getXmlValueProperty() == null){
+                throw JAXBException.invalidTypeForXmlValueField(propName);	
+            }                        	
+        }
+    }                    
 
     /**
      * Inner class used for ordering a list of Properties 
