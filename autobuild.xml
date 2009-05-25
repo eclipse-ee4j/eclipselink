@@ -147,22 +147,31 @@
         <condition property="p2.repos.path" value="${eclipselink.download.path}/incremental-updates/nightly">
             <equals arg1="${build.type}" arg2="SNAPSHOT"/>
         </condition>
-        <condition property="p2.repos.path" value="${eclipselink.download.path}/updates">
+        <condition property="p2.repos.path" value="${eclipselink.download.path}/updates/${release.version}">
             <equals arg1="${build.type}" arg2="RELEASE"/>
         </condition>
         <property name="p2.repos.path" value="${eclipselink.download.path}/incremental-updates/milestone"/>
+
+        <!-- Set p2 repository url appropriately depending upon build target     -->
+        <condition property="p2.repos.url" value="${eclipselink.download.url}/incremental-updates/nightly">
+            <equals arg1="${build.type}" arg2="SNAPSHOT"/>
+        </condition>
+        <condition property="p2.repos.url" value="${eclipselink.download.url}/updates/${release.version}">
+            <equals arg1="${build.type}" arg2="RELEASE"/>
+        </condition>
+        <property name="p2.repos.url" value="${eclipselink.download.url}/incremental-updates/milestone"/>
 
         <!-- generate Release Designation string for manifest                     -->
         <property name="release.designation" value="EclipseLink ${release.version}"/>
 
         <!-- generate P2 repository labels                                        -->
-        <condition property="metadata.repos.name" value="&quot;EclipseLink Nightly Build Repository&quot;">
+        <condition property="metadata.repos.name" value="&quot;${P2.nightly.repos.name}&quot;">
             <equals arg1="${build.type}" arg2="SNAPSHOT"/>
         </condition>
-        <condition property="metadata.repos.name" value="&quot;EclipseLink Release Repository&quot;">
+        <condition property="metadata.repos.name" value="&quot;${P2.release.repos.name}&quot;">
             <equals arg1="${build.type}" arg2="RELEASE"/>
         </condition>
-        <property name="metadata.repos.name" value="&quot;EclipseLink Milestone Repository&quot;"/>
+        <property name="metadata.repos.name" value="&quot;${P2.milestone.repos.name}&quot;"/>
 
         <condition property="artifact.repos.name" value="&quot;EclipseLink Incremental Artifacts&quot;">
             <equals arg1="${build.type}" arg2="SNAPSHOT"/>
@@ -346,7 +355,20 @@
         </ant>
     </target>
 
-    <target name="publish-build">
+    <target name="wait-for-sign-jar">
+        <!-- With nightly builds taking anywhere from 85 to 120 minutes to complete, max wait-time can  -->
+        <!-- only be roughly 100 minutes since the build starts at 2:35am and MUST finish before the    -->
+        <!-- first continuous build at 6:30 (that leaves roughly a 15 minute window)                    -->
+        <waitfor maxwait="100" maxwaitunit="minute" checkevery="15" checkeveryunit="second" timeoutproperty="signing.time.limit.exceeded">
+            <available file="${signing.dir}/signed-output/${eclipselink.p2.archive.presigned}"/>
+        </waitfor>
+    </target>
+    
+    <target name="wait-report-timeout" if="signing.time.limit.exceeded">
+        <echo message="Signing aborted, wait time exceeded!"/>
+    </target>
+
+    <target name="publish-build" depends="wait-for-sign-jar, wait-report-timeout, populate-p2-update-site">
         <!-- New Publish Architecture -->
         <mkdir dir="${download.path}"/>
         <copy file="${signing.dir}/signed-output/${eclipselink.p2.archive.presigned}"                  tofile="${download.path}/${eclipselink.p2.archive.signed}" failonerror="false"/>
@@ -400,6 +422,8 @@
         <fail message="Some of the junit tests failed.  See the ${report.dir}/junit-noframes.html file for details." if="junit.failed"/>
     </target>
 
+    <!--  =====  #####              Milestone Targets               #####  =====  -->
+
     <target name="create-tag">
         <echo message="Create a tag (${milestone.tag}) of this revision (${svn.revision}) for this milestone (${build.type})"/>
         <echo message="   ${svn.branch.url} = ${svn.branch.url}"/>
@@ -419,20 +443,31 @@
     </target>
 
     <target name="promote-pre-init">
+        <!-- svn.revision and build.time should already be set to the svn revision number and build date of the -->
+        <!-- build being promoted - however, build.time is undefined (it is currently unused)                   -->
         <fail unless="svn.revision" message="svn.revision doesn't exist and it should before we reach this point!"/>
         <fail unless="build.date" message="build.date doesn't exist and it should before we reach this point!"/>
         <!-- build.type should be set to "M#" or "RELEASE" on the command-line for milestone or release builds  -->
         <fail unless="build.type" message="build.type doesn't exist and it should before we reach this point!"/>
         <tstamp>
             <format property="promote.date" pattern="MMM dd, yyyy"/>
+            <format property="run.date" pattern="yyyyMMdd"/>
+            <format property="run.time" pattern="HHmm"/>
         </tstamp>
         <property name="version.qualifier" value="v${build.date}-r${svn.revision}"/>
     </target>
 
     <target name="promote-init" depends="promote-pre-init, common-init">
-        <property name="build.source.path" value="${eclipselink.download.path}/nightly/${release.version}/${build.date}"/>
-        <available file="${build.source.path}" type="dir" property="build.path.exist"/>
-        <fail unless="build.path.exist" message="${build.source.path} not found! Cannot promote it."/>
+        <!-- This depends upon freezing nightly builds after an RC# build - otherwise the nightly to be -->
+        <!-- promoted to a 'RELEASE' build (same as last milestone) could expire off the nightly site   -->
+        <property name="build.source.path"    value="${eclipselink.download.path}/nightly/${release.version}/${build.date}"/>
+        <property name="build.signed.archive" value="${build.source.path}/${eclipselink.p2.archive.signed}"/>
+        <available file="${build.source.path}"    property="build.path.exist" type="dir"/>
+        <available file="${build.signed.archive}" property="signed.archive.exist"/>
+        <!-- FAIL THIS PROMOTION if the source build is not found                                       -->
+        <fail unless="build.path.exist"     message="${build.source.path} not found! Cannot promote this build."/>
+        <!-- FAIL THIS PROMOTION if the signed archive for build is not found                           -->
+        <fail unless="signed.archive.exist" message="${build.signed.archive} not found! Cannot promote this build."/>
         <property name="temp.rebuild.path" value="/tmp/EL${run.date}.${run.time}/${version.string}"/>
         <delete dir="${temp.rebuild.path}" failonerror="false"/>
         <mkdir dir="${temp.rebuild.path}"/>
@@ -514,17 +549,19 @@
         <copy todir="${download.path}" file="${build.source.path}/eclipselink-sdo-lrg-${version.string}.html"                                       failonerror="false"/>
         <copy todir="${download.path}" file="${build.source.path}/eclipselink-dbws-lrg-${version.string}.html"                                      failonerror="false"/>
         <copy todir="${download.path}" file="${build.source.path}/eclipselink-dbws-util-lrg-${version.string}.html"                                 failonerror="false"/>
-        <!-- copy P2 archive as well for safekeeping (in case rebuild needed) -->
-        <copy todir="${download.path}" file="${build.source.path}/${eclipselink.p2.archive.signed}"                                                 failonerror="false"/>
+        <!-- copy P2 archive as well as eclipse build file for safekeeping (in case rebuild needed) -->
+        <copy todir="${download.path}" file="${build.source.path}/${eclipselink.p2.archive.signed}" failonerror="false"/>
+        <copy todir="${download.path}" file="${temp.rebuild.path}/signed/eclipselink.build" failonerror="false"/>
         <!-- Copy for maven to run -->
-        <copy todir="${tmp.maven.dir}" file="${basedir}/pom.xml.template"                                                 failonerror="false"/>
-        <copy todir="${tmp.maven.dir}" file="${basedir}/uploadToMaven.xml"                                                 failonerror="false"/>
+        <copy todir="${tmp.maven.dir}" file="${basedir}/pom.xml.template"  failonerror="false"/>
+        <copy todir="${tmp.maven.dir}" file="${basedir}/uploadToMaven.xml"  failonerror="false"/>
         <ant antfile="uploadToMaven.xml" dir="${tmp.maven.dir}" target="upload-maven-all"/>
     </target>
 
     <target name="populate-p2-update-site">
         <!-- has to be run last, so it can be generic for nightly, or milestone builds -->
-        <property name="p2.repos.path" value="${eclipselink.download.path}/incremental-updates/milestone"/>
+        <!-- Clean existing repos if it exists (should only be true of a release redo, or the latest milestone or nightly) -->
+        <delete dir="${p2.repos.path}" failonerror="false"/>
         <mkdir dir="${p2.repos.path}"/>
         <unzip dest="${p2.repos.path}/plugins" src="${download.path}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}">
             <patternset>
@@ -542,7 +579,6 @@
                 <include name="features/*.jar"/>
             </patternset>
         </unzip>
-        
         <!-- Generate repository -->
         <ant antfile="build.xml" dir="${build.root.dir}/features" target="generate-p2-repos">
             <property name="bundle.installer.exist" value="true"/>
