@@ -60,6 +60,9 @@ public class JAXBContextFactory {
         ClassLoader loader = null;
         if (classesToBeBound.length > 0) {
             loader = classesToBeBound[0].getClassLoader();
+            if(null == loader) {
+                loader = Thread.currentThread().getContextClassLoader();
+            }
         }
         return createContext(classesToBeBound, properties, loader);
     }
