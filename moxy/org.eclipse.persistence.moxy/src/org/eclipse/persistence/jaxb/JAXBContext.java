@@ -29,6 +29,7 @@ import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.exceptions.JAXBException;
+import org.eclipse.persistence.internal.jaxb.JAXBSchemaOutputResolver;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelGenerator;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jaxb.compiler.Generator;
@@ -84,7 +85,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     }
     
     public void generateSchema(SchemaOutputResolver outputResolver) {
-        if(generator == null) {
+        if (generator == null) {
             List<XMLDescriptor> descriptorsToProcess = new ArrayList<XMLDescriptor>();
             List<Session> sessions = xmlContext.getSessions();
             for (Session session : sessions) {
@@ -94,7 +95,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                 }
             }
             SchemaModelGenerator smGen = new SchemaModelGenerator();
-            smGen.generateSchemas(descriptorsToProcess, null, outputResolver);
+            smGen.generateSchemas(descriptorsToProcess, null, new JAXBSchemaOutputResolver(outputResolver));
         } else {
             generator.generateSchemaFiles(outputResolver, null);
         }

@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Vector;
 
-import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.descriptors.InheritancePolicy;
@@ -158,7 +157,7 @@ public class SchemaModelGenerator {
      * @throws DescriptorException if the reference descriptor for a composite mapping is not in the list of descriptors
      * @see Schema
      */
-    public Map<String, Schema> generateSchemas(List<XMLDescriptor> descriptorsToProcess, SchemaModelGeneratorProperties properties, SchemaOutputResolver outputResolver) throws DescriptorException {
+    public Map<String, Schema> generateSchemas(List<XMLDescriptor> descriptorsToProcess, SchemaModelGeneratorProperties properties, SchemaModelOutputResolver outputResolver) throws DescriptorException {
         Map<String, Schema> schemas = generateSchemas(descriptorsToProcess, properties);
 
         Project proj = new SchemaModelProject();
