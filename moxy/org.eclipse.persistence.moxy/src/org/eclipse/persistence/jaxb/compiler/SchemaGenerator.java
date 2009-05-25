@@ -359,6 +359,8 @@ public class SchemaGenerator {
                     if (name.equals("##default")) {
                         name = next.getPropertyName();
                     }
+                    // handle nillable
+                    wrapperElement.setNillable(wrapper.nillable());
                     // namespace in not the target or ##default, create a ref with min/max = 1
                     String wrapperNS = wrapper.namespace();
                     if (!wrapperNS.equals("##default") && !wrapperNS.equals(schema.getTargetNamespace())) {
@@ -578,6 +580,9 @@ public class SchemaGenerator {
                     if (!(parentCompositor instanceof All)) {
                         element.setMinOccurs(next.isRequired() ? Occurs.ONE : Occurs.ZERO);
                     }
+                    // handle nillable
+                    element.setNillable(next.isNillable());
+                    
                     QName elementName = next.getSchemaName();
                     JavaClass javaType = next.getType();
                     boolean isCollectionType = isCollectionType(next);

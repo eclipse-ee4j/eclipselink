@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <root3>
-   <stuff>
+   <someNillableStuff xsi:nil='false' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <stuff>mystuff</stuff>
-   </stuff>
+   </someNillableStuff>
+   <someOtherNillableStuff xsi:nil='true' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
 </root3>

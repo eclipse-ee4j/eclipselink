@@ -12,11 +12,15 @@
 ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.schemagen.customizedmapping.xmlelementwrapper;
 
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "root3")
 class MyClassThree {
-    @XmlElementWrapper
+    @XmlElementWrapper (name="someNillableStuff", nillable=true)
     public String[] stuff;
+
+    @XmlElement (nillable=true) 
+    public String someOtherNillableStuff;
 }
