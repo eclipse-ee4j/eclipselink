@@ -342,7 +342,8 @@
     <target name="create-site-for-generation">
         <mkdir dir="${site.dir}"/>
         <delete file="${site.dir}/site.xml" quiet="true"/>
-        <filter token="REPOS_URL"       value="${p2.repos.url}"/>
+        <!-- filter token="REPOS_URL"       value="${p2.repos.url}"/ -->
+        <filter token="REPOS_URL"       value="${p2.base.url}"/>
         <filter token="VERSION"         value="${release.version}"/>
         <filter token="QUALIFIER"       value="${version.qualifier}"/>
         <copy todir="${site.dir}" file="${feature.build.location}/site.xml" filtering="true"/>
