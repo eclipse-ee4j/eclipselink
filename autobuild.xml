@@ -604,14 +604,14 @@
         </unzip>
         <!-- Remove unwanted jars -->
         <delete>
-            <fileset dir="${p2.repos.path}/plugins" includes="*dbws*.jar, *servlet*.jar, *soap*.jar, *xml.ws*.jar"/>
-            <fileset dir="${p2.repos.path}"         includes="artifact*.*, content*.*"/>
+            <fileset dir="${p2.repos.path}/plugins" includes="commonj.sdo_2.1.1.jar, *dbws*.jar, *servlet*.jar, *soap*.jar, *xml.ws*.jar"/>
         </delete>
         <!-- populate features -->
         <unzip dest="${p2.repos.path}" src="${download.path}/${eclipselink.p2.archive.signed}">
             <patternset>
                 <include name="features/*.jar"/>
             </patternset>
+            <mapper type="flatten"/>
         </unzip>
         <!-- Generate repository -->
         <ant antfile="build.xml" dir="${build.root.dir}/features" target="generate-p2-repos">
