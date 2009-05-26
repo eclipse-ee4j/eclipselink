@@ -73,7 +73,7 @@
         <property name="eclipselink.plugins.install.prefix" value="eclipselink-plugins"/>
         <property name="eclipselink.zip.suffix"             value=".zip"/>
         <property name="classes.dir"                        value="classes"/>
-        <property name="eclipselink.util.dbws"              value="utils/eclipselink.utils.dbws"/>
+        <!-- property name="eclipselink.util.dbws"              value="utils/eclipselink.utils.dbws"/ -->
         <property name="eclipselink.jpa.plugins"            value="jpa/plugins"/>
         <property name="specification.vendor"               value="Eclipse.org - EclipseLink Project"/>
         <property name="eclipselink.p2.archive.presigned"   value="${eclipselink.install.prefix}-P2-${release.version}${eclipselink.zip.suffix}"/>
@@ -83,7 +83,7 @@
         <!-- Helper definitions derived from Pre-set variables -->
         <property name="feature.build.dir"                  value="${classes.dir}/features"/>
         <property name="bundle.working.dir"                 value="${classes.dir}/plugins"/>
-        <property name="feature.2.util.dbws"                value="${feature.2.base.dir}/${eclipselink.util.dbws}"/>
+        <!-- property name="feature.2.util.dbws"                value="${feature.2.base.dir}/${eclipselink.util.dbws}"/ -->
         <property name="feature.2.jpa.plugins"              value="${feature.2.base.dir}/${eclipselink.jpa.plugins}"/>
     
         <!-- Tool definitions -->
@@ -120,11 +120,11 @@
         <echo message="eclipselink.plugins.install.prefix='${eclipselink.plugins.install.prefix}'"/>
         <echo message="eclipselink.zip.suffix='${eclipselink.zip.suffix}'"/>
         <echo message="classes.dir='${classes.dir}'"/>
-        <echo message="eclipselink.util.dbws='${eclipselink.util.dbws}'"/>
+        <!-- echo message="eclipselink.util.dbws='${eclipselink.util.dbws}'"/ -->
         <echo message="eclipselink.jpa.plugins='${eclipselink.jpa.plugins}'"/>
         <echo message="feature.build.dir='${feature.build.dir}'"/>
         <echo message="bundle.working.dir='${bundle.working.dir}'"/>
-        <echo message="feature.2.util.dbws='${feature.2.util.dbws}'"/>
+        <!-- echo message="feature.2.util.dbws='${feature.2.util.dbws}'"/ -->
         <echo message="feature.2.jpa.plugins='${feature.2.jpa.plugins}'"/>
         <echo message=" ---"/>
         <echo message="p2.SDK.install.dir='${p2.SDK.install.dir}'"/>
@@ -185,16 +185,16 @@
     <target name="create-deployable-features">
         <mkdir dir="${classes.dir}"/>
         <mkdir dir="${feature.build.dir}"/>
-        <filter token="REPOS_URL"       value="${p2.repos.url}"/>
-        <filter token="PROVIDER"        value="${specification.vendor}"/>
+        <!--          Filters for feature.xml files                 -->
         <filter token="VERSION"         value="${release.version}"/>
         <filter token="QUALIFIER"       value="${version.qualifier}"/>
+        <!--       Filters for feature.properties files             -->
+        <filter token="PROVIDER"        value="${specification.vendor}"/>
         <filter token="REPOS_NAME"      value="${P2.release.repos.name}"/>
         <filter token="MILESTONE_REPOS" value="${P2.milestone.repos.name}"/>
         <copy todir="${classes.dir}" filtering="true">
             <fileset dir="${feature.build.location}">
                 <include name="**/feature*.*"/>
-                <include name="site.xml"/>
             </fileset>
         </copy>
         <antcall target="jar-feature">
@@ -236,7 +236,8 @@
             <!-- zipfileset dir="${feature.2.base.dir}"                         includes="eclipselink*.jar"/ -->
             <!-- zipfileset dir="${feature.2.util.dbws}"                        includes="eclipselink-dbwsutils*.jar"/ -->
             <zipfileset dir="${classes.dir}"                                    includes="eclipselink.build"/>
-            <zipfileset dir="${classes.dir}"                                    includes="site.xml"/>
+            <!-- Removed based on decision to have different repos names, by build type - 5/26/09            -->
+            <!-- zipfileset dir="${classes.dir}"                                includes="site.xml"/         -->
             <zipfileset dir="${feature.build.dir}"            prefix="features" includes="*.jar"/>
             <zipfileset dir="${feature.2.common.plugins.dir}" prefix="plugins"  includes="org.eclipse.persistence*${release.version}.${version.qualifier}.jar"/>
             <zipfileset dir="${feature.2.jpa.plugins}"        prefix="plugins"  includes="javax.persistence*1.99.0.jar"/>
@@ -337,8 +338,16 @@
         </antcall>
     </target>
 
-    <target name="generate-p2-repos" depends="init">
-        <!-- property name="site.url" value="file:${p2.base.dir}/site.xml"/ -->
+    <target name="create-site-for-generation">
+        <mkdir dir="${site.dir}"/>
+        <delete file="${site.dir}/site.xml" quiet="true"/>
+        <filter token="REPOS_URL"       value="${p2.repos.url}"/>
+        <filter token="VERSION"         value="${release.version}"/>
+        <filter token="QUALIFIER"       value="${version.qualifier}"/>
+        <copy todir="${site.dir}" file="${feature.build.location}/site.xml" filtering="true"/>
+    </target>
+
+    <target name="generate-p2-repos" depends="init, create-site-for-generation">
         <echo message="Site url='${site.url}'"/>
         <!-- Metadata generator apparently doesn't rebuild the artifact and content xml files if they already exist -->
         <delete  failonerror="false">

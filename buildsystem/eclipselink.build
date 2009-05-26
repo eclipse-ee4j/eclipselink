@@ -19,6 +19,6 @@
   <features id="org.eclipse.persistence.sdo.source" version="@VERSION@.@QUALIFIER@" repo="//@repositories.0">
     <category href="galileo.build#//@categories.9"/>
   </features>
-  <repositories location="http://download.eclipse.org/rt/eclipselink/updates/" label="EclipseLink"/> 
+  <repositories location="http://download.eclipse.org/rt/eclipselink/galileo-integration/" label="EclipseLink"/> 
 </build:Contribution>
   

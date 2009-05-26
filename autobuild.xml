@@ -171,6 +171,8 @@
 
         <!-- generate Release Designation string for manifest                     -->
         <property name="release.designation" value="EclipseLink ${release.version}"/>
+        <!-- specify location of eclipse SDK install to use                       -->
+        <property name="p2.SDK.install.dir"  value="${build.deps.dir}/eclipse"/>
 
         <!-- generate P2 repository labels                                        -->
         <condition property="metadata.repos.name" value="&quot;${P2.nightly.repos.name}&quot;">
@@ -614,8 +616,6 @@
         <!-- Generate repository -->
         <ant antfile="build.xml" dir="${build.root.dir}/features" target="generate-p2-repos">
             <property name="bundle.installer.exist" value="true"/>
-            <property name="p2.SDK.install.dir" value="${build.deps.dir}/eclipse"/>
-            <property name="site.dir" value="${signed.jar.path}"/>
         </ant>
         <!-- delete dir="${temp.rebuild.path}" failonerror="false"/ -->
     </target>
