@@ -373,7 +373,7 @@
         <echo message="Signing aborted, wait time exceeded!"/>
     </target>
 
-    <target name="publish-build" depends="wait-for-sign-jar, wait-report-timeout, publish-artifacts, populate-p2-update-site">
+    <target name="publish-build" depends="wait-for-sign-jar, wait-report-timeout, publish-artifacts, populate-p2-update-site"/>
     <target name="publish-artifacts">
         <!-- New Publish Architecture -->
         <mkdir dir="${download.path}"/>
