@@ -395,6 +395,11 @@ public class AnnotationsProcessor {
                 XmlElement element = (XmlElement) helper.getAnnotation(property.getElement(), XmlElement.class);
                 if (element.type() != XmlElement.DEFAULT.class) {
                     propertyType = helper.getJavaClass(element.type());
+                    property.setType(propertyType);
+                }
+                // handle default value
+                if (!element.defaultValue().equals("\u0000")) {
+                    property.setDefaultValue(element.defaultValue());
                 }
                 validateElementIsInPropOrder(info, property.getPropertyName());
             }

@@ -80,7 +80,7 @@ public class SchemaGenEmployeeTestCases extends TestCase {
         builderFactory.setNamespaceAware(true);
         DocumentBuilder parser = builderFactory.newDocumentBuilder();
             
-        InputStream stream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/schemagen/employee/schema0.xsd");
+        InputStream stream = new FileInputStream(new File("org/eclipse/persistence/testing/jaxb/schemagen/employee/schema0.xsd"));
         Document control = parser.parse(stream);
             
         stream = new FileInputStream(new File(tmpdir + "/schema0.xsd"));

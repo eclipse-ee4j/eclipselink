@@ -6,6 +6,8 @@
   <lastName>lastName</lastName>
   <address postal-code="">
     <country-name>country-name</country-name>
+    <myInteger/>
+    <myObject>66</myObject>
     <street-name>street-name</street-name>
   </address>
   <department>4</department>

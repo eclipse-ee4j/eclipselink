@@ -582,6 +582,10 @@ public class SchemaGenerator {
                     }
                     // handle nillable
                     element.setNillable(next.isNillable());
+                    // handle defaultValue
+                    if (next.isSetDefaultValue()) {
+                        element.setDefaultValue(next.getDefaultValue());
+                    }
                     
                     QName elementName = next.getSchemaName();
                     JavaClass javaType = next.getType();

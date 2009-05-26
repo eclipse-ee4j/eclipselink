@@ -29,7 +29,7 @@ import org.eclipse.persistence.jaxb.javamodel.JavaMethod;
  *  <li>Store some JAXB 2.0 Runtime specific information such as JAXB 2.0 Adapter classes</li>
  *  </ul>
  *  <p>This class is used to store information about a property on a JAXB 2.0 annotated class. It is 
- *  created by the AnnotationsProcessor duing pre-processing and stored on a TypeInfo object
+ *  created by the AnnotationsProcessor during pre-processing and stored on a TypeInfo object
  *  
  *  @see org.eclipse.persistence.jaxb.compiler.TypeInfo
  *  @see org.eclipse.persistence.jaxb.compiler.AnnotationsProcessor
@@ -56,6 +56,8 @@ public class Property {
     private boolean isRequired = false;
     private boolean isNillable = false;
     private boolean isTransient;
+    private String defaultValue;
+    private boolean isSetDefaultValue = false;
     
     public Property() {
     }
@@ -239,5 +241,27 @@ public class Property {
 
     public void setTransient(boolean isTransient) {
         this.isTransient = isTransient;
+    }
+
+    /**
+     * @param defaultValue the defaultValue to set
+     */
+    public void setDefaultValue(String defaultValue) {
+        this.defaultValue = defaultValue;
+        this.isSetDefaultValue = true;
+    }
+
+    /**
+     * @return the defaultValue
+     */
+    public String getDefaultValue() {
+        return defaultValue;
+    }
+
+    /**
+     * @return the isSetDefaultValue
+     */
+    public boolean isSetDefaultValue() {
+        return isSetDefaultValue;
     }
 }

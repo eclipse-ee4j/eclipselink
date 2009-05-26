@@ -53,4 +53,10 @@ public class Address {
     public void setCountry(String country) {
         this.country = country;
     }
+    
+    @XmlElement(type=Integer.class)
+    public Object myObject;
+
+    @XmlElement(defaultValue="1")
+    public Integer myInteger;
 }
