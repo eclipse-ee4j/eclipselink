@@ -46,6 +46,9 @@ public class UnitOfWorkConformTest extends TestCase {
         Employee newEmployee = new org.eclipse.persistence.testing.models.employee.domain.Employee();
         newEmployee.setFirstName("Bob");
         uow.registerObject(newEmployee);
+        newEmployee = new org.eclipse.persistence.testing.models.employee.domain.Employee();
+        newEmployee.setFirstName("newBobby");
+        uow.registerNewObject(newEmployee);
         uow.deleteObject(uow.readObject(Employee.class, new ExpressionBuilder().get("firstName").equal("Sarah")));
 
         org.eclipse.persistence.tools.schemaframework.PopulationManager manager = org.eclipse.persistence.tools.schemaframework.PopulationManager.getDefaultManager();

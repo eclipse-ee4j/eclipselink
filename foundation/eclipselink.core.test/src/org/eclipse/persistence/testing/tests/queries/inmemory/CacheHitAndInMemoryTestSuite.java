@@ -315,7 +315,7 @@ public class CacheHitAndInMemoryTestSuite extends TestSuite {
 
         query = new ReadAllQuery(Employee.class);
         query.conformResultsInUnitOfWork();
-        test = new UnitOfWorkConformTest(query, 12);
+        test = new UnitOfWorkConformTest(query, 13);
         test.setName("UnitOfWorkConformTest - no selection criteria");
         addTest(test);
 
@@ -323,6 +323,13 @@ public class CacheHitAndInMemoryTestSuite extends TestSuite {
         query = new ReadAllQuery(Employee.class, builder.get("firstName").equal("Bob"));
         query.conformResultsInUnitOfWork();
         test = new UnitOfWorkConformTest(query, 2);
+        test.setName("UnitOfWorkConformTest - by name, new object");
+        addTest(test);
+
+        builder = new ExpressionBuilder();
+        query = new ReadAllQuery(Employee.class, builder.get("firstName").equal("newBobby"));
+        query.conformResultsInUnitOfWork();
+        test = new UnitOfWorkConformTest(query, 1);
         test.setName("UnitOfWorkConformTest - by name, new object");
         addTest(test);
 
