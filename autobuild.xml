@@ -490,7 +490,7 @@
         <fail unless="build.path.exist"     message="${build.source.path} not found! Cannot promote this build."/>
         <!-- FAIL THIS PROMOTION if the signed archive for build is not found                           -->
         <fail unless="signed.archive.exist" message="${build.signed.archive} not found! Cannot promote this build."/>
-        <property name="temp.rebuild.path" value="/tmp/EL${run.date}.${run.time}/${version.string}"/>
+        <property name="temp.rebuild.path" value="/tmp/EL${run.date}.${run.time}-${version.string}"/>
         <delete dir="${temp.rebuild.path}" failonerror="false"/>
         <mkdir dir="${temp.rebuild.path}"/>
     </target>
