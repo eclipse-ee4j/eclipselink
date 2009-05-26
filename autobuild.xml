@@ -46,11 +46,8 @@
     <target name="build-nightly"    description="Trigger the nightly automated build and lrg tests"
             depends="clean, build, test-lrg, publish-build, publish-results, test-for-errors"
     />
-    <!-- target name="build-milestone"  description="Trigger build, testing, and publishing of a milestone release ('release' is a milestone in this case)"
-            depends="promote-init, extract-signed-artifacts, regen-archives, gen-build-for-maven, publish-milestone, populate-p2-update-site, create-tag"
-    / -->
     <target name="build-milestone"  description="Trigger build, testing, and publishing of a milestone release ('release' is a milestone in this case)"
-            depends="promote-init, extract-signed-artifacts, regen-archives, gen-build-for-maven, populate-p2-update-site"
+            depends="promote-init, extract-signed-artifacts, regen-archives, gen-build-for-maven, publish-milestone, populate-p2-update-site, create-tag"
     />
     <target name="build-continuous" description="Trigger an automated build and run the tests if source changes exist"
             depends="clean, build-no-javadoc, build-utils, test-srg"
@@ -617,7 +614,7 @@
         <ant antfile="build.xml" dir="${build.root.dir}/features" target="generate-p2-repos">
             <property name="bundle.installer.exist" value="true"/>
         </ant>
-        <!-- delete dir="${temp.rebuild.path}" failonerror="false"/ -->
+        <delete dir="${temp.rebuild.path}" failonerror="false"/>
     </target>
 
 </project>
