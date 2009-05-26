@@ -87,8 +87,8 @@
         <property name="feature.2.jpa.plugins"              value="${feature.2.base.dir}/${eclipselink.jpa.plugins}"/>
     
         <!-- Tool definitions -->
-        <property name="p2.SDK.install.dir" value="C:\eclipseSDK\eclipse"/>
-        <property name="p2.SDK.plugin.dir" value="${p2.SDK.install.dir}\plugins"/>
+        <property name="p2.SDK.install.dir" value="C:/eclipseSDK/eclipse"/>
+        <property name="p2.SDK.plugin.dir" value="${p2.SDK.install.dir}/plugins"/>
         <property name="p2.generator.jar" value="org.eclipse.equinox.p2.metadata.generator_*.jar"/>
         <property name="p2.launcher.jar" value="org.eclipse.equinox.launcher_*.jar"/>
         <property name="signing.script" value="dir"/>
@@ -96,13 +96,14 @@
         <!-- property name="p2.ant.tasks.classpath" value="${p2.SDK.plugin.dir}\${p2.generator.jar}" / -->
     
         <!-- Input definitions -->
-        <property name="p2.base.dir"         value="C:\__EL-RepositorySite"/>
+        <property name="p2.base.dir"         value="C:/__EL-RepositorySite"/>
         <property name="p2.feature.dir"      value="${p2.base.dir}/features"/>
         <property name="p2.bundle.dir"       value="${p2.base.dir}/plugins"/>
         <property name="bundle.install.file" value="${feature.2.base.dir}/${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}"/>
         <property name="site.dir"            value="${feature.build.location}/${classes.dir}"/>
         <property name="site.url"            value="file:${site.dir}/site.xml"/>
         <!-- Output definitions -->
+        <property name="p2.base.url"             value="file:/${p2.base.dir}"/> <!-- DO NOT Override this one -->
         <property name="p2.repos.url"            value="file:/${p2.base.dir}"/>
         <property name="P2.milestone.repos.name" value="EclipseLink Milestone Repository"/>
         <property name="P2.release.repos.name"   value="EclipseLink Repository"/>
@@ -351,6 +352,7 @@
         <echo message="p2.base.dir   ='${p2.base.dir}'"/>
         <echo message="p2.feature.dir='${p2.feature.dir}'"/>
         <echo message="p2.bundle.dir ='${p2.bundle.dir}'"/>
+        <echo message="p2.base.url   ='${p2.repos.url}'"/>
         <echo message="p2.repos.url  ='${p2.repos.url}'"/>
         <echo message="java.home     ='${java.home}'"/>
         <echo message="p2.SDK.plugin.dir='${p2.SDK.plugin.dir}'"/>
@@ -374,8 +376,8 @@
             <arg line=" -application org.eclipse.equinox.p2.metadata.generator.EclipseGenerator" />
             <arg line=" -updateSite ${p2.base.dir}/ -site ${site.url}" />
             <arg line=" -source ${p2.base.dir}/ -features ${p2.feature.dir}/ -bundles ${p2.bundle.dir}/" />
-            <arg line=" -metadataRepository ${p2.repos.url}/ -metadataRepositoryName ${metadata.repos.name}" />
-            <arg line=" -artifactRepository ${p2.repos.url}/ -artifactRepositoryName ${artifact.repos.name}" />
+            <arg line=" -metadataRepository ${p2.base.url}/ -metadataRepositoryName ${metadata.repos.name}" />
+            <arg line=" -artifactRepository ${p2.base.url}/ -artifactRepositoryName ${artifact.repos.name}" />
             <arg line=" -compress -reusePack200Files" />
         </java>
     </target>
