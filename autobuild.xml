@@ -373,7 +373,8 @@
         <echo message="Signing aborted, wait time exceeded!"/>
     </target>
 
-    <target name="publish-build" depends="wait-for-sign-jar, wait-report-timeout, populate-p2-update-site">
+    <target name="publish-build" depends="wait-for-sign-jar, wait-report-timeout, publish-artifacts, populate-p2-update-site">
+    <target name="publish-artifacts">
         <!-- New Publish Architecture -->
         <mkdir dir="${download.path}"/>
         <copy file="${signing.dir}/signed-output/${eclipselink.p2.archive.presigned}"                  tofile="${download.path}/${eclipselink.p2.archive.signed}" failonerror="false"/>
