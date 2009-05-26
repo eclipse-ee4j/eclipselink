@@ -155,7 +155,8 @@
             <equals arg1="${build.type}" arg2="RELEASE"/>
         </condition>
         <property name="p2.repos.path" value="${eclipselink.download.path}/incremental-updates/milestone"/>
-
+        <property name="p2.base.dir" value="${p2.repos.path}"/>
+        
         <!-- Set p2 repository url appropriately depending upon build target     -->
         <condition property="p2.repos.url" value="${eclipselink.download.url}/incremental-updates/nightly">
             <equals arg1="${build.type}" arg2="SNAPSHOT"/>
@@ -589,7 +590,6 @@
         <ant antfile="build.xml" dir="${build.root.dir}/features" target="generate-p2-repos">
             <property name="bundle.installer.exist" value="true"/>
             <property name="p2.SDK.install.dir" value="${build.deps.dir}/eclipse"/>
-            <property name="p2.base.dir" value="${p2.repos.path}"/>
             <property name="site.dir" value="${signed.jar.path}"/>
         </ant>
         <delete dir="${temp.rebuild.path}" failonerror="false"/>
