@@ -146,7 +146,7 @@
     </target>
 
     <target name="generate-manifest" description="Generate the OSGi bundle manifest before jarring">                                                                                                               
-        <delete file="${classes.dir}/MANIFEST.MF" quiet="true"/>                                                                                                                                                         
+        <delete file="${classes.dir}/MANIFEST.MF*" quiet="true"/>                                                                                                                                                         
         <echo message="Manifest-Version: 1.0${line.separator}"                                                      file="${classes.dir}/MANIFEST.MF" append="false"/>                                                   
         <echo message="Specification-Vendor: ${specification.vendor}${line.separator}"                              file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="Specification-Version: ${release.version}${line.separator}"                                  file="${classes.dir}/MANIFEST.MF" append="true"/>
