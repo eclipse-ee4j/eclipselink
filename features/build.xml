@@ -348,7 +348,17 @@
     </target>
 
     <target name="generate-p2-repos" depends="init, create-site-for-generation">
-        <echo message="Site url='${site.url}'"/>
+        <echo message="p2.base.dir   ='${p2.base.dir}'"/>
+        <echo message="p2.feature.dir='${p2.feature.dir}'"/>
+        <echo message="p2.bundle.dir ='${p2.bundle.dir}'"/>
+        <echo message="p2.repos.url  ='${p2.repos.url}'"/>
+        <echo message="java.home     ='${java.home}'"/>
+        <echo message="p2.SDK.plugin.dir='${p2.SDK.plugin.dir}'"/>
+        <echo message="p2.launcher.jar  ='${p2.launcher.jar}'"/>
+        <echo message="p2.generator.jar ='${p2.generator.jar}'"/>
+        <echo message="site.url           ='${site.url}'"/>
+        <echo message="metadata.repos.name='${metadata.repos.name}'"/>
+        <echo message="artifact.repos.name='${artifact.repos.name}'"/>
         <!-- Metadata generator apparently doesn't rebuild the artifact and content xml files if they already exist -->
         <delete  failonerror="false">
             <fileset dir="${p2.base.dir}" includes="artifact*.*, content*.*"/>
