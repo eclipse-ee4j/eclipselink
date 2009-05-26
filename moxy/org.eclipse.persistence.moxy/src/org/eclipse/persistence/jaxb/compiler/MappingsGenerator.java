@@ -668,7 +668,8 @@ public class MappingsGenerator {
         }else{
             mapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);   
         }
-        
+        mapping.setUseXMLRoot(true);
+        mapping.setAttributeAccessor(new JAXBElementAttributeAccessor(mapping.getAttributeAccessor()));
         descriptor.addMapping(mapping);
     }
     
