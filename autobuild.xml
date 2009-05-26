@@ -46,8 +46,11 @@
     <target name="build-nightly"    description="Trigger the nightly automated build and lrg tests"
             depends="clean, build, test-lrg, publish-build, publish-results, test-for-errors"
     />
-    <target name="build-milestone"  description="Trigger build, testing, and publishing of a milestone release ('release' is a milestone in this case)"
+    <!-- target name="build-milestone"  description="Trigger build, testing, and publishing of a milestone release ('release' is a milestone in this case)"
             depends="promote-init, extract-signed-artifacts, regen-archives, gen-build-for-maven, publish-milestone, populate-p2-update-site, create-tag"
+    / -->
+    <target name="build-milestone"  description="Trigger build, testing, and publishing of a milestone release ('release' is a milestone in this case)"
+            depends="promote-init, extract-signed-artifacts, regen-archives, gen-build-for-maven, populate-p2-update-site"
     />
     <target name="build-continuous" description="Trigger an automated build and run the tests if source changes exist"
             depends="clean, build-no-javadoc, build-utils, test-srg"
@@ -198,12 +201,22 @@
         <echo message="ANT_ARGS='${env.ANT_ARGS}'"/>
         <echo message="ANT_OPTS='${env.ANT_OPTS}'"/>
         <echo message=" "/>
+        <echo message="env.JAVA_HOME   = '${env.JAVA_HOME}'"/>
+        <echo message="env.ANT_HOME    = '${env.ANT_HOME}'"/>
+        <echo message="env.JUNIT_HOME  = '${env.JUNIT_HOME}'"/>
+        <echo message="env.MAVENANT_DIR= '${env.MAVENANT_DIR}'"/>
+        <echo message="env.PATH        = '${env.PATH}'"/>
+        <echo message="env.CLASSPATH   = '${env.CLASSPATH}'"/>   
+        <echo message="env.SVN_EXEC    = '${env.SVN_EXEC}'"/>
+        <echo message="env.TARGET      = '${env.TARGET}'"/>
+        <echo message=" "/>
         <echo message="builddate.buildtime='${build.date}.${build.time}'"/>
         <echo message="java.version  ='${java.version}'"/>
         <echo message="os.name       ='${os.name}'"/>
         <echo message="os.arch       ='${os.arch}'"/>
         <echo message="os.version    ='${os.version}'"/>
         <echo message=" "/>
+        <echo message="branch.name   = '${branch.name}'"/>
         <echo message="basedir       ='${basedir}'"/>
         <echo message="build.deps.dir='${build.deps.dir}'"/>
         <echo message="build.root.dir='${build.root.dir}'"/>
@@ -604,7 +617,7 @@
             <property name="p2.SDK.install.dir" value="${build.deps.dir}/eclipse"/>
             <property name="site.dir" value="${signed.jar.path}"/>
         </ant>
-        <delete dir="${temp.rebuild.path}" failonerror="false"/>
+        <!-- delete dir="${temp.rebuild.path}" failonerror="false"/ -->
     </target>
 
 </project>
