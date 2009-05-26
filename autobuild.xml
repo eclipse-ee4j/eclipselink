@@ -486,31 +486,41 @@
         <unzip dest="${signed.jar.path}" src="${build.source.path}/${eclipselink.p2.archive.signed}"/>
     </target>
        
-    <target name="regen-archives">
-        <echo message="Creating signed versions of archives..."/>
-        <!-- unzip original versions to working dir -->
+    <target name="regen-archives" depends="regen-installer-archive, regen-plugin-archive"/>
+    <target name="regen-installer-archive">
+        <!--     THIS IS NOT DONE. Unless we start signing eclipselink.jar or DBWS Utils again. -->
+        <echo message="     THIS IS NOT DONE. Unless we start signing eclipselink.jar or DBWS Utils again."/>
+        <echo message="However, we still need a copy of eclipslink.jar for maven. Extracting from original InstallerZip for later copy..."/>
+        <!-- unzip original InstallerZip to working dir -->
+        <!-- echo message="Creating signed versions of InstallerZip archive..."/ -->
         <unzip dest="${temp.rebuild.path}/install" src="${build.source.path}/${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}">
             <patternset>
                 <include name="**/*"/>
             </patternset>
         </unzip>
+        <!-- Force overwrite of original content -->
+        <!-- copy todir="${temp.rebuild.path}/install/eclipselink/utils/dbws" file="${signed.jar.path}/${dbws-util.jar.name}"   failonerror="false"/>
+        <copy todir="${temp.rebuild.path}/install/eclipselink/jlib"       file="${signed.jar.path}/${eclipselink.jar.name}" failonerror="false"/ -->
+        <!-- Rezip EclipseLink Installer Zip -->
+        <!-- zip destfile="${temp.rebuild.path}/${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}" update="true">
+            <zipfileset dir="${temp.rebuild.path}/install" includes="**/*" />
+        </zip --> 
+    </target>
+    
+    <target name="regen-plugin-archive">
+        <echo message="Creating signed versions of Plugins archive..."/>
+        <!-- unzip original PluginInstaller to working dir -->
         <unzip dest="${temp.rebuild.path}/bundlezip" src="${build.source.path}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}">
             <patternset>
                 <include name="**/*"/>
             </patternset>
         </unzip>
         <!-- Force overwrite of original content -->
-        <copy todir="${temp.rebuild.path}/install/eclipselink/utils/dbws" file="${signed.jar.path}/${dbws-util.jar.name}"   failonerror="false"/>
-        <copy todir="${temp.rebuild.path}/install/eclipselink/jlib"       file="${signed.jar.path}/${eclipselink.jar.name}" failonerror="false"/>
         <copy todir="${temp.rebuild.path}/bundlezip" failonerror="false">
             <fileset dir="${signed.jar.path}/plugins">
                 <include name="*.jar"/>
             </fileset>
         </copy>
-        <!-- Rezip EclipseLink Installer Zip -->
-        <zip destfile="${temp.rebuild.path}/${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}" update="true">
-            <zipfileset dir="${temp.rebuild.path}/install" includes="**/*" />
-        </zip> 
         <!-- Rezip EclipseLink Plugins Zip -->
         <zip destfile="${temp.rebuild.path}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}" update="true">
             <zipfileset dir="${temp.rebuild.path}/bundlezip" includes="**/*" />
@@ -518,14 +528,20 @@
     </target>
     
     <target name="gen-build-for-maven">
+        <!-- MUST BE DONE AFTER Recreating "signed" version of the archives -->
         <echo message="Prepare for Maven publishing"/>
         <property name="tmp.maven.dir" value="${temp.rebuild.path}/maven"/>
         <!-- need to setup a dir that contains the correct contents for maven to promote -->
         <mkdir dir="${tmp.maven.dir}"/>
         <!-- get eclipselink source zip -->
         <copy file="${build.source.path}/${eclipselink.src.install.prefix}-${version.string}${eclipselink.zip.suffix}" tofile="${tmp.maven.dir}/${eclipselink.src.install.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
-        <!-- get eclipselink.jar -->
-        <copy todir="${tmp.maven.dir}" file="${signed.jar.path}/${eclipselink.jar.name}"/>
+        <!-- get eclipselink.jar (from temp InstallerZip location, so will work if signed or unsigned) -->
+        <copy todir="${tmp.maven.dir}" file="${temp.rebuild.path}/install/eclipselink/jlib/${eclipselink.jar.name}"/>
+        <unzip dest="${temp.rebuild.path}/install" src="${build.source.path}/${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}">
+            <patternset>
+                <include name="**/*"/>
+            </patternset>
+        </unzip -->
         <!-- get bundles -->
         <copy todir="${tmp.maven.dir}/${plugins.dir}">
             <fileset dir="${signed.jar.path}/${plugins.dir}">
@@ -544,9 +560,10 @@
         <!-- Publish from nightly published location to Milestone dir -->
         <mkdir dir="${download.path}"/>
         <!-- From temp rebuild location -->
-        <copy todir="${download.path}" file="${temp.rebuild.path}/${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}"         failonerror="false"/>
+        <!-- copy todir="${download.path}" file="${temp.rebuild.path}/${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}"         failonerror="false"/ -->
         <copy todir="${download.path}" file="${temp.rebuild.path}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
         <!-- Populated directly from original build -->
+        <copy todir="${download.path}" file="${build.source.path}/${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}"         failonerror="false"/>
         <copy todir="${download.path}" file="${build.source.path}/${eclipselink.src.install.prefix}-${version.string}${eclipselink.zip.suffix}"     failonerror="false"/>
         <copy todir="${download.path}" file="${build.source.path}/${eclipselink.tst.src.prefix}-${version.string}${eclipselink.zip.suffix}"         failonerror="false"/>
         <copy todir="${download.path}" file="${build.source.path}/eclipselink-core-lrg-${version.string}.html"                                      failonerror="false"/>
