@@ -33,16 +33,6 @@ public class SDOTypeInstanceClassTestCases extends SDOTestCase {
         assertNotNull(theClass);
     }
 
-    public void testInstanceClassInvlaidNameWithNullInstanceClass() {
-        SDOType type = new SDOType("my.uri", "myType");
-
-        type.setInstanceClass(null);
-        type.setInstanceClassName("org.eclipse.persistence.testing.sdo.myInvalidClass");
-
-        Class theClass = type.getInstanceClass();
-        assertNotNull(theClass);
-    }
-
     public void testIsInstance() {
         SDOType type = new SDOType(aHelperContext);
         type.setInstanceClass(USAddress.class);
