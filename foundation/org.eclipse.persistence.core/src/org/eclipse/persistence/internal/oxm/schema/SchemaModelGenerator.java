@@ -575,7 +575,7 @@ public class SchemaModelGenerator {
     	frag = getTargetXPathFragment(frag);
 
         String schemaTypeString = getSchemaTypeForElement(field, mapping.getAttributeElementClass(), workingSchema);
-        Element element;
+        Element element = null;
         if (field.usesSingleNode()) {
             SimpleType st = new SimpleType();
             org.eclipse.persistence.internal.oxm.schema.model.List list = new org.eclipse.persistence.internal.oxm.schema.model.List();
@@ -589,8 +589,12 @@ public class SchemaModelGenerator {
             element = buildElement(field.getXPathFragment(), null, Occurs.ZERO, null);
             element.setSimpleType(st);
         } else {
-            element = buildElement(field.getXPathFragment(), schemaTypeString, Occurs.ZERO, null);
-            element.setMaxOccurs(Occurs.UNBOUNDED);
+            if (frag.getNamespaceURI() != null) {
+                element = handleFragNamespace(frag, schemaForNamespace, workingSchema, properties, element, schemaTypeString);
+                element.setMaxOccurs(Occurs.UNBOUNDED);
+            } else {
+                element = buildElement(frag, schemaTypeString, Occurs.ZERO, Occurs.UNBOUNDED);
+            }
         }
         seq.addElement(element);
     }

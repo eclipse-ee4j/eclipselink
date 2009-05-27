@@ -98,6 +98,13 @@
                   <collection-type>java.util.Vector</collection-type>
                </container>
             </attribute-mapping>
+            <attribute-mapping xsi:type="xml-composite-direct-collection-mapping">
+               <attribute-name>stuff</attribute-name>
+               <field name="things/stuff/text()" xsi:type="node"/>
+               <container xsi:type="list-container-policy">
+                  <collection-type>java.util.List</collection-type>
+               </container>
+            </attribute-mapping>
          </attribute-mappings>
          <descriptor-type>aggregate</descriptor-type>
          <instantiation/>

@@ -96,8 +96,12 @@ public class GenerateSingleSchemaTestCases extends GenerateSchemaTestCases {
             List<XMLDescriptor> descriptorsToProcess = setupDescriptorList(prj);
             Map<String, Schema> generatedSchemas = sg.generateSchemas(descriptorsToProcess, props);
             generatedSchema = generatedSchemas.get(MYNS);
-            assertNotNull("No schema was generated for namespace ["+MYNS+"]", generatedSchema);
             
+            // debugging
+            //writeSchema(generatedSchema);
+            
+            assertNotNull("No schema was generated for namespace ["+MYNS+"]", generatedSchema);
+
             tDoc = getDocument(generatedSchema);
             cDoc = getDocument(ELEMENT_FORM_QUALIFIED_RESOURCE);
         } catch (Exception ex) {

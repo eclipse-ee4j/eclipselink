@@ -12,6 +12,7 @@
 ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.schemamodelgenerator.mappings.pathbased;
 
+import java.util.List;
 import java.util.Vector;
 
 public class Customer  {
@@ -22,6 +23,7 @@ public class Customer  {
 	private Address billingAddress;
 	private Address shippingAddress;
 	private Vector phoneNumbers;
+	public List<String> stuff;
 
 	public Customer() {
 		super();

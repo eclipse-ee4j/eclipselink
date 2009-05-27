@@ -72,13 +72,14 @@ public class PathbasedMappingTestCases extends GenerateSchemaTestCases {
             generatedSchema = generatedSchemas.get(MYNS);
             assertNotNull("No schema was generated for namespace ["+MYNS+"]", generatedSchema);
 
+            writeSchema(generatedSchema);
+
             tDoc = getDocument(generatedSchema);
             cDoc = getDocument(XSD_RESOURCE);
+            
             assertNotNull("Schema to Document conversion failed", tDoc);
             assertNotNull("A problem occurred loading the control schema", cDoc);
             assertTrue("Schema comparsion failed", comparer.isSchemaEqual(cDoc, tDoc));
-            
-            writeSchema(generatedSchema);
             
             SchemaFactory sFact = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
             javax.xml.validation.Schema theSchema = sFact.newSchema(new File(TMP_DIR + "generatedSchema.xsd"));
@@ -112,14 +113,14 @@ public class PathbasedMappingTestCases extends GenerateSchemaTestCases {
             generatedSchema = generatedSchemas.get(MYNS);
             assertNotNull("No schema was generated for namespace ["+MYNS+"]", generatedSchema);
 
+            writeSchema(generatedSchema);
+
             tDoc = getDocument(generatedSchema);
             cDoc = getDocument(XSD_RESOURCE);
 
             assertNotNull("Schema to Document conversion failed", tDoc);
             assertNotNull("A problem occurred loading the control schema", cDoc);
             assertTrue("Schema comparsion failed", comparer.isSchemaEqual(cDoc, tDoc));
-            
-            writeSchema(generatedSchema);
             
             SchemaFactory sFact = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
             javax.xml.validation.Schema theSchema = sFact.newSchema(new File(TMP_DIR + "generatedSchema.xsd"));

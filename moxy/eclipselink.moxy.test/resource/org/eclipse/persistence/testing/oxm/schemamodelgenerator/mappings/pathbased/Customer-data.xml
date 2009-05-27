@@ -22,4 +22,9 @@
 		<c:phone-number number-type="work">(613) 555-1111</c:phone-number>
 		<c:phone-number number-type="cell">(613) 555-2222</c:phone-number>
 	</c:contact-info>
+    <things>
+        <stuff>blah</stuff>
+        <stuff>blah blah</stuff>
+        <stuff>blah blah blah</stuff>
+    </things>
 </c:customer>
