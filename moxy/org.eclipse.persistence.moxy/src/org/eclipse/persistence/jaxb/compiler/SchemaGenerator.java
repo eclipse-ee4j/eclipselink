@@ -1025,7 +1025,9 @@ public class SchemaGenerator {
 	        if(schemaName != null && !importExists(sourceSchema, schemaName)){                            
 	            Import schemaImport = new Import();
 	            schemaImport.setSchemaLocation(schemaName);
-	            schemaImport.setNamespace(importNamespace);
+	            if (importNamespace != null && !importNamespace.equals("")) {
+	                schemaImport.setNamespace(importNamespace);
+	            }
 	            sourceSchema.getImports().add(schemaImport);
 	            if (schemaImport.getNamespace() != null) { 
 	            	String prefix = sourceSchema.getNamespaceResolver().resolveNamespaceURI(importNamespace);
