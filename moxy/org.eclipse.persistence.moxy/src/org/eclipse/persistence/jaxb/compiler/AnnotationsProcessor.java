@@ -1461,7 +1461,7 @@ public class AnnotationsProcessor {
     }
     
     public JavaClass[] processObjectFactory(JavaClass objectFactoryClass, ArrayList<JavaClass> classes) {
-        Collection methods = objectFactoryClass.getMethods();
+        Collection methods = objectFactoryClass.getDeclaredMethods();
         Iterator methodsIter = methods.iterator();
         NamespaceInfo namespaceInfo = getNamespaceInfoForPackage(objectFactoryClass.getPackage());
         while(methodsIter.hasNext()) {
