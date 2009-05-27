@@ -58,6 +58,7 @@ public class Property {
     private boolean isTransient;
     private String defaultValue;
     private boolean isSetDefaultValue = false;
+    private boolean isMixedContent = false;
     
     public Property() {
     }
@@ -263,5 +264,13 @@ public class Property {
      */
     public boolean isSetDefaultValue() {
         return isSetDefaultValue;
+    }
+    
+    public boolean isMixedContent() {
+        return isMixedContent;
+    }
+    
+    public void setMixedContent(boolean b) {
+        this.isMixedContent = b;
     }
 }

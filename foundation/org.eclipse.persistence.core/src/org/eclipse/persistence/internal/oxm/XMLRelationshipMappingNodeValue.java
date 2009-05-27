@@ -198,7 +198,7 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
     }
   
     protected void endElementProcessText(UnmarshalRecord unmarshalRecord, Converter converter, XPathFragment xPathFragment, Object collection) {
-        Object value = unmarshalRecord.getStringBuffer().toString().trim();
+        Object value = unmarshalRecord.getStringBuffer().toString();
         if(converter != null) {
             if(converter instanceof XMLConverter){
                 value = ((XMLConverter)converter).convertDataValueToObjectValue(value, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller());

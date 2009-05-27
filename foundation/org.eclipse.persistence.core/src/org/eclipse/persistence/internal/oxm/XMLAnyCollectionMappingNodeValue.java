@@ -155,17 +155,21 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
             SAXFragmentBuilder builder = unmarshalRecord.getFragmentBuilder();
 
             UnmarshalKeepAsElementPolicy keepAsElementPolicy = xmlAnyCollectionMapping.getKeepAsElementPolicy();
-            if ((((keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) || (keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT))) && (builder.getNodes().size() != 0)) {
+            if ((((keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) || (keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT))) && (builder.getNodes().size() > 1)) {
                 setOrAddAttributeValueForKeepAsElement(builder, xmlAnyCollectionMapping, xmlAnyCollectionMapping.getConverter(), unmarshalRecord, true, null);
             } else {
                 //TEXT VALUE
-                endElementProcessText(unmarshalRecord, xmlAnyCollectionMapping.getConverter(), xPathFragment, null);
+                if(xmlAnyCollectionMapping.isMixedContent()) {
+                    endElementProcessText(unmarshalRecord, xmlAnyCollectionMapping.getConverter(), xPathFragment, null);
+                } else {
+                    unmarshalRecord.resetStringBuffer();
+                }
             }
         }
     }
 
     private void startElementProcessText(UnmarshalRecord unmarshalRecord, Object collection) {
-        Object value = unmarshalRecord.getStringBuffer().toString().trim();
+        Object value = unmarshalRecord.getStringBuffer().toString();
         unmarshalRecord.resetStringBuffer();
         if (!EMPTY_STRING.equals(value) && xmlAnyCollectionMapping.isMixedContent()) {
             unmarshalRecord.addAttributeValue(this, value);
@@ -338,6 +342,14 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
 
     public XMLAnyCollectionMapping getMapping() {
         return xmlAnyCollectionMapping;
+    }
+    
+    public boolean isWhitespaceAware() {
+        return this.xmlAnyCollectionMapping.isMixedContent() && this.xmlAnyCollectionMapping.isWhitespacePreservedForMixedContent();
+    }
+    
+    public boolean isAnyMappingNodeValue() {
+        return true;
     }
 
 }

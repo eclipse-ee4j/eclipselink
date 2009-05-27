@@ -263,7 +263,7 @@ public class MappingsGenerator {
             }
         } else if(property.isAny()) {
             if(isCollectionType(property)){
-                generateAnyCollectionMapping(property, descriptor, namespaceInfo);
+                generateAnyCollectionMapping(property, descriptor, namespaceInfo, false);
             }else{
                 generateAnyObjectMapping(property, descriptor, namespaceInfo);
             }
@@ -433,8 +433,15 @@ public class MappingsGenerator {
     }
     
     
-    public XMLAnyCollectionMapping generateAnyCollectionMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
-        AnyProperty prop = (AnyProperty)property;
+    public XMLAnyCollectionMapping generateAnyCollectionMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo, boolean isMixed) {
+        boolean isLax = false;
+        Class domHandlerClass = null;
+        
+        if(property instanceof AnyProperty) {
+            AnyProperty prop = (AnyProperty)property;
+            isLax = prop.isLax();
+            domHandlerClass = prop.getDomHandlerClass();
+        }
         XMLAnyCollectionMapping  mapping = new XMLAnyCollectionMapping();
         mapping.setAttributeName(property.getPropertyName());
         if(property.isMethodProperty()) {
@@ -446,18 +453,24 @@ public class MappingsGenerator {
                 mapping.setIsWriteOnly(true);
             }
         }
-        mapping.setUseXMLRoot(true);
+        if(!isMixed) {
+            mapping.setUseXMLRoot(true);
+        }
         mapping.setAttributeAccessor(new JAXBElementAttributeAccessor(mapping.getAttributeAccessor(), mapping.getContainerPolicy()));
-        if(prop.isLax()) {
+        if(isLax) {
             mapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
         } else {
             mapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT);
         }
-        if(prop.getDomHandlerClass() != null) {
-            DomHandlerConverter converter = new DomHandlerConverter(prop.getDomHandlerClass());
+        if(domHandlerClass != null) {
+            DomHandlerConverter converter = new DomHandlerConverter(domHandlerClass);
             mapping.setConverter(converter);
         }
         descriptor.addMapping(mapping);
+        mapping.setMixedContent(isMixed);
+        if(isMixed) {
+            mapping.setPreserveWhitespaceForMixedContent(true);
+        }
         return mapping;
     }
     
@@ -578,6 +591,10 @@ public class MappingsGenerator {
             javaClass = (JavaClass) property.getGenericType();
         }
        
+        if (property.isMixedContent()) {
+            generateAnyCollectionMapping(property, descriptor, namespaceInfo, true);
+            return;
+        }
         if (helper.isAnnotationPresent(property.getElement(), XmlElement.class)) {
             XmlElement xmlElement = (XmlElement) helper.getAnnotation(property.getElement(), XmlElement.class);
             if (xmlElement.type() != XmlElement.DEFAULT.class) {
@@ -654,6 +671,7 @@ public class MappingsGenerator {
     public void generateAnyObjectMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
         XMLAnyObjectMapping mapping = new XMLAnyObjectMapping();
         mapping.setAttributeName(property.getPropertyName());
+        mapping.setMixedContent(false);
         if(property.isMethodProperty()) {
             mapping.setSetMethodName(property.getSetMethodName());
             mapping.setGetMethodName(property.getGetMethodName());
@@ -743,6 +761,9 @@ public class MappingsGenerator {
         mapping.useCollectionClassName(collectionType.getRawName());
         XMLField xmlField = getXPathForField(property, namespaceInfo, true);
         mapping.setField(xmlField);
+        if(helper.isAnnotationPresent(property.getElement(), XmlMixed.class)) {
+            xmlField.setXPath("text()");
+        }
         
         if(XMLConstants.QNAME_QNAME.equals(property.getSchemaType())){
             ((XMLField) mapping.getField()).setSchemaType(XMLConstants.QNAME_QNAME);

@@ -597,6 +597,7 @@ public class AnnotationsProcessor {
                     // Check for mixed context
                     if (helper.isAnnotationPresent((JavaHasAnnotations)nextField, XmlMixed.class)) {
                         info.setMixed(true);
+                        property.setMixedContent(true);
                     }
 
                     JavaClass ptype = (JavaClass) nextField.getResolvedType();
@@ -835,6 +836,7 @@ public class AnnotationsProcessor {
                 //  Check for mixed context
                 if (helper.isAnnotationPresent(propertyMethod, XmlMixed.class)) {
                     info.setMixed(true);
+                    property.setMixedContent(true);
                 }
                 
                 property.setElement(propertyMethod);

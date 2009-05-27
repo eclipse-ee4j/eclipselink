@@ -770,7 +770,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
                             return;
                         }
                         String tmpString = new String(ch, start, length);
-                        if (EMPTY_STRING.equals(tmpString.trim())) {
+                        if (EMPTY_STRING.equals(tmpString.trim()) && !textNode.isWhitespaceAware()) {
                             return;
                         }
                     }

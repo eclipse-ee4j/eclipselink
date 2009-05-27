@@ -160,6 +160,7 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements XM
     private ContainerPolicy containerPolicy;
     private boolean useXMLRoot;
     private boolean mixedContent = true;
+    private boolean isWhitespacePreservedForMixedContent = false;
     private boolean areOtherMappingInThisContext = true;
     private XMLConverter valueConverter;
 
@@ -775,5 +776,20 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements XM
     
     public XMLConverter getConverter() {
         return this.valueConverter;
+    }
+    
+    /**
+     * Setting this to true indicates that text nodes containing *only* whitespaces should still be 
+     * added to the collection as strings for mixed content.
+     * 
+     * If mixedContent is false, this setting has no effect.
+     * @return
+     */
+    public boolean isWhitespacePreservedForMixedContent() {
+        return this.isWhitespacePreservedForMixedContent;
+    }
+    
+    public void setPreserveWhitespaceForMixedContent(boolean preserveWhitespace) {
+        this.isWhitespacePreservedForMixedContent = preserveWhitespace;
     }
 }

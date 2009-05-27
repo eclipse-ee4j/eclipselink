@@ -160,6 +160,7 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
     private boolean useXMLRoot;
     private boolean areOtherMappingInThisContext = true;
     private XMLConverter converter;
+    private boolean isMixedContent = true;
 
     public XMLAnyObjectMapping() {
         useXMLRoot = false;
@@ -646,6 +647,14 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
     
     public void setConverter(XMLConverter converter) {
         this.converter = converter;
+    }
+    
+    public boolean isMixedContent() {
+        return this.isMixedContent;
+    }
+    
+    public void setMixedContent(boolean mixed) {
+        this.isMixedContent = mixed;
     }
 
 }

@@ -222,11 +222,15 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
 
             UnmarshalKeepAsElementPolicy keepAsElementPolicy = xmlAnyObjectMapping.getKeepAsElementPolicy();
 
-            if ((((keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) || (keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT))) && (builder.getNodes().size() != 0)) {
+            if ((((keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) || (keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT))) && (builder.getNodes().size() > 1)) {
                 setOrAddAttributeValueForKeepAsElement(builder, xmlAnyObjectMapping, xmlAnyObjectMapping.getConverter(), unmarshalRecord, false, null);
             } else {
-                // TEXT VALUE             
-                endElementProcessText(unmarshalRecord, xmlAnyObjectMapping.getConverter(), xPathFragment, null);
+                // TEXT VALUE   
+                if(xmlAnyObjectMapping.isMixedContent()) {
+                    endElementProcessText(unmarshalRecord, xmlAnyObjectMapping.getConverter(), xPathFragment, null);
+                } else {
+                    unmarshalRecord.resetStringBuffer();
+                }
             }
         }
     }
@@ -295,5 +299,13 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
     public XMLAnyObjectMapping getMapping() {
         return xmlAnyObjectMapping;
     }
+    
+    public boolean isWhitespaceAware() {
+        return false;
+    }
+    
+    public boolean isAnyMappingNodeValue() {
+        return true;
+    }    
     
 }

@@ -201,5 +201,13 @@ public abstract class NodeValue {
     public boolean isMappingNodeValue() {
         return true;
     }
+    
+    public boolean isWhitespaceAware() {
+        return false;
+    }
+    
+    public boolean isAnyMappingNodeValue() {
+        return false;
+    }
 
 }

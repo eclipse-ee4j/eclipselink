@@ -332,4 +332,8 @@ public class XPathNode {
         }
         return marshalNodeValue.marshalSelfAttributes(xPathFragment, marshalRecord, object, session, namespaceResolver, marshaller);
     }
+    
+    public boolean isWhitespaceAware() {
+        return this.getNodeValue().isWhitespaceAware();
+    }
 }
