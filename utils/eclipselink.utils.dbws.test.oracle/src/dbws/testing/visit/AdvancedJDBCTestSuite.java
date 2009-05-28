@@ -60,119 +60,84 @@ import static dbws.testing.visit.WebServiceTestSuite.DEFAULT_DATABASE_DRIVER;
 
 public class AdvancedJDBCTestSuite extends BuilderTestSuite {
     
+    static final String REGION_OR_PROJECT =
+    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+    "<object-persistence version=\"Eclipse Persistence Services - some version (some build date)\" xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:eclipselink=\"http://www.eclipse.org/eclipselink/xsds/persistence\">" +
+       "<name>region</name>" +
+       "<class-mapping-descriptors>" +
+          "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
+             "<class>advanced_object_demo.region</class>" +
+             "<alias>region</alias>" +
+             "<events xsi:type=\"event-policy\"/>" +
+             "<querying xsi:type=\"query-policy\"/>" +
+             "<attribute-mappings>" +
+                "<attribute-mapping xsi:type=\"direct-mapping\">" +
+                   "<attribute-name>reg_id</attribute-name>" +
+                   "<field name=\"REG_ID\" xsi:type=\"column\"/>" +
+                "</attribute-mapping>" +
+                "<attribute-mapping xsi:type=\"direct-mapping\">" +
+                   "<attribute-name>reg_name</attribute-name>" +
+                   "<field name=\"REG_NAME\" xsi:type=\"column\"/>" +
+                "</attribute-mapping>" +
+             "</attribute-mappings>" +
+             "<descriptor-type>aggregate</descriptor-type>" +
+             "<caching>" +
+                "<cache-size>-1</cache-size>" +
+             "</caching>" +
+             "<remote-caching>" +
+                "<cache-size>-1</cache-size>" +
+             "</remote-caching>" +
+             "<instantiation/>" +
+             "<copying xsi:type=\"instantiation-copy-policy\"/>" +
+             "<structure>REGION</structure>" +
+             "<field-order>" +
+                "<field name=\"REG_ID\" xsi:type=\"column\"/>" +
+                "<field name=\"REG_NAME\" xsi:type=\"column\"/>" +
+             "</field-order>" +
+          "</class-mapping-descriptor>" +
+       "</class-mapping-descriptors>" +
+       "<queries>" +
+           "<query name=\"echoRegion\" xsi:type=\"value-read-query\">" +
+              "<arguments>" +
+                 "<argument name=\"AREGION\">" +
+                    "<type>java.lang.Object</type>" +
+                 "</argument>" +
+              "</arguments>" +
+              "<maintain-cache>false</maintain-cache>" +
+              "<bind-all-parameters>true</bind-all-parameters>" +
+              "<call xsi:type=\"stored-function-call\">" +
+                 "<procedure-name>ADVANCED_OBJECT_DEMO.ECHOREGION</procedure-name>" +
+                 "<cursor-output-procedure>false</cursor-output-procedure>" +
+                 "<arguments>" +
+                    "<argument xsi:type=\"procedure-argument\">" +
+                       "<procedure-argument-name>AREGION</procedure-argument-name>" +
+                       "<argument-name>AREGION</argument-name>" +
+                       "<procedure-argument-type>advanced_object_demo.region</procedure-argument-type>" +
+                       "<procedure-argument-sqltype>2002</procedure-argument-sqltype>" +
+                       "<procedure-argument-sqltype-name>REGION</procedure-argument-sqltype-name>" +
+                    "</argument>" +
+                 "</arguments>" +
+                 "<stored-function-result xsi:type=\"procedure-output-argument\">" +
+                    "<procedure-argument-type>advanced_object_demo.region</procedure-argument-type>" +
+                    "<procedure-argument-sqltype>2002</procedure-argument-sqltype>" +
+                    "<procedure-argument-sqltype-name>REGION</procedure-argument-sqltype-name>" +
+                 "</stored-function-result>" +
+              "</call>" +
+           "</query>" +
+       "</queries>" +
+    "</object-persistence>";
+    @SuppressWarnings("unchecked")
     @Test
-    public void struct1LevelDeep_OrPart() throws SQLException, PublisherException {
+    public void struct1LevelDeep_OrPart() 
+        throws SQLException, PublisherException, InstantiationException, IllegalAccessException {
         ProcedureOperationModel pModel = new ProcedureOperationModel();
         pModel.setName("echoRegion");
         pModel.setCatalogPattern("ADVANCED_OBJECT_DEMO");
         pModel.setSchemaPattern(username.toUpperCase());
         pModel.setProcedurePattern("ECHOREGION");
         pModel.setReturnType("regionType");
-        List<DbStoredProcedure> storedProcedures = 
-            OracleHelper.buildStoredProcedure(conn, username, ora11Platform, pModel); 
-        Map<DbStoredProcedure, DbStoredProcedureNameAndModel> dbStoredProcedure2QueryName = 
-            new HashMap<DbStoredProcedure, DbStoredProcedureNameAndModel>();
-        ArrayList<OperationModel> operations = new ArrayList<OperationModel>();
-        operations.add(pModel);
-        DBWSBuilder.buildDbStoredProcedure2QueryNameMap(dbStoredProcedure2QueryName,
-            storedProcedures, operations, true);     
-        AdvancedJDBCORDescriptorBuilder advJOrDescriptorBuilder = 
-            new AdvancedJDBCORDescriptorBuilder();
-        AdvancedJDBCQueryBuilder queryBuilder = 
-            new AdvancedJDBCQueryBuilder(storedProcedures, dbStoredProcedure2QueryName);
-        PublisherListenerChainAdapter listenerChainAdapter = new PublisherListenerChainAdapter();
-        listenerChainAdapter.addListener(advJOrDescriptorBuilder);
-        listenerChainAdapter.addListener(queryBuilder);
-        PublisherWalker walker = new PublisherWalker(listenerChainAdapter);
-        pModel.getJPubType().accept(walker);
-        List<ObjectRelationalDataTypeDescriptor> descriptors = 
-            advJOrDescriptorBuilder.getDescriptors();
-        Project p = new Project();
-        p.setName("region");
-        for (ObjectRelationalDataTypeDescriptor ordt : descriptors) { 
-            p.addDescriptor(ordt);
-        }
-        List<DatabaseQuery> queries = queryBuilder.getQueries();
-        if (queries != null && queries.size() > 0) {
-            p.getQueries().addAll(queries);
-        }
-        Document resultDoc = xmlPlatform.createDocument();
-        XMLMarshaller marshaller = new XMLContext(writeObjectPersistenceProject).createMarshaller();
-        marshaller.marshal(p, resultDoc);
-        Document controlDoc = xmlParser.parse(new StringReader(REGION_OR_PROJECT));
-        assertTrue("control document not same as instance document",
-                comparer.isNodeEqual(controlDoc, resultDoc));
-    }
-    static final String REGION_OR_PROJECT =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-        "<object-persistence version=\"Eclipse Persistence Services - some version (some build date)\" xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:eclipselink=\"http://www.eclipse.org/eclipselink/xsds/persistence\">" +
-           "<name>region</name>" +
-           "<class-mapping-descriptors>" +
-              "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
-                 "<class>advanced_object_demo.region</class>" +
-                 "<alias>region</alias>" +
-                 "<events xsi:type=\"event-policy\"/>" +
-                 "<querying xsi:type=\"query-policy\"/>" +
-                 "<attribute-mappings>" +
-                    "<attribute-mapping xsi:type=\"direct-mapping\">" +
-                       "<attribute-name>reg_id</attribute-name>" +
-                       "<field name=\"REG_ID\" xsi:type=\"column\"/>" +
-                    "</attribute-mapping>" +
-                    "<attribute-mapping xsi:type=\"direct-mapping\">" +
-                       "<attribute-name>reg_name</attribute-name>" +
-                       "<field name=\"REG_NAME\" xsi:type=\"column\"/>" +
-                    "</attribute-mapping>" +
-                 "</attribute-mappings>" +
-                 "<descriptor-type>aggregate</descriptor-type>" +
-                 "<caching>" +
-                    "<cache-size>-1</cache-size>" +
-                 "</caching>" +
-                 "<remote-caching>" +
-                    "<cache-size>-1</cache-size>" +
-                 "</remote-caching>" +
-                 "<instantiation/>" +
-                 "<copying xsi:type=\"instantiation-copy-policy\"/>" +
-                 "<structure>REGION</structure>" +
-                 "<field-order>" +
-                    "<field name=\"REG_ID\" xsi:type=\"column\"/>" +
-                    "<field name=\"REG_NAME\" xsi:type=\"column\"/>" +
-                 "</field-order>" +
-              "</class-mapping-descriptor>" +
-           "</class-mapping-descriptors>" +
-           "<queries>" +
-               "<query name=\"echoRegion\" xsi:type=\"value-read-query\">" +
-                  "<arguments>" +
-                     "<argument name=\"AREGION\">" +
-                        "<type>java.lang.Object</type>" +
-                     "</argument>" +
-                  "</arguments>" +
-                  "<maintain-cache>false</maintain-cache>" +
-                  "<bind-all-parameters>true</bind-all-parameters>" +
-                  "<call xsi:type=\"stored-function-call\">" +
-                     "<procedure-name>ADVANCED_OBJECT_DEMO.ECHOREGION</procedure-name>" +
-                     "<cursor-output-procedure>false</cursor-output-procedure>" +
-                     "<arguments>" +
-                        "<argument xsi:type=\"procedure-argument\">" +
-                           "<procedure-argument-name>AREGION</procedure-argument-name>" +
-                           "<argument-name>AREGION</argument-name>" +
-                           "<procedure-argument-type>advanced_object_demo.region</procedure-argument-type>" +
-                           "<procedure-argument-sqltype>2002</procedure-argument-sqltype>" +
-                           "<procedure-argument-sqltype-name>REGION</procedure-argument-sqltype-name>" +
-                        "</argument>" +
-                     "</arguments>" +
-                     "<stored-function-result xsi:type=\"procedure-output-argument\">" +
-                        "<procedure-argument-type>advanced_object_demo.region</procedure-argument-type>" +
-                        "<procedure-argument-sqltype>2002</procedure-argument-sqltype>" +
-                        "<procedure-argument-sqltype-name>REGION</procedure-argument-sqltype-name>" +
-                     "</stored-function-result>" +
-                  "</call>" +
-               "</query>" +
-           "</queries>" +
-        "</object-persistence>";
-    
-    @SuppressWarnings("unchecked")
-    @Test
-    public void echoRegion() throws InstantiationException, IllegalAccessException {
+        testOrProject(pModel, "region", REGION_OR_PROJECT);
+        // test query
         DatabaseSession ds = fixUp(REGION_OR_PROJECT);
         Class regionClass = ds.getProject().getDescriptorForAlias("region").getJavaClass();
         ValueReadQuery vrq = (ValueReadQuery)ds.getQuery("echoRegion");
@@ -190,159 +155,188 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         assertTrue("incorrect second field for type returned from StoredFunctionCall",
             regionEntityEchoed.get(1).equals("this is a test"));
     }
-    
+
+    @SuppressWarnings("unchecked")
     @Test
-    public void struct2LevelDeep_OrPart() throws SQLException, PublisherException {
+    public void struct1LevelDeep_OxPart() throws SQLException, PublisherException {
+        ProcedureOperationModel pModel = new ProcedureOperationModel();
+        pModel.setCatalogPattern("advanced_object_demo");
+        pModel.setSchemaPattern(username.toUpperCase());
+        pModel.setProcedurePattern("echoRegion");
+        testOxProject(pModel, "region", "urn:struct1", REGION_OX_PROJECT, REGION_SCHEMA);
+    }
+
+    static final String REGION_OX_PROJECT =
+    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+    "<object-persistence version=\"Eclipse Persistence Services - some version (some build date)\" xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:eclipselink=\"http://www.eclipse.org/eclipselink/xsds/persistence\">" +
+       "<name>region</name>" +
+       "<class-mapping-descriptors>" +
+           "<class-mapping-descriptor xsi:type=\"xml-class-mapping-descriptor\">" +
+               "<class>advanced_object_demo.region</class>" +
+               "<alias>region</alias>" +
+               "<events xsi:type=\"event-policy\"/>" +
+               "<querying xsi:type=\"query-policy\"/>" +
+               "<attribute-mappings>" +
+                  "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
+                     "<attribute-name>reg_id</attribute-name>" +
+                     "<field name=\"reg_id/text()\" xsi:type=\"node\">" +
+                        "<schema-type>{http://www.w3.org/2001/XMLSchema}decimal</schema-type>" +
+                     "</field>" +
+                     "<attribute-classification>java.math.BigDecimal</attribute-classification>" +
+                  "</attribute-mapping>" +
+                  "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
+                     "<attribute-name>reg_name</attribute-name>" +
+                     "<field name=\"reg_name/text()\" xsi:type=\"node\">" +
+                         "<schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>" +
+                     "</field>" +
+                     "<attribute-classification>java.lang.String</attribute-classification>" +
+                  "</attribute-mapping>" +
+               "</attribute-mappings>" +
+               "<descriptor-type>aggregate</descriptor-type>" +
+               "<instantiation/>" +
+               "<copying xsi:type=\"instantiation-copy-policy\"/>" +
+               "<default-root-element>regionType</default-root-element>" +
+               "<default-root-element-field name=\"regionType\" xsi:type=\"node\"/>" +
+               "<namespace-resolver>" +
+                  "<default-namespace-uri>urn:struct1</default-namespace-uri>" +
+               "</namespace-resolver>" +
+               "<schema xsi:type=\"schema-url-reference\">" +
+                  "<schema-context>/regionType</schema-context>" +
+                  "<node-type>complex-type</node-type>" +
+               "</schema>" +
+           "</class-mapping-descriptor>" +
+       "</class-mapping-descriptors>" +
+    "</object-persistence>";
+    static final String REGION_SCHEMA =
+    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+    "<xsd:schema targetNamespace=\"urn:struct1\" xmlns=\"urn:struct1\" elementFormDefault=\"qualified\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
+        "<xsd:complexType name=\"regionType\">" +
+           "<xsd:sequence>" +
+              "<xsd:element name=\"reg_id\" type=\"xsd:decimal\" minOccurs=\"0\"/>" +
+              "<xsd:element name=\"reg_name\" type=\"xsd:string\" minOccurs=\"0\"/>" +
+           "</xsd:sequence>" +
+        "</xsd:complexType>" +
+        "<xsd:element name=\"regionType\" type=\"regionType\"/>" +
+    "</xsd:schema>";
+    static final String EMPADDRESS_OR_PROJECT =
+    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+    "<object-persistence version=\"Eclipse Persistence Services - some version (some build date)\" xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:eclipselink=\"http://www.eclipse.org/eclipselink/xsds/persistence\">" +
+       "<name>empAddress</name>" +
+       "<class-mapping-descriptors>" +
+          "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
+             "<class>advanced_object_demo.region</class>" +
+             "<alias>region</alias>" +
+             "<events xsi:type=\"event-policy\"/>" +
+             "<querying xsi:type=\"query-policy\"/>" +
+             "<attribute-mappings>" +
+                "<attribute-mapping xsi:type=\"direct-mapping\">" +
+                   "<attribute-name>reg_id</attribute-name>" +
+                   "<field name=\"REG_ID\" xsi:type=\"column\"/>" +
+                "</attribute-mapping>" +
+                "<attribute-mapping xsi:type=\"direct-mapping\">" +
+                   "<attribute-name>reg_name</attribute-name>" +
+                   "<field name=\"REG_NAME\" xsi:type=\"column\"/>" +
+                "</attribute-mapping>" +
+             "</attribute-mappings>" +
+             "<descriptor-type>aggregate</descriptor-type>" +
+             "<caching>" +
+                "<cache-size>-1</cache-size>" +
+             "</caching>" +
+             "<remote-caching>" +
+                "<cache-size>-1</cache-size>" +
+             "</remote-caching>" +
+             "<instantiation/>" +
+             "<copying xsi:type=\"instantiation-copy-policy\"/>" +
+             "<structure>REGION</structure>" +
+             "<field-order>" +
+                "<field name=\"REG_ID\" xsi:type=\"column\"/>" +
+                "<field name=\"REG_NAME\" xsi:type=\"column\"/>" +
+             "</field-order>" +
+          "</class-mapping-descriptor>" +
+          "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
+             "<class>advanced_object_demo.emp_address</class>" +
+             "<alias>emp_address</alias>" +
+             "<events xsi:type=\"event-policy\"/>" +
+             "<querying xsi:type=\"query-policy\"/>" +
+             "<attribute-mappings>" +
+                "<attribute-mapping xsi:type=\"direct-mapping\">" +
+                   "<attribute-name>street</attribute-name>" +
+                   "<field name=\"STREET\" xsi:type=\"column\"/>" +
+                "</attribute-mapping>" +
+                "<attribute-mapping xsi:type=\"direct-mapping\">" +
+                   "<attribute-name>suburb</attribute-name>" +
+                   "<field name=\"SUBURB\" xsi:type=\"column\"/>" +
+                "</attribute-mapping>" +
+                "<attribute-mapping xsi:type=\"structure-mapping\">" +
+                   "<attribute-name>addr_region</attribute-name>" +
+                   "<reference-class>advanced_object_demo.region</reference-class>" +
+                   "<field name=\"ADDR_REGION\" xsi:type=\"object-relational-field\"/>" +
+                "</attribute-mapping>" +
+                "<attribute-mapping xsi:type=\"direct-mapping\">" +
+                   "<attribute-name>postcode</attribute-name>" +
+                   "<field name=\"POSTCODE\" xsi:type=\"column\"/>" +
+                "</attribute-mapping>" +
+             "</attribute-mappings>" +
+             "<descriptor-type>aggregate</descriptor-type>" +
+             "<caching>" +
+                "<cache-size>-1</cache-size>" +
+             "</caching>" +
+             "<remote-caching>" +
+                "<cache-size>-1</cache-size>" +
+             "</remote-caching>" +
+             "<instantiation/>" +
+             "<copying xsi:type=\"instantiation-copy-policy\"/>" +
+             "<structure>EMP_ADDRESS</structure>" +
+             "<field-order>" +
+                "<field name=\"STREET\" xsi:type=\"column\"/>" +
+                "<field name=\"SUBURB\" xsi:type=\"column\"/>" +
+                "<field name=\"ADDR_REGION\" xsi:type=\"column\"/>" +
+                "<field name=\"POSTCODE\" xsi:type=\"column\"/>" +
+             "</field-order>" +
+          "</class-mapping-descriptor>" +
+       "</class-mapping-descriptors>" +
+       "<queries>" +
+          "<query name=\"echoEmpAddress\" xsi:type=\"value-read-query\">" +
+             "<arguments>" +
+                "<argument name=\"ANEMPADDRESS\">" +
+                   "<type>java.lang.Object</type>" +
+                "</argument>" +
+             "</arguments>" +
+             "<maintain-cache>false</maintain-cache>" +
+             "<bind-all-parameters>true</bind-all-parameters>" +
+             "<call xsi:type=\"stored-function-call\">" +
+                "<procedure-name>advanced_object_demo.ECHOEMPADDRESS</procedure-name>" +
+                "<cursor-output-procedure>false</cursor-output-procedure>" +
+                "<arguments>" +
+                   "<argument xsi:type=\"procedure-argument\">" +
+                      "<procedure-argument-name>ANEMPADDRESS</procedure-argument-name>" +
+                      "<argument-name>ANEMPADDRESS</argument-name>" +
+                      "<procedure-argument-type>advanced_object_demo.emp_address</procedure-argument-type>" +
+                      "<procedure-argument-sqltype>2002</procedure-argument-sqltype>" +
+                      "<procedure-argument-sqltype-name>EMP_ADDRESS</procedure-argument-sqltype-name>" +
+                   "</argument>" +
+                "</arguments>" +
+                "<stored-function-result xsi:type=\"procedure-output-argument\">" +
+                   "<procedure-argument-type>advanced_object_demo.emp_address</procedure-argument-type>" +
+                   "<procedure-argument-sqltype>2002</procedure-argument-sqltype>" +
+                   "<procedure-argument-sqltype-name>EMP_ADDRESS</procedure-argument-sqltype-name>" +
+                "</stored-function-result>" +
+             "</call>" +
+          "</query>" +
+       "</queries>" +
+    "</object-persistence>";
+    @SuppressWarnings("unchecked")
+    @Test
+    public void struct2LevelDeep_OrPart()
+        throws SQLException, PublisherException, InstantiationException, IllegalAccessException {
         ProcedureOperationModel pModel = new ProcedureOperationModel();
         pModel.setName("echoEmpAddress");
         pModel.setCatalogPattern("advanced_object_demo"); // test case-insensitivity
         pModel.setSchemaPattern(username.toUpperCase());
         pModel.setProcedurePattern("echoEmpAddress");
         pModel.setReturnType("empAddressType");
-        List<DbStoredProcedure> storedProcedures = 
-            OracleHelper.buildStoredProcedure(conn, username, ora11Platform, pModel); 
-        Map<DbStoredProcedure, DbStoredProcedureNameAndModel> dbStoredProcedure2QueryName = 
-            new HashMap<DbStoredProcedure, DbStoredProcedureNameAndModel>();
-        ArrayList<OperationModel> operations = new ArrayList<OperationModel>();
-        operations.add(pModel);
-        DBWSBuilder.buildDbStoredProcedure2QueryNameMap(dbStoredProcedure2QueryName,
-            storedProcedures, operations, true);     
-        AdvancedJDBCORDescriptorBuilder advJOrDescriptorBuilder = 
-            new AdvancedJDBCORDescriptorBuilder();
-        AdvancedJDBCQueryBuilder queryBuilder = 
-            new AdvancedJDBCQueryBuilder(storedProcedures, dbStoredProcedure2QueryName);
-        PublisherListenerChainAdapter listenerChainAdapter = new PublisherListenerChainAdapter();
-        listenerChainAdapter.addListener(advJOrDescriptorBuilder);
-        listenerChainAdapter.addListener(queryBuilder);
-        PublisherWalker walker = new PublisherWalker(listenerChainAdapter);
-        pModel.getJPubType().accept(walker);
-        List<ObjectRelationalDataTypeDescriptor> descriptors = 
-            advJOrDescriptorBuilder.getDescriptors();
-        Project p = new Project();
-        p.setName("empAddress");
-        for (ObjectRelationalDataTypeDescriptor ordt : descriptors) { 
-            p.addDescriptor(ordt);
-        }
-        List<DatabaseQuery> queries = queryBuilder.getQueries();
-        p.getQueries().addAll(queries);
-        Document resultDoc = xmlPlatform.createDocument();
-        XMLMarshaller marshaller = new XMLContext(writeObjectPersistenceProject).createMarshaller();
-        marshaller.marshal(p, resultDoc);
-        Document controlDoc = xmlParser.parse(new StringReader(EMPADDRESS_OR_PROJECT));
-        assertTrue("control document not same as instance document",
-                comparer.isNodeEqual(controlDoc, resultDoc));
-    }
-    static final String EMPADDRESS_OR_PROJECT =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-        "<object-persistence version=\"Eclipse Persistence Services - some version (some build date)\" xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:eclipselink=\"http://www.eclipse.org/eclipselink/xsds/persistence\">" +
-           "<name>empAddress</name>" +
-           "<class-mapping-descriptors>" +
-              "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
-                 "<class>advanced_object_demo.region</class>" +
-                 "<alias>region</alias>" +
-                 "<events xsi:type=\"event-policy\"/>" +
-                 "<querying xsi:type=\"query-policy\"/>" +
-                 "<attribute-mappings>" +
-                    "<attribute-mapping xsi:type=\"direct-mapping\">" +
-                       "<attribute-name>reg_id</attribute-name>" +
-                       "<field name=\"REG_ID\" xsi:type=\"column\"/>" +
-                    "</attribute-mapping>" +
-                    "<attribute-mapping xsi:type=\"direct-mapping\">" +
-                       "<attribute-name>reg_name</attribute-name>" +
-                       "<field name=\"REG_NAME\" xsi:type=\"column\"/>" +
-                    "</attribute-mapping>" +
-                 "</attribute-mappings>" +
-                 "<descriptor-type>aggregate</descriptor-type>" +
-                 "<caching>" +
-                    "<cache-size>-1</cache-size>" +
-                 "</caching>" +
-                 "<remote-caching>" +
-                    "<cache-size>-1</cache-size>" +
-                 "</remote-caching>" +
-                 "<instantiation/>" +
-                 "<copying xsi:type=\"instantiation-copy-policy\"/>" +
-                 "<structure>REGION</structure>" +
-                 "<field-order>" +
-                    "<field name=\"REG_ID\" xsi:type=\"column\"/>" +
-                    "<field name=\"REG_NAME\" xsi:type=\"column\"/>" +
-                 "</field-order>" +
-              "</class-mapping-descriptor>" +
-              "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
-                 "<class>advanced_object_demo.emp_address</class>" +
-                 "<alias>emp_address</alias>" +
-                 "<events xsi:type=\"event-policy\"/>" +
-                 "<querying xsi:type=\"query-policy\"/>" +
-                 "<attribute-mappings>" +
-                    "<attribute-mapping xsi:type=\"direct-mapping\">" +
-                       "<attribute-name>street</attribute-name>" +
-                       "<field name=\"STREET\" xsi:type=\"column\"/>" +
-                    "</attribute-mapping>" +
-                    "<attribute-mapping xsi:type=\"direct-mapping\">" +
-                       "<attribute-name>suburb</attribute-name>" +
-                       "<field name=\"SUBURB\" xsi:type=\"column\"/>" +
-                    "</attribute-mapping>" +
-                    "<attribute-mapping xsi:type=\"structure-mapping\">" +
-                       "<attribute-name>addr_region</attribute-name>" +
-                       "<reference-class>advanced_object_demo.region</reference-class>" +
-                       "<field name=\"ADDR_REGION\" xsi:type=\"object-relational-field\"/>" +
-                    "</attribute-mapping>" +
-                    "<attribute-mapping xsi:type=\"direct-mapping\">" +
-                       "<attribute-name>postcode</attribute-name>" +
-                       "<field name=\"POSTCODE\" xsi:type=\"column\"/>" +
-                    "</attribute-mapping>" +
-                 "</attribute-mappings>" +
-                 "<descriptor-type>aggregate</descriptor-type>" +
-                 "<caching>" +
-                    "<cache-size>-1</cache-size>" +
-                 "</caching>" +
-                 "<remote-caching>" +
-                    "<cache-size>-1</cache-size>" +
-                 "</remote-caching>" +
-                 "<instantiation/>" +
-                 "<copying xsi:type=\"instantiation-copy-policy\"/>" +
-                 "<structure>EMP_ADDRESS</structure>" +
-                 "<field-order>" +
-                    "<field name=\"STREET\" xsi:type=\"column\"/>" +
-                    "<field name=\"SUBURB\" xsi:type=\"column\"/>" +
-                    "<field name=\"ADDR_REGION\" xsi:type=\"column\"/>" +
-                    "<field name=\"POSTCODE\" xsi:type=\"column\"/>" +
-                 "</field-order>" +
-              "</class-mapping-descriptor>" +
-           "</class-mapping-descriptors>" +
-           "<queries>" +
-              "<query name=\"echoEmpAddress\" xsi:type=\"value-read-query\">" +
-                 "<arguments>" +
-                    "<argument name=\"ANEMPADDRESS\">" +
-                       "<type>java.lang.Object</type>" +
-                    "</argument>" +
-                 "</arguments>" +
-                 "<maintain-cache>false</maintain-cache>" +
-                 "<bind-all-parameters>true</bind-all-parameters>" +
-                 "<call xsi:type=\"stored-function-call\">" +
-                    "<procedure-name>advanced_object_demo.ECHOEMPADDRESS</procedure-name>" +
-                    "<cursor-output-procedure>false</cursor-output-procedure>" +
-                    "<arguments>" +
-                       "<argument xsi:type=\"procedure-argument\">" +
-                          "<procedure-argument-name>ANEMPADDRESS</procedure-argument-name>" +
-                          "<argument-name>ANEMPADDRESS</argument-name>" +
-                          "<procedure-argument-type>advanced_object_demo.emp_address</procedure-argument-type>" +
-                          "<procedure-argument-sqltype>2002</procedure-argument-sqltype>" +
-                          "<procedure-argument-sqltype-name>EMP_ADDRESS</procedure-argument-sqltype-name>" +
-                       "</argument>" +
-                    "</arguments>" +
-                    "<stored-function-result xsi:type=\"procedure-output-argument\">" +
-                       "<procedure-argument-type>advanced_object_demo.emp_address</procedure-argument-type>" +
-                       "<procedure-argument-sqltype>2002</procedure-argument-sqltype>" +
-                       "<procedure-argument-sqltype-name>EMP_ADDRESS</procedure-argument-sqltype-name>" +
-                    "</stored-function-result>" +
-                 "</call>" +
-              "</query>" +
-           "</queries>" +
-        "</object-persistence>";
-    
-    @SuppressWarnings("unchecked")
-    @Test
-    public void echoEmpAddress() throws InstantiationException, IllegalAccessException {
+        testOrProject(pModel, "empAddress", EMPADDRESS_OR_PROJECT);
+        // test query
         DatabaseSession ds = fixUp(EMPADDRESS_OR_PROJECT);
         ObjectRelationalDataTypeDescriptor regionDesc = 
             (ObjectRelationalDataTypeDescriptor)ds.getProject().getDescriptorForAlias("region");
@@ -350,7 +344,6 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         ObjectRelationalDataTypeDescriptor empAddressDesc = 
             (ObjectRelationalDataTypeDescriptor)ds.getProject().getDescriptorForAlias("emp_address");
         Class empAddressClass = empAddressDesc.getJavaClass();
-        
         ValueReadQuery vrq = (ValueReadQuery)ds.getQuery("echoEmpAddress");
         BaseEntity regionEntity = (BaseEntity)regionClass.newInstance();
         regionEntity.set(0, BigDecimal.valueOf(5));
@@ -377,202 +370,279 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         assertTrue("incorrect fourth field for type returned from StoredFunctionCall",
             addressEntityEchoed.get(3).equals(BigDecimal.valueOf(12)));
     }
-    
+    @SuppressWarnings("unchecked")
     @Test
-    public void struct3LevelDeep_OrPart() throws SQLException, PublisherException {
+    public void struct2LevelDeep_OxPart() throws SQLException, PublisherException {
+        ProcedureOperationModel pModel = new ProcedureOperationModel();
+        pModel.setCatalogPattern("advanced_object_demo");
+        pModel.setSchemaPattern(username.toUpperCase());
+        pModel.setProcedurePattern("echoEmpAddress");
+        testOxProject(pModel, "empAddress", "urn:struct2", EMPADDRESS_OX_PROJECT, EMPADDRESS_SCHEMA);
+    }
+    static final String EMPADDRESS_OX_PROJECT =
+    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+    "<object-persistence version=\"Eclipse Persistence Services - some version (some build date)\" xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:eclipselink=\"http://www.eclipse.org/eclipselink/xsds/persistence\">" +
+       "<name>empAddress</name>" +
+       "<class-mapping-descriptors>" +
+          "<class-mapping-descriptor xsi:type=\"xml-class-mapping-descriptor\">" +
+             "<class>advanced_object_demo.region</class>" +
+             "<alias>region</alias>" +
+             "<events xsi:type=\"event-policy\"/>" +
+             "<querying xsi:type=\"query-policy\"/>" +
+             "<attribute-mappings>" +
+                "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
+                   "<attribute-name>reg_id</attribute-name>" +
+                   "<field name=\"reg_id/text()\" xsi:type=\"node\">" +
+                      "<schema-type>{http://www.w3.org/2001/XMLSchema}decimal</schema-type>" +
+                   "</field>" +
+                   "<attribute-classification>java.math.BigDecimal</attribute-classification>" +
+                "</attribute-mapping>" +
+                "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
+                   "<attribute-name>reg_name</attribute-name>" +
+                   "<field name=\"reg_name/text()\" xsi:type=\"node\">" +
+                       "<schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>" +
+                    "</field>" +
+                    "<attribute-classification>java.lang.String</attribute-classification>" +
+                "</attribute-mapping>" +
+             "</attribute-mappings>" +
+             "<descriptor-type>aggregate</descriptor-type>" +
+             "<instantiation/>" +
+             "<copying xsi:type=\"instantiation-copy-policy\"/>" +
+             "<namespace-resolver>" +
+                "<default-namespace-uri>urn:struct2</default-namespace-uri>" +
+             "</namespace-resolver>" +
+             "<schema xsi:type=\"schema-url-reference\">" +
+                "<schema-context>/regionType</schema-context>" +
+                "<node-type>complex-type</node-type>" +
+             "</schema>" +
+          "</class-mapping-descriptor>" +
+          "<class-mapping-descriptor xsi:type=\"xml-class-mapping-descriptor\">" +
+             "<class>advanced_object_demo.emp_address</class>" +
+             "<alias>emp_address</alias>" +
+             "<events xsi:type=\"event-policy\"/>" +
+             "<querying xsi:type=\"query-policy\"/>" +
+             "<attribute-mappings>" +
+               "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
+                  "<attribute-name>street</attribute-name>" +
+                  "<field name=\"street/text()\" xsi:type=\"node\">" +
+                     "<schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>" +
+                  "</field>" +
+                  "<attribute-classification>java.lang.String</attribute-classification>" +
+               "</attribute-mapping>" +
+               "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
+                  "<attribute-name>suburb</attribute-name>" +
+                  "<field name=\"suburb/text()\" xsi:type=\"node\">" +
+                     "<schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>" +
+                  "</field>" +
+                  "<attribute-classification>java.lang.String</attribute-classification>" +
+               "</attribute-mapping>" +
+               "<attribute-mapping xsi:type=\"xml-composite-object-mapping\">" +
+                  "<attribute-name>addr_region</attribute-name>" +
+                  "<reference-class>advanced_object_demo.region</reference-class>" +
+                  "<field name=\"addr_region\" xsi:type=\"node\"/>" +
+               "</attribute-mapping>" +
+               "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
+                  "<attribute-name>postcode</attribute-name>" +
+                  "<field name=\"postcode/text()\" xsi:type=\"node\">" +
+                     "<schema-type>{http://www.w3.org/2001/XMLSchema}integer</schema-type>" +
+                  "</field>" +
+                  "<attribute-classification>java.math.BigInteger</attribute-classification>" +
+               "</attribute-mapping>" +
+             "</attribute-mappings>" +
+             "<descriptor-type>aggregate</descriptor-type>" +
+             "<instantiation/>" +
+             "<copying xsi:type=\"instantiation-copy-policy\"/>" +
+             "<default-root-element>emp_addressType</default-root-element>" +
+             "<default-root-element-field name=\"emp_addressType\" xsi:type=\"node\"/>" +
+             "<namespace-resolver>" +
+                "<default-namespace-uri>urn:struct2</default-namespace-uri>" +
+             "</namespace-resolver>" +
+             "<schema xsi:type=\"schema-url-reference\">" +
+                "<schema-context>/emp_addressType</schema-context>" +
+                "<node-type>complex-type</node-type>" +
+             "</schema>" +
+          "</class-mapping-descriptor>" +
+       "</class-mapping-descriptors>" +
+    "</object-persistence>";
+    static final String EMPADDRESS_SCHEMA =
+    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+    "<xsd:schema targetNamespace=\"urn:struct2\" xmlns=\"urn:struct2\" elementFormDefault=\"qualified\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
+       "<xsd:complexType name=\"emp_addressType\">" +
+          "<xsd:sequence>" +
+             "<xsd:element name=\"street\" type=\"xsd:string\" minOccurs=\"0\"/>" +
+             "<xsd:element name=\"suburb\" type=\"xsd:string\" minOccurs=\"0\"/>" +
+             "<xsd:element name=\"addr_region\" type=\"regionType\" minOccurs=\"0\"/>" +
+             "<xsd:element name=\"postcode\" type=\"xsd:integer\" minOccurs=\"0\"/>" +
+          "</xsd:sequence>" +
+       "</xsd:complexType>" +
+       "<xsd:complexType name=\"regionType\">" +
+          "<xsd:sequence>" +
+             "<xsd:element name=\"reg_id\" type=\"xsd:decimal\" minOccurs=\"0\"/>" +
+             "<xsd:element name=\"reg_name\" type=\"xsd:string\" minOccurs=\"0\"/>" +
+          "</xsd:sequence>" +
+       "</xsd:complexType>" +
+       "<xsd:element name=\"emp_addressType\" type=\"emp_addressType\"/>" +
+    "</xsd:schema>";
+    static final String EMPOBJECT_OR_PROJECT =
+    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+    "<object-persistence version=\"Eclipse Persistence Services - some version (some build date)\" xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:eclipselink=\"http://www.eclipse.org/eclipselink/xsds/persistence\">" +
+       "<name>empObject</name>" +
+       "<class-mapping-descriptors>" +
+          "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
+             "<class>advanced_object_demo.region</class>" +
+             "<alias>region</alias>" +
+             "<events xsi:type=\"event-policy\"/>" +
+             "<querying xsi:type=\"query-policy\"/>" +
+             "<attribute-mappings>" +
+                "<attribute-mapping xsi:type=\"direct-mapping\">" +
+                   "<attribute-name>reg_id</attribute-name>" +
+                   "<field name=\"REG_ID\" xsi:type=\"column\"/>" +
+                "</attribute-mapping>" +
+                "<attribute-mapping xsi:type=\"direct-mapping\">" +
+                   "<attribute-name>reg_name</attribute-name>" +
+                   "<field name=\"REG_NAME\" xsi:type=\"column\"/>" +
+                "</attribute-mapping>" +
+             "</attribute-mappings>" +
+             "<descriptor-type>aggregate</descriptor-type>" +
+             "<caching>" +
+                "<cache-size>-1</cache-size>" +
+             "</caching>" +
+             "<remote-caching>" +
+                "<cache-size>-1</cache-size>" +
+             "</remote-caching>" +
+             "<instantiation/>" +
+             "<copying xsi:type=\"instantiation-copy-policy\"/>" +
+             "<structure>REGION</structure>" +
+             "<field-order>" +
+                "<field name=\"REG_ID\" xsi:type=\"column\"/>" +
+                "<field name=\"REG_NAME\" xsi:type=\"column\"/>" +
+             "</field-order>" +
+          "</class-mapping-descriptor>" +
+          "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
+             "<class>advanced_object_demo.emp_object</class>" +
+             "<alias>emp_object</alias>" +
+             "<events xsi:type=\"event-policy\"/>" +
+             "<querying xsi:type=\"query-policy\"/>" +
+             "<attribute-mappings>" +
+                "<attribute-mapping xsi:type=\"direct-mapping\">" +
+                   "<attribute-name>employee_id</attribute-name>" +
+                   "<field name=\"EMPLOYEE_ID\" xsi:type=\"column\"/>" +
+                "</attribute-mapping>" +
+                "<attribute-mapping xsi:type=\"structure-mapping\">" +
+                   "<attribute-name>address</attribute-name>" +
+                   "<reference-class>advanced_object_demo.emp_address</reference-class>" +
+                   "<field name=\"ADDRESS\" xsi:type=\"object-relational-field\"/>" +
+                "</attribute-mapping>" +
+                "<attribute-mapping xsi:type=\"direct-mapping\">" +
+                   "<attribute-name>employee_name</attribute-name>" +
+                   "<field name=\"EMPLOYEE_NAME\" xsi:type=\"column\"/>" +
+                "</attribute-mapping>" +
+                "<attribute-mapping xsi:type=\"direct-mapping\">" +
+                   "<attribute-name>date_of_hire</attribute-name>" +
+                   "<field name=\"DATE_OF_HIRE\" xsi:type=\"column\"/>" +
+                "</attribute-mapping>" +
+             "</attribute-mappings>" +
+             "<descriptor-type>aggregate</descriptor-type>" +
+             "<caching>" +
+                "<cache-size>-1</cache-size>" +
+             "</caching>" +
+             "<remote-caching>" +
+                "<cache-size>-1</cache-size>" +
+             "</remote-caching>" +
+             "<instantiation/>" +
+             "<copying xsi:type=\"instantiation-copy-policy\"/>" +
+             "<structure>EMP_OBJECT</structure>" +
+             "<field-order>" +
+                "<field name=\"EMPLOYEE_ID\" xsi:type=\"column\"/>" +
+                "<field name=\"ADDRESS\" xsi:type=\"column\"/>" +
+                "<field name=\"EMPLOYEE_NAME\" xsi:type=\"column\"/>" +
+                "<field name=\"DATE_OF_HIRE\" xsi:type=\"column\"/>" +
+             "</field-order>" +
+          "</class-mapping-descriptor>" +
+          "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
+             "<class>advanced_object_demo.emp_address</class>" +
+             "<alias>emp_address</alias>" +
+             "<events xsi:type=\"event-policy\"/>" +
+             "<querying xsi:type=\"query-policy\"/>" +
+             "<attribute-mappings>" +
+                "<attribute-mapping xsi:type=\"direct-mapping\">" +
+                   "<attribute-name>street</attribute-name>" +
+                   "<field name=\"STREET\" xsi:type=\"column\"/>" +
+                "</attribute-mapping>" +
+                "<attribute-mapping xsi:type=\"direct-mapping\">" +
+                   "<attribute-name>suburb</attribute-name>" +
+                   "<field name=\"SUBURB\" xsi:type=\"column\"/>" +
+                "</attribute-mapping>" +
+                "<attribute-mapping xsi:type=\"structure-mapping\">" +
+                   "<attribute-name>addr_region</attribute-name>" +
+                   "<reference-class>advanced_object_demo.region</reference-class>" +
+                   "<field name=\"ADDR_REGION\" xsi:type=\"object-relational-field\"/>" +
+                "</attribute-mapping>" +
+                "<attribute-mapping xsi:type=\"direct-mapping\">" +
+                   "<attribute-name>postcode</attribute-name>" +
+                   "<field name=\"POSTCODE\" xsi:type=\"column\"/>" +
+                "</attribute-mapping>" +
+             "</attribute-mappings>" +
+             "<descriptor-type>aggregate</descriptor-type>" +
+             "<caching>" +
+                "<cache-size>-1</cache-size>" +
+             "</caching>" +
+             "<remote-caching>" +
+                "<cache-size>-1</cache-size>" +
+             "</remote-caching>" +
+             "<instantiation/>" +
+             "<copying xsi:type=\"instantiation-copy-policy\"/>" +
+             "<structure>EMP_ADDRESS</structure>" +
+             "<field-order>" +
+                "<field name=\"STREET\" xsi:type=\"column\"/>" +
+                "<field name=\"SUBURB\" xsi:type=\"column\"/>" +
+                "<field name=\"ADDR_REGION\" xsi:type=\"column\"/>" +
+                "<field name=\"POSTCODE\" xsi:type=\"column\"/>" +
+             "</field-order>" +
+          "</class-mapping-descriptor>" +
+       "</class-mapping-descriptors>" +
+       "<queries>" +
+          "<query name=\"echoEmpObject\" xsi:type=\"value-read-query\">" +
+             "<arguments>" +
+                "<argument name=\"ANEMPOBJECT\">" +
+                   "<type>java.lang.Object</type>" +
+                "</argument>" +
+             "</arguments>" +
+             "<maintain-cache>false</maintain-cache>" +
+             "<bind-all-parameters>true</bind-all-parameters>" +
+             "<call xsi:type=\"stored-function-call\">" +
+                "<procedure-name>advanced_object_demo.ECHOEMPOBJECT</procedure-name>" +
+                "<cursor-output-procedure>false</cursor-output-procedure>" +
+                "<arguments>" +
+                   "<argument xsi:type=\"procedure-argument\">" +
+                      "<procedure-argument-name>ANEMPOBJECT</procedure-argument-name>" +
+                      "<argument-name>ANEMPOBJECT</argument-name>" +
+                      "<procedure-argument-type>advanced_object_demo.emp_object</procedure-argument-type>" +
+                      "<procedure-argument-sqltype>2002</procedure-argument-sqltype>" +
+                      "<procedure-argument-sqltype-name>EMP_OBJECT</procedure-argument-sqltype-name>" +
+                   "</argument>" +
+                "</arguments>" +
+                "<stored-function-result xsi:type=\"procedure-output-argument\">" +
+                   "<procedure-argument-type>advanced_object_demo.emp_object</procedure-argument-type>" +
+                   "<procedure-argument-sqltype>2002</procedure-argument-sqltype>" +
+                   "<procedure-argument-sqltype-name>EMP_OBJECT</procedure-argument-sqltype-name>" +
+                "</stored-function-result>" +
+             "</call>" +
+          "</query>" +
+       "</queries>" +
+    "</object-persistence>";
+    @SuppressWarnings("unchecked")
+    @Test
+    public void struct3LevelDeep_OrPart()
+        throws SQLException, PublisherException, InstantiationException, IllegalAccessException {
         ProcedureOperationModel pModel = new ProcedureOperationModel();
         pModel.setName("echoEmpObject");
         pModel.setCatalogPattern("advanced_object_demo"); // test case-insensitivity
         pModel.setSchemaPattern(username.toUpperCase());
         pModel.setProcedurePattern("echoEmpObject");
-        pModel.setReturnType("emp_objectType");
-        List<DbStoredProcedure> storedProcedures = 
-            OracleHelper.buildStoredProcedure(conn, username, ora11Platform, pModel); 
-        Map<DbStoredProcedure, DbStoredProcedureNameAndModel> dbStoredProcedure2QueryName = 
-            new HashMap<DbStoredProcedure, DbStoredProcedureNameAndModel>();
-        ArrayList<OperationModel> operations = new ArrayList<OperationModel>();
-        operations.add(pModel);
-        DBWSBuilder.buildDbStoredProcedure2QueryNameMap(dbStoredProcedure2QueryName,
-            storedProcedures, operations, true);     
-        AdvancedJDBCORDescriptorBuilder advJOrDescriptorBuilder = 
-            new AdvancedJDBCORDescriptorBuilder();
-        AdvancedJDBCQueryBuilder queryBuilder = 
-            new AdvancedJDBCQueryBuilder(storedProcedures, dbStoredProcedure2QueryName);
-        PublisherListenerChainAdapter listenerChainAdapter = new PublisherListenerChainAdapter();
-        listenerChainAdapter.addListener(advJOrDescriptorBuilder);
-        listenerChainAdapter.addListener(queryBuilder);
-        PublisherWalker walker = new PublisherWalker(listenerChainAdapter);
-        pModel.getJPubType().accept(walker);
-        List<ObjectRelationalDataTypeDescriptor> descriptors = 
-            advJOrDescriptorBuilder.getDescriptors();
-        Project p = new Project();
-        p.setName("empObject");
-        for (ObjectRelationalDataTypeDescriptor ordt : descriptors) { 
-            p.addDescriptor(ordt);
-        }
-        List<DatabaseQuery> queries = queryBuilder.getQueries();
-        if (queries != null && queries.size() > 0) {
-            p.getQueries().addAll(queries);
-        }
-        Document resultDoc = xmlPlatform.createDocument();
-        XMLMarshaller marshaller = new XMLContext(writeObjectPersistenceProject).createMarshaller();
-        marshaller.marshal(p, resultDoc);
-        Document controlDoc = xmlParser.parse(new StringReader(EMPOBJECT_OR_PROJECT));
-        assertTrue("control document not same as instance document",
-                comparer.isNodeEqual(controlDoc, resultDoc));
-    }
-    static final String EMPOBJECT_OR_PROJECT =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-        "<object-persistence version=\"Eclipse Persistence Services - some version (some build date)\" xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:eclipselink=\"http://www.eclipse.org/eclipselink/xsds/persistence\">" +
-           "<name>empObject</name>" +
-           "<class-mapping-descriptors>" +
-              "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
-                 "<class>advanced_object_demo.region</class>" +
-                 "<alias>region</alias>" +
-                 "<events xsi:type=\"event-policy\"/>" +
-                 "<querying xsi:type=\"query-policy\"/>" +
-                 "<attribute-mappings>" +
-                    "<attribute-mapping xsi:type=\"direct-mapping\">" +
-                       "<attribute-name>reg_id</attribute-name>" +
-                       "<field name=\"REG_ID\" xsi:type=\"column\"/>" +
-                    "</attribute-mapping>" +
-                    "<attribute-mapping xsi:type=\"direct-mapping\">" +
-                       "<attribute-name>reg_name</attribute-name>" +
-                       "<field name=\"REG_NAME\" xsi:type=\"column\"/>" +
-                    "</attribute-mapping>" +
-                 "</attribute-mappings>" +
-                 "<descriptor-type>aggregate</descriptor-type>" +
-                 "<caching>" +
-                    "<cache-size>-1</cache-size>" +
-                 "</caching>" +
-                 "<remote-caching>" +
-                    "<cache-size>-1</cache-size>" +
-                 "</remote-caching>" +
-                 "<instantiation/>" +
-                 "<copying xsi:type=\"instantiation-copy-policy\"/>" +
-                 "<structure>REGION</structure>" +
-                 "<field-order>" +
-                    "<field name=\"REG_ID\" xsi:type=\"column\"/>" +
-                    "<field name=\"REG_NAME\" xsi:type=\"column\"/>" +
-                 "</field-order>" +
-              "</class-mapping-descriptor>" +
-              "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
-                 "<class>advanced_object_demo.emp_object</class>" +
-                 "<alias>emp_object</alias>" +
-                 "<events xsi:type=\"event-policy\"/>" +
-                 "<querying xsi:type=\"query-policy\"/>" +
-                 "<attribute-mappings>" +
-                    "<attribute-mapping xsi:type=\"direct-mapping\">" +
-                       "<attribute-name>employee_id</attribute-name>" +
-                       "<field name=\"EMPLOYEE_ID\" xsi:type=\"column\"/>" +
-                    "</attribute-mapping>" +
-                    "<attribute-mapping xsi:type=\"structure-mapping\">" +
-                       "<attribute-name>address</attribute-name>" +
-                       "<reference-class>advanced_object_demo.emp_address</reference-class>" +
-                       "<field name=\"ADDRESS\" xsi:type=\"object-relational-field\"/>" +
-                    "</attribute-mapping>" +
-                    "<attribute-mapping xsi:type=\"direct-mapping\">" +
-                       "<attribute-name>employee_name</attribute-name>" +
-                       "<field name=\"EMPLOYEE_NAME\" xsi:type=\"column\"/>" +
-                    "</attribute-mapping>" +
-                    "<attribute-mapping xsi:type=\"direct-mapping\">" +
-                       "<attribute-name>date_of_hire</attribute-name>" +
-                       "<field name=\"DATE_OF_HIRE\" xsi:type=\"column\"/>" +
-                    "</attribute-mapping>" +
-                 "</attribute-mappings>" +
-                 "<descriptor-type>aggregate</descriptor-type>" +
-                 "<caching>" +
-                    "<cache-size>-1</cache-size>" +
-                 "</caching>" +
-                 "<remote-caching>" +
-                    "<cache-size>-1</cache-size>" +
-                 "</remote-caching>" +
-                 "<instantiation/>" +
-                 "<copying xsi:type=\"instantiation-copy-policy\"/>" +
-                 "<structure>EMP_OBJECT</structure>" +
-                 "<field-order>" +
-                    "<field name=\"EMPLOYEE_ID\" xsi:type=\"column\"/>" +
-                    "<field name=\"ADDRESS\" xsi:type=\"column\"/>" +
-                    "<field name=\"EMPLOYEE_NAME\" xsi:type=\"column\"/>" +
-                    "<field name=\"DATE_OF_HIRE\" xsi:type=\"column\"/>" +
-                 "</field-order>" +
-              "</class-mapping-descriptor>" +
-              "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
-                 "<class>advanced_object_demo.emp_address</class>" +
-                 "<alias>emp_address</alias>" +
-                 "<events xsi:type=\"event-policy\"/>" +
-                 "<querying xsi:type=\"query-policy\"/>" +
-                 "<attribute-mappings>" +
-                    "<attribute-mapping xsi:type=\"direct-mapping\">" +
-                       "<attribute-name>street</attribute-name>" +
-                       "<field name=\"STREET\" xsi:type=\"column\"/>" +
-                    "</attribute-mapping>" +
-                    "<attribute-mapping xsi:type=\"direct-mapping\">" +
-                       "<attribute-name>suburb</attribute-name>" +
-                       "<field name=\"SUBURB\" xsi:type=\"column\"/>" +
-                    "</attribute-mapping>" +
-                    "<attribute-mapping xsi:type=\"structure-mapping\">" +
-                       "<attribute-name>addr_region</attribute-name>" +
-                       "<reference-class>advanced_object_demo.region</reference-class>" +
-                       "<field name=\"ADDR_REGION\" xsi:type=\"object-relational-field\"/>" +
-                    "</attribute-mapping>" +
-                    "<attribute-mapping xsi:type=\"direct-mapping\">" +
-                       "<attribute-name>postcode</attribute-name>" +
-                       "<field name=\"POSTCODE\" xsi:type=\"column\"/>" +
-                    "</attribute-mapping>" +
-                 "</attribute-mappings>" +
-                 "<descriptor-type>aggregate</descriptor-type>" +
-                 "<caching>" +
-                    "<cache-size>-1</cache-size>" +
-                 "</caching>" +
-                 "<remote-caching>" +
-                    "<cache-size>-1</cache-size>" +
-                 "</remote-caching>" +
-                 "<instantiation/>" +
-                 "<copying xsi:type=\"instantiation-copy-policy\"/>" +
-                 "<structure>EMP_ADDRESS</structure>" +
-                 "<field-order>" +
-                    "<field name=\"STREET\" xsi:type=\"column\"/>" +
-                    "<field name=\"SUBURB\" xsi:type=\"column\"/>" +
-                    "<field name=\"ADDR_REGION\" xsi:type=\"column\"/>" +
-                    "<field name=\"POSTCODE\" xsi:type=\"column\"/>" +
-                 "</field-order>" +
-              "</class-mapping-descriptor>" +
-           "</class-mapping-descriptors>" +
-           "<queries>" +
-              "<query name=\"echoEmpObject\" xsi:type=\"value-read-query\">" +
-                 "<arguments>" +
-                    "<argument name=\"ANEMPOBJECT\">" +
-                       "<type>java.lang.Object</type>" +
-                    "</argument>" +
-                 "</arguments>" +
-                 "<maintain-cache>false</maintain-cache>" +
-                 "<bind-all-parameters>true</bind-all-parameters>" +
-                 "<call xsi:type=\"stored-function-call\">" +
-                    "<procedure-name>advanced_object_demo.ECHOEMPOBJECT</procedure-name>" +
-                    "<cursor-output-procedure>false</cursor-output-procedure>" +
-                    "<arguments>" +
-                       "<argument xsi:type=\"procedure-argument\">" +
-                          "<procedure-argument-name>ANEMPOBJECT</procedure-argument-name>" +
-                          "<argument-name>ANEMPOBJECT</argument-name>" +
-                          "<procedure-argument-type>advanced_object_demo.emp_object</procedure-argument-type>" +
-                          "<procedure-argument-sqltype>2002</procedure-argument-sqltype>" +
-                          "<procedure-argument-sqltype-name>EMP_OBJECT</procedure-argument-sqltype-name>" +
-                       "</argument>" +
-                    "</arguments>" +
-                    "<stored-function-result xsi:type=\"procedure-output-argument\">" +
-                       "<procedure-argument-type>advanced_object_demo.emp_object</procedure-argument-type>" +
-                       "<procedure-argument-sqltype>2002</procedure-argument-sqltype>" +
-                       "<procedure-argument-sqltype-name>EMP_OBJECT</procedure-argument-sqltype-name>" +
-                    "</stored-function-result>" +
-                 "</call>" +
-              "</query>" +
-           "</queries>" +
-        "</object-persistence>";
-    
-    @SuppressWarnings("unchecked")
-    @Test
-    public void echoEmpObject() throws InstantiationException, IllegalAccessException {
+        pModel.setReturnType("empObject");
+        testOrProject(pModel, "empObject", EMPOBJECT_OR_PROJECT);
+        // test query
         DatabaseSession ds = fixUp(EMPOBJECT_OR_PROJECT);
         ObjectRelationalDataTypeDescriptor regionDesc = 
             (ObjectRelationalDataTypeDescriptor)ds.getProject().getDescriptorForAlias("region");
@@ -620,240 +690,6 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
             empObjectEntityEchoed.get(2).equals("Mike Norman"));
         // assume date works out
     }
-    
-    @SuppressWarnings("unchecked")
-    @Test
-    public void struct1LevelDeep_OxPart() throws SQLException, PublisherException {
-        ProcedureOperationModel pModel = new ProcedureOperationModel();
-        pModel.setCatalogPattern("advanced_object_demo");
-        pModel.setSchemaPattern(username.toUpperCase());
-        pModel.setProcedurePattern("echoRegion");
-        OracleHelper.buildStoredProcedure(conn, username, ora11Platform, pModel);        
-        AdvancedJDBCOXDescriptorBuilder advJOxDescriptorBuilder = 
-            new AdvancedJDBCOXDescriptorBuilder("urn:struct1", new TypeSuffixTransformer());
-        PublisherWalker walker = new PublisherWalker(advJOxDescriptorBuilder);
-        pModel.getJPubType().accept(walker);
-        List<XMLDescriptor> descriptors =
-            ((AdvancedJDBCOXDescriptorBuilder)walker.getListener()).getDescriptors();
-        Project p = new Project();
-        p.setName("region");
-        for (XMLDescriptor xDesc : descriptors) { 
-            p.addDescriptor(xDesc);
-        }
-        Document resultDoc = xmlPlatform.createDocument();
-        XMLMarshaller marshaller = new XMLContext(writeObjectPersistenceProject).createMarshaller();
-        marshaller.marshal(p,resultDoc);
-        Document controlDoc = xmlParser.parse(new StringReader(REGION_OX_PROJECT));
-        assertTrue("control document not same as instance document",
-                comparer.isNodeEqual(controlDoc, resultDoc));
-        SchemaModelGenerator schemaGenerator = new SchemaModelGenerator();
-        SchemaModelGeneratorProperties sgProperties = new SchemaModelGeneratorProperties();
-        // set element form default to qualified for target namespace
-        sgProperties.addProperty("urn:struct1", ELEMENT_FORM_QUALIFIED_KEY, true);
-        Map schemaMap = schemaGenerator.generateSchemas(descriptors, sgProperties);
-        Schema s = (Schema)schemaMap.get("urn:struct1");
-        Document regionSchema = xmlPlatform.createDocument();
-        marshaller = new XMLContext(new SchemaModelProject()).createMarshaller();
-        marshaller.marshal(s, regionSchema);
-        Document controlRegionSchema = xmlParser.parse(new StringReader(REGION_SCHEMA));
-        assertTrue("control schema not same as instance schema",
-            comparer.isNodeEqual(controlRegionSchema, regionSchema));
-    }
-    static final String REGION_OX_PROJECT =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-        "<object-persistence version=\"Eclipse Persistence Services - some version (some build date)\" xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:eclipselink=\"http://www.eclipse.org/eclipselink/xsds/persistence\">" +
-           "<name>region</name>" +
-           "<class-mapping-descriptors>" +
-               "<class-mapping-descriptor xsi:type=\"xml-class-mapping-descriptor\">" +
-                   "<class>advanced_object_demo.region</class>" +
-                   "<alias>region</alias>" +
-                   "<events xsi:type=\"event-policy\"/>" +
-                   "<querying xsi:type=\"query-policy\"/>" +
-                   "<attribute-mappings>" +
-                      "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
-                         "<attribute-name>reg_id</attribute-name>" +
-                         "<field name=\"reg_id/text()\" xsi:type=\"node\">" +
-                            "<schema-type>{http://www.w3.org/2001/XMLSchema}decimal</schema-type>" +
-                         "</field>" +
-                         "<attribute-classification>java.math.BigDecimal</attribute-classification>" +
-                      "</attribute-mapping>" +
-                      "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
-                         "<attribute-name>reg_name</attribute-name>" +
-                         "<field name=\"reg_name/text()\" xsi:type=\"node\">" +
-                             "<schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>" +
-                         "</field>" +
-                         "<attribute-classification>java.lang.String</attribute-classification>" +
-                      "</attribute-mapping>" +
-                   "</attribute-mappings>" +
-                   "<descriptor-type>aggregate</descriptor-type>" +
-                   "<instantiation/>" +
-                   "<copying xsi:type=\"instantiation-copy-policy\"/>" +
-                   "<default-root-element>regionType</default-root-element>" +
-                   "<default-root-element-field name=\"regionType\" xsi:type=\"node\"/>" +
-                   "<namespace-resolver>" +
-                      "<default-namespace-uri>urn:struct1</default-namespace-uri>" +
-                   "</namespace-resolver>" +
-                   "<schema xsi:type=\"schema-url-reference\">" +
-                      "<schema-context>/regionType</schema-context>" +
-                      "<node-type>complex-type</node-type>" +
-                   "</schema>" +
-               "</class-mapping-descriptor>" +
-           "</class-mapping-descriptors>" +
-        "</object-persistence>";
-    static final String REGION_SCHEMA =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-        "<xsd:schema targetNamespace=\"urn:struct1\" xmlns=\"urn:struct1\" elementFormDefault=\"qualified\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
-            "<xsd:complexType name=\"regionType\">" +
-               "<xsd:sequence>" +
-                  "<xsd:element name=\"reg_id\" type=\"xsd:decimal\" minOccurs=\"0\"/>" +
-                  "<xsd:element name=\"reg_name\" type=\"xsd:string\" minOccurs=\"0\"/>" +
-               "</xsd:sequence>" +
-            "</xsd:complexType>" +
-            "<xsd:element name=\"regionType\" type=\"regionType\"/>" +
-        "</xsd:schema>";
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void struct2LevelDeep_OxPart() throws SQLException, PublisherException {
-        ProcedureOperationModel pModel = new ProcedureOperationModel();
-        pModel.setCatalogPattern("advanced_object_demo");
-        pModel.setSchemaPattern(username.toUpperCase());
-        pModel.setProcedurePattern("echoEmpAddress");
-        OracleHelper.buildStoredProcedure(conn, username, ora11Platform, pModel);
-        AdvancedJDBCOXDescriptorBuilder advJOxDescriptorBuilder = 
-            new AdvancedJDBCOXDescriptorBuilder("urn:struct2", new TypeSuffixTransformer());
-        PublisherWalker walker = new PublisherWalker(advJOxDescriptorBuilder);
-        pModel.getJPubType().accept(walker);
-        List<XMLDescriptor> descriptors =
-            ((AdvancedJDBCOXDescriptorBuilder)walker.getListener()).getDescriptors();
-        Project p = new Project();
-        p.setName("empAddress");
-        for (XMLDescriptor xDesc : descriptors) { 
-            p.addDescriptor(xDesc);
-        }
-        Document resultDoc = xmlPlatform.createDocument();
-        XMLMarshaller marshaller = new XMLContext(writeObjectPersistenceProject).createMarshaller();
-        marshaller.marshal(p,resultDoc);
-        Document controlDoc = xmlParser.parse(new StringReader(EMPADDRESS_OX_PROJECT));
-        assertTrue("control document not same as instance document",
-                comparer.isNodeEqual(controlDoc, resultDoc));
-        SchemaModelGenerator schemaGenerator = new SchemaModelGenerator();
-        SchemaModelGeneratorProperties sgProperties = new SchemaModelGeneratorProperties();
-        // set element form default to qualified for target namespace
-        sgProperties.addProperty("urn:struct2", ELEMENT_FORM_QUALIFIED_KEY, true);
-        Map schemaMap = schemaGenerator.generateSchemas(descriptors, sgProperties);
-        Schema s = (Schema)schemaMap.get("urn:struct2");
-        Document empAddressSchema = xmlPlatform.createDocument();
-        new XMLContext(new SchemaModelProject()).createMarshaller().marshal(s, empAddressSchema);
-        Document controlEmpAddressSchema = xmlParser.parse(new StringReader(EMPADDRESS_SCHEMA));
-        assertTrue("control schema not same as instance schema",
-            comparer.isNodeEqual(controlEmpAddressSchema, empAddressSchema));
-    }
-    static final String EMPADDRESS_OX_PROJECT =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-        "<object-persistence version=\"Eclipse Persistence Services - some version (some build date)\" xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:eclipselink=\"http://www.eclipse.org/eclipselink/xsds/persistence\">" +
-           "<name>empAddress</name>" +
-           "<class-mapping-descriptors>" +
-              "<class-mapping-descriptor xsi:type=\"xml-class-mapping-descriptor\">" +
-                 "<class>advanced_object_demo.region</class>" +
-                 "<alias>region</alias>" +
-                 "<events xsi:type=\"event-policy\"/>" +
-                 "<querying xsi:type=\"query-policy\"/>" +
-                 "<attribute-mappings>" +
-                    "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
-                       "<attribute-name>reg_id</attribute-name>" +
-                       "<field name=\"reg_id/text()\" xsi:type=\"node\">" +
-                          "<schema-type>{http://www.w3.org/2001/XMLSchema}decimal</schema-type>" +
-                       "</field>" +
-                       "<attribute-classification>java.math.BigDecimal</attribute-classification>" +
-                    "</attribute-mapping>" +
-                    "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
-                       "<attribute-name>reg_name</attribute-name>" +
-                       "<field name=\"reg_name/text()\" xsi:type=\"node\">" +
-                           "<schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>" +
-                        "</field>" +
-                        "<attribute-classification>java.lang.String</attribute-classification>" +
-                    "</attribute-mapping>" +
-                 "</attribute-mappings>" +
-                 "<descriptor-type>aggregate</descriptor-type>" +
-                 "<instantiation/>" +
-                 "<copying xsi:type=\"instantiation-copy-policy\"/>" +
-                 "<namespace-resolver>" +
-                    "<default-namespace-uri>urn:struct2</default-namespace-uri>" +
-                 "</namespace-resolver>" +
-                 "<schema xsi:type=\"schema-url-reference\">" +
-                    "<schema-context>/regionType</schema-context>" +
-                    "<node-type>complex-type</node-type>" +
-                 "</schema>" +
-              "</class-mapping-descriptor>" +
-              "<class-mapping-descriptor xsi:type=\"xml-class-mapping-descriptor\">" +
-                 "<class>advanced_object_demo.emp_address</class>" +
-                 "<alias>emp_address</alias>" +
-                 "<events xsi:type=\"event-policy\"/>" +
-                 "<querying xsi:type=\"query-policy\"/>" +
-                 "<attribute-mappings>" +
-                   "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
-                      "<attribute-name>street</attribute-name>" +
-                      "<field name=\"street/text()\" xsi:type=\"node\">" +
-                         "<schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>" +
-                      "</field>" +
-                      "<attribute-classification>java.lang.String</attribute-classification>" +
-                   "</attribute-mapping>" +
-                   "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
-                      "<attribute-name>suburb</attribute-name>" +
-                      "<field name=\"suburb/text()\" xsi:type=\"node\">" +
-                         "<schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>" +
-                      "</field>" +
-                      "<attribute-classification>java.lang.String</attribute-classification>" +
-                   "</attribute-mapping>" +
-                   "<attribute-mapping xsi:type=\"xml-composite-object-mapping\">" +
-                      "<attribute-name>addr_region</attribute-name>" +
-                      "<reference-class>advanced_object_demo.region</reference-class>" +
-                      "<field name=\"addr_region\" xsi:type=\"node\"/>" +
-                   "</attribute-mapping>" +
-                   "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
-                      "<attribute-name>postcode</attribute-name>" +
-                      "<field name=\"postcode/text()\" xsi:type=\"node\">" +
-                         "<schema-type>{http://www.w3.org/2001/XMLSchema}integer</schema-type>" +
-                      "</field>" +
-                      "<attribute-classification>java.math.BigInteger</attribute-classification>" +
-                   "</attribute-mapping>" +
-                 "</attribute-mappings>" +
-                 "<descriptor-type>aggregate</descriptor-type>" +
-                 "<instantiation/>" +
-                 "<copying xsi:type=\"instantiation-copy-policy\"/>" +
-                 "<default-root-element>emp_addressType</default-root-element>" +
-                 "<default-root-element-field name=\"emp_addressType\" xsi:type=\"node\"/>" +
-                 "<namespace-resolver>" +
-                    "<default-namespace-uri>urn:struct2</default-namespace-uri>" +
-                 "</namespace-resolver>" +
-                 "<schema xsi:type=\"schema-url-reference\">" +
-                    "<schema-context>/emp_addressType</schema-context>" +
-                    "<node-type>complex-type</node-type>" +
-                 "</schema>" +
-              "</class-mapping-descriptor>" +
-           "</class-mapping-descriptors>" +
-        "</object-persistence>";
-    static final String EMPADDRESS_SCHEMA =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-        "<xsd:schema targetNamespace=\"urn:struct2\" xmlns=\"urn:struct2\" elementFormDefault=\"qualified\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
-           "<xsd:complexType name=\"emp_addressType\">" +
-              "<xsd:sequence>" +
-                 "<xsd:element name=\"street\" type=\"xsd:string\" minOccurs=\"0\"/>" +
-                 "<xsd:element name=\"suburb\" type=\"xsd:string\" minOccurs=\"0\"/>" +
-                 "<xsd:element name=\"addr_region\" type=\"regionType\" minOccurs=\"0\"/>" +
-                 "<xsd:element name=\"postcode\" type=\"xsd:integer\" minOccurs=\"0\"/>" +
-              "</xsd:sequence>" +
-           "</xsd:complexType>" +
-           "<xsd:complexType name=\"regionType\">" +
-              "<xsd:sequence>" +
-                 "<xsd:element name=\"reg_id\" type=\"xsd:decimal\" minOccurs=\"0\"/>" +
-                 "<xsd:element name=\"reg_name\" type=\"xsd:string\" minOccurs=\"0\"/>" +
-              "</xsd:sequence>" +
-           "</xsd:complexType>" +
-           "<xsd:element name=\"emp_addressType\" type=\"emp_addressType\"/>" +
-        "</xsd:schema>";
-
     @SuppressWarnings("unchecked")
     @Test
     public void struct3LevelDeep_OxPart() throws SQLException, PublisherException,
@@ -862,36 +698,8 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         pModel.setCatalogPattern("advanced_object_demo");
         pModel.setSchemaPattern(username.toUpperCase());
         pModel.setProcedurePattern("echoEmpObject");
-        OracleHelper.buildStoredProcedure(conn, username, ora11Platform, pModel);
-        AdvancedJDBCOXDescriptorBuilder advJOxDescriptorBuilder = 
-            new AdvancedJDBCOXDescriptorBuilder("urn:struct3", new TypeSuffixTransformer());
-        PublisherWalker walker = new PublisherWalker(advJOxDescriptorBuilder);
-        pModel.getJPubType().accept(walker);
-        List<XMLDescriptor> descriptors =
-            ((AdvancedJDBCOXDescriptorBuilder)walker.getListener()).getDescriptors();
-        Project p = new Project();
-        p.setName("empObject");
-        for (XMLDescriptor xDesc : descriptors) { 
-            p.addDescriptor(xDesc);
-        }
-        Document resultDoc = xmlPlatform.createDocument();
-        XMLMarshaller marshaller = new XMLContext(writeObjectPersistenceProject).createMarshaller();
-        marshaller.marshal(p, resultDoc);
-        Document controlDoc = xmlParser.parse(new StringReader(EMPOBJECT_OX_PROJECT));
-        assertTrue("control document not same as instance document",
-                comparer.isNodeEqual(controlDoc, resultDoc));
-        SchemaModelGenerator schemaGenerator = new SchemaModelGenerator();
-        SchemaModelGeneratorProperties sgProperties = new SchemaModelGeneratorProperties();
-        // set element form default to qualified for target namespace
-        sgProperties.addProperty("urn:struct3", ELEMENT_FORM_QUALIFIED_KEY, true);
-        Map schemaMap = schemaGenerator.generateSchemas(descriptors, sgProperties);
-        Schema s = (Schema)schemaMap.get("urn:struct3");
-        Document empObjectSchema = xmlPlatform.createDocument();
-        new XMLContext(new SchemaModelProject()).createMarshaller().marshal(s, empObjectSchema);
-        Document controlempObjectSchema = xmlParser.parse(new StringReader(EMPOBJECT_SCHEMA));
-        assertTrue("control schema not same as instance schema",
-            comparer.isNodeEqual(controlempObjectSchema, empObjectSchema));
-
+        testOxProject(pModel, "empObject", "urn:struct3", EMPOBJECT_OX_PROJECT, EMPOBJECT_SCHEMA);
+        // test marshalling
         BaseEntityClassLoader becl = new BaseEntityClassLoader(this.getClass().getClassLoader());
         XMLContext xmlContext = new XMLContext(readObjectPersistenceProject, becl);
         Project p2 = (Project)xmlContext.createUnmarshaller().unmarshal(
@@ -945,7 +753,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         String anEmpObject = ANEMPOBJECT + today.toString() + ANEMPOBJECT_SUFFIX;
         assertTrue("instance empObject not same as control empObject",
             anEmpObject.equals(empObjectEntityString));
-        
+        // test un-marshalling
         BaseEntity echoedEmpObjectEntity = (BaseEntity)xmlContext2.createUnmarshaller().unmarshal(
             new StringReader(anEmpObject), empObjectClass);
         assertTrue("incorrect first field for type returned from StoredFunctionCall",
@@ -1143,6 +951,100 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
            "<xsd:element name=\"emp_objectType\" type=\"emp_objectType\"/>" +
         "</xsd:schema>";
 
+    public static final String EMP_ARRAY_OR_PROJECT =
+    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+    "<object-persistence version=\"Eclipse Persistence Services - some version (some build date)\" xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:eclipselink=\"http://www.eclipse.org/eclipselink/xsds/persistence\">" +
+       "<name>empArray</name>" +
+       "<class-mapping-descriptors>" +
+          "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
+             "<class>another_advanced_demo.emp_info</class>" +
+             "<alias>emp_info</alias>" +
+             "<events xsi:type=\"event-policy\"/>" +
+             "<querying xsi:type=\"query-policy\"/>" +
+             "<attribute-mappings>" +
+                "<attribute-mapping xsi:type=\"direct-mapping\">" +
+                   "<attribute-name>id</attribute-name>" +
+                   "<field name=\"ID\" xsi:type=\"column\"/>" +
+                "</attribute-mapping>" +
+                "<attribute-mapping xsi:type=\"direct-mapping\">" +
+                   "<attribute-name>name</attribute-name>" +
+                   "<field name=\"NAME\" xsi:type=\"column\"/>" +
+                "</attribute-mapping>" +
+             "</attribute-mappings>" +
+             "<descriptor-type>aggregate</descriptor-type>" +
+             "<caching>" +
+                "<cache-size>-1</cache-size>" +
+             "</caching>" +
+             "<remote-caching>" +
+                "<cache-size>-1</cache-size>" +
+             "</remote-caching>" +
+             "<instantiation/>" +
+             "<copying xsi:type=\"instantiation-copy-policy\"/>" +
+             "<structure>EMP_INFO</structure>" +
+             "<field-order>" +
+                "<field name=\"ID\" xsi:type=\"column\"/>" +
+                "<field name=\"NAME\" xsi:type=\"column\"/>" +
+             "</field-order>" +
+          "</class-mapping-descriptor>" +
+          "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
+             "<class>another_advanced_demo.emp_info_array_CollectionWrapper</class>" +
+             "<alias>emp_info_array</alias>" +
+             "<events xsi:type=\"event-policy\"/>" +
+             "<querying xsi:type=\"query-policy\"/>" +
+             "<attribute-mappings>" +
+                "<attribute-mapping xsi:type=\"object-array-mapping\">" +
+                   "<attribute-name>items</attribute-name>" +
+                   "<reference-class>another_advanced_demo.emp_info</reference-class>" +
+                   "<field name=\"ITEMS\" xsi:type=\"object-relational-field\"/>" +
+                   "<container xsi:type=\"list-container-policy\">" +
+                      "<collection-type>java.util.ArrayList</collection-type>" +
+                   "</container>" +
+                   "<structure>EMP_INFO_ARRAY</structure>" +
+                "</attribute-mapping>" +
+             "</attribute-mappings>" +
+             "<descriptor-type>aggregate</descriptor-type>" +
+             "<caching>" +
+                "<cache-size>-1</cache-size>" +
+             "</caching>" +
+             "<remote-caching>" +
+                "<cache-size>-1</cache-size>" +
+             "</remote-caching>" +
+             "<instantiation/>" +
+             "<copying xsi:type=\"instantiation-copy-policy\"/>" +
+          "</class-mapping-descriptor>" +
+       "</class-mapping-descriptors>" +
+       "<queries>" +
+          "<query name=\"buildEmpArray\" xsi:type=\"value-read-query\">" +
+             "<arguments>" +
+                "<argument name=\"NUM\">" +
+                   "<type>java.lang.Object</type>" +
+                "</argument>" +
+             "</arguments>" +
+             "<maintain-cache>false</maintain-cache>" +
+             "<bind-all-parameters>true</bind-all-parameters>" +
+             "<call xsi:type=\"stored-function-call\">" +
+                "<procedure-name>another_advanced_demo.BUILDEMPARRAY</procedure-name>" +
+                "<cursor-output-procedure>false</cursor-output-procedure>" +
+                "<arguments>" +
+                   "<argument xsi:type=\"procedure-argument\">" +
+                      "<procedure-argument-name>NUM</procedure-argument-name>" +
+                      "<argument-name>NUM</argument-name>" +
+                   "</argument>" +
+                "</arguments>" +
+                "<stored-function-result xsi:type=\"procedure-output-argument\">" +
+                   "<procedure-argument-type>another_advanced_demo.emp_info_array_CollectionWrapper</procedure-argument-type>" +
+                   "<procedure-argument-sqltype>2003</procedure-argument-sqltype>" +
+                   "<procedure-argument-sqltype-name>EMP_INFO_ARRAY</procedure-argument-sqltype-name>" +
+                   "<nested-type-field xsi:type=\"procedure-argument\">" +
+                      "<procedure-argument-type>another_advanced_demo.emp_info</procedure-argument-type>" +
+                      "<procedure-argument-sqltype>2002</procedure-argument-sqltype>" +
+                      "<procedure-argument-sqltype-name>EMP_INFO</procedure-argument-sqltype-name>" +
+                   "</nested-type-field>" +
+                "</stored-function-result>" +
+             "</call>" +
+          "</query>" +
+       "</queries>" +
+    "</object-persistence>";
     static final String ANEMPOBJECT =
         "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +
         "<emp_objectType xmlns=\"urn:struct3\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
@@ -1171,41 +1073,8 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         pModel.setSchemaPattern(username.toUpperCase());
         pModel.setProcedurePattern("buildEmpArray");
         pModel.setReturnType("emp_info_arrayType");
-        List<DbStoredProcedure> storedProcedures = 
-            OracleHelper.buildStoredProcedure(conn, username, ora11Platform, pModel); 
-        Map<DbStoredProcedure, DbStoredProcedureNameAndModel> dbStoredProcedure2QueryName = 
-            new HashMap<DbStoredProcedure, DbStoredProcedureNameAndModel>();
-        ArrayList<OperationModel> operations = new ArrayList<OperationModel>();
-        operations.add(pModel);
-        DBWSBuilder.buildDbStoredProcedure2QueryNameMap(dbStoredProcedure2QueryName,
-            storedProcedures, operations, true);     
-        AdvancedJDBCORDescriptorBuilder advJOrDescriptorBuilder = 
-            new AdvancedJDBCORDescriptorBuilder();
-        AdvancedJDBCQueryBuilder queryBuilder = 
-            new AdvancedJDBCQueryBuilder(storedProcedures, dbStoredProcedure2QueryName);
-        PublisherListenerChainAdapter listenerChainAdapter = new PublisherListenerChainAdapter();
-        listenerChainAdapter.addListener(advJOrDescriptorBuilder);
-        listenerChainAdapter.addListener(queryBuilder);
-        PublisherWalker walker = new PublisherWalker(listenerChainAdapter);
-        pModel.getJPubType().accept(walker);
-        List<ObjectRelationalDataTypeDescriptor> descriptors = 
-            advJOrDescriptorBuilder.getDescriptors();
-        Project p = new Project();
-        p.setName("empArray");
-        for (ObjectRelationalDataTypeDescriptor ordt : descriptors) { 
-            p.addDescriptor(ordt);
-        }
-        List<DatabaseQuery> queries = queryBuilder.getQueries();
-        if (queries != null && queries.size() > 0) {
-            p.getQueries().addAll(queries);
-        }
-        Document resultDoc = xmlPlatform.createDocument();
-        XMLMarshaller marshaller = new XMLContext(writeObjectPersistenceProject).createMarshaller();
-        marshaller.marshal(p, resultDoc);
-        Document empArrayOrProjectDoc = xmlParser.parse(new StringReader(EMP_ARRAY_OR_PROJECT));
-        assertTrue("control document not same as instance document",
-            comparer.isNodeEqual(resultDoc, empArrayOrProjectDoc));    
-        
+        testOrProject(pModel, "empArray", EMP_ARRAY_OR_PROJECT);
+        // test query
         DatabaseSession ds = fixUp(EMP_ARRAY_OR_PROJECT);
         DatabaseQuery vrq = ds.getQuery("buildEmpArray");
         Vector args = new NonSynchronizedVector();
@@ -1233,101 +1102,6 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         assertTrue("return value array second element name wrong value",
             emp3.get(1).equals("entry 3"));
     }
-    public static final String EMP_ARRAY_OR_PROJECT =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-        "<object-persistence version=\"Eclipse Persistence Services - some version (some build date)\" xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:eclipselink=\"http://www.eclipse.org/eclipselink/xsds/persistence\">" +
-           "<name>empArray</name>" +
-           "<class-mapping-descriptors>" +
-              "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
-                 "<class>another_advanced_demo.emp_info</class>" +
-                 "<alias>emp_info</alias>" +
-                 "<events xsi:type=\"event-policy\"/>" +
-                 "<querying xsi:type=\"query-policy\"/>" +
-                 "<attribute-mappings>" +
-                    "<attribute-mapping xsi:type=\"direct-mapping\">" +
-                       "<attribute-name>id</attribute-name>" +
-                       "<field name=\"ID\" xsi:type=\"column\"/>" +
-                    "</attribute-mapping>" +
-                    "<attribute-mapping xsi:type=\"direct-mapping\">" +
-                       "<attribute-name>name</attribute-name>" +
-                       "<field name=\"NAME\" xsi:type=\"column\"/>" +
-                    "</attribute-mapping>" +
-                 "</attribute-mappings>" +
-                 "<descriptor-type>aggregate</descriptor-type>" +
-                 "<caching>" +
-                    "<cache-size>-1</cache-size>" +
-                 "</caching>" +
-                 "<remote-caching>" +
-                    "<cache-size>-1</cache-size>" +
-                 "</remote-caching>" +
-                 "<instantiation/>" +
-                 "<copying xsi:type=\"instantiation-copy-policy\"/>" +
-                 "<structure>EMP_INFO</structure>" +
-                 "<field-order>" +
-                    "<field name=\"ID\" xsi:type=\"column\"/>" +
-                    "<field name=\"NAME\" xsi:type=\"column\"/>" +
-                 "</field-order>" +
-              "</class-mapping-descriptor>" +
-              "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
-                 "<class>another_advanced_demo.emp_info_array_CollectionWrapper</class>" +
-                 "<alias>emp_info_array</alias>" +
-                 "<events xsi:type=\"event-policy\"/>" +
-                 "<querying xsi:type=\"query-policy\"/>" +
-                 "<attribute-mappings>" +
-                    "<attribute-mapping xsi:type=\"object-array-mapping\">" +
-                       "<attribute-name>items</attribute-name>" +
-                       "<reference-class>another_advanced_demo.emp_info</reference-class>" +
-                       "<field name=\"ITEMS\" xsi:type=\"object-relational-field\"/>" +
-                       "<container xsi:type=\"list-container-policy\">" +
-                          "<collection-type>java.util.ArrayList</collection-type>" +
-                       "</container>" +
-                       "<structure>EMP_INFO_ARRAY</structure>" +
-                    "</attribute-mapping>" +
-                 "</attribute-mappings>" +
-                 "<descriptor-type>aggregate</descriptor-type>" +
-                 "<caching>" +
-                    "<cache-size>-1</cache-size>" +
-                 "</caching>" +
-                 "<remote-caching>" +
-                    "<cache-size>-1</cache-size>" +
-                 "</remote-caching>" +
-                 "<instantiation/>" +
-                 "<copying xsi:type=\"instantiation-copy-policy\"/>" +
-              "</class-mapping-descriptor>" +
-           "</class-mapping-descriptors>" +
-           "<queries>" +
-              "<query name=\"buildEmpArray\" xsi:type=\"value-read-query\">" +
-                 "<arguments>" +
-                    "<argument name=\"NUM\">" +
-                       "<type>java.lang.Object</type>" +
-                    "</argument>" +
-                 "</arguments>" +
-                 "<maintain-cache>false</maintain-cache>" +
-                 "<bind-all-parameters>true</bind-all-parameters>" +
-                 "<call xsi:type=\"stored-function-call\">" +
-                    "<procedure-name>another_advanced_demo.BUILDEMPARRAY</procedure-name>" +
-                    "<cursor-output-procedure>false</cursor-output-procedure>" +
-                    "<arguments>" +
-                       "<argument xsi:type=\"procedure-argument\">" +
-                          "<procedure-argument-name>NUM</procedure-argument-name>" +
-                          "<argument-name>NUM</argument-name>" +
-                       "</argument>" +
-                    "</arguments>" +
-                    "<stored-function-result xsi:type=\"procedure-output-argument\">" +
-                       "<procedure-argument-type>another_advanced_demo.emp_info_array_CollectionWrapper</procedure-argument-type>" +
-                       "<procedure-argument-sqltype>2003</procedure-argument-sqltype>" +
-                       "<procedure-argument-sqltype-name>EMP_INFO_ARRAY</procedure-argument-sqltype-name>" +
-                       "<nested-type-field xsi:type=\"procedure-argument\">" +
-                          "<procedure-argument-type>another_advanced_demo.emp_info</procedure-argument-type>" +
-                          "<procedure-argument-sqltype>2002</procedure-argument-sqltype>" +
-                          "<procedure-argument-sqltype-name>EMP_INFO</procedure-argument-sqltype-name>" +
-                       "</nested-type-field>" +
-                    "</stored-function-result>" +
-                 "</call>" +
-              "</query>" +
-           "</queries>" +
-        "</object-persistence>";
-
     @SuppressWarnings("unchecked")
     @Test
     public void buildEmpArray_OxPart() throws SQLException, PublisherException,
@@ -1338,42 +1112,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         pModel.setSchemaPattern(username.toUpperCase());
         pModel.setProcedurePattern("buildEmpArray");
         pModel.setReturnType("emp_info_arrayType");
-        List<DbStoredProcedure> storedProcedures = 
-            OracleHelper.buildStoredProcedure(conn, username, ora11Platform, pModel); 
-        Map<DbStoredProcedure, DbStoredProcedureNameAndModel> dbStoredProcedure2QueryName = 
-            new HashMap<DbStoredProcedure, DbStoredProcedureNameAndModel>();
-        ArrayList<OperationModel> operations = new ArrayList<OperationModel>();
-        operations.add(pModel);
-        DBWSBuilder.buildDbStoredProcedure2QueryNameMap(dbStoredProcedure2QueryName,
-            storedProcedures, operations, true);     
-        AdvancedJDBCOXDescriptorBuilder advJOxDescriptorBuilder = 
-            new AdvancedJDBCOXDescriptorBuilder("urn:empArray", new TypeSuffixTransformer());
-        PublisherWalker walker = new PublisherWalker(advJOxDescriptorBuilder);
-        pModel.getJPubType().accept(walker);
-        List<XMLDescriptor> descriptors = advJOxDescriptorBuilder.getDescriptors();
-        Project p = new Project();
-        p.setName("empArray");
-        for (XMLDescriptor xDesc : descriptors) { 
-            p.addDescriptor(xDesc);
-        }
-        Document resultDoc = xmlPlatform.createDocument();
-        XMLMarshaller marshaller = new XMLContext(writeObjectPersistenceProject).createMarshaller();
-        marshaller.marshal(p, resultDoc);
-        Document controlDoc = xmlParser.parse(new StringReader(EMPARRAY_OX_PROJECT));
-        assertTrue("control document not same as instance document",
-                comparer.isNodeEqual(controlDoc, resultDoc));
-        SchemaModelGenerator schemaGenerator = new SchemaModelGenerator();
-        SchemaModelGeneratorProperties sgProperties = new SchemaModelGeneratorProperties();
-        // set element form default to qualified for target namespace
-        sgProperties.addProperty("urn:empArray", ELEMENT_FORM_QUALIFIED_KEY, true);
-        Map schemaMap = schemaGenerator.generateSchemas(descriptors, sgProperties);
-        Schema s = (Schema)schemaMap.get("urn:empArray");
-        Document empArraySchema = xmlPlatform.createDocument();
-        XMLMarshaller schemaMarshaller = new XMLContext(new SchemaModelProject()).createMarshaller();
-        schemaMarshaller.marshal(s, empArraySchema);
-        Document controlempArraySchema = xmlParser.parse(new StringReader(EMPARRAY_SCHEMA));
-        assertTrue("control schema not same as instance schema",
-            comparer.isNodeEqual(controlempArraySchema, empArraySchema));
+        testOxProject(pModel, "empArray", "urn:empArray", EMPARRAY_OX_PROJECT, EMPARRAY_SCHEMA);
     }
     static final String EMPARRAY_OX_PROJECT =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
@@ -1459,6 +1198,66 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
            "<xsd:element name=\"emp_info_arrayType\" type=\"emp_info_arrayType\"/>" +
        "</xsd:schema>";
 
+    public static final String SF_TBL1_OR_PROJECT = 
+    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+    "<object-persistence version=\"Eclipse Persistence Services - some version (some build date)\" xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:eclipselink=\"http://www.eclipse.org/eclipselink/xsds/persistence\">" +
+       "<name>sfTbl1</name>" +
+       "<class-mapping-descriptors>" +
+          "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
+             "<class>toplevel.somepackage_tbl1_CollectionWrapper</class>" +
+             "<alias>somepackage_tbl1</alias>" +
+             "<events xsi:type=\"event-policy\"/>" +
+             "<querying xsi:type=\"query-policy\"/>" +
+             "<attribute-mappings>" +
+                "<attribute-mapping xsi:type=\"array-mapping\">" +
+                   "<attribute-name>items</attribute-name>" +
+                   "<field name=\"items\" xsi:type=\"object-relational-field\">" +
+                      "<nested-type-field name=\"\" sql-typecode=\"12\" column-definition=\"VARCHAR2\" xsi:type=\"column\"/>" +
+                   "</field>" +                       
+                   "<container xsi:type=\"list-container-policy\">" +
+                      "<collection-type>java.util.ArrayList</collection-type>" +
+                   "</container>" +
+                   "<structure>somepackage_tbl1</structure>" +
+                "</attribute-mapping>" +
+             "</attribute-mappings>" +
+             "<descriptor-type>aggregate</descriptor-type>" +
+             "<caching>" +
+                "<cache-size>-1</cache-size>" +
+             "</caching>" +
+             "<remote-caching>" +
+                "<cache-size>-1</cache-size>" +
+             "</remote-caching>" +
+             "<instantiation/>" +
+             "<copying xsi:type=\"instantiation-copy-policy\"/>" +
+          "</class-mapping-descriptor>" +
+       "</class-mapping-descriptors>" +
+       "<queries>" +
+          "<query name=\"sfTbl1\" xsi:type=\"value-read-query\">" +
+             "<arguments>" +
+                "<argument name=\"NUM\">" +
+                   "<type>java.lang.Object</type>" +
+                "</argument>" +
+             "</arguments>" +
+             "<maintain-cache>false</maintain-cache>" +
+             "<bind-all-parameters>true</bind-all-parameters>" +
+             "<call xsi:type=\"stored-function-call\">" +
+                "<procedure-name>SF_TBL1</procedure-name>" +
+                "<cursor-output-procedure>false</cursor-output-procedure>" +
+                "<arguments>" +
+                   "<argument xsi:type=\"procedure-argument\">" +
+                      "<procedure-argument-name>NUM</procedure-argument-name>" +
+                      "<argument-name>NUM</argument-name>" +
+                   "</argument>" +
+                "</arguments>" +
+                "<stored-function-result xsi:type=\"procedure-output-argument\">" +
+                   "<procedure-argument-type>toplevel.somepackage_tbl1_CollectionWrapper</procedure-argument-type>" +
+                   "<procedure-argument-sqltype>2003</procedure-argument-sqltype>" +
+                   "<procedure-argument-sqltype-name>SOMEPACKAGE_TBL1</procedure-argument-sqltype-name>" +
+                "</stored-function-result>" +
+             "</call>" +
+          "</query>" +
+       "</queries>" +
+    "</object-persistence>";
     @SuppressWarnings("unchecked")
     @Test
     public void sfTbl1_OrPart() {
@@ -1468,41 +1267,8 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         pModel.setSchemaPattern(username.toUpperCase());
         pModel.setProcedurePattern("SF_TBL1");
         pModel.setReturnType("somepackage_tbl1Type");
-        List<DbStoredProcedure> storedProcedures = 
-            OracleHelper.buildStoredProcedure(conn, username, ora11Platform, pModel); 
-        Map<DbStoredProcedure, DbStoredProcedureNameAndModel> dbStoredProcedure2QueryName = 
-            new HashMap<DbStoredProcedure, DbStoredProcedureNameAndModel>();
-        ArrayList<OperationModel> operations = new ArrayList<OperationModel>();
-        operations.add(pModel);
-        DBWSBuilder.buildDbStoredProcedure2QueryNameMap(dbStoredProcedure2QueryName,
-            storedProcedures, operations, true);     
-        AdvancedJDBCORDescriptorBuilder advJOrDescriptorBuilder = 
-            new AdvancedJDBCORDescriptorBuilder();
-        AdvancedJDBCQueryBuilder queryBuilder = 
-            new AdvancedJDBCQueryBuilder(storedProcedures, dbStoredProcedure2QueryName);
-        PublisherListenerChainAdapter listenerChainAdapter = new PublisherListenerChainAdapter();
-        listenerChainAdapter.addListener(advJOrDescriptorBuilder);
-        listenerChainAdapter.addListener(queryBuilder);
-        PublisherWalker walker = new PublisherWalker(listenerChainAdapter);
-        pModel.getJPubType().accept(walker);
-        List<ObjectRelationalDataTypeDescriptor> descriptors = 
-            advJOrDescriptorBuilder.getDescriptors();
-        Project p = new Project();
-        p.setName("sfTbl1");
-        for (ObjectRelationalDataTypeDescriptor ordt : descriptors) { 
-            p.addDescriptor(ordt);
-        }
-        List<DatabaseQuery> queries = queryBuilder.getQueries();
-        if (queries != null && queries.size() > 0) {
-            p.getQueries().addAll(queries);
-        }
-        Document resultDoc = xmlPlatform.createDocument();
-        XMLMarshaller marshaller = new XMLContext(writeObjectPersistenceProject).createMarshaller();
-        marshaller.marshal(p, resultDoc);
-        Document empArrayOrProjectDoc = xmlParser.parse(new StringReader(SF_TBL1_OR_PROJECT));
-        assertTrue("control document not same as instance document",
-            comparer.isNodeEqual(resultDoc, empArrayOrProjectDoc));
-
+        testOrProject(pModel, "sfTbl1", SF_TBL1_OR_PROJECT);
+        // test query
         DatabaseSession ds = fixUp(SF_TBL1_OR_PROJECT);
         DatabaseQuery vrq = ds.getQuery("sfTbl1");
         Vector args = new NonSynchronizedVector();
@@ -1516,66 +1282,18 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
             assertTrue("wrong array element value", ("entry " + (i + 1)).equals(strings.get(i)));
         }
     }
-    public static final String SF_TBL1_OR_PROJECT = 
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-        "<object-persistence version=\"Eclipse Persistence Services - some version (some build date)\" xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:eclipselink=\"http://www.eclipse.org/eclipselink/xsds/persistence\">" +
-           "<name>sfTbl1</name>" +
-           "<class-mapping-descriptors>" +
-              "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
-                 "<class>toplevel.somepackage_tbl1_CollectionWrapper</class>" +
-                 "<alias>somepackage_tbl1</alias>" +
-                 "<events xsi:type=\"event-policy\"/>" +
-                 "<querying xsi:type=\"query-policy\"/>" +
-                 "<attribute-mappings>" +
-                    "<attribute-mapping xsi:type=\"array-mapping\">" +
-                       "<attribute-name>items</attribute-name>" +
-                       "<field name=\"items\" xsi:type=\"object-relational-field\">" +
-                          "<nested-type-field name=\"\" sql-typecode=\"12\" column-definition=\"VARCHAR2\" xsi:type=\"column\"/>" +
-                       "</field>" +                       
-                       "<container xsi:type=\"list-container-policy\">" +
-                          "<collection-type>java.util.ArrayList</collection-type>" +
-                       "</container>" +
-                       "<structure>somepackage_tbl1</structure>" +
-                    "</attribute-mapping>" +
-                 "</attribute-mappings>" +
-                 "<descriptor-type>aggregate</descriptor-type>" +
-                 "<caching>" +
-                    "<cache-size>-1</cache-size>" +
-                 "</caching>" +
-                 "<remote-caching>" +
-                    "<cache-size>-1</cache-size>" +
-                 "</remote-caching>" +
-                 "<instantiation/>" +
-                 "<copying xsi:type=\"instantiation-copy-policy\"/>" +
-              "</class-mapping-descriptor>" +
-           "</class-mapping-descriptors>" +
-           "<queries>" +
-              "<query name=\"sfTbl1\" xsi:type=\"value-read-query\">" +
-                 "<arguments>" +
-                    "<argument name=\"NUM\">" +
-                       "<type>java.lang.Object</type>" +
-                    "</argument>" +
-                 "</arguments>" +
-                 "<maintain-cache>false</maintain-cache>" +
-                 "<bind-all-parameters>true</bind-all-parameters>" +
-                 "<call xsi:type=\"stored-function-call\">" +
-                    "<procedure-name>SF_TBL1</procedure-name>" +
-                    "<cursor-output-procedure>false</cursor-output-procedure>" +
-                    "<arguments>" +
-                       "<argument xsi:type=\"procedure-argument\">" +
-                          "<procedure-argument-name>NUM</procedure-argument-name>" +
-                          "<argument-name>NUM</argument-name>" +
-                       "</argument>" +
-                    "</arguments>" +
-                    "<stored-function-result xsi:type=\"procedure-output-argument\">" +
-                       "<procedure-argument-type>toplevel.somepackage_tbl1_CollectionWrapper</procedure-argument-type>" +
-                       "<procedure-argument-sqltype>2003</procedure-argument-sqltype>" +
-                       "<procedure-argument-sqltype-name>SOMEPACKAGE_TBL1</procedure-argument-sqltype-name>" +
-                    "</stored-function-result>" +
-                 "</call>" +
-              "</query>" +
-           "</queries>" +
-        "</object-persistence>";
+    @SuppressWarnings("unchecked")
+    @Test
+    public void sfTbl1_OxPart() {
+        ProcedureOperationModel pModel = new ProcedureOperationModel();
+        pModel.setName("sfTbl1");
+        pModel.setCatalogPattern("toplevel");
+        pModel.setSchemaPattern(username.toUpperCase());
+        pModel.setProcedurePattern("SF_TBL1");
+        pModel.setReturnType("somepackage_tbl1Type");
+        testOxProject(pModel, "sfTbl1", "urn:tbl1", SF_TBL1_OX_PROJECT, SF_TBL1_SCHEMA);
+    }
+
     public static final String SF_TBL1_OX_PROJECT = 
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
         "<object-persistence version=\"Eclipse Persistence Services - some version (some build date)\" xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:eclipselink=\"http://www.eclipse.org/eclipselink/xsds/persistence\">" +
@@ -1615,7 +1333,6 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
               "</class-mapping-descriptor>" +
            "</class-mapping-descriptors>" +
         "</object-persistence>";
-
     public static final String SF_TBL1_SCHEMA = 
         "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +
         "<xsd:schema xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns=\"urn:tbl1\" elementFormDefault=\"qualified\" targetNamespace=\"urn:tbl1\">" +
@@ -1627,53 +1344,66 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
             "<xsd:element name=\"somepackage_tbl1Type\" type=\"somepackage_tbl1Type\"/>" +
         "</xsd:schema>";
 
-    @SuppressWarnings("unchecked")
-    @Test
-    public void sfTbl1_OxPart() {
-        ProcedureOperationModel pModel = new ProcedureOperationModel();
-        pModel.setName("sfTbl1");
-        pModel.setCatalogPattern("toplevel");
-        pModel.setSchemaPattern(username.toUpperCase());
-        pModel.setProcedurePattern("SF_TBL1");
-        pModel.setReturnType("somepackage_tbl1Type");
-        List<DbStoredProcedure> storedProcedures = 
-            OracleHelper.buildStoredProcedure(conn, username, ora11Platform, pModel); 
-        Map<DbStoredProcedure, DbStoredProcedureNameAndModel> dbStoredProcedure2QueryName = 
-            new HashMap<DbStoredProcedure, DbStoredProcedureNameAndModel>();
-        ArrayList<OperationModel> operations = new ArrayList<OperationModel>();
-        operations.add(pModel);
-        DBWSBuilder.buildDbStoredProcedure2QueryNameMap(dbStoredProcedure2QueryName,
-            storedProcedures, operations, true);     
-        AdvancedJDBCOXDescriptorBuilder advJOxDescriptorBuilder = 
-            new AdvancedJDBCOXDescriptorBuilder("urn:tbl1", new TypeSuffixTransformer());
-        PublisherWalker walker = new PublisherWalker(advJOxDescriptorBuilder);
-        pModel.getJPubType().accept(walker);
-        List<XMLDescriptor> descriptors = advJOxDescriptorBuilder.getDescriptors();
-        Project p = new Project();
-        p.setName("sfTbl1");
-        for (XMLDescriptor xDesc : descriptors) { 
-            p.addDescriptor(xDesc);
-        }
-        Document resultDoc = xmlPlatform.createDocument();
-        XMLMarshaller marshaller = new XMLContext(writeObjectPersistenceProject).createMarshaller();
-        marshaller.marshal(p, resultDoc);
-        Document controlDoc = xmlParser.parse(new StringReader(SF_TBL1_OX_PROJECT));
-        assertTrue("control document not same as instance document",
-                comparer.isNodeEqual(controlDoc, resultDoc));
-        SchemaModelGenerator schemaGenerator = new SchemaModelGenerator();
-        SchemaModelGeneratorProperties sgProperties = new SchemaModelGeneratorProperties();
-        // set element form default to qualified for target namespace
-        sgProperties.addProperty("urn:tbl1", ELEMENT_FORM_QUALIFIED_KEY, true);
-        Map schemaMap = schemaGenerator.generateSchemas(descriptors, sgProperties);
-        Schema tbl1Schema = (Schema)schemaMap.get("urn:tbl1");
-        Document tbl1SchemaDoc = xmlPlatform.createDocument();
-        XMLMarshaller schemaMarshaller = new XMLContext(new SchemaModelProject()).createMarshaller();
-        schemaMarshaller.marshal(tbl1Schema, tbl1SchemaDoc);
-        Document controlTbl1SchemaDoc = xmlParser.parse(new StringReader(SF_TBL1_SCHEMA));
-        assertTrue("control schema not same as instance schema",
-            comparer.isNodeEqual(controlTbl1SchemaDoc, tbl1SchemaDoc));
-    }
-
+    public static final String TBL5_OR_PROJECT = 
+    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+    "<object-persistence version=\"Eclipse Persistence Services - some version (some build date)\" xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:eclipselink=\"http://www.eclipse.org/eclipselink/xsds/persistence\">" +
+       "<name>tbl5</name>" +
+       "<class-mapping-descriptors>" +
+          "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
+             "<class>toplevel.somepackage_tbl5_CollectionWrapper</class>" +
+             "<alias>somepackage_tbl5</alias>" +
+             "<events xsi:type=\"event-policy\"/>" +
+             "<querying xsi:type=\"query-policy\"/>" +
+             "<attribute-mappings>" +
+                "<attribute-mapping xsi:type=\"array-mapping\">" +
+                   "<attribute-name>items</attribute-name>" +
+                   "<field name=\"items\" xsi:type=\"object-relational-field\">" +
+                      "<nested-type-field name=\"\" sql-typecode=\"91\" column-definition=\"DATE\" xsi:type=\"column\"/>" +
+                   "</field>" +
+                   "<container xsi:type=\"list-container-policy\">" +
+                      "<collection-type>java.util.ArrayList</collection-type>" +
+                   "</container>" +
+                   "<structure>somepackage_tbl5</structure>" +
+                "</attribute-mapping>" +
+             "</attribute-mappings>" +
+             "<descriptor-type>aggregate</descriptor-type>" +
+             "<caching>" +
+                "<cache-size>-1</cache-size>" +
+             "</caching>" +
+             "<remote-caching>" +
+                "<cache-size>-1</cache-size>" +
+             "</remote-caching>" +
+             "<instantiation/>" +
+             "<copying xsi:type=\"instantiation-copy-policy\"/>" +
+          "</class-mapping-descriptor>" +
+       "</class-mapping-descriptors>" +
+       "<queries>" +
+          "<query name=\"tbl5\" xsi:type=\"value-read-query\">" +
+             "<arguments>" +
+                "<argument name=\"NUM\">" +
+                   "<type>java.lang.Object</type>" +
+                "</argument>" +
+             "</arguments>" +
+             "<maintain-cache>false</maintain-cache>" +
+             "<bind-all-parameters>true</bind-all-parameters>" +
+             "<call xsi:type=\"stored-function-call\">" +
+                "<procedure-name>BUILDTBL5</procedure-name>" +
+                "<cursor-output-procedure>false</cursor-output-procedure>" +
+                "<arguments>" +
+                   "<argument xsi:type=\"procedure-argument\">" +
+                      "<procedure-argument-name>NUM</procedure-argument-name>" +
+                      "<argument-name>NUM</argument-name>" +
+                   "</argument>" +
+                "</arguments>" +
+                "<stored-function-result xsi:type=\"procedure-output-argument\">" +
+                   "<procedure-argument-type>toplevel.somepackage_tbl5_CollectionWrapper</procedure-argument-type>" +
+                   "<procedure-argument-sqltype>2003</procedure-argument-sqltype>" +
+                   "<procedure-argument-sqltype-name>SOMEPACKAGE_TBL5</procedure-argument-sqltype-name>" +
+                "</stored-function-result>" +
+             "</call>" +
+          "</query>" +
+       "</queries>" +
+    "</object-persistence>";
     @SuppressWarnings("unchecked")
     @Test
     public void tbl5_OrPart() {
@@ -1683,41 +1413,8 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         pModel.setSchemaPattern(username.toUpperCase());
         pModel.setProcedurePattern("BuildTbl5");
         pModel.setReturnType("somepackage_tbl5Type");
-        List<DbStoredProcedure> storedProcedures = 
-            OracleHelper.buildStoredProcedure(conn, username, ora11Platform, pModel); 
-        Map<DbStoredProcedure, DbStoredProcedureNameAndModel> dbStoredProcedure2QueryName = 
-            new HashMap<DbStoredProcedure, DbStoredProcedureNameAndModel>();
-        ArrayList<OperationModel> operations = new ArrayList<OperationModel>();
-        operations.add(pModel);
-        DBWSBuilder.buildDbStoredProcedure2QueryNameMap(dbStoredProcedure2QueryName,
-            storedProcedures, operations, true);     
-        AdvancedJDBCORDescriptorBuilder advJOrDescriptorBuilder = 
-            new AdvancedJDBCORDescriptorBuilder();
-        AdvancedJDBCQueryBuilder queryBuilder = 
-            new AdvancedJDBCQueryBuilder(storedProcedures, dbStoredProcedure2QueryName);
-        PublisherListenerChainAdapter listenerChainAdapter = new PublisherListenerChainAdapter();
-        listenerChainAdapter.addListener(advJOrDescriptorBuilder);
-        listenerChainAdapter.addListener(queryBuilder);
-        PublisherWalker walker = new PublisherWalker(listenerChainAdapter);
-        pModel.getJPubType().accept(walker);
-        List<ObjectRelationalDataTypeDescriptor> descriptors = 
-            advJOrDescriptorBuilder.getDescriptors();
-        Project p = new Project();
-        p.setName("tbl5");
-        for (ObjectRelationalDataTypeDescriptor ordt : descriptors) { 
-            p.addDescriptor(ordt);
-        }
-        List<DatabaseQuery> queries = queryBuilder.getQueries();
-        if (queries != null && queries.size() > 0) {
-            p.getQueries().addAll(queries);
-        }
-        Document resultDoc = xmlPlatform.createDocument();
-        XMLMarshaller marshaller = new XMLContext(writeObjectPersistenceProject).createMarshaller();
-        marshaller.marshal(p, resultDoc);
-        Document empArrayOrProjectDoc = xmlParser.parse(new StringReader(TBL5_OR_PROJECT));
-        assertTrue("control document not same as instance document",
-            comparer.isNodeEqual(resultDoc, empArrayOrProjectDoc));
-
+        testOrProject(pModel, "tbl5", TBL5_OR_PROJECT);
+        // test query
         DatabaseSession ds = fixUp(TBL5_OR_PROJECT);
         DatabaseQuery vrq = ds.getQuery("tbl5");
         Vector args = new NonSynchronizedVector();
@@ -1728,67 +1425,6 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         ArrayList<java.sql.Date> dates = (ArrayList<java.sql.Date>)returnValue.get(0);
         assertTrue("wrong number of returned dates", 3 == dates.size());
     }
-    public static final String TBL5_OR_PROJECT = 
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-        "<object-persistence version=\"Eclipse Persistence Services - some version (some build date)\" xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:eclipselink=\"http://www.eclipse.org/eclipselink/xsds/persistence\">" +
-           "<name>tbl5</name>" +
-           "<class-mapping-descriptors>" +
-              "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
-                 "<class>toplevel.somepackage_tbl5_CollectionWrapper</class>" +
-                 "<alias>somepackage_tbl5</alias>" +
-                 "<events xsi:type=\"event-policy\"/>" +
-                 "<querying xsi:type=\"query-policy\"/>" +
-                 "<attribute-mappings>" +
-                    "<attribute-mapping xsi:type=\"array-mapping\">" +
-                       "<attribute-name>items</attribute-name>" +
-                       "<field name=\"items\" xsi:type=\"object-relational-field\">" +
-                          "<nested-type-field name=\"\" sql-typecode=\"91\" column-definition=\"DATE\" xsi:type=\"column\"/>" +
-                       "</field>" +
-                       "<container xsi:type=\"list-container-policy\">" +
-                          "<collection-type>java.util.ArrayList</collection-type>" +
-                       "</container>" +
-                       "<structure>somepackage_tbl5</structure>" +
-                    "</attribute-mapping>" +
-                 "</attribute-mappings>" +
-                 "<descriptor-type>aggregate</descriptor-type>" +
-                 "<caching>" +
-                    "<cache-size>-1</cache-size>" +
-                 "</caching>" +
-                 "<remote-caching>" +
-                    "<cache-size>-1</cache-size>" +
-                 "</remote-caching>" +
-                 "<instantiation/>" +
-                 "<copying xsi:type=\"instantiation-copy-policy\"/>" +
-              "</class-mapping-descriptor>" +
-           "</class-mapping-descriptors>" +
-           "<queries>" +
-              "<query name=\"tbl5\" xsi:type=\"value-read-query\">" +
-                 "<arguments>" +
-                    "<argument name=\"NUM\">" +
-                       "<type>java.lang.Object</type>" +
-                    "</argument>" +
-                 "</arguments>" +
-                 "<maintain-cache>false</maintain-cache>" +
-                 "<bind-all-parameters>true</bind-all-parameters>" +
-                 "<call xsi:type=\"stored-function-call\">" +
-                    "<procedure-name>BUILDTBL5</procedure-name>" +
-                    "<cursor-output-procedure>false</cursor-output-procedure>" +
-                    "<arguments>" +
-                       "<argument xsi:type=\"procedure-argument\">" +
-                          "<procedure-argument-name>NUM</procedure-argument-name>" +
-                          "<argument-name>NUM</argument-name>" +
-                       "</argument>" +
-                    "</arguments>" +
-                    "<stored-function-result xsi:type=\"procedure-output-argument\">" +
-                       "<procedure-argument-type>toplevel.somepackage_tbl5_CollectionWrapper</procedure-argument-type>" +
-                       "<procedure-argument-sqltype>2003</procedure-argument-sqltype>" +
-                       "<procedure-argument-sqltype-name>SOMEPACKAGE_TBL5</procedure-argument-sqltype-name>" +
-                    "</stored-function-result>" +
-                 "</call>" +
-              "</query>" +
-           "</queries>" +
-        "</object-persistence>";
-
     @SuppressWarnings("unchecked")
     @Test
     public void tbl5_OxPart() {
@@ -1798,42 +1434,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         pModel.setSchemaPattern(username.toUpperCase());
         pModel.setProcedurePattern("BuildTbl5");
         pModel.setReturnType("somepackage_tbl5Type");
-        List<DbStoredProcedure> storedProcedures = 
-            OracleHelper.buildStoredProcedure(conn, username, ora11Platform, pModel); 
-        Map<DbStoredProcedure, DbStoredProcedureNameAndModel> dbStoredProcedure2QueryName = 
-            new HashMap<DbStoredProcedure, DbStoredProcedureNameAndModel>();
-        ArrayList<OperationModel> operations = new ArrayList<OperationModel>();
-        operations.add(pModel);
-        DBWSBuilder.buildDbStoredProcedure2QueryNameMap(dbStoredProcedure2QueryName,
-            storedProcedures, operations, true);      
-        AdvancedJDBCOXDescriptorBuilder advJOxDescriptorBuilder = 
-            new AdvancedJDBCOXDescriptorBuilder("urn:tbl5", new TypeSuffixTransformer());
-        PublisherWalker walker = new PublisherWalker(advJOxDescriptorBuilder);
-        pModel.getJPubType().accept(walker);
-        List<XMLDescriptor> descriptors = advJOxDescriptorBuilder.getDescriptors();
-        Project p = new Project();
-        p.setName("BuildTbl5");
-        for (XMLDescriptor xDesc : descriptors) { 
-            p.addDescriptor(xDesc);
-        }
-        Document resultDoc = xmlPlatform.createDocument();
-        XMLMarshaller marshaller = new XMLContext(writeObjectPersistenceProject).createMarshaller();
-        marshaller.marshal(p, resultDoc);
-        Document controlDoc = xmlParser.parse(new StringReader(TBL5_OX_PROJECT));
-        assertTrue("control document not same as instance document",
-                comparer.isNodeEqual(controlDoc, resultDoc));
-        SchemaModelGenerator schemaGenerator = new SchemaModelGenerator();
-        SchemaModelGeneratorProperties sgProperties = new SchemaModelGeneratorProperties();
-        // set element form default to qualified for target namespace
-        sgProperties.addProperty("urn:tbl5", ELEMENT_FORM_QUALIFIED_KEY, true);
-        Map schemaMap = schemaGenerator.generateSchemas(descriptors, sgProperties);
-        Schema tbl5Schema = (Schema)schemaMap.get("urn:tbl5");
-        Document tbl5SchemaDoc = xmlPlatform.createDocument();
-        XMLMarshaller schemaMarshaller = new XMLContext(new SchemaModelProject()).createMarshaller();
-        schemaMarshaller.marshal(tbl5Schema, tbl5SchemaDoc);
-        Document controlTbl1SchemaDoc = xmlParser.parse(new StringReader(TBL5_SCHEMA));
-        assertTrue("control schema not same as instance schema",
-            comparer.isNodeEqual(controlTbl1SchemaDoc, tbl5SchemaDoc));
+        testOxProject(pModel, "BuildTbl5", "urn:tbl5", TBL5_OX_PROJECT, TBL5_SCHEMA);
     }
     public static final String TBL5_OX_PROJECT = 
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
@@ -1885,6 +1486,140 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
            "<xsd:element name=\"somepackage_tbl5Type\" type=\"somepackage_tbl5Type\"/>" +
         "</xsd:schema>";
     
+    public static final String ARECORD_OR_PROJECT = 
+    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+    "<object-persistence version=\"Eclipse Persistence Services - some version (some build date)\" xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:eclipselink=\"http://www.eclipse.org/eclipselink/xsds/persistence\">" +
+       "<name>aRecord</name>" +
+       "<class-mapping-descriptors>" +
+          "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
+             "<class>toplevel.somepackage_arecord</class>" +
+             "<alias>somepackage_arecord</alias>" +
+             "<events xsi:type=\"event-policy\"/>" +
+             "<querying xsi:type=\"query-policy\"/>" +
+             "<attribute-mappings>" +
+                "<attribute-mapping xsi:type=\"array-mapping\">" +
+                   "<attribute-name>t1</attribute-name>" +
+                   "<field name=\"T1\" xsi:type=\"object-relational-field\">" +
+                      "<nested-type-field name=\"\" sql-typecode=\"12\" column-definition=\"VARCHAR2\" xsi:type=\"column\"/>" +
+                   "</field>" +
+                   "<container xsi:type=\"list-container-policy\">" +
+                      "<collection-type>java.util.ArrayList</collection-type>" +
+                   "</container>" +
+                   "<structure>somepackage_tbl1</structure>" +
+                "</attribute-mapping>" +
+                "<attribute-mapping xsi:type=\"array-mapping\">" +
+                   "<attribute-name>t2</attribute-name>" +
+                   "<field name=\"T2\" xsi:type=\"object-relational-field\">" +
+                      "<nested-type-field name=\"\" sql-typecode=\"2\" column-definition=\"NUMBER\" xsi:type=\"column\"/>" +
+                   "</field>" +
+                   "<container xsi:type=\"list-container-policy\">" +
+                      "<collection-type>java.util.ArrayList</collection-type>" +
+                   "</container>" +
+                   "<structure>somepackage_tbl2</structure>" +
+                "</attribute-mapping>" +
+                "<attribute-mapping xsi:type=\"direct-mapping\">" +
+                   "<attribute-name>t3</attribute-name>" +
+                   "<field name=\"T3\" xsi:type=\"column\"/>" +
+                "</attribute-mapping>" +
+             "</attribute-mappings>" +
+             "<descriptor-type>aggregate</descriptor-type>" +
+             "<caching>" +
+                "<cache-size>-1</cache-size>" +
+             "</caching>" +
+             "<remote-caching>" +
+                "<cache-size>-1</cache-size>" +
+             "</remote-caching>" +
+             "<instantiation/>" +
+             "<copying xsi:type=\"instantiation-copy-policy\"/>" +
+             "<structure>SOMEPACKAGE_ARECORD</structure>" +
+             "<field-order>" +
+                "<field name=\"T1\" xsi:type=\"column\"/>" +
+                "<field name=\"T2\" xsi:type=\"column\"/>" +
+                "<field name=\"T3\" xsi:type=\"column\"/>" +
+             "</field-order>" +
+          "</class-mapping-descriptor>" +
+          "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
+             "<class>toplevel.somepackage_tbl1_CollectionWrapper</class>" +
+             "<alias>somepackage_tbl1</alias>" +
+             "<events xsi:type=\"event-policy\"/>" +
+             "<querying xsi:type=\"query-policy\"/>" +
+             "<attribute-mappings>" +
+                "<attribute-mapping xsi:type=\"array-mapping\">" +
+                   "<attribute-name>items</attribute-name>" +
+                   "<field name=\"items\" xsi:type=\"object-relational-field\">" +
+                      "<nested-type-field name=\"\" sql-typecode=\"12\" column-definition=\"VARCHAR2\" xsi:type=\"column\"/>" +
+                   "</field>" +
+                   "<container xsi:type=\"list-container-policy\">" +
+                      "<collection-type>java.util.ArrayList</collection-type>" +
+                   "</container>" +
+                   "<structure>somepackage_tbl1</structure>" +
+                "</attribute-mapping>" +
+             "</attribute-mappings>" +
+             "<descriptor-type>aggregate</descriptor-type>" +
+             "<caching>" +
+                "<cache-size>-1</cache-size>" +
+             "</caching>" +
+             "<remote-caching>" +
+                "<cache-size>-1</cache-size>" +
+             "</remote-caching>" +
+             "<instantiation/>" +
+             "<copying xsi:type=\"instantiation-copy-policy\"/>" +
+          "</class-mapping-descriptor>" +
+          "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
+             "<class>toplevel.somepackage_tbl2_CollectionWrapper</class>" +
+             "<alias>somepackage_tbl2</alias>" +
+             "<events xsi:type=\"event-policy\"/>" +
+             "<querying xsi:type=\"query-policy\"/>" +
+             "<attribute-mappings>" +
+                "<attribute-mapping xsi:type=\"array-mapping\">" +
+                   "<attribute-name>items</attribute-name>" +
+                   "<field name=\"items\" xsi:type=\"object-relational-field\">" +
+                      "<nested-type-field name=\"\" sql-typecode=\"2\" column-definition=\"NUMBER\" xsi:type=\"column\"/>" +
+                   "</field>" +
+                   "<container xsi:type=\"list-container-policy\">" +
+                      "<collection-type>java.util.ArrayList</collection-type>" +
+                   "</container>" +
+                   "<structure>somepackage_tbl2</structure>" +
+                "</attribute-mapping>" +
+             "</attribute-mappings>" +
+             "<descriptor-type>aggregate</descriptor-type>" +
+             "<caching>" +
+                "<cache-size>-1</cache-size>" +
+             "</caching>" +
+             "<remote-caching>" +
+                "<cache-size>-1</cache-size>" +
+             "</remote-caching>" +
+             "<instantiation/>" +
+             "<copying xsi:type=\"instantiation-copy-policy\"/>" +
+          "</class-mapping-descriptor>" +
+       "</class-mapping-descriptors>" +
+       "<queries>" +
+          "<query name=\"buildARecord\" xsi:type=\"value-read-query\">" +
+             "<arguments>" +
+                "<argument name=\"NUM\">" +
+                   "<type>java.lang.Object</type>" +
+                "</argument>" +
+             "</arguments>" +
+             "<maintain-cache>false</maintain-cache>" +
+             "<bind-all-parameters>true</bind-all-parameters>" +
+             "<call xsi:type=\"stored-function-call\">" +
+                "<procedure-name>BUILDARECORD</procedure-name>" +
+                "<cursor-output-procedure>false</cursor-output-procedure>" +
+                "<arguments>" +
+                   "<argument xsi:type=\"procedure-argument\">" +
+                      "<procedure-argument-name>NUM</procedure-argument-name>" +
+                      "<argument-name>NUM</argument-name>" +
+                   "</argument>" +
+                "</arguments>" +
+                "<stored-function-result xsi:type=\"procedure-output-argument\">" +
+                   "<procedure-argument-type>toplevel.somepackage_arecord</procedure-argument-type>" +
+                   "<procedure-argument-sqltype>2002</procedure-argument-sqltype>" +
+                   "<procedure-argument-sqltype-name>SOMEPACKAGE_ARECORD</procedure-argument-sqltype-name>" +
+                "</stored-function-result>" +
+             "</call>" +
+          "</query>" +
+       "</queries>" +
+    "</object-persistence>";
     @SuppressWarnings("unchecked")
     @Test
     public void BuildARecord_OrPart() {
@@ -1894,41 +1629,8 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         pModel.setSchemaPattern(username.toUpperCase());
         pModel.setProcedurePattern("BuildARecord");
         pModel.setReturnType("somepackage_arecordType");
-        List<DbStoredProcedure> storedProcedures = 
-            OracleHelper.buildStoredProcedure(conn, username, ora11Platform, pModel); 
-        Map<DbStoredProcedure, DbStoredProcedureNameAndModel> dbStoredProcedure2QueryName = 
-            new HashMap<DbStoredProcedure, DbStoredProcedureNameAndModel>();
-        ArrayList<OperationModel> operations = new ArrayList<OperationModel>();
-        operations.add(pModel);
-        DBWSBuilder.buildDbStoredProcedure2QueryNameMap(dbStoredProcedure2QueryName,
-            storedProcedures, operations, true);
-        AdvancedJDBCORDescriptorBuilder advJOrDescriptorBuilder = 
-            new AdvancedJDBCORDescriptorBuilder();
-        AdvancedJDBCQueryBuilder queryBuilder = 
-            new AdvancedJDBCQueryBuilder(storedProcedures, dbStoredProcedure2QueryName);
-        PublisherListenerChainAdapter listenerChainAdapter = new PublisherListenerChainAdapter();
-        listenerChainAdapter.addListener(advJOrDescriptorBuilder);
-        listenerChainAdapter.addListener(queryBuilder);
-        PublisherWalker walker = new PublisherWalker(listenerChainAdapter);
-        pModel.getJPubType().accept(walker);
-        List<ObjectRelationalDataTypeDescriptor> descriptors = 
-            advJOrDescriptorBuilder.getDescriptors();
-        Project p = new Project();
-        p.setName("aRecord");
-        for (ObjectRelationalDataTypeDescriptor ordt : descriptors) { 
-            p.addDescriptor(ordt);
-        }
-        List<DatabaseQuery> queries = queryBuilder.getQueries();
-        if (queries != null && queries.size() > 0) {
-            p.getQueries().addAll(queries);
-        }
-        Document resultDoc = xmlPlatform.createDocument();
-        XMLMarshaller marshaller = new XMLContext(writeObjectPersistenceProject).createMarshaller();
-        marshaller.marshal(p, resultDoc);
-        Document aRecordOrProjectDoc = xmlParser.parse(new StringReader(ARECORD_OR_PROJECT));
-        assertTrue("control document not same as instance document",
-            comparer.isNodeEqual(resultDoc, aRecordOrProjectDoc));
-
+        testOrProject(pModel, "aRecord", ARECORD_OR_PROJECT);
+        // test query
         DatabaseSession ds = fixUp(ARECORD_OR_PROJECT);
         DatabaseQuery vrq = ds.getQuery("buildARecord");
         Vector args = new NonSynchronizedVector();
@@ -1950,141 +1652,6 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         BigDecimal t3 = (BigDecimal)returnValue.get(2);
         assertTrue("wrong array element value", BigDecimal.valueOf(num).equals(t3));
     }
-    public static final String ARECORD_OR_PROJECT = 
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-        "<object-persistence version=\"Eclipse Persistence Services - some version (some build date)\" xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:eclipselink=\"http://www.eclipse.org/eclipselink/xsds/persistence\">" +
-           "<name>aRecord</name>" +
-           "<class-mapping-descriptors>" +
-              "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
-                 "<class>toplevel.somepackage_arecord</class>" +
-                 "<alias>somepackage_arecord</alias>" +
-                 "<events xsi:type=\"event-policy\"/>" +
-                 "<querying xsi:type=\"query-policy\"/>" +
-                 "<attribute-mappings>" +
-                    "<attribute-mapping xsi:type=\"array-mapping\">" +
-                       "<attribute-name>t1</attribute-name>" +
-                       "<field name=\"T1\" xsi:type=\"object-relational-field\">" +
-                          "<nested-type-field name=\"\" sql-typecode=\"12\" column-definition=\"VARCHAR2\" xsi:type=\"column\"/>" +
-                       "</field>" +
-                       "<container xsi:type=\"list-container-policy\">" +
-                          "<collection-type>java.util.ArrayList</collection-type>" +
-                       "</container>" +
-                       "<structure>somepackage_tbl1</structure>" +
-                    "</attribute-mapping>" +
-                    "<attribute-mapping xsi:type=\"array-mapping\">" +
-                       "<attribute-name>t2</attribute-name>" +
-                       "<field name=\"T2\" xsi:type=\"object-relational-field\">" +
-                          "<nested-type-field name=\"\" sql-typecode=\"2\" column-definition=\"NUMBER\" xsi:type=\"column\"/>" +
-                       "</field>" +
-                       "<container xsi:type=\"list-container-policy\">" +
-                          "<collection-type>java.util.ArrayList</collection-type>" +
-                       "</container>" +
-                       "<structure>somepackage_tbl2</structure>" +
-                    "</attribute-mapping>" +
-                    "<attribute-mapping xsi:type=\"direct-mapping\">" +
-                       "<attribute-name>t3</attribute-name>" +
-                       "<field name=\"T3\" xsi:type=\"column\"/>" +
-                    "</attribute-mapping>" +
-                 "</attribute-mappings>" +
-                 "<descriptor-type>aggregate</descriptor-type>" +
-                 "<caching>" +
-                    "<cache-size>-1</cache-size>" +
-                 "</caching>" +
-                 "<remote-caching>" +
-                    "<cache-size>-1</cache-size>" +
-                 "</remote-caching>" +
-                 "<instantiation/>" +
-                 "<copying xsi:type=\"instantiation-copy-policy\"/>" +
-                 "<structure>SOMEPACKAGE_ARECORD</structure>" +
-                 "<field-order>" +
-                    "<field name=\"T1\" xsi:type=\"column\"/>" +
-                    "<field name=\"T2\" xsi:type=\"column\"/>" +
-                    "<field name=\"T3\" xsi:type=\"column\"/>" +
-                 "</field-order>" +
-              "</class-mapping-descriptor>" +
-              "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
-                 "<class>toplevel.somepackage_tbl1_CollectionWrapper</class>" +
-                 "<alias>somepackage_tbl1</alias>" +
-                 "<events xsi:type=\"event-policy\"/>" +
-                 "<querying xsi:type=\"query-policy\"/>" +
-                 "<attribute-mappings>" +
-                    "<attribute-mapping xsi:type=\"array-mapping\">" +
-                       "<attribute-name>items</attribute-name>" +
-                       "<field name=\"items\" xsi:type=\"object-relational-field\">" +
-                          "<nested-type-field name=\"\" sql-typecode=\"12\" column-definition=\"VARCHAR2\" xsi:type=\"column\"/>" +
-                       "</field>" +
-                       "<container xsi:type=\"list-container-policy\">" +
-                          "<collection-type>java.util.ArrayList</collection-type>" +
-                       "</container>" +
-                       "<structure>somepackage_tbl1</structure>" +
-                    "</attribute-mapping>" +
-                 "</attribute-mappings>" +
-                 "<descriptor-type>aggregate</descriptor-type>" +
-                 "<caching>" +
-                    "<cache-size>-1</cache-size>" +
-                 "</caching>" +
-                 "<remote-caching>" +
-                    "<cache-size>-1</cache-size>" +
-                 "</remote-caching>" +
-                 "<instantiation/>" +
-                 "<copying xsi:type=\"instantiation-copy-policy\"/>" +
-              "</class-mapping-descriptor>" +
-              "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
-                 "<class>toplevel.somepackage_tbl2_CollectionWrapper</class>" +
-                 "<alias>somepackage_tbl2</alias>" +
-                 "<events xsi:type=\"event-policy\"/>" +
-                 "<querying xsi:type=\"query-policy\"/>" +
-                 "<attribute-mappings>" +
-                    "<attribute-mapping xsi:type=\"array-mapping\">" +
-                       "<attribute-name>items</attribute-name>" +
-                       "<field name=\"items\" xsi:type=\"object-relational-field\">" +
-                          "<nested-type-field name=\"\" sql-typecode=\"2\" column-definition=\"NUMBER\" xsi:type=\"column\"/>" +
-                       "</field>" +
-                       "<container xsi:type=\"list-container-policy\">" +
-                          "<collection-type>java.util.ArrayList</collection-type>" +
-                       "</container>" +
-                       "<structure>somepackage_tbl2</structure>" +
-                    "</attribute-mapping>" +
-                 "</attribute-mappings>" +
-                 "<descriptor-type>aggregate</descriptor-type>" +
-                 "<caching>" +
-                    "<cache-size>-1</cache-size>" +
-                 "</caching>" +
-                 "<remote-caching>" +
-                    "<cache-size>-1</cache-size>" +
-                 "</remote-caching>" +
-                 "<instantiation/>" +
-                 "<copying xsi:type=\"instantiation-copy-policy\"/>" +
-              "</class-mapping-descriptor>" +
-           "</class-mapping-descriptors>" +
-           "<queries>" +
-              "<query name=\"buildARecord\" xsi:type=\"value-read-query\">" +
-                 "<arguments>" +
-                    "<argument name=\"NUM\">" +
-                       "<type>java.lang.Object</type>" +
-                    "</argument>" +
-                 "</arguments>" +
-                 "<maintain-cache>false</maintain-cache>" +
-                 "<bind-all-parameters>true</bind-all-parameters>" +
-                 "<call xsi:type=\"stored-function-call\">" +
-                    "<procedure-name>BUILDARECORD</procedure-name>" +
-                    "<cursor-output-procedure>false</cursor-output-procedure>" +
-                    "<arguments>" +
-                       "<argument xsi:type=\"procedure-argument\">" +
-                          "<procedure-argument-name>NUM</procedure-argument-name>" +
-                          "<argument-name>NUM</argument-name>" +
-                       "</argument>" +
-                    "</arguments>" +
-                    "<stored-function-result xsi:type=\"procedure-output-argument\">" +
-                       "<procedure-argument-type>toplevel.somepackage_arecord</procedure-argument-type>" +
-                       "<procedure-argument-sqltype>2002</procedure-argument-sqltype>" +
-                       "<procedure-argument-sqltype-name>SOMEPACKAGE_ARECORD</procedure-argument-sqltype-name>" +
-                    "</stored-function-result>" +
-                 "</call>" +
-              "</query>" +
-           "</queries>" +
-        "</object-persistence>";
-
     @SuppressWarnings("unchecked")
     @Test
     public void BuildARecord_OxPart() {
@@ -2094,42 +1661,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         pModel.setSchemaPattern(username.toUpperCase());
         pModel.setProcedurePattern("BuildARecord");
         pModel.setReturnType("somepackage_arecordType");
-        List<DbStoredProcedure> storedProcedures = 
-            OracleHelper.buildStoredProcedure(conn, username, ora11Platform, pModel); 
-        Map<DbStoredProcedure, DbStoredProcedureNameAndModel> dbStoredProcedure2QueryName = 
-            new HashMap<DbStoredProcedure, DbStoredProcedureNameAndModel>();
-        ArrayList<OperationModel> operations = new ArrayList<OperationModel>();
-        operations.add(pModel);
-        DBWSBuilder.buildDbStoredProcedure2QueryNameMap(dbStoredProcedure2QueryName,
-            storedProcedures, operations, true);       
-        AdvancedJDBCOXDescriptorBuilder advJOxDescriptorBuilder = 
-            new AdvancedJDBCOXDescriptorBuilder("urn:aRecord", new TypeSuffixTransformer());
-        PublisherWalker walker = new PublisherWalker(advJOxDescriptorBuilder);
-        pModel.getJPubType().accept(walker);
-        List<XMLDescriptor> descriptors = advJOxDescriptorBuilder.getDescriptors();
-        Project p = new Project();
-        p.setName("buildARecord");
-        for (XMLDescriptor xDesc : descriptors) { 
-            p.addDescriptor(xDesc);
-        }
-        Document resultDoc = xmlPlatform.createDocument();
-        XMLMarshaller marshaller = new XMLContext(writeObjectPersistenceProject).createMarshaller();
-        marshaller.marshal(p, resultDoc);
-        Document controlDoc = xmlParser.parse(new StringReader(ARECORD_OX_PROJECT));
-        assertTrue("control document not same as instance document",
-                comparer.isNodeEqual(controlDoc, resultDoc));
-        SchemaModelGenerator schemaGenerator = new SchemaModelGenerator();
-        SchemaModelGeneratorProperties sgProperties = new SchemaModelGeneratorProperties();
-        // set element form default to qualified for target namespace
-        sgProperties.addProperty("urn:aRecord", ELEMENT_FORM_QUALIFIED_KEY, true);
-        Map schemaMap = schemaGenerator.generateSchemas(descriptors, sgProperties);
-        Schema aRecordSchema = (Schema)schemaMap.get("urn:aRecord");
-        Document aRecordSchemaDoc = xmlPlatform.createDocument();
-        XMLMarshaller schemaMarshaller = new XMLContext(new SchemaModelProject()).createMarshaller();
-        schemaMarshaller.marshal(aRecordSchema, aRecordSchemaDoc);
-        Document controlARecordSchemaDoc = xmlParser.parse(new StringReader(ARECORD_SCHEMA));
-        assertTrue("control schema not same as instance schema",
-            comparer.isNodeEqual(controlARecordSchemaDoc, aRecordSchemaDoc));
+        testOxProject(pModel, "buildARecord", "urn:aRecord", ARECORD_OX_PROJECT, ARECORD_SCHEMA);
     }
     public static final String ARECORD_OX_PROJECT = 
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
@@ -2284,6 +1816,78 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
            "<xsd:element name=\"somepackage_arecordType\" type=\"somepackage_arecordType\"/>" +
         "</xsd:schema>";        
     
+    protected void testOrProject(ProcedureOperationModel pModel, String projectName, String orProject) {
+        List<DbStoredProcedure> storedProcedures = 
+            OracleHelper.buildStoredProcedure(conn, username, ora11Platform, pModel); 
+        Map<DbStoredProcedure, DbStoredProcedureNameAndModel> dbStoredProcedure2QueryName = 
+            new HashMap<DbStoredProcedure, DbStoredProcedureNameAndModel>();
+        ArrayList<OperationModel> operations = new ArrayList<OperationModel>();
+        operations.add(pModel);
+        DBWSBuilder.buildDbStoredProcedure2QueryNameMap(dbStoredProcedure2QueryName,
+            storedProcedures, operations, true);     
+        AdvancedJDBCORDescriptorBuilder advJOrDescriptorBuilder = 
+            new AdvancedJDBCORDescriptorBuilder();
+        AdvancedJDBCQueryBuilder queryBuilder = 
+            new AdvancedJDBCQueryBuilder(storedProcedures, dbStoredProcedure2QueryName);
+        PublisherListenerChainAdapter listenerChainAdapter = new PublisherListenerChainAdapter();
+        listenerChainAdapter.addListener(advJOrDescriptorBuilder);
+        listenerChainAdapter.addListener(queryBuilder);
+        PublisherWalker walker = new PublisherWalker(listenerChainAdapter);
+        pModel.getJPubType().accept(walker);
+        List<ObjectRelationalDataTypeDescriptor> descriptors = 
+            advJOrDescriptorBuilder.getDescriptors();
+        Project p = new Project();
+        p.setName(projectName);
+        for (ObjectRelationalDataTypeDescriptor ordt : descriptors) { 
+            p.addDescriptor(ordt);
+        }
+        List<DatabaseQuery> queries = queryBuilder.getQueries();
+        if (queries != null && queries.size() > 0) {
+            p.getQueries().addAll(queries);
+        }
+        Document resultDoc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = new XMLContext(writeObjectPersistenceProject).createMarshaller();
+        marshaller.marshal(p, resultDoc);
+        Document controlDoc = xmlParser.parse(new StringReader(orProject));
+        assertTrue("control document not same as instance document",
+                comparer.isNodeEqual(controlDoc, resultDoc));
+    }
+    
+    @SuppressWarnings("unchecked")
+    protected void testOxProject(ProcedureOperationModel pModel, String projectName,
+        String nameSpace, String oxProject, String oxSchema) {
+        OracleHelper.buildStoredProcedure(conn, username, ora11Platform, pModel);
+        AdvancedJDBCOXDescriptorBuilder advJOxDescriptorBuilder = 
+            new AdvancedJDBCOXDescriptorBuilder(nameSpace, new TypeSuffixTransformer());
+        PublisherWalker walker = new PublisherWalker(advJOxDescriptorBuilder);
+        pModel.getJPubType().accept(walker);
+        List<XMLDescriptor> descriptors =
+            ((AdvancedJDBCOXDescriptorBuilder)walker.getListener()).getDescriptors();
+        Project p = new Project();
+        p.setName(projectName);
+        for (XMLDescriptor xDesc : descriptors) { 
+            p.addDescriptor(xDesc);
+        }
+        Document resultDoc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = new XMLContext(writeObjectPersistenceProject).createMarshaller();
+        marshaller.marshal(p, resultDoc);
+        Document controlDoc = xmlParser.parse(new StringReader(oxProject));
+        assertTrue("control document not same as instance document",
+                comparer.isNodeEqual(controlDoc, resultDoc));
+        
+        SchemaModelGenerator schemaGenerator = new SchemaModelGenerator();
+        SchemaModelGeneratorProperties sgProperties = new SchemaModelGeneratorProperties();
+        // set element form default to qualified for target namespace
+        sgProperties.addProperty(nameSpace, ELEMENT_FORM_QUALIFIED_KEY, true);
+        Map schemaMap = schemaGenerator.generateSchemas(descriptors, sgProperties);
+        Schema s = (Schema)schemaMap.get(nameSpace);
+        Document empObjectSchema = xmlPlatform.createDocument();
+        new XMLContext(new SchemaModelProject()).createMarshaller().marshal(s, empObjectSchema);
+        Document controlempObjectSchema = xmlParser.parse(new StringReader(oxSchema));
+        assertTrue("control schema not same as instance schema",
+            comparer.isNodeEqual(controlempObjectSchema, empObjectSchema));
+    }
+
     @SuppressWarnings("unchecked")
     public DatabaseSession fixUp(String projectString) {
         BaseEntityClassLoader becl = new BaseEntityClassLoader(this.getClass().getClassLoader());
