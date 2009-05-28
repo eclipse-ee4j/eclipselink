@@ -297,7 +297,7 @@ public class FieldDefinition implements Serializable, Cloneable {
      * PUBLIC:
      * Answer whether the receiver is an identity field.
      * Identity fields are Sybase specific,
-     * they insure that on insert a unique sequencial value is store in the row.
+     * they insure that on insert a unique sequential value is stored in the row.
      */
     public boolean isIdentity() {
         return isIdentity;
@@ -345,7 +345,7 @@ public class FieldDefinition implements Serializable, Cloneable {
      * PUBLIC:
      * Set whether the receiver is an identity field.
      * Identity fields are Sybase specific,
-     * they insure that on insert a unique sequencial value is store in the row.
+     * they insure that on insert a unique sequential value is stored in the row.
      */
     public void setIsIdentity(boolean value) {
         isIdentity = value;

@@ -42,7 +42,10 @@ import org.eclipse.persistence.sessions.server.ServerSession;
  * 
  * @author gyorke
  * @since TopLink Essentials - JPA 1.0
- */
+ *  
+ *     03/19/2009-2.0 Michael O'Brien  
+ *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)  
+ */ 
 public class EntityManagerFactoryImpl implements EntityManagerFactory {
 	/** Reference to Cache Interface. */
 	protected Cache myCache;
@@ -54,6 +57,12 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory {
 	protected boolean isOpen = true;
 	/** Persistence unit properties from persistence.xml or from create factory. */
 	protected Map properties;
+
+    // 266912: Criteria API and Metamodel API (See Ch 5 of the JPA 2.0 Specification)
+	/** Reference to the Metamodel for this deployment. */
+    protected Metamodel metaModel;     
+    /** Reference to the QueryBuilder for this deployment. */    
+    protected QueryBuilder queryBuilder; 	
 
 	/**
 	 * Default join existing transaction property, allows reading through write
@@ -140,6 +149,9 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory {
 	public synchronized void close() {
 		verifyOpen();
 		isOpen = false;
+        // Do not invalidate the metaModel field 
+        // (a reopened emf will re-populate the same metaModel)
+        // (a new persistence unit will generate a new metaModel)
 		if (setupImpl != null) {
 			// 260511 null check so that closing a EM
 			// created from the constructor no longer throws a NPE
@@ -382,17 +394,28 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory {
 	 * @since Java Persistence 2.0
 	 */
 	public QueryBuilder getQueryBuilder() {
-		// TODO
-		throw new PersistenceException("Not Yet Implemented");
+        // TODO:
+        throw new PersistenceException("Not Yet Implemented");        
 	}
 
-	/**
+    /**
+     * Return an instance of Metamodel interface for access to the
+     * metamodel of the persistence unit.
+     * @return Metamodel instance
+     * @throws IllegalStateException if the entity manager factory has
+     * been closed.
      * @see javax.persistence.EntityManagerFactory#getMetamodel()
      * @since Java Persistence 2.0
      */
     public Metamodel getMetamodel() {
-        // TODO 
-        throw new PersistenceException("Not Yet Implemented");
+        if(!this.isOpen()) {
+            throw new IllegalStateException(ExceptionLocalization.buildMessage("operation_on_closed_entity_manager_factory"));
+        }
+        // perform lazy initialization
+        if(null == metaModel) {
+            metaModel = new org.eclipse.persistence.internal.jpa.metamodel.MetamodelImpl(this);
+        }
+        return metaModel;
     }
 
 	/**

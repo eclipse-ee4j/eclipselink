@@ -35,6 +35,8 @@
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  *     04/24/2009-2.0 Guy Pelletier 
  *       - 270011: JPA 2.0 MappedById support
+ *     04/30/2009-2.0 Michael O'Brien 
+ *       - 266912: JPA 2.0 Metamodel API (part of Criteria API) 
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -55,6 +57,7 @@ import javax.persistence.SecondaryTable;
 import javax.persistence.SecondaryTables;
 import javax.persistence.Table;
 
+import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.helper.DatabaseTable;
@@ -167,17 +170,31 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     
     /**
      * INTERNAL:
+     * Add mapped superclass accessors to inheriting entities.
+     * Add new descriptors for these mapped superclasses to the core project.
      */
-    protected void addPotentialMappedSuperclass(MetadataClass cls) {
-        MappedSuperclassAccessor accessor = getProject().getMappedSuperclass(cls);
+    
+    protected void addPotentialMappedSuperclass(MetadataClass metadataClass) {
+        // Get the mappedSuperclass that was stored previously on the project
+        MappedSuperclassAccessor accessor = getProject().getMappedSuperclass(metadataClass);
 
         // If the mapped superclass was not defined in XML then check 
         // for a MappedSuperclass annotation.
         if (accessor == null) {
-            if (cls.isAnnotationPresent(MappedSuperclass.class)) {
-                m_mappedSuperclasses.add(new MappedSuperclassAccessor(cls.getAnnotation(MappedSuperclass.class), cls, getDescriptor()));
+            if (metadataClass.isAnnotationPresent(MappedSuperclass.class)) {
+                m_mappedSuperclasses.add(new MappedSuperclassAccessor(
+                        metadataClass.getAnnotation(MappedSuperclass.class), metadataClass, getDescriptor()));
+                // 266912: store the mapped superclass as a descriptor on the project for later use by the Metamodel API
+                // We pass through here more than once - we rely on the Set implementation to handle no duplicates
+                RelationalDescriptor msDescriptor = new RelationalDescriptor();
+                msDescriptor.setAlias(metadataClass.getName());//.getSimpleName());
+                // Set the javaClassName only on the descriptor and use this as the key when the descriptor is part of a set
+                // The javaClass itself will be set on the descriptor later when we have the correct classLoader 
+                msDescriptor.setJavaClassName(metadataClass.getName());
+                getProject().getProject().addMappedSuperclass(msDescriptor);
             }
         } else {
+            // TODO: 266912 add descriptor for xml clients
             m_mappedSuperclasses.add(reloadMappedSuperclass(accessor, getDescriptor()));
         }
     }
@@ -209,6 +226,8 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      *    actual class types for mappings.
      *  - Will discover and set the inheritance parent and root descriptors
      *    if this entity is part of an inheritance hierarchy.
+     *  - save mapped-superclass descriptors on the project for later use
+     *    by the Metamodel API
      * 
      * Note: The list is rebuilt every time this method is called since
      * it is called both during pre-deploy and deploy where the class loader

@@ -17,6 +17,8 @@
  *        In case there's no active transaction, close method now releases uow.
  *        UowImpl was amended to allow value holders instantiation even after it has been released,
  *        the parent ClientSession is released, too.
+ *     03/19/2009-2.0 Michael O'Brien  
+ *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)
  *
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa;
@@ -1252,6 +1254,9 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             isOpen = false;
             factory = null;
             serverSession = null;
+            // Do not invalidate the metaModel field 
+            // (a reopened emf will re-populate the same metaModel)
+            // (a new persistence unit will generate a new metaModel)
             if (extendedPersistenceContext != null) {
                 // bug210677, checkForTransactioin returns null in
                 // afterCompletion - in this case check for uow being
@@ -1287,7 +1292,8 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     }
 
     /**
-     * Indicates whether or not this entity manager is open. Returns
+     * Indicates whether or not this entity manager and its entity manager factory 
+     * are open. Returns
      * <code>true</code> until a call to {@link #close} is made.
      */
     public boolean isOpen() {
@@ -1916,21 +1922,31 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     }
 
     /**
+     * Return an instance of QueryBuilder for the creation of
+     * Criteria API Query objects.
+     * @return QueryBuilder instance
+     * @throws IllegalStateException if the entity manager has
+     * been closed.
      * @see javax.persistence.EntityManager#getQueryBuilder()
      * @since Java Persistence 2.0
      */
     public QueryBuilder getQueryBuilder() {
-        // TODO 
-        throw new PersistenceException("Not Yet Implemented");
+        // defer to the parent entityManagerFactory
+        return this.factory.getQueryBuilder();
     }
 
     /**
+     * Return an instance of Metamodel interface for access to the
+     * metamodel of the persistence unit.
+     * @return Metamodel instance
+     * @throws IllegalStateException if the entity manager has
+     * been closed.
      * @see javax.persistence.EntityManager#getMetamodel()
      * @since Java Persistence 2.0
      */
     public Metamodel getMetamodel() {
-        // TODO 
-        throw new PersistenceException("Not Yet Implemented");
+        // defer to the parent entityManagerFactory
+        return this.factory.getMetamodel();
     }
 
     /**

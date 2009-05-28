@@ -46,8 +46,9 @@ public class InstanceVariableAttributeAccessor extends AttributeAccessor {
 
     /**
      * Returns the value of attributeField.
+     * 266912: For Metamodel API - change visibility from protected
      */
-    protected Field getAttributeField() {
+    public Field getAttributeField() {
         return attributeField;
     }
 

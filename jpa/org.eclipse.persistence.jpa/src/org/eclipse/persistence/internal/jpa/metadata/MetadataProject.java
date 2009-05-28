@@ -23,6 +23,8 @@
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  *     04/24/2009-2.0 Guy Pelletier 
  *       - 270011: JPA 2.0 MappedById support
+ *     04/30/2009-2.0 Michael O'Brien 
+ *       - 266912: JPA 2.0 Metamodel API (part of Criteria API) 
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -83,6 +85,7 @@ import org.eclipse.persistence.sequencing.TableSequence;
 import org.eclipse.persistence.sequencing.NativeSequence;
 
 import org.eclipse.persistence.sessions.DatasourceLogin;
+import org.eclipse.persistence.sessions.Project;
 
 /**
  * INTERNAL:
@@ -120,7 +123,7 @@ public class MetadataProject {
     // A linked map of all the entity mappings (XML file representation)
     private HashMap<URL, XMLEntityMappings> m_entityMappings;
     
-    // List of mapped-superclasses found in XML for this project/persistence unit.
+    // Map of mapped-superclasses found in XML for this project/persistence unit.
     private HashMap<String, MappedSuperclassAccessor> m_mappedSuperclasses;
 
     // All the class accessors for this project (Entities and Embeddables).
@@ -1162,5 +1165,16 @@ public class MetadataProject {
     public boolean weaveEager() {
         return m_weaveEager;
     }
+    
+    /**
+     * INTERNAL:
+     * Return the core project associated with this Metadata project
+     * @return
+     */
+    public Project getProject() {
+        return m_session.getProject();
+    }
+    
+    
 }
 

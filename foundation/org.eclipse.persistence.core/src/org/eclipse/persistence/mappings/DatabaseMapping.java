@@ -493,7 +493,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     * Return the classifiction for the field contained in the mapping.
+     * Return the classification for the field contained in the mapping.
      * This is used to convert the row value to a consistent java value.
      * By default this is unknown.
      */

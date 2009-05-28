@@ -72,7 +72,7 @@ public interface EntityManagerFactory {
      * 
      * @return Metamodel instance
      * @throws IllegalStateException
-     *             if the entity manager has been closed.
+     *             if the entity manager factory has been closed.
      */
     public Metamodel getMetamodel();
 

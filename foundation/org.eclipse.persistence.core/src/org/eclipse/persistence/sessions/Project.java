@@ -9,12 +9,19 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     
+ *     04/30/2009-2.0 Michael O'Brien 
+ *       - 266912: JPA 2.0 Metamodel API (part of Criteria API)
+ *         Add Set<RelationalDescriptor> mappedSuperclassDescriptors 
+ *         to support the Metamodel API 
+ *     
  ******************************************************************************/  
 package org.eclipse.persistence.sessions;
 
 import java.util.*;
 import java.io.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.identitymaps.AbstractIdentityMap;
@@ -82,6 +89,11 @@ public class Project implements Serializable, Cloneable {
     protected transient List<DatabaseQuery> queries = null;
     
     /**
+     * Mapped Superclasses (JPA 2) collection of parent non-relational descriptors
+     */
+    protected Set<RelationalDescriptor> mappedSuperclassDescriptors;
+    
+    /**
      * PUBLIC:
      * Create a new project.
      */
@@ -95,6 +107,7 @@ public class Project implements Serializable, Cloneable {
         this.hasProxyIndirection = false;
         this.jpqlParseCache = new ConcurrentFixedCache(200);
         this.queries = new ArrayList<DatabaseQuery>();
+        this.mappedSuperclassDescriptors = new HashSet<RelationalDescriptor>(2);
     }
 
     /**
@@ -942,5 +955,71 @@ public class Project implements Serializable, Cloneable {
      */
     public void setHasMappingsPostCalculateChangesOnDeleted(boolean hasMappingsPostCalculateChangesOnDeleted) {
         this.hasMappingsPostCalculateChangesOnDeleted = hasMappingsPostCalculateChangesOnDeleted;
-    }    
+    }
+    
+    /**
+     * INTERNAL:
+     * Return whether there any mappings that are mapped superclasses.
+     * @return
+     */
+    public boolean hasMappedSuperclasses() {
+        return (null != this.mappedSuperclassDescriptors && this.mappedSuperclassDescriptors.size() > 0);
+    }
+    
+    /**
+     * INTERNAL:
+     * 266912: Add a descriptor to the Set of mappedSuperclass descriptors
+     * @param value (RelationalDescriptor)
+     */
+    public void addMappedSuperclass(RelationalDescriptor value) {
+        // Lazy initialization of the mappedSuperclassDescriptors field.
+        if(null == this.mappedSuperclassDescriptors) {
+            this.mappedSuperclassDescriptors = new HashSet<RelationalDescriptor>(2);
+        }
+        // duplicates are avoided with use of a Set and overriding equals()/hashCode()
+        this.mappedSuperclassDescriptors.add(value);
+    }
+
+    /**
+     * INTERNAL:
+     * Use the javaClassName from the Class key parameter to lookup the 
+     * Descriptor from the Set of mappedSuperclass descriptors
+     * @param key - the String name of the metadata class
+     * @return
+     */
+    public RelationalDescriptor getMappedSuperclass(String key) {
+        // TODO: this implementation may have side effects when we have the same class in different class loaders. 
+        RelationalDescriptor descriptor = null;
+        // Lazy initialization of the mappedSuperclassDescriptors field.
+        if(null == this.mappedSuperclassDescriptors) {
+            this.mappedSuperclassDescriptors = new HashSet<RelationalDescriptor>(2);
+        }
+        // iterate the set of mappedSuperclasses and return the value that has a matching javaClass key
+        for(Iterator<RelationalDescriptor> anIterator = 
+            this.mappedSuperclassDescriptors.iterator(); anIterator.hasNext();) {
+            descriptor = anIterator.next();
+            // return descriptor that matches the name set in  EntityAccessor
+            if(descriptor.getJavaClassName().equals(key)) {
+                return descriptor;
+            }
+        }
+        return null;
+    }
+
+
+    /**
+     * INTERNAL:
+     * Return the Set of RelationalDescriptor objects representing mapped superclass parents
+     * @return Set
+     */
+    public Set<RelationalDescriptor> getMappedSuperclassDescriptors() {        
+        // Lazy initialization of the mappedSuperclassDescriptors field.
+        if(null == this.mappedSuperclassDescriptors) {
+            this.mappedSuperclassDescriptors = new HashSet<RelationalDescriptor>(2);
+        }
+        return this.mappedSuperclassDescriptors;
+    }
+    
+    
 }
+

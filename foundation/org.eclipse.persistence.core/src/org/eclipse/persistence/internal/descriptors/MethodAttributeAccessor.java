@@ -80,8 +80,9 @@ public class MethodAttributeAccessor extends AttributeAccessor {
 
     /**
      * Return the accessor method for the attribute accessor.
+     * 266912: For Metamodel API - change visibility from protected
      */
-    protected Method getGetMethod() {
+    public Method getGetMethod() {
         return getMethod;
     }
 
