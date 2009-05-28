@@ -1279,7 +1279,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                        "<reference-class>another_advanced_demo.emp_info</reference-class>" +
                        "<field name=\"ITEMS\" xsi:type=\"object-relational-field\"/>" +
                        "<container xsi:type=\"list-container-policy\">" +
-                          "<collection-type>java.util.Vector</collection-type>" +
+                          "<collection-type>java.util.ArrayList</collection-type>" +
                        "</container>" +
                        "<structure>EMP_INFO_ARRAY</structure>" +
                     "</attribute-mapping>" +
@@ -1589,7 +1589,9 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                  "<attribute-mappings>" +
                     "<attribute-mapping xsi:type=\"xml-composite-direct-collection-mapping\">" +
                        "<attribute-name>items</attribute-name>" +
-                       "<field name=\"item/text()\" xsi:type=\"node\"/>" +
+                       "<field name=\"item/text()\" xsi:type=\"node\">" +
+                          "<schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>" +
+                       "</field>" +
                        "<value-converter xsi:type=\"type-conversion-converter\">" +
                           "<object-class>java.lang.String</object-class>" +
                        "</value-converter>" +
@@ -1787,6 +1789,500 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
            "</queries>" +
         "</object-persistence>";
 
+    @SuppressWarnings("unchecked")
+    @Test
+    public void tbl5_OxPart() {
+        ProcedureOperationModel pModel = new ProcedureOperationModel();
+        pModel.setName("tbl5");
+        pModel.setCatalogPattern("toplevel");
+        pModel.setSchemaPattern(username.toUpperCase());
+        pModel.setProcedurePattern("BuildTbl5");
+        pModel.setReturnType("somepackage_tbl5Type");
+        List<DbStoredProcedure> storedProcedures = 
+            OracleHelper.buildStoredProcedure(conn, username, ora11Platform, pModel); 
+        Map<DbStoredProcedure, DbStoredProcedureNameAndModel> dbStoredProcedure2QueryName = 
+            new HashMap<DbStoredProcedure, DbStoredProcedureNameAndModel>();
+        ArrayList<OperationModel> operations = new ArrayList<OperationModel>();
+        operations.add(pModel);
+        DBWSBuilder.buildDbStoredProcedure2QueryNameMap(dbStoredProcedure2QueryName,
+            storedProcedures, operations, true);      
+        AdvancedJDBCOXDescriptorBuilder advJOxDescriptorBuilder = 
+            new AdvancedJDBCOXDescriptorBuilder("urn:tbl5", new TypeSuffixTransformer());
+        PublisherWalker walker = new PublisherWalker(advJOxDescriptorBuilder);
+        pModel.getJPubType().accept(walker);
+        List<XMLDescriptor> descriptors = advJOxDescriptorBuilder.getDescriptors();
+        Project p = new Project();
+        p.setName("BuildTbl5");
+        for (XMLDescriptor xDesc : descriptors) { 
+            p.addDescriptor(xDesc);
+        }
+        Document resultDoc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = new XMLContext(writeObjectPersistenceProject).createMarshaller();
+        marshaller.marshal(p, resultDoc);
+        Document controlDoc = xmlParser.parse(new StringReader(TBL5_OX_PROJECT));
+        assertTrue("control document not same as instance document",
+                comparer.isNodeEqual(controlDoc, resultDoc));
+        SchemaModelGenerator schemaGenerator = new SchemaModelGenerator();
+        SchemaModelGeneratorProperties sgProperties = new SchemaModelGeneratorProperties();
+        // set element form default to qualified for target namespace
+        sgProperties.addProperty("urn:tbl5", ELEMENT_FORM_QUALIFIED_KEY, true);
+        Map schemaMap = schemaGenerator.generateSchemas(descriptors, sgProperties);
+        Schema tbl5Schema = (Schema)schemaMap.get("urn:tbl5");
+        Document tbl5SchemaDoc = xmlPlatform.createDocument();
+        XMLMarshaller schemaMarshaller = new XMLContext(new SchemaModelProject()).createMarshaller();
+        schemaMarshaller.marshal(tbl5Schema, tbl5SchemaDoc);
+        Document controlTbl1SchemaDoc = xmlParser.parse(new StringReader(TBL5_SCHEMA));
+        assertTrue("control schema not same as instance schema",
+            comparer.isNodeEqual(controlTbl1SchemaDoc, tbl5SchemaDoc));
+    }
+    public static final String TBL5_OX_PROJECT = 
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+        "<object-persistence version=\"Eclipse Persistence Services - some version (some build date)\" xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:eclipselink=\"http://www.eclipse.org/eclipselink/xsds/persistence\">" +
+           "<name>BuildTbl5</name>" +
+           "<class-mapping-descriptors>" +
+              "<class-mapping-descriptor xsi:type=\"xml-class-mapping-descriptor\">" +
+                 "<class>toplevel.somepackage_tbl5_CollectionWrapper</class>" +
+                 "<alias>somepackage_tbl5</alias>" +
+                 "<events xsi:type=\"event-policy\"/>" +
+                 "<querying xsi:type=\"query-policy\"/>" +
+                 "<attribute-mappings>" +
+                    "<attribute-mapping xsi:type=\"xml-composite-direct-collection-mapping\">" +
+                       "<attribute-name>items</attribute-name>" +
+                       "<field name=\"item/text()\" xsi:type=\"node\">" +
+                          "<schema-type>{http://www.w3.org/2001/XMLSchema}date</schema-type>" +
+                       "</field>" +
+                       "<value-converter xsi:type=\"type-conversion-converter\">" +
+                          "<object-class>java.sql.Date</object-class>" +
+                       "</value-converter>" +
+                       "<container xsi:type=\"container-policy\">" +
+                          "<collection-type>java.util.ArrayList</collection-type>" +
+                       "</container>" +
+                    "</attribute-mapping>" +
+                 "</attribute-mappings>" +
+                 "<descriptor-type>aggregate</descriptor-type>" +
+                 "<instantiation/>" +
+                 "<copying xsi:type=\"instantiation-copy-policy\"/>" +
+                 "<default-root-element>somepackage_tbl5Type</default-root-element>" +
+                 "<default-root-element-field name=\"somepackage_tbl5Type\" xsi:type=\"node\"/>" +
+                 "<namespace-resolver>" +
+                    "<default-namespace-uri>urn:tbl5</default-namespace-uri>" +
+                 "</namespace-resolver>" +
+                 "<schema xsi:type=\"schema-url-reference\">" +
+                    "<schema-context>/somepackage_tbl5Type</schema-context>" +
+                    "<node-type>complex-type</node-type>" +
+                 "</schema>" +
+              "</class-mapping-descriptor>" +
+           "</class-mapping-descriptors>" +
+        "</object-persistence>";
+    public static final String TBL5_SCHEMA =
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+        "<xsd:schema targetNamespace=\"urn:tbl5\" xmlns=\"urn:tbl5\" elementFormDefault=\"qualified\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
+           "<xsd:complexType name=\"somepackage_tbl5Type\">" +
+              "<xsd:sequence>" +
+                 "<xsd:element name=\"item\" type=\"xsd:date\" minOccurs=\"0\" maxOccurs=\"unbounded\"/>" +
+              "</xsd:sequence>" +
+           "</xsd:complexType>" +
+           "<xsd:element name=\"somepackage_tbl5Type\" type=\"somepackage_tbl5Type\"/>" +
+        "</xsd:schema>";
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void BuildARecord_OrPart() {
+        ProcedureOperationModel pModel = new ProcedureOperationModel();
+        pModel.setName("buildARecord");
+        pModel.setCatalogPattern("toplevel");
+        pModel.setSchemaPattern(username.toUpperCase());
+        pModel.setProcedurePattern("BuildARecord");
+        pModel.setReturnType("somepackage_arecordType");
+        List<DbStoredProcedure> storedProcedures = 
+            OracleHelper.buildStoredProcedure(conn, username, ora11Platform, pModel); 
+        Map<DbStoredProcedure, DbStoredProcedureNameAndModel> dbStoredProcedure2QueryName = 
+            new HashMap<DbStoredProcedure, DbStoredProcedureNameAndModel>();
+        ArrayList<OperationModel> operations = new ArrayList<OperationModel>();
+        operations.add(pModel);
+        DBWSBuilder.buildDbStoredProcedure2QueryNameMap(dbStoredProcedure2QueryName,
+            storedProcedures, operations, true);
+        AdvancedJDBCORDescriptorBuilder advJOrDescriptorBuilder = 
+            new AdvancedJDBCORDescriptorBuilder();
+        AdvancedJDBCQueryBuilder queryBuilder = 
+            new AdvancedJDBCQueryBuilder(storedProcedures, dbStoredProcedure2QueryName);
+        PublisherListenerChainAdapter listenerChainAdapter = new PublisherListenerChainAdapter();
+        listenerChainAdapter.addListener(advJOrDescriptorBuilder);
+        listenerChainAdapter.addListener(queryBuilder);
+        PublisherWalker walker = new PublisherWalker(listenerChainAdapter);
+        pModel.getJPubType().accept(walker);
+        List<ObjectRelationalDataTypeDescriptor> descriptors = 
+            advJOrDescriptorBuilder.getDescriptors();
+        Project p = new Project();
+        p.setName("aRecord");
+        for (ObjectRelationalDataTypeDescriptor ordt : descriptors) { 
+            p.addDescriptor(ordt);
+        }
+        List<DatabaseQuery> queries = queryBuilder.getQueries();
+        if (queries != null && queries.size() > 0) {
+            p.getQueries().addAll(queries);
+        }
+        Document resultDoc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = new XMLContext(writeObjectPersistenceProject).createMarshaller();
+        marshaller.marshal(p, resultDoc);
+        Document aRecordOrProjectDoc = xmlParser.parse(new StringReader(ARECORD_OR_PROJECT));
+        assertTrue("control document not same as instance document",
+            comparer.isNodeEqual(resultDoc, aRecordOrProjectDoc));
+
+        DatabaseSession ds = fixUp(ARECORD_OR_PROJECT);
+        DatabaseQuery vrq = ds.getQuery("buildARecord");
+        Vector args = new NonSynchronizedVector();
+        int num = 3;
+        args.add(Integer.valueOf(num));
+        Object o = ds.executeQuery(vrq, args);
+        assertTrue("return value not correct type", o instanceof BaseEntity);
+        BaseEntity returnValue = (BaseEntity)o;
+        ArrayList<String> tbl1 = (ArrayList<String>)returnValue.get(0);
+        assertTrue("wrong number of returned strings", num == tbl1.size());
+        for (int i = 0, len = tbl1.size(); i < len; i++) {
+            assertTrue("wrong array element value", ("entry " + (i + 1)).equals(tbl1.get(i)));
+        }
+        ArrayList<BigDecimal> tbl2 = (ArrayList<BigDecimal>)returnValue.get(1);
+        assertTrue("wrong number of returned strings", num == tbl2.size());
+        for (int i = 0, len = tbl2.size(); i < len; i++) {
+            assertTrue("wrong array element value", BigDecimal.valueOf(i+1).equals(tbl2.get(i)));
+        }
+        BigDecimal t3 = (BigDecimal)returnValue.get(2);
+        assertTrue("wrong array element value", BigDecimal.valueOf(num).equals(t3));
+    }
+    public static final String ARECORD_OR_PROJECT = 
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+        "<object-persistence version=\"Eclipse Persistence Services - some version (some build date)\" xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:eclipselink=\"http://www.eclipse.org/eclipselink/xsds/persistence\">" +
+           "<name>aRecord</name>" +
+           "<class-mapping-descriptors>" +
+              "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
+                 "<class>toplevel.somepackage_arecord</class>" +
+                 "<alias>somepackage_arecord</alias>" +
+                 "<events xsi:type=\"event-policy\"/>" +
+                 "<querying xsi:type=\"query-policy\"/>" +
+                 "<attribute-mappings>" +
+                    "<attribute-mapping xsi:type=\"array-mapping\">" +
+                       "<attribute-name>t1</attribute-name>" +
+                       "<field name=\"T1\" xsi:type=\"object-relational-field\">" +
+                          "<nested-type-field name=\"\" sql-typecode=\"12\" column-definition=\"VARCHAR2\" xsi:type=\"column\"/>" +
+                       "</field>" +
+                       "<container xsi:type=\"list-container-policy\">" +
+                          "<collection-type>java.util.ArrayList</collection-type>" +
+                       "</container>" +
+                       "<structure>somepackage_tbl1</structure>" +
+                    "</attribute-mapping>" +
+                    "<attribute-mapping xsi:type=\"array-mapping\">" +
+                       "<attribute-name>t2</attribute-name>" +
+                       "<field name=\"T2\" xsi:type=\"object-relational-field\">" +
+                          "<nested-type-field name=\"\" sql-typecode=\"2\" column-definition=\"NUMBER\" xsi:type=\"column\"/>" +
+                       "</field>" +
+                       "<container xsi:type=\"list-container-policy\">" +
+                          "<collection-type>java.util.ArrayList</collection-type>" +
+                       "</container>" +
+                       "<structure>somepackage_tbl2</structure>" +
+                    "</attribute-mapping>" +
+                    "<attribute-mapping xsi:type=\"direct-mapping\">" +
+                       "<attribute-name>t3</attribute-name>" +
+                       "<field name=\"T3\" xsi:type=\"column\"/>" +
+                    "</attribute-mapping>" +
+                 "</attribute-mappings>" +
+                 "<descriptor-type>aggregate</descriptor-type>" +
+                 "<caching>" +
+                    "<cache-size>-1</cache-size>" +
+                 "</caching>" +
+                 "<remote-caching>" +
+                    "<cache-size>-1</cache-size>" +
+                 "</remote-caching>" +
+                 "<instantiation/>" +
+                 "<copying xsi:type=\"instantiation-copy-policy\"/>" +
+                 "<structure>SOMEPACKAGE_ARECORD</structure>" +
+                 "<field-order>" +
+                    "<field name=\"T1\" xsi:type=\"column\"/>" +
+                    "<field name=\"T2\" xsi:type=\"column\"/>" +
+                    "<field name=\"T3\" xsi:type=\"column\"/>" +
+                 "</field-order>" +
+              "</class-mapping-descriptor>" +
+              "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
+                 "<class>toplevel.somepackage_tbl1_CollectionWrapper</class>" +
+                 "<alias>somepackage_tbl1</alias>" +
+                 "<events xsi:type=\"event-policy\"/>" +
+                 "<querying xsi:type=\"query-policy\"/>" +
+                 "<attribute-mappings>" +
+                    "<attribute-mapping xsi:type=\"array-mapping\">" +
+                       "<attribute-name>items</attribute-name>" +
+                       "<field name=\"items\" xsi:type=\"object-relational-field\">" +
+                          "<nested-type-field name=\"\" sql-typecode=\"12\" column-definition=\"VARCHAR2\" xsi:type=\"column\"/>" +
+                       "</field>" +
+                       "<container xsi:type=\"list-container-policy\">" +
+                          "<collection-type>java.util.ArrayList</collection-type>" +
+                       "</container>" +
+                       "<structure>somepackage_tbl1</structure>" +
+                    "</attribute-mapping>" +
+                 "</attribute-mappings>" +
+                 "<descriptor-type>aggregate</descriptor-type>" +
+                 "<caching>" +
+                    "<cache-size>-1</cache-size>" +
+                 "</caching>" +
+                 "<remote-caching>" +
+                    "<cache-size>-1</cache-size>" +
+                 "</remote-caching>" +
+                 "<instantiation/>" +
+                 "<copying xsi:type=\"instantiation-copy-policy\"/>" +
+              "</class-mapping-descriptor>" +
+              "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
+                 "<class>toplevel.somepackage_tbl2_CollectionWrapper</class>" +
+                 "<alias>somepackage_tbl2</alias>" +
+                 "<events xsi:type=\"event-policy\"/>" +
+                 "<querying xsi:type=\"query-policy\"/>" +
+                 "<attribute-mappings>" +
+                    "<attribute-mapping xsi:type=\"array-mapping\">" +
+                       "<attribute-name>items</attribute-name>" +
+                       "<field name=\"items\" xsi:type=\"object-relational-field\">" +
+                          "<nested-type-field name=\"\" sql-typecode=\"2\" column-definition=\"NUMBER\" xsi:type=\"column\"/>" +
+                       "</field>" +
+                       "<container xsi:type=\"list-container-policy\">" +
+                          "<collection-type>java.util.ArrayList</collection-type>" +
+                       "</container>" +
+                       "<structure>somepackage_tbl2</structure>" +
+                    "</attribute-mapping>" +
+                 "</attribute-mappings>" +
+                 "<descriptor-type>aggregate</descriptor-type>" +
+                 "<caching>" +
+                    "<cache-size>-1</cache-size>" +
+                 "</caching>" +
+                 "<remote-caching>" +
+                    "<cache-size>-1</cache-size>" +
+                 "</remote-caching>" +
+                 "<instantiation/>" +
+                 "<copying xsi:type=\"instantiation-copy-policy\"/>" +
+              "</class-mapping-descriptor>" +
+           "</class-mapping-descriptors>" +
+           "<queries>" +
+              "<query name=\"buildARecord\" xsi:type=\"value-read-query\">" +
+                 "<arguments>" +
+                    "<argument name=\"NUM\">" +
+                       "<type>java.lang.Object</type>" +
+                    "</argument>" +
+                 "</arguments>" +
+                 "<maintain-cache>false</maintain-cache>" +
+                 "<bind-all-parameters>true</bind-all-parameters>" +
+                 "<call xsi:type=\"stored-function-call\">" +
+                    "<procedure-name>BUILDARECORD</procedure-name>" +
+                    "<cursor-output-procedure>false</cursor-output-procedure>" +
+                    "<arguments>" +
+                       "<argument xsi:type=\"procedure-argument\">" +
+                          "<procedure-argument-name>NUM</procedure-argument-name>" +
+                          "<argument-name>NUM</argument-name>" +
+                       "</argument>" +
+                    "</arguments>" +
+                    "<stored-function-result xsi:type=\"procedure-output-argument\">" +
+                       "<procedure-argument-type>toplevel.somepackage_arecord</procedure-argument-type>" +
+                       "<procedure-argument-sqltype>2002</procedure-argument-sqltype>" +
+                       "<procedure-argument-sqltype-name>SOMEPACKAGE_ARECORD</procedure-argument-sqltype-name>" +
+                    "</stored-function-result>" +
+                 "</call>" +
+              "</query>" +
+           "</queries>" +
+        "</object-persistence>";
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void BuildARecord_OxPart() {
+        ProcedureOperationModel pModel = new ProcedureOperationModel();
+        pModel.setName("buildARecord");
+        pModel.setCatalogPattern("toplevel");
+        pModel.setSchemaPattern(username.toUpperCase());
+        pModel.setProcedurePattern("BuildARecord");
+        pModel.setReturnType("somepackage_arecordType");
+        List<DbStoredProcedure> storedProcedures = 
+            OracleHelper.buildStoredProcedure(conn, username, ora11Platform, pModel); 
+        Map<DbStoredProcedure, DbStoredProcedureNameAndModel> dbStoredProcedure2QueryName = 
+            new HashMap<DbStoredProcedure, DbStoredProcedureNameAndModel>();
+        ArrayList<OperationModel> operations = new ArrayList<OperationModel>();
+        operations.add(pModel);
+        DBWSBuilder.buildDbStoredProcedure2QueryNameMap(dbStoredProcedure2QueryName,
+            storedProcedures, operations, true);       
+        AdvancedJDBCOXDescriptorBuilder advJOxDescriptorBuilder = 
+            new AdvancedJDBCOXDescriptorBuilder("urn:aRecord", new TypeSuffixTransformer());
+        PublisherWalker walker = new PublisherWalker(advJOxDescriptorBuilder);
+        pModel.getJPubType().accept(walker);
+        List<XMLDescriptor> descriptors = advJOxDescriptorBuilder.getDescriptors();
+        Project p = new Project();
+        p.setName("buildARecord");
+        for (XMLDescriptor xDesc : descriptors) { 
+            p.addDescriptor(xDesc);
+        }
+        Document resultDoc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = new XMLContext(writeObjectPersistenceProject).createMarshaller();
+        marshaller.marshal(p, resultDoc);
+        Document controlDoc = xmlParser.parse(new StringReader(ARECORD_OX_PROJECT));
+        assertTrue("control document not same as instance document",
+                comparer.isNodeEqual(controlDoc, resultDoc));
+        SchemaModelGenerator schemaGenerator = new SchemaModelGenerator();
+        SchemaModelGeneratorProperties sgProperties = new SchemaModelGeneratorProperties();
+        // set element form default to qualified for target namespace
+        sgProperties.addProperty("urn:aRecord", ELEMENT_FORM_QUALIFIED_KEY, true);
+        Map schemaMap = schemaGenerator.generateSchemas(descriptors, sgProperties);
+        Schema aRecordSchema = (Schema)schemaMap.get("urn:aRecord");
+        Document aRecordSchemaDoc = xmlPlatform.createDocument();
+        XMLMarshaller schemaMarshaller = new XMLContext(new SchemaModelProject()).createMarshaller();
+        schemaMarshaller.marshal(aRecordSchema, aRecordSchemaDoc);
+        Document controlARecordSchemaDoc = xmlParser.parse(new StringReader(ARECORD_SCHEMA));
+        assertTrue("control schema not same as instance schema",
+            comparer.isNodeEqual(controlARecordSchemaDoc, aRecordSchemaDoc));
+    }
+    public static final String ARECORD_OX_PROJECT = 
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+        "<object-persistence version=\"Eclipse Persistence Services - some version (some build date)\" xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:eclipselink=\"http://www.eclipse.org/eclipselink/xsds/persistence\">" +
+           "<name>buildARecord</name>" +
+           "<class-mapping-descriptors>" +
+              "<class-mapping-descriptor xsi:type=\"xml-class-mapping-descriptor\">" +
+                 "<class>toplevel.somepackage_arecord</class>" +
+                 "<alias>somepackage_arecord</alias>" +
+                 "<events xsi:type=\"event-policy\"/>" +
+                 "<querying xsi:type=\"query-policy\"/>" +
+                 "<attribute-mappings>" +
+                    "<attribute-mapping xsi:type=\"xml-composite-direct-collection-mapping\">" +
+                       "<attribute-name>t1</attribute-name>" +
+                       "<field name=\"t1/item/text()\" xsi:type=\"node\">" +
+                          "<schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>" +
+                       "</field>" +
+                       "<value-converter xsi:type=\"type-conversion-converter\">" +
+                          "<object-class>java.lang.String</object-class>" +
+                       "</value-converter>" +
+                       "<container xsi:type=\"container-policy\">" +
+                          "<collection-type>java.util.ArrayList</collection-type>" +
+                       "</container>" +
+                    "</attribute-mapping>" +
+                    "<attribute-mapping xsi:type=\"xml-composite-direct-collection-mapping\">" +
+                       "<attribute-name>t2</attribute-name>" +
+                       "<field name=\"t2/item/text()\" xsi:type=\"node\">" +
+                          "<schema-type>{http://www.w3.org/2001/XMLSchema}decimal</schema-type>" +
+                       "</field>" +
+                       "<value-converter xsi:type=\"type-conversion-converter\">" +
+                          "<object-class>java.math.BigDecimal</object-class>" +
+                       "</value-converter>" +
+                       "<container xsi:type=\"container-policy\">" +
+                          "<collection-type>java.util.ArrayList</collection-type>" +
+                       "</container>" +
+                    "</attribute-mapping>" +
+                    "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
+                       "<attribute-name>t3</attribute-name>" +
+                       "<field name=\"t3/text()\" xsi:type=\"node\">" +
+                          "<schema-type>{http://www.w3.org/2001/XMLSchema}integer</schema-type>" +
+                       "</field>" +
+                       "<attribute-classification>java.math.BigInteger</attribute-classification>" +
+                    "</attribute-mapping>" +
+                 "</attribute-mappings>" +
+                 "<descriptor-type>aggregate</descriptor-type>" +
+                 "<instantiation/>" +
+                 "<copying xsi:type=\"instantiation-copy-policy\"/>" +
+                 "<default-root-element>somepackage_arecordType</default-root-element>" +
+                 "<default-root-element-field name=\"somepackage_arecordType\" xsi:type=\"node\"/>" +
+                 "<namespace-resolver>" +
+                    "<default-namespace-uri>urn:aRecord</default-namespace-uri>" +
+                 "</namespace-resolver>" +
+                 "<schema xsi:type=\"schema-url-reference\">" +
+                    "<schema-context>/somepackage_arecordType</schema-context>" +
+                    "<node-type>complex-type</node-type>" +
+                 "</schema>" +
+              "</class-mapping-descriptor>" +
+              "<class-mapping-descriptor xsi:type=\"xml-class-mapping-descriptor\">" +
+                 "<class>toplevel.somepackage_tbl1_CollectionWrapper</class>" +
+                 "<alias>somepackage_tbl1</alias>" +
+                 "<events xsi:type=\"event-policy\"/>" +
+                 "<querying xsi:type=\"query-policy\"/>" +
+                 "<attribute-mappings>" +
+                    "<attribute-mapping xsi:type=\"xml-composite-direct-collection-mapping\">" +
+                       "<attribute-name>items</attribute-name>" +
+                       "<field name=\"item/text()\" xsi:type=\"node\">" +
+                          "<schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>" +
+                       "</field>" +
+                       "<value-converter xsi:type=\"type-conversion-converter\">" +
+                          "<object-class>java.lang.String</object-class>" +
+                       "</value-converter>" +
+                       "<container xsi:type=\"container-policy\">" +
+                          "<collection-type>java.util.ArrayList</collection-type>" +
+                       "</container>" +
+                    "</attribute-mapping>" +
+                 "</attribute-mappings>" +
+                 "<descriptor-type>aggregate</descriptor-type>" +
+                 "<instantiation/>" +
+                 "<copying xsi:type=\"instantiation-copy-policy\"/>" +
+                 "<namespace-resolver>" +
+                    "<default-namespace-uri>urn:aRecord</default-namespace-uri>" +
+                 "</namespace-resolver>" +
+                 "<schema xsi:type=\"schema-url-reference\">" +
+                    "<schema-context>/somepackage_tbl1Type</schema-context>" +
+                    "<node-type>complex-type</node-type>" +
+                 "</schema>" +
+              "</class-mapping-descriptor>" +
+              "<class-mapping-descriptor xsi:type=\"xml-class-mapping-descriptor\">" +
+                 "<class>toplevel.somepackage_tbl2_CollectionWrapper</class>" +
+                 "<alias>somepackage_tbl2</alias>" +
+                 "<events xsi:type=\"event-policy\"/>" +
+                 "<querying xsi:type=\"query-policy\"/>" +
+                 "<attribute-mappings>" +
+                    "<attribute-mapping xsi:type=\"xml-composite-direct-collection-mapping\">" +
+                       "<attribute-name>items</attribute-name>" +
+                       "<field name=\"item/text()\" xsi:type=\"node\">" +
+                          "<schema-type>{http://www.w3.org/2001/XMLSchema}decimal</schema-type>" +
+                       "</field>" +
+                       "<value-converter xsi:type=\"type-conversion-converter\">" +
+                          "<object-class>java.math.BigDecimal</object-class>" +
+                       "</value-converter>" +
+                       "<container xsi:type=\"container-policy\">" +
+                          "<collection-type>java.util.ArrayList</collection-type>" +
+                       "</container>" +
+                    "</attribute-mapping>" +
+                 "</attribute-mappings>" +
+                 "<descriptor-type>aggregate</descriptor-type>" +
+                 "<instantiation/>" +
+                 "<copying xsi:type=\"instantiation-copy-policy\"/>" +
+                 "<namespace-resolver>" +
+                    "<default-namespace-uri>urn:aRecord</default-namespace-uri>" +
+                 "</namespace-resolver>" +
+                 "<schema xsi:type=\"schema-url-reference\">" +
+                    "<schema-context>/somepackage_tbl2Type</schema-context>" +
+                    "<node-type>complex-type</node-type>" +
+                 "</schema>" +
+              "</class-mapping-descriptor>" +
+           "</class-mapping-descriptors>" +
+        "</object-persistence>";
+    public static final String ARECORD_SCHEMA =
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+        "<xsd:schema targetNamespace=\"urn:aRecord\" xmlns=\"urn:aRecord\" elementFormDefault=\"qualified\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
+           "<xsd:complexType name=\"somepackage_tbl2Type\">" +
+              "<xsd:sequence>" +
+                 "<xsd:element name=\"item\" type=\"xsd:decimal\" minOccurs=\"0\" maxOccurs=\"unbounded\"/>" +
+              "</xsd:sequence>" +
+           "</xsd:complexType>" +
+           "<xsd:complexType name=\"somepackage_arecordType\">" +
+              "<xsd:sequence>" +
+                 "<xsd:element name=\"t1\">" +
+                    "<xsd:complexType>" +
+                       "<xsd:sequence>" +
+                          "<xsd:element name=\"item\" type=\"xsd:string\" minOccurs=\"0\" maxOccurs=\"unbounded\"/>" +
+                       "</xsd:sequence>" +
+                    "</xsd:complexType>" +
+                 "</xsd:element>" +
+                 "<xsd:element name=\"t2\">" +
+                    "<xsd:complexType>" +
+                       "<xsd:sequence>" +
+                          "<xsd:element name=\"item\" type=\"xsd:decimal\" minOccurs=\"0\" maxOccurs=\"unbounded\"/>" +
+                       "</xsd:sequence>" +
+                    "</xsd:complexType>" +
+                 "</xsd:element>" +
+                 "<xsd:element name=\"t3\" type=\"xsd:integer\" minOccurs=\"0\"/>" +
+              "</xsd:sequence>" +
+           "</xsd:complexType>" +
+           "<xsd:complexType name=\"somepackage_tbl1Type\">" +
+              "<xsd:sequence>" +
+                 "<xsd:element name=\"item\" type=\"xsd:string\" minOccurs=\"0\" maxOccurs=\"unbounded\"/>" +
+              "</xsd:sequence>" +
+           "</xsd:complexType>" +
+           "<xsd:element name=\"somepackage_arecordType\" type=\"somepackage_arecordType\"/>" +
+        "</xsd:schema>";        
     
     @SuppressWarnings("unchecked")
     public DatabaseSession fixUp(String projectString) {

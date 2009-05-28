@@ -49,6 +49,7 @@ import static org.eclipse.persistence.tools.dbws.oracle.PLSQLOXDescriptorBuilder
 public class AdvancedJDBCOXDescriptorBuilder extends PublisherDefaultListener {
 
     public static final String ITEMS_MAPPING_ATTRIBUTE_NAME = "items";
+    public static final String ITEM_MAPPING_NAME = "item";
 
     protected String targetNamespace;
     protected NamingConventionTransformer nct;
@@ -146,13 +147,42 @@ public class AdvancedJDBCOXDescriptorBuilder extends PublisherDefaultListener {
                 DatabaseMapping dm = xdesc.getMappingForAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME);
                 if (dm == null) {
                     XMLCompositeDirectCollectionMapping itemsMapping = new XMLCompositeDirectCollectionMapping();
+                    SqltypeHelper componentType = new SqltypeHelper(sqlTypeName);
                     itemsMapping.setAttributeElementClass(
-                        attributeClassFromDatabaseType((DefaultListenerHelper)new SqltypeHelper(sqlTypeName)));
+                        attributeClassFromDatabaseType((DefaultListenerHelper)componentType));
                     itemsMapping.setAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME);
                     itemsMapping.setUsesSingleNode(true);
-                    itemsMapping.setXPath("item/text()");
+                    itemsMapping.setXPath(ITEM_MAPPING_NAME + "/text()");
+                    ((XMLField)itemsMapping.getField()).setSchemaType(
+                        qnameFromDatabaseType(componentType));
                     itemsMapping.useCollectionClassName("java.util.ArrayList");
                     xdesc.addMapping(itemsMapping);
+                }
+                ListenerHelper listenerHelper2 = stac.peek();
+                if (listenerHelper2.isAttribute()) {
+                    // type built above used in field definition of object further up stack
+                    stac.pop();
+                    AttributeFieldHelper fieldHelper = (AttributeFieldHelper)listenerHelper2;
+                    ListenerHelper listenerHelper3 = stac.peek();
+                    if (listenerHelper3.isObject()) {
+                        ObjectTypeHelper objectTypeHelper = (ObjectTypeHelper)listenerHelper3;
+                        XMLDescriptor xdesc2 = descriptorMap.get(objectTypeHelper.objectTypename());
+                        String fieldName = fieldHelper.attributeFieldName();
+                        DatabaseMapping dm2 = xdesc2.getMappingForAttributeName(fieldName.toLowerCase());
+                        if (dm2 == null) {
+                            XMLCompositeDirectCollectionMapping fieldMapping = new XMLCompositeDirectCollectionMapping();
+                            SqltypeHelper componentType = new SqltypeHelper(sqlTypeName);
+                            fieldMapping.setAttributeElementClass(
+                                attributeClassFromDatabaseType((DefaultListenerHelper)componentType));
+                            fieldMapping.setAttributeName(fieldName.toLowerCase());
+                            XMLField field = new XMLField(fieldName.toLowerCase() + "/" + 
+                                ITEM_MAPPING_NAME + "/text()");
+                            fieldMapping.setField(field);
+                            field.setSchemaType(qnameFromDatabaseType(componentType));
+                            fieldMapping.useCollectionClassName("java.util.ArrayList");
+                            xdesc2.addMapping(fieldMapping);
+                        }
+                    }
                 }
             }
         }
@@ -223,7 +253,7 @@ public class AdvancedJDBCOXDescriptorBuilder extends PublisherDefaultListener {
                         if (!itemsMappingFound) {
                             XMLCompositeCollectionMapping itemsMapping = new XMLCompositeCollectionMapping();
                             itemsMapping.setAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME);
-                            itemsMapping.setXPath("item");
+                            itemsMapping.setXPath(ITEM_MAPPING_NAME);
                             itemsMapping.useCollectionClassName("java.util.ArrayList");
                             itemsMapping.setReferenceClassName(xdesc.getJavaClassName());
                             xdesc2.addMapping(itemsMapping);

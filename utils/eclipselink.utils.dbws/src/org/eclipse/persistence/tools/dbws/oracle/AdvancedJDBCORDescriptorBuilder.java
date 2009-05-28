@@ -29,6 +29,7 @@ import org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescr
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
 import org.eclipse.persistence.mappings.structures.StructureMapping;
 import org.eclipse.persistence.platform.database.oracle.publisher.visit.PublisherDefaultListener;
+
 import static org.eclipse.persistence.internal.dynamicpersist.BaseEntityClassLoader.COLLECTION_WRAPPER_SUFFIX;
 
 public class AdvancedJDBCORDescriptorBuilder extends PublisherDefaultListener {
@@ -142,6 +143,36 @@ public class AdvancedJDBCORDescriptorBuilder extends PublisherDefaultListener {
                     field.setNestedTypeField(nestedField);
                     ordt.addMapping(arrayMapping);
                 }
+                ListenerHelper listenerHelper3 = stac.peek();
+                if (listenerHelper3.isAttribute()) {
+                    // type built above used in field definition of object further up stack
+                    stac.pop();
+                    AttributeFieldHelper fieldHelper = (AttributeFieldHelper)listenerHelper3;
+                    ListenerHelper listenerHelper4 = stac.peek();
+                    if (listenerHelper4.isObject()) {
+                        ObjectTypeHelper objectTypeHelper = (ObjectTypeHelper)listenerHelper4;
+                        ObjectRelationalDataTypeDescriptor ordt2 = 
+                            descriptorMap.get(objectTypeHelper.objectTypename());
+                        String fieldName = fieldHelper.attributeFieldName();
+                        ordt2.addFieldOrdering(fieldName);
+                        DatabaseMapping dm2 = 
+                            ordt2.getMappingForAttributeName(fieldName.toLowerCase());
+                        if (dm2 == null) {
+                            ArrayMapping arrayMapping2 = new ArrayMapping();
+                            arrayMapping2.setAttributeName(fieldName.toLowerCase());
+                            arrayMapping2.setFieldName(fieldName);
+                            arrayMapping2.setStructureName(sqlArrayTypeHelper.arrayTypename());
+                            arrayMapping2.useCollectionClass(ArrayList.class);
+                            DatabaseField nestedField = new DatabaseField("");
+                            nestedField.setSqlType(typecode);
+                            nestedField.setColumnDefinition(sqlTypeName);
+                            ObjectRelationalDatabaseField field = 
+                                (ObjectRelationalDatabaseField)arrayMapping2.getField();
+                            field.setNestedTypeField(nestedField);
+                            ordt2.addMapping(arrayMapping2);
+                        }
+                    }
+                }
             }
         }
     }
@@ -208,6 +239,7 @@ public class AdvancedJDBCORDescriptorBuilder extends PublisherDefaultListener {
                             arrayMapping.setFieldName(ITEMS_MAPPING_FIELD_NAME);
                             arrayMapping.setStructureName(sqlArrayTypeNameAlias.toUpperCase());
                             arrayMapping.setReferenceClassName(ordt.getJavaClassName());
+                            arrayMapping.useCollectionClass(ArrayList.class);
                             ordt2.addMapping(arrayMapping);
                         }
                     }

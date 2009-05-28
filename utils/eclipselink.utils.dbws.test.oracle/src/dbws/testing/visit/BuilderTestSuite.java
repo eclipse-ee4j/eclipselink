@@ -99,16 +99,7 @@ public class BuilderTestSuite {
         ConstantTransformer constantTransformer = 
             (ConstantTransformer)transformerField.get(versionTransformer);
         constantTransformer.setValue(CONSTANT_PROJECT_BUILD_VERSION);
-        
-        readObjectPersistenceProject = new EclipseLinkObjectPersistenceRuntimeXMLProject();
-        versionMapping = (XMLTransformationMapping)writeObjectPersistenceProject.getDescriptor(
-            Project.class).getMappings().firstElement();
-        versionTransformer = (TransformerBasedFieldTransformation)versionMapping.
-            getFieldTransformations().firstElement();
-        transformerField = TransformerBasedFieldTransformation.class.getDeclaredField("transformer");
-        transformerField.setAccessible(true);
-        constantTransformer = (ConstantTransformer)transformerField.get(versionTransformer);
-        constantTransformer.setValue(CONSTANT_PROJECT_BUILD_VERSION);
-    }
 
+        readObjectPersistenceProject = new EclipseLinkObjectPersistenceRuntimeXMLProject();
+    }
 }
