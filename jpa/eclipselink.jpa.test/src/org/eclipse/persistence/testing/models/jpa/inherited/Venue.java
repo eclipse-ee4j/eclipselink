@@ -28,7 +28,7 @@ public class Venue {
     
     @Embedded
     // There are no attribute overrides at this level, however, novice beer 
-    // consumer is going to provide the follwoing overrides:
+    // consumer is going to provide the following overrides:
     // - yearBuilt -> VENUE_YEAR_BUILT
     // - builder -> VENUE_BUILDER
     // And expert beer consumer is going to use the defaults (columns) of
