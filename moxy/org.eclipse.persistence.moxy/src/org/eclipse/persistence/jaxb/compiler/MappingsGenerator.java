@@ -31,6 +31,7 @@ import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaMethod;
 import org.eclipse.persistence.jaxb.JAXBEnumTypeConverter;
+import org.eclipse.persistence.internal.jaxb.JAXBSetMethodAttributeAccessor;
 import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
 import org.eclipse.persistence.internal.jaxb.DomHandlerConverter;
 import org.eclipse.persistence.internal.jaxb.MultiArgInstantiationPolicy;
@@ -306,13 +307,19 @@ public class MappingsGenerator {
         ChoiceProperty prop = (ChoiceProperty)property;
         XMLChoiceObjectMapping mapping = new XMLChoiceObjectMapping();
         mapping.setAttributeName(property.getPropertyName());
-        if(property.isMethodProperty()) {
-            mapping.setSetMethodName(property.getSetMethodName());
-            mapping.setGetMethodName(property.getGetMethodName());
-            if(property.getGetMethodName() == null) {
+        if (property.isMethodProperty()) {
+            if (property.getGetMethodName() == null) {
+                // handle case of set with no get method 
+                String paramTypeAsString = property.getType().getName();
+                mapping.setAttributeAccessor(new JAXBSetMethodAttributeAccessor(paramTypeAsString, helper.getClassLoader()));
                 mapping.setIsReadOnly(true);
-            } else if(property.getSetMethodName() == null) {
+                mapping.setSetMethodName(property.getSetMethodName());
+            } else if (property.getSetMethodName() == null) {
+                mapping.setGetMethodName(property.getGetMethodName());
                 mapping.setIsWriteOnly(true);
+            } else {
+                mapping.setSetMethodName(property.getSetMethodName());
+                mapping.setGetMethodName(property.getGetMethodName());
             }
         }
         Iterator<Property> choiceProperties = prop.getChoiceProperties().iterator();
@@ -330,13 +337,19 @@ public class MappingsGenerator {
         ChoiceProperty prop = (ChoiceProperty)property;
         XMLChoiceCollectionMapping mapping = new XMLChoiceCollectionMapping();
         mapping.setAttributeName(property.getPropertyName());
-        if(property.isMethodProperty()) {
-            mapping.setSetMethodName(property.getSetMethodName());
-            mapping.setGetMethodName(property.getGetMethodName());
-            if(property.getGetMethodName() == null) {
+        if (property.isMethodProperty()) {
+            if (property.getGetMethodName() == null) {
+                // handle case of set with no get method 
+                String paramTypeAsString = property.getType().getName();
+                mapping.setAttributeAccessor(new JAXBSetMethodAttributeAccessor(paramTypeAsString, helper.getClassLoader()));
                 mapping.setIsReadOnly(true);
-            } else if(property.getSetMethodName() == null) {
+                mapping.setSetMethodName(property.getSetMethodName());
+            } else if (property.getSetMethodName() == null) {
+                mapping.setGetMethodName(property.getGetMethodName());
                 mapping.setIsWriteOnly(true);
+            } else {
+                mapping.setSetMethodName(property.getSetMethodName());
+                mapping.setGetMethodName(property.getGetMethodName());
             }
         }
         JavaClass collectionType = property.getType();
@@ -368,13 +381,19 @@ public class MappingsGenerator {
             mapping = new XMLChoiceObjectMapping();
         }
         mapping.setAttributeName(property.getPropertyName());
-        if(property.isMethodProperty()) {
-            mapping.setSetMethodName(property.getSetMethodName());
-            mapping.setGetMethodName(property.getGetMethodName());
-            if(property.getGetMethodName() == null) {
+        if (property.isMethodProperty()) {
+            if (property.getGetMethodName() == null) {
+                // handle case of set with no get method 
+                String paramTypeAsString = property.getType().getName();
+                mapping.setAttributeAccessor(new JAXBSetMethodAttributeAccessor(paramTypeAsString, helper.getClassLoader()));
                 mapping.setIsReadOnly(true);
-            } else if(property.getSetMethodName() == null) {
+                mapping.setSetMethodName(property.getSetMethodName());
+            } else if (property.getSetMethodName() == null) {
+                mapping.setGetMethodName(property.getGetMethodName());
                 ((XMLMapping)mapping).setIsWriteOnly(true);
+            } else {
+                mapping.setSetMethodName(property.getSetMethodName());
+                mapping.setGetMethodName(property.getGetMethodName());
             }
         }
 
@@ -444,13 +463,19 @@ public class MappingsGenerator {
         }
         XMLAnyCollectionMapping  mapping = new XMLAnyCollectionMapping();
         mapping.setAttributeName(property.getPropertyName());
-        if(property.isMethodProperty()) {
-            mapping.setSetMethodName(property.getSetMethodName());
-            mapping.setGetMethodName(property.getGetMethodName());
-            if(property.getGetMethodName() == null) {
+        if (property.isMethodProperty()) {
+            if (property.getGetMethodName() == null) {
+                // handle case of set with no get method 
+                String paramTypeAsString = property.getType().getName();
+                mapping.setAttributeAccessor(new JAXBSetMethodAttributeAccessor(paramTypeAsString, helper.getClassLoader()));
                 mapping.setIsReadOnly(true);
-            } else if(property.getSetMethodName() == null) {
+                mapping.setSetMethodName(property.getSetMethodName());
+            } else if (property.getSetMethodName() == null) {
+                mapping.setGetMethodName(property.getGetMethodName());
                 mapping.setIsWriteOnly(true);
+            } else {
+                mapping.setSetMethodName(property.getSetMethodName());
+                mapping.setGetMethodName(property.getGetMethodName());
             }
         }
         if(!isMixed) {
@@ -478,13 +503,19 @@ public class MappingsGenerator {
         XMLCompositeObjectMapping mapping = new XMLCompositeObjectMapping();
         mapping.setReferenceClassName(referenceClassName);
         mapping.setAttributeName(property.getPropertyName());
-        if(property.isMethodProperty()) {
-            mapping.setSetMethodName(property.getSetMethodName());
-            mapping.setGetMethodName(property.getGetMethodName());
-            if(property.getGetMethodName() == null) {
+        if (property.isMethodProperty()) {
+            if (property.getGetMethodName() == null) {
+                // handle case of set with no get method 
+                String paramTypeAsString = property.getType().getName();
+                mapping.setAttributeAccessor(new JAXBSetMethodAttributeAccessor(paramTypeAsString, helper.getClassLoader()));
                 mapping.setIsReadOnly(true);
-            } else if(property.getSetMethodName() == null) {
+                mapping.setSetMethodName(property.getSetMethodName());
+            } else if (property.getSetMethodName() == null) {
+                mapping.setGetMethodName(property.getGetMethodName());
                 mapping.setIsWriteOnly(true);
+            } else {
+                mapping.setSetMethodName(property.getSetMethodName());
+                mapping.setGetMethodName(property.getGetMethodName());
             }
         }
         if(property.isNillable()){
@@ -508,13 +539,20 @@ public class MappingsGenerator {
     public XMLDirectMapping generateDirectMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
         XMLDirectMapping mapping = new XMLDirectMapping();
         mapping.setAttributeName(property.getPropertyName());
-        if(property.isMethodProperty()) {
-            mapping.setSetMethodName(property.getSetMethodName());
-            mapping.setGetMethodName(property.getGetMethodName());
-            if(property.getGetMethodName() == null) {
+
+        if (property.isMethodProperty()) {
+            if (property.getGetMethodName() == null) {
+                // handle case of set with no get method 
+                String paramTypeAsString = property.getType().getName();
+                mapping.setAttributeAccessor(new JAXBSetMethodAttributeAccessor(paramTypeAsString, helper.getClassLoader()));
                 mapping.setIsReadOnly(true);
-            } else if(property.getSetMethodName() == null) {
+                mapping.setSetMethodName(property.getSetMethodName());
+            } else if (property.getSetMethodName() == null) {
+                mapping.setGetMethodName(property.getGetMethodName());
                 mapping.setIsWriteOnly(true);
+            } else {
+                mapping.setSetMethodName(property.getSetMethodName());
+                mapping.setGetMethodName(property.getGetMethodName());
             }
         }
         if(property.isNillable()){
@@ -523,20 +561,27 @@ public class MappingsGenerator {
         mapping.setField(getXPathForField(property, namespaceInfo, true));
         if(XMLConstants.QNAME_QNAME.equals(property.getSchemaType())){
             ((XMLField) mapping.getField()).setSchemaType(XMLConstants.QNAME_QNAME);
-        }        
+        }
         descriptor.addMapping(mapping);
         return mapping;
     }
+    
     public XMLBinaryDataMapping generateBinaryMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
         XMLBinaryDataMapping mapping = new XMLBinaryDataMapping();
         mapping.setAttributeName(property.getPropertyName());
-        if(property.isMethodProperty()) {
-            mapping.setSetMethodName(property.getSetMethodName());
-            mapping.setGetMethodName(property.getGetMethodName());
-            if(property.getGetMethodName() == null) {
+        if (property.isMethodProperty()) {
+            if (property.getGetMethodName() == null) {
+                // handle case of set with no get method 
+                String paramTypeAsString = property.getType().getName();
+                mapping.setAttributeAccessor(new JAXBSetMethodAttributeAccessor(paramTypeAsString, helper.getClassLoader()));
                 mapping.setIsReadOnly(true);
-            } else if(property.getSetMethodName() == null) {
+                mapping.setSetMethodName(property.getSetMethodName());
+            } else if (property.getSetMethodName() == null) {
+                mapping.setGetMethodName(property.getGetMethodName());
                 mapping.setIsWriteOnly(true);
+            } else {
+                mapping.setSetMethodName(property.getSetMethodName());
+                mapping.setGetMethodName(property.getGetMethodName());
             }
         }
         mapping.setField(getXPathForField(property, namespaceInfo, false));
@@ -560,13 +605,19 @@ public class MappingsGenerator {
         XMLDirectMapping mapping = new XMLDirectMapping();
         mapping.setConverter(buildJAXBEnumTypeConverter(mapping, enumInfo));
         mapping.setAttributeName(property.getPropertyName());
-        if(property.isMethodProperty()) {
-            mapping.setSetMethodName(property.getSetMethodName());
-            mapping.setGetMethodName(property.getGetMethodName());
-            if(property.getGetMethodName() == null) {
+        if (property.isMethodProperty()) {
+            if (property.getGetMethodName() == null) {
+                // handle case of set with no get method 
+                String paramTypeAsString = property.getType().getName();
+                mapping.setAttributeAccessor(new JAXBSetMethodAttributeAccessor(paramTypeAsString, helper.getClassLoader()));
                 mapping.setIsReadOnly(true);
-            } else if(property.getSetMethodName() == null) {
+                mapping.setSetMethodName(property.getSetMethodName());
+            } else if (property.getSetMethodName() == null) {
+                mapping.setGetMethodName(property.getGetMethodName());
                 mapping.setIsWriteOnly(true);
+            } else {
+                mapping.setSetMethodName(property.getSetMethodName());
+                mapping.setGetMethodName(property.getGetMethodName());
             }
         }
         mapping.setField(getXPathForField(property, namespaceInfo, true));
@@ -623,13 +674,19 @@ public class MappingsGenerator {
     public void generateEnumCollectionMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo, EnumTypeInfo info) {
         XMLCompositeDirectCollectionMapping mapping = new XMLCompositeDirectCollectionMapping();
         mapping.setAttributeName(property.getPropertyName());
-        if(property.isMethodProperty()) {
-            mapping.setSetMethodName(property.getSetMethodName());
-            mapping.setGetMethodName(property.getGetMethodName());
-            if(property.getGetMethodName() == null) {
+        if (property.isMethodProperty()) {
+            if (property.getGetMethodName() == null) {
+                // handle case of set with no get method 
+                String paramTypeAsString = property.getType().getName();
+                mapping.setAttributeAccessor(new JAXBSetMethodAttributeAccessor(paramTypeAsString, helper.getClassLoader()));
                 mapping.setIsReadOnly(true);
-            } else if(property.getSetMethodName() == null) {
+                mapping.setSetMethodName(property.getSetMethodName());
+            } else if (property.getSetMethodName() == null) {
+                mapping.setGetMethodName(property.getGetMethodName());
                 mapping.setIsWriteOnly(true);
+            } else {
+                mapping.setSetMethodName(property.getSetMethodName());
+                mapping.setGetMethodName(property.getGetMethodName());
             }
         }
 
@@ -654,13 +711,19 @@ public class MappingsGenerator {
     public void generateAnyAttributeMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
         XMLAnyAttributeMapping mapping = new XMLAnyAttributeMapping();
         mapping.setAttributeName(property.getPropertyName());
-        if(property.isMethodProperty()) {
-            mapping.setSetMethodName(property.getSetMethodName());
-            mapping.setGetMethodName(property.getGetMethodName());
-            if(property.getGetMethodName() == null) {
+        if (property.isMethodProperty()) {
+            if (property.getGetMethodName() == null) {
+                // handle case of set with no get method 
+                String paramTypeAsString = property.getType().getName();
+                mapping.setAttributeAccessor(new JAXBSetMethodAttributeAccessor(paramTypeAsString, helper.getClassLoader()));
                 mapping.setIsReadOnly(true);
-            } else if(property.getSetMethodName() == null) {
+                mapping.setSetMethodName(property.getSetMethodName());
+            } else if (property.getSetMethodName() == null) {
+                mapping.setGetMethodName(property.getGetMethodName());
                 mapping.setIsWriteOnly(true);
+            } else {
+                mapping.setSetMethodName(property.getSetMethodName());
+                mapping.setGetMethodName(property.getGetMethodName());
             }
         }
         mapping.setSchemaInstanceIncluded(false);
@@ -672,13 +735,19 @@ public class MappingsGenerator {
         XMLAnyObjectMapping mapping = new XMLAnyObjectMapping();
         mapping.setAttributeName(property.getPropertyName());
         mapping.setMixedContent(false);
-        if(property.isMethodProperty()) {
-            mapping.setSetMethodName(property.getSetMethodName());
-            mapping.setGetMethodName(property.getGetMethodName());
-            if(property.getGetMethodName() == null) {
+        if (property.isMethodProperty()) {
+            if (property.getGetMethodName() == null) {
+                // handle case of set with no get method 
+                String paramTypeAsString = property.getType().getName();
+                mapping.setAttributeAccessor(new JAXBSetMethodAttributeAccessor(paramTypeAsString, helper.getClassLoader()));
                 mapping.setIsReadOnly(true);
-            } else if(property.getSetMethodName() == null) {
+                mapping.setSetMethodName(property.getSetMethodName());
+            } else if (property.getSetMethodName() == null) {
+                mapping.setGetMethodName(property.getGetMethodName());
                 mapping.setIsWriteOnly(true);
+            } else {
+                mapping.setSetMethodName(property.getSetMethodName());
+                mapping.setGetMethodName(property.getGetMethodName());
             }
         }
         if(property.getType().getQualifiedName().equals("org.w3c.dom.Element")){
@@ -701,13 +770,19 @@ public class MappingsGenerator {
     public XMLCompositeCollectionMapping generateCompositeCollectionMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo, String referenceClassName) {
         XMLCompositeCollectionMapping mapping = new XMLCompositeCollectionMapping();
         mapping.setAttributeName(property.getPropertyName());
-        if(property.isMethodProperty()) {
-            mapping.setSetMethodName(property.getSetMethodName());
-            mapping.setGetMethodName(property.getGetMethodName());
-            if(property.getGetMethodName() == null) {
+        if (property.isMethodProperty()) {
+            if (property.getGetMethodName() == null) {
+                // handle case of set with no get method 
+                String paramTypeAsString = property.getType().getName();
+                mapping.setAttributeAccessor(new JAXBSetMethodAttributeAccessor(paramTypeAsString, helper.getClassLoader()));
                 mapping.setIsReadOnly(true);
-            } else if(property.getSetMethodName() == null) {
+                mapping.setSetMethodName(property.getSetMethodName());
+            } else if (property.getSetMethodName() == null) {
+                mapping.setGetMethodName(property.getGetMethodName());
                 mapping.setIsWriteOnly(true);
+            } else {
+                mapping.setSetMethodName(property.getSetMethodName());
+                mapping.setGetMethodName(property.getGetMethodName());
             }
         }
         mapping.setReferenceClassName(referenceClassName);
@@ -742,13 +817,19 @@ public class MappingsGenerator {
     public XMLCompositeDirectCollectionMapping generateDirectCollectionMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
         XMLCompositeDirectCollectionMapping mapping = new XMLCompositeDirectCollectionMapping();
         mapping.setAttributeName(property.getPropertyName());
-        if(property.isMethodProperty()) {
-            mapping.setSetMethodName(property.getSetMethodName());
-            mapping.setGetMethodName(property.getGetMethodName());
-            if(property.getGetMethodName() == null) {
+        if (property.isMethodProperty()) {
+            if (property.getGetMethodName() == null) {
+                // handle case of set with no get method 
+                String paramTypeAsString = property.getType().getName();
+                mapping.setAttributeAccessor(new JAXBSetMethodAttributeAccessor(paramTypeAsString, helper.getClassLoader()));
                 mapping.setIsReadOnly(true);
-            } else if(property.getSetMethodName() == null) {
+                mapping.setSetMethodName(property.getSetMethodName());
+            } else if (property.getSetMethodName() == null) {
+                mapping.setGetMethodName(property.getGetMethodName());
                 mapping.setIsWriteOnly(true);
+            } else {
+                mapping.setSetMethodName(property.getSetMethodName());
+                mapping.setGetMethodName(property.getGetMethodName());
             }
         }
         JavaClass collectionType = property.getType();
@@ -947,13 +1028,19 @@ public class MappingsGenerator {
         XMLField srcXPath = getXPathForField(property, namespaceInfo, true);
         XMLCollectionReferenceMapping mapping = new XMLCollectionReferenceMapping();
         mapping.setAttributeName(property.getPropertyName());
-        if(property.isMethodProperty()) {
-            mapping.setSetMethodName(property.getSetMethodName());
-            mapping.setGetMethodName(property.getGetMethodName());
-            if(property.getGetMethodName() == null) {
+        if (property.isMethodProperty()) {
+            if (property.getGetMethodName() == null) {
+                // handle case of set with no get method 
+                String paramTypeAsString = property.getType().getName();
+                mapping.setAttributeAccessor(new JAXBSetMethodAttributeAccessor(paramTypeAsString, helper.getClassLoader()));
                 mapping.setIsReadOnly(true);
-            } else if(property.getSetMethodName() == null) {
+                mapping.setSetMethodName(property.getSetMethodName());
+            } else if (property.getSetMethodName() == null) {
+                mapping.setGetMethodName(property.getGetMethodName());
                 mapping.setIsWriteOnly(true);
+            } else {
+                mapping.setSetMethodName(property.getSetMethodName());
+                mapping.setGetMethodName(property.getGetMethodName());
             }
         }
         mapping.setReferenceClassName(referenceClass.getQualifiedName());
@@ -991,13 +1078,19 @@ public class MappingsGenerator {
 
         XMLObjectReferenceMapping mapping = new XMLObjectReferenceMapping();
         mapping.setAttributeName(property.getPropertyName());
-        if(property.isMethodProperty()) {
-            mapping.setSetMethodName(property.getSetMethodName());
-            mapping.setGetMethodName(property.getGetMethodName());
-            if(property.getGetMethodName() == null) {
+        if (property.isMethodProperty()) {
+            if (property.getGetMethodName() == null) {
+                // handle case of set with no get method 
+                String paramTypeAsString = property.getType().getName();
+                mapping.setAttributeAccessor(new JAXBSetMethodAttributeAccessor(paramTypeAsString, helper.getClassLoader()));
                 mapping.setIsReadOnly(true);
-            } else if(property.getSetMethodName() == null) {
+                mapping.setSetMethodName(property.getSetMethodName());
+            } else if (property.getSetMethodName() == null) {
+                mapping.setGetMethodName(property.getGetMethodName());
                 mapping.setIsWriteOnly(true);
+            } else {
+                mapping.setSetMethodName(property.getSetMethodName());
+                mapping.setGetMethodName(property.getGetMethodName());
             }
         }
         mapping.setReferenceClassName(referenceClass.getQualifiedName());
@@ -1404,5 +1497,4 @@ public class MappingsGenerator {
     public HashMap<QName, Class> getQNamesToDeclaredClasses() {
         return qNamesToDeclaredClasses;
     }
-    
 }
