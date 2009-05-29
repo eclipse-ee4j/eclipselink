@@ -85,6 +85,24 @@ public class DefaultSessionLog extends AbstractSessionLog implements Serializabl
     }
 
     /**
+     * Return the logging level for the provided category. If the category is null or 
+     * the level in the categoryLogLevelMap is null return the default level from
+     * {@link AbstractSessionLog#getLevel(String)}.
+     */
+    @Override
+    public int getLevel(String category) {
+       if (category != null) {
+           Integer catLevel = this.categoryLogLevelMap.get(category);
+
+           if (catLevel != null) {
+               return catLevel;
+           }
+       }
+
+       return super.getLevel(category);
+    }
+
+    /**
      * PUBLIC:
      * <p>
      * Check if a message of the given level would actually be logged by the logger
