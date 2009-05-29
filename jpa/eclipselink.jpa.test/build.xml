@@ -221,6 +221,7 @@
         <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.cascade.deletes}"/>
         <!--mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.pu.with.multibyte}"/-->
         <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${jpa.performance}"/>
+        <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.metamodel.model}"/>
     </target>
 
     <!-- Compiles all tests. -->
@@ -242,7 +243,7 @@
     </target>
 
     <!-- Packages JPA persistent unit test jars. -->
-    <target name="package" depends="config-trunk, config-flat, package-annotation, package-ddl, package-xml-only, package-xml-merge, package-xml-extended, package-validation-failed, package-jpa-advanced-field-access, package-jpa-advanced-properties, package-jpa-pu_with_spaces, package-jpa-performance, package-cascade-deletes" description="build EclipseLink jar">
+    <target name="package" depends="config-trunk, config-flat, package-annotation, package-ddl, package-xml-only, package-xml-merge, package-xml-extended, package-validation-failed, package-jpa-advanced-field-access, package-jpa-advanced-properties, package-jpa-pu_with_spaces, package-jpa-performance, package-cascade-deletes, package-jpa-metamodel" description="build EclipseLink jar">
         <jar jarfile="${eclipselink.jpa.test}/${eclipselink.tests.jar}">
            <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
                     includes="org/eclipse/persistence/testing/framework/**/*.class,
@@ -429,6 +430,20 @@
         </jar>
     </target>
 
+    <target name="package-jpa-metamodel" depends="">
+        <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.metamodel.model}/META-INF">
+            <fileset dir="${eclipselink.jpa.test}/resource/${eclipselink.metamodel.model}" includes="*.xml"/>
+        </copy>
+        <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.metamodel.model}">
+            <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
+                     includes="org/eclipse/persistence/testing/models/jpa/metamodel/**"/>
+        </copy>
+        <jar jarfile="${eclipselink.jpa.test}/${eclipselink.metamodel.model}.jar">
+            <fileset dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.metamodel.model}">
+            </fileset>
+        </jar>
+    </target>
+
     <target name="clean" description="Clean the build">
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${eclipselink.jpa.test}/${classes.dir}"/>
@@ -445,6 +460,7 @@
             <fileset file="${eclipselink.jpa.test}/${eclipselink.pu.with.spaces}.jar"/>
             <!--fileset file="${eclipselink.jpa.test}/${eclipselink.pu.with.multibyte}.jar"/-->
             <fileset file="${eclipselink.jpa.test}/${jpa.performance}.jar"/>
+            <fileset file="${eclipselink.jpa.test}/${eclipselink.metamodel.model}.jar"/>
             <fileset file="${eclipselink.jpa.test}/woven*.jar"/>
             <fileset file="${eclipselink.jpa.test}/*.ear"/>
             <fileset file="${eclipselink.jpa.test}/${eclipselink.cascade.deletes}.jar"/>
@@ -476,6 +492,7 @@
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.pu.with.spaces}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.cascade.deletes}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/${jpa.performance}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.metamodel.model}.jar"/>
             <!--pathelement path="${eclipselink.jpa.test}/${eclipselink.pu.with.multibyte}.jar"/-->
             <pathelement path="${eclipselink.extension.oracle.test.dir}/${eclipselink.struct.converter.model}.jar"/>
             <pathelement path="${eclipselink.extension.oracle.test.dir}/${eclipselink.customfeatures.model}.jar"/>
@@ -615,6 +632,7 @@
             <pathelement path="${eclipselink.jpa.test}/woven-${eclipselink.cascade.deletes}.jar"/>
             <!--pathelement path="${eclipselink.jpa.test}/woven-${eclipselink.pu.with.multibyte}.jar"/-->
             <pathelement path="${eclipselink.jpa.test}/woven-${jpa.performance}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/woven-${eclipselink.metamodel.model}.jar"/>
             <pathelement path="${jdbc.driver.jar}"/>
             <pathelement path="${eclipselink.jpa.test}/${classes.dir}"/>
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.tests.jar}"/>
@@ -968,6 +986,13 @@
         </weave-->
         <weave source= "${eclipselink.jpa.test}/${jpa.performance}.jar"
                target = "${eclipselink.jpa.test}/woven-${jpa.performance}.jar"
+               loglevel="${logging.level}">
+               <classpath>
+                    <path refid="run.classpath"/>
+               </classpath>
+        </weave>
+        <weave source= "${eclipselink.jpa.test}/${eclipselink.metamodel.model}.jar"
+               target = "${eclipselink.jpa.test}/woven-${eclipselink.metamodel.model}.jar"
                loglevel="${logging.level}">
                <classpath>
                     <path refid="run.classpath"/>

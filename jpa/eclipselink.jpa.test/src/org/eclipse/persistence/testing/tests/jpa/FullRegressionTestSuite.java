@@ -196,6 +196,9 @@ public class FullRegressionTestSuite extends TestSuite{
         // OSGi Deployment
         fullSuite.addTestSuite(CompositeEnumerationTest.class);
 
+        // JPA 2.0 Metamodel model
+        fullSuite.addTest(org.eclipse.persistence.testing.tests.jpa.metamodel.MetamodelTestSuite.suite());
+
         return fullSuite;
     }
 }
