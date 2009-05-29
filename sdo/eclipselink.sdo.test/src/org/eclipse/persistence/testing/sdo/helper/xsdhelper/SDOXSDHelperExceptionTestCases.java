@@ -110,14 +110,4 @@ public class SDOXSDHelperExceptionTestCases extends XSDHelperTestCases {
         }
     }
 
-    public void testGetNamespaceURIViaTypeException() throws Exception {
-        try {
-            Type type = null;
-            String result = xsdHelper.getNamespaceURI(type);
-            assertNull("Expected [null] but was ["+result+"]", result);
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("An unexpected exception occurrred: " + e.getMessage());
-        }
-    }
 }
