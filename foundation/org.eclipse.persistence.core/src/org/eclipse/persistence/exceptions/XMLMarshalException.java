@@ -42,6 +42,7 @@ public class XMLMarshalException extends ValidationException {
     public static final int NO_DESCRIPTOR_FOUND = 25023;
     public static final int ERROR_INSTANTIATING_UNMAPPED_CONTENTHANDLER = 25024;
     public static final int UNMAPPED_CONTENTHANDLER_DOESNT_IMPLEMENT = 25025;
+    public static final int OBJ_NOT_FOUND_IN_CACHE = 25026;    
 
     // ==========================================================================================
     protected XMLMarshalException(String message) {
@@ -263,4 +264,13 @@ public class XMLMarshalException extends ValidationException {
         exception.setInternalException(nestedException);
         return exception;
     }
+    
+    public static XMLMarshalException objectNotFoundInCache(String nodeName) {
+        Object[] args = { nodeName };
+
+        XMLMarshalException exception = new XMLMarshalException(ExceptionMessageGenerator.buildMessage(XMLMarshalException.class, OBJ_NOT_FOUND_IN_CACHE, args));
+        exception.setErrorCode(OBJ_NOT_FOUND_IN_CACHE);
+        return exception;
+    }
+    
 }

@@ -17,6 +17,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.Validator;
 
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.ErrorHandler;
@@ -161,14 +162,19 @@ public class XMLBinder {
     }
 
     public void updateXML(Object obj, Node associatedNode) {
-        if(obj instanceof XMLRoot) {
+        if (obj instanceof XMLRoot) {
             obj = ((XMLRoot)obj).getObject();
         }
+        
+        Node objNode = this.getXMLNode(obj); 
+
         AbstractSession session = context.getSession(obj);
-        DOMRecord root = new DOMRecord((Element)associatedNode);
-        root.setDocPresPolicy(this.documentPreservationPolicy);
-        XMLDescriptor rootDescriptor = (XMLDescriptor) session.getDescriptor(obj);
-        ((XMLObjectBuilder)rootDescriptor.getObjectBuilder()).buildIntoNestedRow(root, obj, session);
+        if (objNode == associatedNode) {
+            DOMRecord root = new DOMRecord((Element)associatedNode);
+            root.setDocPresPolicy(this.documentPreservationPolicy);
+            XMLDescriptor rootDescriptor = (XMLDescriptor) session.getDescriptor(obj);
+            ((XMLObjectBuilder)rootDescriptor.getObjectBuilder()).buildIntoNestedRow(root, obj, session);
+        }
     }
 
     /**
@@ -195,9 +201,15 @@ public class XMLBinder {
      * @param node
      */
     public void updateObject(org.w3c.dom.Node node) {
+        if (node.getNodeType() == Node.DOCUMENT_NODE) {
+            node = ((Document) node).getDocumentElement();
+        }
+        
         Object cachedObject = documentPreservationPolicy.getObjectForNode(node);
-        if(cachedObject != null) {
+        if (cachedObject != null) {
             unmarshal(node);
+        } else {
+            throw XMLMarshalException.objectNotFoundInCache(node.getNodeName());
         }
     }
 

@@ -29,8 +29,8 @@ import org.w3c.dom.Node;
 
 import org.eclipse.persistence.oxm.XMLBinder;
 import org.eclipse.persistence.oxm.XMLContext;
+import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLRoot;
-import org.eclipse.persistence.oxm.documentpreservation.IgnoreNewElementsOrderingPolicy;
 import org.eclipse.persistence.oxm.documentpreservation.RelativePositionOrderingPolicy;
 
 /**
@@ -63,10 +63,6 @@ public class JAXBBinder extends Binder {
             throw new IllegalArgumentException();
         }
         
-        if (!(xmlNode instanceof Node)) {
-            return;
-        }
-        
         try {
             if (obj instanceof JAXBElement) {
                 JAXBElement jaxbElem = (JAXBElement) obj;
@@ -83,54 +79,122 @@ public class JAXBBinder extends Binder {
         }
     }
 
-    public Object updateXML(Object obj) {
+    public Object unmarshal(Object obj) throws JAXBException {
         if (null == obj) {
+            throw new IllegalArgumentException();
+        }
+
+        try {
+            Object returnValue = xmlBinder.unmarshal((Node) obj);
+            if (returnValue instanceof XMLRoot) {
+                XMLRoot xmlRoot = (XMLRoot) returnValue;
+                return new JAXBElement(new QName(xmlRoot.getNamespaceURI(), xmlRoot.getLocalName()), xmlRoot.getObject().getClass(), xmlRoot.getObject());
+            } else {
+                return returnValue;                
+            }
+        } catch (Exception e) {
+            throw new UnmarshalException(e);
+        }
+    }
+
+    public JAXBElement unmarshal(Object obj, Class javaClass) throws JAXBException  {
+        if (null == obj || null == javaClass) {
+            throw new IllegalArgumentException();
+        }
+
+        try {
+            XMLRoot xmlRoot = (XMLRoot) xmlBinder.unmarshal((Node) obj, javaClass);
+            return new JAXBElement(new QName(xmlRoot.getNamespaceURI(), xmlRoot.getLocalName()), javaClass, xmlRoot.getObject());
+        } catch (Exception e) {
+            throw new UnmarshalException(e);
+        }
+    }
+
+    public Object getXMLNode(Object obj) {
+        if (null == obj) {
+            throw new IllegalArgumentException();
+        }
+        
+        return xmlBinder.getXMLNode(obj);
+    }
+
+    public Object updateXML(Object obj) {
+        return updateXML(obj, getXMLNode(obj));
+    }
+
+    public Object updateXML(Object obj, Object xmlNode) {
+        if (null == obj || null == xmlNode) {
             throw new IllegalArgumentException();
         }
 
         if (obj instanceof JAXBElement) {
-            JAXBElement elem = (JAXBElement) obj;
-            XMLRoot xmlRoot = new XMLRoot();
-            xmlRoot.setObject(elem.getValue());
-            xmlRoot.setLocalName(elem.getName().getLocalPart());
-            xmlRoot.setNamespaceURI(elem.getName().getNamespaceURI());
+            obj = ((JAXBElement) obj).getValue();
         }
-        
-        this.xmlBinder.updateXML(obj);
-        return xmlBinder.getXMLNode(obj);
+        xmlBinder.updateXML(obj, ((Element) xmlNode));
+        return xmlNode;
     }
 
-    public Object updateXML(Object obj, Object xmlNode) {
-        if (!(xmlNode instanceof Node)) {
-            return null;
-        } else {
-            xmlBinder.updateXML(obj, ((Element) xmlNode));
-            return xmlNode;
-        }
-    }
-
-    public void setSchema(Schema schema) {
-        this.xmlBinder.setSchema(schema);
-    }
-
-    
-    public Schema getSchema() {
-        return this.xmlBinder.getSchema();
-    }
-
-    
-    public JAXBElement getJAXBNode(Object obj) {
+    public Object getJAXBNode(Object obj) {
         if (null == obj) {
             throw new IllegalArgumentException();
         }
 
-        Element elem = (Element) xmlBinder.getXMLNode(obj);
+        return xmlBinder.getObject((Node) obj);
+    }
 
-        if (null == elem) {
-            return null;
+    public Object updateJAXB(Object obj) throws JAXBException {
+        if (null == obj) {
+            throw new IllegalArgumentException();
         }
 
-        return new JAXBElement(new QName(elem.getNamespaceURI(), elem.getLocalName()), obj.getClass(), obj);
+        try {
+            xmlBinder.updateObject((Node) obj);
+            Object updatedObj = xmlBinder.getObject((Node) obj);
+            
+            boolean shouldWrapInJAXBElement = true;
+            
+            XMLDescriptor desc = (XMLDescriptor) xmlBinder.getMarshaller().getXMLContext().getSession(0).getClassDescriptor(updatedObj);
+            
+            if (desc == null) {
+                return updatedObj;
+            }
+            
+            String objRootElem = desc.getDefaultRootElement();
+
+            if (!desc.isResultAlwaysXMLRoot()) {
+                if (objRootElem != null) {
+                    String rootElemNS = objRootElem.substring(0, objRootElem.lastIndexOf(":"));
+                    String rootElemName = objRootElem.substring(objRootElem.lastIndexOf(":") + 1);
+                    String resolvedNS = desc.getNamespaceResolver().resolveNamespacePrefix(rootElemNS);
+                    
+                    String nodeName = ((Node) obj).getLocalName();
+                    String nodeNS = ((Node) obj).getNamespaceURI();
+                    
+                    if (rootElemName.equals(nodeName) && resolvedNS.equals(nodeNS)) {
+                        shouldWrapInJAXBElement = false;
+                    }
+                }
+            }
+
+            if (!shouldWrapInJAXBElement) {
+                return updatedObj;
+            } else {
+                QName qname = new QName(((Node) obj).getNamespaceURI(), ((Node) obj).getLocalName());
+                return new JAXBElement(qname, updatedObj.getClass(), updatedObj);
+            }
+        } catch (Exception e) {
+            throw new JAXBException(e);
+        }
+    }
+
+    // ============
+    
+    public void setSchema(Schema schema) {
+        this.xmlBinder.setSchema(schema);
+    }
+    
+    public Schema getSchema() {
+        return this.xmlBinder.getSchema();
     }
 
     public void setEventHandler(ValidationEventHandler handler) {
@@ -140,25 +204,10 @@ public class JAXBBinder extends Binder {
             xmlBinder.setErrorHandler(new JAXBErrorHandler(handler));
         }
     }
-
     
     public ValidationEventHandler getEventHandler() {
         JAXBErrorHandler jaxbErrorHandler = (JAXBErrorHandler) xmlBinder.getErrorHandler();
         return jaxbErrorHandler.getValidationEventHandler();
-    }
-
-    
-    public Object updateJAXB(Object obj) {
-        if (null == obj) {
-            throw new IllegalArgumentException();
-        }
-
-        if (!(obj instanceof Node)) {
-            return null;
-        }
-
-        xmlBinder.updateObject((Node) obj);
-        return xmlBinder.getObject((Node) obj);
     }
 
     public Object getProperty(String propName) throws PropertyException {
@@ -184,7 +233,6 @@ public class JAXBBinder extends Binder {
 
         throw new PropertyException(propName);
     }
-
     
     public void setProperty(String propName, Object value) throws PropertyException {
         if (null == propName) {
@@ -215,50 +263,6 @@ public class JAXBBinder extends Binder {
         }
 
         throw new PropertyException(propName);
-    }
-
-
-    public Object getXMLNode(Object obj) {
-        return xmlBinder.getXMLNode(obj);
-    }
-
-    public Object unmarshal(Object obj) throws JAXBException {
-        if (null == obj) {
-            throw new IllegalArgumentException();
-        }
-
-        if (!(obj instanceof Node)) {
-            return null;
-        }
-
-        try {
-            Object returnValue = xmlBinder.unmarshal((Node) obj);
-            if (returnValue instanceof XMLRoot) {
-                XMLRoot xmlRoot = (XMLRoot) xmlBinder.unmarshal((Node) obj);
-                return new JAXBElement(new QName(xmlRoot.getNamespaceURI(), xmlRoot.getLocalName()), xmlRoot.getObject().getClass(), xmlRoot.getObject());
-            } else {
-                return returnValue;                
-            }
-        } catch (Exception e) {
-            throw new UnmarshalException(e);
-        }
-    }
-
-    public JAXBElement unmarshal(Object obj, Class javaClass) throws JAXBException  {
-        if (null == obj || null == javaClass) {
-            throw new IllegalArgumentException();
-        }
-
-        if (!(obj instanceof Node)) {
-            return null;
-        }
-
-        try {
-            XMLRoot xmlRoot = (XMLRoot) xmlBinder.unmarshal((Node) obj, javaClass);
-            return new JAXBElement(new QName(xmlRoot.getNamespaceURI(), xmlRoot.getLocalName()), javaClass, xmlRoot.getObject());
-        } catch (Exception e) {
-            throw new UnmarshalException(e);
-        }
     }
 
 }

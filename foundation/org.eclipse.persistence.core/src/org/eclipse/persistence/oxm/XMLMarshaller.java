@@ -267,11 +267,11 @@ public class XMLMarshaller {
                     }
                 }
             } else {
-            	java.io.StringWriter writer = new java.io.StringWriter();
-            	marshal(object, writer);
-            	System.out.println(writer.toString());
-            	javax.xml.transform.stream.StreamSource source = new javax.xml.transform.stream.StreamSource(new java.io.StringReader(writer.toString()));
-            	transformer.transform(source, result);
+                java.io.StringWriter writer = new java.io.StringWriter();
+                marshal(object, writer);
+                System.out.println(writer.toString());
+                javax.xml.transform.stream.StreamSource source = new javax.xml.transform.stream.StreamSource(new java.io.StringReader(writer.toString()));
+                transformer.transform(source, result);
             }
             return;
         }
@@ -567,7 +567,7 @@ public class XMLMarshaller {
         NamespaceResolver nr = marshalRecord.getNamespaceResolver();
         XMLRoot root = null;
         if(isXMLRoot) {
-        	root = (XMLRoot)object;
+            root = (XMLRoot)object;
         }
         if (getMarshalListener() != null) {
             getMarshalListener().beforeMarshal(object);
@@ -650,8 +650,8 @@ public class XMLMarshaller {
         if (treeObjectBuilder != null) {
             treeObjectBuilder.buildRow(marshalRecord, object, (AbstractSession) session, this);
         } else if (isXMLRoot) {
-        	String value = null;
-      		value = (String) XMLConversionManager.getDefaultXMLManager().convertObject(object, String.class, root.getSchemaType());
+            String value = null;
+            value = (String) XMLConversionManager.getDefaultXMLManager().convertObject(object, String.class, root.getSchemaType());
             marshalRecord.characters(value);
         }
 
@@ -959,6 +959,8 @@ public class XMLMarshaller {
 
             }
             object = ((XMLRoot) object).getObject();
+        } else {
+            xmlRow = (XMLRecord) ((XMLObjectBuilder) descriptor.getObjectBuilder()).createRecordFor(object, docPresPolicy);
         }
 
         XMLObjectBuilder bldr = (XMLObjectBuilder) descriptor.getObjectBuilder();
