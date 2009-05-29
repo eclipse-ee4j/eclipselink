@@ -525,10 +525,10 @@ public class SchemaGenerator {
                         ((Choice)parentCompositor).addAny(any);
                     }
                 	
-                } else if(next.isReference()) {
+                } else if (next.isReference()) {
                 	ReferenceProperty refProp = (ReferenceProperty)next;
                 	java.util.List<ElementDeclaration> referencedElements = refProp.getReferencedElements();
-                	if(referencedElements.size() == 1) {
+                	if (referencedElements.size() == 1) {
                 		//if only a single reference, just add the element.
                     	Element element = new Element();
                 		ElementDeclaration decl = referencedElements.get(0);
@@ -543,7 +543,9 @@ public class SchemaGenerator {
                 		} else {
                 			element.setRef(prefix + ":" + localName);
                 		}
-                		if(isCollectionType(next)) {
+
+                		if (isCollectionType(next)) {
+                            element.setMinOccurs(Occurs.ZERO);
                 			element.setMaxOccurs(Occurs.UNBOUNDED);
                 		}
                 		parentCompositor.addElement(element);
