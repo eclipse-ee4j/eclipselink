@@ -38,6 +38,7 @@ public abstract class XMLRecord extends AbstractRecord {
     private QName leafElementType;
     private NamespaceResolver namespaceResolver;
     protected AbstractSession session;
+    private boolean isXOPPackage;
 
     public XMLRecord() {
         super(null, null);
@@ -209,4 +210,13 @@ public abstract class XMLRecord extends AbstractRecord {
     public void setSession(AbstractSession session) {
         this.session = session;
     }
+
+    public boolean isXOPPackage() {
+        return isXOPPackage;
+    }
+
+    public void setXOPPackage(boolean isXOPPackage) {
+        this.isXOPPackage = isXOPPackage;
+    }
+
 }

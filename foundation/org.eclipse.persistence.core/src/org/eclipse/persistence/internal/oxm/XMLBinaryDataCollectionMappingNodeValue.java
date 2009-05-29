@@ -208,7 +208,7 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
             }
             marshalRecord.characters(c_id);
         } else {
-            if (marshaller.getAttachmentMarshaller() != null && marshaller.getAttachmentMarshaller().isXOPPackage() && !xmlBinaryDataCollectionMapping.shouldInlineBinaryData()) {
+            if (marshalRecord.isXOPPackage() && !xmlBinaryDataCollectionMapping.shouldInlineBinaryData()) {
                 XPathFragment lastFrag = ((XMLField) xmlBinaryDataCollectionMapping.getField()).getLastXPathFragment();
                 String c_id = "";
                 if (objectValue.getClass() == ClassConstants.APBYTE) {

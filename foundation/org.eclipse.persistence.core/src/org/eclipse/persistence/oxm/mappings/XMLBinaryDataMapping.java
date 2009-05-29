@@ -187,7 +187,7 @@ public class XMLBinaryDataMapping extends XMLDirectMapping {
                 record.put(field, base64Value);
             }
         }
-        if ((marshaller.getAttachmentMarshaller() != null) && marshaller.getAttachmentMarshaller().isXOPPackage() && !isSwaRef() && !shouldInlineBinaryData()) {
+        if (record.isXOPPackage() && !isSwaRef() && !shouldInlineBinaryData()) {
             //write as attachment
             String c_id = "";
             if ((getAttributeClassification() == ClassConstants.ABYTE) || (getAttributeClassification() == ClassConstants.APBYTE)) {

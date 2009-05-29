@@ -166,7 +166,7 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
         String prefix = null;
         XMLField includeField = null;
         if (!isAttribute) {
-            if ((marshaller.getAttachmentMarshaller() != null) && marshaller.getAttachmentMarshaller().isXOPPackage() && !isSwaRef() && !shouldInlineBinaryData()) {
+            if (record.isXOPPackage() && !isSwaRef() && !shouldInlineBinaryData()) {
                 field = (XMLField) getField();
 
                 // If the field's resolver is non-null and has an entry for XOP, 
@@ -236,7 +236,7 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
                 element = base64Value;
             }
         } else {
-            if ((marshaller.getAttachmentMarshaller() != null) && marshaller.getAttachmentMarshaller().isXOPPackage() && !isSwaRef() && !shouldInlineBinaryData()) {
+            if (record.isXOPPackage() && !isSwaRef() && !shouldInlineBinaryData()) {
                 //write as attachment
                 String c_id = "";
                 if ((getCollectionContentType() == ClassConstants.ABYTE) || (getCollectionContentType() == ClassConstants.APBYTE)) {
@@ -298,7 +298,7 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
         String prefix = null;
         XMLField includeField = null;
         if (!isAttribute) {
-            if ((marshaller.getAttachmentMarshaller() != null) && marshaller.getAttachmentMarshaller().isXOPPackage() && !isSwaRef() && !shouldInlineBinaryData()) {
+            if (record.isXOPPackage() && !isSwaRef() && !shouldInlineBinaryData()) {
                 field = (XMLField) getField();
 
                 // If the field's resolver is non-null and has an entry for XOP, 

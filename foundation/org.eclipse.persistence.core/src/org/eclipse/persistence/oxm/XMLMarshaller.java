@@ -267,11 +267,11 @@ public class XMLMarshaller {
                     }
                 }
             } else {
-                java.io.StringWriter writer = new java.io.StringWriter();
-                marshal(object, writer);
-                System.out.println(writer.toString());
-                javax.xml.transform.stream.StreamSource source = new javax.xml.transform.stream.StreamSource(new java.io.StringReader(writer.toString()));
-                transformer.transform(source, result);
+            	java.io.StringWriter writer = new java.io.StringWriter();
+            	marshal(object, writer);
+            	System.out.println(writer.toString());
+            	javax.xml.transform.stream.StreamSource source = new javax.xml.transform.stream.StreamSource(new java.io.StringReader(writer.toString()));
+            	transformer.transform(source, result);
             }
             return;
         }
@@ -563,11 +563,15 @@ public class XMLMarshaller {
      * @param descriptor the XMLDescriptor for the object being marshalled
      */
     private void marshal(Object object, MarshalRecord marshalRecord, XMLDescriptor descriptor, boolean isXMLRoot) {
+        if (getAttachmentMarshaller() != null) {
+            marshalRecord.setXOPPackage(getAttachmentMarshaller().isXOPPackage());
+        }
+        
         addDescriptorNamespacesToXMLRecord(descriptor, marshalRecord);
         NamespaceResolver nr = marshalRecord.getNamespaceResolver();
         XMLRoot root = null;
         if(isXMLRoot) {
-            root = (XMLRoot)object;
+        	root = (XMLRoot)object;
         }
         if (getMarshalListener() != null) {
             getMarshalListener().beforeMarshal(object);
@@ -650,8 +654,8 @@ public class XMLMarshaller {
         if (treeObjectBuilder != null) {
             treeObjectBuilder.buildRow(marshalRecord, object, (AbstractSession) session, this);
         } else if (isXMLRoot) {
-            String value = null;
-            value = (String) XMLConversionManager.getDefaultXMLManager().convertObject(object, String.class, root.getSchemaType());
+        	String value = null;
+      		value = (String) XMLConversionManager.getDefaultXMLManager().convertObject(object, String.class, root.getSchemaType());
             marshalRecord.characters(value);
         }
 
@@ -787,6 +791,9 @@ public class XMLMarshaller {
             if (!isXMLRoot) {
                 xmlRow = (XMLRecord) ((XMLObjectBuilder) descriptor.getObjectBuilder()).createRecordFor(object, xmlContext.getDocumentPreservationPolicy(session));
                 xmlRow.setMarshaller(this);
+                if (getAttachmentMarshaller() != null) {
+                    xmlRow.setXOPPackage(getAttachmentMarshaller().isXOPPackage());
+                }
                 addDescriptorNamespacesToXMLRecord(descriptor, xmlRow);
             }
             return objectToXML(object, descriptor, xmlRow, isXMLRoot, docPresPolicy);
@@ -814,6 +821,9 @@ public class XMLMarshaller {
             if (!isXMLRoot) {
                 xmlRow = (XMLRecord) ((XMLObjectBuilder) descriptor.getObjectBuilder()).createRecordFor(object, xmlContext.getDocumentPreservationPolicy(session));
                 xmlRow.setMarshaller(this);
+                if (getAttachmentMarshaller() != null) {
+                    xmlRow.setXOPPackage(getAttachmentMarshaller().isXOPPackage());
+                }
                 if (xmlRow.getDOM().getNodeType() == Node.ELEMENT_NODE) {
                     addDescriptorNamespacesToXMLRecord(descriptor, xmlRow);
                 }
@@ -879,6 +889,9 @@ public class XMLMarshaller {
         if (docPresPolicy != null && docPresPolicy.shouldPreserveDocument()) {
             XMLRecord xmlRow = (XMLRecord) ((XMLObjectBuilder) descriptor.getObjectBuilder()).createRecord(localRootName, parent, session);
             xmlRow.setMarshaller(this);
+            if (getAttachmentMarshaller() != null) {
+                xmlRow.setXOPPackage(getAttachmentMarshaller().isXOPPackage());
+            }            
             return objectToXML(object, descriptor, xmlRow, isXMLRoot, docPresPolicy);
         }
         MarshalRecord marshalRecord = new NodeRecord(localRootName, parent);
@@ -931,6 +944,9 @@ public class XMLMarshaller {
                 }
                 xmlRow = (XMLRecord) ((XMLObjectBuilder) descriptor.getObjectBuilder()).createRecordFor(((XMLRoot) object).getObject(), docPresPolicy, recordName, xmlRootUri);
                 xmlRow.setMarshaller(this);
+                if (getAttachmentMarshaller() != null) {
+                    xmlRow.setXOPPackage(getAttachmentMarshaller().isXOPPackage());
+                }                
                 if (!isRootDocumentFragment) {
                     if (shouldCallSetAttributeNS) {
                         if (xmlRootPrefix != null) {
@@ -959,8 +975,6 @@ public class XMLMarshaller {
 
             }
             object = ((XMLRoot) object).getObject();
-        } else {
-            xmlRow = (XMLRecord) ((XMLObjectBuilder) descriptor.getObjectBuilder()).createRecordFor(object, docPresPolicy);
         }
 
         XMLObjectBuilder bldr = (XMLObjectBuilder) descriptor.getObjectBuilder();

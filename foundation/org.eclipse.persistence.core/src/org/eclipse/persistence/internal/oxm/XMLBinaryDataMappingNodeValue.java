@@ -95,7 +95,7 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
             }
             marshalRecord.characters(c_id);
         } else {
-            if ((marshaller.getAttachmentMarshaller() != null) && marshaller.getAttachmentMarshaller().isXOPPackage() && !xmlBinaryDataMapping.shouldInlineBinaryData()) {
+            if (marshalRecord.isXOPPackage() && !xmlBinaryDataMapping.shouldInlineBinaryData()) {
                 XPathFragment lastFrag = ((XMLField) xmlBinaryDataMapping.getField()).getLastXPathFragment();
                 String c_id = "";
                 if (objectValue.getClass() == ClassConstants.APBYTE) {
