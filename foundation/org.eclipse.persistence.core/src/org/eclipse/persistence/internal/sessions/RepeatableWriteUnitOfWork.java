@@ -420,6 +420,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
             
         // Must put in the detached original to clone to resolve circular refs.
         getNewObjectsOriginalToClone().put(original, clone);
+        getNewObjectsCloneToOriginal().put(clone, original);
         
         // Must put in clone mapping.
         getCloneMapping().put(clone, clone);

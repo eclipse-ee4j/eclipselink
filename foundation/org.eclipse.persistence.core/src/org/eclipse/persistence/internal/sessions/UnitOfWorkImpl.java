@@ -805,6 +805,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
         // Must put in the original to clone to resolv circular refs.
         getNewObjectsOriginalToClone().put(original, clone);
+        getNewObjectsCloneToOriginal().put(clone, original);        
         // Must put in clone mapping.
         getCloneMapping().put(clone, clone);
 
@@ -1786,7 +1787,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         }
 
         Vector objects = new Vector();
-        for (Iterator newObjectsEnum = getNewObjectsOriginalToClone().values().iterator();
+        for (Iterator newObjectsEnum = getNewObjectsCloneToOriginal().keySet().iterator();
                  newObjectsEnum.hasNext();) {
             Object object = newObjectsEnum.next();
             if (theClass.isInstance(object)) {
@@ -2046,7 +2047,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * PERF: Used to avoid initialization of new objects map unless required.
      */
     public boolean hasNewObjects() {
-        return ((newObjectsOriginalToClone != null) && !newObjectsOriginalToClone.isEmpty());
+        return ((newObjectsCloneToOriginal != null) && !newObjectsCloneToOriginal.isEmpty());
     }
 
     /**
@@ -2263,7 +2264,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             return null;
         }
         ObjectBuilder objectBuilder = getDescriptor(theClass).getObjectBuilder();
-        for (Iterator newObjectsEnum = getNewObjectsOriginalToClone().values().iterator();
+        for (Iterator newObjectsEnum = getNewObjectsCloneToOriginal().keySet().iterator();
                  newObjectsEnum.hasNext();) {
             Object object = newObjectsEnum.next();
             if (theClass.isInstance(object)) {
@@ -2287,7 +2288,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         if (!hasNewObjects()) {
             return null;
         }
-        for (Iterator newObjectsEnum = getNewObjectsOriginalToClone().values().iterator();
+        for (Iterator newObjectsEnum = getNewObjectsCloneToOriginal().keySet().iterator();
                  newObjectsEnum.hasNext();) {
             Object object = newObjectsEnum.next();
             if (theClass.isInstance(object)) {
@@ -4114,7 +4115,9 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         registerNewObjectInIdentityMap(clone, original, descriptor);
 
         getNewObjectsCloneToOriginal().put(clone, original);
+        if (original != null) {
         getNewObjectsOriginalToClone().put(original, clone);
+        }
         
         // run prePersist callbacks if any
         if (descriptor.getEventManager().hasAnyEventListeners()) {
