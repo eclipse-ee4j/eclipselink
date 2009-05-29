@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.libraries.asm.Constants;
 
 /**
@@ -136,11 +137,11 @@ public class MetadataClass extends MetadataAnnotatedElement {
         String restOfName = propertyName.substring(1);
         
         // Look for a getPropertyName() method
-        method = getMethod(MetadataMethod.GET_PROPERTY_METHOD_PREFIX.concat(leadingChar).concat(restOfName), new String[]{});
+        method = getMethod(Helper.GET_PROPERTY_METHOD_PREFIX.concat(leadingChar).concat(restOfName), new String[]{});
         
         if (method == null) {
             // Look for an isPropertyName() method
-            method = getMethod(MetadataMethod.IS_PROPERTY_METHOD_PREFIX.concat(leadingChar).concat(restOfName), new String[]{});
+            method = getMethod(Helper.IS_PROPERTY_METHOD_PREFIX.concat(leadingChar).concat(restOfName), new String[]{});
         }
         
         if (method != null) {

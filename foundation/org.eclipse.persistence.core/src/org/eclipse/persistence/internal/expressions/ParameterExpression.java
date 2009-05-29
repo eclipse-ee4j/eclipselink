@@ -18,6 +18,7 @@ import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.expressions.*;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -361,8 +362,28 @@ public class ParameterExpression extends BaseExpression {
         
         if (value != null && queryKey != null && queryKey.isObjectExpression()) {
             DatabaseMapping mapping = ((ObjectExpression) queryKey).getMapping();
-            if (mapping != null && mapping.isForeignReferenceMapping() && !mapping.getReferenceDescriptor().getJavaClass().isInstance(value)) {
-                throw QueryException.incorrectClassForObjectComparison(baseExpression, value, mapping);
+            if (mapping != null){
+                if (mapping.isCollectionMapping() && queryKey.isMapEntryExpression() && !((MapEntryExpression)queryKey).shouldReturnMapEntry()){
+                    // this is a map key expression, operate on the key
+                    ContainerPolicy cp = ((CollectionMapping)mapping).getContainerPolicy();
+                    Object keyType = cp.getKeyType();
+                    Class keyTypeClass = keyType instanceof Class ? (Class)keyType: ((ClassDescriptor)keyType).getJavaClass();
+                    if (!keyTypeClass.isInstance(value)){
+                        throw QueryException.incorrectClassForObjectComparison(baseExpression, value, mapping);
+                    }
+                } else if (mapping.isDirectCollectionMapping()){
+                    Class targetClass = ((DirectCollectionMapping)mapping).getDirectField().getType();
+                    if (((Class)targetClass).equals(BasicTypeHelperImpl.ElementPlaceHolder.class)){
+                        // we do not know the class of the target and cannot do validation
+                        return;
+                    } else {
+                        if (!targetClass.isInstance(value)){
+                            throw QueryException.incorrectClassForObjectComparison(baseExpression, value, mapping);
+                        }
+                    }
+                } else if (mapping.isForeignReferenceMapping() && !mapping.getReferenceDescriptor().getJavaClass().isInstance(value)) {
+                    throw QueryException.incorrectClassForObjectComparison(baseExpression, value, mapping);
+                }
             }
         }
     }

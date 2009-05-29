@@ -14,6 +14,8 @@ package org.eclipse.persistence.testing.tests.collections.map;
 
 import java.util.List;
 
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.indirection.IndirectMap;
 import org.eclipse.persistence.mappings.DirectCollectionMapping;
 import org.eclipse.persistence.sessions.UnitOfWork;
@@ -28,6 +30,7 @@ public class TestReadAggregateDirectMapMapping extends TestCase {
     protected int fetchJoinRelationship = 0;
     protected int oldFetchJoinValue = 0;
     protected DirectCollectionMapping mapping = null;
+    protected Expression holderExp;
     
     public TestReadAggregateDirectMapMapping(){
         super();
@@ -55,11 +58,12 @@ public class TestReadAggregateDirectMapMapping extends TestCase {
         holder.addAggregateToDirectMapItem(mapKey2, new Integer(2));
         uow.registerObject(holder);
         uow.commit();
+        holderExp = (new ExpressionBuilder()).get("id").equal(holder.getId());
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
     
     public void test(){
-        holders = getSession().readAllObjects(AggregateDirectMapHolder.class);
+        holders = getSession().readAllObjects(AggregateDirectMapHolder.class, holderExp);
     }
     
     public void verify(){

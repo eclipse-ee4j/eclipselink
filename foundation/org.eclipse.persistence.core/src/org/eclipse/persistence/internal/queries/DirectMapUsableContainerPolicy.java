@@ -16,6 +16,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DirectMapMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
@@ -49,7 +50,7 @@ public interface DirectMapUsableContainerPolicy {
      * Return the DatabaseField that represents the key in a DirectMapMapping
      * @return
      */
-    public DatabaseField getDirectKeyField();
+    public DatabaseField getDirectKeyField(CollectionMapping baseMapping);
     
     /**
      * INTERNAL:

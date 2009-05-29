@@ -28,8 +28,10 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.mappings.Association;
+import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DirectMapMapping;
 import org.eclipse.persistence.mappings.converters.*;
+import org.eclipse.persistence.mappings.querykeys.QueryKey;
 import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ReadQuery;
@@ -273,14 +275,23 @@ public class DirectMapContainerPolicy extends InterfaceContainerPolicy implement
             this.keyConverter = keyConverter;;
         }
     }
-
+    
+    /**
+     * INTERNAL:
+     * Create a query key that links to the map key.  DirectMapContainerPolicy does not have a specific mapping for the
+     * key, so return null;
+     * @return
+     */
+    public QueryKey createQueryKeyForMapKey(){
+        return null;
+    }
     
     /**
      * INTERNAL:
      * Return the DatabaseField that represents the key in a DirectMapMapping
      * @return
      */
-    public DatabaseField getDirectKeyField(){
+    public DatabaseField getDirectKeyField(CollectionMapping baseMapping){
         return keyField;
     }
 
@@ -331,21 +342,40 @@ public class DirectMapContainerPolicy extends InterfaceContainerPolicy implement
         return fields;
     }
     
+    /**
+     * INTERNAL:
+     * Return the type of the map key, this will be overridden by container policies that allow maps
+     * @return
+     */
+    public Object getKeyType(){
+        return keyField.getType();
+    }
+    
     public boolean isDirectMapPolicy() {
         return true;
     }
 
     /**
      * INTERNAL:
+     * Return whether a map key this container policy represents is an attribute
+     * DirectMapContainerPolicy's can only have non-mapped values as keys, so return true
+     * @return
+     */
+    public boolean isMapKeyAttribute(){
+        return true;
+    }
+    
+    /**
+     * INTERNAL:
      * Initialize the key mapping
      */
     public void initialize(AbstractSession session, DatabaseTable keyTable){
-        if (getDirectKeyField() == null) {
+        if (getDirectKeyField(null) == null) {
             throw DescriptorException.directKeyNotSet(elementDescriptor);
         }
 
-        getDirectKeyField().setTable(keyTable);
-        getDirectKeyField().setIndex(1);
+        getDirectKeyField(null).setTable(keyTable);
+        getDirectKeyField(null).setIndex(1);
     }
     
     /**

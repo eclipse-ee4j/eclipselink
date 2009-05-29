@@ -1260,6 +1260,29 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         if (!(expression.isQueryKeyExpression())) {
             return null;
         }
+        
+        if (expression.isMapEntryExpression()){
+            MapEntryExpression teExpression = (MapEntryExpression)expression;
+            
+            // get the expression that we want the table entry for
+            QueryKeyExpression baseExpression = (QueryKeyExpression)teExpression.getBaseExpression();
+            
+            // get the expression that owns the mapping for the table entry
+            Expression owningExpression = baseExpression.getBaseExpression();
+            ClassDescriptor owningDescriptor = getLeafDescriptorFor(owningExpression, rootDescriptor);
+            
+            // Get the mapping that owns the table
+            CollectionMapping mapping = (CollectionMapping)owningDescriptor.getObjectBuilder().getMappingForAttributeName(baseExpression.getName());
+            
+            if (teExpression.shouldReturnMapEntry()){
+                return mapping;
+            }
+            if (mapping.getContainerPolicy().isMappedKeyMapPolicy()){
+                MappedKeyMapContainerPolicy policy = (MappedKeyMapContainerPolicy)mapping.getContainerPolicy();
+                return (DatabaseMapping)policy.getKeyMapping();
+            }
+            return mapping;
+        }
 
         QueryKeyExpression qkExpression = (QueryKeyExpression)expression;
         Expression baseExpression = qkExpression.getBaseExpression();

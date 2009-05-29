@@ -283,7 +283,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      * INTERNAL:
      */
     public DatabaseField getDirectKeyField() {
-        return getDirectMapUsableContainerPolicy().getDirectKeyField();
+        return getDirectMapUsableContainerPolicy().getDirectKeyField(null);
     }
 
     /**

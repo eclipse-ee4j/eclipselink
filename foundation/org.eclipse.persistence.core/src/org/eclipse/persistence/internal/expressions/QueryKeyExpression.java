@@ -297,8 +297,11 @@ public class QueryKeyExpression extends ObjectExpression {
         } else {
             Vector result = new Vector();
             result.addAll(super.getFields());
-            if (mapping.isCollectionMapping() && mapping.getContainerPolicy().getAllFieldsForMapKey() != null){
-                result.addAll((mapping.getContainerPolicy().getAllFieldsForMapKey()));
+            if (mapping.isCollectionMapping()){
+                List<DatabaseField> fields = mapping.getContainerPolicy().getAllFieldsForMapKey((CollectionMapping)mapping);
+                if (fields != null){
+                    result.addAll(fields);
+                }
             }
             return result;
         }
@@ -606,7 +609,7 @@ public class QueryKeyExpression extends ObjectExpression {
         // For bug 2900974 these are now handled as non-attributes during normalize but
         // as attributes when printing SQL.
         //
-        if ((getMapping() != null) && getMapping().isDirectCollectionMapping()) {
+        if ((!isAttribute()) && (getMapping() != null) && getMapping().isDirectCollectionMapping()) {
             DirectCollectionMapping directCollectionMapping = (DirectCollectionMapping)getMapping();
 
             // The aliased table comes for free as it was a required part of the join criteria.

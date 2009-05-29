@@ -17,7 +17,10 @@ import java.security.PrivilegedActionException;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.mappings.AggregateMapping;
+import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.DirectCollectionMapping;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
@@ -69,6 +72,19 @@ public class TypeHelperImpl
     public Object resolveAttribute(Object ownerClass, String attribute) {
         DatabaseMapping mapping = resolveAttributeMapping(ownerClass, attribute);
         return getType(mapping);
+    }
+    
+    /** Returns the type of the map key for the mapping on ownerClass named attribute
+     * Returns null if that mapping does not exist or does not contain a map key
+     */ 
+    public Object resolveMapKey(Object ownerClass, String attribute) {
+        Object type = null;
+        DatabaseMapping mapping = resolveAttributeMapping(ownerClass, attribute);
+        if (mapping.isCollectionMapping()){
+            ContainerPolicy cp = ((CollectionMapping)mapping).getContainerPolicy();
+            type = cp.getKeyType();
+        }
+        return type;
     }
     
     /** Returns the type of the class corresponding to the specified abstract
@@ -185,7 +201,12 @@ public class TypeHelperImpl
             return null;
         }
         Object type = null;
-        if (mapping.isForeignReferenceMapping()) {
+        if (mapping.isDirectCollectionMapping()){
+            type = ((DirectCollectionMapping)mapping).getDirectField().getType();
+            if (type == null){
+                type = BasicTypeHelperImpl.ElementPlaceHolder.class;
+            }
+        } else if (mapping.isForeignReferenceMapping()) {
             ClassDescriptor descriptor = mapping.getReferenceDescriptor();
             type = descriptor == null ? null : descriptor.getJavaClass();
         } else if (mapping.isAggregateMapping()) {
@@ -195,9 +216,10 @@ public class TypeHelperImpl
             // not the shell of the descriptors as stored by the session.
             type = ((AggregateMapping)mapping).getReferenceDescriptor();
         } else {
-            type = mapping.getAttributeClassification();
+            type = mapping.getAttributeAccessor().getAttributeClass();
         }
         return type;
     }
-
+    
 }
+

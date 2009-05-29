@@ -48,7 +48,7 @@ public class TestUpdateDirectEntity1MMapMapping extends TestReadDirectEntity1MMa
     
     public void test(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
-        holders = uow.readAllObjects(DirectEntity1MMapHolder.class);
+        holders = uow.readAllObjects(DirectEntity1MMapHolder.class, holderExp);
         changedHolder = (DirectEntity1MMapHolder)holders.get(0);
         changedHolder.removeDirectToEntityMapItem(new Integer(11));
         DEOTMMapValue mapValue = new DEOTMMapValue();
@@ -61,7 +61,7 @@ public class TestUpdateDirectEntity1MMapMapping extends TestReadDirectEntity1MMa
         
     public void verify(){
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
-        holders = getSession().readAllObjects(DirectEntity1MMapHolder.class);
+        holders = getSession().readAllObjects(DirectEntity1MMapHolder.class, holderExp);
         DirectEntity1MMapHolder holder = (DirectEntity1MMapHolder)holders.get(0);
         if (!compareObjects(holder, changedHolder)){
             throw new TestErrorException("Objects do not match reinitialize");

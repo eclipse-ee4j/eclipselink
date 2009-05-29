@@ -30,6 +30,7 @@ import javax.persistence.PreRemove;
 import javax.persistence.PreUpdate;
 
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
@@ -42,12 +43,6 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
  * @since TopLink 10.1.3/EJB 3.0 Preview
  */
 public class MetadataMethod extends MetadataAnnotatedElement {
-    public static final String IS_PROPERTY_METHOD_PREFIX = "is";
-    public static final String GET_PROPERTY_METHOD_PREFIX = "get";
-    private static final String SET_PROPERTY_METHOD_PREFIX = "set";
-    private static final String SET_IS_PROPERTY_METHOD_PREFIX = "setIs";
-    private static final int POSITION_AFTER_IS_PREFIX = IS_PROPERTY_METHOD_PREFIX.length();
-    private static final int POSITION_AFTER_GET_PREFIX = GET_PROPERTY_METHOD_PREFIX.length();
 
     /** Class that the method is defined in. */
     protected MetadataClass metadataClass;
@@ -70,31 +65,6 @@ public class MetadataMethod extends MetadataAnnotatedElement {
     public MetadataMethod(MetadataClass metadataClass, MetadataLogger logger) {
         super(logger);
         this.metadataClass = metadataClass;
-    }
-    
-    /**
-     * INTERNAL:
-     * Method to convert a getXyz or isXyz method name to an xyz attribute name.
-     * NOTE: The method name passed it may not actually be a method name, so
-     * by default return the name passed in.
-     */
-    public static String getAttributeNameFromMethodName(String methodName) {
-        String leadingChar = "";
-        String restOfName = methodName;
-        
-        // We're looking at method named 'get' or 'set', therefore,
-        // there is no attribute name, set it to "" string for now.
-        if (methodName.equals(GET_PROPERTY_METHOD_PREFIX) || methodName.equals(IS_PROPERTY_METHOD_PREFIX)) {
-            return "";
-        } else if (methodName.startsWith(GET_PROPERTY_METHOD_PREFIX)) {
-            leadingChar = methodName.substring(POSITION_AFTER_GET_PREFIX, POSITION_AFTER_GET_PREFIX + 1);
-            restOfName = methodName.substring(POSITION_AFTER_GET_PREFIX + 1);
-        } else if (methodName.startsWith(IS_PROPERTY_METHOD_PREFIX)){
-            leadingChar = methodName.substring(POSITION_AFTER_IS_PREFIX, POSITION_AFTER_IS_PREFIX + 1);
-            restOfName = methodName.substring(POSITION_AFTER_IS_PREFIX + 1);
-        }
-        
-        return leadingChar.toLowerCase().concat(restOfName);
     }
     
     /**
@@ -127,17 +97,17 @@ public class MetadataMethod extends MetadataAnnotatedElement {
         List<String> params = Arrays.asList(new String[] {getReturnType()});
         MetadataMethod setMethod = null;
         
-        if (getMethodName.startsWith(GET_PROPERTY_METHOD_PREFIX)) {
+        if (getMethodName.startsWith(Helper.GET_PROPERTY_METHOD_PREFIX)) {
             // Replace 'get' with 'set'.
-            setMethod = cls.getMethod(SET_PROPERTY_METHOD_PREFIX + getMethodName.substring(3), params);
+            setMethod = cls.getMethod(Helper.SET_PROPERTY_METHOD_PREFIX + getMethodName.substring(3), params);
         } else {        
             // methodName.startsWith(IS_PROPERTY_METHOD_PREFIX)
             // Check for a setXyz method first, if it exists use it.
-            setMethod = cls.getMethod(SET_PROPERTY_METHOD_PREFIX + getMethodName.substring(2), params);
+            setMethod = cls.getMethod(Helper.SET_PROPERTY_METHOD_PREFIX + getMethodName.substring(2), params);
             
             if (setMethod == null) {
                 // setXyz method was not found try setIsXyz
-                setMethod = cls.getMethod(SET_IS_PROPERTY_METHOD_PREFIX + getMethodName.substring(2), params);
+                setMethod = cls.getMethod(Helper.SET_IS_PROPERTY_METHOD_PREFIX + getMethodName.substring(2), params);
             }
         }
         
@@ -246,7 +216,7 @@ public class MetadataMethod extends MetadataAnnotatedElement {
      * INTERNAL:
      */
     public boolean isValidPersistenceMethodName() {
-        return (getName().startsWith(GET_PROPERTY_METHOD_PREFIX) || getName().startsWith(IS_PROPERTY_METHOD_PREFIX)) && hasAttributeName();
+        return (getName().startsWith(Helper.GET_PROPERTY_METHOD_PREFIX) || getName().startsWith(Helper.IS_PROPERTY_METHOD_PREFIX)) && hasAttributeName();
     }
 
     public MetadataMethod getNext() {

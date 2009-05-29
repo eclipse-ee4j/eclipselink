@@ -362,4 +362,8 @@ public interface NodeFactory {
     public Object newSetAssignmentClause(int line, int column, 
                                          Object target, Object value);
 
+    public Object newKey(int line, int column, Object left);
+
+    public Object newMapEntry(int line, int column, Object arg);
 }
+

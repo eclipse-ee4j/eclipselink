@@ -18,6 +18,7 @@ import java.util.*;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
@@ -30,6 +31,8 @@ import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.*;
+import org.eclipse.persistence.mappings.querykeys.DirectQueryKey;
+import org.eclipse.persistence.mappings.querykeys.QueryKey;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.remote.*;
 import org.eclipse.persistence.sessions.ObjectCopyingPolicy;
@@ -552,6 +555,17 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
     
     /**
      * INTERNAL:
+     * Create a query key that links to the map key
+     * @return
+     */
+    public QueryKey createQueryKeyForMapKey(){
+        DirectQueryKey queryKey = new DirectQueryKey();
+        queryKey.setField(field);
+        return queryKey;
+    }
+    
+    /**
+     * INTERNAL:
      * Extract the fields for the Map key from the object to use in a query
      * @return
      */
@@ -651,6 +665,17 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      */
     public boolean isAbstractDirectMapping() {
         return true;
+    }
+
+    /**
+     * INTERNAL:
+     * Get the descriptor for this mapping
+     * This method is potentially called when this mapping is used as a map key and
+     * will return null since direct mappings do not have reference descriptors
+     * @return
+     */
+    public ClassDescriptor getReferenceDescriptor(){
+        return null;
     }
 
     /**
@@ -810,6 +835,15 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      */
     public Object getTargetVersionOfSourceObject(Object object, Object parent, MergeManager mergeManager){
        return object;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the class this key mapping maps or the descriptor for it
+     * @return
+     */
+    public Class getMapKeyTargetType(){
+        return getAttributeAccessor().getAttributeClass();
     }
     
     /**

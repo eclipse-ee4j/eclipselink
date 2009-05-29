@@ -353,7 +353,7 @@ public class RelationExpression extends CompoundExpression {
                 isObjectComparisonExpression = Boolean.FALSE;
             } else {
                 DatabaseMapping mapping = ((ObjectExpression)this.firstChild).getMapping();
-                if ((mapping != null) && (mapping.isDirectCollectionMapping())) {
+                if ((mapping != null) && (mapping.isDirectCollectionMapping()) && !(this.getFirstChild().isMapEntryExpression())) {
                     isObjectComparisonExpression = Boolean.FALSE;
                 } else {    
                     isObjectComparisonExpression = Boolean.valueOf(this.secondChild.isObjectExpression() || (this.secondChild.isValueExpression() || (this.secondChild.isFunctionExpression() && ((FunctionExpression)this.secondChild).getOperator().isAnyOrAll())));
@@ -515,8 +515,8 @@ public class RelationExpression extends CompoundExpression {
             // keys of the first expression and the selection object.
             if (getSecondChild().isConstantExpression()) {
                 Expression keyExpression = 
-                    first.getDescriptor().getObjectBuilder().buildPrimaryKeyExpressionFromObject(((ConstantExpression)getSecondChild()).getValue(), 
-                                                                                                 getSession());
+                    first.getDescriptor().getObjectBuilder().buildPrimaryKeyExpressionFromObject(((ConstantExpression)getSecondChild()).getValue(), getSession());
+
                 foreignKeyJoin = first.twist(keyExpression, first);
 
                 // Each expression will represent a separate table, so compare the primary

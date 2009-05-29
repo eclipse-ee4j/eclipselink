@@ -12,7 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.collections.map;
 
-import java.util.List;
+import java.util.Iterator;
 
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
@@ -146,9 +146,11 @@ public class TestUpdateEntityEntityMapMapping extends TestCase {
     
     public void reset(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
+        Iterator j = holder.getEntityToEntityMap().keySet().iterator();
+        while (j.hasNext()){
+            uow.deleteObject(holder.getEntityToEntityMap().get(j.next()));
+        }
         uow.deleteObject(holder);
-        List keys = uow.readAllObjects(EntityMapValue.class);
-        uow.deleteAllObjects(keys);
         uow.commit();
         mapping.setIsPrivateOwned(oldPrivateOwnedValue);
         keyMapping.setIsPrivateOwned(oldKeyPrivateOwnedValue);

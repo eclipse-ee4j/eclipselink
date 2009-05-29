@@ -12,8 +12,12 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.collections.map;
 
+import java.util.Vector;
+
 import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.TestSystem;
+import org.eclipse.persistence.tools.schemaframework.PopulationManager;
 import org.eclipse.persistence.tools.schemaframework.SchemaManager;
 
 public class MapCollectionsSystem extends TestSystem {
@@ -62,6 +66,32 @@ public class MapCollectionsSystem extends TestSystem {
         schemaManager.replaceObject(AggregateEntityU1MMapHolder.tableDefinition());
         schemaManager.replaceObject(EntityEntityU1MMapHolder.tableDefinition());
         schemaManager.createSequences();
+    }
+    
+    public void populate(DatabaseSession session) {
+        MapPopulator system = new MapPopulator();
+        UnitOfWork unitOfWork = session.acquireUnitOfWork();
+
+        system.buildExamples();
+        Vector allObjects = new Vector();
+        PopulationManager.getDefaultManager().addAllObjectsForClass(EntityEntity1MMapHolder.class, allObjects);
+        PopulationManager.getDefaultManager().addAllObjectsForClass(EntityDirectMapHolder.class, allObjects);
+        PopulationManager.getDefaultManager().addAllObjectsForClass(EntityAggregateMapHolder.class, allObjects);
+        PopulationManager.getDefaultManager().addAllObjectsForClass(DirectEntityU1MMapHolder.class, allObjects);
+        PopulationManager.getDefaultManager().addAllObjectsForClass(DirectEntityMapHolder.class, allObjects);
+        PopulationManager.getDefaultManager().addAllObjectsForClass(DirectEntity1MMapHolder.class, allObjects);
+        PopulationManager.getDefaultManager().addAllObjectsForClass(DirectDirectMapHolder.class, allObjects);
+        PopulationManager.getDefaultManager().addAllObjectsForClass(DirectAggregateMapHolder.class, allObjects);
+        PopulationManager.getDefaultManager().addAllObjectsForClass(AggregateEntityU1MMapHolder.class, allObjects);
+        PopulationManager.getDefaultManager().addAllObjectsForClass(AggregateEntityMapHolder.class, allObjects);
+        PopulationManager.getDefaultManager().addAllObjectsForClass(AggregateEntity1MMapHolder.class, allObjects);
+        PopulationManager.getDefaultManager().addAllObjectsForClass(AggregateDirectMapHolder.class, allObjects);
+        PopulationManager.getDefaultManager().addAllObjectsForClass(AggregateAggregateMapHolder.class, allObjects);
+        PopulationManager.getDefaultManager().addAllObjectsForClass(EntityEntityMapHolder.class, allObjects);
+        PopulationManager.getDefaultManager().addAllObjectsForClass(EntityEntityU1MMapHolder.class, allObjects);
+        
+        unitOfWork.registerAllObjects(allObjects);
+        unitOfWork.commit();
     }
 
 }

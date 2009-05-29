@@ -170,6 +170,9 @@ public class QueryException extends ValidationException {
     public final static int EXCEPTION_WHILE_READING_MAP_KEY = 6156;
     public final static int CANNOT_ADD_ELEMENT_WITHOUT_KEY_TO_MAP = 6157;
     public final static int CANNOT_UNWRAP_NON_MAP_MEMBERS = 6158;
+    public final static int NO_MAPPING_FOR_MAP_ENTRY_EXPRESSION = 6159;
+    public final static int MAP_ENTRY_EXPRESSION_FOR_NON_COLLECTION = 6160;
+    public final static int MAP_ENTRY_EXPRESSION_FOR_NON_MAP = 6161;
 
     /**
      * INTERNAL:
@@ -1428,6 +1431,29 @@ public class QueryException extends ValidationException {
         queryException.setErrorCode(CANNOT_UNWRAP_NON_MAP_MEMBERS);
         return queryException;
     }
+    
+    public static QueryException noMappingForMapEntryExpression(Expression baseExpression){
+        Object[] args = { baseExpression };
 
+        QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, NO_MAPPING_FOR_MAP_ENTRY_EXPRESSION , args));
+        queryException.setErrorCode(NO_MAPPING_FOR_MAP_ENTRY_EXPRESSION );
+        return queryException;
+    }
+    
+    public static QueryException mapEntryExpressionForNonCollection(Expression baseExpression, DatabaseMapping mapping){
+        Object[] args = { baseExpression, mapping };
+
+        QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, MAP_ENTRY_EXPRESSION_FOR_NON_COLLECTION  , args));
+        queryException.setErrorCode(MAP_ENTRY_EXPRESSION_FOR_NON_COLLECTION  );
+        return queryException;
+    }
+    
+    public static QueryException mapEntryExpressionForNonMap(Expression baseExpression, DatabaseMapping mapping){
+        Object[] args = { baseExpression, mapping };
+
+        QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, MAP_ENTRY_EXPRESSION_FOR_NON_MAP   , args));
+        queryException.setErrorCode(MAP_ENTRY_EXPRESSION_FOR_NON_MAP   );
+        return queryException;
+    }
     
 }

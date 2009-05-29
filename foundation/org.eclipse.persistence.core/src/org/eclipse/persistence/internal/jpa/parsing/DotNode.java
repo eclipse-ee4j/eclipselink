@@ -202,6 +202,15 @@ public class DotNode extends LogicalOperatorNode {
         return null;
     }
 
+    public Object getTypeForMapKey(ParseTreeContext context){
+        Object type = null;
+        String name = ((AttributeNode)right).getAttributeName();
+        Node leftMost = getLeftMostNode();
+        if (isDeclaredVariable(leftMost, context)) {
+            type = context.getTypeHelper().resolveMapKey(left.getType(), name);
+        }
+        return type;
+    }
     /**
      * INTERNAL
      * ():
@@ -251,8 +260,13 @@ public class DotNode extends LogicalOperatorNode {
      * INTERNAL
      * Return the left most node of a dot expr, so return 'a' for 'a.b.c'.
      */
-    private Node getLeftMostNode() {
-        return left.isDotNode() ? ((DotNode)left).getLeftMostNode() : left;
+    public Node getLeftMostNode() {
+        if (left.isDotNode()){
+            return ((DotNode)left).getLeftMostNode();
+        } else if (left.isMapKeyNode()){
+            return ((MapKeyNode)left).getLeftMostNode();
+        }
+        return left;
     }
 
     /**

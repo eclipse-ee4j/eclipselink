@@ -55,7 +55,7 @@ public class TestUpdateEntityEntityU1MMapMapping extends TestReadEntityEntityU1M
     
     public void test(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
-        holders = uow.readAllObjects(EntityEntityU1MMapHolder.class);
+        holders = uow.readAllObjects(EntityEntityU1MMapHolder.class, holderExp);
         changedHolder = (EntityEntityU1MMapHolder)holders.get(0);
         EntityMapKey key = new EntityMapKey();
         key.setId(11);
@@ -76,7 +76,7 @@ public class TestUpdateEntityEntityU1MMapMapping extends TestReadEntityEntityU1M
     
     public void verify(){
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
-        holders = getSession().readAllObjects(EntityEntityU1MMapHolder.class);
+        holders = getSession().readAllObjects(EntityEntityU1MMapHolder.class, holderExp);
         EntityEntityU1MMapHolder holder = (EntityEntityU1MMapHolder)holders.get(0);
         if (!compareObjects(holder, changedHolder)){
             throw new TestErrorException("Objects do not match reinitialize");

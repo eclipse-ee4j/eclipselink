@@ -50,7 +50,7 @@ public class TestUpdateEntityDirectMapMapping extends TestReadEntityDirectMapMap
     
     public void test(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
-        holders = uow.readAllObjects(EntityDirectMapHolder.class);
+        holders = uow.readAllObjects(EntityDirectMapHolder.class, holderExp);
         changedHolder = (EntityDirectMapHolder)holders.get(0);
         EntityMapKey mapKey = new EntityMapKey();
         mapKey.setId(1);
@@ -69,7 +69,7 @@ public class TestUpdateEntityDirectMapMapping extends TestReadEntityDirectMapMap
     
     public void verify(){
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
-        holders = getSession().readAllObjects(EntityDirectMapHolder.class);
+        holders = getSession().readAllObjects(EntityDirectMapHolder.class, holderExp);
         EntityDirectMapHolder holder = (EntityDirectMapHolder)holders.get(0);
         if (!compareObjects(holder, changedHolder)){
             throw new TestErrorException("Objects do not match reinitialize");

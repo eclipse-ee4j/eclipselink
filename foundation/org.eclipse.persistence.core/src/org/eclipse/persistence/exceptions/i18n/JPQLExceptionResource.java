@@ -59,6 +59,8 @@ public class JPQLExceptionResource extends ListResourceBundle {
                                            { "8036", "Error compiling the query [{0}], line {1}, column {2}: invalid navigation expression [{3}], cannot navigate collection valued association field [{4}]." },
                                            { "8037", "Error compiling the query [{0}], line {1}, column {2}:  Unknown entity type [{3}]." },
                                            { "8038", "Error compiling the query [{0}], line {1}, column {2}: a problem was encountered resolving the class name - The class [{3}] was not found." },
+                                           { "8038", "Error compiling the query [{0}], line {1}, column {2}: Variable {3} a not a map and a map key is being requested from it." }
+
     };
 
     /**

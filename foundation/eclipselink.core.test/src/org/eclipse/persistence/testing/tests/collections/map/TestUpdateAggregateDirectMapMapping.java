@@ -21,7 +21,7 @@ public class TestUpdateAggregateDirectMapMapping extends TestReadAggregateDirect
 
     public void test(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
-        holders = uow.readAllObjects(AggregateDirectMapHolder.class);
+        holders = uow.readAllObjects(AggregateDirectMapHolder.class, holderExp);
         AggregateDirectMapHolder holder = (AggregateDirectMapHolder)holders.get(0);
         AggregateMapKey mapKey = new AggregateMapKey();
         mapKey.setKey(1);
@@ -40,7 +40,7 @@ public class TestUpdateAggregateDirectMapMapping extends TestReadAggregateDirect
     public void verify(){
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         Object changedHolder = holders.get(0);
-        holders = getSession().readAllObjects(AggregateDirectMapHolder.class);
+        holders = getSession().readAllObjects(AggregateDirectMapHolder.class, holderExp);
         AggregateDirectMapHolder holder = (AggregateDirectMapHolder)holders.get(0);
         if (!compareObjects(holder, changedHolder)){
             throw new TestErrorException("Objects do not match reinitialize");

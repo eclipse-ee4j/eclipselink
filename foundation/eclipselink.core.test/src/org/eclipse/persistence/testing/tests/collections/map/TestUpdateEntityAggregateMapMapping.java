@@ -52,7 +52,7 @@ public class TestUpdateEntityAggregateMapMapping extends TestReadEntityAggregate
     
     public void test(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
-        holders = uow.readAllObjects(EntityAggregateMapHolder.class);
+        holders = uow.readAllObjects(EntityAggregateMapHolder.class, holderExp);
         changedHolder = (EntityAggregateMapHolder)holders.get(0);
         EntityMapKey key = new EntityMapKey();
         key.setId(1);
@@ -72,7 +72,7 @@ public class TestUpdateEntityAggregateMapMapping extends TestReadEntityAggregate
     
     public void verify(){
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
-        holders = getSession().readAllObjects(EntityAggregateMapHolder.class);
+        holders = getSession().readAllObjects(EntityAggregateMapHolder.class, holderExp);
         EntityAggregateMapHolder holder = (EntityAggregateMapHolder)holders.get(0);
         if (!compareObjects(holder, changedHolder)){
             throw new TestErrorException("Objects do not match reinitialize");

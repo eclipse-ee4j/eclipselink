@@ -279,5 +279,20 @@ public class VariableNode extends Node {
     public String getAsString() {
         return getVariableName();
     }
+    
+    public Object getTypeForMapKey(ParseTreeContext context){
+        String name = getCanonicalVariableName();
+        if (context.isRangeVariable(name)) {
+            throw JPQLException.variableCannotHaveMapKey(context.getQueryInfo(), getLine(), getColumn(), name);
+        } else {
+            DotNode path = (DotNode)context.pathForVariable(name);
+            if (path == null) {
+                throw JPQLException.aliasResolutionException(
+                    context.getQueryInfo(), getLine(), getColumn(), name);
+            } else {
+                return path.getTypeForMapKey(context);
+            }
+        }
+    }
 
 }

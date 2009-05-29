@@ -12,8 +12,11 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.collections.map;
 
+import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.indirection.IndirectMap;
 import org.eclipse.persistence.mappings.DirectCollectionMapping;
 import org.eclipse.persistence.sessions.UnitOfWork;
@@ -28,6 +31,7 @@ public class TestReadEntityDirectMapMapping extends TestCase {
     protected int fetchJoinRelationship = 0;
     protected int oldFetchJoinValue = 0;
     protected DirectCollectionMapping mapping = null;
+    protected Expression holderExp;
     
     public TestReadEntityDirectMapMapping(){
         super();
@@ -60,11 +64,12 @@ public class TestReadEntityDirectMapMapping extends TestCase {
         uow.registerObject(holder);
         
         uow.commit();
+        holderExp = (new ExpressionBuilder()).get("id").equal(holder.getId());
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
     
     public void test(){
-        holders = getSession().readAllObjects(EntityDirectMapHolder.class);
+        holders = getSession().readAllObjects(EntityDirectMapHolder.class, holderExp);
     }
     
     public void verify(){
@@ -89,9 +94,15 @@ public class TestReadEntityDirectMapMapping extends TestCase {
     
     public void reset(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
+        Iterator i = holders.iterator();
+        while (i.hasNext()){
+            EntityDirectMapHolder holder = (EntityDirectMapHolder)i.next();
+            Iterator j = holder.getEntityToDirectMap().keySet().iterator();
+            while (j.hasNext()){
+                uow.deleteObject(j.next());
+            }
+        }
         uow.deleteAllObjects(holders);
-        List keys = uow.readAllObjects(EntityMapKey.class);
-        uow.deleteAllObjects(keys);
         uow.commit();
         if (!verifyDelete(holders.get(0))){
             throw new TestErrorException("Delete was unsuccessful.");

@@ -67,7 +67,6 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ObjectAc
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.OneToOneAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.RelationshipAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataMethod;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.PropertyMetadata;
 
@@ -78,6 +77,7 @@ import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListener;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.Helper;
 
 import org.eclipse.persistence.mappings.DatabaseMapping;
 
@@ -375,7 +375,7 @@ public class MetadataDescriptor {
         
         if (accessor == null) {
             // Perhaps we have a property name ...
-            accessor = m_accessors.get(MetadataMethod.getAttributeNameFromMethodName(fieldOrPropertyName));
+            accessor = m_accessors.get(Helper.getAttributeNameFromMethodName(fieldOrPropertyName));
            
             // If still no accessor and we are an inheritance subclass, check 
             // our parent descriptor. Unless we are within a table per class 

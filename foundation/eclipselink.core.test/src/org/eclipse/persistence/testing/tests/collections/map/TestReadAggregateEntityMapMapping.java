@@ -12,8 +12,11 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.collections.map;
 
+import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.indirection.IndirectMap;
 import org.eclipse.persistence.mappings.ManyToManyMapping;
 import org.eclipse.persistence.sessions.UnitOfWork;
@@ -30,7 +33,7 @@ public class TestReadAggregateEntityMapMapping extends TestCase {
     protected int fetchJoinRelationship = 0;
     protected int oldFetchJoinValue = 0;
     protected ManyToManyMapping mapping = null;
-    
+    protected Expression holderExp;
     
     public TestReadAggregateEntityMapMapping(){
         super();
@@ -66,11 +69,12 @@ public class TestReadAggregateEntityMapMapping extends TestCase {
         uow.registerObject(value);
         uow.registerObject(value2);
         uow.commit();
+        holderExp = (new ExpressionBuilder()).get("id").equal(holder.getId());
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
     
     public void test(){
-        holders = getSession().readAllObjects(AggregateEntityMapHolder.class);
+        holders = getSession().readAllObjects(AggregateEntityMapHolder.class, holderExp);
     }
     
     public void verify(){
@@ -96,9 +100,15 @@ public class TestReadAggregateEntityMapMapping extends TestCase {
     
     public void reset(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
+        Iterator i = holders.iterator();
+        while (i.hasNext()){
+            AggregateEntityMapHolder holder = (AggregateEntityMapHolder)i.next();
+            Iterator j = holder.getAggregateToEntityMap().keySet().iterator();
+            while (j.hasNext()){
+                uow.deleteObject(holder.getAggregateToEntityMap().get(j.next()));
+            }
+        }
         uow.deleteAllObjects(holders);
-        List keys = uow.readAllObjects(EntityMapValue.class);
-        uow.deleteAllObjects(keys);
         uow.commit();
         if (!verifyDelete(holders.get(0))){
             throw new TestErrorException("Delete was unsuccessful.");

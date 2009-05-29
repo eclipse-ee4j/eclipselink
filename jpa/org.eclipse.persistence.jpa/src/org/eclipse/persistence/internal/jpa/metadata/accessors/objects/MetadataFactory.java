@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.libraries.asm.Attribute;
 import org.eclipse.persistence.internal.libraries.asm.ClassReader;
@@ -236,7 +237,7 @@ public class MetadataFactory {
             List<String> argumentNames = processDescription(desc, false);                
             method = new MetadataMethod(this.classMetadata, logger);
             method.setName(name);
-            method.setAttributeName(method.getAttributeNameFromMethodName(name));
+            method.setAttributeName(Helper.getAttributeNameFromMethodName(name));
             method.setModifiers(access);
             method.setGenericType(getGenericType(attrs));
             method.setReturnType(argumentNames.get(argumentNames.size() - 1));

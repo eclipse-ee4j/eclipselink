@@ -39,7 +39,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  * <ul>
  * <li> Store the selection criteria in a tree-like structure.
  * <li> Support public manipulation protocols for all comparison and function operators.
- * <li> Use opperator overloading to support all primitive types as well as objects.
+ * <li> Use operator overloading to support all primitive types as well as objects.
  * </ul></p>
  */
 public abstract class Expression implements Serializable, Cloneable {
@@ -2174,6 +2174,13 @@ public abstract class Expression implements Serializable, Cloneable {
     public boolean isTableExpression() {
         return false;
     }
+    
+    /**
+     * INTERNAL:
+     */
+    public boolean isMapEntryExpression(){
+        return false;
+    }
 
     /**
      * INTERNAL:
@@ -2619,6 +2626,33 @@ public abstract class Expression implements Serializable, Cloneable {
     public Expression monthsBetween(Object otherDate) {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.MonthsBetween);
         return anOperator.expressionFor(this, otherDate);
+    }
+    
+    /**
+     * PUBLIC:
+     * Return a Map.Entry containing the key and the value from a mapping that maps to a java.util.Map
+     * This expression can only be used as a return value in a ReportQuery and cannot be used as part of
+     * the WHERE clause in any query
+     * 
+     * TopLink: eb.get("mapAttribute").mapEntry()
+     * @return
+     */
+    public Expression mapEntry(){
+        MapEntryExpression expression = new MapEntryExpression(this);
+        expression.returnMapEntry();
+        return expression;
+    }
+    
+    /**
+     * PUBLIC:
+     * Return the key from a mapping that maps to a java.util.Map
+     * This expression can be used either in as a return value in a ReportQuery or in the WHERE clause in a query
+     * 
+     * TopLink: eb.get("mapAttribute").mapKey()
+     * @return
+     */
+    public Expression mapKey(){
+        return new MapEntryExpression(this);
     }
 
     /**

@@ -31,6 +31,7 @@ import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
 import org.eclipse.persistence.mappings.foundation.MapKeyMapping;
+import org.eclipse.persistence.mappings.querykeys.QueryKey;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.Project;
 
@@ -676,6 +677,15 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     
     /**
      * INTERNAL:
+     * Create a query key that links to the map key
+     * @return
+     */
+    public QueryKey createQueryKeyForMapKey(){
+        return null;
+    }
+    
+    /**
+     * INTERNAL:
      * For mappings used as MapKeys in MappedKeyContainerPolicy, Delete the passed object if necessary.
      * 
      * This method is used for removal of private owned relationships. 
@@ -876,6 +886,15 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
             return aggregateObject;
         }
         return object;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the class this key mapping maps or the descriptor for it
+     * @return
+     */
+    public Object getMapKeyTargetType(){
+        return getReferenceDescriptor();
     }
     
     /**

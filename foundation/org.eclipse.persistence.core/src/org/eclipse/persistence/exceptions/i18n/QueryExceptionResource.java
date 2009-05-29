@@ -160,7 +160,10 @@ public class QueryExceptionResource extends ListResourceBundle {
        { "6155", "No relation table found in {0}. {2}joinCriteria Expression: [{1}]"},
        { "6156", "An exception occurred while attempting to set read the map key for [{0}]: [{1}]."},
        { "6157", "Element [{0}] is being added to a map without a key.  This generally means the database does not hold a key that is expected."},
-       { "6158", "MapContainerPolicy has been asked to unwrap element [{0}] which is not a map element.  This means that the incorrect container policy is being used."}
+       { "6158", "MapContainerPolicy has been asked to unwrap element [{0}] which is not a map element.  This means that the incorrect container policy is being used."},
+       { "6159", "Cannot find mapping for MapEntryExpression with base: [{0}]."},
+       { "6160", "MapEntryExpression with base: [{0}] refers to mapping [{1}] which is not a collection mapping.  Maps may only exist on colleciton mappings."},
+       { "6161", "MapEntryExpression with base: [{0}] refers to mapping [{1}] which does not refer to a map."}
 
     };
 

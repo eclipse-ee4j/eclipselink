@@ -12,10 +12,30 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.collections.map;
 
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.testing.framework.TestModel;
 import org.eclipse.persistence.testing.framework.TestSuite;
+import org.eclipse.persistence.testing.models.collections.map.AggregateAggregateMapHolder;
+import org.eclipse.persistence.testing.models.collections.map.AggregateDirectMapHolder;
+import org.eclipse.persistence.testing.models.collections.map.AggregateEntity1MMapHolder;
+import org.eclipse.persistence.testing.models.collections.map.AggregateEntityMapHolder;
+import org.eclipse.persistence.testing.models.collections.map.AggregateEntityU1MMapHolder;
+import org.eclipse.persistence.testing.models.collections.map.AggregateMapKey;
+import org.eclipse.persistence.testing.models.collections.map.DirectAggregateMapHolder;
+import org.eclipse.persistence.testing.models.collections.map.DirectDirectMapHolder;
+import org.eclipse.persistence.testing.models.collections.map.DirectEntity1MMapHolder;
+import org.eclipse.persistence.testing.models.collections.map.DirectEntityMapHolder;
+import org.eclipse.persistence.testing.models.collections.map.DirectEntityU1MMapHolder;
+import org.eclipse.persistence.testing.models.collections.map.EntityAggregateMapHolder;
+import org.eclipse.persistence.testing.models.collections.map.EntityDirectMapHolder;
+import org.eclipse.persistence.testing.models.collections.map.EntityEntity1MMapHolder;
+import org.eclipse.persistence.testing.models.collections.map.EntityEntityMapHolder;
+import org.eclipse.persistence.testing.models.collections.map.EntityEntityU1MMapHolder;
+import org.eclipse.persistence.testing.models.collections.map.EntityMapKey;
 import org.eclipse.persistence.testing.models.collections.map.MapCollectionsSystem;
+import org.eclipse.persistence.testing.tests.expressions.ReadAllExpressionTest;
 
 public class MapCollectionsTestModel extends TestModel {
     
@@ -58,6 +78,30 @@ public class MapCollectionsTestModel extends TestModel {
         suite.addTest(new TestReadAggregateDirectMapMapping(ForeignReferenceMapping.INNER_JOIN));
         suite.addTest(new TestReadEntityDirectMapMapping(ForeignReferenceMapping.INNER_JOIN));
 
+        //Expressions
+        ReadAllExpressionTest test = new ReadAllExpressionTest(DirectDirectMapHolder.class, 1);
+        ExpressionBuilder holders = new ExpressionBuilder();
+        Expression exp = holders.anyOf("directToDirectMap").mapKey().equal(1);
+        test.setExpression(exp);
+        suite.addTest(test);
+        
+        test = new ReadAllExpressionTest(AggregateDirectMapHolder.class, 1);
+        AggregateMapKey aggkey = new AggregateMapKey();
+        aggkey.setKey(11);
+        holders = new ExpressionBuilder();
+        exp = holders.anyOf("aggregateToDirectMap").mapKey().equal(aggkey);
+        test.setExpression(exp);
+        suite.addTest(test);
+        
+        test = new ReadAllExpressionTest(EntityDirectMapHolder.class, 1);
+        EntityMapKey entKey = new EntityMapKey();
+        entKey.setId(333);
+        entKey.setData("data3");
+        holders = new ExpressionBuilder();
+        exp = holders.anyOf("entityToDirectMap").mapKey().equal(entKey);
+        test.setExpression(exp);
+        suite.addTest(test);
+        
         return suite;
     }
     
@@ -84,6 +128,29 @@ public class MapCollectionsTestModel extends TestModel {
         suite.addTest(new TestReadDirectAggregateMapMapping(ForeignReferenceMapping.INNER_JOIN));
         suite.addTest(new TestReadAggregateAggregateMapMapping(ForeignReferenceMapping.INNER_JOIN));
         suite.addTest(new TestReadEntityAggregateMapMapping(ForeignReferenceMapping.INNER_JOIN));
+        
+        ReadAllExpressionTest test = new ReadAllExpressionTest(DirectAggregateMapHolder.class, 1);
+        ExpressionBuilder holders = new ExpressionBuilder();
+        Expression exp = holders.anyOf("directToAggregateMap").mapKey().equal(1);
+        test.setExpression(exp);
+        suite.addTest(test);
+        
+        test = new ReadAllExpressionTest(AggregateAggregateMapHolder.class, 1);
+        AggregateMapKey aggkey = new AggregateMapKey();
+        aggkey.setKey(11);
+        holders = new ExpressionBuilder();
+        exp = holders.anyOf("aggregateToAggregateMap").mapKey().equal(aggkey);
+        test.setExpression(exp);
+        suite.addTest(test);
+        
+        test = new ReadAllExpressionTest(EntityAggregateMapHolder.class, 1);
+        EntityMapKey entKey = new EntityMapKey();
+        entKey.setId(111);
+        entKey.setData("111");
+        holders = new ExpressionBuilder();
+        exp = holders.anyOf("entityToAggregateMap").mapKey().equal(entKey);
+        test.setExpression(exp);
+        suite.addTest(test);
         
         return suite;
     }
@@ -113,6 +180,50 @@ public class MapCollectionsTestModel extends TestModel {
         suite.addTest(new TestReadAggregateEntity1MMapMapping(ForeignReferenceMapping.INNER_JOIN));
         suite.addTest(new TestReadEntityEntity1MMapMapping(ForeignReferenceMapping.INNER_JOIN));
         
+        //Expressions
+        ReadAllExpressionTest test = new ReadAllExpressionTest(DirectEntity1MMapHolder.class, 1);
+        ExpressionBuilder holders = new ExpressionBuilder();
+        Expression exp = holders.anyOf("directToEntityMap").mapKey().equal(11);
+        test.setExpression(exp);
+        suite.addTest(test);
+        
+        test = new ReadAllExpressionTest(AggregateEntity1MMapHolder.class, 1);
+        AggregateMapKey aggkey = new AggregateMapKey();
+        aggkey.setKey(11);
+        holders = new ExpressionBuilder();
+        exp = holders.anyOf("aggregateToEntityMap").mapKey().equal(aggkey);
+        test.setExpression(exp);
+        suite.addTest(test);
+        
+        test = new ReadAllExpressionTest(AggregateEntity1MMapHolder.class, 1);
+        holders = new ExpressionBuilder();
+        exp = holders.anyOf("aggregateToEntityMap").mapKey().get("key").equal(11);
+        test.setExpression(exp);
+        suite.addTest(test);
+        
+        test = new ReadAllExpressionTest(EntityEntity1MMapHolder.class, 1);
+        EntityMapKey entKey = new EntityMapKey();
+        entKey.setId(555);
+        entKey.setData("data5");
+        holders = new ExpressionBuilder();
+        exp = holders.anyOf("entityToEntityMap").mapKey().equal(entKey);
+        test.setExpression(exp);
+        suite.addTest(test);
+        
+        test = new ReadAllExpressionTest(EntityEntity1MMapHolder.class, 1);
+        holders = new ExpressionBuilder();
+        exp = holders.anyOf("entityToEntityMap").mapKey().get("data").equal("data5");
+        test.setExpression(exp);
+        suite.addTest(test);
+
+        suite.addTest(new MapKeyDirectEntity1MReportQueryTestCase());
+        suite.addTest(new MapKeyAggregateEntity1MReportQueryTestCase());
+        suite.addTest(new MapKeyEntityEntity1MReportQueryTestCase());
+        
+        suite.addTest(new MapEntryDirectEntity1MReportQueryTest());
+        
+        suite.addTest(new InMemoryDirectEntity1MTest());
+        
         return suite;
     }
     
@@ -140,6 +251,30 @@ public class MapCollectionsTestModel extends TestModel {
         suite.addTest(new TestReadDirectEntityU1MMapMapping(ForeignReferenceMapping.INNER_JOIN));
         suite.addTest(new TestReadAggregateEntityU1MMapMapping(ForeignReferenceMapping.INNER_JOIN));
         suite.addTest(new TestReadEntityEntityU1MMapMapping(ForeignReferenceMapping.INNER_JOIN));
+        
+        //Expressions
+        ReadAllExpressionTest test = new ReadAllExpressionTest(DirectEntityU1MMapHolder.class, 1);
+        ExpressionBuilder holders = new ExpressionBuilder();
+        Expression exp = holders.anyOf("directToEntityMap").mapKey().equal(11);
+        test.setExpression(exp);
+        suite.addTest(test);
+        
+        test = new ReadAllExpressionTest(AggregateEntityU1MMapHolder.class, 1);
+        AggregateMapKey aggkey = new AggregateMapKey();
+        aggkey.setKey(11);
+        holders = new ExpressionBuilder();
+        exp = holders.anyOf("aggregateToEntityMap").mapKey().equal(aggkey);
+        test.setExpression(exp);
+        suite.addTest(test);
+        
+        test = new ReadAllExpressionTest(EntityEntityU1MMapHolder.class, 1);
+        EntityMapKey entKey = new EntityMapKey();
+        entKey.setId(999);
+        entKey.setData("data9");
+        holders = new ExpressionBuilder();
+        exp = holders.anyOf("entityToEntityMap").mapKey().equal(entKey);
+        test.setExpression(exp);
+        suite.addTest(test);
 
         return suite;
     }
@@ -168,6 +303,30 @@ public class MapCollectionsTestModel extends TestModel {
         suite.addTest(new TestReadDirectEntityMapMapping(ForeignReferenceMapping.INNER_JOIN));
         suite.addTest(new TestReadAggregateEntityMapMapping(ForeignReferenceMapping.INNER_JOIN));
         suite.addTest(new TestReadEntityEntityMapMapping(ForeignReferenceMapping.INNER_JOIN));
+        
+        //Expressions
+        ReadAllExpressionTest test = new ReadAllExpressionTest(DirectEntityMapHolder.class, 1);
+        ExpressionBuilder holders = new ExpressionBuilder();
+        Expression exp = holders.anyOf("directToEntityMap").mapKey().equal(11);
+        test.setExpression(exp);
+        suite.addTest(test);
+        
+        test = new ReadAllExpressionTest(AggregateEntityMapHolder.class, 1);
+        AggregateMapKey aggkey = new AggregateMapKey();
+        aggkey.setKey(11);
+        holders = new ExpressionBuilder();
+        exp = holders.anyOf("aggregateToEntityMap").mapKey().equal(aggkey);
+        test.setExpression(exp);
+        suite.addTest(test);
+        
+        test = new ReadAllExpressionTest(EntityEntityMapHolder.class, 1);
+        EntityMapKey entKey = new EntityMapKey();
+        entKey.setId(777);
+        entKey.setData("data7");
+        holders = new ExpressionBuilder();
+        exp = holders.anyOf("entityToEntityMap").mapKey().equal(entKey);
+        test.setExpression(exp);
+        suite.addTest(test);
         
         return suite;
     }

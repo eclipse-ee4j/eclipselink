@@ -32,6 +32,11 @@ public interface TypeHelper {
      * specified owner class. */ 
     public Object resolveAttribute(Object ownerClass, String attribute);
 
+    /** Returns the type of the map key for the mapping on ownerClass named attribute
+     * Returns null if that mapping does not exist or does not contain a map key
+     */ 
+    public Object resolveMapKey(Object ownerClass, String attribute);
+
     /** Returns the type of the class corresponding to the specified abstract
      * schema type. */
     public Object resolveSchema(String schemaName);
@@ -58,6 +63,9 @@ public interface TypeHelper {
     /** Returns the type representation of class Long.*/
     public Object getLongClassType();
 
+    /** Returns the type representation of class Map.Entry.*/
+    public Object getMapEntryType();
+    
     /** Returns the float type representation.*/
     public Object getFloatType();
 

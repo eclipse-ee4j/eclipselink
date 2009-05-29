@@ -421,8 +421,8 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         
         catch(IllegalArgumentException ex)
         {
-            Assert.assertEquals(JPQLException.syntaxErrorAt, ((JPQLException) ex.getCause()).getErrorCode());
-            assertTrue("Failed to throw expected IllegalArgumentException for a query having a Syntax error.", ex.getCause().getMessage().contains("syntax error at [6]"));
+            Assert.assertEquals(JPQLException.unexpectedToken, ((JPQLException) ex.getCause()).getErrorCode());
+            assertTrue("Failed to throw expected IllegalArgumentException for a query having a Syntax error.", ex.getCause().getMessage().contains("unexpected token [6]"));
         }         
 
         ejbqlString =  "SELECT c FROM Customer c WHERE c.name NOT BETEEN 6 and 7";

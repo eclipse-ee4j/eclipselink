@@ -21,7 +21,7 @@ public class TestUpdateAggregateAggregateMapMapping extends TestReadAggregateAgg
 
     public void test(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
-        holders = uow.readAllObjects(AggregateAggregateMapHolder.class);
+        holders = uow.readAllObjects(AggregateAggregateMapHolder.class, holderExp);
         AggregateAggregateMapHolder holder = (AggregateAggregateMapHolder)holders.get(0);
         AggregateMapKey key = new AggregateMapKey();
         key.setKey(11);
@@ -41,7 +41,7 @@ public class TestUpdateAggregateAggregateMapMapping extends TestReadAggregateAgg
     public void verify(){
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         Object initialHolder = holders.get(0);
-        holders = getSession().readAllObjects(AggregateAggregateMapHolder.class);
+        holders = getSession().readAllObjects(AggregateAggregateMapHolder.class, holderExp);
         AggregateAggregateMapHolder holder = (AggregateAggregateMapHolder)holders.get(0);
         if (!compareObjects(holder, initialHolder)){
             throw new TestErrorException("Objects do not match reinitialize");

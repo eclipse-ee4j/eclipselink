@@ -12,10 +12,10 @@
  ******************************************************************************/
 package org.eclipse.persistence.mappings.foundation;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
@@ -26,9 +26,9 @@ import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.internal.sessions.CommitManager;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.mappings.querykeys.QueryKey;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadQuery;
@@ -115,7 +115,14 @@ public interface MapKeyMapping extends MapComponentMapping {
      * Returns the key.
      */
     public Object createMapComponentFromJoinedRow(AbstractRecord dbRow, JoinedAttributeManager joinManager, ObjectBuildingQuery query, AbstractSession session);
-       
+
+    /**
+     * INTERNAL:
+     * Create a query key that links to the map key
+     * @return
+     */
+    public QueryKey createQueryKeyForMapKey();
+    
     /**
      * INTERNAL:
      * For mappings used as MapKeys in MappedKeyContainerPolicy, Delete the passed object if necessary.
@@ -139,6 +146,13 @@ public interface MapKeyMapping extends MapComponentMapping {
      * Get all the fields for the map key
      */
     public List<DatabaseField> getAllFieldsForMapKey();
+    
+    /**
+     * INTERNAL:
+     * Get the descriptor for the Map Key
+     * @return
+     */
+    public ClassDescriptor getReferenceDescriptor();
     
     /**
      * INTERNAL:
@@ -169,6 +183,13 @@ public interface MapKeyMapping extends MapComponentMapping {
      * @return
      */
     public Object getTargetVersionOfSourceObject(Object object, Object parent, MergeManager mergeManager);
+    
+    /**
+     * INTERNAL:
+     * Return the class this key mapping maps or the descriptor for it
+     * @return
+     */
+    public Object getMapKeyTargetType();
     
     /**
      * INTERNAL:

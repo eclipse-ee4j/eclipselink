@@ -209,6 +209,14 @@ public class Node {
 
     /**
      * INTERNAL
+     * Is this node a MapKey node
+     */
+    public boolean isMapKeyNode() {
+        return false;
+    }
+    
+    /**
+     * INTERNAL
      * Is this node a Minus node
      */
     public boolean isMinusNode() {

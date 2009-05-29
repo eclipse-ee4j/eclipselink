@@ -76,6 +76,14 @@ public class Helper implements Serializable {
     /** Backdoor to allow 0 to be used in primary keys. */
     public static boolean isZeroValidPrimaryKey = false;
 
+    // settings to allow ascertaining attribute names from method names
+    public static final String IS_PROPERTY_METHOD_PREFIX = "is";
+    public static final String GET_PROPERTY_METHOD_PREFIX = "get";
+    public static final String SET_PROPERTY_METHOD_PREFIX = "set";
+    public static final String SET_IS_PROPERTY_METHOD_PREFIX = "setIs";
+    public static final int POSITION_AFTER_IS_PREFIX = IS_PROPERTY_METHOD_PREFIX.length();
+    public static final int POSITION_AFTER_GET_PREFIX = GET_PROPERTY_METHOD_PREFIX.length();
+    
     /**
      * Return if JDBC date access should be optimized.
      */
@@ -2147,5 +2155,30 @@ public class Helper implements Serializable {
             // characters in path
             return new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), null);
         }
+    }
+
+    /**
+     * INTERNAL:
+     * Method to convert a getXyz or isXyz method name to an xyz attribute name.
+     * NOTE: The method name passed it may not actually be a method name, so
+     * by default return the name passed in.
+     */
+    public static String getAttributeNameFromMethodName(String methodName) {
+        String leadingChar = "";
+        String restOfName = methodName;
+        
+        // We're looking at method named 'get' or 'set', therefore,
+        // there is no attribute name, set it to "" string for now.
+        if (methodName.equals(GET_PROPERTY_METHOD_PREFIX) || methodName.equals(IS_PROPERTY_METHOD_PREFIX)) {
+            return "";
+        } else if (methodName.startsWith(GET_PROPERTY_METHOD_PREFIX)) {
+            leadingChar = methodName.substring(POSITION_AFTER_GET_PREFIX, POSITION_AFTER_GET_PREFIX + 1);
+            restOfName = methodName.substring(POSITION_AFTER_GET_PREFIX + 1);
+        } else if (methodName.startsWith(IS_PROPERTY_METHOD_PREFIX)){
+            leadingChar = methodName.substring(POSITION_AFTER_IS_PREFIX, POSITION_AFTER_IS_PREFIX + 1);
+            restOfName = methodName.substring(POSITION_AFTER_IS_PREFIX + 1);
+        }
+        
+        return leadingChar.toLowerCase().concat(restOfName);
     }
 }

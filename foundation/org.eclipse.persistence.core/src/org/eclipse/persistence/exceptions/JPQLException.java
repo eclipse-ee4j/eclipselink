@@ -60,6 +60,7 @@ public class JPQLException extends EclipseLinkException {
     public static final int invalidCollectionNavigation = 8036;
     public static final int entityTypeNotFound2 = 8037;
     public static final int resolutionClassNotFoundException2 = 8038;
+    public static final int variableCannotHaveMapKey = 8039;
     public Collection internalExceptions = null;
 
     /**
@@ -488,6 +489,15 @@ public class JPQLException extends EclipseLinkException {
             JPQLException.class, entityTypeNotFound2, args);
         JPQLException exception = new JPQLException(message);
         exception.setErrorCode(entityTypeNotFound2);
+        return exception;
+    }
+    
+    public static JPQLException variableCannotHaveMapKey(String query, int line, int column, String name) {
+        Object[] args = { query, line, column, name };
+
+        String message = ExceptionMessageGenerator.buildMessage(JPQLException.class, variableCannotHaveMapKey, args);
+        JPQLException exception = new JPQLException(message);
+        exception.setErrorCode(variableCannotHaveMapKey);
         return exception;
     }
 

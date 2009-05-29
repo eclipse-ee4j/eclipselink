@@ -20,6 +20,7 @@ import java.util.*;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.internal.expressions.MapEntryExpression;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.queries.*;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -156,7 +157,11 @@ public class ReportQueryResult implements Serializable, Map {
         int itemIndex = item.getResultIndex();
         ClassDescriptor descriptor = item.getDescriptor();
         if (!item.isPlaceHolder()) {
-            if (mapping != null) {
+            if (descriptor == null && mapping != null){
+                descriptor = mapping.getReferenceDescriptor();
+            }
+            if (mapping != null && mapping.isAbstractDirectMapping()) {
+                
                 if (itemIndex >= rowSize) {
                     throw QueryException.reportQueryResultSizeMismatch(itemIndex + 1, rowSize);
                 }
@@ -181,6 +186,24 @@ public class ReportQueryResult implements Serializable, Map {
                     subRow = new DatabaseRecord(trimedFields, trimedValues);
                 }
                 value = descriptor.getObjectBuilder().buildObject(query, subRow, joinManager);
+                
+                // this covers two possibilities
+                // 1. We want the actual Map.Entry from the table rather than the just the key
+                // 2. The map key is extracted from the owning object rather than built with 
+                // a specific mapping.  This could happen in a MapContainerPolicy
+                if (item.getAttributeExpression().isMapEntryExpression() && mapping.isCollectionMapping()){
+                    Object rowKey = null;
+                    if (mapping.getContainerPolicy().isMapPolicy() && !mapping.getContainerPolicy().isMappedKeyMapPolicy()){
+                        rowKey = ((MapContainerPolicy)mapping.getContainerPolicy()).keyFrom(value, query.getSession());
+                    } else {
+                        rowKey = mapping.getContainerPolicy().buildKey(subRow, query, query.getSession());
+                    }
+                    if (((MapEntryExpression)item.getAttributeExpression()).shouldReturnMapEntry()){
+                        value = new Association(rowKey, value);
+                    } else {
+                        value = rowKey;
+                    }
+                }
                 // GF_ISSUE_395
                 if (this.key != null) {
                     List list = descriptor.getObjectBuilder().extractPrimaryKeyFromRow(subRow, query.getSession());

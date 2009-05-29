@@ -36,6 +36,9 @@ import org.eclipse.persistence.descriptors.changetracking.MapChangeEvent;
 import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
 import org.eclipse.persistence.mappings.Association;
 import org.eclipse.persistence.mappings.CollectionMapping;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
+import org.eclipse.persistence.mappings.querykeys.QueryKey;
 
 /**
  * <p><b>Purpose</b>: A MapContainerPolicy is ContainerPolicy whose container class
@@ -170,9 +173,6 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
             if (clonedValue != null && unitOfWork.isObjectNew(clonedValue)) { 
                 unitOfWork.addPrivateOwnedObject(mapping, clonedValue);
             }
-            if (clonedKey != null && unitOfWork.isObjectNew(clonedKey)) {
-                unitOfWork.addPrivateOwnedObject(mapping, clonedKey);
-            }
         }
         addInto(clonedKey, clonedValue, toCollection, unitOfWork);
     }
@@ -276,6 +276,51 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
 
     /**
      * INTERNAL:
+     * Create a query key that links to the map key.  MapContainerPolicy does not have a specific mapping for the
+     * key, so return null;
+     * @return
+     */
+    public QueryKey createQueryKeyForMapKey(){
+        return null;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return all the fields in the key.  MapContainerPolicy gets it fields from the reference descriptor
+     * of the provided mappings.  It uses its keyName to lookup the appropriate mapping and returns the fields from
+     * that mapping
+     * @return
+     */
+    public List<DatabaseField> getAllFieldsForMapKey(CollectionMapping baseMapping){
+        if (baseMapping == null){
+            return null;
+        }
+        ClassDescriptor descriptor = baseMapping.getReferenceDescriptor();
+        DatabaseMapping mapping = descriptor.getMappingForAttributeName(Helper.getAttributeNameFromMethodName(keyName));
+        return mapping.getFields();
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the DatabaseField that represents the key in a DirectMapMapping.   MapContainerPolicy gets it fields from the reference descriptor
+     * of the provided mappings.  It uses its keyName to lookup the appropriate mapping and returns the field from
+     * that mapping
+     * @return
+     */
+    public DatabaseField getDirectKeyField(CollectionMapping baseMapping){
+        if (baseMapping == null){
+            return null;
+        }
+        ClassDescriptor descriptor = baseMapping.getReferenceDescriptor();
+        DatabaseMapping mapping = descriptor.getMappingForAttributeName(Helper.getAttributeNameFromMethodName(keyName));
+        if (mapping.isAbstractDirectMapping()){
+            return ((AbstractDirectMapping)mapping).getField();
+        }
+        return null;
+    }
+    
+    /**
+     * INTERNAL:
      * Returns the element class which defines the map key.
      */
     public Class getElementClass() {
@@ -307,6 +352,21 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
     }
 
     /**
+     * INTERNAL:
+     * Return the type of the map key, this will be overridden by container policies that allow maps
+     * @return
+     */
+    public Object getKeyType(){
+        initializeKey();
+        if (keyField != null){
+            return keyField.getType();
+        } else if (keyMethod != null){
+            return keyMethod.getReturnType();
+        }
+        return null;
+    }
+    
+    /**
      * INTERNAL
      * Yes this is a MapPolicy
      */
@@ -326,6 +386,32 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
     
     /**
      * INTERNAL:
+     * Return whether a map key this container policy represents is an attribute
+     * @return
+     */
+    public boolean isMapKeyAttribute(){
+        if (elementDescriptor != null){
+            DatabaseMapping mapping = elementDescriptor.getMappingForAttributeName(Helper.getAttributeNameFromMethodName(keyName));
+            if (mapping != null){
+                return mapping.isDirectToFieldMapping();
+            }
+            
+        }
+        initializeKey();
+        if (keyField != null){
+            if (keyField.getClass().isPrimitive()){
+                return true;
+            }
+        } else if (keyMethod != null){
+            if (keyMethod.getClass().isPrimitive()){
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
      * Return whether the iterator has more objects.
      * The iterator is the one returned from #iteratorFor().
      *
@@ -334,20 +420,11 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
     public boolean hasNext(Object iterator){
         return ((MapContainerPolicyIterator)iterator).hasNext();
     }
-
     /**
      * INTERNAL:
-     * Return an Iterator for the given container.
+     * Set the keyMethod or keyField based on the keyName
      */
-    public Object iteratorFor(Object container) {
-        return new MapContainerPolicyIterator((Map)container);
-    }
-
-    /**
-     * INTERNAL:
-     * Return the key for the specified element.
-     */
-    public Object keyFrom(Object element, AbstractSession session) {
+    protected void initializeKey(){
         // Should only run through this once ...
         if (keyName != null && keyMethod == null && keyField == null) {
             try {
@@ -360,6 +437,22 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
                 }
             }
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * Return an Iterator for the given container.
+     */
+    public Object iteratorFor(Object container) {
+        return new MapContainerPolicyIterator((Map)container);
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the key for the specified element.
+     */
+    public Object keyFrom(Object element, AbstractSession session) {
+        initializeKey();
         Object keyElement = element;
         if (hasElementDescriptor()) {
             keyElement = getElementDescriptor().getObjectBuilder().unwrapObject(element, session);

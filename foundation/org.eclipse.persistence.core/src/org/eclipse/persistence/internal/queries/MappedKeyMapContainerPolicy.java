@@ -36,6 +36,7 @@ import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.mappings.AggregateObjectMapping;
 import org.eclipse.persistence.mappings.Association;
+import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectMapMapping;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
@@ -43,6 +44,7 @@ import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.mappings.foundation.MapKeyMapping;
 import org.eclipse.persistence.mappings.foundation.MapComponentMapping;
+import org.eclipse.persistence.mappings.querykeys.QueryKey;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.DeleteObjectQuery;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
@@ -124,6 +126,15 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements D
         return keyMapping.extractIdentityFieldsForQuery(keyValue, session);
     }
 
+    /**
+     * INTERNAL:
+     * Return the type of the map key, this will be overridden by container policies that allow maps
+     * @return
+     */
+    public Object getKeyType(){
+        return keyMapping.getMapKeyTargetType();
+    }
+    
     /**
      * INTERNAL:
      * Called when the insert query is being initialized to ensure the fields for the key are in the insert query
@@ -385,6 +396,14 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements D
             changeSet.setOldKey(association.getKey());
         }
     }
+    /**
+     * INTERNAL:
+     * Create a query key that links to the map key
+     * @return
+     */
+    public QueryKey createQueryKeyForMapKey(){
+        return keyMapping.createQueryKeyForMapKey();
+    }
     
     /**
      * INTERNAL:
@@ -446,8 +465,16 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements D
      * Return all the fields in the key
      * @return
      */
-    public List<DatabaseField> getAllFieldsForMapKey(){
+    public List<DatabaseField> getAllFieldsForMapKey(CollectionMapping baseMapping){
         return keyMapping.getAllFieldsForMapKey();
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the reference descriptor for the map key if it exists
+     */
+    public ClassDescriptor getDescriptorForMapKey(){
+        return keyMapping.getReferenceDescriptor();
     }
     
     /**
@@ -472,7 +499,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements D
      * keyMapping is not a DirectMapping, this will return null
      * @return
      */
-    public DatabaseField getDirectKeyField(){
+    public DatabaseField getDirectKeyField(CollectionMapping baseMapping){
         if (((DatabaseMapping)keyMapping).isDirectToFieldMapping()){
             return ((DirectToFieldMapping)keyMapping).getField();
         }
@@ -549,6 +576,16 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements D
     
     public boolean isMappedKeyMapPolicy(){
         return true;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return whether a map key this container policy represents is an attribute
+     * By default this method will return false since only subclasses actually represent maps.
+     * @return
+     */
+    public boolean isMapKeyAttribute(){
+        return ((DatabaseMapping)keyMapping).isAbstractDirectMapping();
     }
     
     /**
@@ -715,6 +752,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements D
     public boolean propagatesEventsToCollection(){
         return ((DatabaseMapping)keyMapping).isAggregateObjectMapping();
     }
+    
     /**
      * INTERNAL:
      * Set the DatabaseField that will represent the key in a DirectMapMapping
@@ -835,7 +873,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements D
      */
     public int updateJoinedMappingIndexesForMapKey(Map<DatabaseMapping, Object> indexList, int index){
         indexList.put((DatabaseMapping)keyMapping, index);
-        return getAllFieldsForMapKey().size();
+        return getAllFieldsForMapKey(null).size();
     }
     
     /**

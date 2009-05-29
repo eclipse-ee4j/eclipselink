@@ -49,7 +49,7 @@
         - clean : removes all build generated files
         - build-distribution : compiles and packages all jars, javadocs, installer
         - build-core : compiles all components, excluding tests, utilities, and Oracle extensions
-        - build-extension : compiles Oracle extensions and tests
+        - build-extensions : compiles Oracle extensions and tests
         - build-test : compiles all tests, excluding Oracle extensions
         - build-workbench-test : compiles the workbench tests
         - package-eclipselink-jar : packages eclipselink.jar

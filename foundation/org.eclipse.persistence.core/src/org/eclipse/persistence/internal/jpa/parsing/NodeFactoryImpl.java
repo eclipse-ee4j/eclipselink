@@ -929,5 +929,19 @@ public class NodeFactoryImpl implements NodeFactory {
             IdentificationVariableDeclNode.calculateCanonicalName(name);
     }
 
+    public Object newKey(int line, int column, Object left){
+        MapKeyNode node = new MapKeyNode();
+        node.setLeft((Node)left);
+        setPosition(node, line, column);
+        return node;
+    }
+
+    public Object newMapEntry(int line, int column, Object arg){
+        MapEntryNode node = new MapEntryNode();
+        node.setLeft((Node)arg);
+        setPosition(node, line, column);
+        return node;
+    }
 
 }
+

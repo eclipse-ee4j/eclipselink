@@ -136,14 +136,14 @@ public class ReportItem implements Cloneable, java.io.Serializable {
                     }
                 }
             } else {
+                if (mapping.isAbstractDirectMapping() || getAttributeExpression().isMapEntryExpression()){
+                        setMapping(mapping);
                 //Bug4942640  Widen the check to support collection mapping too
-                if (mapping.isForeignReferenceMapping()) {
+                } else if (mapping.isForeignReferenceMapping()) {
                     setDescriptor(mapping.getReferenceDescriptor());
                     if (getDescriptor().hasInheritance()){
                         ((QueryKeyExpression)getAttributeExpression()).setShouldUseOuterJoinForMultitableInheritance(true);
                     }
-                } else if (mapping.isAbstractDirectMapping()) {
-                    setMapping(mapping);
                 } else {
                     throw QueryException.invalidExpressionForQueryItem(getAttributeExpression(), query);
                 }

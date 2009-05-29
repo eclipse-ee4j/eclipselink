@@ -30,6 +30,8 @@ import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.expressions.ObjectExpression;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.mappings.foundation.MapKeyMapping;
+import org.eclipse.persistence.mappings.querykeys.OneToOneQueryKey;
+import org.eclipse.persistence.mappings.querykeys.QueryKey;
 
 /**
  * <p><b>Purpose</b>: One to one mappings are used to represent a pointer references
@@ -397,6 +399,19 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     
     /**
      * INTERNAL:
+     * Create a query key that links to the map key
+     * @return
+     */
+    public QueryKey createQueryKeyForMapKey(){
+        OneToOneQueryKey key = new OneToOneQueryKey();
+        key.setDescriptor(getReferenceDescriptor());
+        key.setReferenceClass(getReferenceClass());
+        key.setJoinCriteria(getAdditionalSelectionCriteriaForMapKey());
+        return key;
+    }
+    
+    /**
+     * INTERNAL:
      * For mappings used as MapKeys in MappedKeyContainerPolicy, Delete the passed object if necessary.
      * 
      * This method is used for removal of private owned relationships
@@ -727,6 +742,15 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      */
     public Object getTargetVersionOfSourceObject(Object object, Object parent, MergeManager mergeManager){
        return  mergeManager.getTargetVersionOfSourceObject(object);
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the class this key mapping maps or the descriptor for it
+     * @return
+     */
+    public Class getMapKeyTargetType(){
+        return getReferenceClass();
     }
     
     /**

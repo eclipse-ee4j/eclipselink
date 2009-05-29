@@ -728,7 +728,7 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      * This method will be overridden by ContainerPolicies that handle map keys
      * @return
      */
-    public List<DatabaseField> getAllFieldsForMapKey(){
+    public List<DatabaseField> getAllFieldsForMapKey(CollectionMapping baseMapping){
         return null;
     }
     
@@ -780,12 +780,20 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
+     * Return the reference descriptor for the map key if it exists
+     */
+    public ClassDescriptor getDescriptorForMapKey(){
+        return null;
+    }
+    
+    /**
+     * INTERNAL:
      * Used for wrapping and unwrapping with the wrapper policy.
      */
     public ClassDescriptor getElementDescriptor() {
         return elementDescriptor;
     }
-
+    
     /**
      * INTERNAL:
      * Return the fields that make up the identity of the key if this mapping is a list
@@ -816,6 +824,15 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      * This will be overridden by container policies that allow maps
      */
     public Expression getKeySelectionCriteria(){
+        return null;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the type of the map key, this will be overridden by container policies that allow maps
+     * @return
+     */
+    public Object getKeyType(){
         return null;
     }
     
@@ -1190,7 +1207,7 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
             referenceDescriptor.getObjectBuilder().recordPrivateOwnedRemovals(unwrapIteratorResult(object), uow, false);
         }
     }
-
+    
     /**
      * Prepare and validate.
      * Allow subclasses to override.

@@ -15,6 +15,7 @@
 
 package org.eclipse.persistence.testing.tests.jpa.jpql;
 
+import java.math.BigInteger;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,6 +24,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 import junit.framework.Assert;
 import junit.framework.Test;
@@ -54,6 +56,15 @@ import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
+import org.eclipse.persistence.testing.models.jpa.inherited.Becks;
+import org.eclipse.persistence.testing.models.jpa.inherited.BecksTag;
+import org.eclipse.persistence.testing.models.jpa.inherited.BeerConsumer;
+import org.eclipse.persistence.testing.models.jpa.inherited.Birthday;
+import org.eclipse.persistence.testing.models.jpa.inherited.Blue;
+import org.eclipse.persistence.testing.models.jpa.inherited.Corona;
+import org.eclipse.persistence.testing.models.jpa.inherited.CoronaTag;
+import org.eclipse.persistence.testing.models.jpa.inherited.ExpertBeerConsumer;
+import org.eclipse.persistence.testing.models.jpa.inherited.InheritedTableManager;
 
 /**
  * <p>
@@ -96,6 +107,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         TestSuite suite = new TestSuite();
         suite.setName("JUnitJPQLComplexTestSuite");
         suite.addTest(new JUnitJPQLComplexTestSuite("testSetup"));
+
         suite.addTest(new JUnitJPQLComplexTestSuite("complexABSTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexABSWithParameterTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("compexInTest"));
@@ -141,6 +153,17 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         suite.addTest(new JUnitJPQLComplexTestSuite("complexInheritanceUsingNamedQueryTest"));
         */
         
+        suite.addTest(new JUnitJPQLComplexTestSuite("mapContainerPolicyMapKeyInSelectTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("mapContainerPolicyMapValueInSelectTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("mapContainerPolicyMapEntryInSelectTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("mapContainerPolicyMapKeyInSelectionCriteriaTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("mapContainerPolicyMapValueInSelectionCriteriaTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("mappedKeyMapContainerPolicyMapKeyInSelectionCriteriaTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("mappedKeyMapContainerPolicyMapKeyInSelectTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("mappedKeyMapContainerPolicyMapEntryInSelectTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("mappedKeyMapContainerPolicyEmbeddableMapKeyInSelectionCriteriaTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("mappedKeyMapContainerPolicyElementCollectionSelectionCriteriaTest"));
+        
         return suite;
     }
     
@@ -175,14 +198,14 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         partnerLinkPopulator.buildExamples();
         
         //Persist the examples in the database
-        partnerLinkPopulator.persistExample(session);       
-
+        partnerLinkPopulator.persistExample(session);
+        
+        new InheritedTableManager().replaceTables(getServerSession());
     }
     
-
     public void complexABSTest()
     {
-        EntityManager em = createEntityManager();                  
+        EntityManager em = createEntityManager();
         beginTransaction(em);
         Employee emp1 = (Employee)getServerSession().readAllObjects(Employee.class).firstElement();
         Employee emp2 = (Employee)getServerSession().readAllObjects(Employee.class).lastElement();
@@ -1518,5 +1541,285 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         public String toString() {
             return "LongHolder(" + value1 + ", " + value2 + ")";
         }
+    }
+    
+    public void mapContainerPolicyMapKeyInSelectTest(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+
+        BeerConsumer consumer = new BeerConsumer();
+        consumer.setName("Marvin Monroe");
+        em.persist(consumer);
+        Blue blue = new Blue();
+        blue.setAlcoholContent(5.0f);
+        blue.setUniqueKey(BigInteger.ONE);
+        consumer.addBlueBeerToConsume(blue);
+        em.persist(blue);
+        em.flush();
+        Vector expectedResult = new Vector();
+        expectedResult.add(BigInteger.ONE);
+        
+        clearCache();
+        String ejbqlString = "SELECT KEY(b) FROM BeerConsumer bc join bc.blueBeersToConsume b";
+        
+        List result = em.createQuery(ejbqlString).getResultList();
+        Assert.assertTrue("mapContainerPolicyMapKeyInSelectTest failed", comparer.compareObjects(result, expectedResult));                 
+
+        rollbackTransaction(em);
+        closeEntityManager(em);
+    }
+    
+    public void mapContainerPolicyMapValueInSelectTest(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        BeerConsumer consumer = new BeerConsumer();
+        consumer.setName("Marvin Monroe");
+        em.persist(consumer);
+        Blue blue = new Blue();
+        blue.setAlcoholContent(5.0f);
+        blue.setUniqueKey(BigInteger.ONE);
+        consumer.addBlueBeerToConsume(blue);
+        em.persist(blue);
+        em.flush();
+        Vector expectedResult = new Vector();
+        expectedResult.add(blue);
+        
+        clearCache();
+        String ejbqlString = "SELECT VALUE(b) FROM BeerConsumer bc join bc.blueBeersToConsume b";
+        
+        List result = em.createQuery(ejbqlString).getResultList();
+        Assert.assertTrue("mapContainerPolicyMapValueInSelectTest failed", comparer.compareObjects(result, expectedResult));                 
+
+        rollbackTransaction(em);
+        closeEntityManager(em);
+    }
+    
+    public void mapContainerPolicyMapEntryInSelectTest(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+
+        BeerConsumer consumer = new BeerConsumer();
+        consumer.setName("Marvin Monroe");
+        em.persist(consumer);
+        Blue blue = new Blue();
+        blue.setAlcoholContent(5.0f);
+        blue.setUniqueKey(BigInteger.ONE);
+        consumer.addBlueBeerToConsume(blue);
+        em.persist(blue);
+        em.flush();
+
+        
+        clearCache();
+        String ejbqlString = "SELECT ENTRY(b) FROM BeerConsumer bc join bc.blueBeersToConsume b";
+        
+        List result = em.createQuery(ejbqlString).getResultList();
+        
+        Assert.assertTrue("Incorrect number of values returned", result.size() == 1);
+        Assert.assertTrue("Did not return a Map.Entry", result.get(0) instanceof Map.Entry);
+        Map.Entry entry = (Map.Entry)result.get(0);
+        Assert.assertTrue("Keys do not match", entry.getKey().equals(BigInteger.ONE));
+        Assert.assertTrue("Values do not match", comparer.compareObjects(entry.getValue(), blue));
+
+        rollbackTransaction(em);
+        closeEntityManager(em);
+    }
+    
+    public void mapContainerPolicyMapKeyInSelectionCriteriaTest(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+
+        BeerConsumer consumer = new BeerConsumer();
+        consumer.setName("Marvin Monroe");
+        em.persist(consumer);
+        Blue blue = new Blue();
+        blue.setAlcoholContent(5.0f);
+        blue.setUniqueKey(BigInteger.ONE);
+        consumer.addBlueBeerToConsume(blue);
+        em.persist(blue);
+        em.flush();
+        Vector expectedResult = new Vector();
+        expectedResult.add(consumer);
+        
+        clearCache();
+        String ejbqlString = "SELECT bc FROM BeerConsumer bc join bc.blueBeersToConsume b where KEY(b) = 1";
+        
+        List result = em.createQuery(ejbqlString).getResultList();
+        Assert.assertTrue("mapContainerPolicyMapKeyInSelectionCriteriaTest failed", comparer.compareObjects(result, expectedResult));                 
+
+        rollbackTransaction(em);
+        closeEntityManager(em);
+    }
+    
+    public void mapContainerPolicyMapValueInSelectionCriteriaTest(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+
+        BeerConsumer consumer = new BeerConsumer();
+        consumer.setName("Marvin Monroe");
+        em.persist(consumer);
+        Blue blue = new Blue();
+        blue.setAlcoholContent(5.0f);
+        blue.setUniqueKey(BigInteger.ONE);
+        consumer.addBlueBeerToConsume(blue);
+        em.persist(blue);
+        em.flush();
+        Vector expectedResult = new Vector();
+        expectedResult.add(consumer);
+        
+        clearCache();
+        String ejbqlString = "SELECT bc FROM BeerConsumer bc join bc.blueBeersToConsume b where VALUE(b).uniqueKey = 1";
+        
+        List result = em.createQuery(ejbqlString).getResultList();
+        Assert.assertTrue("mapContainerPolicyMapValueInSelectionCriteriaTest failed", comparer.compareObjects(result, expectedResult));                 
+
+        rollbackTransaction(em);
+        closeEntityManager(em);
+    }
+    
+    public void mappedKeyMapContainerPolicyMapKeyInSelectionCriteriaTest(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+
+        BeerConsumer consumer = new BeerConsumer();
+        consumer.setName("Marvin Monroe");
+        em.persist(consumer);
+        Becks becks = new Becks();
+        becks.setAlcoholContent(5.0);
+        BecksTag tag = new BecksTag();
+        tag.setCallNumber("123");
+        consumer.addBecksBeerToConsume(becks, tag);
+        em.persist(becks);
+        em.persist(tag);
+        em.flush();
+        Vector expectedResult = new Vector();
+        expectedResult.add(consumer);
+        
+        clearCache();
+        String ejbqlString = "SELECT bc FROM BeerConsumer bc join bc.becksBeersToConsume b where Key(b).callNumber = '123'";
+        
+        List result = em.createQuery(ejbqlString).getResultList();
+
+        Assert.assertTrue("mappedKeyMapContainerPolicyMapKeyInSelectionCriteriaTest failed", comparer.compareObjects(result, expectedResult));                 
+
+        rollbackTransaction(em);
+        closeEntityManager(em);
+    }
+    
+    public void mappedKeyMapContainerPolicyMapKeyInSelectTest(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+
+        BeerConsumer consumer = new BeerConsumer();
+        consumer.setName("Marvin Monroe");
+        em.persist(consumer);
+        Becks becks = new Becks();
+        becks.setAlcoholContent(5.0);
+        BecksTag tag = new BecksTag();
+        tag.setCallNumber("123");
+        consumer.addBecksBeerToConsume(becks, tag);
+        em.persist(becks);
+        em.persist(tag);
+        em.flush();
+        Vector expectedResult = new Vector();
+        expectedResult.add(tag);
+        
+        clearCache();
+        String ejbqlString = "SELECT Key(b) FROM BeerConsumer bc join bc.becksBeersToConsume b where Key(b).callNumber = '123'";
+        
+        List result = em.createQuery(ejbqlString).getResultList();
+
+        Assert.assertTrue("mappedKeyMapContainerPolicyMapKeyInSelectTest failed", comparer.compareObjects(result, expectedResult));                 
+
+        rollbackTransaction(em);
+        closeEntityManager(em);
+    }
+    
+    public void mappedKeyMapContainerPolicyMapEntryInSelectTest(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+
+        BeerConsumer consumer = new BeerConsumer();
+        consumer.setName("Marvin Monroe");
+        em.persist(consumer);
+        Becks becks = new Becks();
+        becks.setAlcoholContent(5.0);
+        BecksTag tag = new BecksTag();
+        tag.setCallNumber("123");
+        consumer.addBecksBeerToConsume(becks, tag);
+        em.persist(becks);
+        em.persist(tag);
+        em.flush();
+        
+        clearCache();
+        String ejbqlString = "SELECT ENTRY(b) FROM BeerConsumer bc join bc.becksBeersToConsume b where Key(b) = :becksTag";
+        
+        List result = em.createQuery(ejbqlString).setParameter("becksTag", tag).getResultList();
+
+        Assert.assertTrue("Incorrect number of values returned", result.size() == 1);
+        Assert.assertTrue("Did not return a Map.Entry", result.get(0) instanceof Map.Entry);
+        Map.Entry entry = (Map.Entry)result.get(0);
+        Assert.assertTrue("Keys do not match", comparer.compareObjects(entry.getKey(), tag));
+        Assert.assertTrue("Values do not match", comparer.compareObjects(entry.getValue(), becks)); 
+
+        rollbackTransaction(em);
+        closeEntityManager(em);
+    }
+    
+    public void mappedKeyMapContainerPolicyEmbeddableMapKeyInSelectionCriteriaTest(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+
+        BeerConsumer consumer = new BeerConsumer();
+        consumer.setName("Marvin Monroe");
+        em.persist(consumer);
+        Corona corona = new Corona();
+        corona.setAlcoholContent(5.0);
+        CoronaTag tag = new CoronaTag();
+        tag.setCode("123");
+        tag.setNumber(123);
+        consumer.addCoronaBeerToConsume(corona, tag);
+        em.persist(corona);
+        em.flush();
+        Vector expectedResult = new Vector();
+        expectedResult.add(consumer);
+
+        clearCache();
+        String ejbqlString = "SELECT bc FROM BeerConsumer bc join bc.coronaBeersToConsume b where Key(b).code = :key";
+        
+        List result = em.createQuery(ejbqlString).setParameter("key", "123").getResultList();
+
+        Assert.assertTrue("mappedKeyMapContainerPolicyEmbeddableMapKeyInSelectionCriteriaTest failed", comparer.compareObjects(result, expectedResult));                 
+
+        rollbackTransaction(em);
+        closeEntityManager(em);
+    }
+    
+    public void mappedKeyMapContainerPolicyElementCollectionSelectionCriteriaTest(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+
+        ExpertBeerConsumer consumer = new ExpertBeerConsumer();
+        consumer.setName("Marvin Monroe");
+        Birthday bday = new Birthday();
+        bday.setDay(25);
+        bday.setMonth(6);
+        bday.setYear(2009);
+        consumer.addCelebration(bday, "Lots of Cake!");
+
+        em.persist(consumer);
+        em.flush();
+        Vector expectedResult = new Vector();
+        expectedResult.add(consumer);
+        
+        clearCache();
+        String ejbqlString = "SELECT bc FROM EXPERT_CONSUMER bc join bc.celebrations c where Key(c).day = :celebration";
+        
+        List result = em.createQuery(ejbqlString).setParameter("celebration", 25).getResultList();
+
+        Assert.assertTrue("mappedKeyMapContainerPolicyElementCollctionSelectionCriteriaTest failed", comparer.compareObjects(result, expectedResult));
+
+        rollbackTransaction(em);
+        closeEntityManager(em);
     }
 }

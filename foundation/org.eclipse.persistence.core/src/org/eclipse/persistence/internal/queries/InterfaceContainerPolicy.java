@@ -18,11 +18,14 @@ import java.util.*;
 import java.lang.reflect.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedGetMethod;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.CollectionMapping;
+import org.eclipse.persistence.mappings.querykeys.QueryKey;
 
 /**
  * <p><b>Purpose</b>: The abstract class for ContainerPolicy's whose container class implements
@@ -124,6 +127,34 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
 
     /**
      * INTERNAL:
+     * Create a query key that links to the map key
+     * InterfaceContainerPolicy does not support maps, so this method will return null
+     * subclasses will extend this method
+     * @return
+     */
+    public QueryKey createQueryKeyForMapKey(){
+        return null;
+    }
+    
+    
+    /**
+     * INTERNAL:
+     * Return all the fields in the key
+     * @param baseMapping TODO
+     * @return
+     */
+    public List<DatabaseField> getAllFieldsForMapKey(CollectionMapping baseMapping){
+        DatabaseField field = getDirectKeyField(null);
+        if (field != null){
+            List<DatabaseField> fields = new ArrayList<DatabaseField>(1);
+            fields.add(field);
+            return fields;
+        }
+        return null;
+    }
+
+    /**
+     * INTERNAL:
      * Return the 'clone()' Method for the container class.
      * Lazy initialization is used, so we can serialize these things.
      */
@@ -171,6 +202,16 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
         return containerClassName;
     }
 
+    /**
+     * INTERNAL:
+     * Return the DatabaseField that represents the key in a DirectMapMapping.  If the
+     * keyMapping is not a DirectMapping, this will return null
+     * @return
+     */
+    public DatabaseField getDirectKeyField(CollectionMapping mapping){
+        return null;
+    }
+    
     public abstract Class getInterfaceType();
 
     /**
@@ -209,6 +250,16 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
         }
     }
 
+    /**
+     * INTERNAL:
+     * Return whether a map key this container policy represents is an attribute
+     * By default this method will return false since only subclasses actually represent maps.
+     * @return
+     */
+    public boolean isMapKeyAttribute(){
+        return false;
+    }
+    
     /**
      * INTERNAL:
      * Validate the container type.

@@ -22,7 +22,7 @@ public class TestUpdateDirectDirectMapMapping extends TestReadDirectDirectMapMap
     
     public void test(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
-        holders = uow.readAllObjects(DirectDirectMapHolder.class);
+        holders = uow.readAllObjects(DirectDirectMapHolder.class, holderExp);
         changedHolder = (DirectDirectMapHolder)holders.get(0);
         changedHolder.removeDirectToDirectMapItem(new Integer(1));
         changedHolder.addDirectToDirectMapItem(new Integer(3), new Integer(3));
@@ -36,7 +36,7 @@ public class TestUpdateDirectDirectMapMapping extends TestReadDirectDirectMapMap
     public void verify(){
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         Object initialHolder = holders.get(0);
-        holders = getSession().readAllObjects(DirectDirectMapHolder.class);
+        holders = getSession().readAllObjects(DirectDirectMapHolder.class, holderExp);
         DirectDirectMapHolder holder = (DirectDirectMapHolder)holders.get(0);
         if (!compareObjects(holder, changedHolder)){
             throw new TestErrorException("Objects do not match reinitialize");

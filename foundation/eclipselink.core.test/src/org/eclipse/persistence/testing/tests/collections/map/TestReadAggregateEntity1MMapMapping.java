@@ -12,8 +12,11 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.collections.map;
 
+import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.indirection.IndirectMap;
 import org.eclipse.persistence.mappings.OneToManyMapping;
 import org.eclipse.persistence.sessions.UnitOfWork;
@@ -29,7 +32,7 @@ public class TestReadAggregateEntity1MMapMapping extends TestCase {
     protected int fetchJoinRelationship = 0;
     protected int oldFetchJoinValue = 0;
     protected OneToManyMapping mapping = null;
-    
+    protected Expression holderExp;
     
     public TestReadAggregateEntity1MMapMapping(){
         super();
@@ -67,11 +70,12 @@ public class TestReadAggregateEntity1MMapMapping extends TestCase {
         uow.registerObject(value);
         uow.registerObject(value2);
         uow.commit();
+        holderExp = (new ExpressionBuilder()).get("id").equal(holder.getId());
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
     
     public void test(){
-        holders = getSession().readAllObjects(AggregateEntity1MMapHolder.class);
+        holders = getSession().readAllObjects(AggregateEntity1MMapHolder.class, holderExp);
     }
     
     public void verify(){
@@ -96,9 +100,15 @@ public class TestReadAggregateEntity1MMapMapping extends TestCase {
     
     public void reset(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
+        Iterator i = holders.iterator();
+        while (i.hasNext()){
+            AggregateEntity1MMapHolder holder = (AggregateEntity1MMapHolder)i.next();
+            Iterator j = holder.getAggregateToEntityMap().keySet().iterator();
+            while (j.hasNext()){
+                uow.deleteObject(holder.getAggregateToEntityMap().get(j.next()));
+            }
+        }
         uow.deleteAllObjects(holders);
-        List keys = uow.readAllObjects(AEOTMMapValue.class);
-        uow.deleteAllObjects(keys);
         uow.commit();
         if (!verifyDelete(holders.get(0))){
             throw new TestErrorException("Delete was unsuccessful.");

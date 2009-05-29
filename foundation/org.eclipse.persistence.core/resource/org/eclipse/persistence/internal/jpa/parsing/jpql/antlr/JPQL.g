@@ -42,6 +42,7 @@ tokens {
     DELETE='delete';
     DISTINCT='distinct';
     EMPTY='empty';
+    ENTRY='entry';
     ESCAPE='escape';
     EXISTS='exists';
     FALSE='false';
@@ -53,6 +54,7 @@ tokens {
     INNER='inner';
     IS='is';
     JOIN='join';
+    KEY='key';
     LEADING='leading';
     LEFT='left';
     LENGTH='length';
@@ -84,6 +86,7 @@ tokens {
     UNKNOWN='unknown';
     UPDATE='update';
     UPPER='upper';
+    VALUE='value';
     WHERE='where';
 }
 @header {
@@ -326,16 +329,29 @@ selectExpression returns [Object node]
     | n = aggregateExpression {$node = $n.node;}
     | OBJECT LEFT_ROUND_BRACKET n = variableAccess RIGHT_ROUND_BRACKET  {$node = $n.node;}
     | n = constructorExpression  {$node = $n.node;}
+    | n = mapEntryExpression {$node = $n.node;}
+    ;
+
+mapEntryExpression returns [Object node]
+@init { node = null; }
+    : l = ENTRY LEFT_ROUND_BRACKET n = variableAccess RIGHT_ROUND_BRACKET { $node = factory.newMapEntry($l.getLine(), $l.getCharPositionInLine(), $n.node);}
     ;
 
 pathExprOrVariableAccess returns [Object node]
 @init {
     node = null;
 }
-    : n = variableAccess {$node = $n.node;}
+    : n = qualifiedIdentificationVariable {$node = $n.node;}
         (d=DOT right = attribute
             { $node = factory.newDot($d.getLine(), $d.getCharPositionInLine(), $node, $right.node); }
         )* 
+    ;
+
+qualifiedIdentificationVariable returns [Object node]
+@init { node = null; }
+    : n = variableAccess {$node = $n.node;}
+    | l = KEY LEFT_ROUND_BRACKET n = variableAccess RIGHT_ROUND_BRACKET  { $node = factory.newKey($l.getLine(), $l.getCharPositionInLine(), $n.node); }
+    | l = VALUE LEFT_ROUND_BRACKET n = variableAccess RIGHT_ROUND_BRACKET { $node = $n.node;}
     ;
 
 aggregateExpression returns [Object node]
@@ -510,7 +526,7 @@ pathExpression returns [Object node]
 @init { 
     node = null; 
 }
-    : n = variableAccess {$node = $n.node;}
+    : n = qualifiedIdentificationVariable {$node = $n.node;}
         (d=DOT right = attribute
             {
                 $node = factory.newDot($d.getLine(), $d.getCharPositionInLine(), $node, $right.node); 
@@ -782,8 +798,7 @@ arithmeticFactor returns [Object node]
 arithmeticPrimary returns [Object node]
 @init { node = null; }
     : { aggregatesAllowed() }? n = aggregateExpression {$node = $n.node;}
-    | n = variableAccess {$node = $n.node;}
-    | n = stateFieldPathExpression {$node = $n.node;}
+    | n = pathExprOrVariableAccess {$node = $n.node;}
     | n = functionsReturningNumerics {$node = $n.node;}
     | n = functionsReturningDatetime {$node = $n.node;}
     | n = functionsReturningStrings {$node = $n.node;}
