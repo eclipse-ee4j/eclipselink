@@ -120,8 +120,8 @@ public @interface ManyToMany {
     /** (Optional) Whether the association should be
      * lazily loaded or must be eagerly fetched. The
      * {@link FetchType#EAGER EAGER} strategy is a 
-     * requirement on the persistenceprovider runtime 
-     * that the associatedentities must be eagerly fetched. 
+     * requirement on the persistence provider runtime 
+     * that the associated entities must be eagerly fetched. 
      * The {@link FetchType#LAZY LAZY} strategy is a hint 
      * to the persistence provider runtime.
      */
