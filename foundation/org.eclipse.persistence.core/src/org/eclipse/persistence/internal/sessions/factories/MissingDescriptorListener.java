@@ -38,6 +38,7 @@ public class MissingDescriptorListener extends SessionEventAdapter {
     protected static String XML_INTERACTION_CLASS = "org.eclipse.persistence.eis.interactions.XMLInteraction";
     protected static String EIS_LOGIN_CLASS = "org.eclipse.persistence.eis.EISLogin";
     protected static String XML_BINARY_MAPPING_CLASS = "org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping";
+    protected static String XML_BINARY_COLLECTION_MAPPING_CLASS = "org.eclipse.persistence.oxm.mappings.XMLBinaryDataCollectionMapping";
 
     public void missingDescriptor(SessionEvent event) {
         String name = ((Class)event.getResult()).getName();
@@ -80,7 +81,7 @@ public class MissingDescriptorListener extends SessionEventAdapter {
             }
             session.addDescriptors(new EISObjectPersistenceXMLProject(namespaceResolverWithPrefixes));
         }
-        if(name.equals(XML_BINARY_MAPPING_CLASS)) {
+        if(name.equals(XML_BINARY_MAPPING_CLASS) || name.equals(XML_BINARY_COLLECTION_MAPPING_CLASS)) {
             session.addDescriptors(new OXMObjectPersistenceRuntimeXMLProject(namespaceResolverWithPrefixes));
         }
     }

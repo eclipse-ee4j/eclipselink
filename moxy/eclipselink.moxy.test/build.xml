@@ -457,8 +457,8 @@
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/DocPresMappingTestSuite.java"/>
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/SAXMappingTestSuite.java"/>
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/anyobjectandanycollection/XMLAnyObjectAndAnyCollectionMappingTestSuite.java"/>
-                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/binarydata/XMLBinaryDataMappingTestSuite.java"/>
-                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/binarydatacollection/XMLBinaryDataCollectionMappingTestSuite.java"/>
+                        <!--exclude name="org/eclipse/persistence/testing/oxm/mappings/binarydata/XMLBinaryDataMappingTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/binarydatacollection/XMLBinaryDataCollectionMappingTestSuite.java"/ -->
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/sequenced/SequencedMappingTestSuite.java"/>
                     </fileset>
                     <formatter type="xml"/>

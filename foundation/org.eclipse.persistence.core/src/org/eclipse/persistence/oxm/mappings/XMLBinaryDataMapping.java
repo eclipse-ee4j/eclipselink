@@ -103,6 +103,9 @@ public class XMLBinaryDataMapping extends XMLDirectMapping {
      * INTERNAL
      */
     public String getMimeType() {
+        if(mimeTypePolicy == null) {
+            return null;
+        }
         return mimeTypePolicy.getMimeType(null);
     }
 

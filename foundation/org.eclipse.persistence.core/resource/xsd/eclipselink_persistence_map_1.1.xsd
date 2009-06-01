@@ -3625,6 +3625,20 @@
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
+  <xsd:complexType name="xml-binary-data-collection-mapping">
+    <xsd:annotation>
+      <xsd:documentation>Defines a mapping of a binary object to base64 binary</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent mixed="false">
+      <xsd:extension base="xml-composite-direct-collection-mapping">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" name="is-swa-ref" type="xsd:boolean" />
+          <xsd:element minOccurs="0" name="mime-type" type="xsd:string" />
+          <xsd:element minOccurs="0" name="should-inline-data" type="xsd:boolean" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
   <xsd:complexType name="xml-choice-collection-mapping">
     <xsd:annotation>
       <xsd:documentation>Defines a mapping of a collection to a choice structure in an xml document</xsd:documentation>

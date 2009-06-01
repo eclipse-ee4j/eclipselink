@@ -56,6 +56,7 @@ import org.eclipse.persistence.oxm.documentpreservation.NodeOrderingPolicy;
 import org.eclipse.persistence.oxm.documentpreservation.RelativePositionOrderingPolicy;
 import org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy;
 import org.eclipse.persistence.oxm.mappings.XMLAnyAttributeMapping;
+import org.eclipse.persistence.oxm.mappings.XMLBinaryDataCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCollectionReferenceMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
@@ -232,6 +233,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         ClassDescriptor descriptor = super.buildDatabaseMappingDescriptor();
 
         descriptor.getInheritancePolicy().addClassIndicator(XMLBinaryDataMapping.class, getPrimaryNamespaceXPath() + "xml-binary-data-mapping");
+        descriptor.getInheritancePolicy().addClassIndicator(XMLBinaryDataCollectionMapping.class, getPrimaryNamespaceXPath() + "xml-binary-data-collection-mapping");
         descriptor.getInheritancePolicy().addClassIndicator(XMLFragmentMapping.class, getPrimaryNamespaceXPath() + "xml-fragment-mapping");
         descriptor.getInheritancePolicy().addClassIndicator(XMLFragmentCollectionMapping.class, getPrimaryNamespaceXPath() + "xml-fragment-collection-mapping");
 
