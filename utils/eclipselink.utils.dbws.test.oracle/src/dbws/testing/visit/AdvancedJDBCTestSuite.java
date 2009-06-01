@@ -995,7 +995,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                 "<attribute-mapping xsi:type=\"object-array-mapping\">" +
                    "<attribute-name>items</attribute-name>" +
                    "<reference-class>another_advanced_demo.emp_info</reference-class>" +
-                   "<field name=\"ITEMS\" xsi:type=\"object-relational-field\"/>" +
+                   "<field name=\"items\" xsi:type=\"object-relational-field\"/>" +
                    "<container xsi:type=\"list-container-policy\">" +
                       "<collection-type>java.util.ArrayList</collection-type>" +
                    "</container>" +
@@ -1217,7 +1217,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                    "<container xsi:type=\"list-container-policy\">" +
                       "<collection-type>java.util.ArrayList</collection-type>" +
                    "</container>" +
-                   "<structure>somepackage_tbl1</structure>" +
+                   "<structure>SOMEPACKAGE_TBL1</structure>" +
                 "</attribute-mapping>" +
              "</attribute-mappings>" +
              "<descriptor-type>aggregate</descriptor-type>" +
@@ -1363,7 +1363,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                    "<container xsi:type=\"list-container-policy\">" +
                       "<collection-type>java.util.ArrayList</collection-type>" +
                    "</container>" +
-                   "<structure>somepackage_tbl5</structure>" +
+                   "<structure>SOMEPACKAGE_TBL5</structure>" +
                 "</attribute-mapping>" +
              "</attribute-mappings>" +
              "<descriptor-type>aggregate</descriptor-type>" +
@@ -1505,7 +1505,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                    "<container xsi:type=\"list-container-policy\">" +
                       "<collection-type>java.util.ArrayList</collection-type>" +
                    "</container>" +
-                   "<structure>somepackage_tbl1</structure>" +
+                   "<structure>SOMEPACKAGE_TBL1</structure>" +
                 "</attribute-mapping>" +
                 "<attribute-mapping xsi:type=\"array-mapping\">" +
                    "<attribute-name>t2</attribute-name>" +
@@ -1515,7 +1515,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                    "<container xsi:type=\"list-container-policy\">" +
                       "<collection-type>java.util.ArrayList</collection-type>" +
                    "</container>" +
-                   "<structure>somepackage_tbl2</structure>" +
+                   "<structure>SOMEPACKAGE_TBL2</structure>" +
                 "</attribute-mapping>" +
                 "<attribute-mapping xsi:type=\"direct-mapping\">" +
                    "<attribute-name>t3</attribute-name>" +
@@ -1552,7 +1552,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                    "<container xsi:type=\"list-container-policy\">" +
                       "<collection-type>java.util.ArrayList</collection-type>" +
                    "</container>" +
-                   "<structure>somepackage_tbl1</structure>" +
+                   "<structure>SOMEPACKAGE_TBL1</structure>" +
                 "</attribute-mapping>" +
              "</attribute-mappings>" +
              "<descriptor-type>aggregate</descriptor-type>" +
@@ -1579,7 +1579,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                    "<container xsi:type=\"list-container-policy\">" +
                       "<collection-type>java.util.ArrayList</collection-type>" +
                    "</container>" +
-                   "<structure>somepackage_tbl2</structure>" +
+                   "<structure>SOMEPACKAGE_TBL2</structure>" +
                 "</attribute-mapping>" +
              "</attribute-mappings>" +
              "<descriptor-type>aggregate</descriptor-type>" +
@@ -1815,6 +1815,407 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
            "</xsd:complexType>" +
            "<xsd:element name=\"somepackage_arecordType\" type=\"somepackage_arecordType\"/>" +
         "</xsd:schema>";        
+
+    public static final String CRECORD_OR_PROJECT =
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+        "<object-persistence version=\"Eclipse Persistence Services - some version (some build date)\" xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:eclipselink=\"http://www.eclipse.org/eclipselink/xsds/persistence\">" +
+           "<name>cRecord</name>" +
+           "<class-mapping-descriptors>" +
+              "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
+                 "<class>toplevel.somepackage_crecord</class>" +
+                 "<alias>somepackage_crecord</alias>" +
+                 "<events xsi:type=\"event-policy\"/>" +
+                 "<querying xsi:type=\"query-policy\"/>" +
+                 "<attribute-mappings>" +
+                    "<attribute-mapping xsi:type=\"structure-mapping\">" +
+                       "<attribute-name>c1</attribute-name>" +
+                       "<reference-class>toplevel.somepackage_arecord</reference-class>" +
+                       "<field name=\"C1\" xsi:type=\"object-relational-field\"/>" +
+                    "</attribute-mapping>" +
+                    "<attribute-mapping xsi:type=\"array-mapping\">" +
+                       "<attribute-name>c2</attribute-name>" +
+                       "<field name=\"C2\" xsi:type=\"object-relational-field\">" +
+                          "<nested-type-field name=\"\" sql-typecode=\"2\" column-definition=\"NUMBER\" xsi:type=\"column\"/>" +
+                       "</field>" +
+                       "<container xsi:type=\"list-container-policy\">" +
+                          "<collection-type>java.util.ArrayList</collection-type>" +
+                       "</container>" +
+                       "<structure>SOMEPACKAGE_TBL2</structure>" +
+                    "</attribute-mapping>" +
+                 "</attribute-mappings>" +
+                 "<descriptor-type>aggregate</descriptor-type>" +
+                 "<caching>" +
+                    "<cache-size>-1</cache-size>" +
+                 "</caching>" +
+                 "<remote-caching>" +
+                    "<cache-size>-1</cache-size>" +
+                 "</remote-caching>" +
+                 "<instantiation/>" +
+                 "<copying xsi:type=\"instantiation-copy-policy\"/>" +
+                 "<structure>SOMEPACKAGE_CRECORD</structure>" +
+                 "<field-order>" +
+                    "<field name=\"C1\" xsi:type=\"column\"/>" +
+                    "<field name=\"C2\" xsi:type=\"column\"/>" +
+                 "</field-order>" +
+              "</class-mapping-descriptor>" +
+              "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
+                 "<class>toplevel.somepackage_arecord</class>" +
+                 "<alias>somepackage_arecord</alias>" +
+                 "<events xsi:type=\"event-policy\"/>" +
+                 "<querying xsi:type=\"query-policy\"/>" +
+                 "<attribute-mappings>" +
+                    "<attribute-mapping xsi:type=\"array-mapping\">" +
+                       "<attribute-name>t1</attribute-name>" +
+                       "<field name=\"T1\" xsi:type=\"object-relational-field\">" +
+                          "<nested-type-field name=\"\" sql-typecode=\"12\" column-definition=\"VARCHAR2\" xsi:type=\"column\"/>" +
+                       "</field>" +
+                       "<container xsi:type=\"list-container-policy\">" +
+                          "<collection-type>java.util.ArrayList</collection-type>" +
+                       "</container>" +
+                       "<structure>SOMEPACKAGE_TBL1</structure>" +
+                    "</attribute-mapping>" +
+                    "<attribute-mapping xsi:type=\"array-mapping\">" +
+                       "<attribute-name>t2</attribute-name>" +
+                       "<field name=\"T2\" xsi:type=\"object-relational-field\">" +
+                          "<nested-type-field name=\"\" sql-typecode=\"2\" column-definition=\"NUMBER\" xsi:type=\"column\"/>" +
+                       "</field>" +
+                       "<container xsi:type=\"list-container-policy\">" +
+                          "<collection-type>java.util.ArrayList</collection-type>" +
+                       "</container>" +
+                       "<structure>SOMEPACKAGE_TBL2</structure>" +
+                    "</attribute-mapping>" +
+                    "<attribute-mapping xsi:type=\"direct-mapping\">" +
+                       "<attribute-name>t3</attribute-name>" +
+                       "<field name=\"T3\" xsi:type=\"column\"/>" +
+                    "</attribute-mapping>" +
+                 "</attribute-mappings>" +
+                 "<descriptor-type>aggregate</descriptor-type>" +
+                 "<caching>" +
+                    "<cache-size>-1</cache-size>" +
+                 "</caching>" +
+                 "<remote-caching>" +
+                    "<cache-size>-1</cache-size>" +
+                 "</remote-caching>" +
+                 "<instantiation/>" +
+                 "<copying xsi:type=\"instantiation-copy-policy\"/>" +
+                 "<structure>SOMEPACKAGE_ARECORD</structure>" +
+                 "<field-order>" +
+                    "<field name=\"T1\" xsi:type=\"column\"/>" +
+                    "<field name=\"T2\" xsi:type=\"column\"/>" +
+                    "<field name=\"T3\" xsi:type=\"column\"/>" +
+                 "</field-order>" +
+              "</class-mapping-descriptor>" +
+              "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
+                 "<class>toplevel.somepackage_tbl1_CollectionWrapper</class>" +
+                 "<alias>somepackage_tbl1</alias>" +
+                 "<events xsi:type=\"event-policy\"/>" +
+                 "<querying xsi:type=\"query-policy\"/>" +
+                 "<attribute-mappings>" +
+                    "<attribute-mapping xsi:type=\"array-mapping\">" +
+                       "<attribute-name>items</attribute-name>" +
+                       "<field name=\"items\" xsi:type=\"object-relational-field\">" +
+                          "<nested-type-field name=\"\" sql-typecode=\"12\" column-definition=\"VARCHAR2\" xsi:type=\"column\"/>" +
+                       "</field>" +
+                       "<container xsi:type=\"list-container-policy\">" +
+                          "<collection-type>java.util.ArrayList</collection-type>" +
+                       "</container>" +
+                       "<structure>SOMEPACKAGE_TBL1</structure>" +
+                    "</attribute-mapping>" +
+                 "</attribute-mappings>" +
+                 "<descriptor-type>aggregate</descriptor-type>" +
+                 "<caching>" +
+                    "<cache-size>-1</cache-size>" +
+                 "</caching>" +
+                 "<remote-caching>" +
+                    "<cache-size>-1</cache-size>" +
+                 "</remote-caching>" +
+                 "<instantiation/>" +
+                 "<copying xsi:type=\"instantiation-copy-policy\"/>" +
+              "</class-mapping-descriptor>" +
+              "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
+                 "<class>toplevel.somepackage_tbl2_CollectionWrapper</class>" +
+                 "<alias>somepackage_tbl2</alias>" +
+                 "<events xsi:type=\"event-policy\"/>" +
+                 "<querying xsi:type=\"query-policy\"/>" +
+                 "<attribute-mappings>" +
+                    "<attribute-mapping xsi:type=\"array-mapping\">" +
+                       "<attribute-name>items</attribute-name>" +
+                       "<field name=\"items\" xsi:type=\"object-relational-field\">" +
+                          "<nested-type-field name=\"\" sql-typecode=\"2\" column-definition=\"NUMBER\" xsi:type=\"column\"/>" +
+                       "</field>" +
+                       "<container xsi:type=\"list-container-policy\">" +
+                          "<collection-type>java.util.ArrayList</collection-type>" +
+                       "</container>" +
+                       "<structure>SOMEPACKAGE_TBL2</structure>" +
+                    "</attribute-mapping>" +
+                 "</attribute-mappings>" +
+                 "<descriptor-type>aggregate</descriptor-type>" +
+                 "<caching>" +
+                    "<cache-size>-1</cache-size>" +
+                 "</caching>" +
+                 "<remote-caching>" +
+                    "<cache-size>-1</cache-size>" +
+                 "</remote-caching>" +
+                 "<instantiation/>" +
+                 "<copying xsi:type=\"instantiation-copy-policy\"/>" +
+              "</class-mapping-descriptor>" +
+           "</class-mapping-descriptors>" +
+           "<queries>" +
+              "<query name=\"buildCRecord\" xsi:type=\"value-read-query\">" +
+                 "<arguments>" +
+                    "<argument name=\"NUM\">" +
+                       "<type>java.lang.Object</type>" +
+                    "</argument>" +
+                 "</arguments>" +
+                 "<maintain-cache>false</maintain-cache>" +
+                 "<bind-all-parameters>true</bind-all-parameters>" +
+                 "<call xsi:type=\"stored-function-call\">" +
+                    "<procedure-name>BUILDCRECORD</procedure-name>" +
+                    "<cursor-output-procedure>false</cursor-output-procedure>" +
+                    "<arguments>" +
+                       "<argument xsi:type=\"procedure-argument\">" +
+                          "<procedure-argument-name>NUM</procedure-argument-name>" +
+                          "<argument-name>NUM</argument-name>" +
+                       "</argument>" +
+                    "</arguments>" +
+                    "<stored-function-result xsi:type=\"procedure-output-argument\">" +
+                       "<procedure-argument-type>toplevel.somepackage_crecord</procedure-argument-type>" +
+                       "<procedure-argument-sqltype>2002</procedure-argument-sqltype>" +
+                       "<procedure-argument-sqltype-name>SOMEPACKAGE_CRECORD</procedure-argument-sqltype-name>" +
+                    "</stored-function-result>" +
+                 "</call>" +
+              "</query>" +
+           "</queries>" +
+        "</object-persistence>";
+    @SuppressWarnings("unchecked")
+    @Test
+    public void BuildCRecord_OrPart() {
+        ProcedureOperationModel pModel = new ProcedureOperationModel();
+        pModel.setName("buildCRecord");
+        pModel.setCatalogPattern("toplevel");
+        pModel.setSchemaPattern(username.toUpperCase());
+        pModel.setProcedurePattern("BuildCRecord");
+        pModel.setReturnType("somepackage_crecordType");
+        testOrProject(pModel, "cRecord", CRECORD_OR_PROJECT);
+        // test query
+        DatabaseSession ds = fixUp(CRECORD_OR_PROJECT);
+        DatabaseQuery vrq = ds.getQuery("buildCRecord");
+        Vector args = new NonSynchronizedVector();
+        int num = 3;
+        args.add(Integer.valueOf(num));
+        Object o = ds.executeQuery(vrq, args);
+        assertTrue("return value not correct type", o instanceof BaseEntity);
+    }
+    
+    @Test
+    public void BuildCRecord_OxPart() {
+        ProcedureOperationModel pModel = new ProcedureOperationModel();
+        pModel.setName("buildCRecord");
+        pModel.setCatalogPattern("toplevel");
+        pModel.setSchemaPattern(username.toUpperCase());
+        pModel.setProcedurePattern("BuildCRecord");
+        pModel.setReturnType("somepackage_crecordType");
+        testOxProject(pModel, "cRecord", "urn:cRecord", CRECORD_OX_PROJECT, CRECORD_SCHEMA);
+    }
+    public static final String CRECORD_OX_PROJECT =
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+        "<object-persistence version=\"Eclipse Persistence Services - some version (some build date)\" xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:eclipselink=\"http://www.eclipse.org/eclipselink/xsds/persistence\">" +
+           "<name>cRecord</name>" +
+           "<class-mapping-descriptors>" +
+              "<class-mapping-descriptor xsi:type=\"xml-class-mapping-descriptor\">" +
+                 "<class>toplevel.somepackage_crecord</class>" +
+                 "<alias>somepackage_crecord</alias>" +
+                 "<events xsi:type=\"event-policy\"/>" +
+                 "<querying xsi:type=\"query-policy\"/>" +
+                 "<attribute-mappings>" +
+                    "<attribute-mapping xsi:type=\"xml-composite-object-mapping\">" +
+                       "<attribute-name>c1</attribute-name>" +
+                       "<reference-class>toplevel.somepackage_arecord</reference-class>" +
+                       "<field name=\"c1\" xsi:type=\"node\"/>" +
+                    "</attribute-mapping>" +
+                    "<attribute-mapping xsi:type=\"xml-composite-direct-collection-mapping\">" +
+                       "<attribute-name>c2</attribute-name>" +
+                       "<field name=\"c2/item/text()\" xsi:type=\"node\">" +
+                          "<schema-type>{http://www.w3.org/2001/XMLSchema}decimal</schema-type>" +
+                       "</field>" +
+                       "<value-converter xsi:type=\"type-conversion-converter\">" +
+                          "<object-class>java.math.BigDecimal</object-class>" +
+                       "</value-converter>" +
+                       "<container xsi:type=\"container-policy\">" +
+                          "<collection-type>java.util.ArrayList</collection-type>" +
+                       "</container>" +
+                    "</attribute-mapping>" +
+                 "</attribute-mappings>" +
+                 "<descriptor-type>aggregate</descriptor-type>" +
+                 "<instantiation/>" +
+                 "<copying xsi:type=\"instantiation-copy-policy\"/>" +
+                 "<default-root-element>somepackage_crecordType</default-root-element>" +
+                 "<default-root-element-field name=\"somepackage_crecordType\" xsi:type=\"node\"/>" +
+                 "<namespace-resolver>" +
+                    "<default-namespace-uri>urn:cRecord</default-namespace-uri>" +
+                 "</namespace-resolver>" +
+                 "<schema xsi:type=\"schema-url-reference\">" +
+                    "<schema-context>/somepackage_crecordType</schema-context>" +
+                    "<node-type>complex-type</node-type>" +
+                 "</schema>" +
+              "</class-mapping-descriptor>" +
+              "<class-mapping-descriptor xsi:type=\"xml-class-mapping-descriptor\">" +
+                 "<class>toplevel.somepackage_arecord</class>" +
+                 "<alias>somepackage_arecord</alias>" +
+                 "<events xsi:type=\"event-policy\"/>" +
+                 "<querying xsi:type=\"query-policy\"/>" +
+                 "<attribute-mappings>" +
+                    "<attribute-mapping xsi:type=\"xml-composite-direct-collection-mapping\">" +
+                       "<attribute-name>t1</attribute-name>" +
+                       "<field name=\"t1/item/text()\" xsi:type=\"node\">" +
+                          "<schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>" +
+                       "</field>" +
+                       "<value-converter xsi:type=\"type-conversion-converter\">" +
+                          "<object-class>java.lang.String</object-class>" +
+                       "</value-converter>" +
+                       "<container xsi:type=\"container-policy\">" +
+                          "<collection-type>java.util.ArrayList</collection-type>" +
+                       "</container>" +
+                    "</attribute-mapping>" +
+                    "<attribute-mapping xsi:type=\"xml-composite-direct-collection-mapping\">" +
+                       "<attribute-name>t2</attribute-name>" +
+                       "<field name=\"t2/item/text()\" xsi:type=\"node\">" +
+                          "<schema-type>{http://www.w3.org/2001/XMLSchema}decimal</schema-type>" +
+                       "</field>" +
+                       "<value-converter xsi:type=\"type-conversion-converter\">" +
+                          "<object-class>java.math.BigDecimal</object-class>" +
+                       "</value-converter>" +
+                       "<container xsi:type=\"container-policy\">" +
+                          "<collection-type>java.util.ArrayList</collection-type>" +
+                       "</container>" +
+                    "</attribute-mapping>" +
+                    "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
+                       "<attribute-name>t3</attribute-name>" +
+                       "<field name=\"t3/text()\" xsi:type=\"node\">" +
+                          "<schema-type>{http://www.w3.org/2001/XMLSchema}integer</schema-type>" +
+                       "</field>" +
+                       "<attribute-classification>java.math.BigInteger</attribute-classification>" +
+                    "</attribute-mapping>" +
+                 "</attribute-mappings>" +
+                 "<descriptor-type>aggregate</descriptor-type>" +
+                 "<instantiation/>" +
+                 "<copying xsi:type=\"instantiation-copy-policy\"/>" +
+                 "<namespace-resolver>" +
+                    "<default-namespace-uri>urn:cRecord</default-namespace-uri>" +
+                 "</namespace-resolver>" +
+                 "<schema xsi:type=\"schema-url-reference\">" +
+                    "<schema-context>/somepackage_arecordType</schema-context>" +
+                    "<node-type>complex-type</node-type>" +
+                 "</schema>" +
+              "</class-mapping-descriptor>" +
+              "<class-mapping-descriptor xsi:type=\"xml-class-mapping-descriptor\">" +
+                 "<class>toplevel.somepackage_tbl1_CollectionWrapper</class>" +
+                 "<alias>somepackage_tbl1</alias>" +
+                 "<events xsi:type=\"event-policy\"/>" +
+                 "<querying xsi:type=\"query-policy\"/>" +
+                 "<attribute-mappings>" +
+                    "<attribute-mapping xsi:type=\"xml-composite-direct-collection-mapping\">" +
+                       "<attribute-name>items</attribute-name>" +
+                       "<field name=\"item/text()\" xsi:type=\"node\">" +
+                          "<schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>" +
+                       "</field>" +
+                       "<value-converter xsi:type=\"type-conversion-converter\">" +
+                          "<object-class>java.lang.String</object-class>" +
+                       "</value-converter>" +
+                       "<container xsi:type=\"container-policy\">" +
+                          "<collection-type>java.util.ArrayList</collection-type>" +
+                       "</container>" +
+                    "</attribute-mapping>" +
+                 "</attribute-mappings>" +
+                 "<descriptor-type>aggregate</descriptor-type>" +
+                 "<instantiation/>" +
+                 "<copying xsi:type=\"instantiation-copy-policy\"/>" +
+                 "<namespace-resolver>" +
+                    "<default-namespace-uri>urn:cRecord</default-namespace-uri>" +
+                 "</namespace-resolver>" +
+                 "<schema xsi:type=\"schema-url-reference\">" +
+                    "<schema-context>/somepackage_tbl1Type</schema-context>" +
+                    "<node-type>complex-type</node-type>" +
+                 "</schema>" +
+              "</class-mapping-descriptor>" +
+              "<class-mapping-descriptor xsi:type=\"xml-class-mapping-descriptor\">" +
+                 "<class>toplevel.somepackage_tbl2_CollectionWrapper</class>" +
+                 "<alias>somepackage_tbl2</alias>" +
+                 "<events xsi:type=\"event-policy\"/>" +
+                 "<querying xsi:type=\"query-policy\"/>" +
+                 "<attribute-mappings>" +
+                    "<attribute-mapping xsi:type=\"xml-composite-direct-collection-mapping\">" +
+                       "<attribute-name>items</attribute-name>" +
+                       "<field name=\"item/text()\" xsi:type=\"node\">" +
+                          "<schema-type>{http://www.w3.org/2001/XMLSchema}decimal</schema-type>" +
+                       "</field>" +
+                       "<value-converter xsi:type=\"type-conversion-converter\">" +
+                          "<object-class>java.math.BigDecimal</object-class>" +
+                       "</value-converter>" +
+                       "<container xsi:type=\"container-policy\">" +
+                          "<collection-type>java.util.ArrayList</collection-type>" +
+                       "</container>" +
+                    "</attribute-mapping>" +
+                 "</attribute-mappings>" +
+                 "<descriptor-type>aggregate</descriptor-type>" +
+                 "<instantiation/>" +
+                 "<copying xsi:type=\"instantiation-copy-policy\"/>" +
+                 "<namespace-resolver>" +
+                    "<default-namespace-uri>urn:cRecord</default-namespace-uri>" +
+                 "</namespace-resolver>" +
+                 "<schema xsi:type=\"schema-url-reference\">" +
+                    "<schema-context>/somepackage_tbl2Type</schema-context>" +
+                    "<node-type>complex-type</node-type>" +
+                 "</schema>" +
+              "</class-mapping-descriptor>" +
+           "</class-mapping-descriptors>" +
+        "</object-persistence>";
+    public static final String CRECORD_SCHEMA =
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+        "<xsd:schema xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns=\"urn:cRecord\" elementFormDefault=\"qualified\" targetNamespace=\"urn:cRecord\">" +
+           "<xsd:complexType name=\"somepackage_crecordType\">" +
+              "<xsd:sequence>" +
+                 "<xsd:element minOccurs=\"0\" name=\"c1\" type=\"somepackage_arecordType\"/>" +
+                 "<xsd:element name=\"c2\">" +
+                    "<xsd:complexType>" +
+                       "<xsd:sequence>" +
+                          "<xsd:element maxOccurs=\"unbounded\" minOccurs=\"0\" name=\"item\" type=\"xsd:decimal\"/>" +
+                       "</xsd:sequence>" +
+                    "</xsd:complexType>" +
+                 "</xsd:element>" +
+              "</xsd:sequence>" +
+           "</xsd:complexType>" +
+           "<xsd:complexType name=\"somepackage_tbl2Type\">" +
+              "<xsd:sequence>" +
+                 "<xsd:element maxOccurs=\"unbounded\" minOccurs=\"0\" name=\"item\" type=\"xsd:decimal\"/>" +
+              "</xsd:sequence>" +
+           "</xsd:complexType>" +
+           "<xsd:complexType name=\"somepackage_arecordType\">" +
+              "<xsd:sequence>" +
+                 "<xsd:element name=\"t1\">" +
+                    "<xsd:complexType>" +
+                       "<xsd:sequence>" +
+                          "<xsd:element maxOccurs=\"unbounded\" minOccurs=\"0\" name=\"item\" type=\"xsd:string\"/>" +
+                       "</xsd:sequence>" +
+                    "</xsd:complexType>" +
+                 "</xsd:element>" +
+                 "<xsd:element name=\"t2\">" +
+                    "<xsd:complexType>" +
+                       "<xsd:sequence>" +
+                          "<xsd:element maxOccurs=\"unbounded\" minOccurs=\"0\" name=\"item\" type=\"xsd:decimal\"/>" +
+                       "</xsd:sequence>" +
+                    "</xsd:complexType>" +
+                 "</xsd:element>" +
+                 "<xsd:element minOccurs=\"0\" name=\"t3\" type=\"xsd:integer\"/>" +
+              "</xsd:sequence>" +
+           "</xsd:complexType>" +
+           "<xsd:complexType name=\"somepackage_tbl1Type\">" +
+              "<xsd:sequence>" +
+                 "<xsd:element maxOccurs=\"unbounded\" minOccurs=\"0\" name=\"item\" type=\"xsd:string\"/>" +
+              "</xsd:sequence>" +
+           "</xsd:complexType>" +
+           "<xsd:element name=\"somepackage_crecordType\" type=\"somepackage_crecordType\"/>" +
+        "</xsd:schema>";
     
     protected void testOrProject(ProcedureOperationModel pModel, String projectName, String orProject) {
         List<DbStoredProcedure> storedProcedures = 
@@ -1881,11 +2282,11 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         sgProperties.addProperty(nameSpace, ELEMENT_FORM_QUALIFIED_KEY, true);
         Map schemaMap = schemaGenerator.generateSchemas(descriptors, sgProperties);
         Schema s = (Schema)schemaMap.get(nameSpace);
-        Document empObjectSchema = xmlPlatform.createDocument();
-        new XMLContext(new SchemaModelProject()).createMarshaller().marshal(s, empObjectSchema);
-        Document controlempObjectSchema = xmlParser.parse(new StringReader(oxSchema));
+        Document schema = xmlPlatform.createDocument();
+        new XMLContext(new SchemaModelProject()).createMarshaller().marshal(s, schema);
+        Document controlSchema = xmlParser.parse(new StringReader(oxSchema));
         assertTrue("control schema not same as instance schema",
-            comparer.isNodeEqual(controlempObjectSchema, empObjectSchema));
+            comparer.isNodeEqual(controlSchema, schema));
     }
 
     @SuppressWarnings("unchecked")

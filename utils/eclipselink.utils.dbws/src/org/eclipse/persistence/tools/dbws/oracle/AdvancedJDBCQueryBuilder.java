@@ -227,12 +227,8 @@ public class AdvancedJDBCQueryBuilder extends PublisherDefaultListener {
 
     @Override
     public void handleObjectType(String objectTypeName, String targetTypeName, int numAttributes) {
-        String objectType = objectTypeName;
         // trim-off dotted-prefix
-        int dotIdx = objectTypeName.indexOf('.');
-        if (dotIdx > -1) {
-            objectType = objectTypeName.substring(dotIdx+1);
-        }
+        String objectType = trimDotPrefix(objectTypeName);
         if (!stac.isEmpty()) {
             ListenerHelper helper = stac.peek();
             if (helper.isReturnArg() || helper.isArray()) {
@@ -313,12 +309,8 @@ public class AdvancedJDBCQueryBuilder extends PublisherDefaultListener {
 
     @Override
     public void handleSqlTableType(String tableTypeName, String targetTypeName) {
-        String tableType = tableTypeName;
         // trim-off dotted-prefix
-        int dotIdx = tableTypeName.indexOf('.');
-        if (dotIdx > -1) {
-            tableType = tableTypeName.substring(dotIdx+1);
-        }
+        String tableType = trimDotPrefix(tableTypeName);
         if (!stac.isEmpty()) {
             ListenerHelper helper = stac.peek();
             if (helper.isReturnArg()) {
@@ -336,8 +328,10 @@ public class AdvancedJDBCQueryBuilder extends PublisherDefaultListener {
                 MethodHelper methodHelper = (MethodHelper)helper;
                 int size = methodHelper.args().size();
                 MethodArgHelper methodArgHelper = methodHelper.args().get(size-1);
-                methodArgHelper.setSqlTypeName(tableType);
-                methodArgHelper.setIsComplex(true);
+                if (methodArgHelper.sqlTypeName() == null) {
+                    methodArgHelper.setSqlTypeName(tableType);
+                    methodArgHelper.setIsComplex(true);
+                }
             }
             else if (helper.isAttribute()) {
                 stac.pop();

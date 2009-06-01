@@ -34,8 +34,7 @@ import static org.eclipse.persistence.internal.dynamicpersist.BaseEntityClassLoa
 
 public class AdvancedJDBCORDescriptorBuilder extends PublisherDefaultListener {
 
-    public static final String ITEMS_MAPPING_ATTRIBUTE_NAME = "items";
-    public static final String ITEMS_MAPPING_FIELD_NAME = "ITEMS";
+    public static final String ITEMS_ATTRIBUTE_NAME = "items";
     
     protected Stack<ListenerHelper> stac = new Stack<ListenerHelper>();
     protected Map<String, ObjectRelationalDataTypeDescriptor> descriptorMap =
@@ -113,7 +112,7 @@ public class AdvancedJDBCORDescriptorBuilder extends PublisherDefaultListener {
                         arrayMapping.setFieldName(fieldName);
                         arrayMapping.setAttributeName(attributeName);
                         arrayMapping.useCollectionClass(ArrayList.class);
-                        arrayMapping.setStructureName(sqlArrayTypeHelper.arrayTypename());
+                        arrayMapping.setStructureName(sqlArrayTypeHelper.arrayTypename().toUpperCase());
                         DatabaseField nestedField = new DatabaseField("");
                         nestedField.setSqlType(typecode);
                         nestedField.setColumnDefinition(sqlTypeName);
@@ -128,13 +127,13 @@ public class AdvancedJDBCORDescriptorBuilder extends PublisherDefaultListener {
                 SqlArrayTypeHelper sqlArrayTypeHelper = (SqlArrayTypeHelper)listenerHelper;
                 ObjectRelationalDataTypeDescriptor ordt = 
                     descriptorMap.get(sqlArrayTypeHelper.arrayTypename());
-                DatabaseMapping dm = ordt.getMappingForAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME);
+                DatabaseMapping dm = ordt.getMappingForAttributeName(ITEMS_ATTRIBUTE_NAME);
                 if (dm == null) {
                     ArrayMapping arrayMapping = new ArrayMapping();
-                    arrayMapping.setFieldName(ITEMS_MAPPING_ATTRIBUTE_NAME);
-                    arrayMapping.setAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME);
+                    arrayMapping.setFieldName(ITEMS_ATTRIBUTE_NAME);
+                    arrayMapping.setAttributeName(ITEMS_ATTRIBUTE_NAME);
                     arrayMapping.useCollectionClass(ArrayList.class);
-                    arrayMapping.setStructureName(sqlArrayTypeHelper.arrayTypename());
+                    arrayMapping.setStructureName(sqlArrayTypeHelper.arrayTypename().toUpperCase());
                     DatabaseField nestedField = new DatabaseField("");
                     nestedField.setSqlType(typecode);
                     nestedField.setColumnDefinition(sqlTypeName);
@@ -144,32 +143,101 @@ public class AdvancedJDBCORDescriptorBuilder extends PublisherDefaultListener {
                     ordt.addMapping(arrayMapping);
                 }
                 ListenerHelper listenerHelper3 = stac.peek();
-                if (listenerHelper3.isAttribute()) {
-                    // type built above used in field definition of object further up stack
+                ListenerHelper listenerHelper4 = null;
+                if (listenerHelper3.isArray()) {
+                    /*
+                     * table of table scenario:
+                    CREATE TYPE SOMEPACKAGE_TBL2 AS TABLE OF NUMBER;
+                    CREATE TYPE SOMEPACKAGE_TBL4 AS TABLE OF SOMEPACKAGE_TBL2;
+                     */
+                    SqlArrayTypeHelper sqlArrayTypeHelper2 = (SqlArrayTypeHelper)listenerHelper3;
                     stac.pop();
-                    AttributeFieldHelper fieldHelper = (AttributeFieldHelper)listenerHelper3;
-                    ListenerHelper listenerHelper4 = stac.peek();
-                    if (listenerHelper4.isObject()) {
-                        ObjectTypeHelper objectTypeHelper = (ObjectTypeHelper)listenerHelper4;
+                    ObjectRelationalDataTypeDescriptor ordt3 = 
+                        descriptorMap.get(sqlArrayTypeHelper2.arrayTypename());
+                    DatabaseMapping dm3 = ordt3.getMappingForAttributeName(ITEMS_ATTRIBUTE_NAME);
+                    if (dm3 == null) {
+                        ObjectArrayMapping objArrayMapping = new ObjectArrayMapping();
+                        objArrayMapping.setAttributeName(ITEMS_ATTRIBUTE_NAME);
+                        objArrayMapping.setFieldName(ITEMS_ATTRIBUTE_NAME);
+                        objArrayMapping.setStructureName(sqlArrayTypeHelper2.arrayTypename().toUpperCase());
+                        objArrayMapping.setReferenceClassName(ordt.getJavaClassName());
+                        objArrayMapping.useCollectionClass(ArrayList.class);
+                        ordt3.addMapping(objArrayMapping);
+                    }
+                    // more stack peeking
+                    if (stac.peek().isAttribute()) {
+                        listenerHelper4 = stac.peek();
+                    }
+                }
+                else {
+                    listenerHelper4 = listenerHelper3;
+                }
+                if (listenerHelper4.isAttribute()) {
+                    // type built above used in field definition of object further up stack
+                    AttributeFieldHelper fieldHelper = (AttributeFieldHelper)listenerHelper4;
+                    stac.pop();
+                    ListenerHelper listenerHelper5 = stac.peek();
+                    if (listenerHelper5.isObject()) {
+                        ObjectTypeHelper objectTypeHelper = (ObjectTypeHelper)listenerHelper5;
                         ObjectRelationalDataTypeDescriptor ordt2 = 
                             descriptorMap.get(objectTypeHelper.objectTypename());
                         String fieldName = fieldHelper.attributeFieldName();
-                        ordt2.addFieldOrdering(fieldName);
                         DatabaseMapping dm2 = 
                             ordt2.getMappingForAttributeName(fieldName.toLowerCase());
                         if (dm2 == null) {
-                            ArrayMapping arrayMapping2 = new ArrayMapping();
-                            arrayMapping2.setAttributeName(fieldName.toLowerCase());
-                            arrayMapping2.setFieldName(fieldName);
-                            arrayMapping2.setStructureName(sqlArrayTypeHelper.arrayTypename());
-                            arrayMapping2.useCollectionClass(ArrayList.class);
-                            DatabaseField nestedField = new DatabaseField("");
-                            nestedField.setSqlType(typecode);
-                            nestedField.setColumnDefinition(sqlTypeName);
-                            ObjectRelationalDatabaseField field = 
-                                (ObjectRelationalDatabaseField)arrayMapping2.getField();
-                            field.setNestedTypeField(nestedField);
-                            ordt2.addMapping(arrayMapping2);
+                            ordt2.addFieldOrdering(fieldName);
+                            // simple or complex array?
+                            if (listenerHelper4 == listenerHelper3) {
+                                ArrayMapping arrayMapping2 = new ArrayMapping();
+                                arrayMapping2.setAttributeName(fieldName.toLowerCase());
+                                arrayMapping2.setFieldName(fieldName);
+                                arrayMapping2.setStructureName(sqlArrayTypeHelper.arrayTypename().toUpperCase());
+                                arrayMapping2.useCollectionClass(ArrayList.class);
+                                DatabaseField nestedField = new DatabaseField("");
+                                nestedField.setSqlType(typecode);
+                                nestedField.setColumnDefinition(sqlTypeName);
+                                ObjectRelationalDatabaseField field = 
+                                    (ObjectRelationalDatabaseField)arrayMapping2.getField();
+                                field.setNestedTypeField(nestedField);
+                                ordt2.addMapping(arrayMapping2);
+                            }
+                            else {
+                                ObjectArrayMapping objArrayMapping2 = new ObjectArrayMapping();
+                                objArrayMapping2.setAttributeName(fieldName.toLowerCase());
+                                objArrayMapping2.setFieldName(fieldName);
+                                String structureName = "";
+                                String referenceClassName = "";
+                                if (listenerHelper3.isObject()) {
+                                    ObjectTypeHelper objectTypeHelper2 = 
+                                        (ObjectTypeHelper)listenerHelper3;
+                                    structureName = 
+                                        objectTypeHelper2.objectTypename().toUpperCase();
+                                    ObjectRelationalDataTypeDescriptor ordt3 = 
+                                        descriptorMap.get(objectTypeHelper2.objectTypename());
+                                    referenceClassName = ordt3.getJavaClassName();
+                                }
+                                else if (listenerHelper3.isArray()) {
+                                    SqlArrayTypeHelper sqlArrayTypeHelper3 = 
+                                        (SqlArrayTypeHelper)listenerHelper3;
+                                    structureName = 
+                                        sqlArrayTypeHelper3.arrayTypename().toUpperCase();
+                                    ObjectRelationalDataTypeDescriptor ordt3 = 
+                                        descriptorMap.get(sqlArrayTypeHelper3.arrayTypename());
+                                    referenceClassName = ordt3.getJavaClassName();
+                                }
+                                else {
+                                    // ??
+                                }
+                                objArrayMapping2.setStructureName(structureName);
+                                objArrayMapping2.setReferenceClassName(referenceClassName);
+                                objArrayMapping2.useCollectionClass(ArrayList.class);
+                                ordt2.addMapping(objArrayMapping2);
+                            }
+                        }
+                        // last attribute, pop ObjectTypeHelper off stack
+                        int numAttributes = objectTypeHelper.decrNumAttributes();
+                        if (numAttributes == 0) {
+                            stac.pop();
                         }
                     }
                 }
@@ -232,11 +300,11 @@ public class AdvancedJDBCORDescriptorBuilder extends PublisherDefaultListener {
                         descriptorMap.get(sqlArrayTypeNameAlias);
                     if (ordt2 != null) {
                         DatabaseMapping dm = 
-                            ordt2.getMappingForAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME);
+                            ordt2.getMappingForAttributeName(ITEMS_ATTRIBUTE_NAME);
                         if (dm == null) {
                             ObjectArrayMapping arrayMapping = new ObjectArrayMapping();
-                            arrayMapping.setAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME);
-                            arrayMapping.setFieldName(ITEMS_MAPPING_FIELD_NAME);
+                            arrayMapping.setAttributeName(ITEMS_ATTRIBUTE_NAME);
+                            arrayMapping.setFieldName(ITEMS_ATTRIBUTE_NAME);
                             arrayMapping.setStructureName(sqlArrayTypeNameAlias.toUpperCase());
                             arrayMapping.setReferenceClassName(ordt.getJavaClassName());
                             arrayMapping.useCollectionClass(ArrayList.class);

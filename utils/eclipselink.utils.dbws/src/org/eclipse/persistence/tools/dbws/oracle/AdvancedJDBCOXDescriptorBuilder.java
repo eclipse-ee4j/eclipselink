@@ -140,10 +140,29 @@ public class AdvancedJDBCOXDescriptorBuilder extends PublisherDefaultListener {
                         stac.pop();
                     }
                 }
+                else if (listenerHelper2.isArray()) {
+                    SqlArrayTypeHelper sqlArrayTypeHelper = (SqlArrayTypeHelper)listenerHelper2;
+                    XMLDescriptor xdesc = descriptorMap.get(sqlArrayTypeHelper.arrayTypename());
+                    DatabaseMapping dm = xdesc.getMappingForAttributeName(attributeName);
+                    if (dm == null) {
+                        XMLCompositeDirectCollectionMapping dirCollectMapping = 
+                            new XMLCompositeDirectCollectionMapping();
+                        SqltypeHelper componentType = new SqltypeHelper(sqlTypeName);
+                        dirCollectMapping.setAttributeElementClass(
+                            attributeClassFromDatabaseType((DefaultListenerHelper)componentType));
+                        dirCollectMapping.setAttributeName(attributeName);
+                        dirCollectMapping.setUsesSingleNode(true);
+                        dirCollectMapping.setXPath(attributeName + "/text()");
+                        ((XMLField)dirCollectMapping.getField()).setSchemaType(
+                            qnameFromDatabaseType(componentType));
+                        dirCollectMapping.useCollectionClassName("java.util.ArrayList");
+                        xdesc.addMapping(dirCollectMapping);
+                    }
+                }
             }
             else if (listenerHelper.isArray()) {
-                SqlArrayTypeHelper sqlArrayTypeHelper = (SqlArrayTypeHelper)listenerHelper;
-                XMLDescriptor xdesc = descriptorMap.get(sqlArrayTypeHelper.arrayTypename());
+                SqlArrayTypeHelper sqlArrayTypeHelper2 = (SqlArrayTypeHelper)listenerHelper;
+                XMLDescriptor xdesc = descriptorMap.get(sqlArrayTypeHelper2.arrayTypename());
                 DatabaseMapping dm = xdesc.getMappingForAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME);
                 if (dm == null) {
                     XMLCompositeDirectCollectionMapping itemsMapping = new XMLCompositeDirectCollectionMapping();
@@ -181,6 +200,11 @@ public class AdvancedJDBCOXDescriptorBuilder extends PublisherDefaultListener {
                             field.setSchemaType(qnameFromDatabaseType(componentType));
                             fieldMapping.useCollectionClassName("java.util.ArrayList");
                             xdesc2.addMapping(fieldMapping);
+                        }
+                        // last attribute, pop ObjectTypeHelper off stack
+                        int numAttributes = objectTypeHelper.decrNumAttributes();
+                        if (numAttributes == 0) {
+                            stac.pop();
                         }
                     }
                 }
