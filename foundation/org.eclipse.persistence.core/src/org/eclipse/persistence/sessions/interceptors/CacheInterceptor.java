@@ -243,6 +243,14 @@ public abstract class CacheInterceptor implements IdentityMap{
     }
 
     /**
+     * Allow for the CacheKeys to be iterated on. - value should be true
+     * if readloacks are to be used, false otherwise.
+     */
+    public Enumeration keys(boolean checkReadLocks){
+        return this.targetIdentityMap.keys(checkReadLocks);
+    }
+
+    /**
      * Store the object in the cache at its primary key.
      * This is used by InsertObjectQuery, typically into the UnitOfWork identity map.
      * Merge and reads do not use put, but acquireLock.

@@ -671,7 +671,8 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
         //removed synchronization that would result in deadlock
         //no need to synchronize as changes to identity map will not aversely
         //affect this code
-        Enumeration keys = identityMap.keys();
+        //bug 275724: IdentityMapAccessor.invalidateClass() should not check ReadLock when invalidating 
+        Enumeration keys = identityMap.keys(false); // do not check readlock 
 
         while (keys.hasMoreElements()) {
             CacheKey key = (CacheKey)keys.nextElement();

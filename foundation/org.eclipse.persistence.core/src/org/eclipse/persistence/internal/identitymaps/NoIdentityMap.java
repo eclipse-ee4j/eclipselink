@@ -95,6 +95,13 @@ public class NoIdentityMap extends AbstractIdentityMap {
         return new Vector(1).elements();
     }
 
+    /** 
+     * Return an empty enumerator. 
+     */ 
+    public Enumeration keys(boolean shouldCheckReadLocks) { 
+        return new Vector(1).elements(); 
+    } 
+       
     /**
      * Do Nothing.
      */

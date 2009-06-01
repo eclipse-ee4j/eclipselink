@@ -18,14 +18,21 @@ import java.util.*;
  * Used to allow iterating over a maps cache keys.
  */
 public class IdentityMapKeyEnumeration implements Enumeration {
+
     protected FullIdentityMap map;
     protected Iterator cacheKeysIterator;
     protected CacheKey nextKey;
+    protected boolean shouldCheckReadLocks;
 
-    public IdentityMapKeyEnumeration(FullIdentityMap map) {
-        this.map = map;
-        this.cacheKeysIterator = map.getCacheKeys().values().iterator();
-    }
+    public IdentityMapKeyEnumeration(FullIdentityMap map) { 
+        this(map, true); 
+    } 
+  
+    public IdentityMapKeyEnumeration(FullIdentityMap map, boolean shouldCheckReadLocks) { 
+        this.map = map; 
+        this.shouldCheckReadLocks = shouldCheckReadLocks; 
+        this.cacheKeysIterator = map.getCacheKeys().values().iterator(); 
+    } 
 
     public boolean hasMoreElements() {
         this.nextKey = getNextCacheKey();
@@ -37,9 +44,11 @@ public class IdentityMapKeyEnumeration implements Enumeration {
             throw new NoSuchElementException("IdentityMapKeyEnumeration nextElement");
         }
 
-        // CR#... Must check the read lock to avoid
-        // returning half built objects.
-        this.nextKey.checkReadLock();
+        // The read lock check is for avoidance of half built objects being returned. 
+        // bug 275724: Added shouldCheckReadLocks to avoid the read lock check when invalidating. 
+        if (shouldCheckReadLocks) { 
+            this.nextKey.checkReadLock(); 
+        } 
         return this.nextKey;
     }
 
@@ -50,4 +59,12 @@ public class IdentityMapKeyEnumeration implements Enumeration {
         }
         return key;
     }
+   
+    public boolean getShouldCheckReadLocks() { 
+        return this.shouldCheckReadLocks; 
+    } 
+  
+    public void setShouldCheckReadLocks(boolean shouldCheckReadLocks) { 
+        this.shouldCheckReadLocks = shouldCheckReadLocks; 
+    } 
 }
