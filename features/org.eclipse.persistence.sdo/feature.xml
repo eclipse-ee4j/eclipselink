@@ -37,13 +37,6 @@
          unpack="false"/>
 
    <plugin
-         id="javax.jms"
-         download-size="0"
-         install-size="0"
-         version="1.1.0"
-         unpack="false"/>
-
-   <plugin
          id="javax.mail"
          download-size="0"
          install-size="0"
@@ -55,20 +48,6 @@
          download-size="0"
          install-size="0"
          version="1.99.0"
-         unpack="false"/>
-
-   <plugin
-         id="javax.resource"
-         download-size="0"
-         install-size="0"
-         version="1.5.0"
-         unpack="false"/>
-
-   <plugin
-         id="javax.transaction"
-         download-size="0"
-         install-size="0"
-         version="1.1.0"
          unpack="false"/>
 
    <plugin
