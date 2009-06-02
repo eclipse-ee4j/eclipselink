@@ -80,6 +80,7 @@ public class AnnotationsProcessor {
     private HashMap<String, JavaMethod> factoryMethods;
     private NamespaceResolver namespaceResolver;
     private Helper helper;
+    private ArrayList<Property> xmlIdRefProps; 
 
     public AnnotationsProcessor(Helper helper) {
         this.helper = helper;
@@ -94,7 +95,8 @@ public class AnnotationsProcessor {
         this.factoryMethods = new HashMap<String, JavaMethod>();
         this.namespaceResolver = new NamespaceResolver();
         this.xmlRootElements = new HashMap<String, ElementDeclaration>();
-        
+        xmlIdRefProps = new ArrayList<Property>();
+
         ArrayList<JavaClass> classesToProcess = new ArrayList<JavaClass>();
         //check for ObjectFactories and process them
         for(JavaClass javaClass:classes) {
@@ -151,6 +153,21 @@ public class AnnotationsProcessor {
             }
         }
         checkForCallbackMethods();
+        
+        // validate @XmlIDREF annotated properties - target class must have an XmlID annotation
+        for (Property property : xmlIdRefProps) {
+            JavaClass typeClass = property.getType();
+            // handle array or collection
+            if (typeClass.isArray()) {
+                typeClass = typeClass.getComponentType();
+            } else if (isCollectionType(typeClass)) {
+                typeClass = property.getGenericType();
+            }
+            TypeInfo tInfo = typeInfo.get(typeClass.getQualifiedName());
+            if (tInfo != null && tInfo.getIDProperty() == null) {
+                throw JAXBException.invalidIdRef(property.getPropertyName(), typeClass.getQualifiedName());
+            }
+        }
     }    
     
     public SchemaTypeInfo addClass(JavaClass javaClass) {
@@ -413,6 +430,10 @@ public class AnnotationsProcessor {
                 }
                 info.setIDProperty(property);
             }
+            // handle @XmlIDREF - validate these properties after processing of all types is completed
+            if (helper.isAnnotationPresent(property.getElement(), XmlIDREF.class)) {
+                xmlIdRefProps.add(property);
+            }            
             // handle @XmlJavaTypeAdapter
             if (helper.isAnnotationPresent(property.getElement(), XmlJavaTypeAdapter.class)) {
                 property.setAdapterClass(((XmlJavaTypeAdapter) helper.getAnnotation(property.getElement(), XmlJavaTypeAdapter.class)).value());
@@ -422,6 +443,7 @@ public class AnnotationsProcessor {
                 createTypeInfoFor(propertyType);
             }
         }
+        
         //Make sure this class has a factory method or a zero arg constructor
         if(info.getFactoryMethodName() == null && info.getObjectFactoryClassName() == null) {
             JavaConstructor zeroArgConstructor = javaClass.getDeclaredConstructor(new JavaClass[]{});
