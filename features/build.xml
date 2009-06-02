@@ -241,7 +241,6 @@
             <!-- zipfileset dir="${classes.dir}"                                includes="site.xml"/         -->
             <zipfileset dir="${feature.build.dir}"            prefix="features" includes="*.jar"/>
             <zipfileset dir="${feature.2.common.plugins.dir}" prefix="plugins"  includes="org.eclipse.persistence*${release.version}.${version.qualifier}.jar"/>
-            <zipfileset dir="${feature.2.jpa.plugins}"        prefix="plugins"  includes="javax.persistence*1.99.0.jar"/>
         </zip>
     </target>
 

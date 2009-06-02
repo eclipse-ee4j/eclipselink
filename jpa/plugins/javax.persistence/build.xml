@@ -43,14 +43,15 @@
        <format property="build.time" pattern="HHmm"/>
     </tstamp>
     
-    <property name="version.qualifier"     value="v${build.date}${build.time}"/>
+    <property name="jpaproto.qualifier"    value="v${build.date}${build.time}"/>
     <property name="jpaproto.version"      value="1.99.0"/>
-    <property name="jpaproto.jar"          value="${ant.project.name}_${jpaproto.version}.jar"/>
-    <property name="jpaproto.src.jar"      value="${ant.project.name}.source_${jpaproto.version}.jar"/>
+    <property name="jpaproto.jar"          value="${ant.project.name}_${jpaproto.version}.${jpaproto.qualifier}.jar"/>
+    <property name="jpaproto.src.jar"      value="${ant.project.name}.source_${jpaproto.version}.${jpaproto.qualifier}.jar"/>
     <property name="src.dir"               value="src"/>
     <property name="package.dir"           value=".."/>
     <property name="classes.dir"           value="classes"/>
     <property name="jpaproto.resource.dir" value="META-INF"/>
+    <property name="implementation.vendor" value="Eclipse.org - EclipseLink Project"/>
 
     <property name="javac.debug"       value="true"/>
     <property name="javac.optimize"    value="off"/>
@@ -67,8 +68,9 @@
 
     <target name="clean" description="Clean the build">
         <delete dir="${classes.dir}" includeEmptyDirs="true" quiet="true"/>
-        <delete file="${package.dir}/${jpaproto.jar}" quiet="true"/>
-        <delete file="${package.dir}/${jpaproto.src.jar}" quiet="true"/>
+        <delete quiet="true">
+            <fileset dir="${package.dir}" includes="${ant.project.name}*_${jpaproto.version}*"/>
+        </delete>
     </target>
 
     <!-- compile -->
@@ -118,14 +120,14 @@
             <manifest>
                 <attribute name="Specification-Vendor"   value="Sun Microsystems"/>
                 <attribute name="Specification-Version"  value="1.0"/>
-                <attribute name="Implementation-Vendor"  value="Sun Microsystems and ${implementation.vendor}"/>
+                <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
                 <attribute name="Implementation-Version" value="${jpaproto.version}"/>
                 <attribute name="Bundle-ManifestVersion" value="2"/>
                 <attribute name="Bundle-Name"            value="JPA 1.0 - Extended for OSGi (1.99) Source"/>
                 <attribute name="Bundle-SymbolicName"    value="${ant.project.name}.source"/>
                 <attribute name="Bundle-Vendor"          value="${implementation.vendor}"/>
-                <attribute name="Bundle-Version"         value="${jpaproto.version}.${version.qualifier}"/>
-                <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${jpaproto.version}.${version.qualifier}&quot;"/>
+                <attribute name="Bundle-Version"         value="${jpaproto.version}.${jpaproto.qualifier}"/>
+                <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${jpaproto.version}.${jpaproto.qualifier}&quot;"/>
             </manifest>
             <fileset dir="${jpaproto.2.base.dir}">
                 <include name="about.html"/>
@@ -146,16 +148,16 @@
         <echo message="Manifest-Version: 1.0${line.separator}"                                                                           file="${classes.dir}/MANIFEST.MF" append="false"/>
         <echo message="Specification-Vendor: Sun Microsystems Inc.${line.separator}"                                                     file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="Specification-Version: 1.0${line.separator}"                                                                      file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Implementation-Vendor: Sun Microsystems and ${implementation.vendor}${line.separator}"                            file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Implementation-Vendor: ${implementation.vendor}${line.separator}"                            file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="Implementation-Version: ${jpaproto.version}${line.separator}"                                                     file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="Bundle-ManifestVersion: 2${line.separator}"                                                                       file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="Bundle-Name: JPA 1.0 - Extended for OSGi (1.99)${line.separator}"                                                 file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="Bundle-SymbolicName: ${ant.project.name}${line.separator}"                                                        file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="Bundle-Vendor: ${implementation.vendor}${line.separator}"                                                         file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-Version: ${jpaproto.version}.${version.qualifier}${line.separator}"                                        file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-Version: ${jpaproto.version}.${jpaproto.qualifier}${line.separator}"                                        file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="Bundle-RequiredExecutionEnvironment: J2SE-1.5${line.separator}"                                                   file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Export-Package: javax.persistence;version=&quot;${jpaproto.version}.${version.qualifier}&quot;,${line.separator}" file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.persistence.spi;version=&quot;${jpaproto.version}.${version.qualifier}&quot;${line.separator}"             file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Export-Package: javax.persistence;version=&quot;${jpaproto.version}.${jpaproto.qualifier}&quot;,${line.separator}" file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" javax.persistence.spi;version=&quot;${jpaproto.version}.${jpaproto.qualifier}&quot;${line.separator}"             file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="Bundle-Activator: javax.persistence.osgi.Activator${line.separator}"                                              file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="Bundle-ClassPath: .${line.separator}"                                                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="Import-Package: org.osgi.framework;resolution:=optional,${line.separator}"                                        file="${classes.dir}/MANIFEST.MF" append="true"/>

@@ -40,7 +40,7 @@
          id="javax.persistence"
          download-size="0"
          install-size="0"
-         version="1.99.0"
+         version="1.99.0.v200906021518"
          unpack="false"/>
 
    <plugin

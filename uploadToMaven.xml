@@ -60,10 +60,10 @@
         <!-- Set version.string appropriately depending upon build.type and if svn -->
         <!--    is present. variable should only be used for uploaded filenames    -->
         <!--    or manifest entries.                                               -->
-        <condition property="version.string" value="${release.version}.qualifier" 
-                                              else="${release.version}.v${build.date}-r${svn.revision}">
+        <condition property="version.qualifier" value="qualifier" else="v${build.date}-r${svn.revision}">
             <equals arg1="${svn.revision}" arg2="NA"/>
         </condition>
+        <property name="version.string" value="${release.version}.${version.qualifier}"/>
 
         <!-- Set maven.version appropriately depending upon ${build.type}.        -->
         <!--    variable should only be used for maven version element in POM.    -->
@@ -156,8 +156,8 @@
             <param name="artifactId" value="javax.persistence"/>
             <param name="artifactVersion" value="${maven.version}"/>
             <!-- param name="artifactVersion" value="2.0-SNAPSHOT"/ --> 
-            <param name="artifact" value="${eclipselink.jpa.base}/${plugins.dir}/javax.persistence_1.99.0.jar"/>
-            <param name="artifactSrc" value="${eclipselink.jpa.base}/${plugins.dir}/javax.persistence.source_1.99.0.jar"/>
+            <param name="artifact" value="${eclipselink.jpa.base}/${plugins.dir}/javax.persistence_1.99.0.v200906021518.jar"/>
+            <param name="artifactSrc" value="${eclipselink.jpa.base}/${plugins.dir}/javax.persistence.source_1.99.0.v200906021518.jar"/>
             <param name="artifactName" value="Javax Persistence 1.99.0"/>
         </antcall>
    </target>

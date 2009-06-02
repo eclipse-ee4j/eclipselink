@@ -117,9 +117,9 @@
                                             else="v${build.date}-r${svn.revision}">
         <equals arg1="${svn.revision}" arg2="NA"/>
     </condition>
-    <property name="version.string" value="${release.version}.${version.qualifier}"/>
-    <property name="release.designation"  value="EclipseLink DeveloperBuild"/>
-
+    <property name="version.string"      value="${release.version}.${version.qualifier}"/>
+    <property name="release.designation" value="EclipseLink DeveloperBuild"/>
+    
     <path id="javadoc.path">
         <pathelement path="${eclipselink.jar.name}"/>
         <pathelement path="${commonj.sdo.lib}"/>
@@ -163,7 +163,7 @@
     <target name="clean" description="Clean the build">
         <ant antfile="build.xml" dir="${eclipselink.antlr}"            target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.asm}"              target="clean"/>
-        <ant antfile="build.xml" dir="${jpa.prototype}"                target="clean"/>
+        <!-- ant antfile="build.xml" dir="${jpa.prototype}"                target="clean"/ -->
         <ant antfile="build.xml" dir="${eclipselink.core}"             target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.extension.oracle}" target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.dbws}"             target="clean"/>
@@ -190,7 +190,7 @@
 
     <!-- Compiles all runtime components (excluding Tests, Oracle extensions). -->
     <target name="build-core">
-        <ant antfile="build.xml" dir="${jpa.prototype}"       target="build"/>
+        <!-- ant antfile="build.xml" dir="${jpa.prototype}"       target="build"/ -->
         <ant antfile="build.xml" dir="${eclipselink.asm}"     target="build"/>
         <ant antfile="build.xml" dir="${eclipselink.antlr}"   target="build"/>
         <ant antfile="build.xml" dir="${eclipselink.core}"    target="build"/>

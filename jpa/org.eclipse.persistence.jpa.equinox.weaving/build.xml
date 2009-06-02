@@ -67,7 +67,7 @@
         <fileset
             dir="${weaving.2.jpa.plugins.dir}"
             includes="org.eclipse.osgi_*.jar,
-                      javax.persistence_1.99.0.jar
+                      javax.persistence_1.99.0.*.jar
             "/>
     </path>
     <available file="${weaving.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar" property="core.bundle.exist"/>
