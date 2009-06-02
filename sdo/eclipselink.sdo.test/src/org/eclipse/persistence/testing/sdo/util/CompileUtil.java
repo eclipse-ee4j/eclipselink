@@ -46,11 +46,17 @@ public class CompileUtil {
             InputStream stderr = proc.getErrorStream();
             InputStreamReader isr = new InputStreamReader(stderr);
             BufferedReader br = new BufferedReader(isr);
-            String line = null;
-            System.out.println("<ERROR>");
-            while ( (line = br.readLine()) != null)
-                System.out.println(line);
-            System.out.println("</ERROR>");			
+            String line = br.readLine();
+            if (line != null) {
+                System.out.println("<ERROR>");   
+                while (line != null) {
+                    System.out.println(line);
+                    if ((line = br.readLine()) == null) {
+                        System.out.println("</ERROR>");
+                    }
+                }
+            }
+            
             exitVal = proc.waitFor();
 		} catch (Exception e) {
 			e.printStackTrace();

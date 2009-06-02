@@ -101,6 +101,22 @@ public class SchemaGenXmlElementWrapperTestCases  extends TestCase {
             }
         }
     }
+    
+    /**
+     * Exception case - @XmlElementWrapper must be on collection property
+     */
+    public void testInvalidElementWrapper() {
+        MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
+        boolean exception = false;
+        try {
+            Class[] classes = new Class[]{ MyInvalidClass.class }; 
+            JAXBContext context = (org.eclipse.persistence.jaxb.JAXBContext) org.eclipse.persistence.jaxb.JAXBContextFactory.createContext(classes, null);
+            context.generateSchema(outputResolver);
+        } catch (Exception ex) {
+            exception = true;
+        }
+        assertTrue("An error did not occur as expected", exception);
+    }
 
     class MySchemaOutputResolver extends SchemaOutputResolver {
         // keep a list of processed schemas for the validation phase of the test(s)

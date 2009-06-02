@@ -406,7 +406,7 @@ public class AnnotationsProcessor {
             // handle @XmlID
             if (helper.isAnnotationPresent(property.getElement(), XmlID.class)) {
                 if (!areEquals(property.getType(), String.class)) {
-                    // TODO: throw an exception here
+                    throw JAXBException.invalidId(property.getPropertyName());
                 }
                 if (info.isIDSet()) {
                     // TODO: throw an exception here
@@ -446,7 +446,7 @@ public class AnnotationsProcessor {
         }
         return true;
     }
-    
+        
     public ArrayList<Property> getPropertiesForClass(JavaClass cls, TypeInfo info) {
     	ArrayList<Property> returnList;
     	if(info.isTransient()){
@@ -674,7 +674,21 @@ public class AnnotationsProcessor {
                         property.setNillable(xmlElement.nillable());
                         validateElementIsInPropOrder(info, property.getPropertyName());
                     }                                                            
- 
+                    
+                    // Make sure XmlElementWrapper annotation is on a collection or array
+                    if (helper.isAnnotationPresent(property.getElement(), XmlElementWrapper.class)) {
+                        if (!isCollectionType(property) && !property.getType().isArray()) {
+                            throw JAXBException.invalidElementWrapper(nextField.getName());
+                        }
+                    }
+
+                    // Make sure XmlList annotation is on a collection or array
+                    if (helper.isAnnotationPresent(property.getElement(), XmlList.class)) {
+                        if (!isCollectionType(property) && !property.getType().isArray()) {
+                            throw JAXBException.invalidList(nextField.getName());
+                        }
+                    }
+                    
                     if (helper.isAnnotationPresent(property.getElement(), XmlValue.class)) {                    
                     	info.setXmlValueProperty(property);
                         validateXmlValueFieldOrProperty(cls, property, ptype, nextField.getName());                    	
@@ -684,7 +698,7 @@ public class AnnotationsProcessor {
                     property.setSchemaName(getQNameForProperty(Introspector.decapitalize(nextField.getName()), nextField, getNamespaceInfoForPackage(cls.getPackage())));
                     properties.add(property);
                 }
-            }else{
+            } else {
             	//If a property is marked transient ensure it doesn't exist in the propOrder            	
             	List<String> propOrderList = Arrays.asList(info.getPropOrder());
             	if(propOrderList.contains(nextField.getName())){
@@ -1009,6 +1023,20 @@ public class AnnotationsProcessor {
                     }
                 }           
                 
+                // Make sure XmlElementWrapper annotation is on a collection or array
+                if (helper.isAnnotationPresent(property.getElement(), XmlElementWrapper.class)) {
+                    if (!isCollectionType(property) && !property.getType().isArray()) {
+                        throw JAXBException.invalidElementWrapper(propertyName);
+                    }
+                }
+                
+                // Make sure XmlList annotation is on a collection or array
+                if (helper.isAnnotationPresent(property.getElement(), XmlList.class)) {
+                    if (!isCollectionType(property) && !property.getType().isArray()) {
+                        throw JAXBException.invalidList(propertyName);
+                    }
+                }
+
                 if (helper.isAnnotationPresent(property.getElement(), XmlValue.class)) {
                     info.setXmlValueProperty(property);
                     validateXmlValueFieldOrProperty(cls, property, ptype, propertyName);                

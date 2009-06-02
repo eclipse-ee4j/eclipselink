@@ -43,6 +43,10 @@ public class JAXBException extends EclipseLinkException {
     public static final int NON_EXISTENT_PROPERTY_IN_PROP_ORDER = 50012;
     public static final int MISSING_PROPERTY_IN_PROP_ORDER = 50013;
     public static final int INVALID_TYPE_FOR_XMLVALUE_PROPERTY = 50014;
+    public static final int INVALID_XML_ELEMENT_WRAPPER = 50015;
+    public static final int INVALID_ID = 50016;
+    public static final int INVALID_IDREF = 50017;
+    public static final int INVALID_LIST = 50018;
     
     protected JAXBException(String message) {
         super(message);
@@ -103,6 +107,34 @@ public class JAXBException extends EclipseLinkException {
         return exception;
     }    
     
+    public static JAXBException invalidElementWrapper(String propertyName) {
+        Object[] args = { propertyName };
+        JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, INVALID_XML_ELEMENT_WRAPPER, args));
+        exception.setErrorCode(INVALID_XML_ELEMENT_WRAPPER);
+        return exception;
+    }    
+
+    public static JAXBException invalidId(String propertyName) {
+        Object[] args = { propertyName };
+        JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, INVALID_ID, args));
+        exception.setErrorCode(INVALID_ID);
+        return exception;
+    }    
+
+    public static JAXBException invalidIdRef(String propertyName, String className) {
+        Object[] args = {propertyName, className};
+        JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, INVALID_IDREF, args));
+        exception.setErrorCode(INVALID_IDREF);
+        return exception;
+    }    
+    
+    public static JAXBException invalidList(String propertyName) {
+        Object[] args = { propertyName };
+        JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, INVALID_LIST, args));
+        exception.setErrorCode(INVALID_LIST);
+        return exception;
+    }    
+
     public static JAXBException nameCollision(String uri, String name) {
         Object[] args = {uri, name};
         JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, NAME_COLLISION, args));
