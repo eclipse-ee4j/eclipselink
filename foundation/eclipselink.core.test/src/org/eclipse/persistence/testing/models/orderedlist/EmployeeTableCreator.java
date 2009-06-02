@@ -22,17 +22,73 @@ public class EmployeeTableCreator extends org.eclipse.persistence.tools.schemafr
 
     public EmployeeTableCreator() {
         applyPROJECT();
+        buildALLOWANCE();
+        buildCHILDTable();
         buildEMPLOYEETable();
         buildLPROJECTTable();
         buildPHONETable();
         buildPROJ_EMPTable();
         buildPROJECTTable();
         buildRESPONSTable();
-        buildCHILDTable();
+        buildSALARYTable();
     }
 
     protected void applyPROJECT() {
         setName("OL_Employee");
+    }
+
+    protected void buildALLOWANCE() {
+        org.eclipse.persistence.tools.schemaframework.TableDefinition tabledefinition = new org.eclipse.persistence.tools.schemaframework.TableDefinition();
+
+        // SECTION: TABLE
+        tabledefinition.setName("OL_ALLOWANCE");
+
+        // SECTION: FIELD
+        org.eclipse.persistence.tools.schemaframework.FieldDefinition field = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+        field.setName("OWNER_CHILD_ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(false);
+        field.setIsPrimaryKey(true);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        field.setForeignKeyFieldName("OL_CHILD.CHILD_ID");
+        tabledefinition.addField(field);
+
+        // SECTION: FIELD
+        org.eclipse.persistence.tools.schemaframework.FieldDefinition field1 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+        field1.setName("ALLOWANCE");
+        field1.setTypeName("INT");
+        field1.setSize(10);
+        field1.setShouldAllowNull(true);
+        field1.setIsPrimaryKey(false);
+        field1.setUnique(false);
+        field1.setIsIdentity(false);
+        tabledefinition.addField(field1);
+        addTableDefinition(tabledefinition);
+
+        // SECTION: FIELD
+        org.eclipse.persistence.tools.schemaframework.FieldDefinition field6 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+        field6.setName("CHILDREN_ORDER");
+        field6.setTypeName("NUMERIC");
+        field6.setSize(15);
+        field6.setShouldAllowNull(true);
+        field6.setIsPrimaryKey(false);
+        field6.setUnique(false);
+        field6.setIsIdentity(false);
+        tabledefinition.addField(field6);
+        
+        // SECTION: FIELD
+        org.eclipse.persistence.tools.schemaframework.FieldDefinition field5 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+        field5.setName("PARENT_ID");
+        field5.setTypeName("NUMERIC");
+        field5.setSize(15);
+        field5.setShouldAllowNull(true);
+        field5.setIsPrimaryKey(false);
+        field5.setUnique(false);
+        field5.setIsIdentity(false);
+        field5.setForeignKeyFieldName("OL_EMPLOYEE.EMP_ID");
+        tabledefinition.addField(field5);        
     }
 
     protected void buildCHILDTable() {
@@ -455,7 +511,7 @@ public class EmployeeTableCreator extends org.eclipse.persistence.tools.schemafr
         field1.setName("DESCRIP");
         field1.setTypeName("VARCHAR");
         field1.setSize(200);
-        field1.setShouldAllowNull(false);
+        field1.setShouldAllowNull(true);
         field1.setIsPrimaryKey(false);
         field1.setUnique(false);
         field1.setIsIdentity(false);
@@ -472,5 +528,60 @@ public class EmployeeTableCreator extends org.eclipse.persistence.tools.schemafr
         field6.setUnique(false);
         field6.setIsIdentity(false);
         tabledefinition.addField(field6);
+    }
+
+    protected void buildSALARYTable() {
+        org.eclipse.persistence.tools.schemaframework.TableDefinition tabledefinition = new org.eclipse.persistence.tools.schemaframework.TableDefinition();
+
+        // SECTION: TABLE
+        tabledefinition.setName("OL_SALARY");
+
+        // SECTION: FIELD
+        org.eclipse.persistence.tools.schemaframework.FieldDefinition field = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+        field.setName("OWNER_EMP_ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(false);
+        field.setIsPrimaryKey(true);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        field.setForeignKeyFieldName("OL_EMPLOYEE.EMP_ID");
+        tabledefinition.addField(field);
+
+        // SECTION: FIELD
+        org.eclipse.persistence.tools.schemaframework.FieldDefinition field1 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+        field1.setName("SALARY");
+        field1.setTypeName("INT");
+        field1.setSize(10);
+        field1.setShouldAllowNull(true);
+        field1.setIsPrimaryKey(false);
+        field1.setUnique(false);
+        field1.setIsIdentity(false);
+        tabledefinition.addField(field1);
+        addTableDefinition(tabledefinition);
+
+        // SECTION: FIELD
+        org.eclipse.persistence.tools.schemaframework.FieldDefinition field11 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+        field11.setName("MANAGED_ORDER");
+        field11.setTypeName("NUMERIC");
+        field11.setSize(15);
+        field11.setShouldAllowNull(true);
+        field11.setIsPrimaryKey(false);
+        field11.setUnique(false);
+        field11.setIsIdentity(false);
+        tabledefinition.addField(field11);
+
+        // SECTION: FIELD
+        org.eclipse.persistence.tools.schemaframework.FieldDefinition field9 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+        field9.setName("MANAGER_ID");
+        field9.setTypeName("NUMERIC");
+        field9.setSize(15);
+        field9.setShouldAllowNull(true);
+        field9.setIsPrimaryKey(false);
+        field9.setUnique(false);
+        field9.setIsIdentity(false);
+        field9.setForeignKeyFieldName("OL_EMPLOYEE.EMP_ID");
+        tabledefinition.addField(field9);
+
     }
 }

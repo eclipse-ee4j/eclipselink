@@ -126,8 +126,12 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
     public Object cloneAttribute(Object attributeValue, Object original, Object clone, UnitOfWorkImpl unitOfWork, boolean buildDirectlyFromRow) {
         ValueHolderInterface valueHolder = null;
         Object container = null;
+        IndirectList indirectList = null;
         if (attributeValue instanceof IndirectContainer) {
             valueHolder = ((IndirectContainer)attributeValue).getValueHolder();
+            if(attributeValue instanceof IndirectList) {
+                indirectList = (IndirectList)attributeValue;
+            }
         }
         if (!buildDirectlyFromRow && unitOfWork.isOriginalNewObject(original)) {
             // CR#3156435 Throw a meaningful exception if a serialized/dead value holder is detected.
@@ -175,6 +179,9 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
           && (container instanceof CollectionChangeTracker) ) {
             ((CollectionChangeTracker)container).setTrackedAttributeName(getMapping().getAttributeName());
             ((CollectionChangeTracker)container)._persistence_setPropertyChangeListener(((ChangeTracker)clone)._persistence_getPropertyChangeListener());
+        }
+        if(indirectList != null) {
+            ((IndirectList)container).setIsListOrderBrokenInDb(indirectList.isListOrderBrokenInDb());
         }
         return container;
     }

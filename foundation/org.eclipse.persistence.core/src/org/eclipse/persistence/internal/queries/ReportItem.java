@@ -141,9 +141,12 @@ public class ReportItem implements Cloneable, java.io.Serializable {
                         setMapping(mapping);
                 //Bug4942640  Widen the check to support collection mapping too
                 } else if (mapping.isForeignReferenceMapping()) {
-                    setDescriptor(mapping.getReferenceDescriptor());
-                    if (getDescriptor().hasInheritance()){
-                        ((QueryKeyExpression)getAttributeExpression()).setShouldUseOuterJoinForMultitableInheritance(true);
+                    // DirectCollectionMapping doesn't have reference descriptor
+                    if(mapping.getReferenceDescriptor() != null) {
+                        setDescriptor(mapping.getReferenceDescriptor());
+                        if (getDescriptor().hasInheritance()){
+                            ((QueryKeyExpression)getAttributeExpression()).setShouldUseOuterJoinForMultitableInheritance(true);
+                        }
                     }
                 } else {
                     throw QueryException.invalidExpressionForQueryItem(getAttributeExpression(), query);

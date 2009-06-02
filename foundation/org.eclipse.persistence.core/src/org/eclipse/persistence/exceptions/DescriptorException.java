@@ -18,6 +18,7 @@ import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 
 import java.lang.reflect.*;
+import java.util.Collection;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
@@ -224,7 +225,9 @@ public class DescriptorException extends ValidationException {
     public final static int CANNOT_SET_CONVERTER_FOR_NON_DIRECT_MAPPING = 208;
     public final static int DIRECT_KEY_NOT_SET = 209;
     public final static int LIST_ORDER_FIELD_REQUIRES_LIST = 210;
-    public final static int LIST_ORDER_FIELD_REQUIRES_ORDERED_LIST_CONTAINER_POLICY = 211;
+    public final static int LIST_ORDER_FIELD_REQUIRES_INDIRECT_LIST = 211;
+    public final static int LIST_ORDER_FIELD_TABLE_IS_WRONG = 212;
+    public final static int MULTIPLE_TARGET_FOREIGN_KEY_TABLES = 213;
 
     /**
      * INTERNAL:
@@ -1955,12 +1958,28 @@ public class DescriptorException extends ValidationException {
         return descriptorException;
     }
 
-    public static DescriptorException listOrderFieldRequiersOrderedListContainerPolicy(ClassDescriptor descriptor, DatabaseMapping mapping) {
+    public static DescriptorException listOrderFieldRequiersIndirectList(ClassDescriptor descriptor, DatabaseMapping mapping) {
         Object[] args = { mapping };
 
-        DescriptorException descriptorException = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, LIST_ORDER_FIELD_REQUIRES_ORDERED_LIST_CONTAINER_POLICY, args), descriptor);
-        descriptorException.setErrorCode(LIST_ORDER_FIELD_REQUIRES_ORDERED_LIST_CONTAINER_POLICY);
+        DescriptorException descriptorException = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, LIST_ORDER_FIELD_REQUIRES_INDIRECT_LIST, args), descriptor);
+        descriptorException.setErrorCode(LIST_ORDER_FIELD_REQUIRES_INDIRECT_LIST);
         return descriptorException;
     }
+
+    public static DescriptorException listOrderFieldTableIsWrong(ClassDescriptor descriptor, DatabaseMapping mapping, DatabaseTable wrongTable, DatabaseTable correctTable) {
+        Object[] args = { mapping, wrongTable, correctTable };
+
+        DescriptorException descriptorException = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, LIST_ORDER_FIELD_TABLE_IS_WRONG, args), descriptor);
+        descriptorException.setErrorCode(LIST_ORDER_FIELD_TABLE_IS_WRONG);
+        return descriptorException;
+    }
+
+    public static DescriptorException multipleTargetForeignKeyTables(ClassDescriptor descriptor, DatabaseMapping mapping, Collection tables) {
+        Object[] args = { mapping, tables };
     
+        DescriptorException descriptorException = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, MULTIPLE_TARGET_FOREIGN_KEY_TABLES, args), descriptor);
+        descriptorException.setErrorCode(MULTIPLE_TARGET_FOREIGN_KEY_TABLES);
+        return descriptorException;
+    }
+
 }

@@ -59,6 +59,8 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     protected boolean isListOrderFieldSupported;
     /** query used when order of list members is changed. Used only if listOrderField!=null */
     protected transient DataModifyQuery changeOrderTargetQuery;
+    /** specifies whether/how listOrderField values in the db should be validated. There should be no nulls, no "holes" in order.*/ 
+    protected OrderedListContainerPolicy.OrderValidationMode listOrderFieldValidationMode;
     
     /**
      * PUBLIC:
@@ -191,6 +193,9 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         if ((this.getDescriptor().getObjectChangePolicy().isObjectChangeTrackingPolicy()) && ((clone != null) && (((ChangeTracker)clone)._persistence_getPropertyChangeListener() != null)) && (clonedAttributeValue instanceof CollectionChangeTracker)) {
             ((CollectionChangeTracker)clonedAttributeValue).setTrackedAttributeName(this.getAttributeName());
             ((CollectionChangeTracker)clonedAttributeValue)._persistence_setPropertyChangeListener(((ChangeTracker)clone)._persistence_getPropertyChangeListener());
+        }
+        if(temporaryCollection instanceof IndirectList) {
+            ((IndirectList)clonedAttributeValue).setIsListOrderBrokenInDb(((IndirectList)temporaryCollection).isListOrderBrokenInDb());
         }
         return clonedAttributeValue;
     }
@@ -411,6 +416,12 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     public Object clone() {
         CollectionMapping clone = (CollectionMapping)super.clone();
         clone.setDeleteAllQuery((ModifyQuery)getDeleteAllQuery().clone());
+        if(this.listOrderField != null) {
+            clone.listOrderField = ((DatabaseField)this.listOrderField.clone());
+        }
+        if(this.changeOrderTargetQuery != null) {
+            clone.changeOrderTargetQuery = (DataModifyQuery)this.changeOrderTargetQuery.clone();
+        }
         return clone;
     }
 
@@ -520,6 +531,10 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                     int previousSize = previousList.size();
                     List currentList = (List)currentObjects;
                     int currentSize = currentList.size();
+                    boolean shouldRepairOrder = false;
+                    if(currentList instanceof IndirectList) {
+                        shouldRepairOrder = ((IndirectList)currentList).isListOrderBrokenInDb();
+                    }
                     if(previousList == currentList) {
                         // previousList is not available
                         
@@ -535,7 +550,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                         List<Integer> currentIndexes = record.getCurrentIndexesOfOriginalObjects(currentList);
                         for(int i=0; i < currentIndexes.size(); i++) {
                             int currentIndex = currentIndexes.get(i);
-                            if(currentIndex != i && currentIndex >= 0) {
+                            if(currentIndex != i && currentIndex >= 0 || shouldRepairOrder) {
                                 objectOrderChangedDuringUpdate(query, currentList.get(currentIndex), currentIndex);
                             }
                         }
@@ -547,7 +562,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                             if(i < currentSize) {
                                 currentObject = currentList.get(i);
                             }
-                            if(prevObject != currentObject) {
+                            if(prevObject != currentObject || shouldRepairOrder) {
                                 // object has either been removed or its index in the List has changed
                                 int newIndex = currentList.indexOf(prevObject);
                                 if(newIndex >= 0) {
@@ -555,6 +570,9 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                                 }
                             }
                         }
+                    }
+                    if(shouldRepairOrder) {
+                        ((IndirectList)currentList).setIsListOrderBrokenInDb(false);
                     }
                 }
             }
@@ -853,6 +871,16 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     }
 
     /**
+     * INTERNAL:
+     * Get the container policy from the selection query for this mapping. This 
+     * method is overridden in DirectCollectionMapping since  its selection 
+     * query is a DataReadQuery.
+     */
+    protected ContainerPolicy getSelectionQueryContainerPolicy() {
+        return ((ReadAllQuery) getSelectionQuery()).getContainerPolicy();
+    }
+
+    /**
      * Convenience method.
      * Return the value of an attribute, unwrapping value holders if necessary.
      * If the value is null, build a new container.
@@ -867,10 +895,28 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
 
     /**
      * PUBLIC:
-     * Field holds the order of elements in the list in the db, requires collection of type List, may be not null only in case isListOrderFieldSupported==true
+     * Field holds the order of elements in the list in the db, requires collection of type List;
+     * may be not null only in case isListOrderFieldSupported==true.
      */
     public DatabaseField getListOrderField() {
         return listOrderField;
+    }
+    
+    /**
+     * INTERNAL:
+     * Returns list of primary key fields from the reference descriptor.
+     */
+    public List<DatabaseField> getTargetPrimaryKeyFields() {
+        return getReferenceDescriptor().getPrimaryKeyFields();
+    }
+    
+    /**
+     * PUBLIC:
+     * Specifies whether/how listOrderField values in the db should be validated;
+     * ignored unless listOrderField != null.
+     */
+    public OrderedListContainerPolicy.OrderValidationMode getListOrderFieldValidationMode() {
+        return this.listOrderFieldValidationMode;
     }
     
     protected boolean hasCustomDeleteAllQuery() {
@@ -901,13 +947,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         }
         
         if(listOrderField != null) {
-            if(!List.class.isAssignableFrom(getAttributeAccessor().getAttributeClass())) {
-                throw DescriptorException.listOrderFieldRequiersList(getDescriptor(), this);
-            } else if(!getContainerPolicy().isOrderedListPolicy()) {
-                throw DescriptorException.listOrderFieldRequiersOrderedListContainerPolicy(getDescriptor(), this);
-            } else {
-                initializeListOrderField(session);
-            }
+            initializeListOrderField(session);
         }
     }
 
@@ -917,15 +957,96 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * Precondition: listOrderField != null.
      */
     protected void initializeListOrderField(AbstractSession session) {
-        this.getReferenceDescriptor().buildField(this.listOrderField);
-        // TODO: should verify that listOrderField's table is one of the tables of the target descriptor.
-        // Could we check that here for AggregateCollectionMapping?
-        ReadAllQuery readAllQuery = (ReadAllQuery)getSelectionQuery();
-        Expression expField = readAllQuery.getExpressionBuilder().getField(this.listOrderField);
-        readAllQuery.addOrdering(expField);
-        readAllQuery.addAdditionalField(expField);
+        if(!List.class.isAssignableFrom(getAttributeAccessor().getAttributeClass())) {
+            throw DescriptorException.listOrderFieldRequiersList(getDescriptor(), this);
+        }
+        if(this.listOrderFieldValidationMode == null) {
+            this.listOrderFieldValidationMode = OrderedListContainerPolicy.OrderValidationMode.NONE;
+        } else if(this.listOrderFieldValidationMode == OrderedListContainerPolicy.OrderValidationMode.CORRECTION) {
+            //OrderValidationMode.CORRECTION sets container class to IndirectList, make sure the attribute is of compatible type.
+            if(!getAttributeAccessor().getAttributeClass().isAssignableFrom(IndirectList.class)) {
+                throw DescriptorException.listOrderFieldRequiersIndirectList(getDescriptor(), this);
+            }
+        }
+
+        ContainerPolicy originalQueryContainerPolicy = getSelectionQueryContainerPolicy();
+        
+        if(!getContainerPolicy().isOrderedListPolicy()) {
+            setContainerPolicy(new OrderedListContainerPolicy(getContainerPolicy().getContainerClass()));
+        }
+        OrderedListContainerPolicy orderedListContainerPolicy = (OrderedListContainerPolicy)getContainerPolicy();  
+        orderedListContainerPolicy.setListOrderField(this.listOrderField);
+        orderedListContainerPolicy.setOrderValidationMode(this.listOrderFieldValidationMode);
+
+        // If ContainerPolicy's container class is IndirectList, originalQueryContainerPolicy's container class is not (likely Vector)
+        // and listOrderFieldValidationMode doesn't require query to use IndirectList - then query will keep a separate container policy
+        // that uses its original container class (likely Vector) - this is the same optimization as used in useTransparentList method.
+        if(getContainerPolicy().getContainerClass().isAssignableFrom(IndirectList.class) && 
+           !IndirectList.class.isAssignableFrom(originalQueryContainerPolicy.getContainerClass()) &&
+           this.listOrderFieldValidationMode != OrderedListContainerPolicy.OrderValidationMode.CORRECTION ||
+           originalQueryContainerPolicy == this.getSelectionQueryContainerPolicy())
+        {
+            OrderedListContainerPolicy queryOrderedListContainerPolicy; 
+            if(originalQueryContainerPolicy.isOrderedListPolicy()) {
+                queryOrderedListContainerPolicy = (OrderedListContainerPolicy)originalQueryContainerPolicy;  
+            } else {
+                queryOrderedListContainerPolicy = new OrderedListContainerPolicy(originalQueryContainerPolicy.getContainerClass());
+            }
+            queryOrderedListContainerPolicy.setListOrderField(this.listOrderField);
+            queryOrderedListContainerPolicy.setOrderValidationMode(this.listOrderFieldValidationMode);
+            setSelectionQueryContainerPolicy(queryOrderedListContainerPolicy);
+        }
+        
+
+        if(this.listOrderField.getType() == null) {
+            this.listOrderField.setType(Integer.class);
+        }
+        
+        buildListOrderField();
+        
+        // DirectCollectMap - that uses DataReadQuery - adds listOrderField to selection query in initializeSelectionStatement method.
+        if(getSelectionQuery().isReadAllQuery()) {
+            ReadAllQuery readAllQuery = (ReadAllQuery)getSelectionQuery();
+            Expression expField = getListOrderFieldExpression(readAllQuery.getExpressionBuilder());
+            readAllQuery.addOrdering(expField);
+            readAllQuery.addAdditionalField(expField);
+        }
         
         initializeChangeOrderTargetQuery(session);
+    }
+    
+    /**
+     * INTERNAL:
+     * Verifies listOrderField's table, if none found sets the default one. 
+     * Precondition: listOrderField != null.
+     */
+    protected void buildListOrderField() {
+        if(this.listOrderField.hasTableName()) {
+            if(!this.getReferenceDescriptor().getDefaultTable().equals(this.listOrderField.getTable())) {
+                throw DescriptorException.listOrderFieldTableIsWrong(this.getDescriptor(), this, this.listOrderField.getTable(), this.getReferenceDescriptor().getDefaultTable());
+            }
+        }
+        this.listOrderField = this.getReferenceDescriptor().buildField(this.listOrderField);
+    }
+    
+    /**
+     * INTERNAL:
+     * Creates expression for listOrderField 
+     * Precondition: listOrderField != null.
+     */
+    public Expression getListOrderFieldExpression(Expression baseExpression) {
+        if(shouldUseListOrderFieldTableExpression()) {
+            baseExpression = baseExpression.getTable(this.listOrderField.getTable());
+        }
+        return baseExpression.getField(this.listOrderField);
+    }
+    
+    /**
+     * INTERNAL:
+     * Indicates whether getListOrderFieldExpression method should create field expression based on table expression.  
+     */
+    public boolean shouldUseListOrderFieldTableExpression() {
+        return false;
     }
     
     /**
@@ -1264,7 +1385,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         AbstractRecord databaseRow = new DatabaseRecord();
 
         // Extract target field and its value. Construct insert statement and execute it
-        List<DatabaseField> targetPrimaryKeyFields = getReferenceDescriptor().getPrimaryKeyFields();
+        List<DatabaseField> targetPrimaryKeyFields = getTargetPrimaryKeyFields();
         int size = targetPrimaryKeyFields.size();
         for (int index = 0; index < size; index++) {
             DatabaseField targetPrimaryKey = targetPrimaryKeyFields.get(index);
@@ -1679,10 +1800,14 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * Throws exception if the mapping doesn't support listOrderField.
      */
     public void setListOrderField(DatabaseField field) {
-        if(isListOrderFieldSupported) {
-            this.listOrderField = field;
+        if(field != null) { 
+            if(isListOrderFieldSupported) {
+                this.listOrderField = field;
+            } else {
+                throw ValidationException.listOrderFieldNotSupported(this);
+            }
         } else {
-            throw ValidationException.listOrderFieldNotSupported(this);
+            this.listOrderField = null;
         }
     }
     
@@ -1695,6 +1820,15 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         setListOrderField(new DatabaseField(fieldName));
     }
     
+    /**
+     * PUBLIC:
+     * Specifies whether/how listOrderField values in the db should be validated;
+     * ignored unless listOrderField != null.
+     */
+    public void setListOrderFieldValidationMode(OrderedListContainerPolicy.OrderValidationMode orderValidationMode) {
+        this.listOrderFieldValidationMode = orderValidationMode;
+    }
+
     /**
      * PUBLIC:
      * Configure the mapping to use an instance of the specified container class
@@ -1866,7 +2000,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     public void useTransparentList() {
         setIndirectionPolicy(new TransparentIndirectionPolicy());
         useCollectionClass(ClassConstants.IndirectList_Class);
-        setSelectionQueryContainerPolicy(ContainerPolicy.buildPolicyFor(Vector.class));
+        setSelectionQueryContainerPolicy(ContainerPolicy.buildPolicyFor(Vector.class, hasOrderBy() || listOrderField != null));
     }
 
     /**
@@ -2059,7 +2193,11 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                 Object targetMapKey = getContainerPolicy().buildKeyFromJoinedRow(targetRow, joinManager, nestedQuery, executionSession);
                 nestedQuery.setTranslationRow(null);
                 if (targetMapKey == null){
-                    getContainerPolicy().addInto(targetObject, value, executionSession);
+                    if(this.listOrderField != null) {
+                        getContainerPolicy().addInto(targetObject, value, executionSession, targetRow, nestedQuery);
+                    } else {
+                        getContainerPolicy().addInto(targetObject, value, executionSession);
+                    }
                 } else {
                     getContainerPolicy().addInto(targetMapKey, targetObject, value, executionSession);
                 }

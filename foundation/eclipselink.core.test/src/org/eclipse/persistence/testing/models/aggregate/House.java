@@ -22,7 +22,6 @@ public class House {
     private java.lang.String type;
     private Vector sellingPoints;
     private Oid insuranceId;
-    public int agentId;
 
     public House() {
         super();

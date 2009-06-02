@@ -20,19 +20,25 @@ import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.testing.models.orderedlist.EmployeeSystem.ChangeTracking;
 import org.eclipse.persistence.testing.models.orderedlist.EmployeeSystem.JoinFetchOrBatchRead;
 import org.eclipse.persistence.descriptors.*;
+import org.eclipse.persistence.indirection.IndirectList;
+import org.eclipse.persistence.internal.queries.OrderedListContainerPolicy.OrderValidationMode;
 import org.eclipse.persistence.mappings.*;
 
 public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
 
     boolean useListOrderField;
     boolean useIndirection;
+    boolean useSecondaryTable;
     ChangeTracking changeTracking;
     JoinFetchOrBatchRead joinFetchOrBatchRead;
+    OrderValidationMode orderValidationMode;
     
-    public EmployeeProject(boolean useListOrderField, boolean useIndirection, ChangeTracking changeTracking, JoinFetchOrBatchRead joinFetchOrBatchRead) {
+    public EmployeeProject(boolean useListOrderField, boolean useIndirection, boolean useSecondaryTable, ChangeTracking changeTracking, OrderValidationMode orderValidationMode, JoinFetchOrBatchRead joinFetchOrBatchRead) {
         this.useListOrderField = useListOrderField;
         this.useIndirection = useIndirection;
+        this.useSecondaryTable = useSecondaryTable;
         this.changeTracking = changeTracking;
+        this.orderValidationMode = orderValidationMode;
         this.joinFetchOrBatchRead = joinFetchOrBatchRead;
         
         setName("OL_Employee");
@@ -53,7 +59,10 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         RelationalDescriptor descriptor = new RelationalDescriptor();
         descriptor.setJavaClass(Child.class);
         descriptor.addTableName("OL_CHILD");
+        descriptor.addTableName("OL_ALLOWANCE");
         descriptor.addPrimaryKeyFieldName("CHILD_ID");
+        
+        descriptor.addForeignKeyFieldNameForMultipleTable("OL_ALLOWANCE.OWNER_CHILD_ID", "OL_CHILD.CHILD_ID");
         
         descriptor.useSoftCacheWeakIdentityMap();
         descriptor.setIdentityMapSize(50);
@@ -82,6 +91,11 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         idMapping.setFieldName("CHILD_ID");
         descriptor.addMapping(idMapping);
         
+        DirectToFieldMapping allowanceMapping = new DirectToFieldMapping();
+        allowanceMapping.setAttributeName("allowance");
+        allowanceMapping.setFieldName("OL_ALLOWANCE.ALLOWANCE");
+        descriptor.addMapping(allowanceMapping);
+
         return descriptor;        
     }
 
@@ -89,8 +103,11 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         RelationalDescriptor descriptor = new RelationalDescriptor();
         descriptor.setJavaClass(Employee.class);
         descriptor.addTableName("OL_EMPLOYEE");
+        descriptor.addTableName("OL_SALARY");
         descriptor.addPrimaryKeyFieldName("OL_EMPLOYEE.EMP_ID");
 
+        descriptor.addForeignKeyFieldNameForMultipleTable("OL_SALARY.OWNER_EMP_ID", "OL_EMPLOYEE.EMP_ID");
+        
         // Descriptor Properties.
         descriptor.useSoftCacheWeakIdentityMap();
         descriptor.setIdentityMapSize(100);
@@ -125,15 +142,25 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         lastNameMapping.setNullValue("");
         descriptor.addMapping(lastNameMapping);
 
+        DirectToFieldMapping salaryMapping = new DirectToFieldMapping();
+        salaryMapping.setAttributeName("salary");
+        salaryMapping.setFieldName("OL_SALARY.SALARY");
+        descriptor.addMapping(salaryMapping);
+
         DirectCollectionMapping responsibilitiesListMapping = new DirectCollectionMapping();
         responsibilitiesListMapping.setAttributeName("responsibilitiesList");
         if(useListOrderField) {
             responsibilitiesListMapping.setListOrderFieldName("OL_RESPONS.RESPONS_ORDER");
+            responsibilitiesListMapping.setListOrderFieldValidationMode(orderValidationMode);
         }
         if(useIndirection) {
             responsibilitiesListMapping.useTransparentList();
         } else {
-            responsibilitiesListMapping.useCollectionClass(ArrayList.class);
+            if(changeTracking == ChangeTracking.ATTRIBUTE) {
+                responsibilitiesListMapping.useCollectionClass(IndirectList.class);
+            } else {
+                responsibilitiesListMapping.useCollectionClass(ArrayList.class);
+            }
             responsibilitiesListMapping.dontUseIndirection();
         }
         responsibilitiesListMapping.setReferenceTableName("OL_RESPONS");
@@ -142,43 +169,77 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         setJoinFetchOrBatchRead(responsibilitiesListMapping);
         descriptor.addMapping(responsibilitiesListMapping);
 
-        OneToOneMapping managerMapping = new OneToOneMapping();
-        managerMapping.setAttributeName("manager");
-        managerMapping.setReferenceClass(Employee.class);
-        managerMapping.useBasicIndirection();
-        managerMapping.addForeignKeyFieldName("MANAGER_ID", "EMP_ID");
-        descriptor.addMapping(managerMapping);
-
-        OneToManyMapping managedEmployeesMapping = new OneToManyMapping();
-        managedEmployeesMapping.setAttributeName("managedEmployees");
-        managedEmployeesMapping.setReferenceClass(Employee.class);
-        if(useListOrderField) {
-            managedEmployeesMapping.setListOrderFieldName("OL_EMPLOYEE.MANAGED_ORDER");
+        // managedEmployees have nothing: no managedEmployees, no children, no projects, no responsibilities, no phones -
+        // can't read them using INNER_JOIN
+        if(this.joinFetchOrBatchRead != JoinFetchOrBatchRead.INNER_JOIN) {
+            OneToOneMapping managerMapping = new OneToOneMapping();
+            managerMapping.setAttributeName("manager");
+            managerMapping.setReferenceClass(Employee.class);
+            managerMapping.useBasicIndirection();
+            if(useSecondaryTable) {
+                managerMapping.addForeignKeyFieldName("OL_SALARY.MANAGER_ID", "EMP_ID");
+            } else {
+                managerMapping.addForeignKeyFieldName("MANAGER_ID", "EMP_ID");
+            }
+            descriptor.addMapping(managerMapping);
+    
+            OneToManyMapping managedEmployeesMapping = new OneToManyMapping();
+            managedEmployeesMapping.setAttributeName("managedEmployees");
+            managedEmployeesMapping.setReferenceClass(Employee.class);
+            if(useIndirection) {
+                managedEmployeesMapping.useTransparentList();
+            } else {
+                if(changeTracking == ChangeTracking.ATTRIBUTE) {
+                    managedEmployeesMapping.useCollectionClass(IndirectList.class);
+                } else {
+                    managedEmployeesMapping.useCollectionClass(ArrayList.class);
+                }
+                managedEmployeesMapping.dontUseIndirection();
+            }
+            if(useListOrderField) {
+                if(useSecondaryTable) {
+                    managedEmployeesMapping.setListOrderFieldName("OL_SALARY.MANAGED_ORDER");
+                } else {
+                    managedEmployeesMapping.setListOrderFieldName("OL_EMPLOYEE.MANAGED_ORDER");
+                }
+                managedEmployeesMapping.setListOrderFieldValidationMode(orderValidationMode);
+            }
+            if(useSecondaryTable) {
+                managedEmployeesMapping.addTargetForeignKeyFieldName("OL_SALARY.MANAGER_ID", "EMP_ID");
+            } else {
+                managedEmployeesMapping.addTargetForeignKeyFieldName("MANAGER_ID", "EMP_ID");
+            }
+            setJoinFetchOrBatchRead(managedEmployeesMapping);
+            descriptor.addMapping(managedEmployeesMapping);
         }
-        if(useIndirection) {
-            managedEmployeesMapping.useTransparentList();
-        } else {
-            managedEmployeesMapping.useCollectionClass(ArrayList.class);
-            managedEmployeesMapping.dontUseIndirection();
-        }
-        managedEmployeesMapping.addTargetForeignKeyFieldName("MANAGER_ID", "EMP_ID");
-        setJoinFetchOrBatchRead(managedEmployeesMapping);
-        descriptor.addMapping(managedEmployeesMapping);
         
         OneToManyMapping childrenMapping = new UnidirectionalOneToManyMapping();
         childrenMapping.setAttributeName("children");
         childrenMapping.setReferenceClass(Child.class);
         if(useListOrderField) {
-            childrenMapping.setListOrderFieldName("OL_CHILD.CHILDREN_ORDER");
+            if(useSecondaryTable) {
+                childrenMapping.setListOrderFieldName("OL_ALLOWANCE.CHILDREN_ORDER");
+            } else {
+                childrenMapping.setListOrderFieldName("OL_CHILD.CHILDREN_ORDER");
+            }
+            childrenMapping.setListOrderFieldValidationMode(orderValidationMode);
         }
         if(useIndirection) {
             childrenMapping.useTransparentList();
         } else {
-            childrenMapping.useCollectionClass(Vector.class);
+            if(changeTracking == ChangeTracking.ATTRIBUTE) {
+                childrenMapping.useCollectionClass(IndirectList.class);
+            } else {
+                childrenMapping.useCollectionClass(Vector.class);
+            }
             childrenMapping.dontUseIndirection();
         }
         childrenMapping.privateOwnedRelationship();
-        childrenMapping.addTargetForeignKeyFieldName("OL_CHILD.PARENT_ID", "EMP_ID");
+        if(useSecondaryTable) {
+            childrenMapping.addTargetForeignKeyFieldName("OL_ALLOWANCE.PARENT_ID", "EMP_ID");
+        } else {
+            childrenMapping.addTargetForeignKeyFieldName("OL_CHILD.PARENT_ID", "EMP_ID");
+        }
         setJoinFetchOrBatchRead(childrenMapping);
         descriptor.addMapping(childrenMapping);
 
@@ -194,11 +255,16 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
             phoneNumbersMapping.addFieldNameTranslation("OL_PHONE.TYPE", "TYPE");
             if(useListOrderField) {
                 phoneNumbersMapping.setListOrderFieldName("OL_PHONE.PHONE_ORDER");
+                phoneNumbersMapping.setListOrderFieldValidationMode(orderValidationMode);
             }
             if(useIndirection) {
                 phoneNumbersMapping.useTransparentList();
             } else {
-                phoneNumbersMapping.useCollectionClass(ArrayList.class);
+                if(changeTracking == ChangeTracking.ATTRIBUTE) {
+                    phoneNumbersMapping.useCollectionClass(IndirectList.class);
+                } else {
+                    phoneNumbersMapping.useCollectionClass(ArrayList.class);
+                }
                 phoneNumbersMapping.dontUseIndirection();
             }
             setJoinFetchOrBatchRead(phoneNumbersMapping);
@@ -208,14 +274,19 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         ManyToManyMapping projectsMapping = new ManyToManyMapping();
         projectsMapping.setAttributeName("projects");
         projectsMapping.setReferenceClass(Project.class);
-        if(useListOrderField) {
-            projectsMapping.setListOrderFieldName("OL_PROJ_EMP.PROJ_ORDER");
-        }
         if(useIndirection) {
             projectsMapping.useTransparentList();
         } else {
-            projectsMapping.useCollectionClass(ArrayList.class);
+            if(changeTracking == ChangeTracking.ATTRIBUTE) {
+                projectsMapping.useCollectionClass(IndirectList.class);
+            } else {
+                projectsMapping.useCollectionClass(ArrayList.class);
+            }
             projectsMapping.dontUseIndirection();
+        }
+        if(useListOrderField) {
+            projectsMapping.setListOrderFieldName("OL_PROJ_EMP.PROJ_ORDER");
+            projectsMapping.setListOrderFieldValidationMode(orderValidationMode);
         }
         projectsMapping.setRelationTableName("OL_PROJ_EMP");
         projectsMapping.addSourceRelationKeyFieldName("OL_PROJ_EMP.EMP_ID", "EMP_ID");
@@ -223,21 +294,29 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         setJoinFetchOrBatchRead(projectsMapping);
         descriptor.addMapping(projectsMapping);
 
-        OneToManyMapping projectsLedMapping = new OneToManyMapping();
-        projectsLedMapping.setAttributeName("projectsLed");
-        projectsLedMapping.setReferenceClass(Project.class);
-        if(useListOrderField) {
-            projectsLedMapping.setListOrderFieldName("OL_PROJECT.PROJECTS_LED_ORDER");
-        }
-        if(useIndirection) {
-            projectsLedMapping.useTransparentList();
-        } else {
-            projectsLedMapping.useCollectionClass(ArrayList.class);
-            projectsLedMapping.dontUseIndirection();
-        }
-        projectsLedMapping.addTargetForeignKeyFieldName("OL_PROJECT.LEADER_ID", "EMP_ID");
-        setJoinFetchOrBatchRead(projectsLedMapping);
-        descriptor.addMapping(projectsLedMapping);
+        // Currently projectsLed is not used in the tests - that breaks INNER_JOIN
+/*        if(this.joinFetchOrBatchRead != JoinFetchOrBatchRead.INNER_JOIN) {
+            OneToManyMapping projectsLedMapping = new OneToManyMapping();
+            projectsLedMapping.setAttributeName("projectsLed");
+            projectsLedMapping.setReferenceClass(Project.class);
+            if(useListOrderField) {
+                projectsLedMapping.setListOrderFieldName("OL_PROJECT.PROJECTS_LED_ORDER");
+                projectsLedMapping.setListOrderFieldValidationMode(orderValidationMode);
+            }
+            if(useIndirection) {
+                projectsLedMapping.useTransparentList();
+            } else {
+                if(changeTracking == ChangeTracking.ATTRIBUTE) {
+                    projectsLedMapping.useCollectionClass(IndirectList.class);
+                } else {
+                    projectsLedMapping.useCollectionClass(ArrayList.class);
+                }
+                projectsLedMapping.dontUseIndirection();
+            }
+            projectsLedMapping.addTargetForeignKeyFieldName("OL_PROJECT.LEADER_ID", "EMP_ID");
+            setJoinFetchOrBatchRead(projectsLedMapping);
+            descriptor.addMapping(projectsLedMapping);
+        }*/
 
         return descriptor;
     }
@@ -245,19 +324,11 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
     public ClassDescriptor buildPhoneNumberDescriptor() {
         RelationalDescriptor descriptor = new RelationalDescriptor();
         descriptor.setJavaClass(PhoneNumber.class);
+        // table name is overridden in AggregateCollectionMapping
         descriptor.addTableName("OL_AGGREGATE_PHONE");
-//        descriptor.addPrimaryKeyFieldName("AREA_CODE");
-//        descriptor.addPrimaryKeyFieldName("P_NUMBER");
 
         // Descriptor Properties.
         descriptor.descriptorIsAggregate();
-//        descriptor.useSoftCacheWeakIdentityMap();
-//        descriptor.setIdentityMapSize(100);
-//        descriptor.setAlias("OL_PhoneNumber");
-
-        // Cache Invalidation Policy
-        // Query Manager.
-//        descriptor.getQueryManager().checkCacheForDoesExist();
 
         // Mappings.
         DirectToFieldMapping areaCodeMapping = new DirectToFieldMapping();
@@ -342,11 +413,16 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         employeesMapping.setReferenceClass(Employee.class);
         if(useListOrderField) {
             employeesMapping.setListOrderFieldName("OL_PROJ_EMP.EMP_ORDER");
+            employeesMapping.setListOrderFieldValidationMode(orderValidationMode);
         }
         if(useIndirection) {
             employeesMapping.useTransparentList();
         } else {
-            employeesMapping.useCollectionClass(ArrayList.class);
+            if(changeTracking == ChangeTracking.ATTRIBUTE) {
+                employeesMapping.useCollectionClass(IndirectList.class);
+            } else {
+                employeesMapping.useCollectionClass(ArrayList.class);
+            }
             employeesMapping.dontUseIndirection();
         }
         employeesMapping.readOnly();

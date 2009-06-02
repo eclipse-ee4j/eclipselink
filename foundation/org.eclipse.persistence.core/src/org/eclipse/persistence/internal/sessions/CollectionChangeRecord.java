@@ -453,24 +453,26 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
         for(int i=0; i < newSize; i++) {
             currentIndexes.add(i);
         }
-        for (int i = this.orderedChangeObjectList.size() - 1; i>=0; i--) {
-            OrderedChangeObject  orderedChange = (OrderedChangeObject)orderedChangeObjectList.get(i);
-            Object obj = orderedChange.getAddedOrRemovedObject();
-            Integer index = orderedChange.getIndex();
-            int changeType = orderedChange.getChangeType();
-            if(changeType == CollectionChangeEvent.ADD) {
-                // the object was added - remove the corresponding index
-                if(index == null) {
-                    currentIndexes.remove(currentIndexes.size()-1);
-                } else {
-                    currentIndexes.remove(index.intValue());
-                }
-            } else if(changeType == CollectionChangeEvent.REMOVE) {
-                // the object was removed - add its index in the new list 
-                if(index == null) {
-                    throw ValidationException.collectionRemoveEventWithNoIndex(getMapping());
-                } else {
-                    currentIndexes.add(index.intValue(), newList.indexOf(obj));
+        if(orderedChangeObjectList != null) {
+            for (int i = this.orderedChangeObjectList.size() - 1; i>=0; i--) {
+                OrderedChangeObject  orderedChange = (OrderedChangeObject)orderedChangeObjectList.get(i);
+                Object obj = orderedChange.getAddedOrRemovedObject();
+                Integer index = orderedChange.getIndex();
+                int changeType = orderedChange.getChangeType();
+                if(changeType == CollectionChangeEvent.ADD) {
+                    // the object was added - remove the corresponding index
+                    if(index == null) {
+                        currentIndexes.remove(currentIndexes.size()-1);
+                    } else {
+                        currentIndexes.remove(index.intValue());
+                    }
+                } else if(changeType == CollectionChangeEvent.REMOVE) {
+                    // the object was removed - add its index in the new list 
+                    if(index == null) {
+                        throw ValidationException.collectionRemoveEventWithNoIndex(getMapping());
+                    } else {
+                        currentIndexes.add(index.intValue(), newList.indexOf(obj));
+                    }
                 }
             }
         }

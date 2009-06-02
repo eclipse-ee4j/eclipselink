@@ -33,7 +33,6 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.expressions.ForUpdateOfClause;
 import org.eclipse.persistence.exceptions.QueryException;
-import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.NonSynchronizedSubVector;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -654,9 +653,8 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
             }
             if(joinMappingExpression != null) {
                 addJoinedMappingExpression(joinMappingExpression);
-                DatabaseField listOrderField = ((CollectionMapping)mapping).getListOrderField(); 
-                if(listOrderField != null) {
-                    Expression fieldExpression = joinMappingExpression.getTable(listOrderField.getTable()).getField(listOrderField);
+                if(((CollectionMapping)mapping).getListOrderField() != null) {
+                    Expression fieldExpression = ((CollectionMapping)mapping).getListOrderFieldExpression(joinMappingExpression);
                     getOrderByExpressions().add(fieldExpression);
                 }
             }

@@ -25,6 +25,8 @@ import java.util.IdentityHashMap;
 import java.util.ListIterator;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.OrderedChangeObject;
@@ -34,6 +36,11 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
 import org.eclipse.persistence.indirection.IndirectCollection;
+import org.eclipse.persistence.indirection.IndirectList;
+import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.queries.DataReadQuery;
+import org.eclipse.persistence.queries.ObjectBuildingQuery;
+import org.eclipse.persistence.queries.ReadQuery;
 
 /**
  * <p><b>Purpose</b>: A OrderedListContainerPolicy is ContainerPolicy whose
@@ -47,6 +54,23 @@ import org.eclipse.persistence.indirection.IndirectCollection;
  * @see ListContainerPolicy
  */
 public class OrderedListContainerPolicy extends ListContainerPolicy {
+    /** 
+     * orderValidationMode used only in case listOrderField != null.
+     * Indicates whether validation of listOrderField values should be
+     * performed when the objects are read from the db:
+     * there should be no rows with listOrderField set to null, no "holes" in order.
+     */
+    public static enum OrderValidationMode {
+        /** Don't validate */
+        NONE,
+        /** Validate, if validation fails set a flag in IndirectList (must use IndirectList as container class) */
+        CORRECTION,
+        /** Validate, if validation fails throw exception */
+        EXCEPTION
+    }
+    protected OrderValidationMode orderValidationMode = OrderValidationMode.NONE;
+    protected DatabaseField listOrderField; 
+    
     /**
      * INTERNAL:
      * Construct a new policy.
@@ -71,6 +95,63 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
         super(containerClassName);
     }
     
+    /**
+     * INTERNAL:
+     * Add element to container.
+     * This is used to add to a collection independent of JDK 1.1 and 1.2.
+     * The session may be required to wrap for the wrapper policy.
+     * The row may be required by subclasses
+     * Return whether the container changed
+     */
+    public boolean addInto(Object element, Object container, AbstractSession session, AbstractRecord dbRow, ObjectBuildingQuery query) {
+        validateOrder(element, container, session, dbRow, query);
+        return super.addInto(element, container, session, dbRow, query);
+    }
+
+    /**
+     * INTERNAL:
+     * Add element to container.
+     * This is used to add to a collection independent of JDK 1.1 and 1.2.
+     * The session may be required to wrap for the wrapper policy.
+     * The row may be required by subclasses
+     * Return whether the container changed
+     */
+    public boolean addInto(Object element, Object container, AbstractSession session, AbstractRecord dbRow, DataReadQuery query) {
+        validateOrder(element, container, session, dbRow, query);
+        return super.addInto(element, container, session, dbRow, query);
+    }
+
+    /**
+     * INTERNAL:
+     * Validate order extracted from listOrderField - it should be the same as the index to hold the element in the list.
+     */
+    protected void validateOrder(Object element, Object container, AbstractSession session, AbstractRecord dbRow, ReadQuery query) {
+        if(this.orderValidationMode != OrderValidationMode.NONE) {
+            Number numOrderValue = (Number)dbRow.get(this.listOrderField);
+            if(numOrderValue != null) {
+                int intOrderValue = numOrderValue.intValue();
+                // verify that the order value read from the db is the same as would be index in the list.
+                if(intOrderValue != ((List)container).size()) {
+                    QueryException exception = QueryException.listOrderFieldWrongValue(query, this.listOrderField, intOrderValue, ((List)container).size()); 
+                    if(this.orderValidationMode == OrderValidationMode.CORRECTION) {
+                        session.logThrowable(SessionLog.WARNING, SessionLog.QUERY, exception);
+                        ((IndirectList)container).setIsListOrderBrokenInDb(true);
+                    } else if(this.orderValidationMode == OrderValidationMode.EXCEPTION) {
+                        throw exception;
+                    }
+                }
+            } else {
+                QueryException exception = QueryException.listOrderFieldWrongValue(query, this.listOrderField, null, ((List)container).size()); 
+                if(this.orderValidationMode == OrderValidationMode.CORRECTION) {
+                    session.logThrowable(SessionLog.WARNING, SessionLog.QUERY, exception);
+                    ((IndirectList)container).setIsListOrderBrokenInDb(true);
+                } else if(this.orderValidationMode == OrderValidationMode.EXCEPTION) {
+                    throw exception;
+                }
+            }
+        }
+    }
+
     /**
      * INTERNAL:
      * Add element into a container which implements the List interface.
@@ -234,6 +315,29 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
         return map.keySet().iterator();
     }
 
+    public DatabaseField getListOrderField() {
+        return this.listOrderField;
+    }
+
+    public void setListOrderField(DatabaseField field) {
+        this.listOrderField = field;
+    }
+    
+    public OrderValidationMode getOrderValidationMode() {
+        return this.orderValidationMode;
+    }
+    
+    public void setOrderValidationMode(OrderValidationMode orderValidationMode) {
+        if(orderValidationMode == OrderValidationMode.CORRECTION && this.orderValidationMode != OrderValidationMode.CORRECTION) {
+            if(!getContainerClass().equals(IndirectList.class)) {
+                setContainerClass(IndirectList.class);
+            }
+        } else if(orderValidationMode == null) {
+            orderValidationMode = OrderValidationMode.NONE;
+        }
+        this.orderValidationMode = orderValidationMode;
+    }
+    
     /**
      * INTERNAL:
      * Return an list iterator for the given container.

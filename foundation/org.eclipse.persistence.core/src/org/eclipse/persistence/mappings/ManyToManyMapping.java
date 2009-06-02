@@ -479,7 +479,6 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
         super.initialize(session);
         getDescriptor().getPreDeleteMappings().add(this);
 
-        initializeRelationTable(session);
         initializeSourceRelationKeys(session);
         initializeTargetRelationKeys(session);
 
@@ -511,13 +510,6 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
                 initializeSelectionCriteriaAndAddFieldsToQuery(session, getSelectionCriteria());
             }
         }
-        if(listOrderField != null) {
-            // TODO: what about the table? Can we assume that listOrderField.getTable() always the same as relationTable?
-            // should throw exception if it's a wrong table.
-            Expression fieldExp = ((ReadAllQuery)getSelectionQuery()).getExpressionBuilder().getTable(this.listOrderField.getTable()).getField(this.listOrderField);
-            ((ReadAllQuery)getSelectionQuery()).addOrdering(fieldExp);
-            ((ReadAllQuery)getSelectionQuery()).addAdditionalField(fieldExp);
-        }
         if (!getSelectionQuery().hasSessionName()) {
             getSelectionQuery().setSessionName(session.getName());
         }
@@ -539,13 +531,28 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
 
     /**
      * INTERNAL:
-     * Initializes listOrderField. 
+     * Verifies listOrderField's table: it must be relation table.
      * Precondition: listOrderField != null.
      */
-    protected void initializeListOrderField(AbstractSession session) {
-        initializeChangeOrderTargetQuery(session);
+    protected void buildListOrderField() {
+        if(this.listOrderField.hasTableName()) {
+            if(!getRelationTable().equals(this.listOrderField.getTable())) {
+                throw DescriptorException.listOrderFieldTableIsWrong(this.getDescriptor(), this, this.listOrderField.getTable(), getRelationTable());
+            }
+        } else {
+            listOrderField.setTable(getRelationTable());
+        }
+        this.listOrderField = getDescriptor().buildField(this.listOrderField, getRelationTable());
     }
     
+    /**
+     * INTERNAL:
+     * Indicates whether getListOrderFieldExpression method should create field expression on table expression.  
+     */
+    public boolean shouldUseListOrderFieldTableExpression() {
+        return true;
+    }
+        
     /**
      * INTERNAL:
      * Initialize changeOrderTargetQuery.
@@ -719,6 +726,16 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
         }
     }
 
+    /**
+     * Initialize and set the descriptor for the referenced class in this mapping.
+     * Added here initialization of relation table so that it's ready when
+     * CollectionMapping.initialize initializes listOrderField.
+     */
+    protected void initializeReferenceDescriptor(AbstractSession session) throws DescriptorException {
+        super.initializeReferenceDescriptor(session);
+        initializeRelationTable(session);
+    }
+    
     /**
      * INTERNAL:
      * Selection criteria is created to read target records from the table.

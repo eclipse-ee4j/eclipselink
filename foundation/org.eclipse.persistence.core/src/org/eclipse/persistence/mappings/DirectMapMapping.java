@@ -710,6 +710,14 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
     
     /**
      * INTERNAL:
+     * Rebuild select query.
+     */
+    protected void initOrRebuildSelectQuery() {        
+        this.selectionQuery = containerPolicy.buildSelectionQueryForDirectCollectionMapping();
+    }
+    
+    /**
+     * INTERNAL:
      * Overridden by mappings that require additional processing of the change record after the record has been calculated.
      */
     @Override

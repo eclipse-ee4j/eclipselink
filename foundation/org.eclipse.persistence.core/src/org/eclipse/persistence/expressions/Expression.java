@@ -2061,6 +2061,10 @@ public abstract class Expression implements Serializable, Cloneable {
         return anOperator.expressionFor(this, subQuery);
     }
 
+    public Expression index() {
+        throw QueryException.indexRequiresQueryKeyExpression(this);
+    }
+    
     /**
      * PUBLIC:
      * Function, returns the integer index of the substring within the source string.

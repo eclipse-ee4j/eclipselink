@@ -21,6 +21,7 @@ public class Child {
     /** Direct-to-field mapping, String -> VARCHAR. */
     public String firstName;
     public String lastName;
+    public int allowance;
     
     public Child() {
         super();
@@ -61,6 +62,14 @@ public class Child {
     public void setLastName(String lastName){
         this.lastName = lastName;
     }    
+
+    public int getAllowance() {
+        return allowance;
+    }
+
+    public void setAllowance(int allowance) {
+        this.allowance = allowance;
+    }
 
     /**
      * Print the first & last name

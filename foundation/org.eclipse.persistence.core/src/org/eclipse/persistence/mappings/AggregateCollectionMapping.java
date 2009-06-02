@@ -16,6 +16,7 @@ import java.util.*;
 
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
+import org.eclipse.persistence.indirection.IndirectList;
 import org.eclipse.persistence.internal.descriptors.*;
 import org.eclipse.persistence.internal.expressions.SQLUpdateStatement;
 import org.eclipse.persistence.internal.helper.*;
@@ -83,6 +84,9 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     protected static String min = "min";
     protected static String max = "max";
     protected static String shift = "shift";
+
+    protected static String pk = "pk";
+    protected static String bulk = "bulk";
 
     /**
      * PUBLIC:
@@ -231,6 +235,9 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
             Object cloneValue = buildElementClone(originalElement, clone, unitOfWork, isExisting);
             Object clonedKey = containerPolicy.buildCloneForKey(containerPolicy.keyFromIterator(valuesIterator), clone, unitOfWork, isExisting);
             containerPolicy.addInto(clonedKey, cloneValue, clonedAttributeValue, unitOfWork);
+        }
+        if(temporaryCollection instanceof IndirectList) {
+            ((IndirectList)clonedAttributeValue).setIsListOrderBrokenInDb(((IndirectList)temporaryCollection).isListOrderBrokenInDb());
         }
         return clonedAttributeValue;
     }
@@ -390,6 +397,16 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         mappingObject.setTargetForeignKeyFields(org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(getTargetForeignKeyFields()));
         mappingObject.aggregateToSourceFieldNames = new HashMap(this.aggregateToSourceFieldNames);
         mappingObject.nestedAggregateToSourceFieldNames = new HashMap(this.nestedAggregateToSourceFieldNames);
+        if(updateListOrderFieldQuery != null) {
+            mappingObject.updateListOrderFieldQuery = (DataModifyQuery)this.updateListOrderFieldQuery; 
+        }
+        if(bulkUpdateListOrderFieldQuery != null) {
+            mappingObject.bulkUpdateListOrderFieldQuery = (DataModifyQuery)this.bulkUpdateListOrderFieldQuery; 
+        }
+        if(pkUpdateListOrderFieldQuery != null) {
+            mappingObject.pkUpdateListOrderFieldQuery = (DataModifyQuery)this.pkUpdateListOrderFieldQuery; 
+        }
+
         return mappingObject;
     }
 
@@ -490,6 +507,11 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * Called only if listOrderField != null
      */
     protected void compareListsAndWrite_NonUpdatableListOrderField(List previousList, List currentList, WriteObjectQuery query) throws DatabaseException, OptimisticLockException {
+        boolean shouldRepairOrder = false;
+        if(currentList instanceof IndirectList) {
+            shouldRepairOrder = ((IndirectList)currentList).isListOrderBrokenInDb();
+        }
+        
         HashMap<CacheKey, Object[]> previousAndCurrentByKey = new HashMap<CacheKey, Object[]>();
         int pkSize = getReferenceDescriptor().getPrimaryKeyFields().size();
         
@@ -512,20 +534,24 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
             }
         }
 
-        // Next index the previous objects (read from db or from backup in uow)
-        for(int i=0; i < previousList.size(); i++) {
-            Object previousObject = previousList.get(i);
-            Vector primaryKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(previousObject, query.getSession());
-            primaryKey.add(i);
-            CacheKey key = new CacheKey(primaryKey);
-            Object[] previousAndCurrent = previousAndCurrentByKey.get(key);
-            if(previousAndCurrent == null) {
-                // there's no current object - that means that previous object should be deleted
-                DatabaseRecord extraData = new DatabaseRecord(1);
-                extraData.put(this.listOrderField, i);
-                objectRemovedDuringUpdate(query, previousObject, extraData);
-            } else {
-                previousAndCurrent[0] = previousObject;
+        if(shouldRepairOrder) {
+            ((DeleteAllQuery)getDeleteAllQuery()).executeDeleteAll(query.getSession().getSessionForClass(getReferenceClass()), query.getTranslationRow(), new Vector(previousList));
+        } else {
+            // Next index the previous objects (read from db or from backup in uow)
+            for(int i=0; i < previousList.size(); i++) {
+                Object previousObject = previousList.get(i);
+                Vector primaryKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(previousObject, query.getSession());
+                primaryKey.add(i);
+                CacheKey key = new CacheKey(primaryKey);
+                Object[] previousAndCurrent = previousAndCurrentByKey.get(key);
+                if(previousAndCurrent == null) {
+                    // there's no current object - that means that previous object should be deleted
+                    DatabaseRecord extraData = new DatabaseRecord(1);
+                    extraData.put(this.listOrderField, i);
+                    objectRemovedDuringUpdate(query, previousObject, extraData);
+                } else {
+                    previousAndCurrent[0] = previousObject;
+                }
             }
         }
 
@@ -553,6 +579,10 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
                 }
             }
         }        
+
+        if(shouldRepairOrder) {
+            ((IndirectList)currentList).setIsListOrderBrokenInDb(false);
+        }
     }
     
     /**
@@ -561,6 +591,11 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * Called only if listOrderField != null
      */
     protected void compareListsAndWrite_UpdatableListOrderField(List previousList, List currentList, WriteObjectQuery query) throws DatabaseException, OptimisticLockException {
+        boolean shouldRepairOrder = false;
+        if(currentList instanceof IndirectList) {
+            shouldRepairOrder = ((IndirectList)currentList).isListOrderBrokenInDb();
+        }
+        
         // Object[] = {previousObject, currentObject, previousIndex, currentIndex}
         HashMap<CacheKey, Object[]> previousAndCurrentByKey = new HashMap<CacheKey, Object[]>();
         // a SortedMap, current index mapped by previous index, both indexes must exist and be not equal.
@@ -597,7 +632,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
                 previousAndCurrent[0] = previousObject;
                 previousAndCurrent[2] = i;
                 int iCurrent = (Integer)previousAndCurrent[3];
-                if(i != iCurrent) {
+                if(i != iCurrent || shouldRepairOrder) {
                     currentIndexByPreviousIndex.put(i, iCurrent);
                 }
             }
@@ -605,28 +640,32 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
 
         // some order indexes should be changed
         if(!currentIndexByPreviousIndex.isEmpty()) {
-            // search for cycles in order changes, such as, for instance: 
-            //   previous index  1, 2 
-            //   current  index  2, 1
-            // or
-            //   previous index  1, 3, 5 
-            //   current  index  3, 5, 1
-            // those objects order index can't be updated using their previous order index value - should use pk in where clause instead.
-            // For now, if a cycle is found let's update all order indexes using pk.
-            // Ideally that should be refined in the future so that only indexes participating in cycles updated using pks - others still through bulk update.
-            boolean isCycleFound = false;
-            int iCurrentMax = -1;
-            Iterator<Integer> itCurrentIndexes = currentIndexByPreviousIndex.values().iterator();
-            while(itCurrentIndexes.hasNext() && !isCycleFound) {
-                int iCurrent = itCurrentIndexes.next();
-                if(iCurrent > iCurrentMax) {
-                    iCurrentMax = iCurrent;
-                } else {
-                    isCycleFound = true;
+            boolean shouldUpdateOrderUsingPk = shouldRepairOrder;
+            if(!shouldUpdateOrderUsingPk) {
+                // search for cycles in order changes, such as, for instance: 
+                //   previous index  1, 2 
+                //   current  index  2, 1
+                // or
+                //   previous index  1, 3, 5 
+                //   current  index  3, 5, 1
+                // those objects order index can't be updated using their previous order index value - should use pk in where clause instead.
+                // For now, if a cycle is found let's update all order indexes using pk.
+                // Ideally that should be refined in the future so that only indexes participating in cycles updated using pks - others still through bulk update.
+                boolean isCycleFound = false;
+                int iCurrentMax = -1;
+                Iterator<Integer> itCurrentIndexes = currentIndexByPreviousIndex.values().iterator();
+                while(itCurrentIndexes.hasNext() && !isCycleFound) {
+                    int iCurrent = itCurrentIndexes.next();
+                    if(iCurrent > iCurrentMax) {
+                        iCurrentMax = iCurrent;
+                    } else {
+                        isCycleFound = true;
+                    }
                 }
+                shouldUpdateOrderUsingPk = isCycleFound;
             }
 
-            if(isCycleFound) {
+            if(shouldUpdateOrderUsingPk) {
                 Iterator<Map.Entry<CacheKey, Object[]>> it = previousAndCurrentByKey.entrySet().iterator();
                 while(it.hasNext()) {
                     Map.Entry<CacheKey, Object[]> entry = it.next();
@@ -641,7 +680,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
                         }
                         int iPrevious = (Integer)previousAndCurrent[2];
                         int iCurrent = (Integer)previousAndCurrent[3];
-                        if(iPrevious != iCurrent) {
+                        if(iPrevious != iCurrent || shouldRepairOrder) {
                             objectChangedListOrderDuringUpdate(query, key, iCurrent);
                         }
                     }
@@ -671,6 +710,10 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
                 int iMin = -1;
                 int iMax = -1;
                 int iShift = 0;
+                // each index corresponds to a bunch of objects to be shifted
+                ArrayList<Integer> iMinList = new ArrayList();
+                ArrayList<Integer> iMaxList = new ArrayList();
+                ArrayList<Integer> iShiftList = new ArrayList();
                 Iterator<Map.Entry<Integer, Integer>> itEntries = currentIndexByPreviousIndex.entrySet().iterator();
                 while(itEntries.hasNext()) {
                     Map.Entry<Integer, Integer> entry = itEntries.next();
@@ -682,7 +725,9 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
                         if(iPrevious == iPreviousExpected && iCurrent == iPreviousExpected + iShift) {
                             iMax++;
                         } else {
-                            objectChangedListOrderDuringUpdate(query, iMin, iMax, iShift);
+                            iMinList.add(iMin);
+                            iMaxList.add(iMax);
+                            iShiftList.add(iShift);
                             iMin = -1;
                         }
                     }
@@ -694,11 +739,54 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
                     }
                 }
                 if(iMin >= 0) {
-                    objectChangedListOrderDuringUpdate(query, iMin, iMax, iShift);
+                    iMinList.add(iMin);
+                    iMaxList.add(iMax);
+                    iShiftList.add(iShift);
+                }
+
+                // Order is important - shouldn't override indexes in one bunch while shifting another one.
+                // Look for the left-most and right-most bunches and update them first.
+                while(!iMinList.isEmpty()) {
+                    int iMinLeft = iMinList.size() + 1;
+                    int iMinRight = -1;
+                    int indexShiftLeft = -1;
+                    int indexShiftRight = -1;
+                    for(int i=0; i < iMinList.size(); i++) {
+                        iMin = iMinList.get(i);
+                        iShift = iShiftList.get(i);
+                        if(iShift < 0) {
+                            if(iMin < iMinLeft) {
+                                iMinLeft = iMin;
+                                indexShiftLeft = i;
+                            }
+                        } else {
+                            // iShift > 0
+                            if(iMin > iMinRight) {
+                                iMinRight = iMin;
+                                indexShiftRight = i;
+                            }
+                        }
+                    }
+                    if(indexShiftLeft >= 0) {
+                        objectChangedListOrderDuringUpdate(query, iMinList.get(indexShiftLeft), iMaxList.get(indexShiftLeft), iShiftList.get(indexShiftLeft));
+                    }
+                    if(indexShiftRight >= 0) {
+                        objectChangedListOrderDuringUpdate(query, iMinList.get(indexShiftRight), iMaxList.get(indexShiftRight), iShiftList.get(indexShiftRight));
+                    }
+                    if(indexShiftLeft >= 0) {
+                        iMinList.remove(indexShiftLeft);
+                        iMaxList.remove(indexShiftLeft);
+                        iShiftList.remove(indexShiftLeft);
+                    }
+                    if(indexShiftRight >= 0) {
+                        iMinList.remove(indexShiftRight);
+                        iMaxList.remove(indexShiftRight);
+                        iShiftList.remove(indexShiftRight);
+                    }
                 }
             }
         }
-
+        
         // Add the new objects
         Iterator<Map.Entry<CacheKey, Object[]>> it = previousAndCurrentByKey.entrySet().iterator();
         while(it.hasNext()) {
@@ -720,6 +808,9 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
                 objectAddedDuringUpdate(query, currentObject, null, extraData);
             }
         }        
+        if(shouldRepairOrder) {
+            ((IndirectList)currentList).setIsListOrderBrokenInDb(false);
+        }
     }
     
     protected int objectChangedListOrderDuringUpdate(WriteObjectQuery query, int iMin, int iMax, int iShift) {
@@ -1173,8 +1264,8 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         initializeDeleteAllQuery(session);
         if(this.listOrderField != null) {
             initializeUpdateListOrderQuery(session, "");
-            initializeUpdateListOrderQuery(session, "bulk");
-            initializeUpdateListOrderQuery(session, "pk");
+            initializeUpdateListOrderQuery(session, bulk);
+            initializeUpdateListOrderQuery(session, pk);
         }
     }
 
@@ -1270,9 +1361,9 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
 
     protected void initializeUpdateListOrderQuery(AbstractSession session, String queryType) {
         DataModifyQuery query = new DataModifyQuery();
-        if(queryType.equals("pk")) {
+        if(queryType == pk) {
             this.pkUpdateListOrderFieldQuery = query;
-        } else if(queryType.equals("bulk")) {
+        } else if(queryType == bulk) {
             this.bulkUpdateListOrderFieldQuery = query;
         } else {
             this.updateListOrderFieldQuery = query;
@@ -1286,7 +1377,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
 
         AbstractRecord modifyRow = new DatabaseRecord();
 
-        if(queryType.equals("pk")) {
+        if(queryType == pk) {
             Iterator<DatabaseField> it = getReferenceDescriptor().getPrimaryKeyFields().iterator();
             while(it.hasNext()) {
                 DatabaseField pkField = it.next();
@@ -1304,7 +1395,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
                 whereClause = expression.and(whereClause);
             }
             Expression listOrderExpression;
-            if(queryType.equals("bulk")) {
+            if(queryType == bulk) {
                 listOrderExpression = builder.getField(this.listOrderField).between(builder.getParameter(min), builder.getParameter(max));
                 modifyRow.add(this.listOrderField, ExpressionMath.add(builder.getField(this.listOrderField), builder.getParameter(shift)));
             } else {

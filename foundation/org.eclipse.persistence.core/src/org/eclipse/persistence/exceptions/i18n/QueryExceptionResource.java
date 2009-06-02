@@ -164,7 +164,10 @@ public class QueryExceptionResource extends ListResourceBundle {
        { "6158", "MapContainerPolicy has been asked to unwrap element [{0}] which is not a map element.  This means that the incorrect container policy is being used."},
        { "6159", "Cannot find mapping for MapEntryExpression with base: [{0}]."},
        { "6160", "MapEntryExpression with base: [{0}] refers to mapping [{1}] which is not a collection mapping.  Maps may only exist on colleciton mappings."},
-       { "6161", "MapEntryExpression with base: [{0}] refers to mapping [{1}] which does not refer to a map."}
+       { "6161", "MapEntryExpression with base: [{0}] refers to mapping [{1}] which does not refer to a map."},
+       { "6162", "List order column [{0}] contains wrong value [{1}], expected value is [{2}]"},
+       { "6163", "index() requires QueryKeyExpression, cannot be applied to [{0}]"},
+       { "6164", "index() requires QueryKeyExpression with CollectionMapping that has non-null list order column. [{1}] in does not meet this condition in [{0}]"}
 
     };
 

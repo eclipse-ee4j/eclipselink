@@ -173,6 +173,9 @@ public class QueryException extends ValidationException {
     public final static int NO_MAPPING_FOR_MAP_ENTRY_EXPRESSION = 6159;
     public final static int MAP_ENTRY_EXPRESSION_FOR_NON_COLLECTION = 6160;
     public final static int MAP_ENTRY_EXPRESSION_FOR_NON_MAP = 6161;
+    public final static int LIST_ORDER_FIELD_WRONG_VALUE = 6162;
+    public final static int INDEX_REQUIRES_QUERY_KEY_EXPRESSION = 6163;
+    public final static int INDEX_REQUIRES_COLLECTION_MAPPING_WITH_LIST_ORDER_FIELD = 6164;
 
     /**
      * INTERNAL:
@@ -1463,5 +1466,29 @@ public class QueryException extends ValidationException {
         queryException.setErrorCode(MAP_ENTRY_EXPRESSION_FOR_NON_MAP   );
         return queryException;
     }
+
+    public static QueryException listOrderFieldWrongValue(DatabaseQuery query, DatabaseField field, Integer wrongValue, Integer expectedValue) {
+        Object[] args = { field, wrongValue, expectedValue };
+
+        QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, LIST_ORDER_FIELD_WRONG_VALUE, args), query);
+        queryException.setErrorCode(LIST_ORDER_FIELD_WRONG_VALUE);
+        return queryException;
+    }
     
+    public static QueryException indexRequiresQueryKeyExpression(Expression expression) {
+        Object[] args = { expression };
+
+        QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, INDEX_REQUIRES_QUERY_KEY_EXPRESSION, args));
+        queryException.setErrorCode(INDEX_REQUIRES_QUERY_KEY_EXPRESSION);
+        return queryException;
+    }
+
+    public static QueryException indexRequiresCollectionMappingWithListOrderField(Expression expression, DatabaseMapping mapping) {
+        Object[] args = { expression, mapping };
+
+        QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, INDEX_REQUIRES_COLLECTION_MAPPING_WITH_LIST_ORDER_FIELD, args));
+        queryException.setErrorCode(INDEX_REQUIRES_COLLECTION_MAPPING_WITH_LIST_ORDER_FIELD);
+        return queryException;
+    }
+
 }

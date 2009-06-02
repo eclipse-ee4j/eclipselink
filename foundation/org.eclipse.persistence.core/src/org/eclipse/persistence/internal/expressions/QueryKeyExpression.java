@@ -54,6 +54,8 @@ public class QueryKeyExpression extends ObjectExpression {
     /** PERF: Cache if the expression is an attribute expression. */
     protected Boolean isAttributeExpression;
     
+    protected FieldExpression index;
+    
     public QueryKeyExpression() {
         this.shouldQueryToManyRelationship = false;
         this.hasQueryKey = true;
@@ -207,6 +209,17 @@ public class QueryKeyExpression extends ObjectExpression {
         }
 
         return super.aliasForTable(table);
+    }
+
+    /**
+     * INTERNAL:
+     * Used for cloning.
+     */
+    protected void postCopyIn(Map alreadyDone) {
+        super.postCopyIn(alreadyDone);
+        if(index != null) {
+            index = (FieldExpression)index.copiedVersionFrom(alreadyDone);
+        }
     }
 
     /**
@@ -411,6 +424,14 @@ public class QueryKeyExpression extends ObjectExpression {
 
     }
 
+    public Expression index() {
+        if(index == null) {
+            index = new FieldExpression(null, this);
+            index.setIsIndex(true);
+        }
+        return index;
+    }
+    
     /**
      * INTERNAL:
      * Alias the database field for our current environment
@@ -756,8 +777,30 @@ public class QueryKeyExpression extends ObjectExpression {
                 throw QueryException.outerJoinIsOnlyValidForOneToOneMappings(getMapping());
             }
             qkIsToMany = mapping.isCollectionMapping();
+            if(index != null) {
+                if(qkIsToMany) {
+                    CollectionMapping collectionMapping = (CollectionMapping)getMapping();
+                    if(collectionMapping.getListOrderField() != null) {
+                        index.setField(collectionMapping.getListOrderField());
+                        if(collectionMapping.shouldUseListOrderFieldTableExpression()) {
+                            Expression newBase = getTable(collectionMapping.getListOrderField().getTable());
+                            index.setBaseExpression(newBase);
+                        } else {
+                            addDerivedField(index);
+                        }
+                    } else {
+                        throw QueryException.indexRequiresCollectionMappingWithListOrderField(this, collectionMapping);
+                    }
+                } else {
+                    throw QueryException.indexRequiresCollectionMappingWithListOrderField(this, mapping);
+                }
+            }
             isNestedMapping = mapping.isNestedTableMapping();
             theOneThatsNotNull = mapping;
+        } else {
+            if(index != null) {
+                throw QueryException.indexRequiresCollectionMappingWithListOrderField(this, null);
+            }
         }
         if ((!shouldQueryToManyRelationship()) && qkIsToMany && (!isNestedMapping)) {
             throw QueryException.invalidUseOfToManyQueryKeyInExpression(theOneThatsNotNull);

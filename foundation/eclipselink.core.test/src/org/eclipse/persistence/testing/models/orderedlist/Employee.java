@@ -57,6 +57,8 @@ public class Employee implements ChangeTracker {
     /** One-to-many mapping, employee references its collection of children arranged by age.
      * This relationship uses transparent indirection */
     public Vector<Child> children;
+    
+    int salary;
 
     public PropertyChangeListener listener;
 
@@ -111,6 +113,18 @@ public class Employee implements ChangeTracker {
         employee.setManager(this);
     }
 
+    public void addManagedEmployee(int index, Employee employee) {
+        getManagedEmployees().add(index, employee);
+        employee.setManager(this);
+    }
+
+    public Employee setManagedEmployee(int index, Employee employee) {
+        Employee removedEmp = getManagedEmployees().set(index, employee);
+        removedEmp.setManager(null);
+        employee.setManager(this);
+        return removedEmp;
+    }
+
     /**
      * For bi-directional relationships, it is important to maintain both sides of the relationship when changing it.
      */
@@ -118,9 +132,29 @@ public class Employee implements ChangeTracker {
         getPhoneNumbers().add(phoneNumber);
     }
 
+    public void addPhoneNumber(int index, PhoneNumber phoneNumber) {
+        getPhoneNumbers().add(index, phoneNumber);
+    }
+
+    public PhoneNumber setPhoneNumber(int index, PhoneNumber phoneNumber) {
+        return getPhoneNumbers().set(index, phoneNumber);
+    }
+
     public void addProject(Project project) {
         getProjects().add(project);
         project.getEmployees().add(this);
+    }
+
+    public void addProject(int index, Project project) {
+        getProjects().add(index, project);
+        project.getEmployees().add(this);
+    }
+
+    public Project setProject(int index, Project project) {
+        Project removedProject = getProjects().set(index, project);
+        removedProject.getEmployees().remove(this);
+        project.getEmployees().add(this);
+        return removedProject;
     }
 
     public void addProjectLed(Project project) {
@@ -130,6 +164,14 @@ public class Employee implements ChangeTracker {
 
     public void addResponsibility(String responsibility) {
         getResponsibilitiesList().add(responsibility);
+    }
+
+    public void addResponsibility(int index, String responsibility) {
+        getResponsibilitiesList().add(index, responsibility);
+    }
+
+    public String setResponsibility(int index, String responsibility) {
+        return getResponsibilitiesList().set(index, responsibility);
     }
 
     public BigDecimal getId() {
@@ -146,6 +188,10 @@ public class Employee implements ChangeTracker {
 
     public String getLastName() {
         return lastName;
+    }
+
+    public int getSalary() {
+        return salary;
     }
 
     public List<Employee> getManagedEmployees() {
@@ -216,6 +262,7 @@ public class Employee implements ChangeTracker {
 
     public Project removeProject(int i) {
         Project project = getProjects().remove(i);
+        project.getEmployees().remove(this);
         return project;
     }
 
@@ -250,6 +297,11 @@ public class Employee implements ChangeTracker {
     public void setLastName(String lastName) {
         propertyChange("lastName", this.lastName, lastName);
         this.lastName = lastName;
+    }
+
+    public void getSalary(int  salary) {
+        propertyChange("salary", this.salary, salary);
+        this.salary = salary;
     }
 
     public void setManagedEmployees(List<Employee> managedEmployees) {

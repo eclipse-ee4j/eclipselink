@@ -219,7 +219,9 @@ public class DescriptorExceptionResource extends ListResourceBundle {
                                            { "208", "You are trying to set a Converter with class name [{1}] on a non-direct-mapping [{0}].  Only Direct Mappings are allowed to have converters.  This usually happens when trying to set a key converter on a DirectMapMapping with a non-direct key." },
                                            { "209", "This descriptor contains a mapping with a DirectMapMapping and no key field set." },
                                            { "210", "[{0}] has list order field set, but attribute does not implement List." },
-                                           { "211", "[{0}] has list order field set, but ContainerPolicy is not OrderedListContainerPolicy. Make sure that useCollectionClass method is called after setListOrderField method. Alternatively call setPolicy method with OrderedListContainerPolicy." },
+                                           { "211", "[{0}] has list order field set and list order field validation mode is CORRECTION, that requires IndirectList to be assignable to the attribute." },
+                                           { "212", "List order field specified for [{0}] has a wrong table [{1}]. Must use {2} instead." },
+                                           { "213", "{0} requires all target foreign key fields to belong to the same table, but several were found: {1}." },
 
     };
 

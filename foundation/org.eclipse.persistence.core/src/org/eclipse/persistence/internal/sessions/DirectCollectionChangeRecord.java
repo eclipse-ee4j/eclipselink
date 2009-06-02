@@ -42,8 +42,6 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
     protected int oldSize;
     protected int newSize;
     
-    public static final NULL Null = new NULL();
-    
     protected boolean isFirstToAddAlreadyInCollection;
     protected boolean isFirstToRemoveAlreadyOutCollection;
     

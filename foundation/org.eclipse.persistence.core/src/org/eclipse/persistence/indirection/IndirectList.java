@@ -63,6 +63,16 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
     
     /** PERF: Quick check flag if has been registered in a unit of work. */
     protected boolean isRegistered;
+    
+    /** 
+     * If the mapping using IndirectList has listOrderfield != null then this flag indicates
+     * whether the list in the db has invalid order:
+     * either row(s) with null order value(s) or/and "holes" in order.
+     * The flag may be set to true when the objects are read from the db.
+     * When collection is updated the flag set to true causes updating of listOrderField of all rows in the db.
+     * After update is complete the flag is set back to false. 
+     **/
+    private boolean isListOrderBrokenInDb;
 
     /**
      * PUBLIC:
@@ -230,8 +240,11 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
         }
         // This can either be another indirect list or a Vector.
         // It can be another indirect list because the mapping's query uses the same container policy.
-        // Unwrap any redundent indirection layers, which can cause issues and impact performance.
+        // Unwrap any redundant indirection layers, which can cause issues and impact performance.
         while (delegate instanceof IndirectList) {
+            if(((IndirectList) delegate).isListOrderBrokenInDb()) {
+                this.isListOrderBrokenInDb = true;
+            }
             delegate = ((IndirectList) delegate).getDelegate();
         }
         // First add/remove any cached changes.
@@ -868,5 +881,12 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
         } else {
             return false;
         }
+    }
+
+    public boolean isListOrderBrokenInDb() {
+        return this.isListOrderBrokenInDb;
+    }
+    public void setIsListOrderBrokenInDb(boolean isBroken) {
+        this.isListOrderBrokenInDb = isBroken;
     }
 }

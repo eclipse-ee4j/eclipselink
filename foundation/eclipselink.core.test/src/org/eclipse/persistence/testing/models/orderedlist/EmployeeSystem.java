@@ -13,6 +13,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.orderedlist;
 
+import org.eclipse.persistence.internal.queries.OrderedListContainerPolicy.OrderValidationMode;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.testing.framework.TestSystem;
 
@@ -41,15 +42,19 @@ public class EmployeeSystem extends TestSystem {
     boolean useListOrderField;
     // if true all collection mappings use TransparentIndirection; otherwise collection mappings use no indirection.
     boolean useIndirection;
+    boolean useSecondaryTable;
     ChangeTracking changeTracking;
+    OrderValidationMode orderValidationMode;
     JoinFetchOrBatchRead joinFetchOrBatchRead;
     
-    public EmployeeSystem(boolean useListOrderField, boolean useIndirection, ChangeTracking changeTracking, JoinFetchOrBatchRead joinFetchOrBatchRead) {
+    public EmployeeSystem(boolean useListOrderField, boolean useIndirection, boolean useSecondaryTable, ChangeTracking changeTracking, OrderValidationMode orderValidationMode, JoinFetchOrBatchRead joinFetchOrBatchRead) {
         this.useIndirection = useIndirection;
         this.useListOrderField = useListOrderField;
+        this.useSecondaryTable = useSecondaryTable;
         this.changeTracking = changeTracking;
+        this.orderValidationMode = orderValidationMode;
         this.joinFetchOrBatchRead = joinFetchOrBatchRead;
-        this.project = new EmployeeProject(useListOrderField, useIndirection, changeTracking, joinFetchOrBatchRead);
+        this.project = new EmployeeProject(useListOrderField, useIndirection, useSecondaryTable, changeTracking, orderValidationMode, joinFetchOrBatchRead);
     }
 
     public void createTables(DatabaseSession session) {

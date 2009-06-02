@@ -55,6 +55,18 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
     /** This maps the (primary) source key fields to the corresponding target foreign key fields. */
     protected transient Map<DatabaseField, DatabaseField> sourceKeysToTargetForeignKeys;
 
+    /** All targetForeignKeyFields should have the same table.
+     *  Used only in case data modification events required.
+     **/
+    protected transient DatabaseTable targetForeignKeyTable;
+
+    /** Primary keys of targetForeignKeyTable:
+     *  the same as referenceDescriptor().getPrimaryKeyFields() in case the table is default table of reference descriptor;
+     *  otherwise contains secondary table's primary key fields in the same order as default table primary keys mapped to them.  
+     *  Used only in case data modification events required.
+     **/
+    protected transient List<DatabaseField> targetPrimaryKeyFields;
+
     /** 
      * Query used to update a single target row setting its foreign key to point to the source. 
      * Run once for each target added to the source.
@@ -63,10 +75,10 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      *   the query looks like:
      *   UPDATE EMPLOYEE SET MANAGER_ID = 1 WHERE (EMP_ID = 2)
      *   where 1 is id of the source, and 2 is the id of the target to be added.  
+     *  Used only in case data modification events required.
      **/
     protected transient DataModifyQuery addTargetQuery;
     protected transient boolean hasCustomAddTargetQuery;
-    
     
     /** 
      * Query used to update a single target row changing its foreign key value from the one pointing to the source to null. 
@@ -76,6 +88,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      *   the query looks like:
      *   UPDATE EMPLOYEE SET MANAGER_ID = null WHERE ((MANAGER_ID = 1) AND (EMP_ID = 2))
      *   where 1 is id of the source, and 2 is the id of the target to be removed.  
+     *  Used only in case data modification events required.
      **/
     protected transient DataModifyQuery removeTargetQuery;
     protected transient boolean hasCustomRemoveTargetQuery;
@@ -88,6 +101,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      *   the query looks like:
      *   UPDATE EMPLOYEE SET MANAGER_ID = null WHERE (MANAGER_ID = 1)
      *   where 1 is id of the source to be deleted.  
+     *  Used only in case data modification events required.
      **/
     protected transient DataModifyQuery removeAllTargetsQuery;
     protected transient boolean hasCustomRemoveAllTargetsQuery;
@@ -155,6 +169,20 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         addTargetForeignKeyField(new DatabaseField(targetForeignKeyFieldName), new DatabaseField(sourceKeyFieldName));
     }
 
+    /**
+     * INTERNAL:
+     * Verifies listOrderField's table: it must be the same table that contains all target foreign keys.
+     * Precondition: listOrderField != null.
+     */
+    protected void buildListOrderField() {
+        if(this.listOrderField.hasTableName()) {
+            if(!this.targetForeignKeyTable.equals(this.listOrderField.getTable())) {
+                throw DescriptorException.listOrderFieldTableIsWrong(this.getDescriptor(), this, this.listOrderField.getTable(), this.targetForeignKeyTable);
+            }
+        }
+        this.listOrderField = this.getReferenceDescriptor().buildField(this.listOrderField, this.targetForeignKeyTable);
+    }
+    
     /**
      * The selection criteria are created with target foreign keys and source "primary" keys.
      * These criteria are then used to read the target records from the table.
@@ -396,6 +424,14 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
 
     /**
      * INTERNAL:
+     * Primary keys of targetForeignKeyTable.
+     */
+    public List<DatabaseField> getTargetPrimaryKeyFields() {
+        return this.targetPrimaryKeyFields;
+    }
+    
+    /**
+     * INTERNAL:
      * Return the target foreign key field names associated with the mapping.
      * These are in-order with the targetForeignKeyFieldNames.
      */
@@ -451,21 +487,18 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
     public void initialize(AbstractSession session) throws DescriptorException {
         super.initialize(session);
 
-        if (!isSourceKeySpecified()) {
-            // sourceKeyFields will be empty when #setTargetForeignKeyFieldName() is used
-            setSourceKeyFields(org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(getDescriptor().getPrimaryKeyFields()));
-        }
-        initializeTargetForeignKeysToSourceKeys();
-
         getContainerPolicy().initialize(session, getReferenceDescriptor().getDefaultTable());
         if (shouldInitializeSelectionCriteria()) {
             setSelectionCriteria(buildDefaultSelectionCriteriaAndAddFieldsToQuery());
         }
 
         initializeDeleteAllQuery();
-        initializeAddTargetQuery(session);
-        initializeRemoveTargetQuery(session);
-        initializeRemoveAllTargetsQuery(session);
+        
+        if(requiresDataModificationEvents() || getContainerPolicy().requiresDataModificationEvents()) {
+            initializeAddTargetQuery(session);
+            initializeRemoveTargetQuery(session);
+            initializeRemoveAllTargetsQuery(session);
+        }
         
         if (getReferenceDescriptor() != null && getReferenceDescriptor().hasTablePerClassPolicy()) {
             // This will do nothing if we have already prepared for this 
@@ -487,11 +520,18 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
             return;
         }
 
+        AbstractRecord modifyRow = createModifyRowForAddTargetQuery();
+        if(modifyRow.isEmpty()) {
+            return;
+        }
+        
+        // all fields in modifyRow must have the same table
+        DatabaseTable table = ((DatabaseField)modifyRow.getFields().get(0)).getTable();
+        
         // Build where clause expression.
         Expression whereClause = null;
         Expression builder = new ExpressionBuilder();
 
-        List<DatabaseField> targetPrimaryKeyFields = getReferenceDescriptor().getPrimaryKeyFields();
         int size = targetPrimaryKeyFields.size();
         for (int index = 0; index < size; index++) {
             DatabaseField targetPrimaryKey = targetPrimaryKeyFields.get(index);
@@ -500,9 +540,9 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         }
 
         SQLUpdateStatement statement = new SQLUpdateStatement();
-        statement.setTable(getReferenceDescriptor().getDefaultTable());
+        statement.setTable(table);
         statement.setWhereClause(whereClause);
-        statement.setModifyRow(createModifyRowForAddTargetQuery());
+        statement.setModifyRow(modifyRow);
         addTargetQuery.setSQLStatement(statement);
     }
 
@@ -536,11 +576,12 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
             return;
         }
 
+        DatabaseTable table = this.listOrderField.getTable();
+        
         // Build where clause expression.
         Expression whereClause = null;
         Expression builder = new ExpressionBuilder();
 
-        List<DatabaseField> targetPrimaryKeyFields = getReferenceDescriptor().getPrimaryKeyFields();
         int size = targetPrimaryKeyFields.size();
         for (int index = 0; index < size; index++) {
             DatabaseField targetPrimaryKey = targetPrimaryKeyFields.get(index);
@@ -549,14 +590,10 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         }
 
         AbstractRecord modifyRow = new DatabaseRecord();
-        modifyRow.add(listOrderField, null);
+        modifyRow.add(this.listOrderField, null);
 
         SQLUpdateStatement statement = new SQLUpdateStatement();
-        if(listOrderField.hasTableName()) {
-            statement.setTable(listOrderField.getTable());
-        } else {
-            statement.setTable(getReferenceDescriptor().getDefaultTable());
-        }
+        statement.setTable(table);
         statement.setWhereClause(whereClause);
         statement.setModifyRow(modifyRow);
         changeOrderTargetQuery.setSQLStatement(statement);
@@ -581,6 +618,58 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
 
     /**
      * INTERNAL:
+     * Initialize targetForeignKeyTable and initializeTargetPrimaryKeyFields.
+     * This method should be called after initializeTargetForeignKeysToSourceKeys method,
+     * which creates targetForeignKeyFields (guaranteed to be not empty in case 
+     * requiresDataModificationEvents method returns true - the only case for the method to be called).
+     */
+    protected void initializeTargetPrimaryKeyFields() {
+        // all target foreign key fields must have the same table.
+        int size = getTargetForeignKeyFields().size();
+        HashSet<DatabaseTable> tables = new HashSet();
+        for(int i=0; i < size; i++) {
+            tables.add(getTargetForeignKeyFields().get(i).getTable());
+        }
+        if(tables.size() == 1) {
+            this.targetForeignKeyTable = getTargetForeignKeyFields().get(0).getTable();
+        } else {
+            // multiple foreign key tables - throw exception.
+            throw DescriptorException.multipleTargetForeignKeyTables(this.getDescriptor(), this, tables);
+        }
+        
+        List defaultTablePrimaryKeyFields = getReferenceDescriptor().getPrimaryKeyFields(); 
+        if(this.targetForeignKeyTable.equals(getReferenceDescriptor().getDefaultTable())) {
+            this.targetPrimaryKeyFields = defaultTablePrimaryKeyFields;
+        } else {
+            int sizePk = defaultTablePrimaryKeyFields.size();
+            this.targetPrimaryKeyFields = new ArrayList();
+            for(int i=0; i < sizePk; i++) {
+                this.targetPrimaryKeyFields.add(null);
+            }
+            Map<DatabaseField, DatabaseField> map = getReferenceDescriptor().getAdditionalTablePrimaryKeyFields().get(this.targetForeignKeyTable);
+            Iterator<Map.Entry<DatabaseField, DatabaseField>> it = map.entrySet().iterator();
+            while(it.hasNext()) {
+                Map.Entry<DatabaseField, DatabaseField> entry = it.next();
+                DatabaseField sourceField = entry.getKey();
+                DatabaseField targetField = entry.getValue();
+                DatabaseField additionalTableField;
+                DatabaseField defaultTableField;
+                if(sourceField.getTable().equals(this.targetForeignKeyTable)) {
+                    additionalTableField = sourceField;
+                    defaultTableField = targetField;
+                } else {
+                    defaultTableField = sourceField;
+                    additionalTableField = targetField;
+                }
+                int index = defaultTablePrimaryKeyFields.indexOf(defaultTableField);
+                getReferenceDescriptor().buildField(additionalTableField, this.targetForeignKeyTable);
+                this.targetPrimaryKeyFields.set(index, additionalTableField);
+            }
+        }
+    }
+    
+    /**
+     * INTERNAL:
      * Initialize removeTargetQuery.
      */
     protected void initializeRemoveTargetQuery(AbstractSession session) {
@@ -591,11 +680,13 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
             return;
         }
 
+        // All targetForeignKeys should have the same table 
+        DatabaseTable table = targetForeignKeyFields.get(0).getTable();
+        
         // Build where clause expression.
         Expression whereClause = null;
         Expression builder = new ExpressionBuilder();
 
-        List<DatabaseField> targetPrimaryKeyFields = getReferenceDescriptor().getPrimaryKeyFields();
         int size = targetPrimaryKeyFields.size();
         for (int index = 0; index < size; index++) {
             DatabaseField targetPrimaryKey = targetPrimaryKeyFields.get(index);
@@ -616,12 +707,29 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         }
 
         SQLUpdateStatement statement = new SQLUpdateStatement();
-        statement.setTable(getReferenceDescriptor().getDefaultTable());
+        statement.setTable(table);
         statement.setWhereClause(whereClause);
         statement.setModifyRow(modifyRow);
         removeTargetQuery.setSQLStatement(statement);
     }
 
+    /**
+     * Initialize and set the descriptor for the referenced class in this mapping.
+     * Added here initialization of target foreign keys and target primary keys so that they are ready when
+     * CollectionMapping.initialize initializes listOrderField.
+     */
+    protected void initializeReferenceDescriptor(AbstractSession session) throws DescriptorException {
+        super.initializeReferenceDescriptor(session);
+        if (!isSourceKeySpecified()) {
+            // sourceKeyFields will be empty when #setTargetForeignKeyFieldName() is used
+            setSourceKeyFields(org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(getDescriptor().getPrimaryKeyFields()));
+        }
+        initializeTargetForeignKeysToSourceKeys();
+        if(requiresDataModificationEvents() || getContainerPolicy().requiresDataModificationEvents()) {
+            initializeTargetPrimaryKeyFields();
+        }
+    }
+    
     /**
      * INTERNAL:
      * Initialize removeAllTargetsQuery.
@@ -634,6 +742,9 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
             return;
         }
 
+        // All targetForeignKeys should have the same table 
+        DatabaseTable table = targetForeignKeyFields.get(0).getTable();
+        
         // Build where clause expression.
         Expression whereClause = null;
         Expression builder = new ExpressionBuilder();
@@ -646,12 +757,13 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
             Expression expression = builder.getField(targetForeignKey).equal(builder.getParameter(targetForeignKey));
             whereClause = expression.and(whereClause);
         }
-        if(listOrderField != null) {
-            modifyRow.add(listOrderField, null);
+        if(this.listOrderField != null) {
+            // targetForeignKeys and listOrderField should have the same table
+            modifyRow.add(this.listOrderField, null);
         }
 
         SQLUpdateStatement statement = new SQLUpdateStatement();
-        statement.setTable(getReferenceDescriptor().getDefaultTable());
+        statement.setTable(table);
         statement.setWhereClause(whereClause);
         statement.setModifyRow(modifyRow);
         removeAllTargetsQuery.setSQLStatement(statement);
@@ -662,7 +774,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      */
     protected void initializeTargetForeignKeysToSourceKeys() throws DescriptorException {
         if (getTargetForeignKeyFields().isEmpty()) {
-            if (shouldInitializeSelectionCriteria()) {
+            if (shouldInitializeSelectionCriteria() || requiresDataModificationEvents() || getContainerPolicy().requiresDataModificationEvents()) {
                 throw DescriptorException.noTargetForeignKeysSpecified(this);
             } else {
                 // if they have specified selection criteria, the keys do not need to be specified
@@ -1143,7 +1255,6 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         AbstractRecord keyRow = buildKeyRowForTargetUpdate(query);
         
         // Extract target field and its value. Construct insert statement and execute it
-        List<DatabaseField> targetPrimaryKeyFields = getReferenceDescriptor().getPrimaryKeyFields();
         int size = targetPrimaryKeyFields.size();
         int objectIndex = 0;
         for (Object iter = cp.iteratorFor(objects); cp.hasNext(iter);) {
@@ -1186,7 +1297,6 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         AbstractRecord databaseRow = buildKeyRowForTargetUpdate(query);
 
         // Extract target field and its value. Construct insert statement and execute it
-        List<DatabaseField> targetPrimaryKeyFields = getReferenceDescriptor().getPrimaryKeyFields();
         int size = targetPrimaryKeyFields.size();
         for (int index = 0; index < size; index++) {
             DatabaseField targetPrimaryKey = targetPrimaryKeyFields.get(index);
@@ -1235,7 +1345,6 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
 
         ContainerPolicy cp = getContainerPolicy();
         // Extract target field and its value from the object.
-        List<DatabaseField> targetPrimaryKeyFields = getReferenceDescriptor().getPrimaryKeyFields();
         size = targetPrimaryKeyFields.size();
         for (int index = 0; index < size; index++) {
             DatabaseField targetPrimaryKey = targetPrimaryKeyFields.get(index);

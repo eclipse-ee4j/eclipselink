@@ -20,11 +20,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackingPolicy;
 import org.eclipse.persistence.descriptors.changetracking.ObjectChangeTrackingPolicy;
+import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.indirection.IndirectList;
+import org.eclipse.persistence.internal.queries.OrderedListContainerPolicy;
+import org.eclipse.persistence.internal.queries.OrderedListContainerPolicy.OrderValidationMode;
+import org.eclipse.persistence.mappings.CollectionMapping;
+import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.queries.ReportQuery;
+import org.eclipse.persistence.queries.ReportQueryResult;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.TestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
@@ -36,16 +46,45 @@ import org.eclipse.persistence.testing.models.orderedlist.EmployeeSystem.JoinFet
 import org.eclipse.persistence.testing.framework.TestProblemException;
 
 public class OrderListTestModel extends TestModel {
+    /*
+     * Indicates whether to run configuration that don't use listOrderField (useListOrderField==false).
+     * By default is set to false.
+     * Set it to true for debugging:
+     * if something fails with listOrderField (useListOrderField==true) see if it also fails without it. 
+     */
+    static boolean shouldRunWithoutListOrderField = false;
+
+    /*
+     * There is a single top level model (contained in TestRunModel) that contains multiple models.
+     */
     boolean isTopLevel;
+    
+    /*
+     * Top level model loops through all possible combinations of the attributes below and decides whether the combination should run.
+     * Foe each combination of values that should run a model is created and added to the top level model. 
+     */
     boolean useListOrderField; 
     boolean useIndirection; 
+    boolean useSecondaryTable;
     ChangeTracking changeTracking;
+    OrderValidationMode orderValidationMode;
     JoinFetchOrBatchRead joinFetchOrBatchRead;
     
+    /*
+     * Variables below used by setup / reset:
+     * setup saves there the original state of something, sets a new state required for testing,
+     * then reset brings back the saved original state.
+     */
     Map<Class, ObjectChangeTrackingPolicy> originalChangeTrackingPolicies;
-    Boolean shouldPrintOuterJoinInWhereClauseOriginal;
-    
-    
+    boolean shouldSetPrintOuterJoinInWhereClauseBackToFalse;
+        
+    /*
+     * Constants used by WhereToAdd tests.
+     */
+    static String front = "front";
+    static String middle = "middle";
+    static String end = "end";
+
     /**
      * Return the JUnit suite to allow JUnit runner to find it.
      * Unfortunately JUnit only allows suite methods to be static,
@@ -58,57 +97,139 @@ public class OrderListTestModel extends TestModel {
     public OrderListTestModel() {
         setDescription("This model tests ordered list.");
         isTopLevel = true;
-
-        addTest(new OrderListTestModel(false, true, ChangeTracking.DEFERRED, JoinFetchOrBatchRead.NONE));
-        addTest(new OrderListTestModel(false, true, ChangeTracking.DEFERRED, JoinFetchOrBatchRead.OUTER_JOIN));
-        addTest(new OrderListTestModel(false, true, ChangeTracking.DEFERRED, JoinFetchOrBatchRead.BATCH_READ));
-
-        addTest(new OrderListTestModel(false, false, ChangeTracking.DEFERRED, JoinFetchOrBatchRead.NONE));
-        addTest(new OrderListTestModel(false, false, ChangeTracking.DEFERRED, JoinFetchOrBatchRead.OUTER_JOIN));
-        addTest(new OrderListTestModel(false, false, ChangeTracking.DEFERRED, JoinFetchOrBatchRead.BATCH_READ));
-
-        addTest(new OrderListTestModel(false, true, ChangeTracking.ATTRIBUTE, JoinFetchOrBatchRead.NONE));
-        addTest(new OrderListTestModel(false, true, ChangeTracking.ATTRIBUTE, JoinFetchOrBatchRead.OUTER_JOIN));
-        addTest(new OrderListTestModel(false, true, ChangeTracking.ATTRIBUTE, JoinFetchOrBatchRead.BATCH_READ));
-
-        addTest(new OrderListTestModel(true, true, ChangeTracking.DEFERRED, JoinFetchOrBatchRead.NONE));
-        addTest(new OrderListTestModel(true, true, ChangeTracking.DEFERRED, JoinFetchOrBatchRead.OUTER_JOIN));
-        addTest(new OrderListTestModel(true, true, ChangeTracking.DEFERRED, JoinFetchOrBatchRead.BATCH_READ));
-
-        addTest(new OrderListTestModel(true, false, ChangeTracking.DEFERRED, JoinFetchOrBatchRead.NONE));
-        addTest(new OrderListTestModel(true, false, ChangeTracking.DEFERRED, JoinFetchOrBatchRead.OUTER_JOIN));
-        addTest(new OrderListTestModel(true, false, ChangeTracking.DEFERRED, JoinFetchOrBatchRead.BATCH_READ));
-
-        addTest(new OrderListTestModel(true, true, ChangeTracking.ATTRIBUTE, JoinFetchOrBatchRead.NONE));
-        addTest(new OrderListTestModel(true, true, ChangeTracking.ATTRIBUTE, JoinFetchOrBatchRead.OUTER_JOIN));
-        addTest(new OrderListTestModel(true, true, ChangeTracking.ATTRIBUTE, JoinFetchOrBatchRead.BATCH_READ));
-
+        
+        addModels();
     }
 
-    public OrderListTestModel(boolean useListOrderField, boolean useIndirection, ChangeTracking changeTracking, JoinFetchOrBatchRead joinFetchOrBatchRead) {
+    /*
+     * Loops through all possible model configurations and adds those for which shouldAddModel returns true.
+     */
+    void addModels() {
+        do {
+            do {
+                do {
+                    for(int i=0; i < ChangeTracking.values().length; i++) {
+                        changeTracking = ChangeTracking.values()[i];
+                        for(int j=0; j < OrderValidationMode.values().length; j++) {
+                            orderValidationMode = OrderValidationMode.values()[j];
+                            for(int k=0; k < JoinFetchOrBatchRead.values().length; k++) {
+                                joinFetchOrBatchRead = JoinFetchOrBatchRead.values()[k];
+                                if(shouldAddModel()) {
+                                    addTest(new OrderListTestModel(useListOrderField, useIndirection, useSecondaryTable, changeTracking, orderValidationMode, joinFetchOrBatchRead));
+                                }
+                            }
+                        }
+                    }
+                useSecondaryTable = !useSecondaryTable;
+                } while(useSecondaryTable);
+            useIndirection = !useIndirection;
+            } while(useIndirection);
+            useListOrderField = !useListOrderField;
+        } while(useListOrderField);
+    }
+
+    /*
+     * Verifies whether the current model configuration should be added.
+     * Cuts the models with invalid configurations, configurations that don't make any difference.
+     */
+    boolean shouldAddModel() {
+        // listOrderField is not used 
+        if(!useListOrderField) {
+            // explicitly asked not to run the model that don't use listOrderField.
+            if(!shouldRunWithoutListOrderField) {
+                return false;
+            }
+            // the model would be identical to OrderValidationMode.NONE
+            if(orderValidationMode != OrderValidationMode.NONE) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
+    public OrderListTestModel(boolean useListOrderField, boolean useIndirection, boolean useSecondaryTable, ChangeTracking changeTracking, OrderValidationMode orderValidationMode, JoinFetchOrBatchRead joinFetchOrBatchRead) {
         this.useListOrderField = useListOrderField;
         this.useIndirection = useIndirection; 
+        this.useSecondaryTable = useSecondaryTable; 
         this.changeTracking = changeTracking;
+        this.orderValidationMode = orderValidationMode;
         this.joinFetchOrBatchRead = joinFetchOrBatchRead;
-        setDescription("This model tests ordered list " + changeTracking + " " + joinFetchOrBatchRead);
-        String useOrderListString = useListOrderField ? " " : " NO_ORDER_LIST "; 
-        String useIndirectionString = useIndirection ? " " : " NO_INDIRECTION "; 
-        setName(useOrderListString + useIndirectionString + changeTracking + " " + joinFetchOrBatchRead);
-        if(!this.useIndirection && this.changeTracking.equals(ChangeTracking.ATTRIBUTE)) {
-            throw new TestProblemException("ATTRIBUTE can't work with NO_INDIRECTION");
-        }
+        
+        setDescription("This model tests ordered list");
+        
+        setName("");
+        addToName(useListOrderField ? "" : "NO_ORDER_LIST");
+        addToName(useIndirection ? "" : "NO_INDIRECTION");
+        addToName(useSecondaryTable ? "SECONDARY_TABLE" : "");
+        addToName(changeTracking.toString());
+        addToName(orderValidationMode == OrderValidationMode.NONE ? "" : orderValidationMode.toString());
+        addToName(joinFetchOrBatchRead.toString());
     }
 
+    void addToName(String strToAdd) {
+        if(strToAdd.length() > 0) {
+            setName(getName() + " " + strToAdd);
+        }
+    }
+    
     public void addRequiredSystems() {
         if(!isTopLevel) {
-            addRequiredSystem(new EmployeeSystem(this.useListOrderField, this.useIndirection, this.changeTracking, this.joinFetchOrBatchRead));
+            addRequiredSystem(new EmployeeSystem(useListOrderField, useIndirection, useSecondaryTable, changeTracking, orderValidationMode, joinFetchOrBatchRead));
         }
     }
 
     public void addTests() {
         if(!isTopLevel) {
-            addTest(new SimpleTest(useListOrderField, useIndirection, changeTracking, joinFetchOrBatchRead));
-            addTest(new MultipleManagersTest(changeTracking, joinFetchOrBatchRead));
+            addTest(new CreateTest());
+            addTest(new SimpleAddRemoveTest());
+            // takes too long with joins
+            if(joinFetchOrBatchRead != JoinFetchOrBatchRead.INNER_JOIN && joinFetchOrBatchRead != JoinFetchOrBatchRead.OUTER_JOIN) {
+                addTest(new SimpleAddRemoveTest2());
+            }
+            addTest(new SimpleSetTest());
+            addTest(new SimpleSetListTest());
+            addTest(new SimpleSetListTest(false));
+            addTest(new SimpleSetListTest(true));
+            addTest(new TranspositionTest(new int[]{0, 1}, new int[]{1, 0}, false));
+            addTest(new TranspositionTest(new int[]{0, 1}, new int[]{1, 0}, true));
+            // currently only DirectCollectionMapping supports nulls. 
+            // bug 278126: Aggregate and Direct collections containing nulls read incorrectly if join is used.
+            // When the bug is fixed the tests should work and condition should be removed.
+            // The bug is partially fixed - the only case result is wrong for DirectCollectionMapping
+            // is a collection that has a single element - null. That collection is read in as empty.
+            addTest(new AddNullTest(front));
+            addTest(new AddNullTest(middle));
+            addTest(new AddNullTest(end));
+            // currently only DirectCollectionMapping supports duplicates.
+            // Duplication doesn't work with joining because of SELECT DISTINCT (would work without DISTINCT).
+            // Should DISTINCT be there?
+            if(joinFetchOrBatchRead != JoinFetchOrBatchRead.INNER_JOIN && joinFetchOrBatchRead != JoinFetchOrBatchRead.OUTER_JOIN) {
+                addTest(new AddDuplicateTest(front));
+                addTest(new AddDuplicateTest(middle));
+                addTest(new AddDuplicateTest(end));
+            }
+            if(joinFetchOrBatchRead == JoinFetchOrBatchRead.OUTER_JOIN) {
+                addTest(new CreateEmptyTest());
+                addTest(new CreateEmptyManagersTest());
+            }
+            if(this.useListOrderField) {
+                addTest(new SimpleIndexTest(true));
+                if(orderValidationMode == OrderValidationMode.EXCEPTION) {
+                    addTest(new BreakOrderExceptionTest_OneToMany());
+                    addTest(new BreakOrderExceptionTest_UnidirectionalOneToMany());
+                    addTest(new BreakOrderExceptionTest_ManyToMany());
+                    addTest(new BreakOrderExceptionTest_DirectCollection());
+                    if(this.changeTracking == ChangeTracking.DEFERRED) {
+                        addTest(new BreakOrderExceptionTest_AggregateCollection());
+                    }
+                } else if(orderValidationMode == OrderValidationMode.CORRECTION) {
+                    addTest(new BreakOrderCorrectionTest(false));
+                    addTest(new BreakOrderCorrectionTest(true));
+                }
+            }
+            
+            addTest(new CreateManagersTest());
         }
     }
     
@@ -136,12 +257,20 @@ public class OrderListTestModel extends TestModel {
                     getSession().getDescriptor(PhoneNumber.class).setObjectChangePolicy(new AttributeChangeTrackingPolicy());
                 }
             }
-/*            if(joinFetchOrBatchRead == JoinFetchOrBatchRead.OUTER_JOIN) {
+            
+            /*
+             * There is an Eclipselink bug: when using Oracle-style (+) outer joins the inner joins between
+             * primary and secondary tables substituted by outer joins (employee outer join manager causes manager's salary to outer join to manager).
+             * If there happens to be another outer join to the secondary table (in useSecondaryTable case manager_id is in salary table)
+             * then suddenly the secondary table auto joined to two tables - that causes exception: 
+             * ORA-01417: a table may be outer joined to at most one other table.
+             */
+            if(this.joinFetchOrBatchRead == JoinFetchOrBatchRead.OUTER_JOIN) {
                 if(getSession().getPlatform().shouldPrintOuterJoinInWhereClause()) {
                     getSession().getPlatform().setPrintOuterJoinInWhereClause(false);
-                    shouldPrintOuterJoinInWhereClauseOriginal = Boolean.TRUE;
+                    shouldSetPrintOuterJoinInWhereClauseBackToFalse = true;
                 }
-            }*/
+            }
         }
     }
 
@@ -156,552 +285,1422 @@ public class OrderListTestModel extends TestModel {
                 }
                 originalChangeTrackingPolicies = null;
             }
-            // restore original 
-            if(shouldPrintOuterJoinInWhereClauseOriginal != null) {
-                getSession().getPlatform().setPrintOuterJoinInWhereClause(shouldPrintOuterJoinInWhereClauseOriginal);
-                shouldPrintOuterJoinInWhereClauseOriginal = null;
+            if(shouldSetPrintOuterJoinInWhereClauseBackToFalse) {
+                getSession().getPlatform().setPrintOuterJoinInWhereClause(true);
+                shouldSetPrintOuterJoinInWhereClauseBackToFalse = false;
             }
         }
     }
 
-    static class SimpleTest extends TestCase {
-        boolean useListOrderField;
-        boolean useIndirection;
-        ChangeTracking changeTracking;
-        JoinFetchOrBatchRead joinFetchOrBatchRead;
+    /*
+     * Defines operations on Lists that consist of (in that order):
+     *   Employees (for empManager.managerEmployees);
+     *   Children (for empManager.children);
+     *   Projects (for empManager.projects);
+     *   Strings (for empManager.responsibilitiesList);
+     *   PhoneNumbers (for empManager.phoneNumbers).
+     * That allows to easily create tests that test all mappings using list order field:
+     *   OneToMany, UnidirectionalOneToMany, ManyToMany, DirectCollection, AggregateCollection.
+     *   
+     * Note that (for debugging purposes) some of these mappings could be "switched off" by setting the corresponding "use..." flag to false.
+     * Don't do that in INNER_JOIN case - or no objects will be ever read back from db.
+     */
+    class BaseTest extends TestCase {
+        boolean useManagedEmployees;
+        boolean useChildren;
+        boolean useProjects;
+        boolean useResponsibilities;
+        boolean usePhones;
         
-        boolean useManagedEmployees = true;
-        boolean useChildren = true;
-        boolean useProjects = true;
-        boolean useResponsibilities = true;
-        boolean usePhones = true;
+        String errorMsg;
         
-        boolean shouldRunTest2 = true;
-        boolean shouldRunTest3 = true;
-        boolean shouldRunTest4 = true;
-        boolean shouldRunTest5 = true;
-        
-        Employee manager;
-        String errorMsg = "";
-        
-        SimpleTest(boolean useListOrderField, boolean useIndirection, ChangeTracking changeTracking, JoinFetchOrBatchRead joinFetchOrBatchRead) {
-            this.useListOrderField = useListOrderField;
-            this.useIndirection = useIndirection;
-            this.changeTracking = changeTracking;
-            this.joinFetchOrBatchRead = joinFetchOrBatchRead;
+        BaseTest() {
+            this.useManagedEmployees = true;
+            this.useChildren = true;
+            this.useProjects = true;
+            this.useResponsibilities = true;
+            this.usePhones = true;
+            setValidFlags();
             
+            errorMsg = "";
+            
+            setName(getShortClassName());
+        }
+
+        /*
+         * Sets some of useManagedEmployees, useChildren, useProjects, useResponsibilities, usePhones to false
+         * as required by the flags copied from OrderListTestModel.this.
+         * If changing this method change validateFlags method accordingly. 
+         */
+        protected void setValidFlags() {
             // currently attribute change tracking is incompatible with AggregateCollectionMapping
-            if(this.changeTracking == ChangeTracking.ATTRIBUTE) {
+            if(OrderListTestModel.this.changeTracking == ChangeTracking.ATTRIBUTE) {
                 usePhones = false;
             }
+            // managedEmployees have nothing: no managedEmployees, no children, no projects, no responsibilities, no phones -
+            // can't read them using INNER_JOIN
+            if(OrderListTestModel.this.joinFetchOrBatchRead == JoinFetchOrBatchRead.INNER_JOIN) {
+                useManagedEmployees = false;
+            }
         }
-
-        public void test() {            
-            // test1: Insert manager with two elements in each list.
-            manager = new Employee("Manager");
+        /*
+         * Validate useManagedEmployees, useChildren, useProjects, useResponsibilities, usePhones flags
+         * so their value don't contradict the flags copied from OrderListTestModel.this.
+         * If changing this method change setValidFlags method accordingly. 
+         */
+        protected void validateFlags() {
+            // currently attribute change tracking is incompatible with AggregateCollectionMapping
+            if(OrderListTestModel.this.changeTracking == ChangeTracking.ATTRIBUTE) {
+                if(usePhones) {
+                    errorMsg += "ChangeTracking.ATTRIBUTE requires usePhones==false; ";
+                }
+            }
+            // managedEmployees have nothing: no managedEmployees, no children, no projects, no responsibilities, no phones -
+            // can't read them using INNER_JOIN
+            if(OrderListTestModel.this.joinFetchOrBatchRead == JoinFetchOrBatchRead.INNER_JOIN) {
+                if(useManagedEmployees) {
+                    errorMsg += "JoinFetchOrBatchRead.INNER_JOIN requires useManagedEmployees==false; ";
+                }
+            }
+            if(errorMsg.length() > 0) {
+                throw new TestProblemException(errorMsg);
+            }
+        }
+        
+        /*
+         * Debugging: putting a breakpoint at the first line of this method is a good place to set some of 
+         * useManagedEmployees, useChildren, useProjects, useResponsibilities, usePhones to false if desired.
+         */
+        public void setup() {
+            if(!useManagedEmployees && !useChildren && !useProjects && !useResponsibilities && !usePhones) {
+                throw new TestProblemException("useManagedEmployees, useChildren, useProjects, useResponsibilities, usePhones are all false - nothing to test");
+            }
+            validateFlags();
+        }
+        
+        public void reset() {
             if(useManagedEmployees) {
-                Employee emp0 = new Employee("0");
-                Employee emp1 = new Employee("1");
-                manager.addManagedEmployee(emp0);
-                manager.addManagedEmployee(emp1);
+                if(useSecondaryTable) {
+                    getSession().executeNonSelectingSQL("UPDATE OL_SALARY SET MANAGER_ID = NULL");
+                } else {
+                    getSession().executeNonSelectingSQL("UPDATE OL_EMPLOYEE SET MANAGER_ID = NULL");
+                }
             }
             if(useChildren) {
-                Child child0 = new Child("0");
-                Child child1 = new Child("1");
-                manager.getChildren().add(child0);
-                manager.getChildren().add(child1);
+                getSession().executeNonSelectingSQL("DELETE FROM OL_ALLOWANCE");
+                getSession().executeNonSelectingSQL("DELETE FROM OL_CHILD");
             }
             if(useProjects) {
-                SmallProject project0 = new SmallProject("0");
-                LargeProject project1 = new LargeProject("1");
-                manager.addProject(project0);
-                manager.addProject(project1);
-            }
-            if(useResponsibilities) {
-                manager.addResponsibility("0");
-                manager.addResponsibility("1");
-            }
-            if(usePhones) {
-                manager.addPhoneNumber(new PhoneNumber("0", "000", "0000000"));
-                manager.addPhoneNumber(new PhoneNumber("1", "111", "1111111"));
-            }
-            UnitOfWork uow = getSession().acquireUnitOfWork();
-            Employee managerClone = (Employee)uow.registerObject(manager);
-            uow.commit();
-//            verify("test1", new int[]{0, 1});
-            verifyCompare("test1", managerClone);
-            
-            
-            /*    if(this.changeTracking.equals(ChangeTracking.ATTRIBUTE)) {
-            managerClone.getResponsibilitiesList().set(1, "new");
-            managerClone.getResponsibilitiesList().add(0, "new");
-            managerClone.getResponsibilitiesList().add("new");
-        }*/
-
-            Employee emp0Clone, emp1Clone;
-            Child child0Clone, child1Clone;
-            Project project0Clone, project1Clone;
-            PhoneNumber phone0Clone;
-            
-            // test2: switch order of two elements
-            if(shouldRunTest2) {
-                uow = getSession().acquireUnitOfWork();
-                managerClone = (Employee)uow.registerObject(manager);
-                if(useManagedEmployees) {
-                    emp1Clone = managerClone.getManagedEmployees().remove(1);
-                    emp0Clone = managerClone.getManagedEmployees().remove(0);
-                    managerClone.addManagedEmployee(emp1Clone);
-                    managerClone.addManagedEmployee(emp0Clone);
-                }
-                if(useChildren) {
-                    child1Clone = (Child)managerClone.getChildren().remove(1);
-                    child0Clone = (Child)managerClone.getChildren().remove(0);
-                    managerClone.getChildren().add(child1Clone);
-                    managerClone.getChildren().add(child0Clone);
-                }
-                if(useProjects) {
-                    project1Clone = managerClone.getProjects().remove(1);
-                    project0Clone = managerClone.getProjects().remove(0);
-                    managerClone.addProject(project1Clone);
-                    managerClone.addProject(project0Clone);
-                }
-                if(useResponsibilities) {
-                    managerClone.removeResponsibility("0");
-                    managerClone.addResponsibility("0");
-                }
-                if(usePhones) {
-                    phone0Clone = managerClone.removePhoneNumber(0);
-                    managerClone.addPhoneNumber(phone0Clone);
-                }
-                uow.commit();
-    //            verify("test2", new int[]{1, 0});
-                verifyCompare("test2", managerClone);
-            }
-
-            // test3: add a new element and remove existing one
-            if(shouldRunTest3) {
-                uow = getSession().acquireUnitOfWork();
-                managerClone = (Employee)uow.registerObject(manager);
-                if(useManagedEmployees) {
-                    Employee emp2 = new Employee("2");
-                    Employee emp2Clone = (Employee)uow.registerObject(emp2);
-                    managerClone.addManagedEmployee(emp2Clone);
-                    emp0Clone = managerClone.removeManagedEmployee(0);
-                    uow.deleteObject(emp0Clone);
-                }
-                if(useChildren) {
-                    Child child2 = new Child("2");
-                    Child child2Clone = (Child)uow.registerObject(child2);
-                    managerClone.getChildren().add(child2Clone);
-                    child0Clone = (Child)managerClone.getChildren().remove(0);
-                }
-                if(useProjects) {
-                    LargeProject project2 = new LargeProject("2");
-                    LargeProject project2Clone = (LargeProject)uow.registerObject(project2);
-                    managerClone.addProject(project2Clone);
-                    project0Clone = managerClone.removeProject(0);
-                    uow.deleteObject(project0Clone);
-                }
-                if(useResponsibilities) {
-                    managerClone.addResponsibility("2");
-                    managerClone.removeResponsibility("1");
-                }
-                if(usePhones) {
-                    managerClone.removePhoneNumber(0);
-                    managerClone.addPhoneNumber(new PhoneNumber("2", "222", "2222222"));
-                }    
-                uow.commit();
-    //            verify("test3", new int[]{0, 2});
-                verifyCompare("test3", managerClone);
-            }
-            
-            if(shouldRunTest4) {
-                // test4: add a new element to collection, then set a new collections 
-                uow = getSession().acquireUnitOfWork();
-                managerClone = (Employee)uow.registerObject(manager);
-                if(useManagedEmployees) {
-                    List<Employee> oldManagedEmployees = managerClone.getManagedEmployees();
-    
-                    managerClone.addManagedEmployee(new Employee("temp"));
-                    List newManagedEmployees = new ArrayList(2);
-                    emp0Clone = new Employee("new0");
-                    emp0Clone.setManager(managerClone);
-                    newManagedEmployees.add(emp0Clone);
-                    emp1Clone = new Employee("new1");
-                    emp1Clone.setManager(managerClone);
-                    newManagedEmployees.add(emp1Clone);
-                    managerClone.setManagedEmployees(newManagedEmployees);
-    
-                    for(int i=0; i < oldManagedEmployees.size(); i++) {
-                        Employee oldEmployee = oldManagedEmployees.get(i);
-                        oldEmployee.setManager(null);
-                    }
-                }
-                if(useChildren) {
-                    managerClone.getChildren().add(new Child("temp"));
-                    Vector newChildren = new Vector(2);
-                    newChildren.add(new Child("new0"));
-                    newChildren.add(new Child("new1"));
-                    managerClone.setChildren(newChildren);
-                }
-                if(useProjects) {
-                    managerClone.addProject(new LargeProject("temp"));
-                    List newProjects = new ArrayList(2);
-                    newProjects.add(new SmallProject("new0"));
-                    newProjects.add(new LargeProject("new1"));
-                    managerClone.setProjects(newProjects);
-                }
-                if(useResponsibilities) {
-                    managerClone.addResponsibility("temp");
-                    List newResponsibilities = new ArrayList(2);
-                    newResponsibilities.add("new0");
-                    newResponsibilities.add("new1");
-                    managerClone.setResponsibilitiesList(newResponsibilities);
-                }
-                if(usePhones) {
-                    managerClone.addPhoneNumber(new PhoneNumber("9", "tmp", "9999999"));
-                    List newPhones = new ArrayList(2);
-                    newPhones.add(new PhoneNumber("0", "new", "0000000"));
-                    newPhones.add(new PhoneNumber("1", "new", "1111111"));
-                    managerClone.setPhoneNumbers(newPhones);
-                }
-                uow.commit();
-                verifyCompare("test4", managerClone);
-            }
-            
-            if(shouldRunTest5) {
-                // test5: the same as test4, but start with setting a new element into collection, then set a new collections 
-                uow = getSession().acquireUnitOfWork();
-                managerClone = (Employee)uow.registerObject(manager);
-                if(useManagedEmployees) {
-                    List<Employee> oldManagedEmployees = managerClone.getManagedEmployees();
-    
-                    Employee temp = new Employee("temp");
-                    Employee removedEmployee = managerClone.getManagedEmployees().set(0, temp);
-                    temp.setManager(managerClone);
-                    
-                    List newManagedEmployees = new ArrayList(2);
-                    emp0Clone = new Employee("newer0");
-                    emp0Clone.setManager(managerClone);
-                    newManagedEmployees.add(emp0Clone);
-                    emp1Clone = new Employee("newer1");
-                    emp1Clone.setManager(managerClone);
-                    newManagedEmployees.add(emp1Clone);
-                    managerClone.setManagedEmployees(newManagedEmployees);
-    
-                    for(int i=0; i < oldManagedEmployees.size(); i++) {
-                        oldManagedEmployees.get(i).setManager(null);
-                    }
-                    removedEmployee.setManager(null);
-                }
-                if(useChildren) {
-                    managerClone.getChildren().set(0, new Child("temp"));
-                    Vector newChildren = new Vector(2);
-                    newChildren.add(new Child("newer0"));
-                    newChildren.add(new Child("newer1"));
-                    managerClone.setChildren(newChildren);
-                }
-                if(useProjects) {
-                    Project temp = new LargeProject("temp");
-                    managerClone.getProjects().set(0, temp);
-                    
-                    List newProjects = new ArrayList(2);
-                    newProjects.add(new SmallProject("newer0"));
-                    newProjects.add(new LargeProject("newer1"));
-                    managerClone.setProjects(newProjects);
-                }
-                if(useResponsibilities) {
-                    managerClone.getResponsibilitiesList().set(0, "temp");
-                    List newResponsibilities = new ArrayList(2);
-                    newResponsibilities.add("new0");
-                    newResponsibilities.add("new1");
-                    managerClone.setResponsibilitiesList(newResponsibilities);
-                }
-                if(usePhones) {
-                    managerClone.getPhoneNumbers().set(0, new PhoneNumber("9", "tmp", "9999999"));
-                    List newPhones = new ArrayList(2);
-                    newPhones.add(new PhoneNumber("0", "nwr", "0000000"));
-                    newPhones.add(new PhoneNumber("1", "nwr", "1111111"));
-                    managerClone.setPhoneNumbers(newPhones);
-                }
-                uow.commit();
-                verifyCompare("test5", managerClone);
-            }
-            
-            //**temp
-/*            uow = getSession().acquireUnitOfWork();
-            managerClone = (Employee)uow.registerObject(manager);
-            managerClone.addPhoneNumber(new PhoneNumber("3", "333", "3333333"));
-            managerClone.addPhoneNumber(new PhoneNumber("4", "444", "4444444"));
-            managerClone.addPhoneNumber(new PhoneNumber("5", "555", "5555555"));
-//            managerClone.getPhoneNumbers().add(null);
-            PhoneNumber phone0Clone = managerClone.removePhoneNumber(0);
-            managerClone.addPhoneNumber(phone0Clone);
-            PhoneNumber phone2Clone = managerClone.removePhoneNumber(0);
-            managerClone.addPhoneNumber(phone2Clone);
-            uow.commit();
-            verifyCompare("test4", managerClone);*/
-
-            // test4: duplicate: add object to the list for the second time
-            // only ManyToMany and DirectCollectionMapping allow duplicates
-/*temp            uow = getSession().acquireUnitOfWork();
-            managerClone = (Employee)uow.registerObject(manager);
-//            managerClone.getManagedEmployees().add(managerClone.getManagedEmployees().get(1));
-//            managerClone.getChildren().add(managerClone.getChildren().get(1));
-            managerClone.addProject(managerClone.getProjects().get(1));
-            LargeProject project3 = new LargeProject("3");
-            LargeProject project3Clone = (LargeProject)uow.registerObject(project3);
-            managerClone.getProjects().add(0, project3Clone);
-            managerClone.getProjects().add(2, project3Clone);
-            managerClone.getProjects().add(4, project3Clone);
-            project3Clone.getEmployees().add(managerClone);
-            project3Clone.getEmployees().add(managerClone);
-            project3Clone.getEmployees().add(managerClone);
-            managerClone.addResponsibility(managerClone.getResponsibilitiesList().get(1));
-            managerClone.getResponsibilitiesList().add(0, "3");
-            managerClone.getResponsibilitiesList().add(2, "3");
-            managerClone.getResponsibilitiesList().add(4, "3");
-//            managerClone.addPhoneNumber(managerClone.getPhoneNumbers().get(1));
-            uow.commit();
-            verify("test4", new int[]{3, 0, 3, 2, 3, 2}, true);*/
-
-            
-            System.out.println();
-        }
-        protected void verify() {
-            if(errorMsg.length() > 0) {
-                throw new TestErrorException('\n' + errorMsg);
-            }
-        }
-        public void reset() {
-            if(manager != null) {
                 getSession().executeNonSelectingSQL("DELETE FROM OL_PROJ_EMP");
-                getSession().executeNonSelectingSQL("DELETE FROM OL_CHILD");
-                getSession().executeNonSelectingSQL("DELETE FROM OL_PHONE");
-                getSession().executeNonSelectingSQL("DELETE FROM OL_RESPONS");
-                getSession().executeNonSelectingSQL("UPDATE OL_EMPLOYEE SET MANAGER_ID = NULL");
-                getSession().executeNonSelectingSQL("DELETE FROM OL_EMPLOYEE");
                 getSession().executeNonSelectingSQL("DELETE FROM OL_LPROJECT");
                 getSession().executeNonSelectingSQL("DELETE FROM OL_PROJECT");
-                
-                getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
-                
-                manager = null;
-                errorMsg = "";
+            }
+            if(useResponsibilities) {
+                getSession().executeNonSelectingSQL("DELETE FROM OL_RESPONS");
+            }
+            if(usePhones) {
+                getSession().executeNonSelectingSQL("DELETE FROM OL_PHONE");
+            }
+
+            getSession().executeNonSelectingSQL("DELETE FROM OL_SALARY");
+            getSession().executeNonSelectingSQL("DELETE FROM OL_EMPLOYEE");
+            
+            getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
+            
+            errorMsg = "";
+        }
+
+        /*
+         * Creates a list of objects that could be added to manager: Employee, Child, Project, Responsibility (String), PhoneNumber.
+         */
+        List create(String prefix, int index) {
+            List list = new ArrayList();
+            String iString = Integer.toString(index);
+            String str = prefix + iString;
+            if(useManagedEmployees) {
+                list.add(new Employee(iString, prefix));
+            }
+            if(useChildren) {
+                list.add(new Child(iString, prefix));
+            }
+            if(useProjects) {
+                if(index % 2 == 0) {
+                    list.add(new SmallProject(str));
+                } else {
+                    list.add(new LargeProject(str));
+                }
+            }
+            if(useResponsibilities) {
+                list.add(str);
+            }
+            if(usePhones) {
+                if(prefix.length() > 3) {
+                    prefix = prefix.substring(0, 3);
+                }
+                list.add(new PhoneNumber(prefix, iString));                
+            }
+            return list;
+        }
+        
+        /*
+         * Creates a list of nulls that could be added to manager: Employee, Child, Project, Responsibility (String), PhoneNumber.
+         */
+        List createNull() {
+            List list = new ArrayList();
+            if(useManagedEmployees) {
+                list.add(null);
+            }
+            if(useChildren) {
+                list.add(null);
+            }
+            if(useProjects) {
+                list.add(null);
+            }
+            if(useResponsibilities) {
+                list.add(null);
+            }
+            if(usePhones) {
+                list.add(null);                
+            }
+            return list;
+        }
+        
+        /*
+         * Adds a list of objects to empManager: Employee, Child, Project, Responsibility (String), PhoneNumber.
+         * The list should be obtained from getFrom, create, removeFrom or setInto methods.
+         */
+        void addTo(Employee empManager, List list) {
+            int i = 0;
+            if(useManagedEmployees) {
+                empManager.addManagedEmployee((Employee)list.get(i++));
+            }
+            if(useChildren) {
+                empManager.getChildren().add((Child)list.get(i++));
+            }
+            if(useProjects) {
+                empManager.addProject((Project)list.get(i++));
+            }
+            if(useResponsibilities) {
+                empManager.addResponsibility((String)list.get(i++));
+            }
+            if(usePhones) {
+                empManager.addPhoneNumber((PhoneNumber)list.get(i++));
             }
         }
         
-        protected void verify(String testName, int[] expected) {
-            verify(testName, expected, false);
-        }
-        // only ManyToMany and DirectCollectionMapping allow duplicates
-        protected void verify(String testName, int[] expected, boolean hasDuplicates) {
-            String textNameExt;
-            for(int k=0; k<2; k++) {
-                if(k == 0) {
-                    textNameExt = testName+"(Cache)";
-                } else {
-                    textNameExt = testName+"(DB)";
-                    // Read back the inserted objects, make sure the order is correct.
-                    getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
-                    ReadObjectQuery query = new ReadObjectQuery();
-                    query.setReferenceClass(Employee.class);
-                    Expression exp = query.getExpressionBuilder().get("id").equal(manager.getId());
-                    query.setSelectionCriteria(exp);
-                    manager = (Employee)getSession().executeQuery(query);
-                }
-    
-                if(!hasDuplicates) {
-                    // check managedEmployees
-                    int size = manager.getManagedEmployees().size();
-                    if(size != expected.length) {
-                        String localErrorMsg = "wrong managedEmployees size " + size +"; expected " + expected.length;
-                        errorMsg += textNameExt + ": " + localErrorMsg + "\n";
-                    } else {
-                        String localErrorMsg = "";
-                        for(int i=0; i < size; i++) {
-                            Employee emp = manager.getManagedEmployees().get(i);
-                            if(Integer.parseInt(emp.getFirstName()) != expected[i]) {
-                                localErrorMsg += "wrong managedEmployee("+i+").firstName() == "+emp.getFirstName()+", expected " + expected[i] + "; ";
-                            }
-                        }
-                        if(localErrorMsg.length() > 0) {
-                            errorMsg += textNameExt + ": " + localErrorMsg + "\n";
-                        }
-                    }
-        
-                    // check children
-                    size = manager.getChildren().size();
-                    if(size != expected.length) {
-                        String localErrorMsg = "wrong children size " + size +"; expected " + expected.length;
-                        errorMsg += textNameExt + ": " + localErrorMsg + "\n";
-                    } else {
-                        String localErrorMsg = "";
-                        for(int i=0; i < size; i++) {
-                            Child child = (Child)manager.getChildren().get(i);
-                            if(Integer.parseInt(child.getFirstName()) != expected[i]) {
-                                localErrorMsg += "wrong child("+i+").firstName() == "+child.getFirstName()+", expected " + expected[i] + "; ";
-                            }
-                        }
-                        if(localErrorMsg.length() > 0) {
-                            errorMsg += textNameExt + ": " + localErrorMsg + "\n";
-                        }
-                    }
-                    
-                    // check phone number
-                    size = manager.getPhoneNumbers().size();
-                    if(size != expected.length) {
-                        String localErrorMsg = "wrong phoneNumbers size " + size +", expected " + expected.length;
-                        errorMsg += textNameExt + ": " + localErrorMsg + "\n";
-                    } else {
-                        String localErrorMsg = "";
-                        for(int i=0; i < size; i++) {
-                            PhoneNumber phone = manager.getPhoneNumbers().get(i);
-                            if(Integer.parseInt(phone.getType()) != expected[i]) {
-                                localErrorMsg += "wrong phone("+i+") == "+phone.getType()+", expected " + expected[i] + "; ";
-                            }
-                        }
-                        if(localErrorMsg.length() > 0) {
-                            errorMsg += textNameExt + ": " + localErrorMsg + "\n";
-                        }
-                    }
-                }
-    
-                // check projects
-                int size = manager.getProjects().size();
-                if(size != expected.length) {
-                    String localErrorMsg = "wrong projects size " + size +", expected " + expected.length;
-                    errorMsg += textNameExt + ": " + localErrorMsg + "\n";
-                } else {
-                    String localErrorMsg = "";
-                    for(int i=0; i < size; i++) {
-                        Project project = manager.getProjects().get(i);
-                        if(Integer.parseInt(project.getName()) != expected[i]) {
-                            localErrorMsg += "wrong project("+i+").name() == "+project.getName()+", expected " + expected[i] + "; ";
-                        }
-                    }
-                    if(localErrorMsg.length() > 0) {
-                        errorMsg += textNameExt + ": " + localErrorMsg + "\n";
-                    }
-                }
-    
-                // check responsibilities
-                size = manager.getResponsibilitiesList().size();
-                if(size != expected.length) {
-                    String localErrorMsg = "wrong responsibilitiesList size " + size +", expected " + expected.length;
-                    errorMsg += textNameExt + ": " + localErrorMsg + "\n";
-                } else {
-                    String localErrorMsg = "";
-                    for(int i=0; i < size; i++) {
-                        String resp = (String)manager.getResponsibilitiesList().get(i);
-                        if(Integer.parseInt(resp) != expected[i]) {
-                            localErrorMsg += "wrong responsibility("+i+") == "+resp+", expected " + expected[i] + "; ";
-                        }
-                    }
-                    if(localErrorMsg.length() > 0) {
-                        errorMsg += textNameExt + ": " + localErrorMsg + "\n";
-                        localErrorMsg = "";
-                    }
-                }
+        /*
+         * Adds a list of objects to empManager at index: Employee, Child, Project, Responsibility (String), PhoneNumber.
+         * The list should be obtained from getFrom, create, removeFrom or setInto methods.
+         */
+        void addTo(Employee empManager, int index, List list) {
+            int i = 0;
+            if(useManagedEmployees) {
+                empManager.addManagedEmployee(index, (Employee)list.get(i++));
+            }
+            if(useChildren) {
+                empManager.getChildren().add(index, (Child)list.get(i++));
+            }
+            if(useProjects) {
+                empManager.addProject(index, (Project)list.get(i++));
+            }
+            if(useResponsibilities) {
+                empManager.addResponsibility(index, (String)list.get(i++));
+            }
+            if(usePhones) {
+                empManager.addPhoneNumber(index, (PhoneNumber)list.get(i++));
             }
         }
         
-        void verifyCompare(String testName, Object managerClone) {
+        /*
+         * Adds a list of objects to empManager at index: Employee, Child, Project, Responsibility (String), PhoneNumber.
+         * The list should be obtained from getFrom, create, removeFrom or setInto methods.
+         */
+        void addTo_NoRelMaintanence(Employee empManager, int index, List list) {
+            int i = 0;
+            if(useManagedEmployees) {
+                empManager.getManagedEmployees().add(index, (Employee)list.get(i++));
+            }
+            if(useChildren) {
+                empManager.getChildren().add(index, (Child)list.get(i++));
+            }
+            if(useProjects) {
+                empManager.getProjects().add(index, (Project)list.get(i++));
+            }
+            if(useResponsibilities) {
+                empManager.addResponsibility(index, (String)list.get(i++));
+            }
+            if(usePhones) {
+                empManager.addPhoneNumber(index, (PhoneNumber)list.get(i++));
+            }
+        }
+        
+        /*
+         * Removes a list of objects from empManager at index.
+         * Returns list of removed objects: Employee, Child, Project, Responsibility (String), PhoneNumber.
+         */
+        List removeFrom(Employee empManager, int index) {
+            List list = new ArrayList();
+            if(useManagedEmployees) {
+                list.add(empManager.removeManagedEmployee(index));
+            }
+            if(useChildren) {
+                list.add(empManager.getChildren().remove(index));
+            }
+            if(useProjects) {
+                list.add(empManager.removeProject(index));
+            }
+            if(useResponsibilities) {
+                list.add(empManager.removeResponsibility(index));
+            }
+            if(usePhones) {
+                list.add(empManager.removePhoneNumber(index));
+            }
+            return list;
+        }
+        
+        /*
+         * Removes a list of objects from empManager at index.
+         * Returns list of removed objects: Employee, Child, Project, Responsibility (String), PhoneNumber.
+         */
+        List removeFrom_NoRelMaintanence(Employee empManager, int index) {
+            List list = new ArrayList();
+            if(useManagedEmployees) {
+                list.add(empManager.getManagedEmployees().remove(index));
+            }
+            if(useChildren) {
+                list.add(empManager.getChildren().remove(index));
+            }
+            if(useProjects) {
+                list.add(empManager.getProjects().remove(index));
+            }
+            if(useResponsibilities) {
+                list.add(empManager.removeResponsibility(index));
+            }
+            if(usePhones) {
+                list.add(empManager.removePhoneNumber(index));
+            }
+            return list;
+        }
+        
+        /*
+         * Gets a list of objects from empManager at index: Employee, Child, Project, Responsibility (String), PhoneNumber.
+         */
+        List getFrom(Employee empManager, int index) {
+            List list = new ArrayList();
+            if(useManagedEmployees) {
+                list.add(empManager.getManagedEmployees().get(index));
+            }
+            if(useChildren) {
+                list.add(empManager.getChildren().get(index));
+            }
+            if(useProjects) {
+                list.add(empManager.getProjects().get(index));
+            }
+            if(useResponsibilities) {
+                list.add(empManager.getResponsibilitiesList().get(index));
+            }
+            if(usePhones) {
+                list.add(empManager.getPhoneNumbers().get(index));
+            }
+            return list;
+        }
+        
+        /*
+         * Sets a list of objects into empManager at index.
+         * Returns list of removed objects: Employee, Child, Project, Responsibility (String), PhoneNumber.
+         */
+        List setInto(Employee empManager, int index, List list) {
+            int i = 0;
+            List listOut = new ArrayList();
+            if(useManagedEmployees) {
+                listOut.add(empManager.setManagedEmployee(index, (Employee)list.get(i++)));
+            }
+            if(useChildren) {
+                listOut.add(empManager.getChildren().set(index, (Child)list.get(i++)));
+            }
+            if(useProjects) {
+                listOut.add(empManager.setProject(index, (Project)list.get(i++)));
+            }
+            if(useResponsibilities) {
+                listOut.add(empManager.setResponsibility(index, (String)list.get(i++)));
+            }
+            if(usePhones) {
+                listOut.add(empManager.setPhoneNumber(index, (PhoneNumber)list.get(i++)));
+            }
+            return listOut;
+        }
+        
+        /*
+         * Sets a list of objects into empManager at index.
+         * Returns list of removed objects: Employee, Child, Project, Responsibility (String), PhoneNumber.
+         */
+        List setInto_NoRelMaintanence(Employee empManager, int index, List list) {
+            int i = 0;
+            List listOut = new ArrayList();
+            if(useManagedEmployees) {
+                listOut.add(empManager.getManagedEmployees().set(index, (Employee)list.get(i++)));
+            }
+            if(useChildren) {
+                listOut.add(empManager.getChildren().set(index, (Child)list.get(i++)));
+            }
+            if(useProjects) {
+                listOut.add(empManager.getProjects().set(index, (Project)list.get(i++)));
+            }
+            if(useResponsibilities) {
+                listOut.add(empManager.setResponsibility(index, (String)list.get(i++)));
+            }
+            if(usePhones) {
+                listOut.add(empManager.setPhoneNumber(index, (PhoneNumber)list.get(i++)));
+            }
+            return listOut;
+        }
+        
+        /*
+         * Sets lists of objects into empManager using setManagedEmployees, setChildren, setProjects, setResponsibilityList, setPhoneNumbers methods.
+         * The list should be created with createList method.
+         */
+        void setListInto(Employee empManager, List<List> listOfLists) {
+            int i = 0;
+            List listOut = new ArrayList();
+            if(useManagedEmployees) {
+                List<Employee> newList = (List<Employee>)listOfLists.get(i++);
+                List<Employee> oldList = empManager.getManagedEmployees();
+                empManager.setManagedEmployees(newList);
+                if(oldList != null) {
+                    for(int j=0; j < oldList.size(); j++) {
+                        oldList.get(j).setManager(null);
+                    }
+                }
+                if(newList != null) {
+                    for(int j=0; j < newList.size(); j++) {
+                        newList.get(j).setManager(empManager);
+                    }
+                }
+            }
+            if(useChildren) {
+                empManager.setChildren((Vector)listOfLists.get(i++));
+            }
+            if(useProjects) {
+                List<Project> newList = (List<Project>)listOfLists.get(i++);
+                List<Project> oldList = empManager.getProjects();
+                empManager.setProjects(newList);
+                if(oldList != null) {
+                    for(int j=0; j < oldList.size(); j++) {
+                        oldList.get(j).getEmployees().remove(empManager);
+                    }
+                }
+                if(newList != null) {
+                    for(int j=0; j < newList.size(); j++) {
+                        newList.get(j).getEmployees().add(empManager);
+                    }
+                }
+            }
+            if(useResponsibilities) {
+                empManager.setResponsibilitiesList((List<String>)listOfLists.get(i++));
+            }
+            if(usePhones) {
+                empManager.setPhoneNumbers((List<PhoneNumber>)listOfLists.get(i++));
+            }
+        }
+        
+        /*
+         * Creates a list of Lists  that could be set to manager: List<Employee>, Vector, List<Project>, List<String>, List<PhoneNumber>.
+         */
+        List<List> createList() {
+            int i = 0;
+            List<List> listOfLists = new ArrayList();
+            if(useManagedEmployees) {
+                listOfLists.add(new ArrayList<Employee>());
+            }
+            if(useChildren) {
+                listOfLists.add(new Vector());
+            }
+            if(useProjects) {
+                listOfLists.add(new ArrayList<Project>());
+            }
+            if(useResponsibilities) {
+                listOfLists.add(new ArrayList<String>());
+            }
+            if(usePhones) {
+                listOfLists.add(new ArrayList<PhoneNumber>());
+            }
+            return listOfLists;
+        }
+        
+        /*
+         * Adds a list of objects to listOfLists: Employee, Child, Project, Responsibility (String), PhoneNumber.
+         * listOfLists should be created with createList method.
+         * list should be obtained from getFrom, create, removeFrom or setInto methods.
+         */
+        void addTo(List<List> listOfLists, List list) {
+            int i = 0;
+            if(useManagedEmployees) {
+                listOfLists.get(i).add((Employee)list.get(i++));
+            }
+            if(useChildren) {
+                listOfLists.get(i).add((Child)list.get(i++));
+            }
+            if(useProjects) {
+                listOfLists.get(i).add((Project)list.get(i++));
+            }
+            if(useResponsibilities) {
+                listOfLists.get(i).add((String)list.get(i++));
+            }
+            if(usePhones) {
+                listOfLists.get(i).add((PhoneNumber)list.get(i++));
+            }
+        }        
+
+        /*
+         * Breaks order in the db by assigning wrong values to order fields 
+         */
+        void breakManagedEmployeesOrder() {
+            if(useSecondaryTable) {
+                getSession().executeNonSelectingSQL("UPDATE OL_SALARY SET MANAGED_ORDER = NULL WHERE MANAGED_ORDER = 1");
+            } else {
+                getSession().executeNonSelectingSQL("UPDATE OL_EMPLOYEE SET MANAGED_ORDER = NULL WHERE MANAGED_ORDER = 1");
+            }
+        }
+        void breakChildrenOrder() {
+            if(useSecondaryTable) {
+                getSession().executeNonSelectingSQL("UPDATE OL_ALLOWANCE SET CHILDREN_ORDER = null WHERE CHILDREN_ORDER = 0");
+            } else {
+                getSession().executeNonSelectingSQL("UPDATE OL_CHILD SET CHILDREN_ORDER = null WHERE CHILDREN_ORDER = 0");
+            }
+        }
+        void breakProjectsOrder() {
+            getSession().executeNonSelectingSQL("UPDATE OL_PROJ_EMP SET PROJ_ORDER = 5 WHERE PROJ_ORDER = 0");
+        }
+        void breakResponsibilitiesOrder() {
+            getSession().executeNonSelectingSQL("UPDATE OL_RESPONS SET RESPONS_ORDER = 0 WHERE RESPONS_ORDER = 1");
+        }
+        void breakPhonesOrder() {
+            getSession().executeNonSelectingSQL("UPDATE OL_PHONE SET PHONE_ORDER = 1 WHERE PHONE_ORDER = 0");
+        }
+        void breakOrder() {
+            if(useManagedEmployees) {
+                breakManagedEmployeesOrder();
+            }
+            if(useChildren) {
+                breakChildrenOrder();
+            }
+            if(useProjects) {
+                breakProjectsOrder();
+            }
+            if(useResponsibilities) {
+                breakResponsibilitiesOrder();
+            }
+            if(usePhones) {
+                breakPhonesOrder();
+            }
+        }
+        
+        /*
+         * Set the new OrderValidationMode, return the old one.
+         * Verify that the old modes are the same for all mappings. 
+         */
+        OrderValidationMode changeOrderValidationMode(OrderValidationMode mode) {
+            OrderValidationMode oldMode = null;
+            if(useManagedEmployees) {
+                oldMode = changeOrderValidationMode("managedEmployees", mode, oldMode);
+            }
+            if(useChildren) {
+                oldMode = changeOrderValidationMode("children", mode, oldMode);
+            }
+            if(useProjects) {
+                oldMode = changeOrderValidationMode("projects", mode, oldMode);
+            }
+            if(useResponsibilities) {
+                oldMode = changeOrderValidationMode("responsibilitiesList", mode, oldMode);
+            }
+            if(usePhones) {
+                oldMode = changeOrderValidationMode("phoneNumbers", mode, oldMode);
+            }
+            return oldMode;
+        }
+        OrderValidationMode changeOrderValidationMode(String attribute, OrderValidationMode mode, OrderValidationMode oldMode) {
+            ClassDescriptor desc = getSession().getDescriptor(Employee.class);
+            CollectionMapping mapping = (CollectionMapping)desc.getMappingForAttributeName(attribute);
+            OrderValidationMode currOldMode = changeOrderValidationMode((CollectionMapping)mapping, mode);
+            if(oldMode != null) {
+                if(oldMode != currOldMode) {
+                    throw new TestProblemException("OrderValidationModes for " + attribute+ " is " + currOldMode +"; for previous mapping(s) it was " + oldMode);
+                }
+            }
+            return currOldMode;
+        }
+        OrderValidationMode changeOrderValidationMode(CollectionMapping mapping, OrderValidationMode mode) {
+            OrderedListContainerPolicy policy = (OrderedListContainerPolicy)mapping.getContainerPolicy(); 
+            OrderValidationMode oldMode = policy.getOrderValidationMode();
+            policy.setOrderValidationMode(mode);
+            
+            OrderedListContainerPolicy queryPolicy = null;
+            if(mapping.getSelectionQuery().isReadAllQuery()) {
+                queryPolicy = (OrderedListContainerPolicy)((ReadAllQuery)mapping.getSelectionQuery()).getContainerPolicy();
+            } else if(mapping.getSelectionQuery().isDataReadQuery()) {
+                queryPolicy = (OrderedListContainerPolicy)((DataReadQuery)mapping.getSelectionQuery()).getContainerPolicy();
+            }
+            if(policy != queryPolicy) {
+                OrderValidationMode oldModeQuery = queryPolicy.getOrderValidationMode();
+                if(oldMode != oldModeQuery) {
+                    throw new TestErrorException(mapping.getAttributeName() + ": OrderValidationModes in container policy is " + oldMode +"; is query is " + oldModeQuery);
+                }
+                queryPolicy.setOrderValidationMode(mode);
+            }
+            return oldMode;
+        }
+        
+        /*
+         * Verify IndirectList.isListOrderBrokenInDb flag value.
+         * Throw exception if it's not expected one.
+         */
+        String verifyIsListOrderBrokenInDb(Employee empManager, boolean expected) {
+            String localErrorMsg = "";
+            if(useManagedEmployees) {
+                localErrorMsg += verifyIsListOrderBrokenInDb(empManager, expected, "managedEmployees");
+            }
+            if(useChildren) {
+                localErrorMsg += verifyIsListOrderBrokenInDb(empManager, expected, "children");
+            }
+            if(useProjects) {
+                localErrorMsg += verifyIsListOrderBrokenInDb(empManager, expected, "projects");
+            }
+            if(useResponsibilities) {
+                localErrorMsg += verifyIsListOrderBrokenInDb(empManager, expected, "responsibilitiesList");
+            }
+            if(usePhones) {
+                localErrorMsg += verifyIsListOrderBrokenInDb(empManager, expected, "phoneNumbers");
+            }
+            if(localErrorMsg.length() > 0) {
+                localErrorMsg = "isListOrderBrokenInDb expected to be " + expected + ". For the following attributes it is " + !expected +": " + localErrorMsg;
+            }
+            return localErrorMsg;
+        }
+        String verifyIsListOrderBrokenInDb(Employee empManager, boolean expected, String attribute) {
+            String localErrorMsg = "";
+            ClassDescriptor desc = getSession().getDescriptor(Employee.class);
+            CollectionMapping mapping = (CollectionMapping)desc.getMappingForAttributeName(attribute);
+            Object attributeValue = mapping.getRealAttributeValueFromObject(empManager, getAbstractSession()); 
+            if(((IndirectList)attributeValue).isListOrderBrokenInDb() != expected) {
+                localErrorMsg = attribute + "; ";
+            }
+            return localErrorMsg;
+        }
+        
+        /*
+         * Indicates whether all lists were read in
+         */
+        boolean isInstantiated(Employee empManager) {
+            List list;
+            String instantiatedStr = "";
+            String notInstantiatedStr = "";
+            String str;
+            boolean isInstantiated;
+            if(useManagedEmployees) {
+                list = empManager.getManagedEmployees();
+                isInstantiated = isInstantiated(list);
+                str = (isInstantiated ? instantiatedStr : notInstantiatedStr);
+                str += "managedEmployees; "; 
+            }
+            if(useChildren) {
+                list = empManager.getChildren();
+                isInstantiated = isInstantiated(list);
+                str = (isInstantiated ? instantiatedStr : notInstantiatedStr);
+                str += "children; "; 
+            }
+            if(useProjects) {
+                list = empManager.getProjects();
+                isInstantiated = isInstantiated(list);
+                str = (isInstantiated ? instantiatedStr : notInstantiatedStr);
+                str += "projects; "; 
+            }
+            if(useResponsibilities) {
+                list = empManager.getResponsibilitiesList();
+                isInstantiated = isInstantiated(list);
+                str = (isInstantiated ? instantiatedStr : notInstantiatedStr);
+                str += "responsibilities; "; 
+            }
+            if(usePhones) {
+                list = empManager.getPhoneNumbers();
+                isInstantiated = isInstantiated(list);
+                str = (isInstantiated ? instantiatedStr : notInstantiatedStr);
+                str += "phoneNumbers; "; 
+            }
+            if(instantiatedStr.length() > 0 && notInstantiatedStr.length() > 0) {
+                throw new TestProblemException("Some attributes are instantiated: " + instantiatedStr + " and some are not: " + notInstantiatedStr);
+            } else {
+                return instantiatedStr.length() > 0;
+            }
+        }
+        boolean isInstantiated(List list) {
+            return !(list instanceof IndirectList && !((IndirectList)list).isInstantiated());
+        }
+        
+        String getShortClassName() {
+            String name = this.getClass().getName();
+            int begin = name.indexOf('$') + 1;
+            int end = name.length();
+            return name.substring(begin, end);
+        }
+    }    
+                
+    /*
+     * Base class for tests using Employee manager object.
+     * createManager method creates a manager with nSize of managedEmployees, children, projects, responsibilities, phones.
+     */
+    class BaseManagerTest extends BaseTest {
+        /*
+         * Number of manager's managedEmployees, children, projects, responsibilities, phones
+         * created by createManager method.
+         */
+        int nSize;
+        
+        Employee manager;
+        /*
+         * manager's clone in uow.
+         */
+        Employee managerClone;
+        
+        BaseManagerTest() {
+            super();
+            this.nSize = 2;            
+        }
+        
+        /*
+         * Creates manager with nSize members 
+         */
+        void createManager() {
+            manager = new Employee("Manager");
+            for(int i=0; i < nSize; i++) {
+                this.addTo(manager, create("old", i));
+            }
+            UnitOfWork uow = getSession().acquireUnitOfWork();
+            managerClone = (Employee)uow.registerObject(manager);
+            uow.commit();
+        }        
+        
+        protected void verify() {
+            if(manager == null) {
+                throw new TestErrorException("manager == null. Nothing to verify");
+            }
+            
+            errorMsg = "";
             String textNameExt;
             Object objectToCompare;
             for(int k=0; k<2; k++) {
                 if(k == 0) {
-                    textNameExt = testName+"(Cache)";
+                    textNameExt = "Cache";
                 } else {
-                    textNameExt = testName+"(DB)";
+                    textNameExt = "DB";
 
                     // Read back the inserted objects, make sure the order is correct.
                     getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
                     manager = (Employee)getSession().readObject(manager);
                 }
                 if(!getAbstractSession().compareObjects(managerClone, manager)) {
-                    String localErrorMsg = textNameExt + ": " + "objects not equal\n";
-                    errorMsg += localErrorMsg;
+                    errorMsg += textNameExt + ": " + "objects not equal\n";
                 }
             }
+            if(errorMsg.length() > 0) {
+                throw new TestErrorException('\n' + errorMsg);
+            }
+        }
+
+        public void reset() {
+            super.reset();
+            manager = null;
+            managerClone = null;
+        }
+
+        String nSizeName() {
+            return getShortClassName() + ": "+nSize+":";
         }
     }
     
-    static class MultipleManagersTest extends TestCase {
-        ChangeTracking changeTracking;
-        JoinFetchOrBatchRead joinFetchOrBatchRead;
-        
-        MultipleManagersTest(ChangeTracking changeTracking, JoinFetchOrBatchRead joinFetchOrBatchRead) {
-            this.changeTracking = changeTracking;
-            this.joinFetchOrBatchRead = joinFetchOrBatchRead;
+    /*
+     * Create manager, save to the db, verify that it was correctly merged into shared cache and written into the db. 
+     */
+    class CreateTest extends BaseManagerTest {        
+        CreateTest() {
+            super();
         }
-        
-        int nManagers = 5;
-        List<Employee> managers = new ArrayList(nManagers);
-        List<Employee> managerClones = new ArrayList(nManagers);
-        int nProjects = 4;
-        List<Project> projects = new ArrayList(nProjects);
-        int nManagedEmployees = 2;
-        int nChildren = 2;
-        // should be <= 9
-        int nPhones = 2;
-        int nResponsibilities = 2;
-        String errorMsg = "";
-
+        public void test() {
+            createManager();
+        }
+    }
+    
+    /*
+     * Create empty manager, save to the db, verify that it was correctly merged into shared cache and written into the db. 
+     * For OUTER_JOIN case to verify that read back lists are empty (as opposed to having null members).
+     */
+    class CreateEmptyTest extends CreateTest {        
+        CreateEmptyTest() {
+            super();
+            nSize = 0;
+        }
+    }
+    
+    /*
+     * Create manager, save to the db. Meant as a base to the tests that change manager. 
+     */
+    class ChangeTest extends BaseManagerTest {
+        ChangeTest() {
+            super();
+        }
         public void setup() {
-            // create Projects
-            for(int i=0; i < nProjects; i++) {
-                if(i % 2 == 0) {
-                    projects.add(new SmallProject(Integer.toString(i)));
+            super.setup();
+            createManager();
+        }
+    }
+    
+    /*
+     * Switch positions of list members. 
+     * [0, 2], [7, 5] means that old[0] = new[7], old[2] = new[5];
+     * [0, 2, 5], [7, 5, 4] means that old[0] = new[7], old[2] = new[5], old[5] = new[4].
+     * useSet indicates whether to use set(index, obj) method or remove(index)/add(index, obj).
+     */
+    class TranspositionTest extends ChangeTest {
+        int[] oldIndexes, newIndexes;
+        boolean useSet;
+        /*
+         * nSize is number of members in each of the lists (managedEmployees, children etc), it should be greater than any old or new index
+         */
+        TranspositionTest(int nSize, int[] oldIndexes, int[] newIndexes, boolean useSet) {
+            super();
+            this.nSize = nSize;
+            this.oldIndexes = oldIndexes;
+            this.newIndexes = newIndexes;
+            this.useSet = useSet;
+            verifyIndexes();
+            for(int i=0; i<oldIndexes.length; i++) {
+                if(oldIndexes[i] >= nSize) {
+                    throw new TestProblemException("oldIndex["+i+"] = "+oldIndexes[i]+", which is greater than nSize ="+nSize);
+                }
+                if(newIndexes[i] >= nSize) {
+                    throw new TestProblemException("newIndex["+i+"] = "+newIndexes[i]+", which is greater than nSize ="+nSize);
+                }
+            }
+            setName();
+        }
+        /*
+         * nSize is number of members in each of the lists (managedEmployees, children etc),
+         * it will be set to the max index + 1.
+         */
+        TranspositionTest(int[] oldIndexes, int[] newIndexes, boolean useSet) {
+            super();
+            this.oldIndexes = oldIndexes;
+            this.newIndexes = newIndexes;
+            this.useSet = useSet;
+            verifyIndexes();
+            nSize = 0;
+            for(int i=0; i<oldIndexes.length; i++) {
+                if(oldIndexes[i] > nSize) {
+                    nSize = oldIndexes[i]; 
+                }
+                if(newIndexes[i] > nSize) {
+                    nSize = newIndexes[i]; 
+                }
+            }
+            nSize++;
+            setName();
+        }
+        public void verifyIndexes() {
+            if(oldIndexes.length != newIndexes.length) {
+                throw new TestProblemException("oldIndexes.length != newIndexes.length");
+            }
+            for(int i=0; i < oldIndexes.length; i++) {
+                int oldIndex = oldIndexes[i];
+                boolean found = false;
+                for(int j=0; j < newIndexes.length; j++) {
+                    if(oldIndex == newIndexes[j]) {
+                        found = true;
+                        break;
+                    }
+                }
+                if(!found) {
+                    throw new TestProblemException("oldIndexes["+i+"] value "+oldIndex+" not found in newIndexes");
+                }
+            }
+        }
+        String toString(int[] array) {
+            String str = "[";
+            for(int i=0; i<array.length; i++) {
+                str += Integer.toString(i);
+                if(i < array.length-1) {
+                    str += ", ";
                 } else {
-                    projects.add(new LargeProject(Integer.toString(i)));
+                    str += "]";
                 }
             }
-
-            // create managers
-            for(int i=0; i < nManagers; i++) {
-                String iStr = Integer.toString(i);
-                Employee manager = new Employee("Manager", iStr);
-                for(int j=0; j < nManagedEmployees; j++) {
-                    manager.addManagedEmployee(new Employee(Integer.toString(j), iStr));
-                }
-                for(int j=0; j < nChildren; j++) {
-                    manager.getChildren().add(new Child(Integer.toString(j), iStr));
-                }
-                String areaCode = iStr + iStr + iStr;
-                for(int j=0; j < nPhones; j++) {
-                    String jStr = Integer.toString(j);
-                    String number = jStr + jStr + jStr + jStr + jStr + jStr + jStr; 
-                    manager.addPhoneNumber(new PhoneNumber(jStr, areaCode, number));
-                }
-                for(int j=0; j < nResponsibilities; j++) {
-                    manager.addResponsibility(Integer.toString(j));
-                }
-                // let's the same project have different order indexes for different managers
-                for(int j=i; j < nProjects+i; j++) {
-                    int k = j % nProjects;
-                    manager.addProject(projects.get(k));
-                }
-                managers.add(manager);
+            return str;
+        }
+        void setName() {
+            setName(getName() + " " + toString(oldIndexes) + " -> " + toString(newIndexes) + (useSet ? " set" : " remove/add"));
+        }
+        public void test() {
+            UnitOfWork uow = getSession().acquireUnitOfWork();
+            managerClone = (Employee)uow.registerObject(manager);
+            
+            int n = oldIndexes.length;
+            List[] lists = new ArrayList[n];
+            for(int i=0; i<n; i++) {
+                lists[i] = getFrom(managerClone, oldIndexes[i]);
             }
+            for(int i=0; i<n; i++) {
+                int newIndex = newIndexes[i];
+                if(useSet) {
+                    setInto_NoRelMaintanence(managerClone, newIndex, lists[i]);
+                } else {
+                    removeFrom_NoRelMaintanence(managerClone, newIndex);
+                    addTo_NoRelMaintanence(managerClone, newIndex, lists[i]);
+                }
+            }
+            uow.commit();
+        }
+    }
+    
+    /*
+     * For each mapping: add one new object, remove one existing object
+     */
+    class SimpleAddRemoveTest extends ChangeTest {
+        SimpleAddRemoveTest() {
+            super();
         }
 
         public void test() {
             UnitOfWork uow = getSession().acquireUnitOfWork();
-            for(int i=0; i < nManagers; i++) {
-                managerClones.add((Employee)uow.registerObject(managers.get(i)));
+            managerClone = (Employee)uow.registerObject(manager);
+            
+            addTo(managerClone, create("new", 1));
+            removeFrom(managerClone, 0);
+            
+            uow.commit();
+        }
+    }
+    
+    /*
+     * For each mapping: add one new object, remove one existing object
+     */
+    class SimpleAddRemoveTest2 extends ChangeTest {
+        SimpleAddRemoveTest2() {
+            super();
+            nSize = 12;
+        }
+
+        public void test() {
+            UnitOfWork uow = getSession().acquireUnitOfWork();
+            managerClone = (Employee)uow.registerObject(manager);
+            
+            addTo(managerClone, 0, create("new", 0));
+            addTo(managerClone, 4, create("new", 4));
+            removeFrom(managerClone, 8);
+            
+            uow.commit();
+        }
+    }
+    
+    /*
+     * For each mapping: set a new object
+     */
+    class SimpleSetTest extends ChangeTest {
+        SimpleSetTest() {
+            super();
+        }
+
+        public void test() {
+            UnitOfWork uow = getSession().acquireUnitOfWork();
+            managerClone = (Employee)uow.registerObject(manager);
+            
+            setInto(managerClone, 1, create("new", 1));
+            
+            uow.commit();
+        }
+    }
+    
+    /*
+     * For each mapping: create a new List of two objects, set the new List into managerClone;
+     * if useSet is not null, before setting a new list either add or set a new object into the old list.
+     */
+    class SimpleSetListTest extends ChangeTest {
+        Boolean useSet;
+        SimpleSetListTest() {
+            super();
+        }
+        SimpleSetListTest(boolean useSet) {
+            super();
+            this.useSet = useSet;
+            setName(getName() + (useSet ? " set" : " remove/add"));
+        }
+
+        public void test() {
+            UnitOfWork uow = getSession().acquireUnitOfWork();
+            managerClone = (Employee)uow.registerObject(manager);
+            
+            if(useSet != null) {
+                if(useSet) {
+                    setInto(managerClone, 1, create("temp", 1));
+                } else {
+                    addTo(managerClone, create("temp", 2));
+                }
             }
+            List list = createList();
+            addTo(list, create("new", 0));
+            addTo(list, create("new", 1));
+            setListInto(managerClone, list);
+            
+            uow.commit();
+        }
+    }
+    
+    class SimpleIndexTest extends ChangeTest {
+        int min;
+        int max;
+        int nExpected;
+        boolean useIndex;
+
+        SimpleIndexTest(boolean useIndex) {
+            super();
+            nSize = 5;
+            min = 2;
+            max = 4;
+            nExpected = max - min + 1;
+            
+            this.useIndex = useIndex;
+            setName(getName() + (useIndex ? " use index()" : " use getField()"));
+        }
+        public void test() {
+            getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
+            if(useManagedEmployees) {
+                test("managedEmployees");
+            }
+            if(useChildren) {
+                test("children");
+            }
+            if(useProjects) {
+                test("projects");
+            }
+            if(useResponsibilities) {
+                test("responsibilitiesList");
+            }
+            if(usePhones) {
+                test("phoneNumbers");
+            }
+        }
+        void test(String attributeName) {
+            ReportQuery query = new ReportQuery();
+            query.setReferenceClass(Employee.class);
+            ExpressionBuilder builder = query.getExpressionBuilder();
+            Expression exp;
+            Expression firstNameManager = builder.get("firstName").equal("Manager");
+            Expression anyOfAttribute = builder.anyOf(attributeName);
+            if(useIndex) {
+                // tests index() expression
+                exp = firstNameManager.and(anyOfAttribute.index().between(min, max));
+            } else {
+                // tests getField() expression (or getTable().getField() expression) equivalent to index().
+                if(isTableExpressionRequired(attributeName)) {
+                    exp = firstNameManager.and(anyOfAttribute.getTable(getTableName(attributeName)).getField(getFieldName(attributeName)).between(min, max));
+                } else {
+                    exp = firstNameManager.and(anyOfAttribute.getField(getFieldName(attributeName)).between(min, max));
+                }
+            }
+            query.setSelectionCriteria(exp);
+            query.addAttribute(attributeName, anyOfAttribute);
+            
+            ArrayList indexesRead = new ArrayList(nExpected);
+            boolean error = false;
+            List<ReportQueryResult> results = (List)getSession().executeQuery(query);
+            for(int i=0; i < results.size(); i++) {
+                ReportQueryResult result = results.get(i);
+                int index = getIndex(result.getResults().get(0), attributeName);
+                error |= max < index || index < min;
+                indexesRead.add(index);
+            }
+            String localErrorMsg = "";
+            if(error) {
+                localErrorMsg += "Wrong index values read: " + indexesRead +"; expected all numbers between (inclusive) " + min + " and " + max;
+            }
+            // query with joins return Cartesian product of all rows - the same values returned more than once. 
+            if(OrderListTestModel.this.joinFetchOrBatchRead != JoinFetchOrBatchRead.OUTER_JOIN && OrderListTestModel.this.joinFetchOrBatchRead != JoinFetchOrBatchRead.INNER_JOIN) {
+                if(indexesRead.size() != nExpected) {
+                    localErrorMsg += attributeName + " Wrong number of objects read: " + indexesRead.size() +"; expected " + nExpected;
+                }
+            }
+            
+            if(localErrorMsg.length() > 0) {
+                localErrorMsg = attributeName + ": " + localErrorMsg + "\n";
+                errorMsg += localErrorMsg;
+            }
+        }
+        /*
+         * all objects were constructed to incorporate the index, see createManager method.
+         */
+        int getIndex(Object obj, String attributeName) {
+            int index = -1;
+            if(attributeName.equals("managedEmployees")) {
+                index = Integer.parseInt(((Employee)obj).getFirstName());
+            } else if(attributeName.equals("children")) {
+                index = Integer.parseInt(((Child)obj).getFirstName());
+            } else if(attributeName.equals("projects")) {
+                index = getNumberFromString(((Project)obj).getName());
+            } else if(attributeName.equals("responsibilitiesList")) {
+                index = getNumberFromString((String)obj);
+            } else if(attributeName.equals("phoneNumbers")) {
+                index = Integer.parseInt(((PhoneNumber)obj).getNumber());
+            }
+            return index;
+        }
+        int getNumberFromString(String str) {
+            int nEnd = str.length();
+            int nStart = 0;
+            for(nStart=0; nStart < nEnd; nStart++) {
+                char ch = str.charAt(nStart);
+                if('0' <= ch && ch <='9') {
+                    break;
+                }
+            }
+            str = str.substring(nStart);
+            return Integer.parseInt(str);
+        }
+
+        protected void verify() {
+            if(errorMsg.length() > 0) {
+                errorMsg = "\n" + errorMsg;
+                throw new TestErrorException(errorMsg);
+            }
+        }
+        
+        /*
+         * ManyToMany and DirectCollection mapping require table name expression.
+         * Used to test getField() expression (or getTable().getField() expression) equivalent to index().
+         */
+        boolean isTableExpressionRequired(String attributeName) {
+            return attributeName.equals("projects") || attributeName.equals("responsibilitiesList"); 
+        }
+        /*
+         * ManyToMany and DirectCollection mapping require table name expression.
+         * Used to test getTable().getField() expression equivalent to index().
+         */
+        String getTableName(String attributeName) {
+            if(attributeName.equals("projects")) {
+                return "OL_PROJ_EMP";
+            } else if(attributeName.equals("responsibilitiesList")) {
+                return "OL_RESPONS";
+            } else {
+                throw new TestProblemException(attributeName + " should not be looking for table name.");
+            }
+        }
+        /*
+         * Used to test getField() expression (or getTable().getField() expression) equivalent to index().
+         */
+        String getFieldName(String attributeName) {
+            String fieldName = null;
+            if(attributeName.equals("managedEmployees")) {
+                fieldName = "MANAGED_ORDER"; 
+            } else if(attributeName.equals("children")) {
+                fieldName = "CHILDREN_ORDER";
+            } else if(attributeName.equals("projects")) {
+                fieldName = "PROJ_ORDER";
+            } else if(attributeName.equals("responsibilitiesList")) {
+                fieldName = "RESPONS_ORDER";
+            } else if(attributeName.equals("phoneNumbers")) {
+                fieldName = "PHONE_ORDER";
+            }
+            return fieldName;
+        }
+    }
+    
+    /*
+     * For each mapping: add object in front, or in the middle, or to the end of the list.
+     * Currently only DirectCollectionMapping supports duplicates and nulls.
+     * The test still uses all mappings so that it could be run with INNER_JOIN.
+     */
+    abstract class WhereToAddTest extends ChangeTest {
+        String whereToAdd;
+        WhereToAddTest(String whereToAdd) {
+            super();
+            this.whereToAdd = whereToAdd;
+            if(!front.equals(whereToAdd) && !middle.equals(whereToAdd) && !end.equals(whereToAdd)) {
+                throw new TestProblemException("Wrong whereToAdd = " + whereToAdd +"; Supported values: " + front +"; " +middle +"; " + end);
+            }
+            setName(getName() + " " + whereToAdd);
+        }
+        
+        public void test() {
+            UnitOfWork uow = getSession().acquireUnitOfWork();
+            managerClone = (Employee)uow.registerObject(manager);
+            
+            if(front.equals(whereToAdd)) {
+                addTo(managerClone, 0, objectToAdd());
+            } else if(middle.equals(whereToAdd)) {
+                addTo(managerClone, 1, objectToAdd());
+            } else if(end.equals(whereToAdd)) {
+                addTo(managerClone, objectToAdd());
+            }
+            
+            uow.commit();
+        }
+
+        abstract List objectToAdd(); 
+    }
+    
+    /*
+     * For each mapping: add null.
+     * Currently only DirectCollectionMapping supports nulls.
+     */
+    class AddNullTest extends WhereToAddTest {
+        AddNullTest(String whereToAdd) {
+            super(whereToAdd);
+        }
+        List objectToAdd() {
+            List list = create("new", 0);
+            for(int i=0; i < list.size(); i++) {
+                if(list.get(i) instanceof String) {
+                    // Currently only DirectCollectionMapping (responsibilities) supports nulls.
+                    list.set(i, null);
+                    break;
+                }
+            }
+            return list;
+        }
+    }
+    
+    /*
+     * For each mapping: add duplicate.
+     * Currently only DirectCollectionMapping supports duplicates.
+     */
+    class AddDuplicateTest extends WhereToAddTest {
+        AddDuplicateTest(String whereToAdd) {
+            super(whereToAdd);
+        }
+        List objectToAdd() {
+            List newList = create("new", 0);
+            List oldList = getFrom(managerClone, 0);
+            // the two lists are of the same size
+            for(int i=0; i < newList.size(); i++) {
+                if(newList.get(i) instanceof String) {
+                    // Currently only DirectCollectionMapping (responsibilities) supports duplicates.
+                    newList.set(i, oldList.get(i));
+                    break;
+                }
+            }
+            return newList;
+        }
+    }
+    
+    /*
+     * Break the order in the db, read the lists (with broken order) back, get the expected exception.
+     * Note that a separate test required for each mapping to make sure they all throw correct exception. 
+     */
+    abstract class BreakOrderExceptionTest extends ChangeTest {
+        BreakOrderExceptionTest() {
+            super();
+            if(orderValidationMode != OrderValidationMode.EXCEPTION) {
+                throw new TestProblemException("Requires OrderValidationMode.EXCEPTION");
+            }
+        }
+        abstract public void test();
+        
+        protected void verify() {
+            try {
+                super.verify();
+            } catch (QueryException queryException) {
+                if(queryException.getErrorCode() == QueryException.LIST_ORDER_FIELD_WRONG_VALUE) {
+                    // expected query exception on attempt to read broken order list
+                    return;
+                } else {
+                    throw queryException;
+                }
+            }
+        }
+    }    
+    class BreakOrderExceptionTest_OneToMany extends BreakOrderExceptionTest {
+        BreakOrderExceptionTest_OneToMany() {
+            super();
+        }
+        public void test() {
+            breakManagedEmployeesOrder();
+        }
+    }
+    class BreakOrderExceptionTest_UnidirectionalOneToMany extends BreakOrderExceptionTest {
+        BreakOrderExceptionTest_UnidirectionalOneToMany() {
+            super();
+        }
+        public void test() {
+            breakChildrenOrder();
+        }
+    }
+    class BreakOrderExceptionTest_ManyToMany extends BreakOrderExceptionTest {
+        BreakOrderExceptionTest_ManyToMany() {
+            super();
+        }
+        public void test() {
+            breakProjectsOrder();
+        }
+    }
+    class BreakOrderExceptionTest_DirectCollection extends BreakOrderExceptionTest {
+        BreakOrderExceptionTest_DirectCollection() {
+            super();
+        }
+        public void test() {
+            breakResponsibilitiesOrder();
+        }
+    }
+    class BreakOrderExceptionTest_AggregateCollection extends BreakOrderExceptionTest {
+        BreakOrderExceptionTest_AggregateCollection() {
+            super();
+        }
+        public void test() {
+            breakPhonesOrder();
+        }
+    }
+
+    /*
+     * Break the order in the db, read the lists (with broken order) back, update lists, write out updated lists.
+     * For verification temporary switch container policy into EXCEPTION mode, read back the list -
+     * exception thrown if the order is still broken. 
+     */
+    class BreakOrderCorrectionTest extends ChangeTest {
+        boolean shoulReadManagerThroughUow;
+        BreakOrderCorrectionTest(boolean shoulReadManagerThroughUow) {
+            super();
+            this.nSize = 4;
+            this.shoulReadManagerThroughUow = shoulReadManagerThroughUow;
+                        
+            if(orderValidationMode != OrderValidationMode.CORRECTION) {
+                throw new TestProblemException("Requires OrderValidationMode.CORRECTION");
+            }
+            setName(getName() + (shoulReadManagerThroughUow ? " ReadThroughUow" : " ReadThroughSession"));
+        }
+        public void test() {
+            breakOrder();
+
+            // clear cache to force reading back the objects
+            getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
+            if(!shoulReadManagerThroughUow) {
+                // read in the object with broken order in the db
+                manager = (Employee)getSession().readObject(manager);
+                if(isInstantiated(manager)) {
+                    // verify that all attribute values are marked as having broken order
+                    errorMsg = this.verifyIsListOrderBrokenInDb(manager, true);
+                    if(errorMsg.length() > 0) {
+                        errorMsg = "manager in test: " + errorMsg;
+                        throw new TestErrorException(errorMsg);
+                    }
+                }
+            }
+            
+            // change the order of elements 0 <-> 1
+            UnitOfWork uow = getSession().acquireUnitOfWork();
+            if(shoulReadManagerThroughUow) {
+                managerClone = (Employee)uow.readObject(manager);            
+            } else {
+                managerClone = (Employee)uow.registerObject(manager);
+            }
+            List list1 = removeFrom(managerClone, 1);
+            
+            // verify that all attribute values are marked as having broken order,
+            // at this point they should be instantiated
+            errorMsg = this.verifyIsListOrderBrokenInDb(managerClone, true);
+            if(errorMsg.length() > 0) {
+                errorMsg = "managerClone in test: " + errorMsg;
+                uow.release();
+                throw new TestErrorException(errorMsg);
+            }
+            
+            List list0 = removeFrom(managerClone, 0);
+            addTo(managerClone, list1);
+            addTo(managerClone, list0);
+
             uow.commit();
         }
         
+        protected void verify() {
+            OrderValidationMode originalMode = this.changeOrderValidationMode(OrderValidationMode.EXCEPTION); 
+            try {                
+                if(shoulReadManagerThroughUow) {
+                    // manager is not in shared cache - bring the one from the shared cache.
+                    ReadObjectQuery query = new ReadObjectQuery();
+                    query.setReferenceClass(Employee.class);
+                    query.checkCacheOnly();
+                    manager = (Employee)getSession().readObject(manager);
+                }
+                super.verify();
+            } finally {
+                this.changeOrderValidationMode(originalMode); 
+            }
+            // verify that all attribute values are marked as having NOT broken order
+            errorMsg = this.verifyIsListOrderBrokenInDb(manager, false);
+            if(errorMsg.length() > 0) {
+                errorMsg = "manager in verify: " + errorMsg + "; ";
+            }
+            String localErrorMsg = this.verifyIsListOrderBrokenInDb(managerClone, false);
+            if(localErrorMsg.length() > 0) {
+                localErrorMsg = "managerClone in verify: " + localErrorMsg;
+                errorMsg += localErrorMsg;
+            }
+        }
+    }    
+
+    class BaseMultipleManagersTest extends BaseTest {
+        /* number of managers created by createManagers method.*/
+        int nManagers;
+        /*
+         * Number of each manager's managedEmployees, children, projects, responsibilities, phones
+         * created by createManager method.
+         */
+        int nSize;
+        
+        /* managers */
+        List<Employee> managers = new ArrayList(nManagers);
+        /* their uow clones */
+        List<Employee> managerClones = new ArrayList(nManagers);
+        
+        BaseMultipleManagersTest() {
+            super();
+            nManagers = 2;
+            nSize = 2;
+        }
+        
+        /*
+         * Creates manager with nSize members 
+         */
+        void createManagers() {
+            UnitOfWork uow = getSession().acquireUnitOfWork();
+
+            for(int i=0; i < nManagers; i++) {
+                String iStr = Integer.toString(i);
+                Employee manager = new Employee("Manager", iStr);
+                for(int j=0; j < nSize; j++) {
+                    addTo(manager, create(iStr, j));
+                }
+                Employee managerClone = (Employee)uow.registerObject(manager);
+
+                managers.add(manager);
+                managerClones.add(managerClone);
+            }
+
+            uow.commit();
+        }        
+        
+        public void reset() {
+            super.reset();
+            managers.clear();
+            managerClones.clear();
+        }
+
         public void verify() {
+            if(managers == null || managers.isEmpty()) {
+                throw new TestErrorException("managers is null or empty. Nothing to verify");
+            }
+            
             String textNameExt;
             Object objectToCompare;
             for(int k=0; k<2; k++) {
                 if(k == 0) {
-                    textNameExt = "(Cache)";
+                    textNameExt = "Cache";
                 } else {
-                    textNameExt = "(DB)";
+                    textNameExt = "DB";
 
                     // Read back the inserted objects, make sure the order is correct.
                     getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
@@ -715,10 +1714,14 @@ public class OrderListTestModel extends TestModel {
                     managers.addAll((List<Employee>)getSession().executeQuery(query));
                     System.out.println();
                 }
-                for(int i=0; i<nManagers; i++) {
-                    if(!getAbstractSession().compareObjects(managerClones.get(i), managers.get(i))) {
-                        String localErrorMsg = textNameExt + ": " + "objects not equal\n";
-                        errorMsg += localErrorMsg;
+                if(managers.size() != managerClones.size()) {
+                    errorMsg = "wrong managers size " + managers.size() + "; expected size is " + managerClones.size();  
+                } else {
+                    for(int i=0; i<managers.size(); i++) {
+                        if(!getAbstractSession().compareObjects(managerClones.get(i), managers.get(i))) {
+                            String localErrorMsg = textNameExt + ": " + "manager["+i+"] not equal\n";
+                            errorMsg += localErrorMsg;
+                        }
                     }
                 }
             }
@@ -726,34 +1729,29 @@ public class OrderListTestModel extends TestModel {
                 throw new TestErrorException(errorMsg);
             }
         }
+    }
+    
+    /*
+     * Creates managers, verifies that they were correctly merged into cache and written to the db.
+     */
+    class CreateManagersTest extends BaseMultipleManagersTest {
+        CreateManagersTest() {
+            super();
+        }
         
-        public void reset() {
-            getSession().executeNonSelectingSQL("DELETE FROM OL_PROJ_EMP");
-            getSession().executeNonSelectingSQL("DELETE FROM OL_CHILD");
-            getSession().executeNonSelectingSQL("DELETE FROM OL_PHONE");
-            getSession().executeNonSelectingSQL("DELETE FROM OL_RESPONS");
-            getSession().executeNonSelectingSQL("UPDATE OL_EMPLOYEE SET MANAGER_ID = NULL");
-            getSession().executeNonSelectingSQL("DELETE FROM OL_EMPLOYEE");
-            getSession().executeNonSelectingSQL("DELETE FROM OL_LPROJECT");
-            getSession().executeNonSelectingSQL("DELETE FROM OL_PROJECT");
-            
-            getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
-            
-            managers.clear();
-            managerClones.clear();
-            projects.clear();
-
-            errorMsg = "";
+        public void setup() {
+            createManagers();
         }
     }
-/*    static class IndexTest extends TestCase {
-        public void test() {
-            ReadObjectQuery query = new ReadObjectQuery();
-            ExpressionBuilder builder = query.getExpressionBuilder();
-            query.setReferenceClass(Employee.class);
-            Expression phoneNumbers = builder.get("phoneNumbers");
-            Expression exp = phoneNumbers.getField("ORDER_PHONE").between(0, 1).and(phoneNumbers.type)
-            Expression exp = builder.getField("phoneNumbers").get
+
+    /*
+     * Creates empty managers, verifies that they were correctly merged into cache and written to the db.
+     * For OUTER_JOIN case to verify that read back lists are empty (as opposed to having null members).
+     */
+    class CreateEmptyManagersTest extends CreateManagersTest {
+        CreateEmptyManagersTest() {
+            super();
+            nSize = 0;
         }
-    }*/
+    }
 }

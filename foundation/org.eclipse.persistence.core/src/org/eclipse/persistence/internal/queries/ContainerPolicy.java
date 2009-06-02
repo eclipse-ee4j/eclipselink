@@ -145,6 +145,18 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      * Add element to container.
      * This is used to add to a collection independent of JDK 1.1 and 1.2.
      * The session may be required to wrap for the wrapper policy.
+     * The row may be required by subclasses
+     * Return whether the container changed
+     */
+    public boolean addInto(Object element, Object container, AbstractSession session, AbstractRecord dbRow, DataReadQuery query) {
+        return addInto(null, element, container, session);
+    }
+
+    /**
+     * INTERNAL:
+     * Add element to container.
+     * This is used to add to a collection independent of JDK 1.1 and 1.2.
+     * The session may be required to wrap for the wrapper policy.
      * Return whether the container changed
      */
     public boolean addInto(Object key, Object element, Object container, AbstractSession session) {
