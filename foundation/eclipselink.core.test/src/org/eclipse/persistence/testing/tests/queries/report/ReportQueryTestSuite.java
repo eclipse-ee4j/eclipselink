@@ -95,6 +95,8 @@ public class ReportQueryTestSuite extends TestSuite {
         addTest(new ReportQueryWithDuplicateQueryKeysTest());
 
         addTest(new OrderByRandomTest());
+        
+        addTest(new ClassForInheritanceTestCase());
 
     // bug 3764121
     addTest(new ReportQueryFunctionTypeTestCase());

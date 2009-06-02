@@ -214,6 +214,18 @@ public abstract class ObjectExpression extends DataExpression {
         return exp;
 
     }
+    
+    /**
+     * PUBLIC:
+     * Return an expression that wraps the inheritance type field in an expression.
+     * <p>Example:
+     * <pre><blockquote>
+     *  builder.getClassForInheritance().equal(SmallProject.class);
+     * </blockquote></pre>
+     */
+    public Expression type() {
+        return new ClassTypeExpression(this);
+    }
 
     public ClassDescriptor getDescriptor() {
         if (isAttribute()) {

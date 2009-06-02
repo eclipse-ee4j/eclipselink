@@ -465,7 +465,7 @@ public class QueryKeyExpression extends ObjectExpression {
 
     /*
      * INTERNAL:
-     * If this query key respresents a foreign reference answer the
+     * If this query key represents a foreign reference answer the
      * base expression -> foreign reference join criteria.
      */
     public Expression mappingCriteria() {
@@ -744,15 +744,9 @@ public class QueryKeyExpression extends ObjectExpression {
         DatabaseMapping mapping = getMapping();
 
         Object theOneThatsNotNull = null;
-        if (queryKey != null) {
-            theOneThatsNotNull = queryKey;
-        }
-        if (mapping != null) {
-            theOneThatsNotNull = mapping;
-        }
-
         boolean qkIsToMany = false;
         if (queryKey != null) {
+            theOneThatsNotNull = queryKey;
             qkIsToMany = queryKey.isManyToManyQueryKey() || queryKey.isOneToManyQueryKey();
         }
         boolean isNestedMapping = false;
@@ -763,6 +757,7 @@ public class QueryKeyExpression extends ObjectExpression {
             }
             qkIsToMany = mapping.isCollectionMapping();
             isNestedMapping = mapping.isNestedTableMapping();
+            theOneThatsNotNull = mapping;
         }
         if ((!shouldQueryToManyRelationship()) && qkIsToMany && (!isNestedMapping)) {
             throw QueryException.invalidUseOfToManyQueryKeyInExpression(theOneThatsNotNull);

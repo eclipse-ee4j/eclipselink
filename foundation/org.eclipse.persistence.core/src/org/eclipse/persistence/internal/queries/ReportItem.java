@@ -128,6 +128,7 @@ public class ReportItem implements Cloneable, java.io.Serializable {
                         Class resultClass = ((ExpressionBuilder)getAttributeExpression()).getQueryClass();
                         if (resultClass == null){
                             resultClass = query.getReferenceClass();
+                            ((ExpressionBuilder)getAttributeExpression()).setQueryClass(resultClass);
                         }
                         setDescriptor(query.getSession().getDescriptor(resultClass));
                         if (getDescriptor().hasInheritance()){

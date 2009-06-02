@@ -104,7 +104,7 @@ public class QueryException extends ValidationException {
     public final static int CANNOT_SET_REPORT_QUERY_TO_CHECK_CACHE_ONLY = 6090;
     public final static int TYPE_MISMATCH_BETWEEN_ATTRIBUTE_AND_CONSTANT_ON_EXPRESSION = 6091;
     public final static int MUST_INSTANTIATE_VALUEHOLDERS = 6092;
-
+    public final static int INVALID_TYPE_EXPRESSION = 6093;
     public final static int PARAMETER_NAME_MISMATCH = 6094;
     public final static int CLONE_METHOD_REQUIRED = 6095;
     public final static int CLONE_METHOD_INACCESSIBLE = 6096;
@@ -684,6 +684,14 @@ public class QueryException extends ValidationException {
 
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, INVALID_TABLE_FOR_FIELD_IN_EXPRESSION, args));
         queryException.setErrorCode(INVALID_TABLE_FOR_FIELD_IN_EXPRESSION);
+        return queryException;
+    }
+    
+    public static QueryException invalidTypeExpression(Object expression) {
+        Object[] args = { expression };
+
+        QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, INVALID_TYPE_EXPRESSION, args));
+        queryException.setErrorCode(INVALID_TYPE_EXPRESSION);
         return queryException;
     }
 

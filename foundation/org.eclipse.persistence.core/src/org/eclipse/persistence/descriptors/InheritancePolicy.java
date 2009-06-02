@@ -330,6 +330,15 @@ public class InheritancePolicy implements Serializable, Cloneable {
             throw DescriptorException.missingClassIndicatorField(rowFromDatabase, getDescriptor());
         }
 
+        return classFromValue(classFieldValue, session);
+    }
+    
+    /**
+     * INTERNAL:
+     * This method is used to turn the a raw database field value classFieldValue into a Class object.  Used to determine
+     * which class objects to build from database results, and for class type expression
+     */
+    public Class classFromValue(Object classFieldValue, AbstractSession session) throws DescriptorException {
         Class concreteClass;
         if (!shouldUseClassNameAsIndicator()) {
             concreteClass = (Class)getClassIndicatorMapping().get(classFieldValue);

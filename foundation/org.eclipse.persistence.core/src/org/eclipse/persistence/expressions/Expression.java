@@ -1549,6 +1549,20 @@ public abstract class Expression implements Serializable, Cloneable {
 
         return anOperator.expressionForArguments(this, arguments);
     }
+    
+    /**
+     * PUBLIC:
+     * Return an expression that wraps the inheritance type field in an expression.
+     * <p>Example:
+     * <pre><blockquote>
+     *  builder.getClassForInheritance().equal(SmallProject.class);
+     *  builder.anyOf("projects").getClassForInheritance().equal(builder.getParameter("projectClass"));
+     * </blockquote></pre>
+     */
+    public Expression type() {
+        //Only valid on an ObjectExpression
+        return null;
+    }
 
     /**
      * INTERNAL:
@@ -2054,6 +2068,13 @@ public abstract class Expression implements Serializable, Cloneable {
     public Expression indexOf(Object substring) {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.Instring);
         return anOperator.expressionFor(this, substring);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public boolean isClassTypeExpression(){
+        return false;
     }
 
     /**

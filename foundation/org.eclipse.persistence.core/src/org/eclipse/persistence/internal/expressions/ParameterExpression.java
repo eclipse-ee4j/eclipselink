@@ -34,7 +34,7 @@ public class ParameterExpression extends BaseExpression {
     /** The opposite side of the relation, this is used for conversion of the parameter using the others mapping. */
     protected Expression localBase;
 
-    /** The infered type of the parameter.
+    /** The inferred type of the parameter.
      * Please note that the type might not be always initialized to correct value.
      * It might be null if not initialized correctly.
      */
@@ -112,7 +112,7 @@ public class ParameterExpression extends BaseExpression {
     }
 
     /**
-     * This allows for nesting of parametrized expression.
+     * This allows for nesting of parameterized expression.
      * This is used for parameterizing object comparisons.
      */
     public Expression get(String attributeOrQueryKey) {
@@ -161,7 +161,7 @@ public class ParameterExpression extends BaseExpression {
     }
 
     /**
-     * The infered type of this parameter.
+     * The inferred type of this parameter.
      * Please note that the type might not be always initialized to correct value.
      * It might be null if not initialized correctly
      */
@@ -190,20 +190,18 @@ public class ParameterExpression extends BaseExpression {
             if (descriptor != null && descriptor.isAggregateDescriptor() && ((ParameterExpression)getBaseExpression()).getLocalBase().isObjectExpression()) {
                 descriptor = ((ObjectExpression)((ParameterExpression)getBaseExpression()).getLocalBase()).getDescriptor();
             }
-            
-            // Bug6119707 validate parameter type against mapping
-            if (descriptor == null) {
-                validateParameterValueAgainstMapping(value, true);
-            }
 
-            if (descriptor != null) {
+            if (descriptor == null) {
+                // Bug 245268 validate parameter type against mapping
+                validateParameterValueAgainstMapping(value, true);
+            } else {
                 // For bug 2990493 must unwrap for EJBQL "Select Person(p) where p = ?1"
                 //if we had to unwrap it make sure we replace the argument with this value
                 //incase it is needed again, say in conforming.
                 //bug 3750793
                 value = descriptor.getObjectBuilder().unwrapObject(value, session);
                 
-                // Bug6119707 must unwrap before validating parameter type
+                // Bug 245268 must unwrap before validating parameter type
                 validateParameterValueAgainstMapping(value, true);
                 
                 translationRow.put(((ParameterExpression)getBaseExpression()).getField(), value);
@@ -226,7 +224,7 @@ public class ParameterExpression extends BaseExpression {
                         }
                     }
                 }
-            }
+            } 
         } else {
             // Check for null translation row.
             if (translationRow == null) {
@@ -347,7 +345,7 @@ public class ParameterExpression extends BaseExpression {
      * INTERNAL
      * Validate the passed parameter against the local base mapping.
      * Throw a QueryException if the parameter is of an incorrect class for object comparison.
-     * Added for Bug 6119707
+     * Added for Bug 245268
      */
     protected void validateParameterValueAgainstMapping(Object value, boolean useBaseExpression) {
         Expression queryKey = null;

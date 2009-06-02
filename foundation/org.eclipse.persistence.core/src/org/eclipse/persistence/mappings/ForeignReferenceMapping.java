@@ -1379,7 +1379,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
 
     /**
      * INTERNAL:
-     * To validate mappings decleration
+     * To validate mappings declaration
      */
     public void validateBeforeInitialization(AbstractSession session) throws DescriptorException {
         super.validateBeforeInitialization(session);

@@ -854,7 +854,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         // bug 2612602 create the working copy object.
         Object clone = builder.instantiateWorkingCopyClone(original, this);
 
-        // Must put in the original to clone to resolv circular refs.
+        // Must put in the original to clone to resolve circular refs.
         getNewObjectsOriginalToClone().put(original, clone);
         getNewObjectsCloneToOriginal().put(clone, original);        
         // Must put in clone mapping.

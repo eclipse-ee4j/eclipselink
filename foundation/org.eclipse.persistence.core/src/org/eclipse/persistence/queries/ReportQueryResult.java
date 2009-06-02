@@ -126,6 +126,15 @@ public class ReportQueryResult implements Serializable, Map {
                     throw QueryException.exceptionWhileUsingConstructorExpression(exc, query);
                 }
 
+            } else if (item.getAttributeExpression()!=null && item.getAttributeExpression().isClassTypeExpression()){
+                Object value = processItem(query, row, toManyData, item);
+                ClassDescriptor descriptor = ((org.eclipse.persistence.internal.expressions.ClassTypeExpression)item.getAttributeExpression()).getContainingDescriptor(query);
+                if (descriptor !=null && descriptor.hasInheritance()){
+                    value = descriptor.getInheritancePolicy().classFromValue(value, query.getSession());
+                } else {
+                    value = query.getSession().getDatasourcePlatform().convertObject(value, Class.class);
+                }
+                results.addElement(value);
             } else {
                 // Normal items
                 Object value = processItem(query, row, toManyData, item);

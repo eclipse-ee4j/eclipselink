@@ -1737,8 +1737,54 @@ public class ExpressionTestSuite extends TestSuite {
 
         addValueEqualValueTest();
         addMultiPlatfromTest();
+        
+        addInheritanceTypeTest1();
+        addInheritanceTypeTest2();
+        addInheritanceTypeTest3();
+    }
+    
+    //bug:277509 Entity type expressions
+    private void addInheritanceTypeTest1() {
+        ExpressionBuilder builder = new ExpressionBuilder(Project.class);
+        
+        Expression expression = builder.type().equal(SmallProject.class);
+       
+        ReadAllExpressionTest test = new ReadAllExpressionTest(Project.class, 10);
+        test.setExpression(expression);
+        test.setName("InheritanceTypeTest1");
+        test.setDescription("Test ClassForInheritance expression using an equals comparison.");
+        addTest(test);
+    }
+    
+    //bug:277509 Entity type expressions
+    private void addInheritanceTypeTest2() {
+        ExpressionBuilder builder = new ExpressionBuilder(Project.class);
+        
+        Expression expression = builder.type().equal(LargeProject.class);
+       
+        ReadAllExpressionTest test = new ReadAllExpressionTest(Project.class, 5);
+        test.setExpression(expression);
+        test.setName("InheritanceTypeTest2");
+        test.setDescription("Test ClassForInheritance expression using an equals comparison.");
+        addTest(test);
+    }
+    
+    //bug:277509 Entity type expressions
+    private void addInheritanceTypeTest3() {
+        ExpressionBuilder builder = new ExpressionBuilder(Project.class);
+        Vector classes = new Vector();
+        classes.add(LargeProject.class);
+        classes.add(SmallProject.class);
+        Expression expression = builder.type().in(classes);
+       
+        ReadAllExpressionTest test = new ReadAllExpressionTest(Project.class, 15);
+        test.setExpression(expression);
+        test.setName("InheritanceTypeTest3");
+        test.setDescription("Test ClassForInheritance expression using an In comparison.");
+        addTest(test);
     }
 
+    
     private void addTransformationTest() {
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression expression = builder.get("gender").equal("Male");

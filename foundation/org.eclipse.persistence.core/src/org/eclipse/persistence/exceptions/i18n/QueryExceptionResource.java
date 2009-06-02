@@ -96,6 +96,7 @@ public class QueryExceptionResource extends ListResourceBundle {
        { "6090", "Cannot set ReportQuery to \"check cache only\"." },
        { "6091", "The type of the constant [{0}], used for comparison in the expression, does not match the type of the attribute [{1}]." },
        { "6092", "Uninstantiated ValueHolder detected. You must instantiate the relevant Valueholders to perform this in-memory query." },
+       { "6093", "Invalid Type Expression on [{0}].  The class does not have a descriptor, or a descriptor that does not use inheritance or uses a ClassExctractor for inheritance" },
        { "6094", "The parameter name [{0}] in the query''s selection criteria does not match any parameter name defined in the query." },
        { "6095", "Public clone method is required." },
        { "6096", "Clone method is inaccessible." },
