@@ -557,8 +557,8 @@
         </copy>
         <!-- get javax.persistence* -->
         <copy todir="${tmp.maven.dir}/${eclipselink.jpa.base}/${plugins.dir}">
-            <fileset dir="${signed.jar.path}/${plugins.dir}">
-                <include name="javax.persistence*.jar"/>
+            <fileset dir="${temp.rebuild.path}/bundlezip">
+                <include name="javax.persistence*1.99.*.jar"/>
             </fileset>
         </copy>
     </target>
