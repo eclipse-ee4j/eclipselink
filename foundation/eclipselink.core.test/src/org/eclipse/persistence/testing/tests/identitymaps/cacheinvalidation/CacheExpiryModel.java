@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -21,6 +21,7 @@ public class CacheExpiryModel extends TestModel {
 
     public void addRequiredSystems() {
         addRequiredSystem(new org.eclipse.persistence.testing.models.employee.relational.EmployeeSystem());
+        addRequiredSystem(new org.eclipse.persistence.testing.models.insurance.InsuranceSystem());
     }
 
     public void addTests() {
