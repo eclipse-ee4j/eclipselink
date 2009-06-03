@@ -535,7 +535,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
     }
 
     public void writeParameterMarker(Writer writer, ParameterExpression parameter) throws IOException {
-        // DB2 requires cast around parameter markers if both operands of certian
+        // DB2 requires cast around parameter markers if both operands of certain
         // operators are parameter markers
         // This method generates CAST for parameter markers whose type is correctly
         // identified by the query compiler
@@ -555,7 +555,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
             } else if (typeHelper.isDoubleType(type)) {
                 castType = "DOUBLE";
             } else if (typeHelper.isStringType(type)) {
-                castType = "VARCHAR(32672)";
+                castType = "VARCHAR(" + getCastSizeForVarcharParameter() + ")";
             }
 
             if(castType != null){

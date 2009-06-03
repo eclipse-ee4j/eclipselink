@@ -129,6 +129,9 @@ public class DatabasePlatform extends DatasourcePlatform {
 
     /** Allow for the batch size to be set as many database have strict limits. **/
     protected int maxBatchWritingSize;
+    
+    /** used for casting of input parameters in certain DBs **/
+    protected int castSizeForVarcharParameter;
 
     /** Allow for our batch writing support to be used in JDK 1.2. **/
     protected boolean usesJDBCBatchWriting;
@@ -201,6 +204,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         this.cursorCode = -10;
         this.supportsAutoCommit = true;
         this.usesNativeBatchWriting = false;
+        this.castSizeForVarcharParameter = 32672;
     }
 
     /**
@@ -829,6 +833,17 @@ public class DatabasePlatform extends DatasourcePlatform {
         return "= ";
     }
 
+    
+    /**
+     * ADVANCED:
+     * Get the maximum length allowed by the database for a Varchar Parameter
+     * This is used by subclasses when writing SQL for parameters
+     * @see DB2Platform
+     */
+    public int getCastSizeForVarcharParameter(){
+        return castSizeForVarcharParameter;
+    }
+    
     /**
      * This method is used to print the required output parameter token for the
      * specific platform.  Used when stored procedures are created.
@@ -1413,7 +1428,17 @@ public class DatabasePlatform extends DatasourcePlatform {
             accessor.getConnection().rollback();
         }
     }
-
+    
+    /**
+     * ADVANCED:
+     * Set the maximum length allowed by the database for a Varchar Parameter
+     * This is used by subclasses when writing SQL for parameters
+     * @see DB2Platform
+     */
+    public void setCastSizeForVarcharParameter(int maxLength){
+        castSizeForVarcharParameter = maxLength;
+    }
+    
     protected void setClassTypes(Hashtable classTypes) {
         this.classTypes = classTypes;
     }
