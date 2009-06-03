@@ -298,6 +298,7 @@ public class ValidationExceptionResource extends ListResourceBundle {
                                            { "7316", "The mapped by id value [{0}] from the mapping attribute [{1}] is invalid. An equivalent attribute with that name must be defined on the id class [{2}]"},
                                            { "7317", "List order field is not supported for [{0}]." },
                                            { "7318", "[{0}] has list order set, but CollectionChangeEvent.REMOVE was sent without index." },
+                                           { "7319", "The attribute named [{1}] from the embeddable class [{0}] is not a valid relationship to use with the association override named [{2}] from [{3}]. An association override may be specified only when the embeddable is on the owning side of the relationship." },
  };
     
     /**

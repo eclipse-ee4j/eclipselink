@@ -19,6 +19,8 @@
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  *     05/1/2009-2.0 Guy Pelletier 
  *       - 249033: JPA 2.0 Orphan removal
+ *     06/02/2009-2.0 Guy Pelletier 
+ *       - 278768: JPA 2.0 Association Override Join Table
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -223,6 +225,30 @@ public abstract class RelationshipAccessor extends MappingAccessor {
     
     /**
      * INTERNAL:
+     * This method will return the join table metadata to be processed with 
+     * this relationship accessor. It will first check for a join table from 
+     * an association override, followed by a join table defined directly on 
+     * the accessor. If neither is present, a join table metadata is defaulted.
+     */
+    protected JoinTableMetadata getJoinTableMetadata() {
+        if (getDescriptor().hasAssociationOverrideFor(getAttributeName())) {
+            if (m_joinTable != null) {
+                // TODO: Log an override message ...
+            }
+            
+            return getDescriptor().getAssociationOverrideFor(getAttributeName()).getJoinTable();
+        } else {
+            if (m_joinTable == null) {
+                // TODO: Log a defaulting message.
+                return new JoinTableMetadata(null, getAccessibleObject());
+            } else {
+                return m_joinTable;
+            }
+        }
+    }
+    
+    /**
+     * INTERNAL:
      * Return the logging context for this accessor.
      */
     protected abstract String getLoggingContext();
@@ -364,40 +390,6 @@ public abstract class RelationshipAccessor extends MappingAccessor {
         if (getDescriptor().isCascadePersist() && ! mapping.isCascadePersist()) {
             setCascadeType(CascadeType.PERSIST.name(), mapping);
         }
-    }
-    
-    /**
-     * INTERNAL:
-     * Process a MetadataJoinTable.
-     */
-    protected void processJoinTable(ManyToManyMapping mapping) {
-        // Check that we loaded a join table otherwise default one.
-        if (m_joinTable == null) {
-            // TODO: Log a defaulting message.
-            m_joinTable = new JoinTableMetadata(null, getAccessibleObject());
-        }
-        
-        // Build the default table name
-        String defaultName = getDescriptor().getPrimaryTableName() + "_" + getReferenceDescriptor().getPrimaryTableName();
-        
-        // Process any table defaults and log warning messages.
-        processTable(m_joinTable, defaultName);
-        
-        // Set the table on the mapping.
-        mapping.setRelationTable(m_joinTable.getDatabaseTable());
-        
-        // Add all the joinColumns (source foreign keys) to the mapping.
-        String defaultSourceFieldName;
-        if (getReferenceDescriptor().hasBiDirectionalManyToManyAccessorFor(getJavaClassName(), getAttributeName())) {
-            defaultSourceFieldName = getReferenceDescriptor().getBiDirectionalManyToManyAccessor(getJavaClassName(), getAttributeName()).getAttributeName();
-        } else {
-            defaultSourceFieldName = getDescriptor().getAlias();
-        }
-        addManyToManyRelationKeyFields(getJoinColumns(m_joinTable.getJoinColumns(), getOwningDescriptor()), mapping, defaultSourceFieldName, getOwningDescriptor(), true);
-        
-        // Add all the inverseJoinColumns (target foreign keys) to the mapping.
-        String defaultTargetFieldName = getAttributeName();
-        addManyToManyRelationKeyFields(getJoinColumns(m_joinTable.getInverseJoinColumns(), getReferenceDescriptor()), mapping, defaultTargetFieldName, getReferenceDescriptor(), false);
     }
     
     /**

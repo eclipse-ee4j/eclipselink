@@ -15,26 +15,36 @@
  *     01/28/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 1)
  *     02/25/2009-2.0 Guy Pelletier 
- *       - 265359: JPA 2.0 Element Collections - Metadata processing portions   
+ *       - 265359: JPA 2.0 Element Collections - Metadata processing portions
+ *     06/02/2009-2.0 Guy Pelletier 
+ *       - 278768: JPA 2.0 Association Override Join Table   
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
 import javax.persistence.Access;
+import javax.persistence.AssociationOverride;
+import javax.persistence.AssociationOverrides;
 import javax.persistence.AttributeOverride;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
+import javax.persistence.Embedded;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
 
 import static javax.persistence.AccessType.FIELD;
 import static javax.persistence.AccessType.PROPERTY;
+import static javax.persistence.CascadeType.ALL;
 
 import org.eclipse.persistence.annotations.BasicCollection;
 import org.eclipse.persistence.annotations.BasicMap;
@@ -67,8 +77,30 @@ public abstract class RatedBeerConsumer<X, Y, Z> extends BeerConsumer<String> {
     @AttributeOverride(name="description", column=@Column(name="DESCRIP"))
     private Collection<Record> records;
     
+    @Embedded
+    // Expert beer consumer will use these overrides, whereas, novice beer 
+    // consumer will override them by defining class level overrides.
+    @AttributeOverride(name="details", column=@Column(name="ACCREDIDATION"))
+    @AssociationOverrides({
+        @AssociationOverride(name="witnesses", joinTable=@JoinTable(name="EBC_ACCREDIDATION_WITNESS",
+            joinColumns=@JoinColumn(name="EBC_ID", referencedColumnName="ID"),
+            inverseJoinColumns=@JoinColumn(name="WITNESS_ID", referencedColumnName="ID"))),
+        @AssociationOverride(name="officials", joinColumns=@JoinColumn(name="FK_EBC_ID"))
+    })
+    private Accredidation accredidation;
+    
     @Transient
     private int iq;
+    
+    // Expert beer consumer will use the join table as is here, whereas, novice
+    // beer consumer will provide an association override.
+    @ManyToMany(cascade=ALL)
+    @JoinTable(
+        name="JPA_CONSUMER_COMMITTEE",
+        joinColumns=@JoinColumn(name="CONSUMER_ID", referencedColumnName="ID"),
+        inverseJoinColumns=@JoinColumn(name="COMMITTEE_ID", referencedColumnName="ID")
+    )
+    private List<Committee> committees;
     
     protected RatedBeerConsumer() {
         super();
@@ -76,16 +108,25 @@ public abstract class RatedBeerConsumer<X, Y, Z> extends BeerConsumer<String> {
         awards = new Hashtable<Y, Z>();
         designations = new ArrayList<String>();
         records = new ArrayList<Record>();
+        committees = new ArrayList<Committee>(); 
     }
     
     public Collection<X> getAcclaims() {
         return acclaims;
     }
     
+    public Accredidation getAccredidation() {
+        return accredidation;
+    }
+    
     public Map<Y, Z> getAwards() {
         return awards;
     }
 
+    public List<Committee> getCommittees() {
+        return committees;
+    }
+    
     public Collection<String> getDesignations() {
         return designations;
     }
@@ -105,10 +146,18 @@ public abstract class RatedBeerConsumer<X, Y, Z> extends BeerConsumer<String> {
         this.acclaims = acclaims;
     }
     
+    public void setAccredidation(Accredidation accredidation) {
+        this.accredidation = accredidation;
+    }
+    
     public void setAwards(Map<Y, Z> awards) {
         this.awards = awards;
     }
 
+    public void setCommittees(List<Committee> committees) {
+        this.committees = committees;
+    }
+    
     public void setDesignations(Collection<String> designations) {
         this.designations = designations;
     }

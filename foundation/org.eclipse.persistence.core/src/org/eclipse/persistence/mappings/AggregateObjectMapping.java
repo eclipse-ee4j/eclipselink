@@ -63,11 +63,25 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     /** Map the name of a field in the aggregate descriptor to a field in the source table. */
     protected transient Map<String, String> aggregateToSourceFieldNames;
 
+    /** 
+     * List of many to many mapping overrides to apply at initialize time to 
+     * their cloned aggregate mappings. 
+     */
+    protected transient List<ManyToManyMapping> overrideManyToManyMappings;
+    
+    /** 
+     * List of unidirectional one to many mapping overrides to apply at 
+     * initialize time to their cloned aggregate mappings. 
+     */
+    protected transient List<UnidirectionalOneToManyMapping> overrideUnidirectionalOneToManyMappings;
+    
     /**
      * Default constructor.
      */
     public AggregateObjectMapping() {
         aggregateToSourceFieldNames = new HashMap(5);
+        overrideManyToManyMappings = new ArrayList<ManyToManyMapping>();
+        overrideUnidirectionalOneToManyMappings = new ArrayList<UnidirectionalOneToManyMapping>();
         isNullAllowed = true;
     }
 
@@ -77,7 +91,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     public boolean isRelationalMapping() {
         return true;
     }
-
+    
     /**
      * INTERNAL:
      * Used when initializing queries for mappings that use a Map
@@ -142,6 +156,26 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         addFieldNameTranslation(sourceFieldName, aggregateFieldName);
     }
 
+    /**
+     * INTERNAL:
+     * In JPA users may specify overrides to apply to a many to many mapping
+     * on a shared embeddable descriptor. These settings are applied at
+     * initialize time, after the reference descriptor is cloned.
+     */
+    public void addOverrideManyToManyMapping(ManyToManyMapping mapping) {
+        overrideManyToManyMappings.add(mapping);
+    }
+    
+    /**
+     * INTERNAL:
+     * In JPA users may specify overrides to apply to a unidirectional one to 
+     * many mapping on a shared embeddable descriptor. These settings are 
+     * applied at initialize time, after the reference descriptor is cloned.
+     */
+    public void addOverrideUnidirectionalOneToManyMapping(UnidirectionalOneToManyMapping mapping) {
+        overrideUnidirectionalOneToManyMappings.add(mapping);
+    }
+    
     /**
      * INTERNAL:
      * For mappings used as MapKeys in MappedKeyContainerPolicy.  Add the target of this mapping to the deleted 
@@ -925,6 +959,37 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
 
         setReferenceDescriptor(clonedDescriptor);
 
+        // Apply any override m2m mappings to their cloned mappings.
+        for (ManyToManyMapping overrideMapping : overrideManyToManyMappings) {
+            DatabaseMapping mapping = clonedDescriptor.getMappingForAttributeName(overrideMapping.getAttributeName());
+            
+            if (mapping.isManyToManyMapping()) {
+                ManyToManyMapping mappingClone = (ManyToManyMapping) mapping;
+                mappingClone.setRelationTable(overrideMapping.getRelationTable());
+                mappingClone.setSourceKeyFields(overrideMapping.getSourceKeyFields());
+                mappingClone.setSourceRelationKeyFields(overrideMapping.getSourceRelationKeyFields());
+                mappingClone.setTargetKeyFields(overrideMapping.getTargetKeyFields());
+                mappingClone.setTargetRelationKeyFields(overrideMapping.getTargetRelationKeyFields());
+            } else {
+                // Silently ignored for now. These override mappings are set and
+                // controlled through JPA metadata processing.
+            }
+        }
+        
+        // Apply any override uni-directional 12m mappings to their cloned mappings.
+        for (UnidirectionalOneToManyMapping overrideMapping : overrideUnidirectionalOneToManyMappings) {
+            DatabaseMapping mapping = clonedDescriptor.getMappingForAttributeName(overrideMapping.getAttributeName());
+            
+            if (mapping.isUnidirectionalOneToManyMapping()) {
+                UnidirectionalOneToManyMapping mappingClone = (UnidirectionalOneToManyMapping) mapping;
+                mappingClone.setSourceKeyFields(overrideMapping.getSourceKeyFields());
+                mappingClone.setTargetForeignKeyFields(overrideMapping.getTargetForeignKeyFields());
+            } else {
+                // Silently ignored for now. These override mappings are set and
+                // controlled through JPA metadata processing.
+            }
+        }
+        
         initializeReferenceDescriptor(clonedDescriptor);
         clonedDescriptor.preInitialize(session);
         clonedDescriptor.initialize(session);

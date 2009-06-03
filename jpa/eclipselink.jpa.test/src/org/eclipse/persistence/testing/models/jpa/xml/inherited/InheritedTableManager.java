@@ -15,6 +15,8 @@
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  *     04/03/2009-2.0 Guy Pelletier
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+ *     06/02/2009-2.0 Guy Pelletier 
+ *       - 278768: JPA 2.0 Association Override Join Table
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.xml.inherited;
 
@@ -37,15 +39,19 @@ public class InheritedTableManager extends TableCreator {
         addTableDefinition(build_EXPERT_BEER_CONSUMER_ACCLAIMS_Table());
         addTableDefinition(build_EXPERT_BEER_CONSUMER_AUDIO_Table());
         addTableDefinition(build_EXPERT_BEER_CONSUMER_CELEBRATIONS_Table());
+        addTableDefinition(build_EXPERT_BEER_CONSUMER_COMMITTEE_Table());
         addTableDefinition(build_EXPERT_BEER_CONSUMER_DESIGNATIONS_Table());
         addTableDefinition(build_EXPERT_BEER_CONSUMER_QUOTES_Table());
         addTableDefinition(build_EXPERT_BEER_CONSUMER_RECORDS_Table());
+        addTableDefinition(build_EXPERT_BEER_CONSUMER_ACCREDIDATION_WITNESS_Table());
         
         addTableDefinition(build_NOVICE_BEER_CONSUMER_Table());
         addTableDefinition(build_NOVICE_BEER_CONSUMER_AWARDS_Table());
         addTableDefinition(build_NOVICE_BEER_CONSUMER_ACCLAIMS_Table());
+        addTableDefinition(build_NOVICE_BEER_CONSUMER_COMMITTEE_Table());
         addTableDefinition(build_NOVICE_BEER_CONSUMER_DESIGNATIONS_Table());
         addTableDefinition(build_NOVICE_BEER_CONSUMER_RECORDS_Table());
+        addTableDefinition(build_NOVICE_BEER_CONSUMER_ACCREDIDATION_WITNESS_Table());
         
         addTableDefinition(build_ALPINE_Table());
         addTableDefinition(build_BECKS_Table());
@@ -54,7 +60,10 @@ public class InheritedTableManager extends TableCreator {
         addTableDefinition(build_CORONA_Table());
         addTableDefinition(build_HEINEKEN_Table());
         
+        addTableDefinition(build_OFFICIAL_Table());
+        addTableDefinition(build_WITNESS_Table());
         addTableDefinition(build_CERTIFICATION_Table());
+        addTableDefinition(build_COMMITTEE_Table());
         addTableDefinition(build_TELEPHONE_NUMBER_Table());
         addTableDefinition(build_LOCATION_Table());
     }
@@ -415,6 +424,33 @@ public class InheritedTableManager extends TableCreator {
         return table;
     }
     
+    public static TableDefinition build_COMMITTEE_Table() {
+        TableDefinition table = new TableDefinition();
+        table.setName("XML_COMMITTEE");
+    
+        FieldDefinition ID_field = new FieldDefinition();
+        ID_field.setName("ID");
+        ID_field.setTypeName("NUMERIC");
+        ID_field.setSize(15);
+        ID_field.setIsPrimaryKey(true);
+        ID_field.setUnique(false);
+        ID_field.setIsIdentity(false);
+        ID_field.setShouldAllowNull(false);
+        table.addField(ID_field);
+
+        FieldDefinition DESCRIPTION_field = new FieldDefinition();
+        DESCRIPTION_field.setName("DESCRIP");
+        DESCRIPTION_field.setTypeName("VARCHAR");
+        DESCRIPTION_field.setSize(40);
+        DESCRIPTION_field.setShouldAllowNull(true);
+        DESCRIPTION_field.setIsPrimaryKey(false);
+        DESCRIPTION_field.setUnique(false);
+        DESCRIPTION_field.setIsIdentity(false);
+        table.addField(DESCRIPTION_field);
+
+        return table;
+    }
+
     public static TableDefinition build_EXPERT_BEER_CONSUMER_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_EXPERT_CONSUMER");
@@ -439,6 +475,16 @@ public class InheritedTableManager extends TableCreator {
         IQ_field.setUnique(false);
         IQ_field.setIsIdentity(false);
         table.addField(IQ_field);
+        
+        FieldDefinition ACCREDIDATION_field = new FieldDefinition();
+        ACCREDIDATION_field.setName("ACCREDIDATION");
+        ACCREDIDATION_field.setTypeName("VARCHAR");
+        ACCREDIDATION_field.setSize(40);
+        ACCREDIDATION_field.setShouldAllowNull(true);
+        ACCREDIDATION_field.setIsPrimaryKey(false);
+        ACCREDIDATION_field.setUnique(false);
+        ACCREDIDATION_field.setIsIdentity(false);
+        table.addField(ACCREDIDATION_field);
         
         return table;
     }
@@ -566,6 +612,35 @@ public class InheritedTableManager extends TableCreator {
         return table;
     }
     
+    public static TableDefinition build_EXPERT_BEER_CONSUMER_ACCREDIDATION_WITNESS_Table() {
+        TableDefinition table = new TableDefinition();
+        table.setName("XML_EBC_ACCREDIDATION_WITNESS");
+
+        FieldDefinition fieldCONSUMERID = new FieldDefinition();
+        fieldCONSUMERID.setName("XML_EBC_ID");
+        fieldCONSUMERID.setTypeName("NUMERIC");
+        fieldCONSUMERID.setSize(15);
+        fieldCONSUMERID.setShouldAllowNull(false);
+        fieldCONSUMERID.setIsPrimaryKey(true);
+        fieldCONSUMERID.setUnique(false);
+        fieldCONSUMERID.setIsIdentity(false);
+        fieldCONSUMERID.setForeignKeyFieldName("XML_EXPERT_CONSUMER.ID");
+        table.addField(fieldCONSUMERID);
+        
+        FieldDefinition fieldWITNESSID = new FieldDefinition();
+        fieldWITNESSID.setName("XML_WITNESS_ID");
+        fieldWITNESSID.setTypeName("NUMERIC");
+        fieldWITNESSID.setSize(15);
+        fieldWITNESSID.setShouldAllowNull(false);
+        fieldWITNESSID.setIsPrimaryKey(true);
+        fieldWITNESSID.setUnique(false);
+        fieldWITNESSID.setIsIdentity(false);
+        fieldWITNESSID.setForeignKeyFieldName("XML_WITNESS.ID");
+        table.addField(fieldWITNESSID);
+
+        return table;
+    }
+    
     public static TableDefinition build_EXPERT_BEER_CONSUMER_AUDIO_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_EBC_AUDIO");
@@ -688,6 +763,36 @@ public class InheritedTableManager extends TableCreator {
         BIRTH_YEAR_field.setIsIdentity(false);
         table.addField(BIRTH_YEAR_field);
     
+        return table;
+    }
+
+    public static TableDefinition build_EXPERT_BEER_CONSUMER_COMMITTEE_Table() {
+        TableDefinition table = new TableDefinition();
+
+        table.setName("XML_EBC_COMMITTEE");
+
+        FieldDefinition fieldCONSUMERID = new FieldDefinition();
+        fieldCONSUMERID.setName("XML_EBC_ID");
+        fieldCONSUMERID.setTypeName("NUMERIC");
+        fieldCONSUMERID.setSize(15);
+        fieldCONSUMERID.setShouldAllowNull(false);
+        fieldCONSUMERID.setIsPrimaryKey(true);
+        fieldCONSUMERID.setUnique(false);
+        fieldCONSUMERID.setIsIdentity(false);
+        fieldCONSUMERID.setForeignKeyFieldName("XML_EXPERT_CONSUMER.ID");
+        table.addField(fieldCONSUMERID);
+        
+        FieldDefinition fieldCOMMITTEEID = new FieldDefinition();
+        fieldCOMMITTEEID.setName("XML_COMMITTEE_ID");
+        fieldCOMMITTEEID.setTypeName("NUMERIC");
+        fieldCOMMITTEEID.setSize(15);
+        fieldCOMMITTEEID.setShouldAllowNull(false);
+        fieldCOMMITTEEID.setIsPrimaryKey(true);
+        fieldCOMMITTEEID.setUnique(false);
+        fieldCOMMITTEEID.setIsIdentity(false);
+        fieldCOMMITTEEID.setForeignKeyFieldName("XML_COMMITTEE.ID");
+        table.addField(fieldCOMMITTEEID);
+
         return table;
     }
 
@@ -831,6 +936,16 @@ public class InheritedTableManager extends TableCreator {
         IQ_field.setIsIdentity(false);
         table.addField(IQ_field);
         
+        FieldDefinition ACCREDIDATION_field = new FieldDefinition();
+        ACCREDIDATION_field.setName("ACCR_DETAILS");
+        ACCREDIDATION_field.setTypeName("VARCHAR");
+        ACCREDIDATION_field.setSize(40);
+        ACCREDIDATION_field.setShouldAllowNull(true);
+        ACCREDIDATION_field.setIsPrimaryKey(false);
+        ACCREDIDATION_field.setUnique(false);
+        ACCREDIDATION_field.setIsIdentity(false);
+        table.addField(ACCREDIDATION_field);
+        
         return table;
     }
     
@@ -859,6 +974,35 @@ public class InheritedTableManager extends TableCreator {
         field1.setIsIdentity(false);
         table.addField(field1);
     
+        return table;
+    }
+    
+    public static TableDefinition build_NOVICE_BEER_CONSUMER_ACCREDIDATION_WITNESS_Table() {
+        TableDefinition table = new TableDefinition();
+        table.setName("XML_NBC_ACCREDITATION_WITNESS");
+
+        FieldDefinition fieldCONSUMERID = new FieldDefinition();
+        fieldCONSUMERID.setName("XML_NBC_ID");
+        fieldCONSUMERID.setTypeName("NUMERIC");
+        fieldCONSUMERID.setSize(15);
+        fieldCONSUMERID.setShouldAllowNull(false);
+        fieldCONSUMERID.setIsPrimaryKey(true);
+        fieldCONSUMERID.setUnique(false);
+        fieldCONSUMERID.setIsIdentity(false);
+        fieldCONSUMERID.setForeignKeyFieldName("XML_NOVICE_CONSUMER.ID");
+        table.addField(fieldCONSUMERID);
+
+        FieldDefinition fieldWITNESSID = new FieldDefinition();
+        fieldWITNESSID.setName("XML_WITNESSID");
+        fieldWITNESSID.setTypeName("NUMERIC");
+        fieldWITNESSID.setSize(15);
+        fieldWITNESSID.setShouldAllowNull(false);
+        fieldWITNESSID.setIsPrimaryKey(true);
+        fieldWITNESSID.setUnique(false);
+        fieldWITNESSID.setIsIdentity(false);
+        fieldWITNESSID.setForeignKeyFieldName("XML_WITNESS.ID");
+        table.addField(fieldWITNESSID);
+
         return table;
     }
     
@@ -897,6 +1041,35 @@ public class InheritedTableManager extends TableCreator {
         fieldAWARD_CODE.setIsIdentity(false);
         table.addField(fieldAWARD_CODE);
     
+        return table;
+    }
+    
+    public static TableDefinition build_NOVICE_BEER_CONSUMER_COMMITTEE_Table() {
+        TableDefinition table = new TableDefinition();
+        table.setName("XML_NBC_COMMITTEE");
+
+        FieldDefinition fieldCONSUMERID = new FieldDefinition();
+        fieldCONSUMERID.setName("XML_NBC_ID");
+        fieldCONSUMERID.setTypeName("NUMERIC");
+        fieldCONSUMERID.setSize(15);
+        fieldCONSUMERID.setShouldAllowNull(false);
+        fieldCONSUMERID.setIsPrimaryKey(true);
+        fieldCONSUMERID.setUnique(false);
+        fieldCONSUMERID.setIsIdentity(false);
+        fieldCONSUMERID.setForeignKeyFieldName("XML_NOVICE_CONSUMER.ID");
+        table.addField(fieldCONSUMERID);
+        
+        FieldDefinition fieldCOMMITTEEID = new FieldDefinition();
+        fieldCOMMITTEEID.setName("XML_COM_ID");
+        fieldCOMMITTEEID.setTypeName("NUMERIC");
+        fieldCOMMITTEEID.setSize(15);
+        fieldCOMMITTEEID.setShouldAllowNull(false);
+        fieldCOMMITTEEID.setIsPrimaryKey(true);
+        fieldCOMMITTEEID.setUnique(false);
+        fieldCOMMITTEEID.setIsIdentity(false);
+        fieldCOMMITTEEID.setForeignKeyFieldName("XML_COMMITTEE.ID");
+        table.addField(fieldCOMMITTEEID);
+
         return table;
     }
     
@@ -976,6 +1149,55 @@ public class InheritedTableManager extends TableCreator {
         
         return table;
     }
+    
+    public static TableDefinition build_OFFICIAL_Table() {
+        TableDefinition table = new TableDefinition();
+        table.setName("XML_OFFICIAL");
+    
+        FieldDefinition ID_field = new FieldDefinition();
+        ID_field.setName("ID");
+        ID_field.setTypeName("NUMERIC");
+        ID_field.setSize(15);
+        ID_field.setIsPrimaryKey(true);
+        ID_field.setUnique(false);
+        ID_field.setIsIdentity(false);
+        ID_field.setShouldAllowNull(false);
+        table.addField(ID_field);
+
+        FieldDefinition DESCRIPTION_field = new FieldDefinition();
+        DESCRIPTION_field.setName("NAME");
+        DESCRIPTION_field.setTypeName("VARCHAR");
+        DESCRIPTION_field.setSize(40);
+        DESCRIPTION_field.setShouldAllowNull(true);
+        DESCRIPTION_field.setIsPrimaryKey(false);
+        DESCRIPTION_field.setUnique(false);
+        DESCRIPTION_field.setIsIdentity(false);
+        table.addField(DESCRIPTION_field);
+        
+        FieldDefinition EBC_ID_field = new FieldDefinition();
+        EBC_ID_field.setName("FK_EBC_ID");
+        EBC_ID_field.setTypeName("NUMERIC");
+        EBC_ID_field.setSize(15);
+        EBC_ID_field.setShouldAllowNull(true);
+        EBC_ID_field.setIsPrimaryKey(false);
+        EBC_ID_field.setUnique(false);
+        EBC_ID_field.setIsIdentity(false);
+        EBC_ID_field.setForeignKeyFieldName("XML_EXPERT_CONSUMER.ID");
+        table.addField(EBC_ID_field);
+        
+        FieldDefinition NBC_ID_field = new FieldDefinition();
+        NBC_ID_field.setName("FK_NBC_ID");
+        NBC_ID_field.setTypeName("NUMERIC");
+        NBC_ID_field.setSize(15);
+        NBC_ID_field.setShouldAllowNull(true);
+        NBC_ID_field.setIsPrimaryKey(false);
+        NBC_ID_field.setUnique(false);
+        NBC_ID_field.setIsIdentity(false);
+        NBC_ID_field.setForeignKeyFieldName("XML_NOVICE_CONSUMER.ID");
+        table.addField(NBC_ID_field);
+
+        return table;
+    }
     public static TableDefinition build_TELEPHONE_NUMBER_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_XML_TELEPHONE");
@@ -1020,6 +1242,33 @@ public class InheritedTableManager extends TableCreator {
         NUMBER_field.setIsIdentity(false);
         NUMBER_field.setShouldAllowNull(false);
         table.addField(NUMBER_field);
+
+        return table;
+    }
+    
+    public static TableDefinition build_WITNESS_Table() {
+        TableDefinition table = new TableDefinition();
+        table.setName("XML_WITNESS");
+    
+        FieldDefinition ID_field = new FieldDefinition();
+        ID_field.setName("ID");
+        ID_field.setTypeName("NUMERIC");
+        ID_field.setSize(15);
+        ID_field.setIsPrimaryKey(true);
+        ID_field.setUnique(false);
+        ID_field.setIsIdentity(false);
+        ID_field.setShouldAllowNull(false);
+        table.addField(ID_field);
+
+        FieldDefinition DESCRIPTION_field = new FieldDefinition();
+        DESCRIPTION_field.setName("NAME");
+        DESCRIPTION_field.setTypeName("VARCHAR");
+        DESCRIPTION_field.setSize(40);
+        DESCRIPTION_field.setShouldAllowNull(true);
+        DESCRIPTION_field.setIsPrimaryKey(false);
+        DESCRIPTION_field.setUnique(false);
+        DESCRIPTION_field.setIsIdentity(false);
+        table.addField(DESCRIPTION_field);
 
         return table;
     }

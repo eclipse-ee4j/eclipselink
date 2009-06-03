@@ -241,6 +241,11 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
     public Object clone() {
         OneToManyMapping clone = (OneToManyMapping)super.clone();
         clone.setTargetForeignKeysToSourceKeys(new HashMap(getTargetForeignKeysToSourceKeys()));
+        
+        clone.addTargetQuery = (DataModifyQuery) this.addTargetQuery.clone();
+        clone.removeTargetQuery = (DataModifyQuery) this.removeTargetQuery.clone();
+        clone.removeAllTargetsQuery = (DataModifyQuery) this.removeAllTargetsQuery.clone();
+        
         return clone;
     }
 

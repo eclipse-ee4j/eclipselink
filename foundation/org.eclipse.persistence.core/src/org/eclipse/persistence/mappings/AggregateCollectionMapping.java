@@ -113,6 +113,30 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     }
 
     /**
+     * INTERNAL:
+     * In JPA users may specify overrides to apply to a many to many mapping
+     * on a shared embeddable descriptor. These settings are applied at
+     * initialize time, after the reference descriptor is cloned. In an
+     * aggregate collection case, this is not supported and currently silently
+     * ignored and does nothing.
+     */
+    public void addOverrideManyToManyMapping(ManyToManyMapping mapping) {
+        // Not supported at this time ...
+    }
+    
+    /**
+     * INTERNAL:
+     * In JPA users may specify overrides to apply to a unidirectional one to 
+     * many mapping on a shared embeddable descriptor. These settings are 
+     * applied at initialize time, after the reference descriptor is cloned. In 
+     * an aggregate collection case, this is not supported and currently 
+     * silently ignored and does nothing.
+     */
+    public void addOverrideUnidirectionalOneToManyMapping(UnidirectionalOneToManyMapping mapping) {
+        // Not supported at this time ...
+    }
+    
+    /**
      * PUBLIC:
      * Maps a field name in the aggregate descriptor
      * to a field name in the source table.

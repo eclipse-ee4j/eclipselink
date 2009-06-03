@@ -28,6 +28,8 @@
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  *     04/24/2009-2.0 Guy Pelletier 
  *       - 270011: JPA 2.0 MappedById support
+ *     06/02/2009-2.0 Guy Pelletier 
+ *       - 278768: JPA 2.0 Association Override Join Table
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -146,7 +148,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
         // with a different column.
         if (getOwningDescriptor().isPrimaryKeyField(aggregatesMappingField)) {
             getOwningDescriptor().removePrimaryKeyField(aggregatesMappingField);
-            getOwningDescriptor().addPrimaryKeyField(overrideField);
+            getOwningDescriptor().addPrimaryKeyField(overrideField, getOwningDescriptor().getPrimaryKeyAccessorForField(aggregatesMappingField));
         }
         
         if (overrideName.indexOf(".") > -1) {
@@ -185,16 +187,17 @@ public abstract class MappingAccessor extends MetadataAccessor {
         for (AssociationOverrideMetadata associationOverride : associationOverrides) {
             String name = associationOverride.getName();
             
-            if (getClassAccessor().isMappedSuperclass() && getDescriptor().hasAssociationOverrideFor(getAttributeName() + "." + name)) {
-                // An association override from a sub-entity class will name its
-                // association override slighty different in that it will have 
-                // one extra dot notation at the front. E.G. A mapped superclass 
-                // that defines an embedded attribute named 'record' can define 
-                // association overrides directly on the mapping, that is, 
-                // 'date'. Whereas from an entity class to override 'date' on 
-                // 'record', the attribute name will be 'record.date'
+            // An association override from a sub-entity class will name its
+            // association override slightly different in that it will have 
+            // one extra dot notation at the front. E.G. A mapped superclass 
+            // that defines an embedded attribute named 'record' can define 
+            // association overrides directly on the mapping, that is, 
+            // 'date'. Whereas from an entity class to override 'date' on 
+            // 'record', the attribute name will be 'record.date'
+            String dotNotationName = getAttributeName() + "." + name;
+            if (getClassAccessor().isMappedSuperclass() && getDescriptor().hasAssociationOverrideFor(dotNotationName)) {
                 getLogger().logWarningMessage(getLogger().IGNORE_ASSOCIATION_OVERRIDE, name, getAttributeName(), getClassAccessor().getJavaClassName(), getJavaClassName());
-                associationOverridesMap.put(name, getDescriptor().getAssociationOverrideFor(name));
+                associationOverridesMap.put(name, getDescriptor().getAssociationOverrideFor(dotNotationName));
             } else {
                 associationOverridesMap.put(name, associationOverride);
             }
@@ -272,15 +275,16 @@ public abstract class MappingAccessor extends MetadataAccessor {
             String name = attributeOverride.getName();
             
             // An attribute override from a sub-entity class will name its
-            // attribute override slighty different in that it will have one
+            // attribute override slightly different in that it will have one
             // extra dot notation at the front. E.G. A mapped superclass that
             // defines an embedded attribute named 'record' can define attribute
             // overrides directly on the mapping, that is, 'date'. Whereas
             // from an entity class to override 'date' on 'record', the
             // attribute name will be 'record.date'
-            if (getClassAccessor().isMappedSuperclass() && getDescriptor().hasAttributeOverrideFor(getAttributeName() + "." + name)) {
+            String dotNotationName = getAttributeName() + "." + name;
+            if (getClassAccessor().isMappedSuperclass() && getDescriptor().hasAttributeOverrideFor(dotNotationName)) {
                 getLogger().logWarningMessage(getLogger().IGNORE_ATTRIBUTE_OVERRIDE, name, getAttributeName(), getClassAccessor().getJavaClassName(), getJavaClassName());
-                attributeOverridesMap.put(name, getDescriptor().getAttributeOverrideFor(name));
+                attributeOverridesMap.put(name, getDescriptor().getAttributeOverrideFor(dotNotationName));
             } else {
                 attributeOverridesMap.put(name, attributeOverride);
             }
@@ -403,17 +407,25 @@ public abstract class MappingAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
-     * Process the join column metadata. This method will look for association
-     * overrides and use those instead if some are available.
-     */    
+     * Return the join columns to use with this mapping accessor. This method 
+     * will look for association overrides and use those instead if some are 
+     * available. This method will validate the join columns and default
+     * any where necessary.
+     */
     protected List<JoinColumnMetadata> getJoinColumns(List<JoinColumnMetadata> potentialJoinColumns, MetadataDescriptor descriptor) {
-        List<JoinColumnMetadata> joinColumns;
         if (getDescriptor().hasAssociationOverrideFor(getAttributeName())) {
-            joinColumns = getDescriptor().getAssociationOverrideFor(getAttributeName()).getJoinColumns();
+            return getJoinColumnsAndValidate(getDescriptor().getAssociationOverrideFor(getAttributeName()).getJoinColumns(), descriptor);
         } else {
-            joinColumns = potentialJoinColumns;
+            return getJoinColumnsAndValidate(potentialJoinColumns, descriptor);
         }
-        
+    }
+    
+    /**
+     * INTERNAL:
+     * This method will validate the join columns and default any where 
+     * necessary.
+     */    
+    protected List<JoinColumnMetadata> getJoinColumnsAndValidate(List<JoinColumnMetadata> joinColumns, MetadataDescriptor descriptor) {
         if (joinColumns.isEmpty()) {
             if (descriptor.hasCompositePrimaryKey()) {
                 // Add a default one for each part of the composite primary
@@ -1003,56 +1015,43 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * INTERNAL:
      * Process an association override for either an embedded object mapping, 
      * or a map mapping (element-collection, 1-M and M-M) containing an
-     * embeddable object as the value or key. 
+     * embeddable object as the value or key.
+     * This method should be implemented in those accessors that support 
+     * association overrides. An exception is thrown otherwise the association
+     * is called against an unsupported accessor/relationship. 
      */
-    protected void processAssociationOverride(AssociationOverrideMetadata associationOverride, EmbeddableMapping embeddableMapping, DatabaseMapping mapping, DatabaseTable defaultTable, MetadataDescriptor aggregateDescriptor) {
-        // AssociationOverride.name(), the name of the attribute we want to
-        // override.
-        String attributeName = associationOverride.getName();
-        
-        if (mapping != null && mapping.isOneToOneMapping()) {
-            MappingAccessor accessor = aggregateDescriptor.getAccessorFor(mapping.getAttributeName());
-            MetadataDescriptor referenceDescriptor = accessor.getReferenceDescriptor();
-            
-            if (associationOverride.hasJoinColumns()) {
-                // The process join columns will validate the join column specifics.
-                for (JoinColumnMetadata joinColumn : getJoinColumns(associationOverride.getJoinColumns(), referenceDescriptor)) {
-                    DatabaseField pkField = joinColumn.getPrimaryKeyField();
-                    pkField.setTable(referenceDescriptor.getPrimaryKeyTable());
-                    DatabaseField fkField = ((OneToOneMapping) mapping).getTargetToSourceKeyFields().get(pkField);
-                
-                    if (fkField == null) {
-                        // TODO: invalid pk field specified
-                        // TODO: composite primary key case (and correct table)
-                    } else {
-                        // Make sure we have a table set on the association override 
-                        // field, otherwise use the default table provided.
-                        DatabaseField translationFKField = joinColumn.getForeignKeyField();
-                        if (! translationFKField.hasTableName()) {
-                            translationFKField.setTable(defaultTable);
-                        }
-                    
-                        embeddableMapping.addFieldNameTranslation(translationFKField.getQualifiedName(),fkField.getName());
-                    }
-                }
-            } else {
-                // TODO: Join table from association override not supported yet ... silently ignored ...
-            }
-        } else {
-            throw ValidationException.embeddableAssociationOverrideNotFound(getReferenceDescriptor().getJavaClass(), attributeName, getJavaClass(), getAttributeName());
-        }
+    protected void processAssociationOverride(AssociationOverrideMetadata associationOverride, EmbeddableMapping embeddableMapping, MetadataDescriptor owningDescriptor) {
+        throw ValidationException.invalidEmbeddableAttributeForAssociationOverride(getJavaClass(), getAttributeName(), associationOverride.getName(), associationOverride.getLocation()); 
     }
     
     /**
      * INTERNAL:
      * Process the association overrides for the given embeddable mapping which
      * is either an embedded or element collection mapping. Association 
-     * overrides are used to apply the correct field name translations of 
-     * foreign key fields.
+     * overrides are used to specify different keys to a shared mapping.
      */
-    protected void processAssociationOverrides(List<AssociationOverrideMetadata> associationOverrides, EmbeddableMapping mapping, MetadataDescriptor aggregateDescriptor) {
-        for (AssociationOverrideMetadata associationOverride : getAssociationOverrides(associationOverrides).values()) {
-            processAssociationOverride(associationOverride, mapping, aggregateDescriptor.getMappingForAttributeName(associationOverride.getName()), getOwningDescriptor().getPrimaryTable(), aggregateDescriptor);
+    protected void processAssociationOverrides(List<AssociationOverrideMetadata> associationOverrides, EmbeddableMapping embeddableMapping, MetadataDescriptor embeddableDescriptor) {
+        // Get the processible map of association overrides. This will take dot 
+        // notation overrides into consideration (from a sub-entity to a mapped 
+        // superclass accessor) and merge the lists. Once the map is returned, 
+        // use the map keys as the attribute name and not the name from the 
+        // individual association override since they could still contain dot 
+        // notation names meaning you will not find their respective mapping 
+        // accessor on the embeddable descriptor.
+        Map<String, AssociationOverrideMetadata> mergedAssociationOverrides = getAssociationOverrides(associationOverrides);
+        
+        for (String attributeName : mergedAssociationOverrides.keySet()) {
+            AssociationOverrideMetadata associationOverride = mergedAssociationOverrides.get(attributeName);
+            // The getAccessorFor call will take care of any sub dot notation 
+            // attribute names when looking for the mapping. It will traverse 
+            // the embeddable chain. 
+            MappingAccessor mappingAccessor = embeddableDescriptor.getAccessorFor(attributeName);
+            
+            if (mappingAccessor == null) {
+                throw ValidationException.embeddableAssociationOverrideNotFound(embeddableDescriptor.getJavaClass(), attributeName, getJavaClass(), getAttributeName());
+            } else {
+                mappingAccessor.processAssociationOverride(associationOverride, embeddableMapping, getOwningDescriptor());
+            }  
         }
     }
     
@@ -1063,22 +1062,27 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * fields. Note an embedded object mapping may be supported as the map key
      * to an element-collection, 1-M and M-M mapping.
      */
-    protected void processAttributeOverrides(List<AttributeOverrideMetadata> attributeOverrides, AggregateObjectMapping aggregateObjectMapping, MetadataDescriptor aggregateDescriptor) {
-        // Process the list of attribute overrides for this mapping. This
-        // includes the immediate specifications (the ones defined on the 
-        // mapping accessor) and those descriptor level ones that were defined
-        // for this accessor.
-        for (AttributeOverrideMetadata attributeOverride : getAttributeOverrides(attributeOverrides).values()) {
-            // The getMappingForAttributeName will take care of any dot 
+    protected void processAttributeOverrides(List<AttributeOverrideMetadata> attributeOverrides, AggregateObjectMapping aggregateObjectMapping, MetadataDescriptor embeddableDescriptor) {
+        // Get the processible map of attribute overrides. This will take dot 
+        // notation overrides into consideration (from a sub-entity to a mapped 
+        // superclass accessor) and merge the lists. Once the map is returned, 
+        // use the map keys as the attribute name and not the name from the 
+        // individual attribute override since they could still contain dot 
+        // notation names meaning you will not find their respective mapping 
+        // accessor on the embeddable descriptor.
+        Map<String, AttributeOverrideMetadata> mergedAttributeOverrides = getAttributeOverrides(attributeOverrides);
+        
+        for (String attributeName : mergedAttributeOverrides.keySet()) {
+            AttributeOverrideMetadata attributeOverride = mergedAttributeOverrides.get(attributeName);
+            // The getMappingForAttributeName call will take care of any sub dot 
             // notation attribute names when looking for the mapping. It will
             // traverse the embeddable chain. 
-            String attributeName = attributeOverride.getName();
-            DatabaseMapping mapping = aggregateDescriptor.getMappingForAttributeName(attributeName);
+            DatabaseMapping mapping = embeddableDescriptor.getMappingForAttributeName(attributeName);
                 
             if (mapping == null) {
-                throw ValidationException.embeddableAttributeOverrideNotFound(aggregateDescriptor.getJavaClass(), attributeName, getJavaClass(), getAttributeName());
+                throw ValidationException.embeddableAttributeOverrideNotFound(embeddableDescriptor.getJavaClass(), attributeName, getJavaClass(), getAttributeName());
             } else if (! mapping.isDirectToFieldMapping()) {
-                throw ValidationException.invalidEmbeddableAttributeForAttributeOverride(aggregateDescriptor.getJavaClass(), attributeName, getJavaClass(), getAttributeName());
+                throw ValidationException.invalidEmbeddableAttributeForAttributeOverride(embeddableDescriptor.getJavaClass(), attributeName, getJavaClass(), getAttributeName());
             } else {
                 addFieldNameTranslation(aggregateObjectMapping, attributeName, attributeOverride.getColumn().getDatabaseField(), mapping);
             }

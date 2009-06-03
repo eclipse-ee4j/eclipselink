@@ -21,6 +21,8 @@
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  *     04/03/2009-2.0 Guy Pelletier
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+ *     06/02/2009-2.0 Guy Pelletier 
+ *       - 278768: JPA 2.0 Association Override Join Table
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.inherited;
 
@@ -37,6 +39,7 @@ import junit.framework.*;
 
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.models.jpa.inherited.Accredidation;
 import org.eclipse.persistence.testing.models.jpa.inherited.Becks;
 import org.eclipse.persistence.testing.models.jpa.inherited.BecksTag;
 import org.eclipse.persistence.testing.models.jpa.inherited.BeerConsumer;
@@ -44,6 +47,7 @@ import org.eclipse.persistence.testing.models.jpa.inherited.Birthday;
 import org.eclipse.persistence.testing.models.jpa.inherited.Blue;
 import org.eclipse.persistence.testing.models.jpa.inherited.Alpine;
 import org.eclipse.persistence.testing.models.jpa.inherited.BlueLight;
+import org.eclipse.persistence.testing.models.jpa.inherited.Committee;
 import org.eclipse.persistence.testing.models.jpa.inherited.Corona;
 import org.eclipse.persistence.testing.models.jpa.inherited.CoronaTag;
 import org.eclipse.persistence.testing.models.jpa.inherited.ExpertBeerConsumer;
@@ -51,10 +55,12 @@ import org.eclipse.persistence.testing.models.jpa.inherited.Heineken;
 import org.eclipse.persistence.testing.models.jpa.inherited.InheritedTableManager;
 import org.eclipse.persistence.testing.models.jpa.inherited.Location;
 import org.eclipse.persistence.testing.models.jpa.inherited.NoviceBeerConsumer;
+import org.eclipse.persistence.testing.models.jpa.inherited.Official;
 import org.eclipse.persistence.testing.models.jpa.inherited.Record;
 import org.eclipse.persistence.testing.models.jpa.inherited.RedStripe;
 import org.eclipse.persistence.testing.models.jpa.inherited.SerialNumber;
 import org.eclipse.persistence.testing.models.jpa.inherited.Venue;
+import org.eclipse.persistence.testing.models.jpa.inherited.Witness;
  
 public class InheritedModelJunitTest extends JUnitTestCase {
     private static BigDecimal m_blueId;
@@ -105,7 +111,6 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         suite.addTest(new InheritedModelJunitTest("testRedStripeExpertConsumer"));
         // Element collection with generic map key type, with embeddable values.
         suite.addTest(new InheritedModelJunitTest("testRedStripeNoviceConsumer"));
-        
         return suite;
     }
     
@@ -205,8 +210,6 @@ public class InheritedModelJunitTest extends JUnitTestCase {
             
             commitTransaction(em);
         } catch (RuntimeException e) {
-            e.printStackTrace();
-            
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
@@ -276,8 +279,9 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         
+        NoviceBeerConsumer beerConsumer = new NoviceBeerConsumer();
+        
         try {    
-            NoviceBeerConsumer beerConsumer = new NoviceBeerConsumer();
             beerConsumer.setName("Novice Beer Consumer");
             beerConsumer.setIQ(100);
             
@@ -302,6 +306,28 @@ public class InheritedModelJunitTest extends JUnitTestCase {
             record1.setVenue(venue1);
             beerConsumer.getRecords().add(record1);
             
+            Accredidation accredidation = new Accredidation();
+            accredidation.setDetails("Superb, just superb!");
+            Witness witness1 = new Witness();
+            witness1.setName("Mickey Blue Eyes");
+            accredidation.addWitness(witness1);
+            Witness witness2 = new Witness();
+            witness2.setName("Donny Trafalgo");
+            accredidation.addWitness(witness2);
+            beerConsumer.setAccredidation(accredidation);
+            
+            Committee committee1 = new Committee();
+            committee1.setDescription("Moral labelling");
+            beerConsumer.addCommittee(committee1);
+            
+            Committee committee2 = new Committee();
+            committee2.setDescription("Crimes against beer");
+            beerConsumer.addCommittee(committee2);
+            
+            Committee committee3 = new Committee();
+            committee3.setDescription("BADD - Beers against drunk dorks");
+            beerConsumer.addCommittee(committee3);
+            
             em.persist(beerConsumer);
             m_noviceBeerConsumerId = beerConsumer.getId();
             commitTransaction(em);    
@@ -315,6 +341,11 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         }
         
         closeEntityManager(em);
+        
+        clearCache();
+        em = createEntityManager();
+        BeerConsumer refreshedBC = em.find(BeerConsumer.class, m_noviceBeerConsumerId);       
+        assertTrue("The novice beer consumer read back did not match the original", getServerSession().compareObjects(beerConsumer, refreshedBC));
     }
     
     public void testCreateExpertBeerConsumer() {
@@ -370,6 +401,19 @@ public class InheritedModelJunitTest extends JUnitTestCase {
             record2.setVenue(venue2);
             beerConsumer.getRecords().add(record2);
             
+            Accredidation accredidation = new Accredidation();
+            accredidation.setDetails("Elite, absolutely elite!");
+            Witness witness1 = new Witness();
+            witness1.setName("Big Bobby");
+            accredidation.addWitness(witness1);
+            Witness witness2 = new Witness();
+            witness2.setName("Little Bobby");
+            accredidation.addWitness(witness2);
+            Official official = new Official();
+            official.setName("Authority Joe");
+            accredidation.addOfficial(official);
+            beerConsumer.setAccredidation(accredidation);
+            
             Birthday birthday1 = new Birthday();
             birthday1.setDay(9);
             birthday1.setMonth(7);
@@ -382,8 +426,17 @@ public class InheritedModelJunitTest extends JUnitTestCase {
             birthday2.setYear(2006);
             beerConsumer.addCelebration(birthday2, "Drank a 24 of Becks");
             
+            Committee committee1 = new Committee();
+            committee1.setDescription("New beer committee");
+            beerConsumer.addCommittee(committee1);
+            
+            Committee committee2 = new Committee();
+            committee2.setDescription("Alcohol content regulation");
+            beerConsumer.addCommittee(committee2);
+                        
             em.persist(beerConsumer);
             m_expertBeerConsumerId = beerConsumer.getId();
+            getServerSession().setLogLevel(0);
             commitTransaction(em);    
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
@@ -398,7 +451,7 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         
         clearCache();
         em = createEntityManager();
-        BeerConsumer refreshedBC = em.find(BeerConsumer.class, m_expertBeerConsumerId);       
+        BeerConsumer refreshedBC = em.find(BeerConsumer.class, m_expertBeerConsumerId);
         assertTrue("The expert beer consumer read back did not match the original", getServerSession().compareObjects(beerConsumer, refreshedBC));
     }
     

@@ -30,6 +30,8 @@ package org.eclipse.persistence.mappings;
  */
 public interface EmbeddableMapping {
     public String getAttributeName();
+    public void addOverrideManyToManyMapping(ManyToManyMapping mapping);
+    public void addOverrideUnidirectionalOneToManyMapping(UnidirectionalOneToManyMapping mapping);
     public void addFieldNameTranslation(String sourceFieldName, String aggregateFieldName);
     public void addNestedFieldNameTranslation(String attributeName, String sourceFieldName, String aggregateFieldName);
 }

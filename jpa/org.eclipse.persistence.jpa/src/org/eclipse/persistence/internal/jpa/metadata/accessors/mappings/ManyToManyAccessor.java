@@ -15,6 +15,8 @@
  *       - 249860: Implement table per class inheritance support.
  *     02/06/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 2)
+ *     06/02/2009-2.0 Guy Pelletier 
+ *       - 278768: JPA 2.0 Association Override Join Table
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -100,7 +102,7 @@ public class ManyToManyAccessor extends CollectionAccessor {
 
         if (getMappedBy() == null || getMappedBy().equals("")) { 
             // Processing the owning side of a M-M that is process a join table.
-            processJoinTable(mapping);
+            processJoinTable(mapping, getJoinTableMetadata());
         } else {
             // We are processing the a non-owning side of a M-M. Must set the
             // mapping read-only.

@@ -35,6 +35,8 @@
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  *     04/24/2009-2.0 Guy Pelletier 
  *       - 270011: JPA 2.0 MappedById support
+ *     06/02/2009-2.0 Guy Pelletier 
+ *       - 278768: JPA 2.0 Association Override Join Table
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -132,9 +134,10 @@ public class MetadataDescriptor {
     private List<ObjectAccessor> m_derivedIDAccessors;
     
     private MetadataClass m_pkClass;
-    public Map<String, String> m_pkClassIDs;
+    private Map<String, String> m_pkClassIDs;
     private Map<String, String> m_genericTypes;
     private Map<String, MappingAccessor> m_accessors;
+    private Map<String, MappingAccessor> m_primaryKeyAccessors;
     private Map<String, PropertyMetadata> m_properties;
     private Map<String, String> m_pkJoinColumnAssociations;
     private Map<String, AttributeOverrideMetadata> m_attributeOverrides;
@@ -172,6 +175,7 @@ public class MetadataDescriptor {
         m_pkClassIDs = new HashMap<String, String>();
         m_genericTypes = new HashMap<String, String>();
         m_accessors = new HashMap<String, MappingAccessor>();
+        m_primaryKeyAccessors = new HashMap<String, MappingAccessor>();
         m_properties = new HashMap<String, PropertyMetadata>();
         m_pkJoinColumnAssociations = new HashMap<String, String>();
         m_attributeOverrides = new HashMap<String, AttributeOverrideMetadata>();
@@ -317,8 +321,11 @@ public class MetadataDescriptor {
     /**
      * INTERNAL:
      */
-    public void addPrimaryKeyField(DatabaseField field) {
+    public void addPrimaryKeyField(DatabaseField field, MappingAccessor accessor) {
         m_descriptor.addPrimaryKeyField(field);
+        
+        // Store the primary primary key mappings based on their field name.
+        m_primaryKeyAccessors.put(field.getName(), accessor);
     }
     
     /**
@@ -750,6 +757,14 @@ public class MetadataDescriptor {
         }
         
         return pkClassName;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the primary key mapping for the given field. 
+     */
+    public MappingAccessor getPrimaryKeyAccessorForField(DatabaseField field) {
+        return m_primaryKeyAccessors.get(field.getName());
     }
     
     /**

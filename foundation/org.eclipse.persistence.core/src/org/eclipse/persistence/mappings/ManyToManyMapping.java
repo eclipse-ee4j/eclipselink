@@ -139,6 +139,9 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
         clone.setSourceKeyFields(cloneFields(getSourceKeyFields()));
         clone.setTargetRelationKeyFields(cloneFields(getTargetRelationKeyFields()));
         clone.setSourceRelationKeyFields(cloneFields(getSourceRelationKeyFields()));
+        
+        clone.setInsertQuery((DataModifyQuery) insertQuery.clone());
+        clone.setDeleteQuery((DataModifyQuery) deleteQuery.clone());
 
         return clone;
     }

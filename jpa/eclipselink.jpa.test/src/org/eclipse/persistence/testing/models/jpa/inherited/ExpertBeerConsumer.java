@@ -18,6 +18,8 @@
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  *     04/03/2009-2.0 Guy Pelletier
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+ *     06/02/2009-2.0 Guy Pelletier 
+ *       - 278768: JPA 2.0 Association Override Join Table
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
@@ -63,6 +65,11 @@ public class ExpertBeerConsumer extends RatedBeerConsumer<String, String, String
     
     public void addCelebration(Birthday birthday, String details) {
         celebrations.put(birthday, details);
+    }
+    
+    public void addCommittee(Committee committee) {
+        getCommittees().add(committee);
+        committee.addExpertBeerConsumer(this);
     }
     
     // Commenting out this mapping until bug 272298 is resolved.

@@ -16,12 +16,15 @@
  *       - 265359: JPA 2.0 Element Collections - Metadata processing portions
  *     03/27/2009-2.0 Guy Pelletier 
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+ *     06/02/2009-2.0 Guy Pelletier 
+ *       - 278768: JPA 2.0 Association Override Join Table
  ******************************************************************************/ 
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
 import javax.persistence.FetchType;
 
 import org.eclipse.persistence.annotations.JoinFetch;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
@@ -84,6 +87,27 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
      */
     public CollectionTableMetadata getCollectionTable() {
         return m_collectionTable;
+    }
+    
+    /**
+     * INTERNAL:
+     * Process column metadata details and resolve any generic specifications.
+     */
+    @Override
+    protected DatabaseField getDatabaseField(DatabaseTable defaultTable, String loggingCtx) {
+        DatabaseField field = super.getDatabaseField(defaultTable, loggingCtx);
+        
+        // To correctly resolve the generics at runtime, we need to set the 
+        // field type.
+        if (getAccessibleObject().isGenericCollectionType()) {
+            if (loggingCtx.equals(MetadataLogger.MAP_KEY_COLUMN)) {
+                field.setType(getJavaClass(getMapKeyReferenceClass()));
+            } else {
+                field.setType(getJavaClass(getReferenceClass()));
+            }
+        }
+                    
+        return field;
     }
     
     /**
@@ -222,6 +246,9 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
     protected void process(CollectionMapping mapping) {
         // Add the mapping to the descriptor.
         setMapping(mapping);
+        
+        // Set the reference class name.
+        mapping.setReferenceClassName(getReferenceClassName());
         
         // Set the attribute name.
         mapping.setAttributeName(getAttributeName());

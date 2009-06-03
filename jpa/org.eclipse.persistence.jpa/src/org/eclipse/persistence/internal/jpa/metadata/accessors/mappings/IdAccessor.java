@@ -15,6 +15,8 @@
  *       - 211329: Add sequencing on non-id attribute(s) support to the EclipseLink-ORM.XML Schema
  *     04/24/2009-2.0 Guy Pelletier 
  *       - 270011: JPA 2.0 MappedById support
+ *     06/02/2009-2.0 Guy Pelletier 
+ *       - 278768: JPA 2.0 Association Override Join Table
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -77,6 +79,6 @@ public class IdAccessor extends BasicAccessor {
         getOwningDescriptor().addIdAttributeName(attributeName);
 
         // Add the primary key field to the descriptor.            
-        getOwningDescriptor().addPrimaryKeyField(getField());
+        getOwningDescriptor().addPrimaryKeyField(getField(), this);
     }
 }

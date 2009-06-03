@@ -384,6 +384,8 @@ public class ValidationException extends EclipseLinkException {
     public static final int LIST_ORDER_FIELD_NOT_SUPPORTED = 7317;
     public static final int COLLECTION_REMOVE_EVENT_WITH_NO_INDEX = 7318;
     
+    public static final int INVALID_EMBEDDABLE_ATTRIBUTE_FOR_ASSOCIATION_OVERRIDE = 7319;
+    
     /**
      * INTERNAL:
      * EclipseLink exceptions should only be thrown by EclipseLink.
@@ -1127,6 +1129,15 @@ public class ValidationException extends EclipseLinkException {
         return validationException;
     }
 
+    public static ValidationException invalidEmbeddableAttributeForAssociationOverride(Object aggregateClass, String aggregateAttributeName, String associationOverrideName, Object location) {
+        Object[] args = { aggregateClass, aggregateAttributeName, associationOverrideName, location};
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INVALID_EMBEDDABLE_ATTRIBUTE_FOR_ASSOCIATION_OVERRIDE, args));
+        validationException.setErrorCode(INVALID_EMBEDDABLE_ATTRIBUTE_FOR_ASSOCIATION_OVERRIDE);
+        return validationException;
+    }
+
+    
     public static ValidationException invalidEmbeddableAttributeForAttributeOverride(Object aggregateClass, String aggregateAttributeName, Object owningClass, String owningAttributeName) {
         Object[] args = { aggregateClass, aggregateAttributeName,  owningClass, owningAttributeName};
 

@@ -18,6 +18,8 @@
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  *     04/03/2009-2.0 Guy Pelletier
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+ *     06/02/2009-2.0 Guy Pelletier 
+ *       - 278768: JPA 2.0 Association Override Join Table
  ******************************************************************************/ 
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -629,9 +631,6 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
         // before any field processing since field processing requires that 
         // the collection table be processed before hand.
         process(mapping);
-
-        // Set the reference class name.
-        mapping.setReferenceClassName(getReferenceClassName());
         
         // Process the fetch type and set the correct indirection on the mapping.
         processContainerPolicyAndIndirection(mapping, getMapKey());
@@ -708,7 +707,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
                             embeddableMapping.addFieldNameTranslation(collectionTableField.getQualifiedName(), fkField.getName());
                         }
                     } else {
-                        processAssociationOverride(associationOverride, embeddableMapping, mapping, getReferenceDatabaseTable(), embeddableDescriptor);
+                        ((ObjectAccessor) mappingAccessor).processAssociationOverride(associationOverride, embeddableMapping, getReferenceDatabaseTable());
                     }
                 } else {
                     // Section 2.6 of the spec states: "An embeddable class (including an embeddable class within 

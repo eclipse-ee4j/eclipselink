@@ -23,6 +23,8 @@
  *       - 270011: JPA 2.0 MappedById support
  *     05/1/2009-2.0 Guy Pelletier 
  *       - 249033: JPA 2.0 Orphan removal
+ *     06/02/2009-2.0 Guy Pelletier 
+ *       - 278768: JPA 2.0 Association Override Join Table
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -42,6 +44,8 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 
+import org.eclipse.persistence.internal.jpa.metadata.columns.AssociationOverrideMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnsMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
@@ -51,8 +55,10 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.indirection.WeavedObjectBasicIndirectionPolicy;
 
+import org.eclipse.persistence.mappings.EmbeddableMapping;
 import org.eclipse.persistence.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 
@@ -268,6 +274,52 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
     
     /**
      * INTERNAL:
+     * Process an association override for either an embedded object mapping, 
+     * or a map mapping (element-collection, 1-M and M-M) containing an
+     * embeddable object as the value or key. 
+     */
+    @Override
+    protected void processAssociationOverride(AssociationOverrideMetadata associationOverride, EmbeddableMapping embeddableMapping, MetadataDescriptor owningDescriptor) {
+        if (getMapping().isOneToOneMapping()) {
+            processAssociationOverride(associationOverride, embeddableMapping, owningDescriptor.getPrimaryTable());
+        } else {
+            super.processAssociationOverride(associationOverride, embeddableMapping, owningDescriptor);
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Process an association override for either an embedded object mapping, 
+     * or a map mapping (element-collection, 1-M and M-M) containing an
+     * embeddable object as the value or key. 
+     */
+    protected void processAssociationOverride(AssociationOverrideMetadata associationOverride, EmbeddableMapping embeddableMapping, DatabaseTable defaultTable) {
+        // Process and use the association override's joinColumns. Avoid calling 
+        // getJoinColumns since, by default, that method looks for an association
+        // override on the descriptor. In this case that has already been taken 
+        // care of for use before calling this method.
+        for (JoinColumnMetadata joinColumn : getJoinColumnsAndValidate(associationOverride.getJoinColumns(), getReferenceDescriptor())) {
+            DatabaseField pkField = joinColumn.getPrimaryKeyField();
+            pkField.setTable(getReferenceDescriptor().getPrimaryKeyTable());
+            DatabaseField fkField = ((OneToOneMapping) getMapping()).getTargetToSourceKeyFields().get(pkField);
+                
+            if (fkField == null) {
+                // TODO: user specified an invalid pk, throw an exception.
+            } else {
+                // Make sure we have a table set on the association override 
+                // field, otherwise use the default table provided.
+                DatabaseField translationFKField = joinColumn.getForeignKeyField();
+                if (! translationFKField.hasTableName()) {
+                    translationFKField.setTable(defaultTable);
+                }
+                    
+                embeddableMapping.addFieldNameTranslation(translationFKField.getQualifiedName(),fkField.getName());
+            }
+        }
+    }
+    
+    /**
+     * INTERNAL:
      * Process the indirection (aka fetch type)
      */
     protected void processIndirection(ObjectReferenceMapping mapping) {
@@ -340,9 +392,9 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
         getOwningDescriptor().addIdAttributeName(attributeName);
 
         // Add the primary key fields to the descriptor.  
-        ObjectReferenceMapping mapping = (ObjectReferenceMapping)this.getMapping();
-        for (DatabaseField pkField : mapping.getForeignKeyFields()){
-            getOwningDescriptor().addPrimaryKeyField(pkField);
+        ObjectReferenceMapping mapping = (ObjectReferenceMapping) getMapping();
+        for (DatabaseField pkField : mapping.getForeignKeyFields()) {
+            getOwningDescriptor().addPrimaryKeyField(pkField, null);
         }
     }
     
@@ -389,6 +441,29 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
     
     /**
      * INTERNAL:
+     * Process the join columns for the owning side of a one to one mapping. 
+     * The default pk and pk field names are used only with single primary key 
+     * entities. The processor should never get as far as to use them with 
+     * entities that have a composite primary key (validation exception will be 
+     * thrown).
+     */
+    protected void processOneToOneForeignKeyRelationship(OneToOneMapping mapping) {
+        // If the pk field (referencedColumnName) is not specified, it 
+        // defaults to the primary key of the referenced table.
+        String defaultPKFieldName = getReferenceDescriptor().getPrimaryKeyFieldName();
+        
+        // If the fk field (name) is not specified, it defaults to the 
+        // concatenation of the following: the name of the referencing 
+        // relationship property or field of the referencing entity or
+        // embeddable class; "_"; the name of the referenced primary key 
+        // column.
+        String defaultFKFieldName = getUpperCaseAttributeName() + "_" + defaultPKFieldName;
+        
+        processOneToOneForeignKeyRelationship(mapping, getJoinColumns(getJoinColumns(), getReferenceDescriptor()), defaultPKFieldName, getReferenceDatabaseTable(), defaultFKFieldName, getDescriptor().getPrimaryTable());        
+    }
+    
+    /**
+     * INTERNAL:
      * Process the primary key join columns for the owning side of a one to one 
      * mapping. The default pk and pk field names are used only with single 
      * primary key entities. The processor should never get as far as to use 
@@ -430,18 +505,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
         if (isOneToOnePrimaryKeyRelationship()) {
             processOneToOnePrimaryKeyRelationship(mapping);
         } else {
-            // If the pk field (referencedColumnName) is not specified, it 
-            // defaults to the primary key of the referenced table.
-            String defaultPKFieldName = getReferenceDescriptor().getPrimaryKeyFieldName();
-            
-            // If the fk field (name) is not specified, it defaults to the 
-            // concatenation of the following: the name of the referencing 
-            // relationship property or field of the referencing entity or
-            // embeddable class; "_"; the name of the referenced primary key 
-            // column.
-            String defaultFKFieldName = getUpperCaseAttributeName() + "_" + defaultPKFieldName;
-            
-            processOneToOneForeignKeyRelationship(mapping, getJoinColumns(getJoinColumns(), getReferenceDescriptor()), defaultPKFieldName, getReferenceDatabaseTable(), defaultFKFieldName, getDescriptor().getPrimaryTable());
+            processOneToOneForeignKeyRelationship(mapping);
         }
     }
     

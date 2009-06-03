@@ -13,6 +13,8 @@
  *       - 218084: Implement metadata merging functionality between mapping files
  *     02/06/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 2)
+ *     06/02/2009-2.0 Guy Pelletier 
+ *       - 278768: JPA 2.0 Association Override Join Table
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
@@ -98,13 +100,6 @@ public class AssociationOverrideMetadata extends OverrideMetadata {
      */
     public JoinTableMetadata getJoinTable() {
         return m_joinTable;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public boolean hasJoinColumns() {
-        return ! m_joinColumns.isEmpty();
     }
     
     /**

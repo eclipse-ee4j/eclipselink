@@ -231,7 +231,16 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
             DatabaseField targetForeignKey = targetForeignKeys.next();
             DatabaseField sourcePrimaryKey = sourceKeys.next();
             if (targetForeignKey.getType() == null) {
-                targetForeignKey.setType(getDescriptor().getObjectBuilder().getMappingForField(sourcePrimaryKey).getFieldClassification(sourcePrimaryKey));
+                DatabaseMapping mapping = getDescriptor().getObjectBuilder().getMappingForField(sourcePrimaryKey);
+                // If we have a mapping, set the type, otherwise at this point 
+                // there is not much more we can do. This case will likely hit
+                // when we have a UnidirectionalOneToManyMapping on an aggregate
+                // outside of JPA. Within JPA, in most cases, the metadata 
+                // processing should set the type on the targetForeignKey for us. 
+                // Bug 278263 has been entered to revisit this code.
+                if (mapping != null) {
+                    targetForeignKey.setType(mapping.getFieldClassification(sourcePrimaryKey));
+                }
             }
         }
     }

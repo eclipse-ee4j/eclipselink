@@ -4,6 +4,9 @@
     <package>org.eclipse.persistence.testing.models.jpa.xml.inherited</package>
     <table-generator name="XML_BEER_TABLE_GENERATOR" table="CMP3_XML_BEER_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="BEER_SEQ"/>
     <table-generator name="XML_LOCATION_TABLE_GENERATOR" table="JPA2_XML_LOCATION_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="LOCATION_SEQ"/>
+    <table-generator name="XML_COMMITTEE_TABLE_GENERATOR" table="CMP3_XML_BEER_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="COMMITTEE_SEQ"/>
+    <table-generator name="XML_OFFICIAL_TABLE_GENERATOR" table="CMP3_XML_BEER_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="OFFICIAL_SEQ"/>
+    <table-generator name="XML_WITNESS_TABLE_GENERATOR" table="CMP3_XML_BEER_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="WITNESS_SEQ"/>
     <named-native-query name="findAnySQLBeerConsumer" result-class="org.eclipse.persistence.testing.models.jpa.xml.inherited.BeerConsumer">
         <query>SELECT * FROM CMP3_XML_CONSUMER</query>
         <hint name="cascadeLevel" value="1"/>
@@ -55,6 +58,19 @@
             <basic name="IQ" access="PROPERTY">
                 <column name="CONSUMER_IQ"/>
             </basic>
+            <many-to-many name="committees">
+                <!--  
+                    Expert beer consumer will use the join table as is here, whereas, novice
+                    beer consumer will provide an association override.    
+                -->
+                <join-table name="XML_EBC_COMMITTEE">
+                    <join-column name="XML_EBC_ID" referenced-column-name="ID"/>
+                    <inverse-join-column name="XML_COMMITTEE_ID" referenced-column-name="ID"/>
+                </join-table>
+                <cascade>
+                    <cascade-all/>
+                </cascade>
+            </many-to-many>
             <element-collection name="acclaims">
                 <column name="ACCLAIM"/>
             </element-collection>
@@ -66,6 +82,24 @@
                 <column name="DESIGNATION"/>
             </element-collection>
             <element-collection name="records"/>
+            <embedded name="accredidation">
+                <!--
+                    Expert beer consumer will use these overrides, whereas, novice beer 
+                    consumer will override them by defining class level overrides. 
+                 -->
+                 <attribute-override name="details">
+                    <column name="ACCREDIDATION"/>
+                 </attribute-override>
+                 <association-override name="witnesses">
+                    <join-table name="XML_EBC_ACCREDIDATION_WITNESS">
+                        <join-column name="XML_EBC_ID" referenced-column-name="ID"/>
+                        <inverse-join-column name="XML_WITNESS_ID" referenced-column-name="ID"/>
+                    </join-table>
+                 </association-override>
+                 <association-override name="officials">
+                    <join-column name="FK_EBC_ID"/>
+                 </association-override>
+            </embedded>
         </attributes>
     </mapped-superclass>
     <entity name="XMLBeerConsumer" class="org.eclipse.persistence.testing.models.jpa.xml.inherited.BeerConsumer" access="PROPERTY">
@@ -230,6 +264,9 @@
     <entity name="XML_NBC" class="org.eclipse.persistence.testing.models.jpa.xml.inherited.NoviceBeerConsumer" access="PROPERTY">
         <table name="XML_NOVICE_CONSUMER"/>
         <discriminator-value>NBC</discriminator-value>
+        <attribute-override name="accredidation.details">
+            <column name="ACCR_DETAILS"/>
+        </attribute-override>
         <attribute-override name="records.date">
             <column name="REC_DATE"/>
         </attribute-override>
@@ -238,6 +275,21 @@
         </attribute-override>
         <association-override name="records.location">
             <join-column name="LOC_ID" referenced-column-name="ID"/>
+        </association-override>
+        <association-override name="committees">
+            <join-table name="XML_NBC_COMMITTEE">
+                <join-column name="XML_NBC_ID" referenced-column-name="ID"/>
+                <inverse-join-column name="XML_COM_ID" referenced-column-name="ID"/>
+            </join-table>
+        </association-override>
+        <association-override name="accredidation.officials">
+            <join-column name="FK_NBC_ID"/>
+        </association-override>
+        <association-override name="accredidation.witnesses">
+            <join-table name="XML_NBC_ACCREDITATION_WITNESS">
+                <join-column name="XML_NBC_ID" referenced-column-name="ID"/>
+                <inverse-join-column name="XML_WITNESSID" referenced-column-name="ID"/>
+            </join-table>
         </association-override>
     </entity>
     <entity name="XML_EBC" class="org.eclipse.persistence.testing.models.jpa.xml.inherited.ExpertBeerConsumer" access="PROPERTY">
@@ -280,6 +332,42 @@
             </element-collection>    
         </attributes>
     </entity>
+    <entity name="XML_COMMITTEE" class="Committee" access="PROPERTY">
+        <table name="XML_COMMITTEE"/>
+        <attributes>
+            <id name="id">
+                <column name="ID"/>
+                <generated-value strategy="TABLE" generator="XML_COMMITTEE_TABLE_GENERATOR"/>
+            </id>
+            <basic name="description">
+                <column name="DESCRIP"/>
+            </basic>
+            <many-to-many name="expertBeerConsumers" mapped-by="committees"/>
+            <many-to-many name="noviceBeerConsumers" mapped-by="committees"/>
+        </attributes>
+    </entity>
+    <entity name="XML_OFFICIAL" class="Official" access="PROPERTY">
+        <attributes>
+            <id name="id">
+                <column name="ID"/>
+                <generated-value strategy="TABLE" generator="XML_OFFICIAL_TABLE_GENERATOR"/>
+            </id>
+            <basic name="name">
+                <column name="NAME"/>
+            </basic>
+        </attributes>
+    </entity>
+    <entity name="XML_WITNESS" class="Witness" access="PROPERTY">
+        <attributes>
+            <id name="id">
+                <column name="ID"/>
+                <generated-value strategy="TABLE" generator="XML_WITNESS_TABLE_GENERATOR"/>
+            </id>
+            <basic name="name">
+                <column name="NAME"/>
+            </basic>
+        </attributes>
+    </entity>
     <embeddable class="org.eclipse.persistence.testing.models.jpa.xml.inherited.Record" access="PROPERTY">
         <attributes>
             <basic name="description">
@@ -308,4 +396,49 @@
         </attributes>
     </embeddable>
     <embeddable class="Birthday"/>
+    <embeddable class="Accredidation">
+        <attributes>
+            <basic name="details">
+                <!-- 
+                    Expert beer consumer will use the attribute override from the 
+                    accredidation mapping from RatedBeerConsumer, whereas, novice beer
+                    consumer will provide a class level attribute override to override
+                    the above mentioned attribute override.
+                    If these overrides are not picked up, the column name will be picked up
+                    and errors will occur.
+                 -->
+                <column name="BOGUS_COLUMN_NAME"/>
+            </basic>
+            <one-to-many name="officials">
+                <!--
+                    Expert beer consumer will use the association overrides from the 
+                    accredidation mapping from RatedBeerConsumer, whereas, novice beer
+                    consumer will provide a class level association override to override
+                    the above mentioned association override.
+                    If these overrides are not picked up, this join column will be picked up
+                    and errors will occur.            
+                 -->
+                <join-column name="BOGUS_JOIN_COLUMN_NAME"/>
+                <cascade>
+                    <cascade-persist/>
+                    <cascade-merge/>
+                </cascade>
+            </one-to-many>
+            <many-to-many name="witnesses">
+                <!-- 
+                    Expert beer consumer will use the association overrides from the 
+                    accredidation mapping from RatedBeerConsumer, whereas, novice beer
+                    consumer will provide a class level association override to override
+                    the above mentioned association override.
+                    If these overrides are not picked up, the join table will default
+                    and errors will occur.            
+                 -->
+                 <join-table name="BOGUS_JOIN_TABLE_NAME"/>
+                 <cascade>
+                    <cascade-persist/>
+                    <cascade-merge/>
+                </cascade>
+            </many-to-many>
+        </attributes>
+    </embeddable>
 </entity-mappings>

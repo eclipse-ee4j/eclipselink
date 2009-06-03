@@ -14,12 +14,15 @@
  *       - 241651: JPA 2.0 Access Type support
  *     01/28/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 1)   
+ *     06/02/2009-2.0 Guy Pelletier 
+ *       - 278768: JPA 2.0 Association Override Join Table
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.xml.inherited;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
@@ -30,9 +33,9 @@ public abstract class RatedBeerConsumer<X, Y, Z> extends BeerConsumer {
     private Map<Y, Z> awards;
     private Collection<String> designations;
     private Collection<Record> records;
-    
-    @Transient
-    private int iq;
+    private Accredidation accredidation;
+    @Transient private int iq;
+    private List<Committee> committees;
     
     protected RatedBeerConsumer() {
         super();
@@ -40,16 +43,25 @@ public abstract class RatedBeerConsumer<X, Y, Z> extends BeerConsumer {
         awards = new Hashtable<Y, Z>();
         designations = new ArrayList<String>();
         records = new ArrayList<Record>();
+        committees = new ArrayList<Committee>(); 
     }
     
     public Collection<X> getAcclaims() {
         return acclaims;
     }
     
+    public Accredidation getAccredidation() {
+        return accredidation;
+    }
+    
     public Map<Y, Z> getAwards() {
         return awards;
     }
-
+    
+    public List<Committee> getCommittees() {
+        return committees;
+    }
+    
     public Collection<String> getDesignations() {
         return designations;
     }
@@ -66,10 +78,18 @@ public abstract class RatedBeerConsumer<X, Y, Z> extends BeerConsumer {
         this.acclaims = acclaims;
     }
     
+    public void setAccredidation(Accredidation accredidation) {
+        this.accredidation = accredidation;
+    }
+    
     public void setAwards(Map<Y, Z> awards) {
         this.awards = awards;
     }
 
+    public void setCommittees(List<Committee> committees) {
+        this.committees = committees;
+    }
+    
     public void setDesignations(Collection<String> designations) {
         this.designations = designations;
     }

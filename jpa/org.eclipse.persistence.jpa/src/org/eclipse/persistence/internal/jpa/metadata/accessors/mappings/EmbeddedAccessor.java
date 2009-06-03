@@ -21,6 +21,8 @@
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  *     04/24/2009-2.0 Guy Pelletier 
  *       - 270011: JPA 2.0 MappedById support
+ *     06/02/2009-2.0 Guy Pelletier 
+ *       - 278768: JPA 2.0 Association Override Join Table
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -100,8 +102,8 @@ public class EmbeddedAccessor extends MappingAccessor {
         // Process the attribute overrides first.
         MetadataAnnotation associationOverrides = getAnnotation(AssociationOverrides.class);
         if (associationOverrides != null) {
-            for (MetadataAnnotation associationOverride : (MetadataAnnotation[]) associationOverrides.getAttribute("value")) {
-                m_associationOverrides.add(new AssociationOverrideMetadata(associationOverride, accessibleObject));
+            for (Object associationOverride : (Object[]) associationOverrides.getAttributeArray("value")) {
+                m_associationOverrides.add(new AssociationOverrideMetadata((MetadataAnnotation) associationOverride, accessibleObject));
             }
         }
         

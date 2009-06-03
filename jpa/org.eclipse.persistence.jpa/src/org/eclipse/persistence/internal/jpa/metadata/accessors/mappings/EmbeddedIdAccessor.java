@@ -23,6 +23,8 @@
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  *     04/24/2009-2.0 Guy Pelletier 
  *       - 270011: JPA 2.0 MappedById support
+ *     06/02/2009-2.0 Guy Pelletier 
+ *       - 278768: JPA 2.0 Association Override Join Table
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -49,6 +51,8 @@ public class EmbeddedIdAccessor extends EmbeddedAccessor {
     // end of processing since they may change when processing attribute 
     // overrides. They are mapped by attribute name.
     protected HashMap<String, DatabaseField> m_idFields = new HashMap<String, DatabaseField>();
+    protected HashMap<DatabaseField, MappingAccessor> m_idAccessors = new HashMap<DatabaseField, MappingAccessor>();
+    
 
     /**
      * INTERNAL:
@@ -84,11 +88,18 @@ public class EmbeddedIdAccessor extends EmbeddedAccessor {
     /**
      * INTERNAL:
      */
-    protected void addIdFieldFromMapping(DatabaseMapping mapping) {
-        if (! m_idFields.containsKey(mapping.getAttributeName())) {
-            // It may be in our id fields map already if an attribute
-            // override was specified on the embedded mapping.
-            m_idFields.put(mapping.getAttributeName(), mapping.getField());
+    protected void addIdFieldFromAccessor(MappingAccessor accessor) {
+        String attributeName = accessor.getAttributeName();
+        
+        if (m_idFields.containsKey(attributeName)) {
+            // It may be in our id fields map already if an attribute override 
+            // was specified on the embedded mapping. Make sure the existing id 
+            // field has its mapping accessor associated with it.
+            m_idAccessors.put(m_idFields.get(attributeName), accessor);
+        } else {
+            DatabaseField field = accessor.getMapping().getField();
+            m_idFields.put(attributeName, field);
+            m_idAccessors.put(field, accessor);
         }
     }
     
@@ -137,10 +148,10 @@ public class EmbeddedIdAccessor extends EmbeddedAccessor {
             for (MappingAccessor accessor : getReferenceAccessors()) {
                 if (accessor.isBasic()) {
                     accessor.getMapping().setIsDerivedIdMapping(true);
-                    addIdFieldFromMapping(accessor.getMapping());
+                    addIdFieldFromAccessor(accessor);
                 } else if (accessor.isDerivedIdClass()) {
                     for (MappingAccessor embeddedAccessor : accessor.getReferenceAccessors()) {
-                        addIdFieldFromMapping(embeddedAccessor.getMapping());
+                        addIdFieldFromAccessor(embeddedAccessor);
                     }
                 } else {
                     // EmbeddedId is solely a JPA feature, so we will not allow 
@@ -162,7 +173,7 @@ public class EmbeddedIdAccessor extends EmbeddedAccessor {
                         clone.setTable(getOwningDescriptor().getPrimaryTable());
                     }
                     
-                    getOwningDescriptor().addPrimaryKeyField(clone);
+                    getOwningDescriptor().addPrimaryKeyField(clone, m_idAccessors.get(clone));
                 }
             }
         }

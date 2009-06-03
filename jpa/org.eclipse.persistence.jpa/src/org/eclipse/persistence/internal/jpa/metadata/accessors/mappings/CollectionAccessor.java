@@ -27,6 +27,8 @@
  *       - 270011: JPA 2.0 MappedById support
  *     05/1/2009-2.0 Guy Pelletier 
  *       - 249033: JPA 2.0 Orphan removal       
+ *     06/02/2009-2.0 Guy Pelletier 
+ *       - 278768: JPA 2.0 Association Override Join Table
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -64,11 +66,13 @@ import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.EnumeratedMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.TemporalMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.tables.JoinTableMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 
 import org.eclipse.persistence.mappings.CollectionMapping;
+import org.eclipse.persistence.mappings.EmbeddableMapping;
 import org.eclipse.persistence.mappings.ManyToManyMapping;
 
 /**
@@ -497,6 +501,62 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
         // Process a @ReturnInsert and @ReturnUpdate (to log a warning message)
         processReturnInsertAndUpdate();
     }  
+    
+    /**
+     * INTERNAL:
+     * Process an association override for either an embedded object mapping, 
+     * or a map mapping (element-collection, 1-M and M-M) containing an
+     * embeddable object as the value or key. 
+     */
+    @Override
+    protected void processAssociationOverride(AssociationOverrideMetadata associationOverride, EmbeddableMapping embeddableMapping, MetadataDescriptor owningDescriptor) {
+        if (getMapping().isManyToManyMapping()) {
+            JoinTableMetadata joinTable = associationOverride.getJoinTable();
+        
+            // Process any table defaults and log warning messages.
+            String defaultName = owningDescriptor.getPrimaryTableName() + "_" + getReferenceDescriptor().getPrimaryTableName();
+            processTable(joinTable, defaultName);
+        
+            // Create an override mapping and process the join table to it.
+            ManyToManyMapping overrideMapping = new ManyToManyMapping();
+            overrideMapping.setAttributeName(getAttributeName());
+            processJoinTable(overrideMapping, joinTable);
+        
+            // The override mapping will have the correct source, sourceRelation, 
+            // target and targetRelation keys. Along with the correct relation table.
+            embeddableMapping.addOverrideManyToManyMapping(overrideMapping);
+        } else {
+            super.processAssociationOverride(associationOverride, embeddableMapping, owningDescriptor);
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Process a MetadataJoinTable.
+     */
+    protected void processJoinTable(ManyToManyMapping mapping, JoinTableMetadata joinTable) {
+        // Build the default table name
+        String defaultName = getOwningDescriptor().getPrimaryTableName() + "_" + getReferenceDescriptor().getPrimaryTableName();
+        
+        // Process any table defaults and log warning messages.
+        processTable(joinTable, defaultName);
+        
+        // Set the table on the mapping.
+        mapping.setRelationTable(joinTable.getDatabaseTable());
+        
+        // Add all the joinColumns (source foreign keys) to the mapping.
+        String defaultSourceFieldName;
+        if (getReferenceDescriptor().hasBiDirectionalManyToManyAccessorFor(getJavaClassName(), getAttributeName())) {
+            defaultSourceFieldName = getReferenceDescriptor().getBiDirectionalManyToManyAccessor(getJavaClassName(), getAttributeName()).getAttributeName();
+        } else {
+            defaultSourceFieldName = getOwningDescriptor().getAlias();
+        }
+        addManyToManyRelationKeyFields(getJoinColumnsAndValidate(joinTable.getJoinColumns(), getOwningDescriptor()), mapping, defaultSourceFieldName, getOwningDescriptor(), true);
+        
+        // Add all the inverseJoinColumns (target foreign keys) to the mapping.
+        String defaultTargetFieldName = getAttributeName();
+        addManyToManyRelationKeyFields(getJoinColumnsAndValidate(joinTable.getInverseJoinColumns(), getReferenceDescriptor()), mapping, defaultTargetFieldName, getReferenceDescriptor(), false);
+    }
     
     /**
      * INTERNAL:
