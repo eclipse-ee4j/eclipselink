@@ -150,7 +150,11 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         DirectCollectionMapping responsibilitiesListMapping = new DirectCollectionMapping();
         responsibilitiesListMapping.setAttributeName("responsibilitiesList");
         if(useListOrderField) {
-            responsibilitiesListMapping.setListOrderFieldName("OL_RESPONS.RESPONS_ORDER");
+            // target foreign key and listOrderField must be in the same table, so
+            // either specify listOrderField with target foreign key table
+//            responsibilitiesListMapping.setListOrderFieldName("OL_RESPONS.RESPONS_ORDER");
+            // or don't specify listOrderField's table at all - it will be defaulted to foreign key table.
+            responsibilitiesListMapping.setListOrderFieldName("RESPONS_ORDER");
             responsibilitiesListMapping.setListOrderFieldValidationMode(orderValidationMode);
         }
         if(useIndirection) {
@@ -197,11 +201,17 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
                 managedEmployeesMapping.dontUseIndirection();
             }
             if(useListOrderField) {
-                if(useSecondaryTable) {
+                // target foreign key and listOrderField must be in the same table, so
+                // either specify listOrderField with target foreign key table
+/*                if(useSecondaryTable) {
                     managedEmployeesMapping.setListOrderFieldName("OL_SALARY.MANAGED_ORDER");
                 } else {
                     managedEmployeesMapping.setListOrderFieldName("OL_EMPLOYEE.MANAGED_ORDER");
-                }
+                }*/
+                // or don't specify listOrderField's table at all - it will be defaulted to foreign key table.
+                // If secondary table used then the field is in SALARY table, otherwise in EMPLOYEE table
+                // (both tables have MANAGED_ORDER field, only one of them used at a time).
+                managedEmployeesMapping.setListOrderFieldName("MANAGED_ORDER");
                 managedEmployeesMapping.setListOrderFieldValidationMode(orderValidationMode);
             }
             if(useSecondaryTable) {
@@ -217,11 +227,17 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         childrenMapping.setAttributeName("children");
         childrenMapping.setReferenceClass(Child.class);
         if(useListOrderField) {
-            if(useSecondaryTable) {
+            // target foreign key and listOrderField must be in the same table, so
+            // either specify listOrderField with target foreign key table
+/*            if(useSecondaryTable) {
                 childrenMapping.setListOrderFieldName("OL_ALLOWANCE.CHILDREN_ORDER");
             } else {
                 childrenMapping.setListOrderFieldName("OL_CHILD.CHILDREN_ORDER");
-            }
+            }*/
+            // or don't specify listOrderField's table at all - it will be defaulted to foreign key table.
+            // If secondary table used then the field is in ALLOWANCE table, otherwise in CHILD table
+            // (both tables have CHILDREN_ORDER field, only one of them used at a time).
+            childrenMapping.setListOrderFieldName("CHILDREN_ORDER");
             childrenMapping.setListOrderFieldValidationMode(orderValidationMode);
         }
         if(useIndirection) {
@@ -254,7 +270,11 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
             phoneNumbersMapping.addFieldNameTranslation("OL_PHONE.PNUMBER", "PNUMBER");
             phoneNumbersMapping.addFieldNameTranslation("OL_PHONE.TYPE", "TYPE");
             if(useListOrderField) {
-                phoneNumbersMapping.setListOrderFieldName("OL_PHONE.PHONE_ORDER");
+                // target foreign key and listOrderField must be in the same table, so
+                // either specify listOrderField with target foreign key table
+//                phoneNumbersMapping.setListOrderFieldName("OL_PHONE.PHONE_ORDER");
+                // or don't specify listOrderField's table at all - it will be defaulted to foreign key table.
+                phoneNumbersMapping.setListOrderFieldName("PHONE_ORDER");
                 phoneNumbersMapping.setListOrderFieldValidationMode(orderValidationMode);
             }
             if(useIndirection) {
@@ -285,7 +305,11 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
             projectsMapping.dontUseIndirection();
         }
         if(useListOrderField) {
-            projectsMapping.setListOrderFieldName("OL_PROJ_EMP.PROJ_ORDER");
+            // target foreign key and listOrderField must be in the same table, so
+            // either specify listOrderField with target foreign key table
+//            projectsMapping.setListOrderFieldName("OL_PROJ_EMP.PROJ_ORDER");
+            // or don't specify listOrderField's table at all - it will be defaulted to foreign key table.
+            projectsMapping.setListOrderFieldName("PROJ_ORDER");
             projectsMapping.setListOrderFieldValidationMode(orderValidationMode);
         }
         projectsMapping.setRelationTableName("OL_PROJ_EMP");
@@ -412,7 +436,11 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         employeesMapping.setAttributeName("employees");
         employeesMapping.setReferenceClass(Employee.class);
         if(useListOrderField) {
-            employeesMapping.setListOrderFieldName("OL_PROJ_EMP.EMP_ORDER");
+            // target foreign key and listOrderField must be in the same table, so
+            // either specify listOrderField with target foreign key table
+//            employeesMapping.setListOrderFieldName("OL_PROJ_EMP.EMP_ORDER");
+            // or don't specify listOrderField's table at all - it will be defaulted to foreign key table.
+            employeesMapping.setListOrderFieldName("EMP_ORDER");
             employeesMapping.setListOrderFieldValidationMode(orderValidationMode);
         }
         if(useIndirection) {

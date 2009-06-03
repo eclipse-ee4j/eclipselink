@@ -179,6 +179,8 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
             if(!this.targetForeignKeyTable.equals(this.listOrderField.getTable())) {
                 throw DescriptorException.listOrderFieldTableIsWrong(this.getDescriptor(), this, this.listOrderField.getTable(), this.targetForeignKeyTable);
             }
+        } else {
+            listOrderField.setTable(this.targetForeignKeyTable);
         }
         this.listOrderField = this.getReferenceDescriptor().buildField(this.listOrderField, this.targetForeignKeyTable);
     }

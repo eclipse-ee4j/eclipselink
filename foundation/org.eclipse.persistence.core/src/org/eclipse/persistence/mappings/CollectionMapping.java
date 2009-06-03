@@ -1025,6 +1025,8 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             if(!this.getReferenceDescriptor().getDefaultTable().equals(this.listOrderField.getTable())) {
                 throw DescriptorException.listOrderFieldTableIsWrong(this.getDescriptor(), this, this.listOrderField.getTable(), this.getReferenceDescriptor().getDefaultTable());
             }
+        } else {
+            this.listOrderField.setTable(this.getReferenceDescriptor().getDefaultTable());
         }
         this.listOrderField = this.getReferenceDescriptor().buildField(this.listOrderField);
     }
