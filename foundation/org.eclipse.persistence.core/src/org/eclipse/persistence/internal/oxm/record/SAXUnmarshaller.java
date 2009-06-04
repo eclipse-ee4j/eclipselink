@@ -336,6 +336,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         // via XMLRootRecord.
         if (isPrimitiveWrapper) {
             unmarshalRecord = new XMLRootRecord(clazz);
+            unmarshalRecord.setSession((AbstractSession) xmlUnmarshaller.getXMLContext().getSession(0));
         } else {
             // for XMLObjectReferenceMappings we need a non-shared cache, so
             // try and get a Unit Of Work from the XMLContext
@@ -494,7 +495,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         if (source instanceof SAXSource) {
             SAXSource saxSource = (SAXSource) source;
             XMLReader xmlReader = null;
-            if (saxSource.getXMLReader() == null) {
+            if (saxSource.getXMLReader() != null) {
                 xmlReader = new XMLReader(saxSource.getXMLReader());
             }
             if (null == saxSource.getXMLReader()) {
