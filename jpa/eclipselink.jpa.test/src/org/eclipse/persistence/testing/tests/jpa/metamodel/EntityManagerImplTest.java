@@ -72,6 +72,9 @@ public class EntityManagerImplTest extends MetamodelTest {
                assertTrue(e instanceof IllegalStateException);
                //System.out.println("_Disclaimer: The above IllegalStateException is expected as part of testing.");
                //e.printStackTrace();
+            } catch (Exception e) {
+                // If we get here the ISE was not thrown - test fails
+                e.printStackTrace();
             }
             assertTrue(exceptionThrown);            
         } catch (Exception e) {

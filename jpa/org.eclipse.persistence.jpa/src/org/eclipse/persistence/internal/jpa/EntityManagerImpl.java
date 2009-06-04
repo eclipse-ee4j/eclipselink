@@ -68,7 +68,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     /** Allows transparent transactions across JTA and local transactions. */
     protected TransactionWrapperImpl transaction;
 
-    /** Store is this entity manager has been closed. */
+    /** Store if this entity manager has been closed. */
     protected boolean isOpen;
 
     /** Stores the UnitOfWork representing the persistence context. */
@@ -1932,6 +1932,9 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      */
     public QueryBuilder getQueryBuilder() {
         // defer to the parent entityManagerFactory
+        if(!this.isOpen()) {
+            throw new IllegalStateException(ExceptionLocalization.buildMessage("operation_on_closed_entity_manager"));
+        }
         return this.factory.getQueryBuilder();
     }
 
@@ -1946,6 +1949,9 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      */
     public Metamodel getMetamodel() {
         // defer to the parent entityManagerFactory
+        if(!this.isOpen()) {
+            throw new IllegalStateException(ExceptionLocalization.buildMessage("operation_on_closed_entity_manager"));
+        }
         return this.factory.getMetamodel();
     }
 
