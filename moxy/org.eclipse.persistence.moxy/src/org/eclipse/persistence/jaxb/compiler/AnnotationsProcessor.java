@@ -432,7 +432,10 @@ public class AnnotationsProcessor {
             }            
             // handle @XmlJavaTypeAdapter
             if (helper.isAnnotationPresent(property.getElement(), XmlJavaTypeAdapter.class)) {
-                property.setAdapterClass(((XmlJavaTypeAdapter) helper.getAnnotation(property.getElement(), XmlJavaTypeAdapter.class)).value());
+                XmlJavaTypeAdapter adapter = (XmlJavaTypeAdapter) helper.getAnnotation(property.getElement(), XmlJavaTypeAdapter.class);
+                JavaClass adapterClass = helper.getJavaClass(adapter.value());
+                property.setAdapterClass(adapterClass);
+                propertyType = property.getValueType();
             }
 
             if (shouldGenerateTypeInfo(propertyType)) {

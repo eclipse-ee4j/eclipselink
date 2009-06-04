@@ -16,4 +16,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="thing")
 public class Thing {
+    static class InnerThing {
+        public InnerThing() {}
+    }
 }
+

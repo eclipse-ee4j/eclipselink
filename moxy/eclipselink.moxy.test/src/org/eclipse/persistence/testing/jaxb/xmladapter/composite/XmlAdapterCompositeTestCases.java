@@ -25,10 +25,8 @@ public class XmlAdapterCompositeTestCases extends JAXBTestCases {
     public XmlAdapterCompositeTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);        
-        Class[] classes = new Class[3];
+        Class[] classes = new Class[1];
         classes[0] = MyMap.class;
-        classes[1] = MyHashMapType.class;
-        classes[2] = MyHashMapEntryType.class;
         setClasses(classes);
     }
 

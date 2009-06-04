@@ -128,7 +128,7 @@ public class MappingsGenerator {
     public void generateDescriptor(JavaClass javaClass, Project project) {
         String jClassName = javaClass.getQualifiedName();
         TypeInfo info = typeInfo.get(jClassName);
-        if(info.isTransient()){
+        if (info.isTransient()){
             return;
         }
         NamespaceInfo namespaceInfo = this.packageToNamespaceMappings.get(javaClass.getPackage().getQualifiedName());
@@ -136,7 +136,7 @@ public class MappingsGenerator {
         String elementName;
         String namespace;
 
-        if(javaClass.getSuperclass() != null && javaClass.getSuperclass().getName().equals("javax.xml.bind.JAXBElement")) {
+        if (javaClass.getSuperclass() != null && javaClass.getSuperclass().getName().equals("javax.xml.bind.JAXBElement")) {
             generateDescriptorForJAXBElementSubclass(javaClass, project, namespaceInfo.getNamespaceResolver());
             return;
         }
@@ -145,13 +145,13 @@ public class MappingsGenerator {
         
         XmlRootElement rootElem = (XmlRootElement) helper.getAnnotation(javaClass, XmlRootElement.class);
         if (rootElem == null) {
-            elementName = Introspector.decapitalize(jClassName.substring(jClassName.lastIndexOf(".") + 1));
+            elementName = Introspector.decapitalize(javaClass.getRawName().substring(jClassName.lastIndexOf(".") + 1));
             namespace = packageNamespace;
             descriptor.setResultAlwaysXMLRoot(true);
         } else {
             elementName = rootElem.name();
             if (elementName.equals("##default")) {
-                elementName = Introspector.decapitalize(jClassName.substring(jClassName.lastIndexOf(".") + 1));
+                elementName = Introspector.decapitalize(javaClass.getRawName().substring(jClassName.lastIndexOf(".") + 1));
             }
             namespace = rootElem.namespace();
             descriptor.setResultAlwaysXMLRoot(false);
@@ -159,7 +159,7 @@ public class MappingsGenerator {
                 
         descriptor.setJavaClassName(jClassName);
 
-        if(info.getFactoryMethodName() != null) {
+        if (info.getFactoryMethodName() != null) {
             descriptor.getInstantiationPolicy().useFactoryInstantiationPolicy(info.getObjectFactoryClassName(), info.getFactoryMethodName());
         }
         
@@ -221,18 +221,7 @@ public class MappingsGenerator {
             // direct mapping (anything we can create a descriptor for) or
             // a composite mapping
             JavaClass adapterClass = property.getAdapterClass();
-            JavaClass valueType = helper.getJavaClass(Object.class);
-
-            // look for marshal method
-            for (JavaMethod method : new ArrayList<JavaMethod>(adapterClass.getDeclaredMethods())) {
-                if (method.getName().equals("marshal")) {
-                    JavaClass returnType = (JavaClass) method.getReturnType();
-                    if (!returnType.getQualifiedName().equals(valueType.getQualifiedName())) {
-                        valueType = returnType;
-                        break;
-                    }
-                }
-            }
+            JavaClass valueType = property.getValueType();
 
             // if the value type is something we have a descriptor for, create
             // a composite object mapping, otherwise create a direct mapping
