@@ -42,9 +42,11 @@ import java.util.Set;
 
 import javax.persistence.Embeddable;
 import javax.persistence.GenerationType;
+import javax.persistence.MappedSuperclass;
 import javax.persistence.spi.PersistenceUnitInfo;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
@@ -1168,13 +1170,39 @@ public class MetadataProject {
     
     /**
      * INTERNAL:
-     * Return the core project associated with this Metadata project
-     * @return
-     */
-    public Project getProject() {
-        return m_session.getProject();
-    }
-    
+     * Add new descriptors for these mapped superclasses to the core project.
+     * The metadataProject handles interaction with the native project.
+     */    
+    public void addMappedSuperclassToProject(MetadataClass metadataClass) {
+        // 266912: store the mapped superclass as a descriptor on the project
+        // for later use by the Metamodel API
+        // We pass through here more than once - we rely on the Set implementation to handle no duplicates
+        RelationalDescriptor msDescriptor = new RelationalDescriptor();
+        msDescriptor.setAlias(metadataClass.getName());
+        // Set the javaClassName only on the descriptor and use this as the key
+        // when the descriptor is part of a set
+        // The javaClass itself will be set on the descriptor later when we have the correct classLoader
+        msDescriptor.setJavaClassName(metadataClass.getName());
+        // Add the mapped superclass to the native project
+        m_session.getProject().addMappedSuperclass(msDescriptor);
+    }    
+
+    /**
+     * INTERNAL:
+     * get the mapped superclasses stored on the core project.
+     * The metadataProject handles interaction with the native project.
+     * @param metadataClass - java class name key is extracted from the MetadataClass
+     */    
+    public RelationalDescriptor getMappedSuperclassFromProject(Object metadataClass) {
+        // 266912: get the mapped superclass stored on the native project using the descriptor class name as key
+        RelationalDescriptor relationalDescriptor = null;
+        // we only handle classes, return null for Methods, Fields and URLs 
+        if(null != metadataClass && metadataClass instanceof MetadataClass) {
+            relationalDescriptor = m_session.getProject()
+                .getMappedSuperclass(((MetadataClass)metadataClass).getName());
+        }
+        return relationalDescriptor;
+    }    
     
 }
 

@@ -139,6 +139,7 @@ public class RelationalDescriptor extends ClassDescriptor {
         }
         RelationalDescriptor descriptor = (RelationalDescriptor) o;
         // TODO: for now if the implementing className is the same then we have equality
+        // TODO: we need a strategy to check classes that are different classLoaders but with the same name
         return descriptor.getJavaClassName().equals(getJavaClassName());
     }
 

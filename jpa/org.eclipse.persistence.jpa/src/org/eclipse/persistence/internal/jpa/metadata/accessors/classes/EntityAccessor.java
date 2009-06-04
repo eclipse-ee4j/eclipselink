@@ -185,13 +185,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
                 m_mappedSuperclasses.add(new MappedSuperclassAccessor(
                         metadataClass.getAnnotation(MappedSuperclass.class), metadataClass, getDescriptor()));
                 // 266912: store the mapped superclass as a descriptor on the project for later use by the Metamodel API
-                // We pass through here more than once - we rely on the Set implementation to handle no duplicates
-                RelationalDescriptor msDescriptor = new RelationalDescriptor();
-                msDescriptor.setAlias(metadataClass.getName());//.getSimpleName());
-                // Set the javaClassName only on the descriptor and use this as the key when the descriptor is part of a set
-                // The javaClass itself will be set on the descriptor later when we have the correct classLoader 
-                msDescriptor.setJavaClassName(metadataClass.getName());
-                getProject().getProject().addMappedSuperclass(msDescriptor);
+                getProject().addMappedSuperclassToProject(metadataClass);
             }
         } else {
             // TODO: 266912 add descriptor for xml clients

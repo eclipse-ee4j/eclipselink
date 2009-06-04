@@ -333,21 +333,18 @@ public class BasicAccessor extends DirectAccessor {
         Object key = this.getClassAccessor().getLocation();
         // Get mapped superclass on the descriptor if present
         ClassAccessor classAccessor = getClassAccessor();
-        // We could override or subclass to avoid instanceof
-        if(classAccessor instanceof MappedSuperclassAccessor) {
-            if(null != key && key instanceof MetadataClass) {
-                RelationalDescriptor msDescriptor = this.getProject().getProject()
-                    .getMappedSuperclass(((MetadataClass)key).getName());
-                if(null != msDescriptor) {
-                    // Do we clone this mapping (yes if we customize it for the mappedSuperclass)
-                    DirectToFieldMapping msMapping = (DirectToFieldMapping)mapping.clone(); // deep copy
-                    // remove pointer to old descriptor (inheriting child class)
-                    msMapping.setDescriptor(null);
-                    // add mapping to new descriptor and vice-versa
-                    msDescriptor.addMapping(msMapping);
-                    // TODO: set the javaClass now on the descriptor - as we have the correct classLoader
-                    //msDescriptor.setJavaClass(theJavaClass);         
-                }
+        if(classAccessor.isMappedSuperclass()) {
+            RelationalDescriptor msDescriptor = getProject().getMappedSuperclassFromProject(key);
+            // we only handle classes and skip, Methods, Fields and URLs
+            if(null != msDescriptor) {
+                // Do we clone this mapping (yes if we customize it for the mappedSuperclass)
+                DirectToFieldMapping msMapping = (DirectToFieldMapping)mapping.clone(); // deep copy
+                // remove pointer to old descriptor (inheriting child class)
+                msMapping.setDescriptor(null);
+                // add mapping to new descriptor and vice-versa
+                msDescriptor.addMapping(msMapping);
+                // TODO: set the javaClass now on the descriptor - as we have the correct classLoader
+                //msDescriptor.setJavaClass(theJavaClass);         
             }
         }        
     }
