@@ -146,12 +146,8 @@ public class AnnotationsProcessor {
             if (javaClass == null) { continue; }
 
             createTypeInfoFor(javaClass);
-
-            JavaClass superClass = (JavaClass) javaClass.getSuperclass();
-            if (shouldGenerateTypeInfo(superClass)) {
-                createTypeInfoFor(superClass);
-            }
         }
+
         checkForCallbackMethods();
         
         // validate @XmlIDREF annotated properties - target class must have an XmlID annotation
@@ -370,6 +366,11 @@ public class AnnotationsProcessor {
         } else {
             info.setAccessType(packageNamespace.getAccessType());
         }
+                
+        JavaClass superClass = (JavaClass) javaClass.getSuperclass();
+        if (shouldGenerateTypeInfo(superClass)) {
+            createTypeInfoFor(superClass);
+        }
         
         info.setProperties(getPropertiesForClass(javaClass, info));
         
@@ -384,12 +385,7 @@ public class AnnotationsProcessor {
         
         if (order != null) {
             info.orderProperties(order.value());
-        }
-        
-        JavaClass superClass = (JavaClass) javaClass.getSuperclass();
-        if (shouldGenerateTypeInfo(superClass)) {
-            createTypeInfoFor(superClass);
-        }
+        }              
         
         ArrayList<Property> properties = info.getPropertyList();
         for (Property property : properties) {
@@ -455,7 +451,7 @@ public class AnnotationsProcessor {
         return info;
     }
 
-    public boolean shouldGenerateTypeInfo(JavaClass javaClass) {
+    public boolean shouldGenerateTypeInfo(JavaClass javaClass) {   	
         if (javaClass == null || javaClass.isPrimitive() || javaClass.isAnnotation() || javaClass.isInterface() || javaClass.isArray()) {
             return false;
         }
@@ -470,17 +466,29 @@ public class AnnotationsProcessor {
     }
         
     public ArrayList<Property> getPropertiesForClass(JavaClass cls, TypeInfo info) {
-    	ArrayList<Property> returnList;
+    	ArrayList<Property> returnList = new ArrayList<Property>();
+    	
+        if(!info.isTransient()){
+	        JavaClass superClass =cls.getSuperclass();
+	        TypeInfo superClassInfo = typeInfo.get(superClass.getQualifiedName());
+	        while(superClassInfo !=null && superClassInfo.isTransient()){
+	        	List<Property> superProps = getPublicMemberPropertiesForClass(superClass, superClassInfo);
+	        	returnList.addAll(0, superProps);	        	
+	        	superClass = superClass.getSuperclass();
+	        	superClassInfo = typeInfo.get(superClass.getQualifiedName());
+	        }
+        }
+    	
     	if(info.isTransient()){
-    		returnList = getNoAccessTypePropertiesForClass(cls, info);
+    		returnList.addAll(getNoAccessTypePropertiesForClass(cls, info));
     	}else if (info.getAccessType() == XmlAccessType.FIELD) {
-        	returnList = getFieldPropertiesForClass(cls, info, false);
+    		returnList.addAll(getFieldPropertiesForClass(cls, info, false));
         } else if (info.getAccessType() == XmlAccessType.PROPERTY) {
-        	returnList = getPropertyPropertiesForClass(cls, info, false);
+        	returnList.addAll(getPropertyPropertiesForClass(cls, info, false));
         } else if (info.getAccessType() == XmlAccessType.PUBLIC_MEMBER) {
-        	returnList = getPublicMemberPropertiesForClass(cls, info);
+        	returnList.addAll(getPublicMemberPropertiesForClass(cls, info));
         } else {
-        	returnList = getNoAccessTypePropertiesForClass(cls, info);
+        	returnList.addAll(getNoAccessTypePropertiesForClass(cls, info));
         }
         
         if(info.getXmlValueProperty()!=null){
@@ -731,6 +739,11 @@ public class AnnotationsProcessor {
         }
         return properties;
     }
+    /*
+    public ArrayList<Property> getPropertiesForTransientClass(JavaClass cls, TypeInfo info, boolean onlyPublic) {
+        ArrayList<Property> properties = new ArrayList<Property>();
+        if (cls == null) { return properties; }
+    }*/
 
     /**
      * Compares a JavaModel JavaClass to a Class.  Equality is based on

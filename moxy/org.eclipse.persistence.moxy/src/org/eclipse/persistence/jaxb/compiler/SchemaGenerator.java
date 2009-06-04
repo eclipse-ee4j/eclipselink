@@ -264,8 +264,8 @@ public class SchemaGenerator {
             type.setSimpleContent(content);
             info.setComplexType(type);
         }  else {
-            ComplexType type = new ComplexType();
-            JavaClass superClass = (JavaClass) myClass.getSuperclass();
+            ComplexType type = new ComplexType();            
+            JavaClass superClass = helper.getNextMappedSuperClass(myClass);
             
             // Handle mixed content
             if (info.isMixed()) {
@@ -277,20 +277,22 @@ public class SchemaGenerator {
                 type.setAbstractValue(true);
             }
             
-            TypeInfo parentTypeInfo = this.typeInfo.get(superClass.getQualifiedName());
             Extension extension = null;
-            if (parentTypeInfo != null) {
-                extension = new Extension();
-                // may need to qualify the type
-                String parentPrefix = getPrefixForNamespace(parentTypeInfo.getClassNamespace(), schema.getNamespaceResolver()); 
-                if (parentPrefix != null) {
-                    extension.setBaseType(parentPrefix + ":" + parentTypeInfo.getSchemaTypeName());
-                } else {
-                    extension.setBaseType(parentTypeInfo.getSchemaTypeName());
-                }
-                ComplexContent content = new ComplexContent();
-                content.setExtension(extension);
-                type.setComplexContent(content);
+            if(superClass != null){
+	            TypeInfo parentTypeInfo = this.typeInfo.get(superClass.getQualifiedName());	            
+	            if (parentTypeInfo != null) {
+	                extension = new Extension();
+	                // may need to qualify the type
+	                String parentPrefix = getPrefixForNamespace(parentTypeInfo.getClassNamespace(), schema.getNamespaceResolver()); 
+	                if (parentPrefix != null) {
+	                    extension.setBaseType(parentPrefix + ":" + parentTypeInfo.getSchemaTypeName());
+	                } else {
+	                    extension.setBaseType(parentTypeInfo.getSchemaTypeName());
+	                }
+	                ComplexContent content = new ComplexContent();
+	                content.setExtension(extension);
+	                type.setComplexContent(content);
+	            }
             }
             TypeDefParticle compositor = null;
             String[] propOrder = info.getPropOrder();
@@ -1043,4 +1045,5 @@ public class SchemaGenerator {
 	    }
 	    return false;
     }
+      
 }

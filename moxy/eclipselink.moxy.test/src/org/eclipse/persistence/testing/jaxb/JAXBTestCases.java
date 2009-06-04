@@ -12,17 +12,24 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.jaxb;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.JAXBElement;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+import javax.xml.transform.Result;
+import javax.xml.transform.stream.StreamResult;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.helper.ConversionManager;
@@ -46,7 +53,7 @@ import org.xml.sax.XMLReader;
 public abstract class JAXBTestCases extends XMLMappingTestCases {
     Class[] classes;
 
-    JAXBContext jaxbContext;
+    protected JAXBContext jaxbContext;
     Marshaller jaxbMarshaller;
     Unmarshaller jaxbUnmarshaller;
     Generator generator;
@@ -241,6 +248,32 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
 
         xmlToObjectTest(jaxbUnmarshallerHandler.getResult());
     }
+    
+    public List<File> generateSchema() throws Exception{    
+	    MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
+	    jaxbContext.generateSchema(outputResolver);
+	    return outputResolver.getSchemaFiles();
+    }
+    
+	public class MySchemaOutputResolver extends SchemaOutputResolver {
+	    	// keep a list of processed schemas for the validation phase of the test(s)
+	    	public List<File> schemaFiles;
+	    	
+	    	public MySchemaOutputResolver() {
+	    		schemaFiles = new ArrayList<File>();
+	    	}
+	    	
+	        public Result createOutput(String namespaceURI, String suggestedFileName) throws IOException {
+	        	File schemaFile = new File(suggestedFileName);
+	        	schemaFiles.add(schemaFile);
+	            return new StreamResult(schemaFile);
+	        }
+	        
+	        public List<File> getSchemaFiles(){
+	        	return schemaFiles;
+	        }
+	    }
+
     
     
 }

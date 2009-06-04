@@ -16,6 +16,8 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.xml.bind.annotation.XmlTransient;
+
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.jaxb.javamodel.JavaAnnotation;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
@@ -273,5 +275,19 @@ public class Helper {
     }
     public ClassLoader getClassLoader() {
     	return loader;
+    }
+    
+    public JavaClass getNextMappedSuperClass(JavaClass jClass){ 
+        JavaClass superClass = jClass.getSuperclass();
+        
+        if(superClass == null || isBuiltInJavaType(jClass) || superClass.getRawName().equals("java.lang.Object")){
+            return null;
+        }
+        
+        if(isAnnotationPresent(superClass, XmlTransient.class)){
+        	return getNextMappedSuperClass(superClass);
+        }
+        
+        return superClass;
     }
 }

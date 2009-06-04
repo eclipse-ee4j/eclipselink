@@ -897,17 +897,19 @@ public class MappingsGenerator {
      */
     private void setupInheritance(JavaClass jClass) {
         XMLDescriptor descriptor = typeInfo.get(jClass.getName()).getDescriptor();
-        NamespaceInfo namespaceInfo = this.packageToNamespaceMappings.get(jClass.getPackageName());
         if (descriptor == null) {
             return;
         }
            
-        JavaClass superClass = getNextMappedSuperClass(jClass, descriptor, namespaceInfo);
+        JavaClass superClass = helper.getNextMappedSuperClass(jClass);
         if(superClass == null){
             return;
         }
     
         TypeInfo superTypeInfo =  typeInfo.get(superClass.getName());
+        if(superTypeInfo == null){
+        	return;
+        }
         XMLDescriptor superDescriptor = superTypeInfo.getDescriptor();
         if (superDescriptor != null) {                          
             XMLSchemaReference sRef = descriptor.getSchemaReference();
@@ -915,7 +917,7 @@ public class MappingsGenerator {
                 return;
             }         
             
-            JavaClass rootMappedSuperClass = getRootMappedSuperClass(superClass, descriptor, namespaceInfo);                  
+            JavaClass rootMappedSuperClass = getRootMappedSuperClass(superClass);                  
             
             TypeInfo rootTypeInfo =  typeInfo.get(rootMappedSuperClass.getName());
 
@@ -955,31 +957,13 @@ public class MappingsGenerator {
         }                      
     }
     
-    private JavaClass getNextMappedSuperClass(JavaClass jClass, XMLDescriptor descriptor, NamespaceInfo namespaceInfo){ 
-        JavaClass superClass = jClass.getSuperclass();
-        
-        if(superClass == null){
-            return null;
-        }
-        
-        TypeInfo superTypeInfo =  typeInfo.get(superClass.getName());
-        if(superTypeInfo == null){
-            return null;
-        }
-        
-        if(superTypeInfo.isTransient()){    
-            generateMappings(superTypeInfo, descriptor, namespaceInfo);
-            return getNextMappedSuperClass(superClass, descriptor, namespaceInfo);
-        }
-        return superClass;
-    }
     
-    private JavaClass getRootMappedSuperClass(JavaClass javaClass, XMLDescriptor descriptor, NamespaceInfo namespaceInfo){
+    private JavaClass getRootMappedSuperClass(JavaClass javaClass){
         JavaClass rootMappedSuperClass = javaClass;
         
         JavaClass nextMappedSuperClass = rootMappedSuperClass;
         while(nextMappedSuperClass != null){
-            nextMappedSuperClass = getNextMappedSuperClass(nextMappedSuperClass, descriptor, namespaceInfo);
+            nextMappedSuperClass = helper.getNextMappedSuperClass(nextMappedSuperClass);
             if(nextMappedSuperClass == null){
                 return rootMappedSuperClass;
             }
