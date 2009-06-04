@@ -432,7 +432,16 @@
         </unzip>
     </target>
     
-    <target name="gen-build-for-maven" depends="extract-installer-archive">
+    <target name="extract-plugin-archive">
+        <!-- unzip original PluginInstaller to working dir -->
+        <unzip dest="${temp.rebuild.path}/bundlezip" src="${build.source.path}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}">
+            <patternset>
+                <include name="**/*"/>
+            </patternset>
+        </unzip>
+    </target>
+    
+    <target name="gen-build-for-maven" depends="extract-installer-archive, extract-plugin-archive">
         <!-- MUST BE DONE AFTER extracting a version of the archives -->
         <echo message="Prepare for Maven publishing"/>
         <property name="tmp.maven.dir" value="${temp.rebuild.path}/maven"/>
@@ -450,7 +459,7 @@
         </copy>
         <!-- get javax.persistence* -->
         <copy todir="${tmp.maven.dir}/${eclipselink.jpa.base}/${plugins.dir}">
-            <fileset dir="${temp.rebuild.path}/install/eclipselink/jlib">
+            <fileset dir="${temp.rebuild.path}/bundlezip">
                 <include name="javax.persistence*2.0*.jar"/>
             </fileset>
         </copy>
