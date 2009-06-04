@@ -316,7 +316,7 @@
         </jar>
     </target>
 
-	<target name="package-xml-extended" depends="">
+    <target name="package-xml-extended" depends="">
       <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.xml.extended.model}/META-INF">
           <fileset dir="${eclipselink.jpa.test}/resource/eclipselinkorm/${eclipselink.xml.extended.model}" includes="*.xml"/>
       </copy>

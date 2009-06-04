@@ -144,16 +144,7 @@
         <property name="download.path" value="${eclipselink.download.path}/milestones/${release.version}/${build.type}"/>
 
         <!-- generate Release Designation string for manifest                     -->
-        <condition property="release.designation" value="EclipseLink DeveloperBuild">
-            <equals arg1="${svn.revision}" arg2="NA"/>
-        </condition>
-        <condition property="release.designation" value="EclipseLink Daily Build">
-            <equals arg1="${build.type}" arg2="SNAPSHOT"/>
-        </condition>
-        <condition property="release.designation" value="EclipseLink Release ${release.version}">
-            <equals arg1="${build.type}" arg2="RELEASE"/>
-        </condition>
-        <property name="release.designation" value="EclipseLink ${build.type}"/>
+        <property name="release.designation" value="EclipseLink ${release.version}"/>
 
         <!-- generate string for tag creation (only used if milestone, or release build)  -->
         <condition property="milestone.tag" value="${release.version}">
@@ -167,12 +158,22 @@
         <echo message="ANT_ARGS='${env.ANT_ARGS}'"/>
         <echo message="ANT_OPTS='${env.ANT_OPTS}'"/>
         <echo message=" "/>
+        <echo message="env.JAVA_HOME   = '${env.JAVA_HOME}'"/>
+        <echo message="env.ANT_HOME    = '${env.ANT_HOME}'"/>
+        <echo message="env.JUNIT_HOME  = '${env.JUNIT_HOME}'"/>
+        <echo message="env.MAVENANT_DIR= '${env.MAVENANT_DIR}'"/>
+        <echo message="env.PATH        = '${env.PATH}'"/>
+        <echo message="env.CLASSPATH   = '${env.CLASSPATH}'"/>   
+        <echo message="env.SVN_EXEC    = '${env.SVN_EXEC}'"/>
+        <echo message="env.TARGET      = '${env.TARGET}'"/>
+        <echo message=" "/>
         <echo message="builddate.buildtime='${build.date}.${build.time}'"/>
         <echo message="java.version  ='${java.version}'"/>
         <echo message="os.name       ='${os.name}'"/>
         <echo message="os.arch       ='${os.arch}'"/>
         <echo message="os.version    ='${os.version}'"/>
         <echo message=" "/>
+        <echo message="branch.name   = '${branch.name}'"/>
         <echo message="basedir       ='${basedir}'"/>
         <echo message="build.deps.dir='${build.deps.dir}'"/>
         <echo message="build.root.dir='${build.root.dir}'"/>
@@ -375,6 +376,8 @@
         <fail message="Some of the junit tests failed.  See the ${report.dir}/junit-noframes.html file for details." if="junit.failed"/>
     </target>
 
+    <!--  =====  #####              Milestone Targets               #####  =====  -->
+
     <target name="create-tag">
         <echo message="Create a tag (${milestone.tag}) of this revision (${svn.revision}) for this milestone (${build.type})"/>
         <echo message="   ${svn.branch.url} = ${svn.branch.url}"/>
@@ -384,41 +387,61 @@
         <echo message="            ${svn.branch.url} \\"/>
         <echo message="            ${svn.base.url}/tags/${milestone.tag} \\"/>
         <echo message="            -m 'Create ${milestone.tag} Tag for ${version.string}'"/>
-        <!-- exec executable="${svn.exec}" failonerror="false" logError="true">
-            <arg value="copy"/>
-            <arg value="-r ${svn.revision}"/>
-            <arg value="${svn.branch.url}"/>
-            <arg value="${svn.base.url}/tags/${milestone.tag}"/>
-            <arg value="-m 'Create ${milestone.tag} Tag for ${version.string}'"/>
-        </exec -->
+        <exec executable="${svn.exec}" failonerror="false" logError="true">
+            <arg line="copy"/>
+            <arg line="-r ${svn.revision}"/>
+            <arg line="${svn.branch.url}"/>
+            <arg line="${svn.base.url}/tags/${milestone.tag}"/>
+            <arg line="-m 'Create ${milestone.tag} Tag for ${version.string}'"/>
+        </exec>
     </target>
 
     <target name="promote-pre-init">
+        <!-- svn.revision and build.time should already be set to the svn revision number and build date of the -->
+        <!-- build being promoted - however, build.time is undefined (it is currently unused)                   -->
         <fail unless="svn.revision" message="svn.revision doesn't exist and it should before we reach this point!"/>
         <fail unless="build.date" message="build.date doesn't exist and it should before we reach this point!"/>
         <!-- build.type should be set to "M#" or "RELEASE" on the command-line for milestone or release builds  -->
         <fail unless="build.type" message="build.type doesn't exist and it should before we reach this point!"/>
         <tstamp>
             <format property="promote.date" pattern="MMM dd, yyyy"/>
+            <format property="run.date" pattern="yyyyMMdd"/>
+            <format property="run.time" pattern="HHmm"/>
         </tstamp>
         <property name="version.qualifier" value="v${build.date}-r${svn.revision}"/>
     </target>
 
     <target name="promote-init" depends="promote-pre-init, common-init">
-        <property name="build.source.path" value="${eclipselink.download.path}/nightly/${release.version}/${build.date}"/>
-        <available file="${build.source.path}" type="dir" property="build.path.exist"/>
-        <fail unless="build.path.exist" message="${build.source.path} not found! Cannot promote it."/>
+        <!-- This depends upon freezing nightly builds after an RC# build - otherwise the nightly to be -->
+        <!-- promoted to a 'RELEASE' build (same as last milestone) could expire off the nightly site   -->
+        <property name="build.source.path"    value="${eclipselink.download.path}/nightly/${release.version}/${build.date}"/>
+        <available file="${build.source.path}"    property="build.path.exist" type="dir"/>
+        <!-- FAIL THIS PROMOTION if the source build is not found                                       -->
+        <fail unless="build.path.exist"     message="${build.source.path} not found! Cannot promote this build."/>
+        <property name="temp.rebuild.path" value="/tmp/EL${run.date}.${run.time}-${version.string}"/>
+        <delete dir="${temp.rebuild.path}" failonerror="false"/>
+        <mkdir dir="${temp.rebuild.path}"/>
     </target>
 
-    <target name="gen-build-for-maven">
+    <target name="extract-installer-archive">
+        <echo message="We need a copy of eclipslink.jar and javax.persistence for maven. Extracting from original InstallerZip for later copy..."/>
+        <unzip dest="${temp.rebuild.path}/install" src="${build.source.path}/${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}">
+            <patternset>
+                <include name="**/*"/>
+            </patternset>
+        </unzip>
+    </target>
+    
+    <target name="gen-build-for-maven" depends="extract-installer-archive">
+        <!-- MUST BE DONE AFTER extracting a version of the archives -->
         <echo message="Prepare for Maven publishing"/>
         <property name="tmp.maven.dir" value="${temp.rebuild.path}/maven"/>
         <!-- need to setup a dir that contains the correct contents for maven to promote -->
         <mkdir dir="${tmp.maven.dir}"/>
         <!-- get eclipselink source zip -->
         <copy file="${build.source.path}/${eclipselink.src.install.prefix}-${version.string}${eclipselink.zip.suffix}" tofile="${tmp.maven.dir}/${eclipselink.src.install.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
-        <!-- get eclipselink.jar -->
-        <copy todir="${tmp.maven.dir}" file="${signed.jar.path}/${eclipselink.jar.name}"/>
+        <!-- get eclipselink.jar (from temp InstallerZip location, so will work if signed or unsigned) -->
+        <copy todir="${tmp.maven.dir}" file="${temp.rebuild.path}/install/eclipselink/jlib/${eclipselink.jar.name}"/>
         <!-- get bundles -->
         <copy todir="${tmp.maven.dir}/${plugins.dir}">
             <fileset dir="${signed.jar.path}/${plugins.dir}">
@@ -427,8 +450,8 @@
         </copy>
         <!-- get javax.persistence* -->
         <copy todir="${tmp.maven.dir}/${eclipselink.jpa.base}/${plugins.dir}">
-            <fileset dir="${signed.jar.path}/${plugins.dir}">
-                <include name="javax.persistence*.jar"/>
+            <fileset dir="${temp.rebuild.path}/install/eclipselink/jlib">
+                <include name="javax.persistence*2.0*.jar"/>
             </fileset>
         </copy>
     </target>
@@ -448,7 +471,10 @@
         <copy todir="${download.path}" file="${build.source.path}/eclipselink-sdo-lrg-${version.string}.html"                                       failonerror="false"/>
         <copy todir="${download.path}" file="${build.source.path}/eclipselink-dbws-lrg-${version.string}.html"                                      failonerror="false"/>
         <copy todir="${download.path}" file="${build.source.path}/eclipselink-dbws-util-lrg-${version.string}.html"                                 failonerror="false"/>
-        <!-- ant antfile="uploadToMaven.xml" dir="${tmp.maven.dir}" target="upload-maven-all"/ -->
+        <copy todir="${tmp.maven.dir}" file="${basedir}/pom.xml.template"  failonerror="false"/>
+        <copy todir="${tmp.maven.dir}" file="${basedir}/uploadToMaven.xml"  failonerror="false"/>
+        <ant antfile="uploadToMaven.xml" dir="${tmp.maven.dir}" target="upload-maven-all"/>
+        <delete dir="${temp.rebuild.path}" failonerror="false"/>
     </target>
 
 </project>

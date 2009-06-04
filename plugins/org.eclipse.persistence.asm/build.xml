@@ -62,7 +62,7 @@
             <fileset dir="${asm.2.common.plugins.dir}" includes="${ant.project.name}_*.jar, ${ant.project.name}.source_*.jar"/>
        </delete>
     </target>
-    
+
     <!-- package -->
     <target name="package" description="jar OSGI bundle">
         <jar jarfile="${asm.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" manifest="${temp.dir}/MANIFEST.MF">
@@ -124,5 +124,5 @@
         <echo message="Bundle-ClassPath: .${line.separator}"                                                                                    file="${temp.dir}/MANIFEST.MF" append="true"/>
         <echo message="HK2-Bundle-Name: org.eclipse.persistence:${ant.project.name}${line.separator}"                                           file="${temp.dir}/MANIFEST.MF" append="true"/>
     </target>
-    
+
 </project>

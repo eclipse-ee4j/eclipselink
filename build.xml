@@ -47,6 +47,8 @@
         - build.all : compiles all components and tests, including Oracle extensions
         - build-eclipselink-jar : compiles all components except tests, packages eclipselink.jar
         - clean : removes all build generated files
+        - clean-runtime : removes all runtime specific (product) build generated files
+        - clean-testing : removes all testing specific build generated files
         - build-distribution : compiles and packages all jars, javadocs, installer
         - build-core : compiles all components, excluding tests, utilities, and Oracle extensions
         - build-extensions : compiles Oracle extensions and tests
@@ -117,8 +119,8 @@
                                             else="v${build.date}-r${svn.revision}">
         <equals arg1="${svn.revision}" arg2="NA"/>
     </condition>
-    <property name="version.string" value="${release.version}.${version.qualifier}"/>
-    <property name="release.designation"  value="EclipseLink DeveloperBuild"/>
+    <property name="version.string"      value="${release.version}.${version.qualifier}"/>
+    <property name="release.designation" value="EclipseLink DeveloperBuild"/>
 
     <path id="javadoc.path">
         <pathelement path="${eclipselink.jar.name}"/>
@@ -162,7 +164,9 @@
 <!-- ================================================================================= -->
 
     <!-- Cleans all build generated files. -->
-    <target name="clean" description="Clean the build">
+    <target name="clean" depends="clean-runtime,clean-testing" description="Clean the build"/>
+
+    <target name="clean-runtime" description="Clean the runtime projects">
         <ant antfile="build.xml" dir="${eclipselink.antlr}"            target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.asm}"              target="clean"/>
         <ant antfile="build.xml" dir="${jpa.prototype}"                target="clean"/>
@@ -177,17 +181,20 @@
         <ant antfile="build.xml" dir="${eclipselink.util.dbws}"        target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.util.rename}"      target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.util.workbench}"   target="clean"/>
+        <delete file="${eclipselink.jar.name}"/>
+        <delete file="${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}"/>
+        <delete file="${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"/>
+        <delete file="${eclipselink.javadoc.install.prefix}${eclipselink.zip.suffix}"/>
+        <delete file="${eclipselink.install.prefix}${eclipselink.zip.suffix}"/>
+    </target>
+
+    <target name="clean-testing" description="Clean the testing projects">
         <ant antfile="build.xml" dir="${eclipselink.core.test}"        target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.jpa.test}"         target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.moxy.test}"        target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.sdo.test}"         target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.util.workbench.test}" target="clean"/>
-        <delete file="${eclipselink.jar.name}"/>
-        <delete file="${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}"/>
-        <delete file="${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"/>
         <delete file="${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}"/>
-        <delete file="${eclipselink.javadoc.install.prefix}${eclipselink.zip.suffix}"/>
-        <delete file="${eclipselink.install.prefix}${eclipselink.zip.suffix}"/>
     </target>
 
     <!-- Compiles all runtime components (excluding Tests, Oracle extensions). -->
@@ -309,43 +316,43 @@
                     javax/persistence/PredicateOperand.class,
                     javax/persistence/PathExpression.class,
                     javax/persistence/Subquery.class,
-					javax/persistence/metamodel/Attribute.class,
-					javax/persistence/metamodel/BasicType.class,
-					javax/persistence/metamodel/Bindable.class,
-					javax/persistence/metamodel/CollectionAttribute.class,
-					javax/persistence/metamodel/EmbeddableType.class,
-					javax/persistence/metamodel/EntityType.class,
-					javax/persistence/metamodel/IdentifiableType.class,
-					javax/persistence/metamodel/ListAttribute.class,
-					javax/persistence/metamodel/ManagedType.class,
-					javax/persistence/metamodel/MapAttribute.class,
-					javax/persistence/metamodel/MappedSuperclassType.class,
-					javax/persistence/metamodel/Metamodel.class,
-					javax/persistence/metamodel/PluralAttribute.class,
-					javax/persistence/metamodel/SetAttribute.class,
-					javax/persistence/metamodel/SingularAttribute.class,
-					javax/persistence/metamodel/StaticMetamodel.class,
-					javax/persistence/metamodel/Type.class,
-					javax/persistence/criteria/AbstractQuery.class,
-					javax/persistence/criteria/CollectionJoin.class,
-					javax/persistence/criteria/CriteriaQuery.class,
-					javax/persistence/criteria/Expression.class,
-					javax/persistence/criteria/Fetch.class,
-					javax/persistence/criteria/FetchParent.class,
-					javax/persistence/criteria/From.class,
-					javax/persistence/criteria/Join.class,
-					javax/persistence/criteria/JoinType.class,
-					javax/persistence/criteria/ListJoin.class,
-					javax/persistence/criteria/MapJoin.class,
-					javax/persistence/criteria/Order.class,
-					javax/persistence/criteria/Path.class,
-					javax/persistence/criteria/PluralJoin.class,
-					javax/persistence/criteria/Predicate.class,
-					javax/persistence/criteria/QueryBuilder.class,
-					javax/persistence/criteria/Root.class,
-					javax/persistence/criteria/Selection.class,
-					javax/persistence/criteria/SetJoin.class,
-					javax/persistence/criteria/Subquery.class
+                    javax/persistence/metamodel/Attribute.class,
+                    javax/persistence/metamodel/BasicType.class,
+                    javax/persistence/metamodel/Bindable.class,
+                    javax/persistence/metamodel/CollectionAttribute.class,
+                    javax/persistence/metamodel/EmbeddableType.class,
+                    javax/persistence/metamodel/EntityType.class,
+                    javax/persistence/metamodel/IdentifiableType.class,
+                    javax/persistence/metamodel/ListAttribute.class,
+                    javax/persistence/metamodel/ManagedType.class,
+                    javax/persistence/metamodel/MapAttribute.class,
+                    javax/persistence/metamodel/MappedSuperclassType.class,
+                    javax/persistence/metamodel/Metamodel.class,
+                    javax/persistence/metamodel/PluralAttribute.class,
+                    javax/persistence/metamodel/SetAttribute.class,
+                    javax/persistence/metamodel/SingularAttribute.class,
+                    javax/persistence/metamodel/StaticMetamodel.class,
+                    javax/persistence/metamodel/Type.class,
+                    javax/persistence/criteria/AbstractQuery.class,
+                    javax/persistence/criteria/CollectionJoin.class,
+                    javax/persistence/criteria/CriteriaQuery.class,
+                    javax/persistence/criteria/Expression.class,
+                    javax/persistence/criteria/Fetch.class,
+                    javax/persistence/criteria/FetchParent.class,
+                    javax/persistence/criteria/From.class,
+                    javax/persistence/criteria/Join.class,
+                    javax/persistence/criteria/JoinType.class,
+                    javax/persistence/criteria/ListJoin.class,
+                    javax/persistence/criteria/MapJoin.class,
+                    javax/persistence/criteria/Order.class,
+                    javax/persistence/criteria/Path.class,
+                    javax/persistence/criteria/PluralJoin.class,
+                    javax/persistence/criteria/Predicate.class,
+                    javax/persistence/criteria/QueryBuilder.class,
+                    javax/persistence/criteria/Root.class,
+                    javax/persistence/criteria/Selection.class,
+                    javax/persistence/criteria/SetJoin.class,
+                    javax/persistence/criteria/Subquery.class
             "/>
         </jar>
     </target>

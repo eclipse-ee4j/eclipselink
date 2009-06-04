@@ -43,7 +43,7 @@
         <property name="build.compiler" value="javac1.5"/>
         <tstamp>
             <format property="run.date" pattern="yyyyMMdd"/>
-            <format property="build.time" pattern="HHmm"/>
+            <format property="run.time" pattern="HHmm"/>
         </tstamp>
         <property environment="env"/>
         <!-- This needs to be here because if not set we need to check OS     -->
