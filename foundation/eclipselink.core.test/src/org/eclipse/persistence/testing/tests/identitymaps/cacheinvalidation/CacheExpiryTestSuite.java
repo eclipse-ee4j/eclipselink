@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -188,6 +188,8 @@ public class CacheExpiryTestSuite extends TestSuite {
         addTest(new InvalidateClassRecurseOptionTest(false));
         addTest(new InvalidateAllTest());
         addTest(new PrimaryKeyQueryInUOWTest());
+        // EL bug 276362 - Re-Validate CacheKey before refreshing object graph
+        addTest(new UnitOfWorkRefreshAfterInvalidationTest());
     }
 
 }

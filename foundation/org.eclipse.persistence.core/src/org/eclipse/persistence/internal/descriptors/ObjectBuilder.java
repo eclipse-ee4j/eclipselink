@@ -614,7 +614,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                         }
                         //must release lock here to prevent acquiring multiple deferred locks but only
                         //releasing one at the end of the build object call.
-			//bug 5156075
+                        //bug 5156075
                         cacheKey.releaseDeferredLock();
                         //sleep and try again if we are not the owner of the lock for CR 2317
                         // prevents us from modifying a cache key that another thread has locked.												
@@ -701,8 +701,9 @@ public class ObjectBuilder implements Cloneable, Serializable {
                             cacheHit = false;
                             // CR #4365 - used to prevent infinite recursion on refresh object cascade all.
                             cacheKey.setLastUpdatedQueryId(query.getQueryId());
-                            concreteDescriptor.getObjectBuilder().buildAttributesIntoObject(domainObject, databaseRow, query, joinManager, true);
+                            // Bug 276362 - set the CacheKey's read time (re-validating the CacheKey) before buildAttributesIntoObject is called
                             cacheKey.setReadTime(query.getExecutionTime());
+                            concreteDescriptor.getObjectBuilder().buildAttributesIntoObject(domainObject, databaseRow, query, joinManager, true);
                         }
                     }
                 } else if (concreteDescriptor.hasFetchGroupManager() && (concreteDescriptor.getFetchGroupManager().isPartialObject(domainObject) && (!concreteDescriptor.getFetchGroupManager().isObjectValidForFetchGroup(domainObject, query.getFetchGroup())))) {
@@ -788,6 +789,8 @@ public class ObjectBuilder implements Cloneable, Serializable {
         concreteDescriptor.getFetchGroupManager().reset(domainObject);
         //set fetch group reference to the cached object
         concreteDescriptor.getFetchGroupManager().setObjectFetchGroup(domainObject, query.getFetchGroup(), session);
+        // Bug 276362 - set the CacheKey's read time (to re-validate the CacheKey) before buildAttributesIntoObject is called
+        cacheKey.setReadTime(query.getExecutionTime());
         //read in the fetch group data only
         concreteDescriptor.getObjectBuilder().buildAttributesIntoObject(domainObject, databaseRow, query, joinManager, false);
         //set refresh on fetch group
@@ -799,9 +802,6 @@ public class ObjectBuilder implements Cloneable, Serializable {
             OptimisticLockingPolicy policy = concreteDescriptor.getOptimisticLockingPolicy();
             cacheKey.setWriteLockValue(policy.getValueToPutInCache(databaseRow, session));
         }
-        cacheKey.setReadTime(query.getExecutionTime());
-        //validate the cached object
-        cacheKey.setInvalidationState(CacheKey.CHECK_INVALIDATION_POLICY);
     }
 
     /**
