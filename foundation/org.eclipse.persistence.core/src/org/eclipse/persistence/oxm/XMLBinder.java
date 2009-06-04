@@ -99,11 +99,8 @@ public class XMLBinder {
     
     public XMLRoot unmarshal(org.w3c.dom.Node node, Class javaClass) {
         validateNode(node);
-
-        XMLRoot root = null;
         reader.setDocPresPolicy(documentPreservationPolicy);
-        root = (XMLRoot)saxUnmarshaller.unmarshal(reader, node, javaClass);
-        return root;
+        return buildXMLRootFromObject(saxUnmarshaller.unmarshal(reader, node, javaClass));
     }
 
     /**
@@ -247,5 +244,46 @@ public class XMLBinder {
     public ErrorHandler getErrorHandler() {
         return this.unmarshaller.getErrorHandler();
     }
-
+    
+    /**
+     * Create an XMLRoot instance.  If the object is an instance of XMLRoot
+     * it will simply be returned.  Otherwise, we will create a new XMLRoot
+     * using the object's descriptor default root element - any prefixes
+     * will be resolved - and the given object
+     *  
+     * @param obj
+     * @return an XMLRoot instance encapsulating the given object
+     */
+    private XMLRoot buildXMLRootFromObject(Object obj) {    
+        if (obj instanceof XMLRoot) {           
+            return (XMLRoot) obj;            
+        }
+        XMLRoot xmlRoot = new XMLRoot();
+        xmlRoot.setObject(obj);
+        
+        // at this point, the default root element of the object being
+        // marshalled to == the root element  - here we need to create 
+        // an XMLRoot instance using information from the returned 
+        // object
+        org.eclipse.persistence.sessions.Session sess = this.unmarshaller.getXMLContext().getSession(obj);
+        XMLDescriptor desc = (XMLDescriptor) sess.getClassDescriptor(obj);
+        
+        // here we are assuming that if we've gotten this far, there
+        // must be a default root element set on the descriptor.  if
+        // this is incorrect, we need to check for null and throw an
+        // exception
+        String rootName = desc.getDefaultRootElement();
+        if (rootName == null) {
+            return xmlRoot;
+        }
+        String rootNamespaceUri = null;
+        int idx = rootName.indexOf(":");
+        if (idx != -1) {
+            rootNamespaceUri = desc.getNamespaceResolver().resolveNamespacePrefix(rootName.substring(0, idx)); 
+            rootName = rootName.substring(idx + 1);
+        }
+        xmlRoot.setLocalName(rootName);
+        xmlRoot.setNamespaceURI(rootNamespaceUri);
+        return xmlRoot;
+    }
 }
