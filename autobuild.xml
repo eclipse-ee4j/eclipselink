@@ -453,7 +453,7 @@
         <copy todir="${tmp.maven.dir}" file="${temp.rebuild.path}/install/eclipselink/jlib/${eclipselink.jar.name}"/>
         <!-- get bundles -->
         <copy todir="${tmp.maven.dir}/${plugins.dir}">
-            <fileset dir="${signed.jar.path}/${plugins.dir}">
+            <fileset dir="${temp.rebuild.path}/bundlezip">
                 <include name="org.eclipse.persistence.*.jar"/>
             </fileset>
         </copy>
