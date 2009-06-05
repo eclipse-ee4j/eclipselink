@@ -224,7 +224,7 @@ public class TimestampLockingPolicy extends VersionLockingPolicy {
     /**
      * INTERNAL:
      * Compares the value with the value from the object (or cache).
-     * Will return true if the object is newer.
+     * Will return true if the currentValue is newer than the domainObject.
      */
     public boolean isNewerVersion(Object currentValue, Object domainObject, java.util.Vector primaryKey, AbstractSession session) {
         java.sql.Timestamp writeLockFieldValue;
@@ -234,24 +234,14 @@ public class TimestampLockingPolicy extends VersionLockingPolicy {
         } else {
             writeLockFieldValue = (java.sql.Timestamp)lockValueFromObject(domainObject);
         }
-        // bug 6342382: object's lock value is null, it is NOT newer than any newWriteLockFieldValue.
-        if(writeLockFieldValue == null) {
-            return false;
-        }
-        // 2.5.1.6 if the write lock value is null, then what ever we have is treated as newer.
-        if (newWriteLockFieldValue == null) {
-            return true;
-        }
-        if (!(newWriteLockFieldValue.after(writeLockFieldValue))) {
-            return false;
-        }
-        return true;
+
+        return isNewerVersion(newWriteLockFieldValue, writeLockFieldValue);
     }
 
     /**
      * INTERNAL:
      * Compares the value from the row and from the object (or cache).
-     * Will return true if the object is newer than the row.
+     * Will return true if the row is newer than the object.
      */
     public boolean isNewerVersion(AbstractRecord databaseRow, Object domainObject, java.util.Vector primaryKey, AbstractSession session) {
         java.sql.Timestamp writeLockFieldValue;
@@ -261,19 +251,34 @@ public class TimestampLockingPolicy extends VersionLockingPolicy {
         } else {
             writeLockFieldValue = (java.sql.Timestamp)lockValueFromObject(domainObject);
         }
-        // bug 6342382: object's lock value is null, it is NOT newer than any newWriteLockFieldValue.
-        if(writeLockFieldValue == null) {
+        
+        return isNewerVersion(newWriteLockFieldValue, writeLockFieldValue);
+    }
+    
+    /**
+     * INTERNAL:
+     * Compares two values.
+     * Will return true if the firstLockFieldValue is newer than the secondWriteLockFieldValue.
+     */
+    public boolean isNewerVersion(Object firstLockFieldValue, Object secondWriteLockFieldValue) {
+        java.sql.Timestamp firstValue = (java.sql.Timestamp)firstLockFieldValue;
+        java.sql.Timestamp secondValue = (java.sql.Timestamp)secondWriteLockFieldValue;
+        
+        // 2.5.1.6 if the write lock value is null, then what ever we have is treated as newer.
+        if (firstValue == null) {
             return false;
         }
-        // 2.5.1.6 if the write lock value is null, then what ever we have is treated as newer.
-        if (newWriteLockFieldValue == null) {
+        
+        // bug 6342382: first is not null, second is null, so we know first>second.
+        if(secondValue == null) {
             return true;
         }
-        if (!(newWriteLockFieldValue.after(writeLockFieldValue))) {
-            return false;
+        
+        if (firstValue.after(secondValue)){
+            return true;
         }
-        return true;
-    }
+        return false;
+    } 
 
     /**
      * PUBLIC:

@@ -30,7 +30,7 @@ public class OptimisticLockExceptionResource extends ListResourceBundle {
                                            { "5007", "The object [{0}] must have a non-read-only mapping to the version lock field." },
                                            { "5008", "Must map the version lock field to java.sql.Timestamp when using Timestamp Locking" },
                                            { "5009", "The object of class [{1}] with primary key [{0}] cannot be unwrapped because it was deleted since it was last read." },
-                                           { "5010", "The object [{0}] cannot be merged because it has changed or been deleted since it was last read. {3}Class> {1}" },
+                                           { "5010", "The object [{0}] cannot be merged because it has changed or been deleted since it was last read. {2}Class> {1}" },
                                            { "5011", "One or more objects cannot be updated because it has changed or been deleted since it was last read" }
     };
 
