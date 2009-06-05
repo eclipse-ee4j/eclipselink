@@ -79,7 +79,15 @@ public class RemoteUnitOfWork extends UnitOfWorkImpl {
      * key value which will be inserted into corresponding local new objects.
      */
     protected Vector collectNewObjects() {
-        return Helper.buildVectorFromHashtableElements(getNewObjectsCloneToOriginal());
+        Set keys = getNewObjectsCloneToOriginal().keySet();
+        
+        Vector vector = new Vector(keys.size());
+        Iterator enumeration = keys.iterator();
+
+        while (enumeration.hasNext()) {
+            vector.addElement(enumeration.next());
+        }
+        return vector;
     }
 
     /**
@@ -400,8 +408,8 @@ public class RemoteUnitOfWork extends UnitOfWorkImpl {
         Enumeration newObjects = ((RemoteUnitOfWork)getParent()).getNewObjectsCache().elements();
 
         for (; returnedNewObjects.hasMoreElements();) {
-            Object cloneFromParent = ((RemoteUnitOfWork)getParent()).getNewObjectsOriginalToClone().get(newObjects.nextElement());
-            Object cloneFromSelf = getNewObjectsOriginalToClone().get(returnedNewObjects.nextElement());
+            Object cloneFromParent = newObjects.nextElement();
+            Object cloneFromSelf = returnedNewObjects.nextElement();
             if (cloneFromSelf != null) {
                 originalToClone.put(cloneFromParent, cloneFromSelf);
                 cloneToOriginal.put(cloneFromSelf, cloneFromParent);

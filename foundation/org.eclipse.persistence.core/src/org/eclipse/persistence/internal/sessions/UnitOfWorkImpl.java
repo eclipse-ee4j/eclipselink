@@ -4116,7 +4116,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
         getNewObjectsCloneToOriginal().put(clone, original);
         if (original != null) {
-        getNewObjectsOriginalToClone().put(original, clone);
+            getNewObjectsOriginalToClone().put(original, clone);
         }
         
         // run prePersist callbacks if any
