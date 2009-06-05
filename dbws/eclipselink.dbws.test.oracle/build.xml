@@ -26,11 +26,11 @@
 *     minorman - dbws oracle-specific test target
 #******************************************************************************/-->
 <!-- This ant project includes the following tasks:
-        - build (default) : cleans, compiles, and packages all tests
-        - clean   : cleans up all generated files and dirs
-        - compile : compiles all test classes
-        - package : packages tests into eclipselink-dbws-oracle-depend-test.jar
-        - run-tests: Runs DBWS Oracle-specific tests
+        - build (default): cleans, compiles, and packages all tests
+        - clean: cleans up all generated files and dirs
+        - compile: compiles all test classes
+        - package: packages tests into eclipselink-dbws-oracle-depend-test.jar
+        - test: Runs DBWS Oracle-specific tests
 -->
 <project
   name="eclipselink.dbws.test.oracle"
