@@ -52,4 +52,12 @@ public interface WeavedAttributeValueHolderInterface extends ValueHolderInterfac
      * @param isNew
      */
     public void setIsNewlyWeavedValueHolder(boolean isNew);
+    
+    /**
+     * INTERNAL:
+     * Return if add/remove should trigger instantiation or avoid.
+     * Current instantiation is avoided is using change tracking.
+     */
+    public boolean shouldAllowInstantiationDeferral();
+
 }

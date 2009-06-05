@@ -33,6 +33,8 @@ public class CacheBasedValueHolder extends DatabaseValueHolder {
     
     protected transient ForeignReferenceMapping mapping;
     protected Object[] references;
+    /** Setting to force the instantiation of the Collection on modification */
+    protected boolean shouldAllowInstantiationDeferral = true;
 
     public CacheBasedValueHolder(Object[] pks, AbstractSession session, ForeignReferenceMapping mapping){
         super();
@@ -74,6 +76,22 @@ public class CacheBasedValueHolder extends DatabaseValueHolder {
     @Override
     public boolean isPessimisticLockingValueHolder() {
         return false;
+    }
+
+    /**
+     * Set if instantiation deferral on modification should be available.
+     */
+    public void setShouldAllowInstantiationDeferral(boolean shouldAllowInstantiationDeferral){
+        this.shouldAllowInstantiationDeferral = shouldAllowInstantiationDeferral;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return if add/remove should trigger instantiation or avoid.
+     * Current instantiation is avoided is using change tracking.
+     */
+    public boolean shouldAllowInstantiationDeferral() {
+        return this.shouldAllowInstantiationDeferral;
     }
 
 }

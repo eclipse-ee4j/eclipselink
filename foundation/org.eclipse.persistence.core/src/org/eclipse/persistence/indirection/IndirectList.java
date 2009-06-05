@@ -853,6 +853,6 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
      * Current instantiation is avoided is using change tracking.
      */
     protected boolean shouldAvoidInstantiation() {
-        return (!isInstantiated()) && (_persistence_getPropertyChangeListener() instanceof AttributeChangeListener);
+        return (!isInstantiated()) && (_persistence_getPropertyChangeListener() instanceof AttributeChangeListener) && ((WeavedAttributeValueHolderInterface)getValueHolder()).shouldAllowInstantiationDeferral();
     }
 }
