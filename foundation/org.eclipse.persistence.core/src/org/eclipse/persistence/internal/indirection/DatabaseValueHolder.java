@@ -264,6 +264,15 @@ public abstract class DatabaseValueHolder implements WeavedAttributeValueHolderI
         setInstantiated();
     }
 
+    /**
+     * INTERNAL:
+     * Return if add/remove should trigger instantiation or avoid.
+     * Current instantiation is avoided is using change tracking.
+     */
+    public boolean shouldAllowInstantiationDeferral() {
+        return true;
+    }
+
     public String toString() {
         if (isInstantiated()) {
             return "{" + getValue() + "}";

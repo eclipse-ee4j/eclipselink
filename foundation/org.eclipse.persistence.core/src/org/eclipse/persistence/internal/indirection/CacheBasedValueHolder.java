@@ -15,6 +15,7 @@ package org.eclipse.persistence.internal.indirection;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.descriptors.changetracking.AttributeChangeListener;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 
@@ -33,6 +34,8 @@ public class CacheBasedValueHolder extends DatabaseValueHolder {
     
     protected transient ForeignReferenceMapping mapping;
     protected Object[] references;
+    /** Setting to force the instantiation of the Collection on modification */
+    protected boolean shouldAllowInstantiationDeferral = true;
 
     public CacheBasedValueHolder(Object[] pks, AbstractSession session, ForeignReferenceMapping mapping){
         super();
@@ -75,5 +78,23 @@ public class CacheBasedValueHolder extends DatabaseValueHolder {
     public boolean isPessimisticLockingValueHolder() {
         return false;
     }
+
+    /**
+     * Set if instantiation deferral on modification should be available.
+     */
+    public void setShouldAllowInstantiationDeferral(boolean shouldAllowInstantiationDeferral){
+        this.shouldAllowInstantiationDeferral = shouldAllowInstantiationDeferral;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return if add/remove should trigger instantiation or avoid.
+     * Current instantiation is avoided is using change tracking.
+     */
+    public boolean shouldAllowInstantiationDeferral() {
+        return this.shouldAllowInstantiationDeferral;
+    }
+
+    
 
 }

@@ -649,6 +649,6 @@ public class IndirectSet implements CollectionChangeTracker, Set, IndirectCollec
      * Current instantiation is avoided is using change tracking.
      */
     protected boolean shouldAvoidInstantiation() {
-        return (!isInstantiated()) && (_persistence_getPropertyChangeListener() instanceof AttributeChangeListener);
+        return (!isInstantiated()) && (_persistence_getPropertyChangeListener() instanceof AttributeChangeListener) && ((WeavedAttributeValueHolderInterface)getValueHolder()).shouldAllowInstantiationDeferral();
     }
 }

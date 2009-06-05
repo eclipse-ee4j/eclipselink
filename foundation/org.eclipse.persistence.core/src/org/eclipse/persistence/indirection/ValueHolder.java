@@ -137,6 +137,15 @@ public class ValueHolder implements WeavedAttributeValueHolderInterface, Cloneab
 
     /**
      * INTERNAL:
+     * Return if add/remove should trigger instantiation or avoid.
+     * Current instantiation is avoided is using change tracking.
+     */
+    public boolean shouldAllowInstantiationDeferral() {
+        return false;
+    }
+
+    /**
+     * INTERNAL:
      */
     public String toString() {
         if (getValue() == null) {

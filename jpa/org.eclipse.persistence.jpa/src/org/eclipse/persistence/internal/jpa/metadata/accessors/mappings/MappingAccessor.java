@@ -1550,7 +1550,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
                 mapping.useTransparentList();
             } else if (rawClass.equals(Collection.class)) {
                 mapping.useTransparentCollection();
-                mapping.setContainerPolicy(new CollectionContainerPolicy(ClassConstants.IndirectList_Class));
+//                mapping.setContainerPolicy(new CollectionContainerPolicy(ClassConstants.IndirectList_Class));
             } else if (rawClass.equals(Set.class)) {
                 mapping.useTransparentSet();
             } else {
