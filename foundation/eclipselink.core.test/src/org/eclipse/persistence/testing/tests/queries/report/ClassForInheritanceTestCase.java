@@ -13,16 +13,12 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.queries.report;
 
-import java.math.BigDecimal;
 import java.util.Enumeration;
 import java.util.Vector;
 
 import org.eclipse.persistence.expressions.ExpressionBuilder;
-import org.eclipse.persistence.internal.helper.ConversionManager;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.queries.ReportQuery;
-import org.eclipse.persistence.queries.ReportQueryResult;
-import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.framework.TestWarningException;
 import org.eclipse.persistence.testing.models.employee.domain.*;
 
 /**
@@ -47,6 +43,9 @@ public class ClassForInheritanceTestCase extends ReportQueryTestCase {
     }
 
     protected void setup() throws Exception {
+        if (getSession().isRemoteSession()){
+            throw new TestWarningException("This Test is not designed to work with RemoteSessions.");
+        }
         super.setup();
         ExpressionBuilder builder = new ExpressionBuilder();
         reportQuery = new ReportQuery(Project.class, builder);
