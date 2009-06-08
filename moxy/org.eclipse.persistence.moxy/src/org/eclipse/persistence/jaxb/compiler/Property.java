@@ -88,7 +88,7 @@ public class Property {
         valueType = helper.getJavaClass(Object.class);
 
         // look for marshal method
-        for (Iterator<JavaMethod> methodIt = adapterClass.getMethods().iterator(); methodIt.hasNext(); ) {
+        for (Iterator<JavaMethod> methodIt = adapterClass.getDeclaredMethods().iterator(); methodIt.hasNext(); ) {
             JavaMethod method = methodIt.next();
             // for some reason, getDeclaredMethods is returning inherited
             // methods - need to filter
