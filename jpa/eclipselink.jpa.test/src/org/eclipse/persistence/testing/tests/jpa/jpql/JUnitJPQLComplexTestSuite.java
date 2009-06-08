@@ -39,6 +39,7 @@ import org.eclipse.persistence.expressions.ExpressionBuilder;
 
 import org.eclipse.persistence.sessions.Session;
 
+import org.eclipse.persistence.platform.server.oc4j.Oc4jPlatform;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 
@@ -1545,7 +1546,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     
     public void mapContainerPolicyMapKeyInSelectTest(){
         // skip test on OC4j some this test fails on some OC4j versions because of an issue with Timestamp
-        if (getServerPlatform() != null && getServerPlatform().isOc4j()){
+        if (getServerSession().getServerPlatform() != null && getServerSession().getServerPlatform() instanceof Oc4jPlatform){
             return;
         }
         EntityManager em = createEntityManager();
@@ -1575,7 +1576,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     
     public void mapContainerPolicyMapValueInSelectTest(){
         // skip test on OC4j some this test fails on some OC4j versions because of an issue with Timestamp
-        if (getServerPlatform() != null && getServerPlatform().isOc4j()){
+        if (getServerSession().getServerPlatform() != null && getServerSession().getServerPlatform() instanceof Oc4jPlatform){
             return;
         }
         EntityManager em = createEntityManager();
@@ -1605,7 +1606,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     
     public void mapContainerPolicyMapEntryInSelectTest(){
         // skip test on OC4j some this test fails on some OC4j versions because of an issue with Timestamp
-        if (getServerPlatform() != null && getServerPlatform().isOc4j()){
+        if (getServerSession().getServerPlatform() != null && getServerSession().getServerPlatform() instanceof Oc4jPlatform){
             return;
         }
         EntityManager em = createEntityManager();
@@ -1639,7 +1640,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     
     public void mapContainerPolicyMapKeyInSelectionCriteriaTest(){
         // skip test on OC4j some this test fails on some OC4j versions because of an issue with Timestamp
-        if (getServerPlatform() != null && getServerPlatform().isOc4j()){
+        if (getServerSession().getServerPlatform() != null && getServerSession().getServerPlatform() instanceof Oc4jPlatform){
             return;
         }
         EntityManager em = createEntityManager();
@@ -1669,7 +1670,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     
     public void mapContainerPolicyMapValueInSelectionCriteriaTest(){
         // skip test on OC4j some this test fails on some OC4j versions because of an issue with Timestamp
-        if (getServerPlatform() != null && getServerPlatform().isOc4j()){
+        if (getServerSession().getServerPlatform() != null && getServerSession().getServerPlatform() instanceof Oc4jPlatform){
             return;
         }
         EntityManager em = createEntityManager();
@@ -1699,7 +1700,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     
     public void mappedKeyMapContainerPolicyMapKeyInSelectionCriteriaTest(){
         // skip test on OC4j some this test fails on some OC4j versions because of an issue with Timestamp
-        if (getServerPlatform() != null && getServerPlatform().isOc4j()){
+        if (getServerSession().getServerPlatform() != null && getServerSession().getServerPlatform() instanceof Oc4jPlatform){
             return;
         }
         EntityManager em = createEntityManager();
@@ -1732,7 +1733,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     
     public void mappedKeyMapContainerPolicyMapKeyInSelectTest(){
         // skip test on OC4j some this test fails on some OC4j versions because of an issue with Timestamp
-        if (getServerPlatform() != null && getServerPlatform().isOc4j()){
+        if (getServerSession().getServerPlatform() != null && getServerSession().getServerPlatform() instanceof Oc4jPlatform){
             return;
         }
         EntityManager em = createEntityManager();
@@ -1765,7 +1766,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     
     public void mappedKeyMapContainerPolicyMapEntryInSelectTest(){
         // skip test on OC4j some this test fails on some OC4j versions because of an issue with Timestamp
-        if (getServerPlatform() != null && getServerPlatform().isOc4j()){
+        if (getServerSession().getServerPlatform() != null && getServerSession().getServerPlatform() instanceof Oc4jPlatform){
             return;
         }
         EntityManager em = createEntityManager();
@@ -1800,7 +1801,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     
     public void mappedKeyMapContainerPolicyEmbeddableMapKeyInSelectionCriteriaTest(){
         // skip test on OC4j some this test fails on some OC4j versions because of an issue with Timestamp
-        if (getServerPlatform() != null && getServerPlatform().isOc4j()){
+        if (getServerSession().getServerPlatform() != null && getServerSession().getServerPlatform() instanceof Oc4jPlatform){
             return;
         }
         EntityManager em = createEntityManager();
@@ -1833,7 +1834,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     
     public void mappedKeyMapContainerPolicyElementCollectionSelectionCriteriaTest(){
         // skip test on OC4j some this test fails on some OC4j versions because of an issue with Timestamp
-        if (getServerPlatform() != null && getServerPlatform().isOc4j()){
+        if (getServerSession().getServerPlatform() != null && getServerSession().getServerPlatform() instanceof Oc4jPlatform){
             return;
         }
         EntityManager em = createEntityManager();
