@@ -269,7 +269,6 @@ public class XMLMarshaller {
             } else {
             	java.io.StringWriter writer = new java.io.StringWriter();
             	marshal(object, writer);
-            	System.out.println(writer.toString());
             	javax.xml.transform.stream.StreamSource source = new javax.xml.transform.stream.StreamSource(new java.io.StringReader(writer.toString()));
             	transformer.transform(source, result);
             }
