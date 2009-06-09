@@ -103,7 +103,9 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedJPAJunitTest("testCreateNewBuyer"));
         suite.addTest(new AdvancedJPAJunitTest("testVerifyNewBuyer"));
         suite.addTest(new AdvancedJPAJunitTest("testBuyerOptimisticLocking"));
-        
+        suite.addTest(new AdvancedJPAJunitTest("testOptimisticLockExceptionOnMerge"));
+        suite.addTest(new AdvancedJPAJunitTest("testOptimisticLockExceptionOnMergeWithAssumeExists"));
+
         suite.addTest(new AdvancedJPAJunitTest("testGiveFredASexChange"));
         suite.addTest(new AdvancedJPAJunitTest("testUpdatePenelopesPhoneNumberStatus"));
         suite.addTest(new AdvancedJPAJunitTest("testRemoveJillWithPrivateOwnedPhoneNumbers"));
@@ -898,7 +900,72 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         closeEntityManager(em);
     }
 
-    
+    /** 
+     * Tests an OptimisticLockingException is thrown when calling merge a detached and removed object.
+     * bug 272704
+     */
+    public void testOptimisticLockExceptionOnMerge() {
+        EntityManager em1 = createEntityManager();
+        beginTransaction(em1);
+
+        RuntimeException caughtException = null;
+        try {
+            Employee emp = new Employee();
+            emp.setLastName("OptimisticLockExceptionOnMerge");
+            emp.setVersion(10);
+            em1.persist(emp);
+            commitTransaction(em1);
+            closeEntityManager(em1);
+
+            em1 = createEntityManager();
+            beginTransaction(em1);
+
+            emp = em1.find(Employee.class, emp.getId());
+            em1.remove(emp);
+            commitTransaction(em1);
+            closeEntityManager(em1);
+            Integer version = emp.getVersion();
+
+            em1 = createEntityManager();
+            beginTransaction(em1);
+            //this is expected to throw an OptimisticLockException, because the version is >1
+            em1.merge(emp);
+
+            commitTransaction(em1);
+            
+        } catch (RuntimeException e) {
+            caughtException = e;
+            if (isTransactionActive(em1)){
+                rollbackTransaction(em1);
+            }
+        }
+        closeEntityManager(em1);
+        if (caughtException == null) {
+            fail("Optimistic lock exception was not thrown.");
+        } else if (!(caughtException instanceof javax.persistence.OptimisticLockException)) {
+            // Re-throw exception to ensure stacktrace appears in test result.
+            throw caughtException;
+        }        
+    }
+
+    /** 
+     * Tests an OptimisticLockingException is thrown when calling merge a detached and removed object.
+     * bug 272704
+     */
+    public void testOptimisticLockExceptionOnMergeWithAssumeExists() {
+        org.eclipse.persistence.sessions.Project project = getServerSession().getProject();
+        ClassDescriptor descriptor = (ClassDescriptor)project.getDescriptor(Employee.class);
+        int existencePolicy = descriptor.getQueryManager().getDoesExistQuery().getExistencePolicy();
+
+        descriptor.getQueryManager().assumeExistenceForDoesExist();
+
+        try {
+            testOptimisticLockExceptionOnMerge();
+        } finally {
+            descriptor.getQueryManager().getDoesExistQuery().setExistencePolicy(existencePolicy);
+        }
+    }
+
     /**
      * Tests a @NamedStoredProcedureQuery that returns raw data using executeUpdate().
      */
