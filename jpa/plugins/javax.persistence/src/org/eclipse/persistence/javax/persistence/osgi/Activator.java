@@ -12,8 +12,7 @@
  *     tware,mkeith - Initial OSGi support for JPA 
  *     smith - Cleanup of activator/listener into this class
  ******************************************************************************/
-
-package javax.persistence.osgi;
+package org.eclipse.persistence.javax.persistence.osgi;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -13,7 +13,7 @@
  *     ssmith - Refactored functionality into Activator
  *
  ******************************************************************************/
-package javax.persistence.osgi;
+package org.eclipse.persistence.javax.persistence.osgi;
 
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;

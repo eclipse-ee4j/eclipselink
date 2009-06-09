@@ -8,20 +8,20 @@
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
- * The API for this class and its comments are derived from the JPA 2.0 specification 
- * which is developed under the Java Community Process (JSR 317) and is copyright 
- * Sun Microsystems, Inc. 
- *
  * Contributors:
  *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
- *               Specification and licensing terms available from
- *               http://jcp.org/en/jsr/detail?id=317
+ *               Specification available from http://jcp.org/en/jsr/detail?id=317
  *     gyorke  - Post PFD updates
  *
- * EARLY ACCESS - PUBLIC DRAFT
+ * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
  * This is an implementation of an early-draft specification developed under the 
- * Java Community Process (JCP) and is made available for testing and evaluation 
- * purposes only. The code is not compatible with any specification of the JCP.
+ * Java Community Process (JCP).  The code is untested and presumed not to be a  
+ * compatible implementation of JSR 317: Java(TM) Persistence API, Version 2.0.   
+ * We encourage you to migrate to an implementation of the Java(TM) Persistence 
+ * API, Version 2.0 Specification that has been tested and verified to be compatible 
+ * as soon as such an implementation is available, and we encourage you to retain 
+ * this notice in any implementation of Java(TM) Persistence API, Version 2.0 
+ * Specification that you distribute.
  ******************************************************************************/
 package javax.persistence.criteria;
 
@@ -37,6 +37,8 @@ import javax.persistence.Parameter;
  * Factory for queries, select lists, restrictions, expressions, orderings. Note
  * that Predicate is used instead of Expression<Boolean> in this API in order to
  * work around the fact that Java generics are not compatible with varags.
+ * 
+ * @since Java Persistence 2.0
  */
 public interface QueryBuilder {
     /**

@@ -8,27 +8,22 @@
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
  * 
- * The API for this class and its comments are derived from the JPA 2.0 specification 
- * which is developed under the Java Community Process (JSR 317) and is copyright 
- * Sun Microsystems, Inc. 
- *
  * Contributors:
  *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
- *     				Specification and licensing terms available from
- *     		   		http://jcp.org/en/jsr/detail?id=317
- * 		mkeith - 	Add ability to run in OSGi and other environments by making 
- *              	provider discovery a strategy. Also allow providers to be 
- *              	added and removed dynamically.
+ *     		     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
- * EARLY ACCESS - PUBLIC DRAFT
+ * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
  * This is an implementation of an early-draft specification developed under the 
- * Java Community Process (JCP) and is made available for testing and evaluation 
- * purposes only. The code is not compatible with any specification of the JCP.
+ * Java Community Process (JCP).  The code is untested and presumed not to be a  
+ * compatible implementation of JSR 317: Java(TM) Persistence API, Version 2.0.   
+ * We encourage you to migrate to an implementation of the Java(TM) Persistence 
+ * API, Version 2.0 Specification that has been tested and verified to be compatible 
+ * as soon as such an implementation is available, and we encourage you to retain 
+ * this notice in any implementation of Java(TM) Persistence API, Version 2.0 
+ * Specification that you distribute.
  ******************************************************************************/
-
 package javax.persistence;
 
-// J2SE imports
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -44,15 +39,6 @@ import javax.persistence.spi.PersistenceUtil;
  * @since Java Persistence 1.0
  */
 public class Persistence {
-    /**
-     * This final String is deprecated and should be removed and is only here for TCK backward compatibility
-     */
-    public static final String PERSISTENCE_PROVIDER = "javax.persistence.spi.PeristenceProvider";
-    /**
-     * This instance variable is deprecated and should be removed and is only here for TCK backward compatibility
-     */
-
-    protected static final Set<PersistenceProvider> providers = new HashSet<PersistenceProvider>();
     
     /**
      * Create and return an EntityManagerFactory for the named persistence unit.
@@ -107,4 +93,19 @@ public class Persistence {
         // return new PersistenceUtilImpl();
     }
 
+    /**
+     * This final String is deprecated and should be removed and is only here for TCK backward compatibility
+     * @since Java Persistence 1.0
+     * @deprecated
+     */
+    @Deprecated
+    public static final String PERSISTENCE_PROVIDER = "javax.persistence.spi.PeristenceProvider";
+    
+    /**
+     * This instance variable is deprecated and should be removed and is only here for TCK backward compatibility
+     * @since Java Persistence 1.0
+     * @deprecated
+     */
+    @Deprecated
+    protected static final Set<PersistenceProvider> providers = new HashSet<PersistenceProvider>();
 }
