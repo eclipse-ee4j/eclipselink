@@ -87,7 +87,7 @@ public class Persistence {
     /**
      * Return the PersistenceUtil instance
      */
-    public PersistenceUtil getPersistenceUtil() {
+    public static PersistenceUtil getPersistenceUtil() {
         // TODO - Implement Util
         throw new RuntimeException("JPA 2.0 Feature Not yet Implemented");
         // return new PersistenceUtilImpl();
