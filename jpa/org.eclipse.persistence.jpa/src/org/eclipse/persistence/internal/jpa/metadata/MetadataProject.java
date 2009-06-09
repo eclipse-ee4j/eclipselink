@@ -24,7 +24,7 @@
  *     04/24/2009-2.0 Guy Pelletier 
  *       - 270011: JPA 2.0 MappedById support
  *     04/30/2009-2.0 Michael O'Brien 
- *       - 266912: JPA 2.0 Metamodel API (part of Criteria API) 
+ *       - 266912: JPA 2.0 Metamodel API (part of Criteria API)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -42,7 +42,6 @@ import java.util.Set;
 
 import javax.persistence.Embeddable;
 import javax.persistence.GenerationType;
-import javax.persistence.MappedSuperclass;
 import javax.persistence.spi.PersistenceUnitInfo;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -87,7 +86,6 @@ import org.eclipse.persistence.sequencing.TableSequence;
 import org.eclipse.persistence.sequencing.NativeSequence;
 
 import org.eclipse.persistence.sessions.DatasourceLogin;
-import org.eclipse.persistence.sessions.Project;
 
 /**
  * INTERNAL:

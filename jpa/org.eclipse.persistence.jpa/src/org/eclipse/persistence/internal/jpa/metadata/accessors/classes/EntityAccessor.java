@@ -57,7 +57,6 @@ import javax.persistence.SecondaryTable;
 import javax.persistence.SecondaryTables;
 import javax.persistence.Table;
 
-import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.helper.DatabaseTable;

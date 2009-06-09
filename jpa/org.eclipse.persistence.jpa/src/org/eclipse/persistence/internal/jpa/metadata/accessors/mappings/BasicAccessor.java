@@ -26,7 +26,7 @@
  *     04/24/2009-2.0 Guy Pelletier 
  *       - 270011: JPA 2.0 MappedById support
  *     04/30/2009-2.0 Michael O'Brien 
- *       - 266912: JPA 2.0 Metamodel API (part of Criteria API) 
+ *       - 266912: JPA 2.0 Metamodel API (part of Criteria API)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -51,7 +51,6 @@ import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.MappedSuperclassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
