@@ -27,6 +27,8 @@
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  *     04/03/2009-2.0 Guy Pelletier
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+ *     06/09/2009-2.0 Guy Pelletier 
+ *       - 249037: JPA 2.0 persisting list item index
  *******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
@@ -70,6 +72,7 @@ import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.DiscriminatorClassMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.DiscriminatorColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.columns.OrderColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.converters.ConversionValueMetadata;
@@ -147,6 +150,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         addDescriptor(buildTimeOfDayDescriptor());
         
         addDescriptor(buildColumnDescriptor());
+        addDescriptor(buildOrderColumnDescriptor());
         addDescriptor(buildJoinColumnDescriptor());
         addDescriptor(buildPrimaryKeyJoinColumnDescriptor());
         addDescriptor(buildAccessMethodsDescriptor());
@@ -1663,8 +1667,32 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         return descriptor;
     }
 
+    /**
+     * INTERNAL:
+     * XSD: order-column
+     */
+    protected ClassDescriptor buildOrderColumnDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(OrderColumnMetadata.class);
+    
+        descriptor.addMapping(getNameAttributeMapping());
+        descriptor.addMapping(getNullableAttributeMapping());
+        descriptor.addMapping(getInsertableAttributeMapping());
+        descriptor.addMapping(getUpdatableAttributeMapping());
+        descriptor.addMapping(getColumnDefinitionAttributeMapping());
+        
+        XMLDirectMapping validationModeMapping = new XMLDirectMapping();
+        validationModeMapping.setAttributeName("m_validationMode");
+        validationModeMapping.setGetMethodName("getValidationMode");
+        validationModeMapping.setSetMethodName("setValidationMode");
+        validationModeMapping.setXPath("@validation-mode");
+        descriptor.addMapping(validationModeMapping);
+        
+        return descriptor;
+    }
     
     /**
+     * INTERNAL:
      * XSD: primary-key
      */
     protected ClassDescriptor buildPrimaryKeyDescriptor() {
@@ -3216,7 +3244,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         orderColumnMapping.setAttributeName("m_orderColumn");
         orderColumnMapping.setGetMethodName("getOrderColumn");
         orderColumnMapping.setSetMethodName("setOrderColumn");
-        orderColumnMapping.setReferenceClass(ColumnMetadata.class);
+        orderColumnMapping.setReferenceClass(OrderColumnMetadata.class);
         orderColumnMapping.setXPath("orm:order-column");
         return orderColumnMapping;
     }

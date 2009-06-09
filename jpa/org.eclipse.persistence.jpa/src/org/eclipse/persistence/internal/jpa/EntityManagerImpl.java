@@ -1355,11 +1355,12 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("cant_lock_not_managed_object", new Object[] { entity }));
             }
 
-            if (lockMode == null || lockMode == LockModeType.NONE) {
+            
+            if (lockMode == null || lockMode.name().equals(ObjectLevelReadQuery.NONE)) {
                 // Nothing to do
                 return;
             }
-            if (lockMode == LockModeType.PESSIMISTIC_READ || lockMode == LockModeType.PESSIMISTIC_WRITE || lockMode == LockModeType.PESSIMISTIC_FORCE_INCREMENT) {
+            if (lockMode.name().equals(ObjectLevelReadQuery.PESSIMISTIC_READ) || lockMode.name().equals(ObjectLevelReadQuery.PESSIMISTIC_WRITE) || lockMode.name().equals(ObjectLevelReadQuery.PESSIMISTIC_FORCE_INCREMENT)) {
                 // Get the read object query and apply the properties to it.
                 ReadObjectQuery query = getReadObjectQuery(entity, properties);
 

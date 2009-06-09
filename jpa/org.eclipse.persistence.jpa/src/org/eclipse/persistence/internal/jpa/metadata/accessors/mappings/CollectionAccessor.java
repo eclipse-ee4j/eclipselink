@@ -29,6 +29,8 @@
  *       - 249033: JPA 2.0 Orphan removal       
  *     06/02/2009-2.0 Guy Pelletier 
  *       - 278768: JPA 2.0 Association Override Join Table
+ *     06/09/2009-2.0 Guy Pelletier 
+ *       - 249037: JPA 2.0 persisting list item index
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -64,6 +66,7 @@ import org.eclipse.persistence.internal.jpa.metadata.columns.AssociationOverride
 import org.eclipse.persistence.internal.jpa.metadata.columns.AttributeOverrideMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.columns.OrderColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.EnumeratedMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.TemporalMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.tables.JoinTableMetadata;
@@ -87,15 +90,15 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
     private static final String ASCENDING = "ASC";
     private static final String DESCENDING = "DESC";
     
-    private MetadataClass m_mapKeyClass;
     private ColumnMetadata m_mapKeyColumn;
-    private ColumnMetadata m_orderColumn; // TODO: mapped but not processed.
-    
     private EnumeratedMetadata m_mapKeyEnumerated;
     
     private List<AssociationOverrideMetadata> m_mapKeyAssociationOverrides;
     private List<AttributeOverrideMetadata> m_mapKeyAttributeOverrides;
     private List<JoinColumnMetadata> m_mapKeyJoinColumns;
+    
+    private MetadataClass m_mapKeyClass;
+    private OrderColumnMetadata m_orderColumn;
     
     private String m_mapKey;
     private String m_mapKeyConvert;
@@ -188,7 +191,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
         
         // Set the order column if one is defined.
         if (isAnnotationPresent(OrderColumn.class)) {
-            m_orderColumn = new ColumnMetadata(getAnnotation(OrderColumn.class), accessibleObject, getAttributeName());
+            m_orderColumn = new OrderColumnMetadata(getAnnotation(OrderColumn.class), accessibleObject);
         }
         
         // Set the map key enumerated if one is defined.
@@ -332,7 +335,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
      * INTERNAL: 
      * Used for OX mapping.
      */
-    protected ColumnMetadata getOrderColumn() {
+    protected OrderColumnMetadata getOrderColumn() {
         return m_orderColumn;
     }
     
@@ -500,6 +503,11 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
         
         // Process a @ReturnInsert and @ReturnUpdate (to log a warning message)
         processReturnInsertAndUpdate();
+        
+        // Process the order column if specified.
+        if (m_orderColumn != null) {
+            m_orderColumn.process(mapping, getDescriptor());
+        }
     }  
     
     /**
@@ -734,7 +742,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
      * INTERNAL: 
      * Used for OX mapping.
      */
-    public void setOrderColumn(ColumnMetadata orderColumn) {
+    public void setOrderColumn(OrderColumnMetadata orderColumn) {
         m_orderColumn = orderColumn;
     }
 }

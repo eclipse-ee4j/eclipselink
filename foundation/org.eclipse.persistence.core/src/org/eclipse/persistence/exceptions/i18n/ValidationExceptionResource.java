@@ -299,6 +299,7 @@ public class ValidationExceptionResource extends ListResourceBundle {
                                            { "7317", "List order field is not supported for [{0}]." },
                                            { "7318", "[{0}] has list order set, but CollectionChangeEvent.REMOVE was sent without index." },
                                            { "7319", "The attribute named [{1}] from the embeddable class [{0}] is not a valid relationship to use with the association override named [{2}] from [{3}]. An association override may be specified only when the embeddable is on the owning side of the relationship." },
+                                           { "7320", "The attribute [{0}] from the class [{1}] (or inherited from a mapped superclass) is not a valid type to use with an order column specification. When specifying an order column, the attribute must be of type List." },
  };
     
     /**

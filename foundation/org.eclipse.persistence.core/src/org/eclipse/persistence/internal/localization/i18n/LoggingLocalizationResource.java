@@ -202,6 +202,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "metadata_default_converter_data_type", "The data type for the converter named [{2}] used with the element [{1}] in the entity [{0}] is being defaulted to [{3}]." },
         { "metadata_default_converter_object_type", "The object type for the converter named [{2}] used with the element [{1}] in the entity [{0}] is being defaulted to [{3}]." },
         { "metadata_default_column", "The column name for element [{0}] is being defaulted to: {1}." },
+        { "metadata_default_order_column", "The order column name for element [{0}] is being defaulted to: {1}." },
         { "metadata_default_key_column", "The key column name for the basic map mapping element [{0}] is being defaulted to: {1}." },
         { "metadata_default_value_column", "The value column name for the basic collection/map mapping element mapping element [{0}] is being defaulted to: {1}." },
         { "metadata_default_pk_column", "The primary key column name for the mapping element [{0}] is being defaulted to: {1}." },

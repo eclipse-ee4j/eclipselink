@@ -17,6 +17,8 @@
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  *     06/02/2009-2.0 Guy Pelletier 
  *       - 278768: JPA 2.0 Association Override Join Table
+ *     06/09/2009-2.0 Guy Pelletier 
+ *       - 249037: JPA 2.0 persisting list item index
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.xml.inherited;
 
@@ -811,16 +813,26 @@ public class InheritedTableManager extends TableCreator {
         fieldID.setForeignKeyFieldName("XML_EXPERT_CONSUMER.ID");
         table.addField(fieldID);
     
-        FieldDefinition field1 = new FieldDefinition();
-        field1.setName("DESIGNATION");
-        field1.setTypeName("VARCHAR");
-        field1.setSize(20);
-        field1.setShouldAllowNull(false);
-        field1.setIsPrimaryKey(false);
-        field1.setUnique(false);
-        field1.setIsIdentity(false);
-        table.addField(field1);
+        FieldDefinition fieldDESIGNATION = new FieldDefinition();
+        fieldDESIGNATION.setName("DESIGNATION");
+        fieldDESIGNATION.setTypeName("VARCHAR");
+        fieldDESIGNATION.setSize(20);
+        fieldDESIGNATION.setShouldAllowNull(false);
+        fieldDESIGNATION.setIsPrimaryKey(false);
+        fieldDESIGNATION.setUnique(false);
+        fieldDESIGNATION.setIsIdentity(false);
+        table.addField(fieldDESIGNATION);
     
+        FieldDefinition fieldDESIGNATIONS_ORDER = new FieldDefinition();
+        fieldDESIGNATIONS_ORDER.setName("designations_ORDER");
+        fieldDESIGNATIONS_ORDER.setTypeName("NUMERIC");
+        fieldDESIGNATIONS_ORDER.setSize(15);
+        fieldDESIGNATIONS_ORDER.setShouldAllowNull(true);
+        fieldDESIGNATIONS_ORDER.setIsPrimaryKey(false);
+        fieldDESIGNATIONS_ORDER.setUnique(false);
+        fieldDESIGNATIONS_ORDER.setIsIdentity(false);
+        table.addField(fieldDESIGNATIONS_ORDER);
+        
         return table;
     }
     
@@ -1088,15 +1100,25 @@ public class InheritedTableManager extends TableCreator {
         fieldID.setForeignKeyFieldName("XML_NOVICE_CONSUMER.ID");
         table.addField(fieldID);
     
-        FieldDefinition field1 = new FieldDefinition();
-        field1.setName("DESIGNATION");
-        field1.setTypeName("VARCHAR");
-        field1.setSize(20);
-        field1.setShouldAllowNull(false);
-        field1.setIsPrimaryKey(false);
-        field1.setUnique(false);
-        field1.setIsIdentity(false);
-        table.addField(field1);
+        FieldDefinition fieldDESIGNATION = new FieldDefinition();
+        fieldDESIGNATION.setName("DESIGNATION");
+        fieldDESIGNATION.setTypeName("VARCHAR");
+        fieldDESIGNATION.setSize(20);
+        fieldDESIGNATION.setShouldAllowNull(false);
+        fieldDESIGNATION.setIsPrimaryKey(false);
+        fieldDESIGNATION.setUnique(false);
+        fieldDESIGNATION.setIsIdentity(false);
+        table.addField(fieldDESIGNATION);
+        
+        FieldDefinition fieldDESIGNATIONS_ORDER = new FieldDefinition();
+        fieldDESIGNATIONS_ORDER.setName("designations_ORDER");
+        fieldDESIGNATIONS_ORDER.setTypeName("NUMERIC");
+        fieldDESIGNATIONS_ORDER.setSize(15);
+        fieldDESIGNATIONS_ORDER.setShouldAllowNull(true);
+        fieldDESIGNATIONS_ORDER.setIsPrimaryKey(false);
+        fieldDESIGNATIONS_ORDER.setUnique(false);
+        fieldDESIGNATIONS_ORDER.setIsIdentity(false);
+        table.addField(fieldDESIGNATIONS_ORDER);
     
         return table;
     }

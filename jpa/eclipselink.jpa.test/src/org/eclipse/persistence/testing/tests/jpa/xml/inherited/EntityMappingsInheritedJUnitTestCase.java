@@ -17,6 +17,8 @@
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  *     06/02/2009-2.0 Guy Pelletier 
  *       - 278768: JPA 2.0 Association Override Join Table
+ *     06/09/2009-2.0 Guy Pelletier 
+ *       - 249037: JPA 2.0 persisting list item index
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.xml.inherited;
 
@@ -85,6 +87,7 @@ public class EntityMappingsInheritedJUnitTestCase extends JUnitTestCase {
         suite.addTest(new EntityMappingsInheritedJUnitTestCase("testReadBeerConsumer"));
         suite.addTest(new EntityMappingsInheritedJUnitTestCase("testCreateNoviceBeerConsumer"));
         suite.addTest(new EntityMappingsInheritedJUnitTestCase("testReadNoviceBeerConsumer"));
+        suite.addTest(new EntityMappingsInheritedJUnitTestCase("testOrderColumnNoviceBeerConsumerDesignations"));
         suite.addTest(new EntityMappingsInheritedJUnitTestCase("testCreateExpertBeerConsumer"));
         suite.addTest(new EntityMappingsInheritedJUnitTestCase("testReadExpertBeerConsumer"));
         suite.addTest(new EntityMappingsInheritedJUnitTestCase("testNamedNativeQueryBeerConsumers"));
@@ -392,8 +395,11 @@ public class EntityMappingsInheritedJUnitTestCase extends JUnitTestCase {
             beerConsumer.getAwards().put(2, 2);
             beerConsumer.getAwards().put(3, 3);
             
-            beerConsumer.getDesignations().add("1");
+            beerConsumer.getDesignations().add("5");
+            beerConsumer.getDesignations().add("4");
             beerConsumer.getDesignations().add("2");
+            beerConsumer.getDesignations().add("3");
+            beerConsumer.getDesignations().add("1");
 
             Record record1 = new Record();
             record1.setDescription("Slowest beer ever consumed - 10 hours");
@@ -468,9 +474,12 @@ public class EntityMappingsInheritedJUnitTestCase extends JUnitTestCase {
         assertFalse("Missing award code - 3", awardCode == null);
         assertTrue("Award code 3 is incorrect", awardCode.equals(3));    
         
-        assertTrue("Incorrect number of designations returned.", consumer.getDesignations().size() == 2);
-        assertTrue("Missing designation - 1", consumer.getDesignations().contains("1"));
-        assertTrue("Missing designation - 2", consumer.getDesignations().contains("2"));
+        assertTrue("Incorrect number of designations returned.", consumer.getDesignations().size() == 5);
+        assertTrue("Missing designation - 5 at index 0", consumer.getDesignations().get(0).equals("5"));
+        assertTrue("Missing designation - 4 at index 1", consumer.getDesignations().get(1).equals("4"));
+        assertTrue("Missing designation - 2 at index 2", consumer.getDesignations().get(2).equals("2"));
+        assertTrue("Missing designation - 3 at index 3", consumer.getDesignations().get(3).equals("3"));
+        assertTrue("Missing designation - 1 at index 4", consumer.getDesignations().get(4).equals("1"));
         
         assertTrue("Incorrect number of records returned.", consumer.getRecords().size() == 1);
     }
@@ -655,6 +664,44 @@ public class EntityMappingsInheritedJUnitTestCase extends JUnitTestCase {
         }
         
     }
+    
+    public void testOrderColumnNoviceBeerConsumerDesignations() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        NoviceBeerConsumer beerConsumer;
+        
+        try {
+            // These are the designations we have right now ... 
+            // index: 0 - 1 - 2 - 3 - 4
+            //  item: 5 - 4 - 2 - 3 - 1
+           beerConsumer = em.find(NoviceBeerConsumer.class, m_noviceBeerConsumerId);
+            
+            String stringFour = beerConsumer.getDesignations().remove(1);
+            String stringTwo = beerConsumer.getDesignations().remove(1);
+            beerConsumer.getDesignations().add(stringTwo);
+            
+            // This is what we have done 
+            // index: 0 - 1 - 2 - 3
+            //  item: 5 - 3 - 1 - 2
+
+            commitTransaction(em);    
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+            throw e;
+        }
+        
+        closeEntityManager(em);
+        
+        clearCache();
+        em = createEntityManager();
+        BeerConsumer refreshedBC = em.find(BeerConsumer.class, m_noviceBeerConsumerId);       
+        assertTrue("The novice beer consumer read back did not match the original", getServerSession().compareObjects(beerConsumer, refreshedBC));
+    }
+    
     //Verify Relationship
     public void testVerifyOneToManyRelationships() {
         EntityManager em = createEntityManager();

@@ -385,6 +385,7 @@ public class ValidationException extends EclipseLinkException {
     public static final int COLLECTION_REMOVE_EVENT_WITH_NO_INDEX = 7318;
     
     public static final int INVALID_EMBEDDABLE_ATTRIBUTE_FOR_ASSOCIATION_OVERRIDE = 7319;
+    public static final int INVALID_ATTRIBUTE_TYPE_FOR_ORDER_COLUMN = 7320;
     
     /**
      * INTERNAL:
@@ -992,6 +993,18 @@ public class ValidationException extends EclipseLinkException {
         return validationException;
     }
 
+    /**
+     * PUBLIC:
+     * An order column can only be applied to an attribute of type List.
+     */
+    public static ValidationException invalidAttributeTypeForOrderColumn(String attributeName, Object cls) {
+        Object[] args = { attributeName, cls };
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INVALID_ATTRIBUTE_TYPE_FOR_ORDER_COLUMN, args));
+        validationException.setErrorCode(INVALID_ATTRIBUTE_TYPE_FOR_ORDER_COLUMN);
+        return validationException;
+    }
+    
     public static ValidationException invalidCallbackMethod(Object listenerClass, String methodName) {
         Object[] args = { listenerClass, methodName };
 

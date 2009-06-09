@@ -16,6 +16,8 @@
  *       - 248293: JPA 2.0 Element Collections (part 1)   
  *     06/02/2009-2.0 Guy Pelletier 
  *       - 278768: JPA 2.0 Association Override Join Table
+ *     06/09/2009-2.0 Guy Pelletier 
+ *       - 249037: JPA 2.0 persisting list item index
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.xml.inherited;
 
@@ -31,7 +33,7 @@ import javax.persistence.Transient;
 public abstract class RatedBeerConsumer<X, Y, Z> extends BeerConsumer {
     private Collection<X> acclaims;
     private Map<Y, Z> awards;
-    private Collection<String> designations;
+    private List<String> designations;
     private Collection<Record> records;
     private Accredidation accredidation;
     @Transient private int iq;
@@ -62,7 +64,7 @@ public abstract class RatedBeerConsumer<X, Y, Z> extends BeerConsumer {
         return committees;
     }
     
-    public Collection<String> getDesignations() {
+    public List<String> getDesignations() {
         return designations;
     }
 
@@ -90,7 +92,7 @@ public abstract class RatedBeerConsumer<X, Y, Z> extends BeerConsumer {
         this.committees = committees;
     }
     
-    public void setDesignations(Collection<String> designations) {
+    public void setDesignations(List<String> designations) {
         this.designations = designations;
     }
     

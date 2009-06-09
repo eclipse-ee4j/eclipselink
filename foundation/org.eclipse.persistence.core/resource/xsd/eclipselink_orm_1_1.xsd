@@ -24,7 +24,7 @@
 
   <xsd:annotation>
     <xsd:documentation>
-      @(#)eclipselink_orm_1_0.xsd 1.0  February 1 2008
+      @(#)eclipselink_orm_1_1.xsd 1.0  February 1 2008
     </xsd:documentation>
   </xsd:annotation>
   <xsd:annotation>
@@ -51,6 +51,15 @@
 
      ]]></xsd:documentation>
   </xsd:annotation>
+
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="emptyType"/>
+  <xsd:simpleType name="versionType">
+    <xsd:restriction base="xsd:token">
+      <xsd:pattern value="[0-9]+(\.[0-9]+)*"/>
+    </xsd:restriction>
+  </xsd:simpleType>
 
   <!-- **************************************************** -->
 
@@ -445,10 +454,6 @@
 
   <!-- **************************************************** -->
 
-  <xsd:complexType name="emptyType"/>
-
-  <!-- **************************************************** -->
-
   <xsd:element name="entity-mappings">
     <xsd:complexType>
       <xsd:annotation>
@@ -614,6 +619,7 @@
       <xsd:element name="description" type="xsd:string" minOccurs="0"/>
       <xsd:element name="schema" type="xsd:string" minOccurs="0"/>
       <xsd:element name="catalog" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="delimited-identifiers" type="orm:emptyType" minOccurs="0"/>
       <xsd:element name="access" type="orm:access-type" minOccurs="0"/>
       <xsd:element name="cascade-persist" type="orm:emptyType" minOccurs="0"/>
       <xsd:element name="entity-listeners" type="orm:entity-listeners" minOccurs="0"/>
@@ -686,6 +692,7 @@
     <xsd:attribute name="name" type="xsd:string"/>
     <xsd:attribute name="class" type="xsd:string" use="required"/>
     <xsd:attribute name="access" type="orm:access-type"/>
+    <xsd:attribute name="cacheable" type="xsd:boolean"/>
     <xsd:attribute name="metadata-complete" type="xsd:boolean"/>
     <xsd:attribute name="read-only" type="xsd:boolean"/>
     <xsd:attribute name="existence-checking" type="orm:existence-type"/>
@@ -1904,6 +1911,28 @@
 
   <!-- **************************************************** -->
 
+  <xsd:simpleType name="lock-mode-type">
+    <xsd:annotation>
+      <xsd:documentation>
+        public enum LockModeType { READ, WRITE, OPTIMISTIC,
+        OPTIMISTIC_FORCE_INCREMENT, PESSIMISTIC_READ, PESSIMISTIC_WRITE,
+        PESSIMISTIC_FORCE_INCREMENT, NONE};
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:token">
+      <xsd:enumeration value="READ"/>
+      <xsd:enumeration value="WRITE"/>
+      <xsd:enumeration value="OPTIMISTIC"/>
+      <xsd:enumeration value="OPTIMISTIC_FORCE_INCREMENT"/>
+      <xsd:enumeration value="PESSIMISTIC_READ"/>
+      <xsd:enumeration value="PESSIMISTIC_WRITE"/>
+      <xsd:enumeration value="PESSIMISTIC_FORCE_INCREMENT"/>
+      <xsd:enumeration value="NONE"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!-- **************************************************** -->
+
   <xsd:complexType name="many-to-many">
     <xsd:annotation>
       <xsd:documentation>
@@ -2191,6 +2220,7 @@
     <xsd:sequence>
       <xsd:element name="description" type="xsd:string" minOccurs="0"/>
       <xsd:element name="query" type="xsd:string"/>
+      <xsd:element name="lock-mode" type="orm:lock-mode-type" minOccurs="0"/>
       <xsd:element name="hint" type="orm:query-hint" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
@@ -2251,7 +2281,7 @@
     </xsd:annotation>
     <xsd:sequence>
       <xsd:element name="hint" type="orm:query-hint" minOccurs="0" maxOccurs="unbounded"/>
-          <xsd:element name="parameter" type="orm:stored-procedure-parameter" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="parameter" type="orm:stored-procedure-parameter" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
     <xsd:attribute name="result-class" type="xsd:string"/>
@@ -2546,9 +2576,6 @@
           boolean insertable() default true;
           boolean updatable() default true;
           String columnDefinition() default "";
-          boolean contiguous() default true;
-          int base() default 0;
-          String table() default "";
         }
 
       </xsd:documentation>
@@ -2558,10 +2585,29 @@
     <xsd:attribute name="insertable" type="xsd:boolean"/>
     <xsd:attribute name="updatable" type="xsd:boolean"/>
     <xsd:attribute name="column-definition" type="xsd:string"/>
-    <xsd:attribute name="contiguous" type="xsd:boolean"/>
-    <xsd:attribute name="base" type="xsd:int"/>
-    <xsd:attribute name="table" type="xsd:string"/>
+    <xsd:attribute name="validation-mode" type="orm:order-column-validation-mode"/>
   </xsd:complexType>
+
+  <!-- **************************************************** -->
+
+  <xsd:simpleType name="order-column-validation-mode">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        public enum OrderColumnValidationMode {
+          NONE,
+          CORRECTION,
+          EXCEPTION
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:token">
+      <xsd:enumeration value="NONE"/>
+      <xsd:enumeration value="CORRECTION"/>
+      <xsd:enumeration value="EXCEPTION"/>
+    </xsd:restriction>
+  </xsd:simpleType>
 
   <!-- **************************************************** -->
 
@@ -3269,12 +3315,14 @@
 
         @Target({}) @Retention(RUNTIME)
         public @interface UniqueConstraint {
+          String name() default "";
           String[] columnNames();
         }
 
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
+      <xsd:element name="name" type="xsd:string" minOccurs="0"/>
       <xsd:element name="column-name" type="xsd:string" maxOccurs="unbounded"/>
     </xsd:sequence>
   </xsd:complexType>
@@ -3399,14 +3447,6 @@
     <xsd:attribute name="access" type="orm:access-type"/>
     <xsd:attribute name="mutable" type="xsd:boolean"/>
   </xsd:complexType>
-
-  <!-- **************************************************** -->
-
-  <xsd:simpleType name="versionType">
-    <xsd:restriction base="xsd:token">
-      <xsd:pattern value="[0-9]+(\.[0-9]+)*"/>
-    </xsd:restriction>
-  </xsd:simpleType>
 
   <!-- **************************************************** -->
 

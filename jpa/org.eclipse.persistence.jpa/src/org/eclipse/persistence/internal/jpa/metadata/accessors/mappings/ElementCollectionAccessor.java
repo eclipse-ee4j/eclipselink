@@ -20,6 +20,8 @@
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  *     06/02/2009-2.0 Guy Pelletier 
  *       - 278768: JPA 2.0 Association Override Join Table
+ *     06/09/2009-2.0 Guy Pelletier 
+ *       - 249037: JPA 2.0 persisting list item index
  ******************************************************************************/ 
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -55,6 +57,7 @@ import org.eclipse.persistence.internal.jpa.metadata.columns.AssociationOverride
 import org.eclipse.persistence.internal.jpa.metadata.columns.AttributeOverrideMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.columns.OrderColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.EnumeratedMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.TemporalMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.tables.CollectionTableMetadata;
@@ -83,7 +86,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
     
     private ColumnMetadata m_column;
     private ColumnMetadata m_mapKeyColumn;
-    private ColumnMetadata m_orderColumn; // TODO: mapped but not processed.
+    private OrderColumnMetadata m_orderColumn;
     
     private EnumeratedMetadata m_mapKeyEnumerated;
     
@@ -201,7 +204,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
         
         // Set the order column if one is defined.
         if (isAnnotationPresent(OrderColumn.class)) {
-            m_orderColumn = new ColumnMetadata(getAnnotation(OrderColumn.class), accessibleObject, getAttributeName());
+            m_orderColumn = new OrderColumnMetadata(getAnnotation(OrderColumn.class), accessibleObject);
         }
     }
     
@@ -393,7 +396,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
      * INTERNAL: 
      * Used for OX mapping.
      */
-    public ColumnMetadata getOrderColumn() {
+    public OrderColumnMetadata getOrderColumn() {
         return m_orderColumn;
     }
     
@@ -587,6 +590,10 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
             processDirectMapMapping();
         } else {
             throw ValidationException.invalidTargetClass(getAttributeName(), getJavaClass());
+        }
+        
+        if (m_orderColumn != null) {
+            m_orderColumn.process((CollectionMapping) getMapping(), getDescriptor());
         }
     }
     
@@ -843,7 +850,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
      * INTERNAL: 
      * Used for OX mapping.
      */
-    public void setOrderColumn(ColumnMetadata orderColumn) {
+    public void setOrderColumn(OrderColumnMetadata orderColumn) {
         m_orderColumn = orderColumn;
     }
 

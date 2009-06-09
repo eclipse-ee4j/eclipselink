@@ -25,6 +25,8 @@
  *       - 249033: JPA 2.0 Orphan removal
  *     06/02/2009-2.0 Guy Pelletier 
  *       - 278768: JPA 2.0 Association Override Join Table
+ *     06/09/2009-2.0 Guy Pelletier 
+ *       - 249037: JPA 2.0 persisting list item index
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -110,11 +112,10 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
         
         // Set the mapped by id if one is present.
         if (isAnnotationPresent(MappedById.class)) {
-            m_mappedById = (String) getAnnotation(MappedById.class).getAttribute("value");
-            // If the value is null a value still must be set, otherwise it will not be known to be there.
-            if (m_mappedById == null) {
-                m_mappedById = "";
-            }
+            // Call getAttributeString in this case because we rely on the
+            // mappedById not being null and it's value of "" means we need to
+            // default. getAttribute returns null which kills (hasMappedById())
+            m_mappedById = (String) getAnnotation(MappedById.class).getAttributeString("value");
         }
         
         // Set the derived id if one is specified.

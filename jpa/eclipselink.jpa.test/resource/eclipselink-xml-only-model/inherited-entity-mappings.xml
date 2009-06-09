@@ -79,6 +79,8 @@
                 <column name="AWARD_CODE"/>
             </element-collection>
             <element-collection name="designations">
+                <!-- Let it default in this case to: designations_ORDER -->
+                <order-column/>
                 <column name="DESIGNATION"/>
             </element-collection>
             <element-collection name="records"/>

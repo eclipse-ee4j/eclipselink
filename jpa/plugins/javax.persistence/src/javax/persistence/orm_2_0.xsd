@@ -21,7 +21,6 @@
     with any specification of the JCP.
   -->
   <!-- Java Persistence API object/relational mapping file schema -->
-<?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema targetNamespace="http://java.sun.com/xml/ns/persistence/orm"
   xmlns:orm="http://java.sun.com/xml/ns/persistence/orm" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
   elementFormDefault="qualified" attributeFormDefault="unqualified" version="2.0">
@@ -62,7 +61,9 @@
       <xsd:pattern value="[0-9]+(\.[0-9]+)*"/>
     </xsd:restriction>
   </xsd:simpleType>
+
   <!-- **************************************************** -->
+
   <xsd:element name="entity-mappings">
     <xsd:complexType>
       <xsd:annotation>
@@ -526,7 +527,7 @@
           <xsd:choice>
             <xsd:element name="map-key-temporal" type="orm:temporal" minOccurs="0"/>
             <xsd:element name="map-key-enumerated" type="orm:enumerated" minOccurs="0"/>
-            <xsd:element name="map-key-attribute-override" type="orm:attribute-override" minOccurs="0"/>
+            <xsd:element name="map-key-attribute-override" type="orm:attribute-override" minOccurs="0" maxOccurs="unbounded"/>
           </xsd:choice>
           <xsd:choice>
             <xsd:element name="map-key-column" type="orm:map-key-column" minOccurs="0"/>
@@ -947,6 +948,7 @@
   </xsd:complexType>
 
   <!-- **************************************************** -->
+
   <xsd:simpleType name="lock-mode-type">
     <xsd:annotation>
       <xsd:documentation>
@@ -966,7 +968,9 @@
       <xsd:enumeration value="NONE"/>
     </xsd:restriction>
   </xsd:simpleType>
+
   <!-- **************************************************** -->
+
   <xsd:complexType name="many-to-many">
     <xsd:annotation>
       <xsd:documentation>
@@ -993,7 +997,7 @@
           <xsd:choice>
             <xsd:element name="map-key-temporal" type="orm:temporal" minOccurs="0"/>
             <xsd:element name="map-key-enumerated" type="orm:enumerated" minOccurs="0"/>
-            <xsd:element name="map-key-attribute-override" type="orm:attribute-override" minOccurs="0"/>
+            <xsd:element name="map-key-attribute-override" type="orm:attribute-override" minOccurs="0" maxOccurs="unbounded"/>
           </xsd:choice>
           <xsd:choice>
             <xsd:element name="map-key-column" type="orm:map-key-column" minOccurs="0"/>
@@ -1256,7 +1260,7 @@
           <xsd:choice>
             <xsd:element name="map-key-temporal" type="orm:temporal" minOccurs="0"/>
             <xsd:element name="map-key-enumerated" type="orm:enumerated" minOccurs="0"/>
-            <xsd:element name="map-key-attribute-override" type="orm:attribute-override" minOccurs="0"/>
+            <xsd:element name="map-key-attribute-override" type="orm:attribute-override" minOccurs="0" maxOccurs="unbounded"/>
           </xsd:choice>
           <xsd:choice>
             <xsd:element name="map-key-column" type="orm:map-key-column" minOccurs="0"/>
@@ -1344,7 +1348,6 @@
           boolean insertable() default true;
           boolean updatable() default true;
           String columnDefinition() default "";
-          String table() default "";
         }
 
       </xsd:documentation>
@@ -1354,7 +1357,6 @@
     <xsd:attribute name="insertable" type="xsd:boolean"/>
     <xsd:attribute name="updatable" type="xsd:boolean"/>
     <xsd:attribute name="column-definition" type="xsd:string"/>
-    <xsd:attribute name="table" type="xsd:string"/>
   </xsd:complexType>
 
   <!-- **************************************************** -->
@@ -1715,7 +1717,7 @@
 
         @Target({}) @Retention(RUNTIME)
         public @interface UniqueConstraint {
-        String name() default "";
+          String name() default "";
           String[] columnNames();
         }
 

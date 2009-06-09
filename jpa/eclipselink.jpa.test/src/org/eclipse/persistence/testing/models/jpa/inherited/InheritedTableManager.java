@@ -25,6 +25,8 @@
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  *     06/02/2009-2.0 Guy Pelletier 
  *       - 278768: JPA 2.0 Association Override Join Table
+ *     06/09/2009-2.0 Guy Pelletier 
+ *       - 249037: JPA 2.0 persisting list item index
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
@@ -885,16 +887,26 @@ public class InheritedTableManager extends TableCreator {
         fieldID.setForeignKeyFieldName("EXPERT_CONSUMER.ID");
         table.addField(fieldID);
     
-        FieldDefinition field1 = new FieldDefinition();
-        field1.setName("DESIGNATION");
-        field1.setTypeName("VARCHAR");
-        field1.setSize(20);
-        field1.setShouldAllowNull(false);
-        field1.setIsPrimaryKey(false);
-        field1.setUnique(false);
-        field1.setIsIdentity(false);
-        table.addField(field1);
-    
+        FieldDefinition fieldDESIGNATION = new FieldDefinition();
+        fieldDESIGNATION.setName("DESIGNATION");
+        fieldDESIGNATION.setTypeName("VARCHAR");
+        fieldDESIGNATION.setSize(20);
+        fieldDESIGNATION.setShouldAllowNull(false);
+        fieldDESIGNATION.setIsPrimaryKey(false);
+        fieldDESIGNATION.setUnique(false);
+        fieldDESIGNATION.setIsIdentity(false);
+        table.addField(fieldDESIGNATION);
+        
+        FieldDefinition fieldORDER_COLUMN = new FieldDefinition();
+        fieldORDER_COLUMN.setName("ORDER_COLUMN");
+        fieldORDER_COLUMN.setTypeName("NUMERIC");
+        fieldORDER_COLUMN.setSize(15);
+        fieldORDER_COLUMN.setShouldAllowNull(true);
+        fieldORDER_COLUMN.setIsPrimaryKey(false);
+        fieldORDER_COLUMN.setUnique(false);
+        fieldORDER_COLUMN.setIsIdentity(false);
+        table.addField(fieldORDER_COLUMN);
+        
         return table;
     }
     
@@ -1290,15 +1302,25 @@ public class InheritedTableManager extends TableCreator {
         fieldID.setForeignKeyFieldName("NOVICE_CONSUMER.ID");
         table.addField(fieldID);
     
-        FieldDefinition field1 = new FieldDefinition();
-        field1.setName("DESIGNATION");
-        field1.setTypeName("VARCHAR");
-        field1.setSize(20);
-        field1.setShouldAllowNull(false);
-        field1.setIsPrimaryKey(false);
-        field1.setUnique(false);
-        field1.setIsIdentity(false);
-        table.addField(field1);
+        FieldDefinition fieldDESIGNATION = new FieldDefinition();
+        fieldDESIGNATION.setName("DESIGNATION");
+        fieldDESIGNATION.setTypeName("VARCHAR");
+        fieldDESIGNATION.setSize(20);
+        fieldDESIGNATION.setShouldAllowNull(false);
+        fieldDESIGNATION.setIsPrimaryKey(false);
+        fieldDESIGNATION.setUnique(false);
+        fieldDESIGNATION.setIsIdentity(false);
+        table.addField(fieldDESIGNATION);
+        
+        FieldDefinition fieldORDER_COLUMN = new FieldDefinition();
+        fieldORDER_COLUMN.setName("ORDER_COLUMN");
+        fieldORDER_COLUMN.setTypeName("NUMERIC");
+        fieldORDER_COLUMN.setSize(15);
+        fieldORDER_COLUMN.setShouldAllowNull(true);
+        fieldORDER_COLUMN.setIsPrimaryKey(false);
+        fieldORDER_COLUMN.setUnique(false);
+        fieldORDER_COLUMN.setIsIdentity(false);
+        table.addField(fieldORDER_COLUMN);
     
         return table;
     }

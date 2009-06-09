@@ -17,7 +17,9 @@
  *     02/25/2009-2.0 Guy Pelletier 
  *       - 265359: JPA 2.0 Element Collections - Metadata processing portions
  *     06/02/2009-2.0 Guy Pelletier 
- *       - 278768: JPA 2.0 Association Override Join Table   
+ *       - 278768: JPA 2.0 Association Override Join Table
+ *     06/09/2009-2.0 Guy Pelletier 
+ *       - 249037: JPA 2.0 persisting list item index
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
@@ -40,6 +42,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.OrderColumn;
 import javax.persistence.Transient;
 
 import static javax.persistence.AccessType.FIELD;
@@ -63,9 +66,10 @@ public abstract class RatedBeerConsumer<X, Y, Z> extends BeerConsumer<String> {
     // An element collection representing a direct collection mapping.
     @ElementCollection
     @Column(name="DESIGNATION")
+    @OrderColumn(name="ORDER_COLUMN")
     // CollectionTable will default in this case, Entity name + "_" + attribute name
     // JoinColumns will default in this case which are different from BasicCollection collection table default
-    private Collection<String> designations;
+    private List<String> designations;
     
     // An element collection representing an aggregate collection mapping.
     @ElementCollection
@@ -127,7 +131,7 @@ public abstract class RatedBeerConsumer<X, Y, Z> extends BeerConsumer<String> {
         return committees;
     }
     
-    public Collection<String> getDesignations() {
+    public List<String> getDesignations() {
         return designations;
     }
     
@@ -158,7 +162,7 @@ public abstract class RatedBeerConsumer<X, Y, Z> extends BeerConsumer<String> {
         this.committees = committees;
     }
     
-    public void setDesignations(Collection<String> designations) {
+    public void setDesignations(List<String> designations) {
         this.designations = designations;
     }
     

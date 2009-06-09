@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
+ *     06/09/2009-2.0 Guy Pelletier 
+ *       - 249037: JPA 2.0 persisting list item index
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
@@ -18,24 +20,23 @@ import javax.persistence.DiscriminatorType;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
-import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
 /**
- * Object to hold onto discriminator column metadata.
+ * INTERNAL:
+ * Object to process a JPA discriminator column into an EclipseLink database field.
  * 
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
  */
-public class DiscriminatorColumnMetadata extends ORMetadata {
-    private String m_discriminatorType;
+public class DiscriminatorColumnMetadata extends MetadataColumn {
     private Integer m_length;
-    private String m_columnDefinition;
-    private String m_name;
+    private String m_discriminatorType;
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
     public DiscriminatorColumnMetadata() {
         super("<discriminator-column>");
@@ -48,19 +49,9 @@ public class DiscriminatorColumnMetadata extends ORMetadata {
         super(discriminatorColumn, accessibleObject);
         
         if (discriminatorColumn != null) {
-            m_columnDefinition =  (String) discriminatorColumn.getAttribute("columnDefinition");
-            m_discriminatorType = (String) discriminatorColumn.getAttribute("discriminatorType"); 
             m_length = (Integer) discriminatorColumn.getAttribute("length");
-            m_name = (String) discriminatorColumn.getAttribute("name"); 
+            m_discriminatorType = (String) discriminatorColumn.getAttribute("discriminatorType");    
         }
-    }
-
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public String getColumnDefinition() {
-        return m_columnDefinition;
     }
     
     /**
@@ -73,39 +64,14 @@ public class DiscriminatorColumnMetadata extends ORMetadata {
     
     /**
      * INTERNAL:
-     * Used for OX mapping.
      */
-    public Integer getLength() {
-        return m_length;
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public String getName() {
-        return m_name;
-    }
-    
-    /**
-     * INTERNAL:
-     * Process a discriminator column metadata into an EclipseLink 
-     * DatabaseField. What is done with that field is up to the caller 
-     * of this method.
-     */
-    public DatabaseField process(MetadataDescriptor descriptor, String annotatedElementName, String loggingCtx) {     
-        DatabaseField field = new DatabaseField();
-
-        // Process the name
-        field.setName(MetadataHelper.getName(m_name, "DTYPE", loggingCtx, descriptor.getLogger(), annotatedElementName));
+    @Override
+    public DatabaseField getDatabaseField() {
+        // Initialize the DatabaseField with values and defaults.
+        DatabaseField field = super.getDatabaseField();
         
-        // Process the length.
         field.setLength(MetadataHelper.getValue(m_length, 31));
         
-        // Process the column definition.
-        field.setColumnDefinition(MetadataHelper.getValue(m_columnDefinition, ""));
-        
-        // Process the type.
         if (m_discriminatorType == null || m_discriminatorType.equals(DiscriminatorType.STRING.name())) {
             field.setType(String.class);
         } else if (m_discriminatorType.equals(DiscriminatorType.CHAR.name())) {
@@ -116,10 +82,6 @@ public class DiscriminatorColumnMetadata extends ORMetadata {
             field.setType(Integer.class);
         }
         
-        // Set the table.
-        field.setTable(descriptor.getPrimaryTable());
-
-        // Return the field for the caller to handle.
         return field;
     }
     
@@ -127,8 +89,27 @@ public class DiscriminatorColumnMetadata extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setColumnDefinition(String columnDefinition) {
-        m_columnDefinition = columnDefinition;
+    public Integer getLength() {
+        return m_length;
+    }
+    
+    /**
+     * INTERNAL:
+     * Process a discriminator column metadata into an EclipseLink 
+     * DatabaseField. What is done with that field is up to the caller 
+     * of this method.
+     */
+    public DatabaseField process(MetadataDescriptor descriptor, String annotatedElementName, String loggingCtx) {     
+        DatabaseField field = getDatabaseField();
+
+        // Process the name
+        field.setName(MetadataHelper.getName(field.getName(), "DTYPE", loggingCtx, descriptor.getLogger(), annotatedElementName));
+        
+        // Set the table.
+        field.setTable(descriptor.getPrimaryTable());
+
+        // Return the field for the caller to handle.
+        return field;
     }
     
     /**
@@ -145,13 +126,5 @@ public class DiscriminatorColumnMetadata extends ORMetadata {
      */
     public void setLength(Integer length) {
         m_length = length;
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public void setName(String name) {
-        m_name = name;
     }
 }

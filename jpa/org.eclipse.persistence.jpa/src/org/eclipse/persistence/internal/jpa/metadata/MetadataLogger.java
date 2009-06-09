@@ -21,6 +21,8 @@
  *       - 248293: JPA 2.0 Element Collections (part 2)    
  *     04/24/2009-2.0 Guy Pelletier 
  *       - 270011: JPA 2.0 MappedById support
+ *     06/09/2009-2.0 Guy Pelletier 
+ *       - 249037: JPA 2.0 persisting list item index
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -126,6 +128,7 @@ public class MetadataLogger {
     public static final String PK_COLUMN = "metadata_default_pk_column";
     public static final String FK_COLUMN = "metadata_default_fk_column";
     public static final String QK_COLUMN = "metadata_default_qk_column";
+    public static final String ORDER_COLUMN = "metadata_default_order_column";
     public static final String MAP_KEY_COLUMN = "metadata_default_key_column";
     public static final String VALUE_COLUMN = "metadata_default_value_column"; // applies to maps and collections
     public static final String SOURCE_PK_COLUMN = "metadata_default_source_pk_column";
@@ -245,7 +248,8 @@ public class MetadataLogger {
         m_ctxStrings.put(COLUMN, COLUMN);
         m_ctxStrings.put(PK_COLUMN, PK_COLUMN);
         m_ctxStrings.put(FK_COLUMN, FK_COLUMN);
-        m_ctxStrings.put(QK_COLUMN, QK_COLUMN);        
+        m_ctxStrings.put(QK_COLUMN, QK_COLUMN);      
+        m_ctxStrings.put(ORDER_COLUMN, ORDER_COLUMN);
         m_ctxStrings.put(VALUE_COLUMN, VALUE_COLUMN);
         m_ctxStrings.put(MAP_KEY_COLUMN, MAP_KEY_COLUMN);
         m_ctxStrings.put(SOURCE_PK_COLUMN, SOURCE_PK_COLUMN);
