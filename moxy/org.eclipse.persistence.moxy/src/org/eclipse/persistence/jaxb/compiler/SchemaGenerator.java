@@ -938,7 +938,7 @@ public class SchemaGenerator {
                 element.setName(next.getLocalPart());
 
                 ElementDeclaration nextElement = additionalElements.get(next);
-                JavaClass javaClass = helper.getJavaClass(nextElement.getJavaTypeName());
+                JavaClass javaClass = nextElement.getJavaType();
 
                 //First check for built in type
                 QName schemaType = (QName) helper.getXMLToJavaTypeMap().get(javaClass.getRawName());

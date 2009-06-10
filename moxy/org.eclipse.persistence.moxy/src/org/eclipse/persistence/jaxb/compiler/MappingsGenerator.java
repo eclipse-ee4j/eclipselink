@@ -394,6 +394,10 @@ public class MappingsGenerator {
             QName elementName = element.getElementName();
             boolean isText = !(this.typeInfo.containsKey(element.getJavaTypeName())) && !(element.getJavaTypeName().equals("java.lang.Object"));            
             XMLField xmlField = this.getXPathForElement("", elementName, namespaceInfo, isText);
+            //ensure byte[] goes to base64 instead of the default hex.
+            if(helper.getXMLToJavaTypeMap().get(element.getJavaType().getRawName()) == XMLConstants.BASE_64_BINARY_QNAME) {
+                xmlField.setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
+            }
             if(isCollection){
                 ((XMLChoiceCollectionMapping)mapping).addChoiceElement(xmlField, element.getJavaTypeName());
                 XMLMapping nestedMapping = ((XMLChoiceCollectionMapping)mapping).getChoiceElementMappings().get(xmlField);

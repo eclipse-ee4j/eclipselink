@@ -264,7 +264,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
                                 
                  XMLConversionManager xmlConversionManager = (XMLConversionManager) session.getDatasourcePlatform().getConversionManager();                                      
                  QName schemaType = (QName)xmlConversionManager.getDefaultJavaTypes().get(nextMapping.getAttributeClassification());
-                 if(schemaType != null) {
+                 if(schemaType != null && ((XMLField)nextMapping.getField()).getSchemaType() == null) {
                      ((XMLField)nextMapping.getField()).setSchemaType(schemaType);
                  }
                 

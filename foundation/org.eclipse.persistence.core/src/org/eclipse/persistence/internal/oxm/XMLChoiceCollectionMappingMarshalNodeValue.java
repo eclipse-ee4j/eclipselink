@@ -89,7 +89,7 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
     		fieldValue = rootValue.getObject();
     		associatedField = getFieldForName(localName, namespaceUri);
     		if(associatedField == null) {
-    			associatedField = xmlChoiceCollectionMapping.getClassToFieldMappings().get(value.getClass());
+    			associatedField = xmlChoiceCollectionMapping.getClassToFieldMappings().get(fieldValue.getClass());
     		}
     	} else {
     		associatedField = xmlChoiceCollectionMapping.getClassToFieldMappings().get(value.getClass());

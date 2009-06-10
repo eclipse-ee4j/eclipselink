@@ -8,7 +8,7 @@
 * http://www.eclipse.org/org/documents/edl-v10.php.
 *
 * Contributors:
-* mmacivor - June 09/2008 - 1.0 - Initial implementation
+* mmacivor - June 09/2009 - 1.0 - Initial implementation
 ******************************************************************************/
 package org.eclipse.persistence.internal.oxm.stax;
 

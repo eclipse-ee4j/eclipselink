@@ -10,22 +10,21 @@
 * Contributors:
 * mmacivor - June 09/2009 - 1.0 - Initial implementation
 ******************************************************************************/
-package org.eclipse.persistence.internal.oxm.stax;
+package org.eclipse.persistence.testing.jaxb.schemagen.customizedmapping.xmlelementref;
 
-import javax.xml.stream.XMLStreamException;
-import javax.xml.transform.stax.StAXSource;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.annotation.XmlElementDecl;
+import javax.xml.bind.annotation.XmlRegistry;
+import javax.xml.namespace.QName;
 
-/**
- * INTERNAL
- * <p><b>Purpose:</b>Provide a StAXSource subclass which wraps the XMLStreamReader from 
- * another source in an XMLStreamReaderWrapper. Used to support transformations from StAX
- * sources.
- * @author mmacivor
- *
- */
-public class XMLStreamSourceWrapper extends StAXSource {
-
-	public XMLStreamSourceWrapper(StAXSource wrappedSource) throws XMLStreamException {
-		super(new XMLStreamReaderWrapper(wrappedSource.getXMLStreamReader()));
-	}
+@XmlRegistry
+public class ObjectFactory {
+    public WrappedByteArray createWrappedByteArray() {
+        return new WrappedByteArray();
+    }
+    
+    @XmlElementDecl(name = "inByteArray")
+    public JAXBElement<byte[]> createByteArrayElement(byte[] value) {
+        return new JAXBElement<byte[]>(new QName("myNs", "someValue"), byte[].class, null, value);
+    }
 }

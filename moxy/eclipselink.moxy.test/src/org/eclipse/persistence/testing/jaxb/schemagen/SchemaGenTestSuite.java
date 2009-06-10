@@ -16,6 +16,7 @@ import org.eclipse.persistence.testing.jaxb.schemagen.deploymentxml.DeploymentXM
 import org.eclipse.persistence.testing.jaxb.schemagen.employee.SchemaGenEmployeeTestCases;
 import org.eclipse.persistence.testing.jaxb.schemagen.imports.SchemaGenImportTestCases;
 import org.eclipse.persistence.testing.jaxb.schemagen.customizedmapping.xmltype.SchemaGenXMLTypeTestCases;
+import org.eclipse.persistence.testing.jaxb.schemagen.customizedmapping.xmlelementref.SchemaGenXmlElementRefByteArrayTestCases;
 import org.eclipse.persistence.testing.jaxb.schemagen.customizedmapping.xmlelementref.SchemaGenXmlElementRefTestCases;
 import org.eclipse.persistence.testing.jaxb.schemagen.customizedmapping.xmlelementwrapper.SchemaGenXmlElementWrapperTestCases;
 import org.eclipse.persistence.testing.jaxb.schemagen.customizedmapping.xmlid.SchemaGenXmlIDTestCases;
@@ -33,6 +34,7 @@ public class SchemaGenTestSuite extends TestSuite {
         suite.addTestSuite(SchemaGenXMLRootElementTestCases.class);
         suite.addTestSuite(DeploymentXMLSchemaGenTestCases.class);
         suite.addTestSuite(SchemaGenXmlElementWrapperTestCases.class);
+        suite.addTestSuite(SchemaGenXmlElementRefByteArrayTestCases.class);
         suite.addTestSuite(SchemaGenXmlElementRefTestCases.class);
         suite.addTestSuite(SchemaGenXmlListTestCases.class);
         suite.addTestSuite(SchemaGenXmlIDTestCases.class);
