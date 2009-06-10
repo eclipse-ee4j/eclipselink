@@ -83,6 +83,7 @@ tokens {
     TRAILING='trailing';
     TRIM='trim';
     TRUE='true';
+    TYPE='type';
     UNKNOWN='unknown';
     UPDATE='update';
     UPPER='upper';
@@ -327,14 +328,14 @@ selectExpression returns [Object node]
 @init { node = null; }
     : n = pathExprOrVariableAccess {$node = $n.node;}
     | n = aggregateExpression {$node = $n.node;}
-    | OBJECT LEFT_ROUND_BRACKET n = variableAccess RIGHT_ROUND_BRACKET  {$node = $n.node;}
+    | OBJECT LEFT_ROUND_BRACKET n = variableAccessOrTypeConstant RIGHT_ROUND_BRACKET  {$node = $n.node;}
     | n = constructorExpression  {$node = $n.node;}
     | n = mapEntryExpression {$node = $n.node;}
     ;
 
 mapEntryExpression returns [Object node]
 @init { node = null; }
-    : l = ENTRY LEFT_ROUND_BRACKET n = variableAccess RIGHT_ROUND_BRACKET { $node = factory.newMapEntry($l.getLine(), $l.getCharPositionInLine(), $n.node);}
+    : l = ENTRY LEFT_ROUND_BRACKET n = variableAccessOrTypeConstant RIGHT_ROUND_BRACKET { $node = factory.newMapEntry($l.getLine(), $l.getCharPositionInLine(), $n.node);}
     ;
 
 pathExprOrVariableAccess returns [Object node]
@@ -349,9 +350,9 @@ pathExprOrVariableAccess returns [Object node]
 
 qualifiedIdentificationVariable returns [Object node]
 @init { node = null; }
-    : n = variableAccess {$node = $n.node;}
-    | l = KEY LEFT_ROUND_BRACKET n = variableAccess RIGHT_ROUND_BRACKET  { $node = factory.newKey($l.getLine(), $l.getCharPositionInLine(), $n.node); }
-    | l = VALUE LEFT_ROUND_BRACKET n = variableAccess RIGHT_ROUND_BRACKET { $node = $n.node;}
+    : n = variableAccessOrTypeConstant {$node = $n.node;}
+    | l = KEY LEFT_ROUND_BRACKET n = variableAccessOrTypeConstant RIGHT_ROUND_BRACKET  { $node = factory.newKey($l.getLine(), $l.getCharPositionInLine(), $n.node); }
+    | l = VALUE LEFT_ROUND_BRACKET n = variableAccessOrTypeConstant RIGHT_ROUND_BRACKET { $node = $n.node;}
     ;
 
 aggregateExpression returns [Object node]
@@ -508,7 +509,7 @@ joinAssociationPathExpression returns [Object node]
 @init {
     node = null; 
 }
-    : left = variableAccess d=DOT right = attribute
+    : left = variableAccessOrTypeConstant d=DOT right = attribute
         { $node = factory.newDot($d.getLine(), $d.getCharPositionInLine(), $left.node, $right.node); }
     ;
 
@@ -548,10 +549,10 @@ attribute returns [Object node]
         }
     ;
 
-variableAccess returns [Object node]
+variableAccessOrTypeConstant returns [Object node]
 @init { node = null; }
     : i=IDENT
-        { $node = factory.newVariableAccess($i.getLine(), $i.getCharPositionInLine(), $i.getText()); }
+        { $node = factory.newVariableAccessOrTypeConstant($i.getLine(), $i.getCharPositionInLine(), $i.getText()); }
     ;
 
 whereClause returns [Object node]
@@ -652,7 +653,12 @@ scope{
     node = null;
     $inExpression::items = new ArrayList();
 }
-    : t=IN
+    :  t = IN n = inputParameter 
+            {
+                $node = factory.newIn($t.getLine(), $t.getCharPositionInLine(),
+                                     $not, $left, $n.node);
+            }
+    |   t=IN
         LEFT_ROUND_BRACKET
         ( itemNode = inItem { $inExpression::items.add($itemNode.node); }
             ( COMMA itemNode = inItem { $inExpression::items.add($itemNode.node); } )*
@@ -674,6 +680,7 @@ inItem returns [Object node]
     : n = literalString {$node = $n.node;}
     | n = literalNumeric {$node = $n.node;}
     | n = inputParameter {$node = $n.node;}
+    | n = variableAccessOrTypeConstant {$node = $ident.schema;}
     ;
 
 likeExpression [boolean not, Object left] returns [Object node]
@@ -806,6 +813,7 @@ arithmeticPrimary returns [Object node]
     | n = literalNumeric {$node = $n.node;}
     | n = literalString {$node = $n.node;}
     | n = literalBoolean {$node = $n.node;}
+    | n = entityTypeExpression {$node = $n.node;}
     | LEFT_ROUND_BRACKET n = simpleArithmeticExpression RIGHT_ROUND_BRACKET {$node = $n.node;}
     ;
 
@@ -817,6 +825,23 @@ anyOrAllExpression returns [Object node]
         { $node = factory.newAny($y.getLine(), $y.getCharPositionInLine(), $n.node); }
     | s=SOME LEFT_ROUND_BRACKET n = subquery RIGHT_ROUND_BRACKET
         { $node = factory.newSome($s.getLine(), $s.getCharPositionInLine(), $n.node); }
+    ;
+
+entityTypeExpression returns [Object node]
+@init {node = null;}
+    : n = typeDiscriminator {$node = $n.node;}
+    ;
+
+typeDiscriminator returns [Object node]
+@init {node = null;}
+    : a =  TYPE LEFT_ROUND_BRACKET n = variableOrSingleValuedPath RIGHT_ROUND_BRACKET { $node = factory.newType($a.getLine(), $a.getCharPositionInLine(), $n.node);}
+    | c =  TYPE LEFT_ROUND_BRACKET n = inputParameter RIGHT_ROUND_BRACKET { $node = factory.newType($c.getLine(), $c.getCharPositionInLine(), $n.node);}
+    ;
+    
+variableOrSingleValuedPath returns [Object node]
+@init {node = null;}
+    : n = singleValuedPathExpression {$node = $n.node;}
+    | n = variableAccessOrTypeConstant {$node = $n.node;}
     ;
 
 stringPrimary returns [Object node]
@@ -1093,7 +1118,7 @@ simpleSelectExpression returns [Object node]
 @init { node = null; }
     : n = singleValuedPathExpression  {$node = $n.node;}
     | n = aggregateExpression  {$node = $n.node;}
-    | n = variableAccess  {$node = $n.node;}
+    | n = variableAccessOrTypeConstant  {$node = $n.node;}
     ;
 
 
@@ -1164,7 +1189,7 @@ scope{
 groupByItem returns [Object node]
 @init { node = null; }
     : n = stateFieldPathExpression {$node = $n.node;}
-    | n = variableAccess {$node = $n.node;}
+    | n = variableAccessOrTypeConstant {$node = $n.node;}
     ;
 
 havingClause returns [Object node]

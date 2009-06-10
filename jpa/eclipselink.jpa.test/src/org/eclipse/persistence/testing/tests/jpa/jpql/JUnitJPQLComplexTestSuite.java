@@ -49,6 +49,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
 import org.eclipse.persistence.testing.models.jpa.advanced.Man;
 import org.eclipse.persistence.testing.models.jpa.advanced.PartnerLinkPopulator;
+import org.eclipse.persistence.testing.models.jpa.advanced.SmallProject;
 
 import org.eclipse.persistence.testing.models.jpa.advanced.LargeProject;
 import org.eclipse.persistence.testing.models.jpa.advanced.Project;
@@ -109,6 +110,11 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         suite.setName("JUnitJPQLComplexTestSuite");
         suite.addTest(new JUnitJPQLComplexTestSuite("testSetup"));
 
+        
+        suite.addTest(new JUnitJPQLComplexTestSuite("complexTypeInParamTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("complexTypeInTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("complexTypeParameterTest"));
+        
         suite.addTest(new JUnitJPQLComplexTestSuite("complexABSTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexABSWithParameterTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("compexInTest"));
@@ -210,7 +216,6 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         beginTransaction(em);
         Employee emp1 = (Employee)getServerSession().readAllObjects(Employee.class).firstElement();
         Employee emp2 = (Employee)getServerSession().readAllObjects(Employee.class).lastElement();
-        
         clearCache();
         String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";
         ejbqlString = ejbqlString + "(ABS(emp.salary) = ";
@@ -1863,4 +1868,57 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         rollbackTransaction(em);
         closeEntityManager(em);
     }
+    
+    public void complexTypeParameterTest()
+    {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        List expectedResult = getServerSession().readAllObjects(LargeProject.class);
+        clearCache();
+        String ejbqlString = "select p from Project p where TYPE(p) = :param";
+        
+        List result = em.createQuery(ejbqlString).setParameter("param", LargeProject.class).getResultList();
+   
+        Assert.assertTrue("complexTypeParameterTest failed", comparer.compareObjects(result, expectedResult));
+        rollbackTransaction(em);
+        closeEntityManager(em);
+    }
+    
+    public void complexTypeInTest()
+    {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        List expectedResult = getServerSession().readAllObjects(LargeProject.class);
+        expectedResult.addAll(getServerSession().readAllObjects(SmallProject.class));
+        clearCache();
+        String ejbqlString = "select p from Project p where TYPE(p) in(LargeProject, SmallProject)";
+        
+        List result = em.createQuery(ejbqlString).getResultList();
+   
+        Assert.assertTrue("complexTypeParameterTest failed", comparer.compareObjects(result, expectedResult));
+        rollbackTransaction(em);
+        closeEntityManager(em);
+    }
+    
+    public void complexTypeInParamTest()
+    {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        List expectedResult = getServerSession().readAllObjects(LargeProject.class);
+        expectedResult.addAll(getServerSession().readAllObjects(SmallProject.class));
+        clearCache();
+        String ejbqlString = "select p from Project p where TYPE(p) in :param";
+        
+        ArrayList params = new ArrayList(2);
+        params.add(LargeProject.class);
+        params.add(SmallProject.class);
+        
+        List result = em.createQuery(ejbqlString).setParameter("param", params).getResultList();
+   
+        Assert.assertTrue("complexTypeParameterTest failed", comparer.compareObjects(result, expectedResult));
+        rollbackTransaction(em);
+        closeEntityManager(em);
+    }
+    
 }
+

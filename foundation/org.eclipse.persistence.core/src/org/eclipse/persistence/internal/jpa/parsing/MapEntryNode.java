@@ -32,7 +32,7 @@ public class MapEntryNode extends Node {
         if (theQuery instanceof ReportQuery) {
             ReportQuery reportQuery = (ReportQuery)theQuery;
             Expression expression = generateExpression(generationContext);
-            reportQuery.addItem("MapEntry", expression);
+            reportQuery.addItem(left.resolveAttribute() + " MapEntry", expression);
         }
     }
     

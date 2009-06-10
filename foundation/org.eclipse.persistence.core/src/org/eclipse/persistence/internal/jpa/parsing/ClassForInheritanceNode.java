@@ -13,22 +13,13 @@
 package org.eclipse.persistence.internal.jpa.parsing;
 
 import org.eclipse.persistence.expressions.Expression;
-import org.eclipse.persistence.internal.expressions.MapEntryExpression;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 
-public class MapKeyNode extends Node {
+public class ClassForInheritanceNode extends Node {
 
-    public MapKeyNode(){
+    public ClassForInheritanceNode(){
         super();
-    }
-    
-    /**
-     * INTERNAL
-     * Is this node a MapKey node
-     */
-    public boolean isMapKeyNode() {
-        return true;
     }
     
     /**
@@ -40,7 +31,7 @@ public class MapKeyNode extends Node {
         if (theQuery instanceof ReportQuery) {
             ReportQuery reportQuery = (ReportQuery)theQuery;
             Expression expression = generateExpression(generationContext);
-            reportQuery.addItem(left.resolveAttribute() + "MapKey", expression);
+            reportQuery.addItem(left.resolveAttribute() + " Type", expression);
         }
     }
     
@@ -50,28 +41,13 @@ public class MapKeyNode extends Node {
      */
     public Expression generateExpression(GenerationContext context) {
         Expression owningExpression = getLeft().generateExpression(context);
-        MapEntryExpression whereClause = new MapEntryExpression(owningExpression);
-        return whereClause;
-    }
-    
-    /**
-     * INTERNAL
-     * Return the left most node of a dot expr, so return 'a' for 'a.b.c'.
-     */
-    public Node getLeftMostNode() {
-        if (left.isDotNode()){
-            return ((DotNode)left).getLeftMostNode();
-        }
-        return left;
+        
+        return owningExpression.type();
     }
     
     public void validate(ParseTreeContext context) {
         TypeHelper typeHelper = context.getTypeHelper();
         left.validate(context);
-        if (left.isVariableNode()){
-            setType(((VariableNode)left).getTypeForMapKey(context));
-        } else if (left.isDotNode()){
-            setType(((DotNode)left).getTypeForMapKey(context));
-        }
+        setType(Class.class);
     }
 }

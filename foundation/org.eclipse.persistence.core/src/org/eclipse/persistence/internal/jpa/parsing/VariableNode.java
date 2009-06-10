@@ -17,14 +17,13 @@ import java.util.*;
 // TopLink imports
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
+import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 
 /**
  * INTERNAL
- * <p><b>Purpose</b>: The Superclass for for typed variables, local variables and remote variables
- * <p><b>Responsibilities</b>:<ul>
- * <li> Generate the correct expression for an AND in EJBQL
+ * <p><b>Purpose</b>: The node that represents typed variables, local variables, remote variables and TYPE constants
  * </ul>
  *    @author Jon Driscoll and Joel Lucuik
  *    @since TopLink 4.0
@@ -36,6 +35,9 @@ public class VariableNode extends Node {
     
     /** */
     private String canonicalName;
+    
+    /** if this represents a type constant, this value will be populated by validate **/
+    private Object classConstant = null;
 
     /**
      * VariableNode constructor comment.
@@ -150,6 +152,11 @@ public class VariableNode extends Node {
      */
     public void validate(ParseTreeContext context) {
         TypeHelper typeHelper = context.getTypeHelper();
+        classConstant = typeHelper.resolveSchema(variableName);
+        if (classConstant != null){
+            setType(Class.class);
+            return;
+        }
         String name = getCanonicalVariableName();
         if (context.isRangeVariable(name)) {
             String schema = context.schemaForVariable(name);
@@ -190,7 +197,9 @@ public class VariableNode extends Node {
         }
 
         //Either I have an alias type, or I'm an IN declaration
-        if (generationContext.getParseTreeContext().isRangeVariable(name)) {
+        if (classConstant != null){
+            myExpression = new ConstantExpression(classConstant, generationContext.getBaseExpression());
+        } else if (generationContext.getParseTreeContext().isRangeVariable(name)) {
             myExpression = generateBaseBuilderExpression(generationContext);
         } else {
             myExpression = generateExpressionForAlias(generationContext);

@@ -272,7 +272,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
-    public Object newVariableAccess(int line, int column, String identifier) {
+    public Object newVariableAccessOrTypeConstant(int line, int column, String identifier) {
         VariableNode node = new VariableNode(identifier);
         setPosition(node, line, column);
         return node;
@@ -288,7 +288,7 @@ public class NodeFactoryImpl implements NodeFactory {
     /** */
     public Object newQualifiedAttribute(int line, int column, 
                                         String variable, String attribute) {
-        Object varNode = newVariableAccess(line, column, variable);
+        Object varNode = newVariableAccessOrTypeConstant(line, column, variable);
         Object attrNode = newAttribute(line, column, attribute);
         return newDot(line, column, varNode, attrNode);
     }
@@ -448,6 +448,21 @@ public class NodeFactoryImpl implements NodeFactory {
         return node;
     }
 
+    // ------------------------------------------
+    // Conditional expression nodes
+    // ------------------------------------------
+    
+    /** */
+    public Object newBetween(int line, int column, boolean not, Object arg, 
+                             Object lower, Object upper) {
+        BetweenNode node = new BetweenNode();
+        node.setLeft((Node)arg);
+        node.setRightForBetween((Node)lower);
+        node.setRightForAnd((Node)upper);
+        setPosition(node, line, column);
+        return not? newNot(line, column, node) : node;
+    }
+
     /** */
     public Object newDivide(int line, int column, Object left, Object right) {
         DivideNode node = new DivideNode();
@@ -486,17 +501,6 @@ public class NodeFactoryImpl implements NodeFactory {
     // Conditional expression nodes
     // ------------------------------------------
     
-    /** */
-    public Object newBetween(int line, int column, boolean not, Object arg, 
-                             Object lower, Object upper) {
-        BetweenNode node = new BetweenNode();
-        node.setLeft((Node)arg);
-        node.setRightForBetween((Node)lower);
-        node.setRightForAnd((Node)upper);
-        setPosition(node, line, column);
-        return not? newNot(line, column, node) : node;
-    }
-
     /** */
     public Object newLike(int line, int column, boolean not, Object string, 
                           Object pattern, Object escape)  {
@@ -822,6 +826,7 @@ public class NodeFactoryImpl implements NodeFactory {
         node.setLeft((Node)expr);
         node.addNodeToTheObjects((Node)subquery);
         setPosition(node, line, column);
+        node.setIsListParameterOrSubquery(true);
         return node;
     }
 
@@ -939,6 +944,13 @@ public class NodeFactoryImpl implements NodeFactory {
     public Object newMapEntry(int line, int column, Object arg){
         MapEntryNode node = new MapEntryNode();
         node.setLeft((Node)arg);
+        setPosition(node, line, column);
+        return node;
+    }
+    
+    public Object newType(int line, int column, Object left){
+        ClassForInheritanceNode node = new ClassForInheritanceNode();
+        node.setLeft((Node)left);
         setPosition(node, line, column);
         return node;
     }

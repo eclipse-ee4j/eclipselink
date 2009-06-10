@@ -43,6 +43,7 @@ import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.models.jpa.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
+import org.eclipse.persistence.testing.models.jpa.advanced.LargeProject;
 import org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber;
 import org.eclipse.persistence.testing.models.jpa.advanced.SmallProject;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
@@ -90,6 +91,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         TestSuite suite = new TestSuite();
         suite.setName("JUnitJPQLSimpleTestSuite");
         suite.addTest(new JUnitJPQLSimpleTestSuite("testSetup"));
+        
         suite.addTest(new JUnitJPQLSimpleTestSuite("simpleJoinFetchTest"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("simpleJoinFetchTest2"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("baseTestCase"));
@@ -112,6 +114,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         suite.addTest(new JUnitJPQLSimpleTestSuite("abstractSchemaIdentifierNotEqualsTest"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("simpleInOneDotTest"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("simpleInTest"));
+        suite.addTest(new JUnitJPQLSimpleTestSuite("simpleInListTest"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("simpleLengthTest"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("simpleLikeTest"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("simpleLikeTestWithParameter"));
@@ -160,7 +163,8 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         suite.addTest(new JUnitJPQLSimpleTestSuite("selectNamedNativeQueryWithPositionalParameterTest"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("selectNativeQueryWithPositionalParameterTest"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("testOneEqualsOne"));
-
+        suite.addTest(new JUnitJPQLSimpleTestSuite("simpleTypeTest"));
+        
         return suite;
     }
     
@@ -756,6 +760,23 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.id IN (" + expectedResult.getId().toString() + ")";
 
         List result = em.createQuery(ejbqlString).getResultList();
+
+        Assert.assertTrue("Simple In Test failed", comparer.compareObjects(result, expectedResult));
+    }
+    
+    public void simpleInListTest() {
+        EntityManager em = createEntityManager();
+
+        Employee expectedResult = (Employee)getServerSession().readAllObjects(Employee.class).elementAt(0);
+
+        List expectedResultList = new ArrayList();
+        expectedResultList.add(expectedResult.getId());
+        
+        clearCache();
+
+        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.id IN :result";
+
+        List result = em.createQuery(ejbqlString).setParameter("result", expectedResultList).getResultList();
 
         Assert.assertTrue("Simple In Test failed", comparer.compareObjects(result, expectedResult));
     }
@@ -2056,5 +2077,20 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
             Assert.fail(errorMsg);
         }
         closeEntityManager(em);
+    }
+    
+    public void simpleTypeTest(){
+        EntityManager em = createEntityManager();
+
+        List expectedResult = getServerSession().readAllObjects(LargeProject.class);
+        
+        clearCache();
+
+        String ejbqlString = "SELECT OBJECT(proj) FROM Project proj WHERE TYPE(proj) = LargeProject";
+
+        List result = em.createQuery(ejbqlString).getResultList();
+
+        Assert.assertTrue("SimpleTypeTest", comparer.compareObjects(result, expectedResult));
+
     }
 }

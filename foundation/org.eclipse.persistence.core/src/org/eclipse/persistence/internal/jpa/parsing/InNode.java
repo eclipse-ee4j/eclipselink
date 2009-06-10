@@ -36,6 +36,8 @@ public class InNode extends SimpleConditionalExpressionNode {
 
     //Was NOT indicated? "WHERE emp.lastName NOT IN (...)
     private boolean notIndicated = false;
+    
+    private boolean isListParameterOrSubquery = false;
 
     /**
      * InNode constructor comment.
@@ -62,7 +64,12 @@ public class InNode extends SimpleConditionalExpressionNode {
 
         if (left != null) {
             left.validate(context);
-            leftType = left.getType();
+            // check to see if the argument is a parameter
+            if (isListParameterOrSubquery && !getTheObjects().isEmpty() && ((Node)getTheObjects().get(0)).isParameterNode()){
+                leftType = Collection.class;
+            } else {
+                leftType = left.getType();
+            }
         }
         for (Iterator i = getTheObjects().iterator(); i.hasNext();) {
             Node node = (Node)i.next();
@@ -95,8 +102,13 @@ public class InNode extends SimpleConditionalExpressionNode {
             else {
                 whereClause = whereClause.in(reportQuery);
             }
-        }
-        else {
+        } else if (isListParameterOrSubquery && firstArg.isParameterNode()) {
+            if (notIndicated()) {
+                whereClause = whereClause.notIn(firstArg.generateExpression(context));
+            } else {
+                whereClause = whereClause.in(firstArg.generateExpression(context));
+            }
+        } else {
             Vector inArguments = new Vector(arguments.size());
             for (Iterator iter = arguments.iterator(); iter.hasNext();) {
                 Node nextNode = (Node)iter.next();
@@ -124,6 +136,16 @@ public class InNode extends SimpleConditionalExpressionNode {
         return theObjects;
     }
 
+    /**
+     * INTERNAL:
+     * This method is called to indicate that the inNode has a single argument.  This will be either a
+     * subquery or a single parameter that contains the list of items to test
+     * @param isListParameterOrSubquery
+     */
+    public void setIsListParameterOrSubquery(boolean isListParameterOrSubquery){
+        this.isListParameterOrSubquery = isListParameterOrSubquery;
+    }
+    
     /**
      * INTERNAL
      * Set this node's object collection to the passed value

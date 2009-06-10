@@ -114,7 +114,7 @@ public interface NodeFactory {
     public Object newDot(int line, int column, Object left, Object right);
 
     /** */
-    public Object newVariableAccess(int line, int column, String identifier);
+    public Object newVariableAccessOrTypeConstant(int line, int column, String identifier);
 
     /** */
     public Object newAttribute(int line, int column, String identifier);
@@ -365,5 +365,7 @@ public interface NodeFactory {
     public Object newKey(int line, int column, Object left);
 
     public Object newMapEntry(int line, int column, Object arg);
+    
+    public Object newType(int line, int column, Object left);
 }
 
