@@ -49,7 +49,7 @@
         - clean : removes all build generated files
         - build-distribution : compiles and packages all jars, javadocs, installer
         - build-core : compiles all components, excluding tests, utilities, and Oracle extensions
-        - build-extension : compiles Oracle extensions and tests
+        - build-extensions : compiles Oracle extensions and tests
         - build-test : compiles all tests, excluding Oracle extensions
         - build-workbench-test : compiles the workbench tests
         - package-eclipselink-jar : packages eclipselink.jar
@@ -119,7 +119,7 @@
     </condition>
     <property name="version.string"      value="${release.version}.${version.qualifier}"/>
     <property name="release.designation" value="EclipseLink DeveloperBuild"/>
-    
+
     <path id="javadoc.path">
         <pathelement path="${eclipselink.jar.name}"/>
         <pathelement path="${commonj.sdo.lib}"/>
@@ -377,7 +377,9 @@
     <!-- Generates the Javadocs for all public EclipseLink classes. -->
     <target name="build-javadocs">
         <property name="javadoc.title" value="${javadoc.prefixTitle} ${version.string} ${javadoc.postfixTitle}"/>
+		<delete dir="${build.dir}/commonj.sdo"/>
 		<unzip src="${eclipselink.sdo.plugins}/commonj.sdo/SDO_2.1.0_Java_source_FINAL.zip" dest="${build.dir}/commonj.sdo/src"/>
+		<delete dir="${eclipselink.javadocs}"/>
         <javadoc
             maxmemory="384m"
             Verbose="false"
