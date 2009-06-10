@@ -13,6 +13,8 @@
 package org.eclipse.persistence.oxm;
 
 import java.io.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.List;
 import java.util.Properties;
@@ -34,6 +36,7 @@ import org.eclipse.persistence.internal.oxm.XMLObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XPathEngine;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.record.DOMReader;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
@@ -95,6 +98,26 @@ public class XMLMarshaller {
     private Properties marshalProperties;
     private Schema schema;
 
+    private static final String STAX_RESULT_CLASS_NAME = "javax.xml.transform.stax.StAXResult";
+    private static final String XML_STREAM_RESULT_WRAPPER_CLASS_NAME = "org.eclipse.persistence.internal.oxm.stax.XMLStreamResultWrapper"; 
+    private static final String GET_XML_STREAM_WRITER_METHOD_NAME = "getXMLStreamWriter"; 
+    private static Class staxResultClass;
+    private static Constructor xmlStreamResultConstructor; 
+    private static Method staxResultGetStreamWriterMethod;
+    
+    static {
+        try {
+            staxResultClass = PrivilegedAccessHelper.getClassForName(STAX_RESULT_CLASS_NAME);
+            if(staxResultClass != null) {
+                staxResultGetStreamWriterMethod = PrivilegedAccessHelper.getDeclaredMethod(staxResultClass, GET_XML_STREAM_WRITER_METHOD_NAME, new Class[]{});
+                Class xmlStreamResultClass = PrivilegedAccessHelper.getClassForName(XML_STREAM_RESULT_WRAPPER_CLASS_NAME);
+                xmlStreamResultConstructor = PrivilegedAccessHelper.getConstructorFor(xmlStreamResultClass, new Class[]{staxResultClass, XMLMarshaller.class}, true); 
+            }
+        } catch (Exception ex) {
+            // Do nothing
+        }
+    } 
+    
     /**
     * Create a new XMLMarshaller based on the specified session
     * @param session A single session
@@ -267,6 +290,15 @@ public class XMLMarshaller {
                     }
                 }
             } else {
+                if (result.getClass().equals(staxResultClass)) {
+                    try {
+                        Object xmlStreamWriter = PrivilegedAccessHelper.invokeMethod(staxResultGetStreamWriterMethod, result);
+                        if (xmlStreamWriter != null) {
+                            result = (Result) PrivilegedAccessHelper.invokeConstructor(this.xmlStreamResultConstructor, new Object[]{result, this});  
+                        }
+                    } catch (Exception e) {
+                    }
+                }
             	java.io.StringWriter writer = new java.io.StringWriter();
             	marshal(object, writer);
             	javax.xml.transform.stream.StreamSource source = new javax.xml.transform.stream.StreamSource(new java.io.StringReader(writer.toString()));

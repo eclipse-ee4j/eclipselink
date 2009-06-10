@@ -30,8 +30,8 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.Result;
+import javax.xml.transform.stax.StAXResult;
 import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
 import java.lang.reflect.Constructor;
 
 import org.w3c.dom.Node;
@@ -260,16 +260,13 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
 		}
 	}
 
-	// TODO: add support for StAX
 	public void marshal(Object object, XMLStreamWriter streamWriter) throws JAXBException {
-		try {
-			Class staxResult = PrivilegedAccessHelper.getClassForName(STAX_RESULT_CLASS_NAME);
-			Constructor cons = PrivilegedAccessHelper.getDeclaredConstructorFor(staxResult, new Class[]{XMLStreamWriter.class}, false);
-			Result result = (Result)PrivilegedAccessHelper.invokeConstructor(cons, new Object[]{streamWriter});
-			this.marshal(object, result);
-		} catch(Exception ex) {
-			throw new MarshalException(ex);
-		}		
+	    try {
+	        StAXResult staxResult = new StAXResult(streamWriter);
+	        this.marshal(object, staxResult);
+	    } catch (Exception ex) {
+	        throw new MarshalException(ex);
+	    }
 	}
 
 	public void marshal(Object object, Writer writer) throws JAXBException {
