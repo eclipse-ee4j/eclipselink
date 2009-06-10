@@ -170,7 +170,7 @@
         <echo message=" org.eclipse.persistence.jaxb.javamodel;version=&quot;${version.string}&quot;,${line.separator}"                                  file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.jaxb.javamodel.reflection;version=&quot;${version.string}&quot;${line.separator}"                        file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="Bundle-ClassPath: .${line.separator}"                                                                                              file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Import-Package: javax.activation;vendor=sun;version=&quot;1.1.0&quot;;resolution:=optional,${line.separator}"                      file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Import-Package: javax.activation;version=&quot;1.1.0&quot;;resolution:=optional,${line.separator}"                                 file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" javax.mail;version=&quot;1.4.0&quot;;resolution:=optional,${line.separator}"                                                      file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" javax.xml.bind;version=&quot;2.0.0&quot;;resolution:=optional,${line.separator}"                                                  file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" javax.xml.bind.annotation;version=&quot;2.0.0&quot;;resolution:=optional,${line.separator}"                                       file="${classes.dir}/MANIFEST.MF" append="true"/>
