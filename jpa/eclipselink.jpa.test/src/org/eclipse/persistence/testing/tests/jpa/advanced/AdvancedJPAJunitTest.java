@@ -935,9 +935,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
      * bug 272704
      */
     public void testOptimisticLockExceptionOnMergeWithAssumeExists() {
-          
-        EntityManagerImpl em = (EntityManagerImpl)createEntityManager().getDelegate();
-        org.eclipse.persistence.sessions.Project project = em.getServerSession().getProject();
+        org.eclipse.persistence.sessions.Project project = getServerSession().getProject();
         ClassDescriptor descriptor = (ClassDescriptor)project.getDescriptor(Employee.class);
         int existencePolicy = descriptor.getQueryManager().getDoesExistQuery().getExistencePolicy();
 
@@ -946,7 +944,6 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         try {
             testOptimisticLockExceptionOnMerge();
         } finally {
-            em = (EntityManagerImpl)createEntityManager().getDelegate();
             descriptor.getQueryManager().getDoesExistQuery().setExistencePolicy(existencePolicy);
         }
     }
