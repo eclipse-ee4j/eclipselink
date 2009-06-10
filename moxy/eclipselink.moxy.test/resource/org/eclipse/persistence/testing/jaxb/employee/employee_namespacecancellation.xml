@@ -1,0 +1,11 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<x:employee-data id="10" xmlns:x="examplenamespace" xmlns="">
+   <firstName>Bob</firstName>
+   <lastName>Smith</lastName>
+   <birthday>2005-05-24T16:06:53.0</birthday>
+   <responsibilities>
+      <responsibility>Fix Bugs</responsibility>
+      <responsibility>Write JAXB2.0 Prototype</responsibility>
+      <responsibility>Write Design Spec</responsibility>
+   </responsibilities>
+</x:employee-data>

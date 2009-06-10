@@ -34,6 +34,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
+import javax.xml.transform.stax.StAXSource;
 import javax.xml.validation.Schema;
 
 import org.w3c.dom.Node;
@@ -48,6 +49,7 @@ import org.eclipse.persistence.jaxb.JAXBUnmarshallerHandler;
 import org.eclipse.persistence.jaxb.attachment.AttachmentUnmarshallerAdapter;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.jaxb.WrappedValue;
+
 
 /**
  * INTERNAL:
@@ -231,26 +233,12 @@ public class JAXBUnmarshaller implements Unmarshaller {
     }
     
     public JAXBElement unmarshal(XMLStreamReader streamReader, Class javaClass) throws JAXBException {
-		Source source = null;
-    	try {
-			Class staxResult = PrivilegedAccessHelper.getClassForName(STAX_SOURCE_CLASS_NAME);
-			Constructor cons = PrivilegedAccessHelper.getDeclaredConstructorFor(staxResult, new Class[]{XMLStreamReader.class}, false);
-			source = (Source)PrivilegedAccessHelper.invokeConstructor(cons, new Object[]{streamReader});
-		} catch(Exception ex) {
-			throw new MarshalException(ex);
-		}    	
+		Source source = new StAXSource(streamReader);
 		return this.unmarshal(source, javaClass);
     }
     
     public Object unmarshal(XMLStreamReader streamReader) throws JAXBException {
-		Source source = null;
-    	try {
-			Class staxResult = PrivilegedAccessHelper.getClassForName(STAX_SOURCE_CLASS_NAME);
-			Constructor cons = PrivilegedAccessHelper.getDeclaredConstructorFor(staxResult, new Class[]{XMLStreamReader.class}, false);
-			source = (Source)PrivilegedAccessHelper.invokeConstructor(cons, new Object[]{streamReader});
-		} catch(Exception ex) {
-			throw new MarshalException(ex);
-		}    	
+		Source source = new StAXSource(streamReader);
 		return this.unmarshal(source);
     }
     
