@@ -137,6 +137,7 @@
                destdir="${classes.dir}"
                includes="org/eclipse/persistence/**, java/sql/**"
                debug="${javac.debug}"
+               debuglevel="${javac.debuglevel}"
                optimize="${javac.optimize}"
                source="${javac.version}"
                target="${javac.version}"
@@ -147,7 +148,7 @@
                classpathref="oracle_test.compile.path"
         />
     </target>
-    
+
     <target name="package">
         <!-- Package the structconverter JPA model jar. -->
         <jar jarfile="eclipselink-struct-converter-model.jar">

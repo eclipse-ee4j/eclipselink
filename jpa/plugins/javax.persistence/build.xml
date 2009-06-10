@@ -105,7 +105,7 @@
             <fileset dir="."
                 includes="readme.txt"
             />
-			<fileset dir="${src.dir}"
+            <fileset dir="${src.dir}"
                 includes="**/*.xsd"
             />
             <fileset dir="${classes.dir}"
@@ -148,13 +148,13 @@
         <echo message="Manifest-Version: 1.0${line.separator}"                                                                           file="${classes.dir}/MANIFEST.MF" append="false"/>
         <echo message="Specification-Vendor: Sun Microsystems Inc.${line.separator}"                                                     file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="Specification-Version: 1.0${line.separator}"                                                                      file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Implementation-Vendor: ${implementation.vendor}${line.separator}"                            file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Implementation-Vendor: ${implementation.vendor}${line.separator}"                                                 file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="Implementation-Version: ${jpaproto.version}${line.separator}"                                                     file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="Bundle-ManifestVersion: 2${line.separator}"                                                                       file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="Bundle-Name: JPA 1.0 - Extended for OSGi (1.99)${line.separator}"                                                 file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="Bundle-SymbolicName: ${ant.project.name}${line.separator}"                                                        file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="Bundle-Vendor: ${implementation.vendor}${line.separator}"                                                         file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-Version: ${jpaproto.version}.${jpaproto.qualifier}${line.separator}"                                        file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-Version: ${jpaproto.version}.${jpaproto.qualifier}${line.separator}"                                       file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="Bundle-RequiredExecutionEnvironment: J2SE-1.5${line.separator}"                                                   file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="Export-Package: javax.persistence;version=&quot;${jpaproto.version}.${jpaproto.qualifier}&quot;,${line.separator}" file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" javax.persistence.spi;version=&quot;${jpaproto.version}.${jpaproto.qualifier}&quot;${line.separator}"             file="${classes.dir}/MANIFEST.MF" append="true"/>
