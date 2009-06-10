@@ -377,6 +377,7 @@
     <!-- Generates the Javadocs for all public EclipseLink classes. -->
     <target name="build-javadocs">
         <property name="javadoc.title" value="${javadoc.prefixTitle} ${version.string} ${javadoc.postfixTitle}"/>
+		<unzip src="${eclipselink.sdo.plugins}/commonj.sdo/SDO_2.1.0_Java_source_FINAL.zip" dest="${build.dir}/commonj.sdo/src"/>
         <javadoc
             maxmemory="384m"
             Verbose="false"
@@ -418,6 +419,9 @@
             </fileset>
             <fileset dir="${jpa.prototype}/${src.dir}" defaultexcludes="yes">
                 <include name="javax/persistence/**/*.java"/>
+            </fileset>
+            <fileset dir="${build.dir}/commonj.sdo/src" defaultexcludes="yes">
+                <include name="commonj/sdo/**/*.java"/>
             </fileset>
             <fileset dir="${eclipselink.util.rename}/${src.dir}" defaultexcludes="yes">
                 <include name="org/eclipse/persistence/**/*.java"/>
