@@ -74,7 +74,6 @@ public class XMLUnmarshaller {
     private static String XML_STREAM_SOURCE_WRAPPER_CLASS_NAME = "org.eclipse.persistence.internal.oxm.stax.XMLStreamSourceWrapper";
     private static String GET_XML_STREAM_READER_METHOD_NAME = "getXMLStreamReader";
     
-    private static Class unmappedContentHandlerClass;
 
     private static Class staxSourceClass;
     private static Class xmlStreamSourceClass;
@@ -88,6 +87,8 @@ public class XMLUnmarshaller {
     private XMLUnmarshalListener unmarshalListener;
     private XMLAttachmentUnmarshaller attachmentUnmarshaller;
     private Properties unmarshalProperties;
+
+    private Class unmappedContentHandlerClass;
 
     static {
         try {
@@ -479,7 +480,7 @@ public class XMLUnmarshaller {
         			source = (Source)PrivilegedAccessHelper.invokeConstructor(this.xmlStreamSourceConstructor, new Object[]{source});
         		}
         	} catch(Exception ex) {}
-    	}        
+    	}     
         return platformUnmarshaller.unmarshal(source);
     }
 
