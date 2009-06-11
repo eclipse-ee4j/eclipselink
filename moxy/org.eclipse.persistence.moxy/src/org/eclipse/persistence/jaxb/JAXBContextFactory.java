@@ -70,49 +70,54 @@ public class JAXBContextFactory {
 
     public static javax.xml.bind.JAXBContext createContext(Class[] classesToBeBound, java.util.Map properties, ClassLoader classLoader) throws JAXBException {       
         JaxbClassLoader loader = new JaxbClassLoader(classLoader);
-        Generator generator = new Generator(new JavaModelInputImpl(classesToBeBound, new JavaModelImpl(loader)));
-        return createContext(generator, properties, classLoader, loader);
+        try{
+            Generator generator = new Generator(new JavaModelInputImpl(classesToBeBound, new JavaModelImpl(loader)));
+            return createContext(generator, properties, classLoader, loader);
+        }catch(Exception ex){
+       	    throw new JAXBException(ex.getMessage() ,ex);
+       }
     }   
     
     public static javax.xml.bind.JAXBContext createContext(Type[] typesToBeBound, java.util.Map properties, ClassLoader classLoader) throws JAXBException {       
         JaxbClassLoader loader = new JaxbClassLoader(classLoader);
         JavaModelInputImpl inputImpl = new JavaModelInputImpl(typesToBeBound, new JavaModelImpl(loader));
-        Generator generator = new Generator(inputImpl, inputImpl.getJavaClassToType());
-        return createContext(generator, properties, classLoader, loader);
+        try{
+        	Generator generator = new Generator(inputImpl, inputImpl.getJavaClassToType());
+        	return createContext(generator, properties, classLoader, loader);
+        }catch(Exception ex){
+        	throw new JAXBException(ex.getMessage() ,ex);
+        }
     }
     
-    private static javax.xml.bind.JAXBContext createContext(Generator generator, java.util.Map properties, ClassLoader classLoader, JaxbClassLoader loader ) throws JAXBException {
+    private static javax.xml.bind.JAXBContext createContext(Generator generator, java.util.Map properties, ClassLoader classLoader, JaxbClassLoader loader ) throws Exception {
         javax.xml.bind.JAXBContext jaxbContext = null;
         XMLContext xmlContext = null;
-        
-        try {                        	
-            Project proj = generator.generateProject();
-            ConversionManager conversionManager = null;
-            if (classLoader != null) {
-                conversionManager = new ConversionManager();
-                conversionManager.setLoader(loader);
-            } else {
-                conversionManager = ConversionManager.getDefaultManager();
-            }
-            proj.convertClassNamesToClasses(conversionManager.getLoader());
-            // need to make sure that the java class is set properly on each 
-            // descriptor when using java classname - req'd for JOT api implementation 
-            for (Iterator<ClassDescriptor> descriptorIt = proj.getOrderedDescriptors().iterator(); descriptorIt.hasNext();) {
-                ClassDescriptor descriptor = descriptorIt.next();
-                if (descriptor.getJavaClass() == null) {
-                    descriptor.setJavaClass(conversionManager.convertClassNameToClass(descriptor.getJavaClassName()));
-                }
-            }
-            
-            // disable instantiation policy validation during descriptor initialization
-            SessionEventListener eventListener = new SessionEventListener();
-            eventListener.setShouldValidateInstantiationPolicy(false);
-            
-            xmlContext = new XMLContext(proj, loader, eventListener);
-            jaxbContext = new org.eclipse.persistence.jaxb.JAXBContext(xmlContext, generator);
-        } catch (Exception ex) {
-            throw new JAXBException(ex.getMessage() ,ex);
+                                   
+        Project proj = generator.generateProject();
+        ConversionManager conversionManager = null;
+        if (classLoader != null) {
+            conversionManager = new ConversionManager();
+            conversionManager.setLoader(loader);
+        } else {
+            conversionManager = ConversionManager.getDefaultManager();
         }
+        proj.convertClassNamesToClasses(conversionManager.getLoader());
+        // need to make sure that the java class is set properly on each 
+        // descriptor when using java classname - req'd for JOT api implementation 
+        for (Iterator<ClassDescriptor> descriptorIt = proj.getOrderedDescriptors().iterator(); descriptorIt.hasNext();) {
+            ClassDescriptor descriptor = descriptorIt.next();
+            if (descriptor.getJavaClass() == null) {
+                descriptor.setJavaClass(conversionManager.convertClassNameToClass(descriptor.getJavaClassName()));
+            }
+        }
+            
+        // disable instantiation policy validation during descriptor initialization
+        SessionEventListener eventListener = new SessionEventListener();
+        eventListener.setShouldValidateInstantiationPolicy(false);
+            
+        xmlContext = new XMLContext(proj, loader, eventListener);
+        jaxbContext = new org.eclipse.persistence.jaxb.JAXBContext(xmlContext, generator);
+        
         return jaxbContext;
 
     }
