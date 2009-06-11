@@ -29,7 +29,6 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.oxm.annotations.*;
 import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
-import org.eclipse.persistence.jaxb.javamodel.JavaMethod;
 import org.eclipse.persistence.jaxb.JAXBEnumTypeConverter;
 import org.eclipse.persistence.internal.jaxb.JAXBSetMethodAttributeAccessor;
 import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
@@ -131,7 +130,7 @@ public class MappingsGenerator {
         if (info.isTransient()){
             return;
         }
-        NamespaceInfo namespaceInfo = this.packageToNamespaceMappings.get(javaClass.getPackage().getQualifiedName());
+        NamespaceInfo namespaceInfo = this.packageToNamespaceMappings.get(javaClass.getPackageName());
         String packageNamespace = namespaceInfo.getNamespace();
         String elementName;
         String namespace;
@@ -287,7 +286,7 @@ public class MappingsGenerator {
                     } else {
                         generateDirectMapping(property, descriptor, namespaceInfo);
                     }
-                }
+                }    
             }
         }
     }
@@ -783,6 +782,7 @@ public class MappingsGenerator {
             mapping.getNullPolicy().setNullRepresentedByXsiNil(true);
         }
         JavaClass collectionType = property.getType();
+ 
         if (areEquals(collectionType, Collection.class) || areEquals(collectionType, List.class)) {
             collectionType = jotArrayList;
         } else if (areEquals(collectionType, Set.class)) {
@@ -825,13 +825,25 @@ public class MappingsGenerator {
                 mapping.setGetMethodName(property.getGetMethodName());
             }
         }
-        JavaClass collectionType = property.getType();
-        
+        JavaClass collectionType = property.getType();        
+ 
+        if(collectionType != null && isCollectionType(collectionType)){        	
+        	if(collectionType.hasActualTypeArguments()){
+        		JavaClass itemType = (JavaClass)collectionType.getActualTypeArguments().toArray()[0];
+        		try{
+        			Class declaredClass = PrivilegedAccessHelper.getClassForName(itemType.getRawName(), false, helper.getClassLoader());
+        			mapping.setAttributeElementClass(declaredClass);
+        		}catch (Exception e) {
+ 
+			}
+        	}
+        }
         if (areEquals(collectionType, Collection.class) || areEquals(collectionType, List.class)) {
             collectionType = jotArrayList;
         } else if (areEquals(collectionType, Set.class)) {
             collectionType = jotHashSet;
         }
+
         mapping.useCollectionClassName(collectionType.getRawName());
         XMLField xmlField = getXPathForField(property, namespaceInfo, true);
         mapping.setField(xmlField);
@@ -870,6 +882,9 @@ public class MappingsGenerator {
 
     public boolean isCollectionType(Property field) {
         JavaClass type = field.getType();
+        return isCollectionType(type);
+    }
+    public boolean isCollectionType(JavaClass type) {        
         if (helper.getJavaClass(Collection.class).isAssignableFrom(type) 
                 || helper.getJavaClass(List.class).isAssignableFrom(type) 
                 || helper.getJavaClass(Set.class).isAssignableFrom(type)) {

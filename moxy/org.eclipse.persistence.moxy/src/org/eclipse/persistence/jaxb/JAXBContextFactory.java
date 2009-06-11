@@ -15,6 +15,7 @@ package org.eclipse.persistence.jaxb;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.StringTokenizer;
@@ -67,14 +68,24 @@ public class JAXBContextFactory {
         return createContext(classesToBeBound, properties, loader);
     }
 
-    public static javax.xml.bind.JAXBContext createContext(Class[] classesToBeBound, java.util.Map properties, ClassLoader classLoader) throws JAXBException {
+    public static javax.xml.bind.JAXBContext createContext(Class[] classesToBeBound, java.util.Map properties, ClassLoader classLoader) throws JAXBException {       
+        JaxbClassLoader loader = new JaxbClassLoader(classLoader);
+        Generator generator = new Generator(new JavaModelInputImpl(classesToBeBound, new JavaModelImpl(loader)));
+        return createContext(generator, properties, classLoader, loader);
+    }   
+    
+    public static javax.xml.bind.JAXBContext createContext(Type[] typesToBeBound, java.util.Map properties, ClassLoader classLoader) throws JAXBException {       
+        JaxbClassLoader loader = new JaxbClassLoader(classLoader);
+        JavaModelInputImpl inputImpl = new JavaModelInputImpl(typesToBeBound, new JavaModelImpl(loader));
+        Generator generator = new Generator(inputImpl, inputImpl.getJavaClassToType());
+        return createContext(generator, properties, classLoader, loader);
+    }
+    
+    private static javax.xml.bind.JAXBContext createContext(Generator generator, java.util.Map properties, ClassLoader classLoader, JaxbClassLoader loader ) throws JAXBException {
         javax.xml.bind.JAXBContext jaxbContext = null;
         XMLContext xmlContext = null;
-        JaxbClassLoader loader = new JaxbClassLoader(classLoader);
         
-        try {
-            Generator generator = new Generator(new JavaModelInputImpl(classesToBeBound, new JavaModelImpl(loader)));
-            	
+        try {                        	
             Project proj = generator.generateProject();
             ConversionManager conversionManager = null;
             if (classLoader != null) {

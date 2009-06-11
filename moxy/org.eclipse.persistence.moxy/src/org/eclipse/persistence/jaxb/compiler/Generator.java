@@ -16,7 +16,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.namespace.QName;
@@ -66,6 +68,21 @@ public class Generator {
     public Generator(JavaModelInput jModelInput) {
         helper = new Helper(jModelInput.getJavaModel());
         annotationsProcessor = new AnnotationsProcessor(helper);
+        schemaGenerator = new SchemaGenerator(helper);
+        mappingsGenerator = new MappingsGenerator(helper);
+        annotationsProcessor.processClassesAndProperties(jModelInput.getJavaClasses());
+    }
+    
+    /**
+     * This constructor creates a Helper using the JavaModelInput 
+	 * instance's JavaModel and a map of javaclasses that were generated from Type objects.
+	 * Annotations are processed here as well.
+     * 
+     * @param jModelInput
+     */
+    public Generator(JavaModelInput jModelInput, Map<JavaClass, Type> javaClassToType) {
+        helper = new Helper(jModelInput.getJavaModel());
+        annotationsProcessor = new AnnotationsProcessor(helper, javaClassToType);
         schemaGenerator = new SchemaGenerator(helper);
         mappingsGenerator = new MappingsGenerator(helper);
         annotationsProcessor.processClassesAndProperties(jModelInput.getJavaClasses());
@@ -156,6 +173,10 @@ public class Generator {
     
     public MappingsGenerator getMappingsGenerator() {
     	return this.mappingsGenerator;
+    }
+
+    public AnnotationsProcessor getAnnotationsProcessor() {
+        return annotationsProcessor;
     }
     
 }

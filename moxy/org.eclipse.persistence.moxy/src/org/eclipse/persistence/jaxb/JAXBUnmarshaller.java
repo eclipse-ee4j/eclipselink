@@ -16,6 +16,8 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.Reader;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.net.URL;
 import java.util.HashMap;
 
@@ -48,6 +50,7 @@ import org.eclipse.persistence.jaxb.JAXBErrorHandler;
 import org.eclipse.persistence.jaxb.JAXBUnmarshallerHandler;
 import org.eclipse.persistence.jaxb.attachment.AttachmentUnmarshallerAdapter;
 import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.jaxb.many.ManyValue;
 import org.eclipse.persistence.internal.jaxb.WrappedValue;
 
 
@@ -70,6 +73,7 @@ import org.eclipse.persistence.internal.jaxb.WrappedValue;
 public class JAXBUnmarshaller implements Unmarshaller {
     private ValidationEventHandler validationEventHandler;
     private XMLUnmarshaller xmlUnmarshaller;
+    private JAXBContext jaxbContext;
     public static final String XML_JAVATYPE_ADAPTERS = "xml-javatype-adapters";
     public static final String STAX_SOURCE_CLASS_NAME = "javax.xml.transform.stax.StAXSource";
     private HashMap<QName, Class> qNamesToDeclaredClasses;
@@ -79,8 +83,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
         validationEventHandler = new DefaultValidationEventHandler();
         xmlUnmarshaller = newXMLUnmarshaller;
         xmlUnmarshaller.setValidationMode(XMLUnmarshaller.NONVALIDATING);
-        xmlUnmarshaller.setUnmarshalListener(new JAXBUnmarshalListener(this));
-        
+        xmlUnmarshaller.setUnmarshalListener(new JAXBUnmarshalListener(this));       
     }
 
     public XMLUnmarshaller getXMLUnmarshaller() {
@@ -228,13 +231,40 @@ public class JAXBUnmarshaller implements Unmarshaller {
         }
     }
 
-    public JAXBElement unmarshal(Source source, Class javaClass) throws JAXBException {
-    	return buildJAXBElementFromObject(xmlUnmarshaller.unmarshal(source, javaClass));
+    public JAXBElement unmarshal(Source source, Class javaClass) throws JAXBException {    	
+    	if(javaClass.isArray() && jaxbContext.getArrayClassesToGeneratedClasses() != null){    		    		    		
+    		Class classToUnmarshalTo = jaxbContext.getArrayClassesToGeneratedClasses().get(javaClass.getCanonicalName());
+    		return unmarshal(source, classToUnmarshalTo);    	    	
+    	}else{    	    	
+    		return buildJAXBElementFromObject(xmlUnmarshaller.unmarshal(source, javaClass));
+    	}    	    	    
+    }
+    
+    public JAXBElement unmarshal(Source source, Type type) throws JAXBException {    	
+    	if(type instanceof Class){
+    		return  unmarshal(source, (Class)type);
+    	}else if(type instanceof ParameterizedType){
+    		Class unmarshalClass = jaxbContext.getCollectionClassesToGeneratedClasses().get(type);
+    		return  unmarshal(source, unmarshalClass);
+    	}
+    	return null;    	    	
     }
     
     public JAXBElement unmarshal(XMLStreamReader streamReader, Class javaClass) throws JAXBException {
 		Source source = new StAXSource(streamReader);
 		return this.unmarshal(source, javaClass);
+    }
+    
+    public JAXBElement unmarshal(XMLStreamReader streamReader, Type type) throws JAXBException {
+		Source source = null;
+    	try {
+			Class staxResult = PrivilegedAccessHelper.getClassForName(STAX_SOURCE_CLASS_NAME);
+			Constructor cons = PrivilegedAccessHelper.getDeclaredConstructorFor(staxResult, new Class[]{XMLStreamReader.class}, false);
+			source = (Source)PrivilegedAccessHelper.invokeConstructor(cons, new Object[]{streamReader});
+		} catch(Exception ex) {
+			throw new MarshalException(ex);
+		}    	
+		return this.unmarshal(source, type);
     }
     
     public Object unmarshal(XMLStreamReader streamReader) throws JAXBException {
@@ -251,7 +281,19 @@ public class JAXBUnmarshaller implements Unmarshaller {
 		} catch(Exception ex) {
 			throw new MarshalException(ex);
 		}    	
-		return this.unmarshal(source, javaClass);    
+		return this.unmarshal(source, javaClass);      	
+    }
+    
+    public JAXBElement unmarshal(XMLEventReader eventReader, Type type) throws JAXBException {
+		Source source = null;
+    	try {
+			Class staxResult = PrivilegedAccessHelper.getClassForName(STAX_SOURCE_CLASS_NAME);
+			Constructor cons = PrivilegedAccessHelper.getDeclaredConstructorFor(staxResult, new Class[]{XMLEventReader.class}, false);
+			source = (Source)PrivilegedAccessHelper.invokeConstructor(cons, new Object[]{eventReader});
+		} catch(Exception ex) {
+			throw new MarshalException(ex);
+		}    	
+		return this.unmarshal(source, type);    
     }
     
     public Object unmarshal(XMLEventReader eventReader) throws JAXBException {
@@ -386,13 +428,16 @@ public class JAXBUnmarshaller implements Unmarshaller {
     	if(value == null){    		    		
     		return createJAXBElement(qname, Object.class, value);
     	}
-    	    
+    	if(value instanceof ManyValue){    		   		
+    		value = ((ManyValue)value).getItem();
+    	}
+    	
     	if(qNamesToDeclaredClasses != null){
     		Class declaredClass = qNamesToDeclaredClasses.get(qname);
     		if(declaredClass != null){
     			return createJAXBElement(qname, declaredClass, value);
     		}
-    	}
+    	}    	    	
     	
     	XMLDescriptor descriptorForQName = xmlUnmarshaller.getXMLContext().getDescriptor(qname);
     	if(descriptorForQName != null){
@@ -420,9 +465,12 @@ public class JAXBUnmarshaller implements Unmarshaller {
     	return new JAXBElement(qname, theClass, value);
     }
 
-
 	public void setQNamesToDeclaredClasses(HashMap<QName, Class> qNamesToDeclaredClassesMap) {
 		qNamesToDeclaredClasses = qNamesToDeclaredClassesMap;
+	}
+
+	public void setJaxbContext(JAXBContext jaxbContext) {
+		this.jaxbContext = jaxbContext;
 	}       
 }
     

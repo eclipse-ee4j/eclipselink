@@ -1,0 +1,7 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<ns0:root xmlns:ns0="examplenamespace">
+   <item>a</item>
+   <item>b</item>
+   <item>c</item>
+   <item>d</item>
+</ns0:root>

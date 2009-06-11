@@ -50,10 +50,8 @@ public abstract class XMLMappingTestCases extends OXTestCase {
         setupParser();
     }
 
-    public void setUp() throws Exception {
-        setupParser();
-        
-        if(this.controlDocumentLocation != null) {
+    public void setupControlDocs() throws Exception{
+    	if(this.controlDocumentLocation != null) {
             InputStream inputStream = ClassLoader.getSystemResourceAsStream(controlDocumentLocation);
             resourceName = controlDocumentLocation;
             controlDocument = parser.parse(inputStream);
@@ -68,6 +66,13 @@ public abstract class XMLMappingTestCases extends OXTestCase {
             removeEmptyTextNodes(writeControlDocument);
             inputStream.close();
         }
+    }
+    
+    public void setUp() throws Exception {
+        setupParser();
+        
+        setupControlDocs();
+        
         xmlContext = getXMLContext(project);
         xmlMarshaller = xmlContext.createMarshaller();
         xmlMarshaller.setFormattedOutput(false);

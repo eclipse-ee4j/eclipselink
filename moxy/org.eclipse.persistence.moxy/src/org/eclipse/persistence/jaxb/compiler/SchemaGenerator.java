@@ -98,7 +98,7 @@ public class SchemaGenerator {
         SchemaTypeInfo schemaTypeInfo = new SchemaTypeInfo();
         schemaTypeInfo.setSchemaTypeName(new QName(info.getClassNamespace(), info.getSchemaTypeName()));
         this.schemaTypeInfo.put(myClass.getQualifiedName(), schemaTypeInfo);
-        NamespaceInfo namespaceInfo = this.packageToNamespaceMappings.get(myClass.getPackage().getQualifiedName());
+        NamespaceInfo namespaceInfo = this.packageToNamespaceMappings.get(myClass.getPackageName());
         if(namespaceInfo.getLocation() != null){
         	return;
         }

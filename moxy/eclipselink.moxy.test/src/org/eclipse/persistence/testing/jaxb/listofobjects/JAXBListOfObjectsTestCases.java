@@ -1,0 +1,270 @@
+/*******************************************************************************
+ * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * This program and the accompanying materials are made available under the 
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
+ * which accompanies this distribution. 
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at 
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * Contributors:
+ *     Denise Smith  June 05, 2009 - Initial implementation
+ ******************************************************************************/
+package org.eclipse.persistence.testing.jaxb.listofobjects;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.SchemaOutputResolver;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Result;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+
+import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.jaxb.JAXBTypeElement;
+import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.XMLRoot;
+import org.eclipse.persistence.platform.xml.SAXDocumentBuilder;
+import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
+import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBXMLComparer;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
+
+public abstract class JAXBListOfObjectsTestCases extends JAXBTestCases {
+	private Class[] classes;
+
+	public JAXBListOfObjectsTestCases(String name) throws Exception {
+		super(name);
+	}
+
+	public void setClasses(Class[] newClasses) throws Exception {
+		classLoader = new JaxbClassLoader(Thread.currentThread()
+				.getContextClassLoader());
+		JAXBContextFactory factory = new JAXBContextFactory();
+		jaxbContext = factory.createContext(newClasses, null, classLoader);
+		jaxbMarshaller = jaxbContext.createMarshaller();
+		jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+	}
+
+	public void setTypes(Type[] newTypes) throws Exception {
+		classLoader = new JaxbClassLoader(Thread.currentThread()
+				.getContextClassLoader());
+		JAXBContextFactory factory = new JAXBContextFactory();
+		jaxbContext = factory.createContext(newTypes, null, classLoader);
+		jaxbMarshaller = jaxbContext.createMarshaller();
+		jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+	}
+
+	protected Object getControlObject() {
+		return null;
+	}
+
+	public void testXMLToObjectFromXMLStreamReader() throws Exception {
+		if (System.getProperty("java.version").contains("1.6")) {
+			InputStream instream = ClassLoader
+					.getSystemResourceAsStream(getNoXsiTypeControlResourceName());
+			javax.xml.stream.XMLInputFactory factory = javax.xml.stream.XMLInputFactory
+					.newInstance();
+			javax.xml.stream.XMLStreamReader reader = factory
+					.createXMLStreamReader(instream);
+
+			Object obj = ((JAXBUnmarshaller) getJAXBUnmarshaller()).unmarshal(
+					reader, getTypeToUnmarshalTo());
+			this.xmlToObjectTest(obj);
+		}
+	}
+
+	public void testXMLToObjectFromXMLEventReader() throws Exception {
+		if (System.getProperty("java.version").contains("1.6")) {
+			InputStream instream = ClassLoader
+					.getSystemResourceAsStream(getNoXsiTypeControlResourceName());
+			javax.xml.stream.XMLInputFactory factory = javax.xml.stream.XMLInputFactory
+					.newInstance();
+			javax.xml.stream.XMLEventReader reader = factory
+					.createXMLEventReader(instream);
+			Object obj = ((JAXBUnmarshaller) getJAXBUnmarshaller()).unmarshal(
+					reader, getTypeToUnmarshalTo());
+			this.xmlToObjectTest(obj);
+		}
+	}
+
+	public void testObjectToXMLStreamWriter() throws Exception {
+		if (System.getProperty("java.version").contains("1.6")) {
+			StringWriter writer = new StringWriter();
+			Object objectToWrite = getWriteControlObject();
+			javax.xml.stream.XMLOutputFactory factory = javax.xml.stream.XMLOutputFactory
+					.newInstance();
+			javax.xml.stream.XMLStreamWriter streamWriter = factory
+					.createXMLStreamWriter(writer);
+
+			getJAXBMarshaller().marshal(objectToWrite, streamWriter);
+
+			StringReader reader = new StringReader(writer.toString());
+			InputSource inputSource = new InputSource(reader);
+			Document testDocument = parser.parse(inputSource);
+			writer.close();
+			reader.close();
+
+			objectToXMLDocumentTest(testDocument);
+		}
+	}
+
+	//Override and don't compare namespaceresolver size
+	public void testObjectToXMLStringWriter() throws Exception {
+        StringWriter writer = new StringWriter();
+        Object objectToWrite = getWriteControlObject();        
+  
+        jaxbMarshaller.marshal(objectToWrite, writer);
+               
+        StringReader reader = new StringReader(writer.toString());
+        InputSource inputSource = new InputSource(reader);
+        Document testDocument = parser.parse(inputSource);
+        writer.close();
+        reader.close();
+
+        objectToXMLDocumentTest(testDocument);
+    }
+
+	//Override and don't compare namespaceresolver size
+	 public void testObjectToContentHandler() throws Exception {
+	        SAXDocumentBuilder builder = new SAXDocumentBuilder();
+	        Object objectToWrite = getWriteControlObject();
+	      
+	        jaxbMarshaller.marshal(objectToWrite, builder);
+	        
+            Document controlDocument = getWriteControlDocument();
+	        Document testDocument = builder.getDocument();
+
+	        log("**testObjectToContentHandler**");
+	        log("Expected:");
+	        log(controlDocument);
+	        log("\nActual:");
+	        log(testDocument);
+
+	        assertXMLIdentical(controlDocument, testDocument);
+	    }
+
+		//Override and don't compare namespaceresolver size
+	    public void testObjectToXMLDocument() throws Exception {
+	        Object objectToWrite = getWriteControlObject();
+	     
+	        Document testDocument = XMLPlatformFactory.getInstance().getXMLPlatform().createDocument(); 
+	        jaxbMarshaller.marshal(objectToWrite, testDocument);	     
+	        objectToXMLDocumentTest(testDocument);
+	    }
+
+	 
+	public void testXMLToObjectFromStreamSource() throws Exception {
+		InputStream instream = ClassLoader
+				.getSystemResourceAsStream(resourceName);
+		StreamSource source = new StreamSource();
+		source.setInputStream(instream);
+		Object obj = getJAXBUnmarshaller().unmarshal(source);
+		this.xmlToObjectTest(obj);
+	}
+
+	public abstract List<InputStream> getControlSchemaFiles();
+	
+	public void testSchemaGen() throws Exception {
+		MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
+		getJAXBContext().generateSchema(outputResolver);
+		
+		List<File> generatedSchemas = outputResolver.getSchemaFiles();
+		List<InputStream> controlSchemas = getControlSchemaFiles();
+		
+		assertEquals(controlSchemas.size(), generatedSchemas.size());
+		
+		for(int i=0; i<controlSchemas.size(); i++){
+			File generatedSchema = generatedSchemas.get(i);
+			InputStream controlstream = controlSchemas.get(i);
+			Document control = parser.parse(controlstream);
+			
+			FileInputStream teststream = new FileInputStream(generatedSchema);
+			Document test = parser.parse(teststream);
+			
+			JAXBXMLComparer xmlComparer = new JAXBXMLComparer();	        
+			assertTrue("generated schema did not match control schema", xmlComparer.isSchemaEqual(control, test));
+
+		}
+		
+		/*
+		
+		DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+	    builderFactory.setIgnoringElementContentWhitespace(true);
+	    builderFactory.setNamespaceAware(true);
+	    DocumentBuilder parser = builderFactory.newDocumentBuilder();
+	            
+	    InputStream stream = new FileInputStream(new File("org/eclipse/persistence/testing/jaxb/schemagen/employee/schema0.xsd"));
+	    Document control = parser.parse(stream);
+	            
+	    stream = new FileInputStream(new File(tmpdir + "/schema0.xsd"));
+	    Document test = parser.parse(stream);
+	            
+	    JAXBXMLComparer xmlComparer = new JAXBXMLComparer();	        
+	    assertTrue("generated schema did not match control schema", xmlComparer.isSchemaEqual(control, test));
+*/
+		
+	}
+	
+	public Object getWriteControlObject(){
+		JAXBElement jaxbElement = (JAXBElement)getControlObject();
+		//TypedJAXBElement typed = new TypedJAXBElement(jaxbElement.getName(), jaxbElement.getDeclaredType(), jaxbElement.getValue());
+//		TypedJAXBElement typed = new TypedJAXBElement(jaxbElement.getName(), jaxbElement.getValue(), jaxbElement.getType());
+		try{
+			//typed.setType(getTypeToUnmarshalTo());
+			Type typeToUse = getTypeToUnmarshalTo();
+			if(typeToUse instanceof ParameterizedType){
+				JAXBTypeElement typed = new JAXBTypeElement(jaxbElement.getName(), jaxbElement.getValue(), (ParameterizedType)getTypeToUnmarshalTo());
+				return typed;
+			}else{
+				//TypedJAXBElement typed = new TypedJAXBElement(jaxbElement.getName(), jaxbElement.getValue(), (Class)getTypeToUnmarshalTo());				
+				return jaxbElement;
+			}
+		}catch(Exception e){
+			fail(e.getMessage());
+		}
+		//fail(e.getMessage());
+		return null;
+		//return typed;
+	}
+
+	protected abstract Type getTypeToUnmarshalTo() throws Exception;
+
+	protected abstract String getNoXsiTypeControlResourceName();
+
+	class MySchemaOutputResolver extends SchemaOutputResolver {
+		// keep a list of processed schemas for the validation phase of the
+		// test(s)
+		public List<File> schemaFiles;
+
+		public MySchemaOutputResolver() {
+			schemaFiles = new ArrayList<File>();
+		}
+
+		public Result createOutput(String namespaceURI, String suggestedFileName)
+				throws IOException {
+			File schemaFile = new File(suggestedFileName);
+			schemaFiles.add(schemaFile);
+			return new StreamResult(schemaFile);
+		}
+
+		public List<File> getSchemaFiles() {
+			return schemaFiles;
+		}
+	}
+
+}

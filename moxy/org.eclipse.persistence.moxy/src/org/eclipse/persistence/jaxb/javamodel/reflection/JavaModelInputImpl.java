@@ -12,6 +12,11 @@
  ******************************************************************************/  
 package org.eclipse.persistence.jaxb.javamodel.reflection;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaModel;
 import org.eclipse.persistence.jaxb.javamodel.JavaModelInput;
@@ -37,7 +42,37 @@ import org.eclipse.persistence.jaxb.javamodel.JavaModelInput;
 public class JavaModelInputImpl implements JavaModelInput {
     private JavaClass[] jClasses;
     private JavaModel jModel;
+    private Map<JavaClass, Type> javaClassToType;
     
+    /**
+     * This constructor builds an array of JavaClass objects from an array
+     * of Types.  The JavaModel instance to be used is also set here.
+     * 
+     * This constructor assumes that the a given type in the list will 
+     * either be a Class or ParameterizedType.
+     * 
+     * @param types
+     * @param javaModel
+     */
+    public JavaModelInputImpl(Type[] types, JavaModel javaModel) {
+    	 jClasses = new JavaClass[types.length];
+    	 javaClassToType = new HashMap<JavaClass, Type>();
+         for (int i=0; i<types.length; i++) {
+             Type type = types[i];
+             // type should be a Class or ParameterizedType
+             if (type instanceof Class) {
+                 jClasses[i] = new JavaClassImpl((Class) type);
+             } else {
+                 // assume parameterized type
+                 ParameterizedType pType = (ParameterizedType) type;
+                 jClasses[i] = new JavaClassImpl(pType, (Class) pType.getRawType());
+                 javaClassToType.put(jClasses[i], type);
+             }             
+         }
+         jModel = javaModel;
+
+    }
+    	  
     public JavaModelInputImpl(Class[] classes, JavaModel javaModel) {
         jClasses = new JavaClass[classes.length];
         for (int i=0; i<classes.length; i++) {
@@ -53,4 +88,8 @@ public class JavaModelInputImpl implements JavaModelInput {
     public JavaModel getJavaModel() {
         return jModel;
     }
+
+	public Map<JavaClass, Type> getJavaClassToType() {
+		return javaClassToType;
+	}
 }

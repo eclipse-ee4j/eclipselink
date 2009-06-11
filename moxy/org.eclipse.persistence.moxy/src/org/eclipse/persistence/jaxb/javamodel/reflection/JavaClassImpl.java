@@ -293,6 +293,11 @@ public class JavaClassImpl implements JavaClass {
     public String getPackageName() {    	
     	if(jClass.getPackage() != null){
     		return jClass.getPackage().getName();
+    	}else if(jClass.getName() !=null){
+    		int index = jClass.getName().lastIndexOf(".");
+    		if(index > -1){
+    			return jClass.getName().substring(0, index);
+    		}
     	}
     	return null;
     }

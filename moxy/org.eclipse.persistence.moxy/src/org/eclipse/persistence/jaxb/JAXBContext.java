@@ -12,9 +12,11 @@
  ******************************************************************************/  
 package org.eclipse.persistence.jaxb;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.xml.bind.Binder;
@@ -114,6 +116,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             marshaller.setMarshalCallbacks(generator.getMarshalCallbacks());
         }
         marshaller.setQNameToGeneratedClasses(this.qNameToGeneratedClasses);
+        marshaller.setJaxbContext(this);
         return marshaller;
     }
 
@@ -129,6 +132,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             unmarshaller.setUnmarshalCallbacks(generator.getUnmarshalCallbacks());
         }        
         unmarshaller.setQNamesToDeclaredClasses(this.qNamesToDeclaredClasses);
+        unmarshaller.setJaxbContext(this);
         return unmarshaller;
     }
 
@@ -172,5 +176,12 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
 			HashMap<QName, Class> nameToDeclaredClasses) {
 		qNamesToDeclaredClasses = nameToDeclaredClasses;
 	}
-    
+	
+	public Map<String, Class>getArrayClassesToGeneratedClasses(){
+		return generator.getAnnotationsProcessor().getArrayClassesToGeneratedClasses();
+	}
+	
+	public Map<Type, Class>getCollectionClassesToGeneratedClasses(){
+		return generator.getAnnotationsProcessor().getCollectionClassesToGeneratedClasses();
+	}
 }

@@ -16,7 +16,6 @@ import java.io.OutputStream;
 import java.io.Writer;
 import java.io.File;
 import java.util.HashMap;
-
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.MarshalException;
@@ -32,7 +31,9 @@ import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.Result;
 import javax.xml.transform.stax.StAXResult;
 import javax.xml.validation.Schema;
+
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Type;
 
 import org.w3c.dom.Node;
 import org.xml.sax.ContentHandler;
@@ -43,6 +44,7 @@ import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.jaxb.many.ManyValue;
 import org.eclipse.persistence.internal.jaxb.WrappedValue;
 
 import org.eclipse.persistence.jaxb.attachment.*;
@@ -67,10 +69,11 @@ import org.eclipse.persistence.jaxb.attachment.*;
 public class JAXBMarshaller implements javax.xml.bind.Marshaller {
 	private ValidationEventHandler validationEventHandler;
 	private XMLMarshaller xmlMarshaller;
+	private JAXBContext jaxbContext;
     public static final String XML_JAVATYPE_ADAPTERS = "xml-javatype-adapters";
     private static String STAX_RESULT_CLASS_NAME = "javax.xml.transform.stax.StAXResult";
     private HashMap<QName, Class> qNameToGeneratedClasses;
-    
+
 	/**
 	 * This constructor initializes various settings on the XML marshaller, and
 	 * stores the provided JAXBIntrospector instance for usage in marshal()
@@ -87,6 +90,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
 		xmlMarshaller.setFormattedOutput(false);
 		JAXBMarshalListener listener = new JAXBMarshalListener(this);
 		xmlMarshaller.setMarshalListener(listener);
+		
 	}
 
 	/**
@@ -101,7 +105,8 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
 	private XMLRoot createXMLRootFromJAXBElement(JAXBElement elt) {
 		// create an XMLRoot to hand into the marshaller
 		XMLRoot xmlroot = new XMLRoot();
-		xmlroot.setObject(elt.getValue());
+		Object objectValue = elt.getValue();
+		xmlroot.setObject(objectValue);
 		QName qname = elt.getName();
 		xmlroot.setLocalName(qname.getLocalPart());
 		xmlroot.setNamespaceURI(qname.getNamespaceURI());
@@ -116,14 +121,32 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
 			if(theClass != null && WrappedValue.class.isAssignableFrom(theClass)) {
 				ClassDescriptor desc = xmlMarshaller.getXMLContext().getSession(theClass).getDescriptor(theClass);
 				Object newObject = desc.getInstantiationPolicy().buildNewInstance();
-				((WrappedValue)newObject).setWrappedValue(elt.getValue());
+				((WrappedValue)newObject).setWrappedValue(objectValue);
 				xmlroot.setObject(newObject);
 			}   
 		}
+				
+		Class generatedClass = null;				
+		
+		if(elt.getDeclaredType() != null && elt.getDeclaredType().isArray()){
+			if(jaxbContext.getArrayClassesToGeneratedClasses() != null){
+				generatedClass = jaxbContext.getArrayClassesToGeneratedClasses().get(elt.getDeclaredType().getCanonicalName());
+			}
+		}else if(elt instanceof JAXBTypeElement){			 
+			Type objectType = ((JAXBTypeElement)elt).getType();
+			generatedClass = jaxbContext.getCollectionClassesToGeneratedClasses().get(objectType);
+		} 
+			
+		if(generatedClass != null ) {
+			ClassDescriptor desc = xmlMarshaller.getXMLContext().getSession(generatedClass).getDescriptor(generatedClass);
+			Object newObject = desc.getInstantiationPolicy().buildNewInstance();			
+			((ManyValue)newObject).setItem(objectValue);				
+			xmlroot.setObject(newObject);
+		}		
 		
 		return xmlroot;
 	}
-
+	
 	public XmlAdapter getAdapter(Class javaClass) {
         HashMap result = (HashMap) xmlMarshaller.getProperty(XML_JAVATYPE_ADAPTERS);
         if (result == null) {
@@ -349,5 +372,10 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
 	public void setQNameToGeneratedClasses(HashMap<QName, Class> qNameToClass) {
 	    this.qNameToGeneratedClasses = qNameToClass;
 	}
+
+	public void setJaxbContext(JAXBContext jaxbContext) {
+		this.jaxbContext = jaxbContext;
+	}
+
 	
 }

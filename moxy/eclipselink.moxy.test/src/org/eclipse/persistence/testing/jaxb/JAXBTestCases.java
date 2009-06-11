@@ -17,7 +17,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.lang.reflect.Array;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -54,10 +57,10 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
     Class[] classes;
 
     protected JAXBContext jaxbContext;
-    Marshaller jaxbMarshaller;
-    Unmarshaller jaxbUnmarshaller;
+    protected Marshaller jaxbMarshaller;
+    protected Unmarshaller jaxbUnmarshaller;
     Generator generator;
-    JaxbClassLoader classLoader;
+    protected JaxbClassLoader classLoader;
     
     public JAXBTestCases(String name) throws Exception {
         super(name);
@@ -68,12 +71,8 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
     }
 
     public void setUp() throws Exception {
-    	super.setUp();
-    	
-    	jaxbContext = new org.eclipse.persistence.jaxb.JAXBContext(xmlContext, generator);
-        jaxbMarshaller = jaxbContext.createMarshaller();
-        jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-
+    	setupParser();        
+        setupControlDocs();    	  
     }
     
     public void tearDown() {
@@ -89,10 +88,13 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
 
     public void setClasses(Class[] newClasses) throws Exception {
         this.classes = newClasses;
-        this.classLoader = new JaxbClassLoader(Thread.currentThread().getContextClassLoader());
+        this.classLoader = new JaxbClassLoader(Thread.currentThread().getContextClassLoader());        
         generator = new Generator(new JavaModelInputImpl(classes, new JavaModelImpl(this.classLoader)));
+        
         Project proj = generator.generateProject();
         proj.convertClassNamesToClasses(classLoader);
+        setProject(proj);
+        xmlContext = getXMLContext(proj);
         // need to make sure that the java class is set properly on each 
         // descriptor when using java classname - req'd for JOT api implementation 
         ConversionManager manager = new ConversionManager();
@@ -104,7 +106,39 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
             }
         }
         setProject(proj);
+        jaxbContext = new org.eclipse.persistence.jaxb.JAXBContext(xmlContext, generator);
+        jaxbMarshaller = jaxbContext.createMarshaller();
+        jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+        
     }
+    
+    public void setTypes(Type[] newTypes) throws Exception {
+       // this.classes = newClasses;
+        this.classLoader = new JaxbClassLoader(Thread.currentThread().getContextClassLoader());
+        generator = new Generator(new JavaModelInputImpl(newTypes, new JavaModelImpl(this.classLoader)));
+        
+        Project proj = generator.generateProject();
+        proj.convertClassNamesToClasses(classLoader);
+        setProject(proj);
+        xmlContext = getXMLContext(proj);
+        // need to make sure that the java class is set properly on each 
+        // descriptor when using java classname - req'd for JOT api implementation 
+        ConversionManager manager = new ConversionManager();
+        manager.setLoader(classLoader);
+        for (Iterator<ClassDescriptor> descriptorIt = proj.getOrderedDescriptors().iterator(); descriptorIt.hasNext(); ) {
+            ClassDescriptor descriptor = descriptorIt.next();
+            if (descriptor.getJavaClass() == null) {
+                descriptor.setJavaClass(manager.convertClassNameToClass(descriptor.getJavaClassName()));
+            }
+        }
+        setProject(proj);
+        jaxbContext = new org.eclipse.persistence.jaxb.JAXBContext(xmlContext, generator);
+        jaxbMarshaller = jaxbContext.createMarshaller();
+        jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+        
+    }
+    
+    
 
     public Class[] getClasses() {
         return classes;
@@ -229,8 +263,30 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
     public void compareJAXBElementObjects(JAXBElement controlObj, JAXBElement testObj) {
         assertEquals(controlObj.getName().getLocalPart(), testObj.getName().getLocalPart());
         assertEquals(controlObj.getName().getNamespaceURI(), testObj.getName().getNamespaceURI());
-        assertEquals(controlObj.getValue(), testObj.getValue());
-//        assertTrue("Value: " + controlObj.getValue() + " is not equal to: " + testObj.getValue(), controlObj.getValue().equals(testObj.getValue()));
+        
+        Object controlValue = controlObj.getValue();
+        Object testValue = testObj.getValue();
+        
+        if(controlValue.getClass().isArray()){
+        	if(testValue.getClass().isArray()){
+        		if(controlValue.getClass().getComponentType().isPrimitive()){
+        			comparePrimitiveArrays(controlValue, testValue);
+        		}else{        		
+	        		assertEquals(((Object[])controlValue).length,((Object[])testValue).length);
+	        		for(int i=0; i<((Object[])controlValue).length-1; i++){
+	        			assertEquals(((Object[])controlValue)[i], ((Object[])testValue)[i]);
+	        		}
+        		}
+        	}else{
+        		fail("Expected an array value but was an " + testValue.getClass().getName());
+        	}
+        }else{        
+        	assertEquals(controlValue, testValue);
+        }
+    }
+    
+    protected void comparePrimitiveArrays(Object controlValue, Object testValue){
+    	fail("NEED TO COMPARE PRIMITIVE ARRAYS");
     }
     
     public void testUnmarshallerHandler() throws Exception {
