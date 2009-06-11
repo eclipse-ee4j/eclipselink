@@ -74,6 +74,13 @@ public class DBWSTestSuite {
     public final static String DEFAULT_DATABASE_PLATFORM =
         "org.eclipse.persistence.platform.database.MySQLPlatform";
 
+    public static final String SFAULT = "sfault_table";
+    public static final String SFAULT_TEST = SFAULT + "Test";
+    public static final String SFAULT_SERVICE = SFAULT + "Service";
+    public static final String SFAULT_NAMESPACE = "urn:" + SFAULT;
+    public static final String SFAULT_SERVICE_NAMESPACE = "urn:" + SFAULT_SERVICE;
+    public static final String SFAULT_PORT = SFAULT_SERVICE + "Port";
+
     // JUnit test fixtures
 
     public static String DBWS_BUILDER_XML_USERNAME;

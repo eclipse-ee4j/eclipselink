@@ -515,6 +515,10 @@ public class ProviderHelper extends XRServiceFactory {
             if (result instanceof ValueObject) {
                 result = ((ValueObject)result).value;
             }
+            response = responseWriter.generateResponse(op, usesSOAP12, result);
+        }
+        catch (SOAPException se) {
+            throw new WebServiceException(se.getMessage());
         }
         catch (EclipseLinkException ele) {
             try {
@@ -545,34 +549,6 @@ public class ProviderHelper extends XRServiceFactory {
                 }
                 throw new SOAPFaultException(soapFault);
             }
-        }
-        try {
-            response = responseWriter.generateResponse(op, usesSOAP12, result);
-        }
-        catch (Exception e) {
-            SOAPFault soapFault = null;
-            try {
-                SOAPFactory soapFactory = null;
-                if (usesSOAP12) {
-                    soapFactory = SOAPFactory.newInstance(SOAP_1_2_PROTOCOL);
-                }
-                else {
-                    soapFactory = SOAPFactory.newInstance();
-                }
-                QName serverQName = null;
-                if (usesSOAP12) {
-                    serverQName = new QName(URI_NS_SOAP_1_2_ENVELOPE, "Server");
-                }
-                else {
-                    serverQName = new QName(URI_NS_SOAP_1_1_ENVELOPE, "Server");
-                }
-                soapFault = soapFactory.createFault("SOAPMessage response format error - " + 
-                    e.getMessage(), serverQName);
-            }
-            catch (SOAPException se) {
-                /* safe to ignore */
-            }
-            throw new SOAPFaultException(soapFault);
         }
         return response;
     }
