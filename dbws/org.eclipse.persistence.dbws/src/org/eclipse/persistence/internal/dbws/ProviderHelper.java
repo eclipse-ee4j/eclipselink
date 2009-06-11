@@ -471,6 +471,10 @@ public class ProviderHelper extends XRServiceFactory {
             if (result instanceof ValueObject) {
                 result = ((ValueObject)result).value;
             }
+            response = responseWriter.generateResponse(op, result);
+        }
+        catch (SOAPException se) {
+            throw new WebServiceException(se.getMessage());
         }
         catch (EclipseLinkException ele) {
             try {
@@ -487,20 +491,6 @@ public class ProviderHelper extends XRServiceFactory {
                 }
                 throw new SOAPFaultException(soapFault);
             }
-        }
-        try {
-            response = responseWriter.generateResponse(op, result);
-        }
-        catch (Exception e) {
-            SOAPFault soapFault = null;
-            try {
-                soapFault = getSOAPFactory().createFault("SOAPMessage response format error - " + 
-                    e.getMessage(), new QName(URI_NS_SOAP_1_1_ENVELOPE, "Server"));
-            }
-            catch (SOAPException se) {
-                /* safe to ignore */
-            }
-            throw new SOAPFaultException(soapFault);
         }
         return response;
     }
