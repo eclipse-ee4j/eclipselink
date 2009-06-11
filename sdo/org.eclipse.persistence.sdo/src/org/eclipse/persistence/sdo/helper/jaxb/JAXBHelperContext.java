@@ -22,9 +22,11 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.internal.helper.IdentityWeakHashMap;
+import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.sdo.SDODataObject;
+import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.helper.SDOCopyHelper;
 import org.eclipse.persistence.sdo.helper.SDODataHelper;
 import org.eclipse.persistence.sdo.helper.SDOEqualityHelper;
@@ -186,6 +188,20 @@ public class JAXBHelperContext extends SDOHelperContext {
     }
 
     /**
+     * Return the wrapped class corresponding to the SDO type. 
+     * <pre>
+     * Type customerType = jaxbHelperContext.getTypeHelper().getType("urn:customer", "customer");
+     * Class customerClass = jaxbHelperContext.getClass(customerType);
+     * </pre>
+     */
+    public Class getClass(Type type) {
+        if(null == type) {
+            return null;
+        }
+        return getObjectDescriptor((SDOType) type).getJavaClass();
+    }
+
+    /**
      * Return a DataObject that wraps a POJO.  This call should be 
      * made on the root POJO.
      * <pre>
@@ -316,6 +332,26 @@ public class JAXBHelperContext extends SDOHelperContext {
      */
     void putWrapperDataObject(Object anObject, SDODataObject aDataObject) {
         wrapperDataObjects.put(anObject, aDataObject);
+    }
+    
+    /**
+     * Get the XML descriptor for the entity class corresponding to the SDO type.
+     */
+    XMLDescriptor getObjectDescriptor(SDOType sdoType) {
+        QName xsdQName = sdoType.getXsdType();
+        if(null == xsdQName) {
+            xsdQName = sdoType.getQName();
+        }
+        XPathFragment xPathFragment = new XPathFragment(xsdQName.getLocalPart());
+        xPathFragment.setNamespaceURI(xsdQName.getNamespaceURI());
+        XMLDescriptor xmlDescriptor = jaxbContext.getXMLContext().getDescriptorByGlobalType(xPathFragment);
+        if (null == xmlDescriptor) {
+            xmlDescriptor = jaxbContext.getXMLContext().getDescriptor(xsdQName);
+            if (null == xmlDescriptor) {
+                throw SDOException.sdoJaxbNoDescriptorForType(sdoType.getQName(), xsdQName);
+            }
+        }
+        return xmlDescriptor;
     }
 
 }

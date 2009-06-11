@@ -18,8 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-import javax.xml.namespace.QName;
-
 import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.oxm.MappingNodeValue;
@@ -64,22 +62,9 @@ public class JAXBValueStore implements ValueStore {
 
     public JAXBValueStore(JAXBHelperContext aJAXBHelperContext, SDOType sdoType) {
         this.jaxbHelperContext = aJAXBHelperContext;
-        QName xsdQName = sdoType.getXsdType();
-        if(null == xsdQName) {
-            xsdQName = sdoType.getQName();
-        }
-        listWrappers = new WeakHashMap<Property, JAXBListWrapper>();
-        XPathFragment xPathFragment = new XPathFragment(xsdQName.getLocalPart());
-        xPathFragment.setNamespaceURI(xsdQName.getNamespaceURI());
-        JAXBContext jaxbContext = (JAXBContext) jaxbHelperContext.getJAXBContext();
-        this.descriptor = jaxbContext.getXMLContext().getDescriptorByGlobalType(xPathFragment);
-        if (null == this.descriptor) {
-            this.descriptor = jaxbContext.getXMLContext().getDescriptor(xsdQName);
-            if (null == this.descriptor) {
-                throw SDOException.sdoJaxbNoDescriptorForType(sdoType.getQName(), xsdQName);
-            }
-        }
-        this.entity = descriptor.getInstantiationPolicy().buildNewInstance();
+        this.listWrappers = new WeakHashMap<Property, JAXBListWrapper>();
+        this.descriptor = jaxbHelperContext.getObjectDescriptor(sdoType);
+        this.entity = this.descriptor.getInstantiationPolicy().buildNewInstance();
     }
 
     public JAXBValueStore(JAXBHelperContext aJAXBHelperContext, Object anEntity) {
