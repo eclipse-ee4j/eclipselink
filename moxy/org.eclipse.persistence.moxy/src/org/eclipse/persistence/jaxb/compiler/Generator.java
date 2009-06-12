@@ -187,7 +187,7 @@ public class Generator {
                 QName key = keyIt.next();
                 Type type = additionalGlobalElements.get(key);
                 JavaClass jClass;
-                if (type.getClass().isAssignableFrom(Class.class)) {
+                if (type instanceof Class) {
                     Class tClass = (Class) type; 
                     if (tClass.isArray()) {
                         // handle arrays

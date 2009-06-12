@@ -122,7 +122,7 @@ public class SchemaModelGenerator {
             for (Iterator<QName> keyIt = additionalGlobalElements.keySet().iterator(); keyIt.hasNext(); ) {
                 QName qname = keyIt.next();
                 Type type = additionalGlobalElements.get(qname);
-                if (type.getClass().isAssignableFrom(Class.class)) {
+                if (type instanceof Class) {
                     Class tClass = (Class) type;
                     String nsKey = qname.getNamespaceURI();
                     Schema schema = schemaForNamespace.get(nsKey);

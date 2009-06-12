@@ -73,13 +73,13 @@ public class SchemaGenTestCases extends TestCase {
      * @param outputResolver
      * @param additionalGlobalElements
      */
-    protected void generateSchema(Class[] classesToBeBound, MySchemaOutputResolver outputResolver, Map<QName, Type> additionalGlobalElements) {
+    protected void generateSchema(Class[] classesToBeBound, MySchemaOutputResolver outputResolver, Map<QName, Type> additionalGlobalElements) throws Exception {
         JAXBContext jaxbContext;
         try {
             jaxbContext = (JAXBContext) JAXBContextFactory.createContext(classesToBeBound, null, loader);
             jaxbContext.generateSchema(outputResolver, additionalGlobalElements);
         } catch (JAXBException e) {
-            e.printStackTrace();
+            throw e;
         }
     }
 
