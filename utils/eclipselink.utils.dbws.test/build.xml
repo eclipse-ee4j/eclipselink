@@ -258,6 +258,10 @@
           key="db.platform"
           value="${db.platform}"
         />
+        <sysproperty
+          key="javax.xml.bind.JAXBContext"
+          value="com.sun.xml.bind.v2.ContextFactory"
+        />
         <test
           name="dbws.testing.@{package-name}.@{testsuite-name}TestSuite"
         />
@@ -376,8 +380,6 @@
         <SetupCompileRunTeardown testsuite-name="SimpleTable"/>
         <SetupCompileRunTeardown testsuite-name="SimpleSP"/>
         <SetupCompileRunTeardown testsuite-name="SimpleTableWithNestedSQL"/>
-        <!--
         <SetupCompileRunTeardown testsuite-name="UpdateFault"/>
-        -->
     </target>
 </project>
