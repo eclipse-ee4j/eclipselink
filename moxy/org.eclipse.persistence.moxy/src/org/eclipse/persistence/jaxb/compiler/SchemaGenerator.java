@@ -929,11 +929,11 @@ public class SchemaGenerator {
         for (QName next : additionalElements.keySet()) {
             String namespaceURI = next.getNamespaceURI();
             Schema targetSchema = getSchemaForNamespace(namespaceURI);
-            if(targetSchema == null){
+            if (targetSchema == null){
             	break;
             }
             
-            if(targetSchema.getTopLevelElements().get(next.getLocalPart()) == null) {
+            if (targetSchema.getTopLevelElements().get(next.getLocalPart()) == null) {
                 Element element = new Element();
                 element.setName(next.getLocalPart());
 
@@ -986,7 +986,6 @@ public class SchemaGenerator {
                         element.setSubstitutionGroup(prefix + ":" + subLocal);
                     }
                 }
-                
                 targetSchema.addTopLevelElement(element);
                 SchemaTypeInfo info = this.schemaTypeInfo.get(javaClass.getQualifiedName());
                 if (info == null) {

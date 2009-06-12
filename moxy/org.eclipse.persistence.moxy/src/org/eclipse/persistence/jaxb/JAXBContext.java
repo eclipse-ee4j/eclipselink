@@ -87,6 +87,10 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     }
     
     public void generateSchema(SchemaOutputResolver outputResolver) {
+        generateSchema(outputResolver, null);
+    }
+    
+    public void generateSchema(SchemaOutputResolver outputResolver, Map<QName, Type> additonalGlobalElements) {
         if (generator == null) {
             List<XMLDescriptor> descriptorsToProcess = new ArrayList<XMLDescriptor>();
             List<Session> sessions = xmlContext.getSessions();
@@ -97,9 +101,9 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                 }
             }
             SchemaModelGenerator smGen = new SchemaModelGenerator();
-            smGen.generateSchemas(descriptorsToProcess, null, new JAXBSchemaOutputResolver(outputResolver));
+            smGen.generateSchemas(descriptorsToProcess, null, new JAXBSchemaOutputResolver(outputResolver), additonalGlobalElements);
         } else {
-            generator.generateSchemaFiles(outputResolver, null);
+            generator.generateSchemaFiles(outputResolver, additonalGlobalElements);
         }
     }
     

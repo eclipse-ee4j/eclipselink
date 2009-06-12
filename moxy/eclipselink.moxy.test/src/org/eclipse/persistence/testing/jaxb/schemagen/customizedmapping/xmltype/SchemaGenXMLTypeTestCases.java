@@ -23,12 +23,19 @@ import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 import junit.framework.TestCase;
 import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.testing.jaxb.schemagen.SchemaGenTestCases;
 
 /**
  * Schema generation tests - based on the JAXB 2.0 TCK: 
  *     java2schema/CustomizedMapping/classes/XMLRootElement 
  */
-public class SchemaGenXMLTypeTestCases extends TestCase {
+public class SchemaGenXMLTypeTestCases extends SchemaGenTestCases {
+
+    /**
+     * This is the preferred (and only) constructor.
+     * 
+     * @param name
+     */
     public SchemaGenXMLTypeTestCases(String name) throws Exception {
         super(name);
     }
@@ -37,7 +44,6 @@ public class SchemaGenXMLTypeTestCases extends TestCase {
         boolean exception = false;
         String msg = null;
         String src = "org/eclipse/persistence/testing/jaxb/schemagen/customizedmapping/xmltype/BaseType001p.xml";
-        String tmpdir = System.getenv("T_WORK");
         try {
             Class[] jClasses = new Class[] { BaseType001c.class };
             Generator gen = new Generator(new JavaModelInputImpl(jClasses, new JavaModelImpl(Thread.currentThread().getContextClassLoader())));
@@ -57,7 +63,6 @@ public class SchemaGenXMLTypeTestCases extends TestCase {
     public void testBaseType001cNegative() throws Exception {
         boolean exception = false;
         String src = "org/eclipse/persistence/testing/jaxb/schemagen/customizedmapping/xmltype/BaseType001n.xml";
-        String tmpdir = System.getenv("T_WORK");
         try {
             Class[] jClasses = new Class[] { BaseType001c.class };
             Generator gen = new Generator(new JavaModelInputImpl(jClasses, new JavaModelImpl(Thread.currentThread().getContextClassLoader())));

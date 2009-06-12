@@ -14,6 +14,10 @@ package org.eclipse.persistence.testing.jaxb.schemagen.deploymentxml;
 
 import java.util.Vector;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement(name="employee")
 public class Employee  {
 
 	private String firstName;
@@ -22,6 +26,7 @@ public class Employee  {
 	public Employee() {
 	}
 
+	@XmlElement(name="first-name")
 	public String getFirstName() {
 		return firstName;
 	}
@@ -30,6 +35,7 @@ public class Employee  {
 		this.firstName = firstName;
 	}
 
+	@XmlElement(name="last-name")
 	public String getLastName() {
 		return lastName;
 	}

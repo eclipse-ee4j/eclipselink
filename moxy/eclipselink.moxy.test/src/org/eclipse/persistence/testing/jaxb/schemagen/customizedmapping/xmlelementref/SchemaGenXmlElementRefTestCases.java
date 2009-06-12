@@ -28,17 +28,26 @@ import javax.xml.validation.Validator;
 
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.testing.jaxb.schemagen.SchemaGenTestCases;
 
 import junit.framework.TestCase;
 
-public class SchemaGenXmlElementRefTestCases  extends TestCase {
-    static String tmpdir;
-    MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
+/**
+ * Tests @XmlElementRef annotation processing.
+ *
+ */
+public class SchemaGenXmlElementRefTestCases extends SchemaGenTestCases {
+    MySchemaOutputResolver outputResolver;
     boolean shouldGenerateSchema = true;
+    static String PATH = "org/eclipse/persistence/testing/jaxb/schemagen/customizedmapping/xmlelementref/";
 
+    /**
+     * This is the preferred (and only) constructor.
+     * 
+     * @param name
+     */
     public SchemaGenXmlElementRefTestCases(String name) throws Exception {
         super(name);
-        tmpdir = (System.getenv("T_WORK") == null ? "" : (System.getenv("T_WORK") + "/"));
     }
 
     /**
@@ -69,16 +78,8 @@ public class SchemaGenXmlElementRefTestCases  extends TestCase {
      */
     public void testElementRefSingleAddress() {
         generateSchema();
-        try {
-            SchemaFactory sFact = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
-            Schema theSchema = sFact.newSchema(outputResolver.schemaFiles.get(0));
-            Validator validator = theSchema.newValidator();
-            String src = "org/eclipse/persistence/testing/jaxb/schemagen/customizedmapping/xmlelementref/emp0.xml";
-            StreamSource ss = new StreamSource(new File(src)); 
-            validator.validate(ss);
-        } catch (Exception ex) {
-            fail("Schema validation failed unexpectedly: " + ex.toString());
-        }
+        String result = validateAgainstSchema(PATH + "emp0.xml", outputResolver);
+        assertTrue("Schema validation failed unxepectedly: " + result, result == null);
     }
     
     /**
@@ -88,16 +89,8 @@ public class SchemaGenXmlElementRefTestCases  extends TestCase {
      */
     public void testElementRefMultipleAddresses() {
         generateSchema();
-        try {
-            SchemaFactory sFact = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
-            Schema theSchema = sFact.newSchema(outputResolver.schemaFiles.get(0));
-            Validator validator = theSchema.newValidator();
-            String src = "org/eclipse/persistence/testing/jaxb/schemagen/customizedmapping/xmlelementref/emp1.xml";
-            StreamSource ss = new StreamSource(new File(src)); 
-            validator.validate(ss);
-        } catch (Exception ex) {
-            fail("Schema validation failed unexpectedly: " + ex.toString());
-        }
+        String result = validateAgainstSchema(PATH + "emp1.xml", outputResolver);
+        assertTrue("Schema validation failed unxepectedly: " + result, result == null);
     }
 
     /**
@@ -107,16 +100,8 @@ public class SchemaGenXmlElementRefTestCases  extends TestCase {
      */
     public void testElementRefNoAddresses() {
         generateSchema();
-        try {
-            SchemaFactory sFact = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
-            Schema theSchema = sFact.newSchema(outputResolver.schemaFiles.get(0));
-            Validator validator = theSchema.newValidator();
-            String src = "org/eclipse/persistence/testing/jaxb/schemagen/customizedmapping/xmlelementref/emp2.xml";
-            StreamSource ss = new StreamSource(new File(src)); 
-            validator.validate(ss);
-        } catch (Exception ex) {
-            fail("Schema validation failed unexpectedly: " + ex.toString());
-        }
+        String result = validateAgainstSchema(PATH + "emp2.xml", outputResolver);
+        assertTrue("Schema validation failed unxepectedly: " + result, result == null);
     }
 
     /**
@@ -126,32 +111,7 @@ public class SchemaGenXmlElementRefTestCases  extends TestCase {
      */
     public void testElementRefRequired() {
         generateSchema();
-        boolean ex = false;
-        try {
-            SchemaFactory sFact = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
-            Schema theSchema = sFact.newSchema(outputResolver.schemaFiles.get(0));
-            Validator validator = theSchema.newValidator();
-            String src = "org/eclipse/persistence/testing/jaxb/schemagen/customizedmapping/xmlelementref/emp3.xml";
-            StreamSource ss = new StreamSource(new File(src)); 
-            validator.validate(ss);
-        } catch (Exception x) {
-            ex = true;
-        }
-        assertTrue("Schema validation passed unexpectedly", ex);
-    }
-
-    class MySchemaOutputResolver extends SchemaOutputResolver {
-        // keep a list of processed schemas for the validation phase of the test(s)
-        public List<File> schemaFiles;
-        
-        public MySchemaOutputResolver() {
-            schemaFiles = new ArrayList<File>();
-        }
-        
-        public Result createOutput(String namespaceURI, String suggestedFileName) throws IOException {
-            File schemaFile = new File(tmpdir + suggestedFileName);
-            schemaFiles.add(schemaFile);
-            return new StreamResult(schemaFile);
-        }
+        String result = validateAgainstSchema(PATH + "emp3.xml", outputResolver);
+        assertTrue("Schema validation passed unexpectedly", result != null);
     }
 }

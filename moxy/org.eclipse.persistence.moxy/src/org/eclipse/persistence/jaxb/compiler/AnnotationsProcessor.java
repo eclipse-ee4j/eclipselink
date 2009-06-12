@@ -1689,7 +1689,15 @@ public class AnnotationsProcessor {
         }
     }
     
+    /**
+     * Lazy load and return the map of global elements.
+     * 
+     * @return
+     */
     public HashMap<QName, ElementDeclaration> getGlobalElements() {
+        if (globalElements == null) {
+            globalElements = new HashMap<QName, ElementDeclaration>();
+        }
         return globalElements;
     }
     

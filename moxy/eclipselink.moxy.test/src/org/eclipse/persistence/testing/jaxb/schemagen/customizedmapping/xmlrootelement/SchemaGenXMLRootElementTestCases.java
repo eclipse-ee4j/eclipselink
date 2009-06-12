@@ -23,12 +23,19 @@ import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 import junit.framework.TestCase;
 import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.testing.jaxb.schemagen.SchemaGenTestCases;
 
 /**
  * Schema generation tests - based on the JAXB 2.0 TCK: 
  *     java2schema/CustomizedMapping/classes/XMLRootElement 
  */
-public class SchemaGenXMLRootElementTestCases extends TestCase {
+public class SchemaGenXMLRootElementTestCases extends SchemaGenTestCases {
+    
+    /**
+     * This is the preferred (and only) constructor.
+     * 
+     * @param name
+     */
     public SchemaGenXMLRootElementTestCases(String name) throws Exception {
         super(name);
     }
@@ -37,7 +44,6 @@ public class SchemaGenXMLRootElementTestCases extends TestCase {
         boolean exception = false;
         String msg = null;
         String src = "org/eclipse/persistence/testing/jaxb/schemagen/customizedmapping/xmlrootelement/Name001p.xml";
-        String tmpdir = System.getenv("T_WORK");
         try {
             Class[] jClasses = new Class[] { Name001.class };
             Generator gen = new Generator(new JavaModelInputImpl(jClasses, new JavaModelImpl(Thread.currentThread().getContextClassLoader())));

@@ -13,10 +13,12 @@
 package org.eclipse.persistence.internal.oxm.schema;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -107,6 +109,70 @@ public class SchemaModelGenerator {
      * per namespace.
      * 
      * @param descriptorsToProcess list of XMLDescriptors which will be used to generate Schema objects
+     * @param properties holds a namespace to Properties map containing schema settings, such as elementFormDefault
+     * @param additionalGlobalElements a map of QName-Type entries identifying additional global elements to be added  
+     * @return a map of namespaces to EclipseLink schema model Schema objects
+     * @throws DescriptorException if the reference descriptor for a composite mapping is not in the list of descriptors
+     * @see Schema
+     */
+    public Map<String, Schema> generateSchemas(List<XMLDescriptor> descriptorsToProcess, SchemaModelGeneratorProperties properties, Map<QName, Type> additionalGlobalElements) throws DescriptorException {
+        Map<String, Schema> schemaForNamespace = generateSchemas(descriptorsToProcess, properties);
+        // process any additional global elements
+        if (additionalGlobalElements != null) {
+            for (Iterator<QName> keyIt = additionalGlobalElements.keySet().iterator(); keyIt.hasNext(); ) {
+                QName qname = keyIt.next();
+                Type type = additionalGlobalElements.get(qname);
+                if (type.getClass().isAssignableFrom(Class.class)) {
+                    Class tClass = (Class) type;
+                    String nsKey = qname.getNamespaceURI();
+                    Schema schema = schemaForNamespace.get(nsKey);
+                    
+                    QName typeAsQName = (QName) XMLConversionManager.getDefaultJavaTypes().get(tClass);
+                    if (typeAsQName == null) {
+                        // not a built in type - need to get the type via schema reference
+                        XMLDescriptor desc = getDescriptorByClass(tClass, descriptorsToProcess);
+                        if (desc == null) {
+                            // at this point we can't determine the element type, so don't add anything
+                            continue;
+                        }
+                        // if the schema is null generate a new one and create an import 
+                        if (schema == null) {
+                            schema = buildNewSchema(nsKey, new NamespaceResolver(), schemaForNamespace.size(), properties);
+                            schemaForNamespace.put(nsKey, schema);
+                            typeAsQName = desc.getSchemaReference().getSchemaContextAsQName();
+                            
+                            Schema schemaForUri = schemaForNamespace.get(typeAsQName.getNamespaceURI());
+                            
+                            if (!importExists(schema, schemaForUri.getTargetNamespace())) {
+                                Import newImport = new Import();
+                                newImport.setNamespace(schemaForUri.getTargetNamespace());
+                                newImport.setSchemaLocation(schemaForUri.getName());
+                                schema.getImports().add(newImport);
+                            }
+                        } else {
+                            typeAsQName = desc.getSchemaReference().getSchemaContextAsQName(schema.getNamespaceResolver());
+                        }
+                    }
+                    if (schema == null) {
+                        schema = buildNewSchema(nsKey, new NamespaceResolver(), schemaForNamespace.size(), properties);
+                        schemaForNamespace.put(nsKey, schema);
+                    }
+                    Element element = new Element();
+                    element.setName(qname.getLocalPart());
+                    element.setType(getSchemaTypeString(typeAsQName, schema));
+                    schema.addTopLevelElement(element);
+                }
+            }
+        }
+        return schemaForNamespace;
+    }
+    
+    /**
+     * Generates a Map of EclipseLink schema model Schema objects for a given list of XMLDescriptors.
+     * The descriptors are assumed to have been initialized.  One Schema  object will be generated 
+     * per namespace.
+     * 
+     * @param descriptorsToProcess list of XMLDescriptors which will be used to generate Schema objects
      * @param properties holds a namespace to Properties map containing schema settings, such as elementFormDefault 
      * @return a map of namespaces to EclipseLink schema model Schema objects
      * @throws DescriptorException if the reference descriptor for a composite mapping is not in the list of descriptors
@@ -118,7 +184,7 @@ public class SchemaModelGenerator {
         if (properties == null) {
             properties = new SchemaModelGeneratorProperties();
         }
-        
+        // set up schemas for the descriptors
         for (XMLDescriptor desc : descriptorsToProcess) {
             String namespace;
             XMLSchemaReference schemaRef = desc.getSchemaReference();
@@ -136,12 +202,10 @@ public class SchemaModelGenerator {
                 }
             }
         }
-        
         // process the descriptors
         for (XMLDescriptor xdesc : descriptorsToProcess) {
             processDescriptor(xdesc, schemaForNamespace, workingSchema, properties, descriptorsToProcess);
         }
-        
         // return the generated schema(s)
         return schemaForNamespace;
     }
@@ -153,13 +217,14 @@ public class SchemaModelGenerator {
      * 
      * @param descriptorsToProcess list of XMLDescriptors which will be used to generate Schema objects
      * @param properties holds a namespace to Properties map containing schema settings, such as elementFormDefault 
+     * @param additionalGlobalElements a map of QName-Type entries identifying additional global elements to be added  
      * @return a map of namespaces to EclipseLink schema model Schema objects
      * @throws DescriptorException if the reference descriptor for a composite mapping is not in the list of descriptors
      * @see Schema
      */
-    public Map<String, Schema> generateSchemas(List<XMLDescriptor> descriptorsToProcess, SchemaModelGeneratorProperties properties, SchemaModelOutputResolver outputResolver) throws DescriptorException {
-        Map<String, Schema> schemas = generateSchemas(descriptorsToProcess, properties);
-
+    public Map<String, Schema> generateSchemas(List<XMLDescriptor> descriptorsToProcess, SchemaModelGeneratorProperties properties, SchemaModelOutputResolver outputResolver, Map<QName, Type> additionalGlobalElements) throws DescriptorException {
+        Map<String, Schema> schemas = generateSchemas(descriptorsToProcess, properties, additionalGlobalElements);
+        // write out the generates schema(s) via the given output resolver
         Project proj = new SchemaModelProject();
         XMLContext context = new XMLContext(proj);
         XMLMarshaller marshaller = context.createMarshaller();
@@ -179,6 +244,21 @@ public class SchemaModelGenerator {
             }
         }
         return schemas;
+    }
+    
+    /**
+     * Generates a Map of EclipseLink schema model Schema objects for a given list of XMLDescriptors.
+     * The descriptors are assumed to have been initialized.  One Schema  object will be generated 
+     * per namespace.
+     * 
+     * @param descriptorsToProcess list of XMLDescriptors which will be used to generate Schema objects
+     * @param properties holds a namespace to Properties map containing schema settings, such as elementFormDefault 
+     * @return a map of namespaces to EclipseLink schema model Schema objects
+     * @throws DescriptorException if the reference descriptor for a composite mapping is not in the list of descriptors
+     * @see Schema
+     */
+    public Map<String, Schema> generateSchemas(List<XMLDescriptor> descriptorsToProcess, SchemaModelGeneratorProperties properties, SchemaModelOutputResolver outputResolver) throws DescriptorException {
+        return generateSchemas(descriptorsToProcess, properties, outputResolver, null);
     }
     
     /**
@@ -1143,14 +1223,16 @@ public class SchemaModelGenerator {
             }
         }
 
-        // set elementFormDefault and attributeFormDefault to qualified if necessary
-        Properties props = properties.getProperties(uri);
-        if (props != null) {
-            if (props.containsKey(SchemaModelGeneratorProperties.ELEMENT_FORM_QUALIFIED_KEY)) {
-                schema.setElementFormDefault((Boolean) props.get(SchemaModelGeneratorProperties.ELEMENT_FORM_QUALIFIED_KEY));
-            }
-            if (props.containsKey(SchemaModelGeneratorProperties.ATTRIBUTE_FORM_QUALIFIED_KEY)) {
-                schema.setAttributeFormDefault((Boolean) props.get(SchemaModelGeneratorProperties.ATTRIBUTE_FORM_QUALIFIED_KEY));
+        if (properties != null) {
+            // set elementFormDefault and attributeFormDefault to qualified if necessary
+            Properties props = properties.getProperties(uri);
+            if (props != null) {
+                if (props.containsKey(SchemaModelGeneratorProperties.ELEMENT_FORM_QUALIFIED_KEY)) {
+                    schema.setElementFormDefault((Boolean) props.get(SchemaModelGeneratorProperties.ELEMENT_FORM_QUALIFIED_KEY));
+                }
+                if (props.containsKey(SchemaModelGeneratorProperties.ATTRIBUTE_FORM_QUALIFIED_KEY)) {
+                    schema.setAttributeFormDefault((Boolean) props.get(SchemaModelGeneratorProperties.ATTRIBUTE_FORM_QUALIFIED_KEY));
+                }
             }
         }
         return schema;
@@ -1376,5 +1458,29 @@ public class SchemaModelGenerator {
             return pkFieldNames.contains(frag.getLocalName() + SLASH + TEXT);
         }
         return false;
+    }
+    
+    /**
+     * Indicates if the javaType map contains a key equal to
+     * the provided Java class' name.
+     * 
+     * @param jClass
+     * @return
+     */
+    private boolean isBuiltInJavaType(Class jClass) {
+        return XMLConversionManager.getDefaultJavaTypes().containsKey(jClass.getName()) || jClass.getName().startsWith("java.") || jClass.getName().startsWith("javax.");
+    }
+    
+    /**
+     * Returns the built in Java type QName for a given Class
+     *  
+     * @param jClass
+     * @return
+     */
+    private QName getBuiltInJavaType(Class jClass) {
+        if (!isBuiltInJavaType(jClass)) {
+            return null;
+        }
+        return (QName) XMLConversionManager.getDefaultJavaTypes().get(jClass.getName());
     }
 }

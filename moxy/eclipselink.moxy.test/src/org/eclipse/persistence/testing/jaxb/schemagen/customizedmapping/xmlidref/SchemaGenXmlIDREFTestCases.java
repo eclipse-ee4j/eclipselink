@@ -28,15 +28,23 @@ import javax.xml.validation.Validator;
 
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.testing.jaxb.schemagen.SchemaGenTestCases;
 
 import junit.framework.TestCase;
 
-public class SchemaGenXmlIDREFTestCases  extends TestCase {
-    static String tmpdir;
+/**
+ * Tests @XmlIDREF annotation processing.
+ *
+ */
+public class SchemaGenXmlIDREFTestCases  extends SchemaGenTestCases {
 
+    /**
+     * This is the preferred (and only) constructor.
+     * 
+     * @param name
+     */
     public SchemaGenXmlIDREFTestCases(String name) throws Exception {
         super(name);
-        tmpdir = (System.getenv("T_WORK") == null ? "" : (System.getenv("T_WORK") + "/"));
     }
     
     /**
@@ -46,19 +54,10 @@ public class SchemaGenXmlIDREFTestCases  extends TestCase {
         MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
         boolean exception = false;
         try {
-            Class[] classes = new Class[]{ MyInvalidClass.class, MyNonIDClass.class }; 
-            JAXBContext context = (org.eclipse.persistence.jaxb.JAXBContext) org.eclipse.persistence.jaxb.JAXBContextFactory.createContext(classes, null);
-            context.generateSchema(outputResolver);
+            generateSchema(new Class[]{ MyInvalidClass.class, MyNonIDClass.class }, outputResolver, null);
         } catch (Exception ex) {
             exception = true;
         }
         assertTrue("An error did not occur as expected", exception);
-    }
-
-    class MySchemaOutputResolver extends SchemaOutputResolver {
-        public Result createOutput(String namespaceURI, String suggestedFileName) throws IOException {
-            File schemaFile = new File(tmpdir + suggestedFileName);
-            return new StreamResult(schemaFile);
-        }
     }
 }

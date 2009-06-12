@@ -18,6 +18,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import javax.xml.bind.SchemaOutputResolver;
@@ -118,7 +119,10 @@ public class Generator {
         return schemaGenerator.getAllSchemas();
     }
     
-    public HashMap<String, SchemaTypeInfo> generateSchemaFiles(String schemaPath, HashMap<QName, String> additionalElements) throws FileNotFoundException {
+    public HashMap<String, SchemaTypeInfo> generateSchemaFiles(String schemaPath, Map<QName, Type> additionalGlobalElements) throws FileNotFoundException {
+        // process any additional global elements
+        processAdditionalElements(additionalGlobalElements, annotationsProcessor);
+
         schemaGenerator.generateSchema(annotationsProcessor.getTypeInfoClasses(), annotationsProcessor.getTypeInfo(), annotationsProcessor.getUserDefinedSchemaTypes(), annotationsProcessor.getPackageToNamespaceMappings(), annotationsProcessor.getGlobalElements());
         Project proj = new SchemaModelProject();
         XMLContext context = new XMLContext(proj);
@@ -137,8 +141,11 @@ public class Generator {
         }
         return schemaGenerator.getSchemaTypeInfo();
     }
-    
-    public HashMap<String, SchemaTypeInfo> generateSchemaFiles(SchemaOutputResolver outputResolver, HashMap<QName, String> additonalGlobalElements) {
+
+    public HashMap<String, SchemaTypeInfo> generateSchemaFiles(SchemaOutputResolver outputResolver, Map<QName, Type> additionalGlobalElements) {
+        // process any additional global elements
+        processAdditionalElements(additionalGlobalElements, annotationsProcessor);
+        
         schemaGenerator.generateSchema(annotationsProcessor.getTypeInfoClasses(), annotationsProcessor.getTypeInfo(), annotationsProcessor.getUserDefinedSchemaTypes(), annotationsProcessor.getPackageToNamespaceMappings(), annotationsProcessor.getGlobalElements());
         Project proj = new SchemaModelProject();
         XMLContext context = new XMLContext(proj);
@@ -161,6 +168,45 @@ public class Generator {
             }
         }
 		return schemaGenerator.getSchemaTypeInfo();
+    }
+    
+    /**
+     * Convenience method that processes a given map of QName-Type entries.  For each an ElementDeclaration
+     * is created and added to the given AnnotationsProcessor instance's map of global elements.
+     * 
+     * It is assumed that the map of QName-Type entries contains Type instances that are either a Class or
+     * a ParameterizedType.
+     *  
+     * @param additionalGlobalElements
+     * @param annotationsProcessor
+     */
+    private void processAdditionalElements(Map<QName, Type> additionalGlobalElements, AnnotationsProcessor annotationsProcessor) {
+        if (additionalGlobalElements != null) {
+            ElementDeclaration declaration;
+            for (Iterator<QName> keyIt = additionalGlobalElements.keySet().iterator(); keyIt.hasNext(); ) {
+                QName key = keyIt.next();
+                Type type = additionalGlobalElements.get(key);
+                JavaClass jClass;
+                if (type.getClass().isAssignableFrom(Class.class)) {
+                    Class tClass = (Class) type; 
+                    if (tClass.isArray()) {
+                        // handle arrays
+                        jClass = helper.getJavaClass(annotationsProcessor.getArrayClassesToGeneratedClasses().get(tClass.getCanonicalName()));
+                    } else {
+                        // handle java class
+                        jClass = helper.getJavaClass(tClass);
+                    }
+                } else {
+                    // handle parameterized type
+                    jClass = helper.getJavaClass(annotationsProcessor.getCollectionClassesToGeneratedClasses().get(type));
+                }
+                // if no type is available don't do anything
+                if (jClass != null) {
+                    declaration = new ElementDeclaration(key, jClass, jClass.getQualifiedName(), false);
+                    annotationsProcessor.getGlobalElements().put(key, declaration);
+                }
+            }
+        }
     }
     
     public java.util.HashMap getUnmarshalCallbacks() {

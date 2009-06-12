@@ -28,40 +28,38 @@ import javax.xml.validation.Validator;
 
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.testing.jaxb.schemagen.SchemaGenTestCases;
 
 import junit.framework.TestCase;
 
-public class SchemaGenXmlElementWrapperTestCases  extends TestCase {
-    static String tmpdir;
-
+/**
+ * Tests @XmlElementWrapper annotation processing.
+ *
+ */
+public class SchemaGenXmlElementWrapperTestCases extends SchemaGenTestCases {
+    static String PATH = "org/eclipse/persistence/testing/jaxb/schemagen/customizedmapping/xmlelementwrapper/";
+    
+    /**
+     * This is the preferred (and only) constructor.
+     * 
+     * @param name
+     */
     public SchemaGenXmlElementWrapperTestCases(String name) throws Exception {
         super(name);
-        tmpdir = (System.getenv("T_WORK") == null ? "" : (System.getenv("T_WORK") + "/"));
     }
     
     public void testElementWrapper() {
         MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
         try {
-            Class[] classes = new Class[]{ MyClassThree.class }; 
-            JAXBContext context = (org.eclipse.persistence.jaxb.JAXBContext) org.eclipse.persistence.jaxb.JAXBContextFactory.createContext(classes, null);
-            context.generateSchema(outputResolver);
+            generateSchema(new Class[]{ MyClassThree.class }, outputResolver, null);
         } catch (Exception ex) {
             fail("Schema generation failed unexpectedly: " + ex.toString());
         }
-
         assertTrue("No schemas were generated", outputResolver.schemaFiles.size() > 0);
         assertTrue("More than one shcema was generated unxepectedly", outputResolver.schemaFiles.size() == 1);
-
-        try {
-            SchemaFactory sFact = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
-            Schema theSchema = sFact.newSchema(outputResolver.schemaFiles.get(0));
-            Validator validator = theSchema.newValidator();
-            String src = "org/eclipse/persistence/testing/jaxb/schemagen/customizedmapping/xmlelementwrapper/root3.xml";
-            StreamSource ss = new StreamSource(new File(src)); 
-            validator.validate(ss);
-        } catch (Exception ex) {
-            fail("Schema validation failed unexpectedly: " + ex.toString());
-        }
+        
+        String result = validateAgainstSchema(PATH + "root3.xml", outputResolver);
+        assertTrue("Schema validation failed unxepectedly: " + result, result == null);
     }
 
     /**
@@ -70,35 +68,24 @@ public class SchemaGenXmlElementWrapperTestCases  extends TestCase {
      */
     public void testElementWrapperRef() {
         MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
-        SchemaFactory sFact = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
-        Schema theSchema;
-        Validator validator;
-        String src = "org/eclipse/persistence/testing/jaxb/schemagen/customizedmapping/xmlelementwrapper/root.xml";
-        StreamSource ss = new StreamSource(new File(src)); 
         try {
-            Class[] classes = new Class[]{ MyClassOne.class, MyClassTwo.class }; 
-            JAXBContext context = (org.eclipse.persistence.jaxb.JAXBContext) org.eclipse.persistence.jaxb.JAXBContextFactory.createContext(classes, null);
-            context.generateSchema(outputResolver);
+            generateSchema(new Class[]{ MyClassOne.class, MyClassTwo.class }, outputResolver, null);
         } catch (Exception ex) {
             fail("Schema generation failed unexpectedly: " + ex.toString());
         }
 
         assertTrue("No schemas were generated", outputResolver.schemaFiles.size() > 0);
         assertTrue("More than two schemas were generated unxepectedly", outputResolver.schemaFiles.size() == 2);
-        
-        try {
-            theSchema = sFact.newSchema(outputResolver.schemaFiles.get(0));
-            validator = theSchema.newValidator();
-            validator.validate(ss);
-        } catch (Exception ex) {
-            // validation may have failed due to map ordering differences between VMs
-            try {
-                theSchema = sFact.newSchema(outputResolver.schemaFiles.get(1));
-                validator = theSchema.newValidator();
-                validator.validate(ss);
-            } catch (Exception x) {
-                fail("Schema validation failed unexpectedly: " + ex.toString() + ";" + x.toString());
+
+        String src = PATH + "root.xml";
+        String result = validateAgainstSchema(src, outputResolver);
+        if (result != null) {
+            // account for map ordering differences between VMs
+            if (validateAgainstSchema(src, 0, outputResolver) == null) {
+                // success
+                return;
             }
+            fail(result);
         }
     }
     
@@ -109,27 +96,10 @@ public class SchemaGenXmlElementWrapperTestCases  extends TestCase {
         MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
         boolean exception = false;
         try {
-            Class[] classes = new Class[]{ MyInvalidClass.class }; 
-            JAXBContext context = (org.eclipse.persistence.jaxb.JAXBContext) org.eclipse.persistence.jaxb.JAXBContextFactory.createContext(classes, null);
-            context.generateSchema(outputResolver);
+            generateSchema(new Class[]{ MyInvalidClass.class }, outputResolver, null);
         } catch (Exception ex) {
             exception = true;
         }
         assertTrue("An error did not occur as expected", exception);
-    }
-
-    class MySchemaOutputResolver extends SchemaOutputResolver {
-        // keep a list of processed schemas for the validation phase of the test(s)
-        public List<File> schemaFiles;
-        
-        public MySchemaOutputResolver() {
-            schemaFiles = new ArrayList<File>();
-        }
-        
-        public Result createOutput(String namespaceURI, String suggestedFileName) throws IOException {
-            File schemaFile = new File(tmpdir + suggestedFileName);
-            schemaFiles.add(schemaFile);
-            return new StreamResult(schemaFile);
-        }
     }
 }

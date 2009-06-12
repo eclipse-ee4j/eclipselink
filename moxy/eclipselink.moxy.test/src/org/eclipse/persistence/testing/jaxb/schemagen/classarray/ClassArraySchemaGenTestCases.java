@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
- * http://www.eclipse.org/org/documents/edl-v10.php.
- *
- * Contributors:
- * dmccann - April 30/2009 - 2.0 - Initial implementation
- ******************************************************************************/
-package org.eclipse.persistence.testing.jaxb.schemagen.deploymentxml;
+* Copyright (c) 1998, 2009 Oracle. All rights reserved.
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+* which accompanies this distribution.
+* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+* and the Eclipse Distribution License is available at
+* http://www.eclipse.org/org/documents/edl-v10.php.
+*
+* Contributors:
+* dmccann - June 11/2009 - 2.0 - Initial implementation
+******************************************************************************/
+package org.eclipse.persistence.testing.jaxb.schemagen.classarray;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,27 +36,29 @@ import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.testing.jaxb.schemagen.SchemaGenTestCases;
+import org.eclipse.persistence.testing.jaxb.schemagen.customizedmapping.xmlelementref.Address;
+import org.eclipse.persistence.testing.jaxb.schemagen.customizedmapping.xmlelementref.Thing;
+import org.eclipse.persistence.testing.jaxb.schemagen.deploymentxml.Employee;
 
 /**
- * Tests schema generation from deployment xml.
- *
+ * Tests schema generation from a Class[].
+ * 
  */
-public class DeploymentXMLSchemaGenTestCases extends SchemaGenTestCases {
+public class ClassArraySchemaGenTestCases extends SchemaGenTestCases {
     MySchemaOutputResolver outputResolver;
     boolean shouldGenerateSchema;
     static String PATH="org/eclipse/persistence/testing/jaxb/schemagen/deploymentxml/";
-    static String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.schemagen.deploymentxml";
-    
+
     /**
      * This is the preferred (and only) constructor.
      * 
      * @param name
      */
-    public DeploymentXMLSchemaGenTestCases(String name) throws Exception {
+    public ClassArraySchemaGenTestCases(String name) throws Exception {
         super(name);
         shouldGenerateSchema = true;
     }
-
+    
     /**
      * Generate the schema for these tests once only.  If generation fails, it will do so
      * for each test (meaning all tests will result in a generation failure).  If generation
@@ -74,7 +76,8 @@ public class DeploymentXMLSchemaGenTestCases extends SchemaGenTestCases {
                 fail("Additional global element Map setup failed: " + x.toString());
             }
             try {
-                generateSchema(CONTEXT_PATH, outputResolver, additionalGlobalElements);
+                Class[] classesToBeBound = new Class[] { Employee.class };
+                generateSchema(classesToBeBound, outputResolver, additionalGlobalElements);
             } catch (Exception ex) {
                 fail("Schema generation failed unexpectedly: " + ex.toString());
             }
@@ -88,7 +91,7 @@ public class DeploymentXMLSchemaGenTestCases extends SchemaGenTestCases {
      * Tests basic schema generation from deployment xml.
      * 
      */
-    public void testSchemaGenFromProjectXml() throws Exception {
+    public void testSchemaGenFromClassArray() throws Exception {
         generateSchema();
         String result = validateAgainstSchema(PATH + "Employee.xml", outputResolver);
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
@@ -99,7 +102,7 @@ public class DeploymentXMLSchemaGenTestCases extends SchemaGenTestCases {
      * 
      * @throws Exception
      */
-    public void testSchemaGenFromProjectXmlWithElements() throws Exception {
+    public void testSchemaGenFromClassArrayWithElements() throws Exception {
         generateSchema();
         String src = PATH + "ASingleEmployee.xml";
         String result = validateAgainstSchema(src, 1, outputResolver);
@@ -118,7 +121,7 @@ public class DeploymentXMLSchemaGenTestCases extends SchemaGenTestCases {
      * 
      * @throws Exception
      */
-    public void testSchemaGenFromProjectXmlWithStringElement() throws Exception {
+    public void testSchemaGenFromClassArrayWithStringElement() throws Exception {
         generateSchema();
         String result = validateAgainstSchema(PATH + "ASingleString.xml", outputResolver);
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
@@ -129,7 +132,7 @@ public class DeploymentXMLSchemaGenTestCases extends SchemaGenTestCases {
      * 
      * @throws Exception
      */
-    public void testSchemaGenFromProjectXmlWithIntElement() throws Exception {
+    public void testSchemaGenFromClassArrayWithIntElement() throws Exception {
         generateSchema();
         String result = validateAgainstSchema(PATH + "ASingleInt.xml", outputResolver);
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
