@@ -12,6 +12,9 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.parsing;
 
+import java.util.Iterator;
+import java.util.List;
+
 import org.eclipse.persistence.expressions.*;
 
 /**
@@ -25,6 +28,8 @@ import org.eclipse.persistence.expressions.*;
  */
 public class ConcatNode extends StringFunctionNode {
 
+    protected List objects = null;
+    
     /**
      * ConcatNode constructor comment.
      */
@@ -39,9 +44,9 @@ public class ConcatNode extends StringFunctionNode {
     public void validate(ParseTreeContext context) {
         super.validate(context);
         TypeHelper typeHelper = context.getTypeHelper();
-        if ((left != null) && (right != null)) {
-            left.validateParameter(context, typeHelper.getStringType());
-            right.validateParameter(context, typeHelper.getStringType());
+        Iterator i = objects.iterator();
+        while (i.hasNext()){
+            ((Node)i.next()).validateParameter(context, typeHelper.getStringType());
         }
         setType(typeHelper.getStringType());
     }
@@ -51,9 +56,15 @@ public class ConcatNode extends StringFunctionNode {
      * Generate the EclipseLink expression for this node
      */
     public Expression generateExpression(GenerationContext context) {
-        Expression whereClause = getLeft().generateExpression(context);
-        whereClause = whereClause.concat(getRight().generateExpression(context));
+        Expression whereClause = ((Node)objects.get(0)).generateExpression(context);
+        for (int i=1;i<objects.size();i++){
+            whereClause = whereClause.concat(((Node)objects.get(i)).generateExpression(context));
+        }
         return whereClause;
+    }
+    
+    public void setObjects(List objects){
+        this.objects = objects;
     }
 
 }

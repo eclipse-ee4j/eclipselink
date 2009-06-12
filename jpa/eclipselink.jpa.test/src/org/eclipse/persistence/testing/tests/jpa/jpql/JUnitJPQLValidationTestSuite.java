@@ -333,8 +333,8 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         
         catch(IllegalArgumentException ex)
         {
-            Assert.assertEquals(JPQLException.syntaxErrorAt, ((JPQLException) ex.getCause()).getErrorCode());
-            assertTrue("Failed to throw expected IllegalArgumentException for a query having an unexpected keyword *.", ex.getCause().getMessage().contains("at [*]"));
+            Assert.assertEquals(JPQLException.unexpectedToken, ((JPQLException) ex.getCause()).getErrorCode());
+            assertTrue("Failed to throw expected IllegalArgumentException for a query having an unexpected keyword *.", ex.getCause().getMessage().contains("unexpected token [FROM]"));
         }         
     }
     

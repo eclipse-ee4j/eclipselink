@@ -101,6 +101,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         suite.addTest(new JUnitJPQLSimpleTestSuite("simpleConcatTest"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("simpleConcatTestWithParameters"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("simpleConcatTestWithConstants1"));
+        suite.addTest(new JUnitJPQLSimpleTestSuite("simpleThreeArgConcatTest"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("simpleDistinctTest"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("simpleDistinctNullTest"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("simpleDistinctMultipleResultTest"));
@@ -500,6 +501,35 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         Assert.assertTrue("Concat test with constraints failed", comparer.compareObjects(result, expectedResult));
     }
 
+    public void simpleThreeArgConcatTest() {
+        EntityManager em = createEntityManager();
+
+        Employee expectedResult = (Employee)(getServerSession().readAllObjects(Employee.class).firstElement());
+
+        clearCache();
+
+        String partOne, partTwo, partThree;
+        String ejbqlString;
+
+        partOne = expectedResult.getFirstName().substring(0, 1);
+        partTwo = expectedResult.getFirstName().substring(1, 2);
+        partThree = expectedResult.getFirstName().substring(2);
+
+        ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";
+        ejbqlString = ejbqlString + "emp.firstName = ";
+        ejbqlString = ejbqlString + "CONCAT(\"";
+        ejbqlString = ejbqlString + partOne;
+        ejbqlString = ejbqlString + "\", \"";
+        ejbqlString = ejbqlString + partTwo;
+        ejbqlString = ejbqlString + "\", \"";
+        ejbqlString = ejbqlString + partThree;
+        ejbqlString = ejbqlString + "\")";
+
+        List result = em.createQuery(ejbqlString).getResultList();
+
+        Assert.assertTrue("Concat test failed", comparer.compareObjects(result, expectedResult));
+    }
+    
     //Test case for double OR function in EJBQL
     //Test case for double OR function in EJBQL
 

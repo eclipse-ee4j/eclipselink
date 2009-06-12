@@ -645,10 +645,9 @@ public class NodeFactoryImpl implements NodeFactory {
     // ------------------------------------------
 
     /** */
-    public Object newConcat(int line, int column, Object left, Object right) {
+    public Object newConcat(int line, int column, List objects) {
         ConcatNode node = new ConcatNode();
-        node.setLeft((Node)left);
-        node.setRight((Node)right);
+        node.setObjects(objects);
         setPosition(node, line, column);
         return node;
     }
@@ -954,6 +953,31 @@ public class NodeFactoryImpl implements NodeFactory {
         setPosition(node, line, column);
         return node;
     }
-
+    
+    
+    public Object newCaseClause(int line, int column, List whenClauses, Object elseClause){
+        // TODO: Add implementation
+        throw new RuntimeException("NOT IMPLEMENTED YET");
+    }
+    
+    public Object newCoalesceClause(int line, int column, List clauses){
+        // TODO: Add implementation
+        throw new RuntimeException("NOT IMPLEMENTED YET");
+    }
+    
+    public Object newNullIfClause(int line, int column, Object left, Object right){
+        // TODO: Add implementation
+        throw new RuntimeException("NOT IMPLEMENTED YET");
+    }
+    
+    public Object newWhenClause(int line, int column, Object conditionClause, Object theClause){
+        // TODO: Add implementation
+        throw new RuntimeException("NOT IMPLEMENTED YET");
+    }
+    
+    public Object newIndex(int line, int column, Object object){
+        // TODO: Add implementation
+        throw new RuntimeException("NOT IMPLEMENTED YET");
+    }
 }
 

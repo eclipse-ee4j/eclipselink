@@ -164,7 +164,6 @@ public class FullRegressionTestSuite extends TestSuite{
         suite.addTest(JUnitJPQLParameterTestSuite.suite());
         suite.addTest(JUnitJPQLExamplesTestSuite.suite());
         suite.addTest(JUnitJPQLModifyTestSuite.suite());
-        suite.addTest(JUnitJPQLModifyTestSuite.suite());
         suite.addTest(AdvancedQueryTestSuite.suite());
         fullSuite.addTest(suite);
 

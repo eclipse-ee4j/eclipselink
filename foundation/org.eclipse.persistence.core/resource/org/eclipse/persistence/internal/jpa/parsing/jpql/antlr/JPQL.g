@@ -33,6 +33,8 @@ tokens {
     BETWEEN='between';
     BOTH='both';
     BY='by';
+    CASE='case';
+    COALESCE='coalesce';
     CONCAT='concat';
     COUNT='count';
     CURRENT_DATE='current_date';
@@ -41,7 +43,9 @@ tokens {
     DESC='desc';
     DELETE='delete';
     DISTINCT='distinct';
+    ELSE='else';
     EMPTY='empty';
+    END='end';
     ENTRY='entry';
     ESCAPE='escape';
     EXISTS='exists';
@@ -51,6 +55,7 @@ tokens {
     GROUP='group';
     HAVING='having';
     IN='in';
+    INDEX='index';
     INNER='inner';
     IS='is';
     JOIN='join';
@@ -68,6 +73,7 @@ tokens {
     NEW='new';
     NOT='not';
     NULL='null';
+    NULLIF='nullif';
     OBJECT='object';
     OF='of';
     OR='or';
@@ -80,6 +86,7 @@ tokens {
     SOME='some';
     SUBSTRING='substring';
     SUM='sum';
+    THEN='then';
     TRAILING='trailing';
     TRIM='trim';
     TRUE='true';
@@ -88,6 +95,7 @@ tokens {
     UPDATE='update';
     UPPER='upper';
     VALUE='value';
+    WHEN='when';
     WHERE='where';
 }
 @header {
@@ -271,7 +279,7 @@ setAssignmentTarget returns [Object node]
 
 newValue returns [Object node]
 @init { node = null; }
-    : n = simpleArithmeticExpression {$node = $n.node;}
+    : n = scalarExpression {$node = $n.node;}
     | n1 = NULL 
         { $node = factory.newNullLiteral($n1.getLine(), $n1.getCharPositionInLine()); } 
     ;
@@ -326,8 +334,8 @@ scope{
 
 selectExpression returns [Object node]
 @init { node = null; }
-    : n = pathExprOrVariableAccess {$node = $n.node;}
-    | n = aggregateExpression {$node = $n.node;}
+    : n = aggregateExpression {$node = $n.node;}
+    | n = scalarExpression {$node = $n.node;}
     | OBJECT LEFT_ROUND_BRACKET n = variableAccessOrTypeConstant RIGHT_ROUND_BRACKET  {$node = $n.node;}
     | n = constructorExpression  {$node = $n.node;}
     | n = mapEntryExpression {$node = $n.node;}
@@ -608,8 +616,8 @@ simpleConditionalExpression returns [Object node]
 @init { 
     node = null; 
 }
-    : left = arithmeticExpression 
-        n = simpleConditionalExpressionRemainder[$left.node] {$node = $n.node;}
+    : left = arithmeticExpression n = simpleConditionalExpressionRemainder[$left.node] {$node = $n.node;}
+    | left = nonArithmeticScalarExpression n = simpleConditionalExpressionRemainder[$left.node] {$node = $n.node;}
     ;
 
 simpleConditionalExpressionRemainder [Object left] returns [Object node]
@@ -680,7 +688,7 @@ inItem returns [Object node]
     : n = literalString {$node = $n.node;}
     | n = literalNumeric {$node = $n.node;}
     | n = inputParameter {$node = $n.node;}
-    | n = variableAccessOrTypeConstant {$node = $ident.schema;}
+    | n = variableAccessOrTypeConstant {$node = $n.node;}
     ;
 
 likeExpression [boolean not, Object left] returns [Object node]
@@ -760,6 +768,7 @@ comparisonExpression [Object left] returns [Object node]
 comparisonExpressionRightOperand returns [Object node]
 @init { node = null; }
     : n = arithmeticExpression {$node = $n.node;}
+    | n = nonArithmeticScalarExpression {$node = $n.node;}
     | n = anyOrAllExpression {$node = $n.node;}
     ;
 
@@ -806,15 +815,26 @@ arithmeticPrimary returns [Object node]
 @init { node = null; }
     : { aggregatesAllowed() }? n = aggregateExpression {$node = $n.node;}
     | n = pathExprOrVariableAccess {$node = $n.node;}
-    | n = functionsReturningNumerics {$node = $n.node;}
-    | n = functionsReturningDatetime {$node = $n.node;}
-    | n = functionsReturningStrings {$node = $n.node;}
     | n = inputParameter {$node = $n.node;}
+    | n = caseExpression {$node = $n.node;}
+    | n = functionsReturningNumerics {$node = $n.node;}
+    | LEFT_ROUND_BRACKET n = simpleArithmeticExpression RIGHT_ROUND_BRACKET {$node = $n.node;}
     | n = literalNumeric {$node = $n.node;}
+    ;
+
+scalarExpression returns [Object node]
+@init {node = null; }
+    : n = simpleArithmeticExpression {$node = $n.node;}	
+    | n = nonArithmeticScalarExpression {$node = $n.node;}
+    ;
+
+nonArithmeticScalarExpression returns [Object node]
+@init {node = null; }
+    : n = functionsReturningDatetime {$node = $n.node;}
+    | n = functionsReturningStrings {$node = $n.node;}
     | n = literalString {$node = $n.node;}
     | n = literalBoolean {$node = $n.node;}
     | n = entityTypeExpression {$node = $n.node;}
-    | LEFT_ROUND_BRACKET n = simpleArithmeticExpression RIGHT_ROUND_BRACKET {$node = $n.node;}
     ;
 
 anyOrAllExpression returns [Object node]
@@ -838,6 +858,93 @@ typeDiscriminator returns [Object node]
     | c =  TYPE LEFT_ROUND_BRACKET n = inputParameter RIGHT_ROUND_BRACKET { $node = factory.newType($c.getLine(), $c.getCharPositionInLine(), $n.node);}
     ;
     
+caseExpression returns [Object node]
+@init {node = null;}
+   : n = simpleCaseExpression {$node = $n.node;}
+   | n = generalCaseExpression {$node = $n.node;}
+   | n = coalesceExpression {$node = $n.node;}
+   | n = nullIfExpression {$node = $n.node;}
+   ;
+    	
+simpleCaseExpression returns [Object node]
+scope{
+    List whens;
+}
+@init {
+    node = null;
+    $simpleCaseExpression::whens = new ArrayList();
+}
+   : a = CASE caseOperand w = simpleWhenClause {$simpleCaseExpression::whens.add($w.node);} (w = simpleWhenClause {$simpleCaseExpression::whens.add($w.node);})* ELSE e = scalarExpression END
+           {
+               $node = factory.newCaseClause($a.getLine(), $a.getCharPositionInLine(), 
+                    $simpleCaseExpression::whens, $e.node); 
+           }
+   ;
+
+generalCaseExpression returns [Object node]
+scope{
+    List whens;
+}
+@init {
+    node = null;
+    $generalCaseExpression::whens = new ArrayList();
+}
+   : a = CASE w = whenClause {$generalCaseExpression::whens.add($w.node);} (whenClause {$generalCaseExpression::whens.add($w.node);})* ELSE e = scalarExpression END
+           {
+               $node = factory.newCaseClause($a.getLine(), $a.getCharPositionInLine(), 
+                    $generalCaseExpression::whens, $e.node); 
+           }
+   ;
+
+coalesceExpression returns [Object node]
+scope{
+    List primaries;
+}
+@init {
+    node = null;
+    $coalesceExpression::primaries = new ArrayList();
+}
+   : c = COALESCE RIGHT_ROUND_BRACKET p = scalarExpression {$coalesceExpression::primaries.add($p.node);} (COMMA scalarExpression {$coalesceExpression::primaries.add($p.node);})+ LEFT_ROUND_BRACKET
+           {
+               $node = factory.newCoalesceClause($c.getLine(), $c.getCharPositionInLine(), 
+                    $coalesceExpression::primaries); 
+           }
+   ;
+
+nullIfExpression returns [Object node]
+@init {node = null;}
+   : n = NULLIF RIGHT_ROUND_BRACKET l = scalarExpression COMMA r = scalarExpression LEFT_ROUND_BRACKET
+           {
+               $node = factory.newNullIfClause($n.getLine(), $n.getCharPositionInLine(), 
+                    $l.node, $r.node); 
+           }
+   ;
+    	
+
+caseOperand returns [Object node]
+@init {node = null;}
+   : n = stateFieldPathExpression {$node = $n.node;}
+   | n =  typeDiscriminator {$node = $n.node;}
+   ;
+    	
+whenClause returns [Object node]
+@init {node = null;}
+   : w = WHEN c = conditionalExpression THEN a = scalarExpression
+       {
+           $node = factory.newWhenClause($w.getLine(), $w.getCharPositionInLine(), 
+               $c.node, $a.node); 
+       }
+   ;
+    	
+simpleWhenClause returns [Object node]
+@init {node = null;}
+   : w = WHEN c = scalarExpression THEN a = scalarExpression
+      {
+           $node = factory.newWhenClause($w.getLine(), $w.getCharPositionInLine(), 
+               $c.node, $a.node); 
+       }
+   ;
+
 variableOrSingleValuedPath returns [Object node]
 @init {node = null;}
     : n = singleValuedPathExpression {$node = $n.node;}
@@ -934,6 +1041,7 @@ functionsReturningNumerics returns [Object node]
     | n = sqrt {$node = $n.node;}
     | n = locate {$node = $n.node;}
     | n = size {$node = $n.node;}
+    | n = index {$node = $n.node;}
     ;
 
 functionsReturningDatetime returns [Object node]
@@ -957,29 +1065,39 @@ functionsReturningStrings returns [Object node]
 
 // Functions returning strings
 concat returns [Object node]
+scope {
+    List items;
+}
 @init { 
     node = null;
+    $concat::items = new ArrayList();
 }
     : c=CONCAT 
         LEFT_ROUND_BRACKET 
-        firstArg = stringPrimary COMMA secondArg = stringPrimary
+        firstArg = stringPrimary {$concat::items.add($firstArg.node);} (COMMA arg = stringPrimary {$concat::items.add($arg.node);})+
         RIGHT_ROUND_BRACKET
-        { $node = factory.newConcat($c.getLine(), $c.getCharPositionInLine(), $firstArg.node, $secondArg.node); }
+        { $node = factory.newConcat($c.getLine(), $c.getCharPositionInLine(), $concat::items); }
     ;
 
 substring returns [Object node]
 @init { 
     node = null;
+    lengthNode = null;
 }
     : s=SUBSTRING   
         LEFT_ROUND_BRACKET
         string = stringPrimary COMMA
         start = simpleArithmeticExpression COMMA
-        lengthNode = simpleArithmeticExpression
+        (lengthNode = simpleArithmeticExpression)?
         RIGHT_ROUND_BRACKET
         { 
-            $node = factory.newSubstring($s.getLine(), $s.getCharPositionInLine(), 
+            if (lengthNode != null){
+                $node = factory.newSubstring($s.getLine(), $s.getCharPositionInLine(), 
                                         $string.node, $start.node, $lengthNode.node); 
+            } else {
+                $node = factory.newSubstring($s.getLine(), $s.getCharPositionInLine(), 
+                                        $string.node, $start.node, null); 
+            }
         }
     ;
 
@@ -1079,6 +1197,12 @@ sqrt returns [Object node]
     : s=SQRT 
         LEFT_ROUND_BRACKET n = simpleArithmeticExpression RIGHT_ROUND_BRACKET
         { $node = factory.newSqrt($s.getLine(), $s.getCharPositionInLine(), $n.node); }
+    ;
+    
+index returns [Object node]
+@init { node = null; }
+    : s=INDEX LEFT_ROUND_BRACKET n = variableAccessOrTypeConstant RIGHT_ROUND_BRACKET
+        { $node = factory.newIndex($s.getLine(), $s.getCharPositionInLine(), $n.node); }
     ;
 
 subquery returns [Object node]

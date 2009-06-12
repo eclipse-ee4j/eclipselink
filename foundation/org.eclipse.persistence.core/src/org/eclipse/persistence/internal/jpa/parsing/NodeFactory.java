@@ -266,7 +266,7 @@ public interface NodeFactory {
     // ------------------------------------------
 
     /** */
-    public Object newConcat(int line, int column, Object left, Object right);
+    public Object newConcat(int line, int column, List objects);
 
     /** */
     public Object newSubstring(int line, int column, 
@@ -367,5 +367,15 @@ public interface NodeFactory {
     public Object newMapEntry(int line, int column, Object arg);
     
     public Object newType(int line, int column, Object left);
+    
+    public Object newCaseClause(int line, int column, List whenClauses, Object elseClause);
+    
+    public Object newCoalesceClause(int line, int column, List clauses);
+    
+    public Object newNullIfClause(int line, int column, Object left, Object right);
+    
+    public Object newWhenClause(int line, int column, Object conditionClause, Object theClause);
+    
+    public Object newIndex(int line, int column, Object object);
 }
 
