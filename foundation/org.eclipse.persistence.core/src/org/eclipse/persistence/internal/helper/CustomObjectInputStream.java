@@ -31,15 +31,14 @@ import org.eclipse.persistence.internal.helper.ConversionManager;
  * @version 1.0 March 25/03
  */
 public class CustomObjectInputStream extends ObjectInputStream {
-    Session m_session;
+    ConversionManager m_conversionManager;
 
     public CustomObjectInputStream(InputStream stream, Session session) throws IOException {
         super(stream);
-        m_session = session;
+        m_conversionManager = session.getDatasourceLogin().getDatasourcePlatform().getConversionManager();
     }
 
     public Class resolveClass(ObjectStreamClass classDesc) throws ClassNotFoundException, IOException {
-        ConversionManager cm = m_session.getDatasourceLogin().getDatasourcePlatform().getConversionManager();
-        return (Class)cm.convertObject(classDesc.getName(), Class.class);
+        return (Class)m_conversionManager.convertClassNameToClass(classDesc.getName());
     }
 }

@@ -26,6 +26,7 @@ import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.AdvancedTableCreator;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee.EmployeeStatus;
 import org.eclipse.persistence.testing.models.jpa.sessionbean.EmployeeService;
 
 /**
@@ -163,6 +164,7 @@ public class SessionBeanTestsRCM extends JUnitTestCase {
         manager.setFirstName("John1");
         manager.setLastName("Done1");
         employee.setManager(manager);
+        employee.setStatus(EmployeeStatus.FULL_TIME);
 	
         empId = getEmployeeService(server1Url).insert(employee);	
 	

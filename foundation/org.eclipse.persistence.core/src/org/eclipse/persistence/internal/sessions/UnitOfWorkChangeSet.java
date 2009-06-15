@@ -15,6 +15,7 @@ package org.eclipse.persistence.internal.sessions;
 import java.util.*;
 import java.io.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.helper.CustomObjectInputStream;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 
 /**
@@ -84,7 +85,7 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
      */
     public UnitOfWorkChangeSet(byte[] bytes) throws java.io.IOException, ClassNotFoundException {
         java.io.ByteArrayInputStream byteIn = new java.io.ByteArrayInputStream(bytes);
-        ObjectInputStream objectIn = new ObjectInputStream(byteIn);
+        ObjectInputStream objectIn = new CustomObjectInputStream(byteIn, getSession());
 	// bug 4416412: allChangeSets set directly instead of using setInternalAllChangeSets
         allChangeSets = (Map)objectIn.readObject();
         deletedObjects = (Map)objectIn.readObject();
