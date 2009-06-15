@@ -93,7 +93,9 @@ public class AnnotationsProcessor {
     private HashMap<String, JavaMethod> factoryMethods;
     
     private Map<String, Class> arrayClassesToGeneratedClasses;
+    private Map<Class, JavaClass> generatedClassesToArrayClasses;
     private Map<java.lang.reflect.Type, Class> collectionClassesToGeneratedClasses;
+    private Map<Class, java.lang.reflect.Type> generatedClassesToCollectionClasses;
     private Map<JavaClass, java.lang.reflect.Type> javaClassToType;
     
 	private NamespaceResolver namespaceResolver;
@@ -122,6 +124,10 @@ public class AnnotationsProcessor {
 
         arrayClassesToGeneratedClasses = new HashMap<String, Class>();
         collectionClassesToGeneratedClasses = new HashMap<java.lang.reflect.Type, Class>();
+
+        generatedClassesToArrayClasses = new HashMap<Class, JavaClass>();
+        generatedClassesToCollectionClasses = new HashMap<Class, java.lang.reflect.Type>();
+        
         
         ArrayList<JavaClass> extraClasses = new ArrayList<JavaClass>();        
         ArrayList<JavaClass> classesToProcess = new ArrayList<JavaClass>();
@@ -133,7 +139,8 @@ public class AnnotationsProcessor {
         		}
         		Class generatedClass = generateWrapperForArrayClass(javaClass);
         		extraClasses.add(helper.getJavaClass(generatedClass));
-        		arrayClassesToGeneratedClasses.put(javaClass.getRawName(), generatedClass);          	
+        		arrayClassesToGeneratedClasses.put(javaClass.getRawName(), generatedClass);  
+        		generatedClassesToArrayClasses.put(generatedClass, javaClass);
         	}else if(isCollectionType(javaClass)){
         		if(javaClass.hasActualTypeArguments()){
         		  JavaClass componentClass  = (JavaClass)javaClass.getActualTypeArguments().toArray()[0];
@@ -145,6 +152,7 @@ public class AnnotationsProcessor {
         			  if(theType != null){
         				  Class generatedClass = generateWrapperForArrayClass(javaClass);
         				  collectionClassesToGeneratedClasses.put(theType, generatedClass);
+        				  generatedClassesToCollectionClasses.put(generatedClass, theType);
         				  extraClasses.add(helper.getJavaClass(generatedClass));
         			  }            		 
         		  }        		  
@@ -2400,5 +2408,12 @@ public class AnnotationsProcessor {
 	public Map<String, Class> getArrayClassesToGeneratedClasses() {
 		return arrayClassesToGeneratedClasses;
 	}
-	
+
+	public Map<Class, java.lang.reflect.Type> getGeneratedClassesToCollectionClasses() {
+        return generatedClassesToCollectionClasses;
+    }
+
+    public Map<Class, JavaClass> getGeneratedClassesToArrayClasses() {
+        return generatedClassesToArrayClasses;
+    }	
 }

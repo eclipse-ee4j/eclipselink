@@ -33,10 +33,12 @@ import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.internal.jaxb.JAXBSchemaOutputResolver;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelGenerator;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jaxb.compiler.Generator;
 import org.eclipse.persistence.jaxb.compiler.MarshalCallback;
 import org.eclipse.persistence.jaxb.compiler.UnmarshalCallback;
+import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 
 /**
  * INTERNAL:
@@ -68,6 +70,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     private org.eclipse.persistence.jaxb.compiler.Generator generator;    
     private HashMap<QName, Class> qNameToGeneratedClasses;
     private HashMap<QName, Class> qNamesToDeclaredClasses;
+    private HashMap<java.lang.reflect.Type, QName> typeToSchemaType;
     
     public JAXBContext(XMLContext context) {
         super();
@@ -188,4 +191,41 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
 	public Map<Type, Class>getCollectionClassesToGeneratedClasses(){
 		return generator.getAnnotationsProcessor().getCollectionClassesToGeneratedClasses();
 	}
+	
+	public void initTypeToSchemaType() {
+	    this.typeToSchemaType = new HashMap<Type, QName>();
+	    Iterator descriptors = xmlContext.getSession(0).getProject().getOrderedDescriptors().iterator();
+	    while(descriptors.hasNext()) {
+	        XMLDescriptor next = (XMLDescriptor)descriptors.next();
+	        Class javaClass = next.getJavaClass();
+	        QName schemaType = next.getSchemaReference().getSchemaContextAsQName(next.getNamespaceResolver());
+	        Type type;
+	        if(generator != null) {
+	            type = generator.getAnnotationsProcessor().getGeneratedClassesToCollectionClasses().get(javaClass);
+	            if(type == null) {
+	                JavaClass arrayClass = (JavaClass)generator.getAnnotationsProcessor().getGeneratedClassesToArrayClasses().get(javaClass);
+	                if(arrayClass != null) {
+	                    String arrayClassName = arrayClass.getName();
+	                    try {
+	                        type = PrivilegedAccessHelper.getClassForName(arrayClassName);
+	                    } catch (Exception ex){}
+	                }
+	            }
+	            if(type == null) {
+	                type = javaClass;
+	            }
+	        } else {
+	            type = javaClass;
+	        }
+	        this.typeToSchemaType.put(type, schemaType);
+	    }	        
+	}
+
+	public HashMap<Type, QName> getTypeToSchemaType() {
+	    if(typeToSchemaType == null) {
+	        initTypeToSchemaType();
+	    }
+	    return typeToSchemaType;
+	}
+	
 }
