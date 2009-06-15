@@ -258,10 +258,6 @@
           key="db.platform"
           value="${db.platform}"
         />
-        <sysproperty
-          key="javax.xml.bind.context.factory"
-          value="com.sun.xml.internal.bind.v2.ContextFactory"
-        />
         <test
           name="dbws.testing.@{package-name}.@{testsuite-name}TestSuite"
         />
@@ -373,7 +369,6 @@
     <target name="run-tests" if="support.test" description="setup, compile, and run dbws util testsuites">
         <DeleteDirQuietly dir="./${report.dir}"/>
         <mkdir dir="./${report.dir}"/>
-        <!--
         <SetupCompileRunTeardown testsuite-name="AttachedBinary"/>
         <SetupCompileRunTeardown testsuite-name="CRUD"/>
         <SetupCompileRunTeardown testsuite-name="CustomSQL"/>
@@ -381,7 +376,8 @@
         <SetupCompileRunTeardown testsuite-name="SimpleTable"/>
         <SetupCompileRunTeardown testsuite-name="SimpleSP"/>
         <SetupCompileRunTeardown testsuite-name="SimpleTableWithNestedSQL"/>
-        -->
+        <!--
         <SetupCompileRunTeardown testsuite-name="UpdateFault"/>
+        -->
     </target>
 </project>
