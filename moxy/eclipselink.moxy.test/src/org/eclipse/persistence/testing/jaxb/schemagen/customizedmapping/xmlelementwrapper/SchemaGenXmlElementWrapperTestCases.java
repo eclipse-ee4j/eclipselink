@@ -78,7 +78,7 @@ public class SchemaGenXmlElementWrapperTestCases extends SchemaGenTestCases {
         assertTrue("More than two schemas were generated unxepectedly", outputResolver.schemaFiles.size() == 2);
 
         String src = PATH + "root.xml";
-        String result = validateAgainstSchema(src, outputResolver);
+        String result = validateAgainstSchema(src, 1, outputResolver);
         if (result != null) {
             // account for map ordering differences between VMs
             if (validateAgainstSchema(src, 0, outputResolver) == null) {
