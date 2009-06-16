@@ -1,0 +1,27 @@
+-debug
+
+Specification-Vendor: ${specification.vendor}
+Specification-Version: ${release.version}
+Implementation-Vendor: ${implementation.vendor}
+Implementation-Version: ${version.string}
+Bundle-Name: EclipseLink JPA
+Bundle-Vendor: ${implementation.vendor}
+Bundle-Version: ${version.string}
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Export-Package: org.eclipse.persistence*;version="${version.string}";-noimport:=true,
+Require-Bundle: org.eclipse.persistence.core;bundle-version="${version.string}";visibility:=reexport, \
+ org.eclipse.persistence.asm;bundle-version="${version.string}";resolution:=optional
+Bundle-Activator: org.eclipse.persistence.jpa.osgi.Activator
+HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.jpa
+Import-Package:                                                         \
+ javax.persistence.*;version="[1.99.4, 2.1)",                           \
+ javax.sql.*;resolution:=optional,                                      \
+ javax.transaction.*;version="1.1.0";resolution:=optional,              \
+ javax.xml.*;resolution:=optional,                                      \
+ org.apache.tools.ant.*;resolution:=optional,                           \
+ org.eclipse.persistence.internal.libraries.asm.*;resolution:=optional, \
+ org.eclipse.persistence.*;version="${version.string}",                 \
+ org.osgi.*;resolution:=optional,                                       \
+ org.w3c.*;resolution:=optional,                                        \
+ org.xml.sax;resolution:=optional 
+
