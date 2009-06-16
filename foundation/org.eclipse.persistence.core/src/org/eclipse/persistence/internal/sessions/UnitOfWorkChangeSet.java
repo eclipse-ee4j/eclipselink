@@ -15,6 +15,7 @@ package org.eclipse.persistence.internal.sessions;
 import java.util.*;
 import java.io.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.helper.CustomObjectInputStream;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 
 /**
@@ -81,11 +82,15 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
      * INTERNAL:
      * Recreate a UnitOfWorkChangeSet that has been converted to a byte array with the
      * getByteArrayRepresentation() method.
+     * The passed session ensures that the correct class loader is used for deserialization.
+     * That allows to deserialize instances of user-defined classes such as enums.
+     * See Bug 280129: WLS JMS CacheCoordination fails if enum changed with ClassNotFoundException.
      */
-    public UnitOfWorkChangeSet(byte[] bytes) throws java.io.IOException, ClassNotFoundException {
+    public UnitOfWorkChangeSet(byte[] bytes, AbstractSession session) throws java.io.IOException, ClassNotFoundException {
         java.io.ByteArrayInputStream byteIn = new java.io.ByteArrayInputStream(bytes);
-        ObjectInputStream objectIn = new ObjectInputStream(byteIn);
-	// bug 4416412: allChangeSets set directly instead of using setInternalAllChangeSets
+        ObjectInputStream objectIn;
+        objectIn = new CustomObjectInputStream(byteIn, session);
+        // bug 4416412: allChangeSets set directly instead of using setInternalAllChangeSets
         allChangeSets = (Map)objectIn.readObject();
         deletedObjects = (Map)objectIn.readObject();
     }
