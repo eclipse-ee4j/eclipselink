@@ -37,6 +37,8 @@
  *       - 270011: JPA 2.0 MappedById support
  *     06/02/2009-2.0 Guy Pelletier 
  *       - 278768: JPA 2.0 Association Override Join Table
+ *     06/16/2009-2.0 Guy Pelletier 
+ *       - 277039: JPA 2.0 Cache Usage Settings
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -92,21 +94,6 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class MetadataDescriptor {
-    private MetadataClass m_javaClass;
-    private ClassAccessor m_classAccessor;
-    private ClassDescriptor m_descriptor;
-    private DatabaseTable m_primaryTable;
-    private String m_existenceChecking;
-    
-    // The embedded id accessor for this descritor if one exists.
-    private EmbeddedIdAccessor m_embeddedIdAccessor;
-    
-    // This is the root descriptor of the inheritance hierarchy. That is, for 
-    // the entity that defines the inheritance strategy.
-    private MetadataDescriptor m_inheritanceRootDescriptor;
-    // This is our immediate parent's descriptor. Which may also be the root. 
-    private MetadataDescriptor m_inheritanceParentDescriptor;
-    
     private boolean m_isCascadePersist;
     private boolean m_ignoreAnnotations; // XML metadata complete
     private boolean m_ignoreDefaultMappings; // XML exclude default mappings
@@ -117,15 +104,15 @@ public class MetadataDescriptor {
     private boolean m_hasCustomizer;
     private boolean m_hasReadOnly;
     private boolean m_hasCopyPolicy;
+    
+    private Boolean m_cacheable;
     private Boolean m_usesCascadedOptimisticLocking;
     
-    // This is the default access type for the class accessor of this 
-    // descriptor. The default access type is needed for those embeddables and 
-    // mapped superclasses that are 'owned' or rely on this value for their own 
-    // processing. It does not reflect an explicit access type.
-    private String m_defaultAccess; 
-    private String m_defaultSchema;
-    private String m_defaultCatalog;
+    private ClassAccessor m_classAccessor;
+    private ClassDescriptor m_descriptor;
+    private DatabaseTable m_primaryTable;
+    // The embedded id accessor for this descritor if one exists.
+    private EmbeddedIdAccessor m_embeddedIdAccessor;
     
     private List<String> m_idAttributeNames;
     private List<String> m_orderByAttributeNames;
@@ -133,7 +120,6 @@ public class MetadataDescriptor {
     private List<MetadataDescriptor> m_embeddableDescriptors;
     private List<ObjectAccessor> m_derivedIDAccessors;
     
-    private MetadataClass m_pkClass;
     private Map<String, String> m_pkClassIDs;
     private Map<String, String> m_genericTypes;
     private Map<String, MappingAccessor> m_accessors;
@@ -143,6 +129,23 @@ public class MetadataDescriptor {
     private Map<String, AttributeOverrideMetadata> m_attributeOverrides;
     private Map<String, AssociationOverrideMetadata> m_associationOverrides;
     private Map<String, Map<String, MetadataAccessor>> m_biDirectionalManyToManyAccessors;
+    
+    private MetadataClass m_pkClass;
+    private MetadataClass m_javaClass;
+    // This is the root descriptor of the inheritance hierarchy. That is, for 
+    // the entity that defines the inheritance strategy.
+    private MetadataDescriptor m_inheritanceRootDescriptor;
+    // This is our immediate parent's descriptor. Which may also be the root. 
+    private MetadataDescriptor m_inheritanceParentDescriptor;
+    
+    // This is the default access type for the class accessor of this 
+    // descriptor. The default access type is needed for those embeddables and 
+    // mapped superclasses that are 'owned' or rely on this value for their own 
+    // processing. It does not reflect an explicit access type.
+    private String m_defaultAccess; 
+    private String m_defaultSchema;
+    private String m_defaultCatalog;
+    private String m_existenceChecking;
 
     /**
      * INTERNAL: 
@@ -971,6 +974,15 @@ public class MetadataDescriptor {
     
     /**
      * INTERNAL:
+     * Indicates that a Cacheable annotation or cache element has already been 
+     * processed for this descriptor.
+     */
+    public boolean hasCacheable() {
+        return m_cacheable != null;
+    }
+    
+    /**
+     * INTERNAL:
      * Indicates that a CacheInterceptor annotation or cacheInterceptor element has already been 
      * processed for this descriptor.
      */
@@ -1063,6 +1075,33 @@ public class MetadataDescriptor {
     public boolean ignoreDefaultMappings() {
         return m_ignoreDefaultMappings;
     }
+    
+    /**
+     * INTERNAL:
+     * Indicates that an explicit cacheable value of true has been set for 
+     * this descriptor.
+     */
+    public boolean isCacheableTrue() {
+        if (isInheritanceSubclass()) {
+            return getInheritanceRootDescriptor().isCacheableTrue(); 
+        } 
+        
+        return m_cacheable != null && m_cacheable.booleanValue();
+    }
+    
+    /**
+     * INTERNAL:
+     * Indicates that an explicit cacheable value of false has been set for 
+     * this descriptor.
+     */
+    public boolean isCacheableFalse() {
+        if (isInheritanceSubclass()) {
+            return getInheritanceRootDescriptor().isCacheableFalse(); 
+        }
+        
+        return m_cacheable != null && ! m_cacheable.booleanValue();
+    }
+    
     
     /**
      * INTERNAL:
@@ -1201,7 +1240,15 @@ public class MetadataDescriptor {
     public void setAlias(String alias) {
         m_descriptor.setAlias(alias);
     }
-            
+    
+    /**
+     * INTERNAL:
+     * Set the cacheable value of this descriptor.
+     */
+    public boolean setCacheable(Boolean cacheable) {
+        return m_cacheable = cacheable;
+    }
+    
     /**
      * INTERNAL:
      */
@@ -1462,6 +1509,13 @@ public class MetadataDescriptor {
     @Override
     public String toString() {
         return getJavaClassName();
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void useNoCache() {
+        m_descriptor.setIsIsolated(true);
     }
     
     /**

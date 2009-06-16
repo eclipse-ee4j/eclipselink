@@ -25,6 +25,8 @@
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  *     04/24/2009-2.0 Guy Pelletier 
  *       - 270011: JPA 2.0 MappedById support
+ *     06/16/2009-2.0 Guy Pelletier 
+ *       - 277039: JPA 2.0 Cache Usage Settings
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -35,6 +37,7 @@ import javax.persistence.AssociationOverride;
 import javax.persistence.AssociationOverrides;
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
+import javax.persistence.Cacheable;
 import javax.persistence.EntityListeners;
 import javax.persistence.ExcludeDefaultListeners;
 import javax.persistence.ExcludeSuperclassListeners;
@@ -100,16 +103,17 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     private boolean m_excludeDefaultListeners;
     private boolean m_excludeSuperclassListeners;
     
+    private Boolean m_cacheable;
     private Boolean m_readOnly;
     private MetadataClass m_idClass;
     private PrimaryKeyMetadata m_primaryKey;
     private CacheMetadata m_cache;
     private CacheInterceptorMetadata m_cacheInterceptor;
     private DefaultRedirectorsMetadata m_defaultRedirectors;
-    private String m_existenceChecking;
     private List<EntityListenerMetadata> m_entityListeners = new ArrayList<EntityListenerMetadata>();
     private OptimisticLockingMetadata m_optimisticLocking;
     
+    private String m_existenceChecking;
     private String m_idClassName;
     private String m_prePersist;
     private String m_postPersist;
@@ -171,6 +175,14 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      */
     public CacheMetadata getCache() {
         return m_cache;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public Boolean getCacheable() {
+        return m_cacheable;
     }
     
     /**
@@ -368,6 +380,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         m_excludeSuperclassListeners = mergePrimitiveBoolean(m_excludeSuperclassListeners, accessor.excludeSuperclassListeners(), accessor, "<exclude-superclass-listeners>");
         
         // Simple object merging.
+        m_cacheable = (Boolean) mergeSimpleObjects(m_cacheable, accessor.getCacheable(), accessor, "@cacheable");
         m_readOnly = (Boolean) mergeSimpleObjects(m_readOnly, accessor.getReadOnly(), accessor, "@read-only");
         m_idClass = (MetadataClass) mergeSimpleObjects(m_idClass, accessor.getIdClassName(), accessor, "<id-class>");
         m_prePersist = (String) mergeSimpleObjects(m_prePersist, accessor.getPrePersist(), accessor, "<pre-persist>");
@@ -399,6 +412,9 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         
         // Add any id class definition to the project.
         initIdClass();
+        
+        // Set a cacheable flag if specified on the entity's descriptor.
+        processCacheable();
         
         // Add the accessors and converters from this mapped superclass.
         addAccessors();
@@ -521,16 +537,41 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     
     /**
      * INTERNAL:
+     * Called in pre-process. It is called from an entity accessor and in 
+     * turn is called on the mapped-superclasses of that entity.
+     */
+    protected void processCacheable() {
+        if (m_cacheable != null || isAnnotationPresent(Cacheable.class)) {
+            if (getDescriptor().isInheritanceSubclass()) {
+                // Ignore cacheable if specified on an inheritance subclass
+                getLogger().logWarningMessage(MetadataLogger.IGNORE_INHERITANCE_SUBCLASS_CACHEABLE, getJavaClass());
+            } else if (getDescriptor().hasCacheable()) {
+                // Ignore cacheable on mapped superclass if cacheable is already 
+                // defined on the entity.
+                getLogger().logWarningMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_CACHE, getDescriptor().getJavaClass(), getJavaClass());
+            } else {
+                // Set the cacheable setting on the descriptor.
+                if (m_cacheable == null) {
+                    m_cacheable = (Boolean) getAnnotation(Cacheable.class).getAttribute("value");
+                } 
+                
+                getDescriptor().setCacheable(m_cacheable);
+            }
+        }
+    }
+    
+    /**
+     * INTERNAL:
      * Process a cache interceptor metadata. 
      */
     protected void processCacheInterceptor() {
         if (m_cacheInterceptor != null || isAnnotationPresent(CacheInterceptor.class)) {
             if (getDescriptor().isInheritanceSubclass()) {
-                // Ignore cache if specified on an inheritance subclass.
+                // Ignore cache interceptor if specified on an inheritance subclass.
                 getLogger().logWarningMessage(MetadataLogger.IGNORE_INHERITANCE_SUBCLASS_CACHE_INTERCEPTOR, getJavaClass());
             } else if (getDescriptor().hasCacheInterceptor()) {
-                // Ignore cache on mapped superclass if cache is already 
-                // defined on the entity.
+                // Ignore cache interceptor on mapped superclass if cache 
+                // interceptor is already defined on the entity.
                 getLogger().logWarningMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_CACHE_INTERCEPTOR, getDescriptor().getJavaClass(), getJavaClass());
             } else {
                 if (m_cacheInterceptor == null) {
@@ -544,25 +585,31 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     
     /**
      * INTERNAL:
-     * Process a default redirector metadata. 
+     * Process a caching metadata. This method will be called on an entity's
+     * mapped superclasses (bottom --> up). We go through the mapped 
+     * superclasses to not only apply a cache setting but log ignore messages.
      */
-    protected void processDefaultRedirectors() {
-        if (m_defaultRedirectors != null || isAnnotationPresent(QueryRedirectors.class)) {
-            if (getDescriptor().isInheritanceSubclass()) {
-                // Ignore cache if specified on an inheritance subclass.
-                getLogger().logWarningMessage(MetadataLogger.IGNORE_INHERITANCE_SUBCLASS_DEFAULT_REDIRECTORS, getJavaClass());
-            } else if (getDescriptor().hasDefaultRedirectors()) {
-                // Ignore cache on mapped superclass if cache is already 
-                // defined on the entity.
-                getLogger().logWarningMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_DEFAULT_REDIRECTORS, getDescriptor().getJavaClass(), getJavaClass());
-            } else {
-                if (m_defaultRedirectors == null) {
-                    new DefaultRedirectorsMetadata(getAnnotation(QueryRedirectors.class), getAccessibleObject()).process(getDescriptor(), getJavaClass());
-                } else {
-                    m_defaultRedirectors.process(getDescriptor(), getJavaClass());
-                }
-            }
-        }        
+    protected void processCaching() {
+        // The settings for processing cache metadata are as follows:
+        // ALL or no setting
+        // ENABLE_SELECTIVE and Cacheable(true)
+        // DISABLE_SELECTIVE and Cacheable(true) 
+        if (getProject().isCacheAll() || 
+           (getProject().isCacheEnableSelective() && getDescriptor().isCacheableTrue()) ||
+           (getProject().isCacheDisableSelective() && ! getDescriptor().isCacheableFalse())) {
+            
+            processCachingMetadata();
+        } 
+    }
+    
+    /**
+     * INTERNAL:
+     * Process a caching metadata. These are the items we process to configure
+     * the entity's cache settings.
+     */
+    protected void processCachingMetadata() {    
+        processCache();
+        processCacheInterceptor(); 
     }
     
     /**
@@ -609,11 +656,9 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         // Process the optimistic locking policy metadata.
         processOptimisticLocking();
         
-        // Process the cache metadata.
-        processCache();
-        
-        // Process the cache interceptors
-        processCacheInterceptor();
+        // Process any cache metadata (Cache and CacheInterceptor) taking the 
+        // cacheable and persistence unit global setting into consideration.
+        processCaching();
         
         // Process the Default Redirectos
         processDefaultRedirectors();
@@ -635,6 +680,29 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         
         // Process the property metadata.
         processProperties();
+    }
+    
+    /**
+     * INTERNAL:
+     * Process a default redirector metadata. 
+     */
+    protected void processDefaultRedirectors() {
+        if (m_defaultRedirectors != null || isAnnotationPresent(QueryRedirectors.class)) {
+            if (getDescriptor().isInheritanceSubclass()) {
+                // Ignore query redirector if specified on an inheritance subclass.
+                getLogger().logWarningMessage(MetadataLogger.IGNORE_INHERITANCE_SUBCLASS_DEFAULT_REDIRECTORS, getJavaClass());
+            } else if (getDescriptor().hasDefaultRedirectors()) {
+                // Ignore query redirector on mapped superclass if query 
+                // redirector is already defined on the entity.
+                getLogger().logWarningMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_DEFAULT_REDIRECTORS, getDescriptor().getJavaClass(), getJavaClass());
+            } else {
+                if (m_defaultRedirectors == null) {
+                    new DefaultRedirectorsMetadata(getAnnotation(QueryRedirectors.class), getAccessibleObject()).process(getDescriptor(), getJavaClass());
+                } else {
+                    m_defaultRedirectors.process(getDescriptor(), getJavaClass());
+                }
+            }
+        }        
     }
     
     /**
@@ -687,7 +755,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
             getDescriptor().setExcludeSuperclassListeners(true);
         } else {
             // Don't overrite a true flag that could be set from a subclass
-            // that already exlcuded them.
+            // that already excluded them.
             if (isAnnotationPresent(ExcludeSuperclassListeners.class)) {
                 getDescriptor().setExcludeSuperclassListeners(true);
             } 
@@ -956,6 +1024,14 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      */
     public void setCache(CacheMetadata cache) {
         m_cache = cache;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setCacheable(Boolean cacheable) {
+        m_cacheable = cacheable;
     }
     
     /**

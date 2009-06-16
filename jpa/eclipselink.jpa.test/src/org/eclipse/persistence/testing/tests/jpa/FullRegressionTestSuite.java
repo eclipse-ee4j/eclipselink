@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     06/16/2009-2.0 Guy Pelletier 
+ *       - 277039: JPA 2.0 Cache Usage Settings
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa;
 
@@ -68,6 +70,7 @@ import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLSimpleTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLValidationTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.xml.EntityMappingsJUnitTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.cacheable.CacheableModelJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.ddlgeneration.DDLGenerationJUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.deployment.CompositeEnumerationTest;
 
@@ -197,6 +200,9 @@ public class FullRegressionTestSuite extends TestSuite{
 
         // JPA 2.0 Metamodel model
         fullSuite.addTest(org.eclipse.persistence.testing.tests.jpa.metamodel.MetamodelTestSuite.suite());
+        
+        // JPA 2.0 Cacheable model
+        fullSuite.addTest(CacheableModelJunitTest.suite());
 
         return fullSuite;
     }

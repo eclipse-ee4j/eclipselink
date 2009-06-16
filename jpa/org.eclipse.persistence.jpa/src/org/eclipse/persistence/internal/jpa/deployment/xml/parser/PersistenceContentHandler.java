@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     06/16/2009-2.0 Guy Pelletier 
+ *       - 277039: JPA 2.0 Cache Usage Settings
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.deployment.xml.parser;
 
@@ -33,10 +35,11 @@ public class PersistenceContentHandler implements ContentHandler {
     private static final String ELEMENT_JAR_FILE = "jar-file";
     private static final String ELEMENT_CLASS = "class";
     private static final String ELEMENT_EXCLUDE_UNLISTED_CLASSES = "exclude-unlisted-classes";
+    private static final String ELEMENT_CACHING = "caching";
     private static final String ELEMENT_PROPERTY = "property";
     private static final String ATTRIBUTE_NAME = "name";
     private static final String ATTRIBUTE_VALUE = "value";  
-    private static final String ATTRIBUTE_TRANSACTION_TYPE = "transaction-type";  
+    private static final String ATTRIBUTE_TRANSACTION_TYPE = "transaction-type";
 
     private SEPersistenceUnitInfo persistenceUnitInfo;
     private Vector<SEPersistenceUnitInfo> persistenceUnits;
@@ -100,6 +103,9 @@ public class PersistenceContentHandler implements ContentHandler {
             } else if (ELEMENT_EXCLUDE_UNLISTED_CLASSES.equals(localName)) {
                 readCharacters = true;
                 return;
+            } else if (ELEMENT_CACHING.equals(localName)) {
+                readCharacters = true;
+                return;
             } else if (ELEMENT_CLASS.equals(localName)) {
                 readCharacters = true;
                 return;
@@ -144,6 +150,8 @@ public class PersistenceContentHandler implements ContentHandler {
                     persistenceUnitInfo.setExcludeUnlistedClasses(false);
                 }
                 return;
+            } else if (ELEMENT_CACHING.equals(localName)) {
+                persistenceUnitInfo.setCaching(string);
             } else if (ELEMENT_PERSISTENCE_UNIT.equals(localName)) {
                 if (persistenceUnitInfo != null){
                     persistenceUnits.add(persistenceUnitInfo);

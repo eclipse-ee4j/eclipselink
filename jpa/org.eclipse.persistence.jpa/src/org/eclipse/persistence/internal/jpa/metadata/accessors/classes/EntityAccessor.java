@@ -36,7 +36,9 @@
  *     04/24/2009-2.0 Guy Pelletier 
  *       - 270011: JPA 2.0 MappedById support
  *     04/30/2009-2.0 Michael O'Brien 
- *       - 266912: JPA 2.0 Metamodel API (part of Criteria API) 
+ *       - 266912: JPA 2.0 Metamodel API (part of Criteria API)
+ *     06/16/2009-2.0 Guy Pelletier 
+ *       - 277039: JPA 2.0 Cache Usage Settings 
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -99,6 +101,7 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
  * @since EclipseLink 1.0
  */
 public class EntityAccessor extends MappedSuperclassAccessor {
+    private ArrayList<MappedSuperclassAccessor> m_mappedSuperclasses = new ArrayList<MappedSuperclassAccessor>();
     private DiscriminatorColumnMetadata m_discriminatorColumn;
     private InheritanceMetadata m_inheritance;
     
@@ -114,8 +117,6 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     private List<SQLResultSetMappingMetadata> m_sqlResultSetMappings = new ArrayList<SQLResultSetMappingMetadata>();
     private List<SecondaryTableMetadata> m_secondaryTables = new ArrayList<SecondaryTableMetadata>();
     private List<PrimaryKeyJoinColumnMetadata> m_primaryKeyJoinColumns = new ArrayList<PrimaryKeyJoinColumnMetadata>();
-    
-    private ArrayList<MappedSuperclassAccessor> m_mappedSuperclasses = new ArrayList<MappedSuperclassAccessor>();
     
     private SequenceGeneratorMetadata m_sequenceGenerator;
  
@@ -576,15 +577,22 @@ public class EntityAccessor extends MappedSuperclassAccessor {
             }
         }
         
+        // Process the correct access type before any other processing.
+        processAccessType();
+        
+        // Process the entity specifics now, metadata complete, exclude default
+        // mappings etc. which we need before proceed further and start looking
+        // for annotations.
+        processEntity();
+        
         // Add any id class definition to the project.
         initIdClass();
         
-        // Process the entity specifics now, like access, metadata complete etc. 
-        // which we need before proceeding any further.
-        processEntity();
+        // Process a cacheable setting.
+        processCacheable();
         
         // Pre-process our mapped superclass accessors, this will add their
-        // accessors and converters.
+        // accessors and converters and further look for a cacheable setting.
         for (MappedSuperclassAccessor mappedSuperclass : m_mappedSuperclasses) {
             mappedSuperclass.preProcess();
         }
@@ -672,6 +680,54 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     
     /**
      * INTERNAL:
+     * Process a caching metadata for this entity accessor logging ignore
+     * warnings where necessary.
+     */
+    @Override
+    protected void processCaching() {
+        if (getProject().isCacheAll()) {
+           if (getDescriptor().isCacheableFalse()) {
+               // The persistence unit has an ALL caching type and the user 
+               // specified Cacheable(false). Log a warning message that it is 
+               // being ignored. If Cacheable(true) was specified then it is 
+               // redundant and we just carry on.
+               getLogger().logWarningMessage(MetadataLogger.IGNORE_CACHEABLE_FALSE, getJavaClass());
+           }
+                
+           // Process the cache metadata.
+           processCachingMetadata();
+        } else if (getProject().isCacheNone()) {
+            if (getDescriptor().isCacheableTrue()) {
+                // The persistence unit has a NONE caching type and the the user
+                // specified Cacheable(true). Log a warning message that it is being 
+                // ignored. If Cacheable(false) was specified then it is redundant 
+                // and we just carry on.
+                getLogger().logWarningMessage(MetadataLogger.IGNORE_CACHEABLE_TRUE, getJavaClass());
+            }
+                
+            // Turn off the cache.
+            getDescriptor().useNoCache();
+        } else if (getProject().isCacheEnableSelective()) {
+            if (getDescriptor().isCacheableTrue()) {
+                // ENABLE_SELECTIVE and Cacheable(true), process the cache metadata.
+                processCachingMetadata();
+            } else {
+                // ENABLE_SELECTIVE and Cacheable(false) or no setting, turn off the cache.
+                getDescriptor().useNoCache();
+            }
+        } else if (getProject().isCacheDisableSelective()) {
+            if (getDescriptor().isCacheableFalse()) {
+                // DISABLE_SELECTIVE and Cacheable(false), turn off cache.
+                getDescriptor().useNoCache();
+            } else {
+                // DISABLE_SELECTIVE and Cacheable(true) or no setting, process the cache metadata.
+                processCachingMetadata();
+            }
+        }
+    }
+    
+    /**
+     * INTERNAL:
      * Allows for processing DerivedIds.  All referenced accessors are processed
      * first to ensure the necessary fields are set before this derivedId is processed 
      */
@@ -697,10 +753,14 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * and return the EclipseLink database field.
      */
     public DatabaseField processDiscriminatorColumn() {
+        MetadataAnnotation discriminatorColumn = getAnnotation(DiscriminatorColumn.class);
+        
         if (m_discriminatorColumn == null) {
-            m_discriminatorColumn = new DiscriminatorColumnMetadata(getAnnotation(DiscriminatorColumn.class), getAccessibleObject()); 
+            m_discriminatorColumn = new DiscriminatorColumnMetadata(discriminatorColumn, getAccessibleObject()); 
         } else {
-            // TODO: Log an ignore warning/override if there is an annotation present.
+            if (isAnnotationPresent(DiscriminatorColumn.class)) {
+                getLogger().logWarningMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, discriminatorColumn, getJavaClassName(), getLocation());
+            }
         }
         
         return m_discriminatorColumn.process(getDescriptor(), getAnnotatedElementName(), MetadataLogger.INHERITANCE_DISCRIMINATOR_COLUMN);
@@ -822,16 +882,12 @@ public class EntityAccessor extends MappedSuperclassAccessor {
             getLogger().logConfigMessage(MetadataLogger.ACCESS_TYPE, defaultAccessType, getJavaClass());
         }
     }
-    
+        
     /**
      * INTERNAL:
      * Process the entity metadata.
      */
     protected void processEntity() {
-        // We must first process the correct access type before any other
-        // processing.
-        processAccessType();
-        
         // Set a metadata complete flag if specified on the entity class or a 
         // mapped superclass.
         if (getMetadataComplete() != null) {

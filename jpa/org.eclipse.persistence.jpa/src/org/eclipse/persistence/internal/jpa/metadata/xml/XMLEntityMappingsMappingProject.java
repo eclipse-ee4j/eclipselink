@@ -29,6 +29,8 @@
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  *     06/09/2009-2.0 Guy Pelletier 
  *       - 249037: JPA 2.0 persisting list item index
+ *     06/16/2009-2.0 Guy Pelletier 
+ *       - 277039: JPA 2.0 Cache Usage Settings
  *******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
@@ -1068,6 +1070,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
 
         descriptor.addMapping(getClassAttributeMapping());
         descriptor.addMapping(getAccessAttributeMapping());
+        descriptor.addMapping(getCacheableAttributeMapping());
         descriptor.addMapping(getMetadataCompleteAttributeMapping());
         descriptor.addMapping(getExcludeDefaultMappingsAttributeMapping());
         descriptor.addMapping(getReadOnlyAttributeMapping());
@@ -1453,6 +1456,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         
         descriptor.addMapping(getClassAttributeMapping());
         descriptor.addMapping(getAccessAttributeMapping());
+        descriptor.addMapping(getCacheableAttributeMapping());
         descriptor.addMapping(getMetadataCompleteAttributeMapping());
         descriptor.addMapping(getExcludeDefaultMappingsAttributeMapping());
         descriptor.addMapping(getReadOnlyAttributeMapping());
@@ -2407,6 +2411,18 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         attributesMapping.setReferenceClass(XMLAttributes.class);
         attributesMapping.setXPath("orm:attributes");
         return attributesMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getCacheableAttributeMapping() {
+        XMLDirectMapping cacheableMapping = new XMLDirectMapping();
+        cacheableMapping.setAttributeName("m_cacheable");
+        cacheableMapping.setGetMethodName("getCacheable");
+        cacheableMapping.setSetMethodName("setCacheable");
+        cacheableMapping.setXPath("@cacheable");
+        return cacheableMapping;
     }
     
     /**

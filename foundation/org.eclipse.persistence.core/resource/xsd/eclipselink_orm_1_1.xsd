@@ -2169,6 +2169,7 @@
     </xsd:sequence>
     <xsd:attribute name="class" type="xsd:string" use="required"/>
     <xsd:attribute name="access" type="orm:access-type"/>
+    <xsd:attribute name="cacheable" type="xsd:boolean"/>
     <xsd:attribute name="metadata-complete" type="xsd:boolean"/>
     <xsd:attribute name="read-only" type="xsd:boolean"/>
     <xsd:attribute name="existence-checking" type="orm:existence-type"/>

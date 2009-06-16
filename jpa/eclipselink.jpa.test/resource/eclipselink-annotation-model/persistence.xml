@@ -30,7 +30,7 @@
         <!-- this is here for testing purposes GF #588, do not remove. -->
         <class>org.eclipse.persistence.testing.models.jpa.xml.inherited.Beer</class>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
-
+        
         <properties>
             <!-- JDBC properties will be given by test.properties file in runtime -->
             <property name="eclipselink.session-name" value="default-session"/>
@@ -87,5 +87,49 @@
             <property name="eclipselink.session-name" value="isolated-session1053"/>
             <property name="eclipselink.cache.shared.default" value="false"/>
         </properties>
+    </persistence-unit>
+    <persistence-unit name="ALL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <mapping-file>META-INF/cacheable-entity-mappings.xml</mapping-file>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableFalseEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueMappedSuperclass</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableFalseEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableNoneEntity</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <caching>ALL</caching>
+    </persistence-unit>
+    <persistence-unit name="NONE">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <mapping-file>META-INF/cacheable-entity-mappings.xml</mapping-file>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableFalseEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueMappedSuperclass</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableFalseEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableNoneEntity</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <caching>NONE</caching>
+    </persistence-unit>
+    <persistence-unit name="ENABLE_SELECTIVE">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <mapping-file>META-INF/cacheable-entity-mappings.xml</mapping-file>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableFalseEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueMappedSuperclass</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableFalseEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableNoneEntity</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <caching>ENABLE_SELECTIVE</caching>
+    </persistence-unit>
+    <persistence-unit name="DISABLE_SELECTIVE">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <mapping-file>META-INF/cacheable-entity-mappings.xml</mapping-file>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableFalseEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueEntity</class>
+                <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueMappedSuperclass</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableFalseEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableNoneEntity</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <caching>DISABLE_SELECTIVE</caching>
     </persistence-unit>
 </persistence>

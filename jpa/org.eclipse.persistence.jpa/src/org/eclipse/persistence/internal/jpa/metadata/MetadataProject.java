@@ -25,6 +25,8 @@
  *       - 270011: JPA 2.0 MappedById support
  *     04/30/2009-2.0 Michael O'Brien 
  *       - 266912: JPA 2.0 Metamodel API (part of Criteria API)
+ *     06/16/2009-2.0 Guy Pelletier 
+ *       - 277039: JPA 2.0 Cache Usage Settings
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -739,6 +741,43 @@ public class MetadataProject {
     public boolean isWeavingEnabled() {
         return m_weavingEnabled;
     }  
+    
+    /**
+     * INTERNAL:
+     * Return true if the caching has been specified as ALL in the
+     * persistence.xml.
+     */
+    public boolean isCacheAll() {
+        return m_persistenceUnitInfo.getCaching() != null && m_persistenceUnitInfo.getCaching().name().equals("ALL");
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if the caching has been specified as DISABLE_SELECTIVE in the
+     * persistence.xml. DISABLE_SELECTIVE is the default therefore this will 
+     * also return true if no caching setting was set.
+     */
+    public boolean isCacheDisableSelective() {
+        return m_persistenceUnitInfo.getCaching() == null || m_persistenceUnitInfo.getCaching().name().equals("DISABLE_SELECTIVE");
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if the caching has been specified as ENABLE_SELECTIVE in the
+     * persistence.xml. 
+     */
+    public boolean isCacheEnableSelective() {
+        return m_persistenceUnitInfo.getCaching() != null && m_persistenceUnitInfo.getCaching().name().equals("ENABLE_SELECTIVE");
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if the caching has been specified as NONE in the 
+     * persistence.xml.  
+     */
+    public boolean isCacheNone() {
+        return m_persistenceUnitInfo.getCaching() != null && m_persistenceUnitInfo.getCaching().name().equals("NONE");
+    }
     
     /**
      * INTERNAL:

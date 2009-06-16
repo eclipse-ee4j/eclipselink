@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     06/16/2009-2.0 Guy Pelletier 
+ *       - 277039: JPA 2.0 Cache Usage Settings
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.deployment;
 
@@ -30,6 +32,8 @@ import java.net.URL;
  */
 public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceUnitInfo {
 
+    // What about 2.0 in 1.0 container here ...
+    protected CachingType caching;
     protected String persistenceUnitName;
     protected String persistenceProviderClassName;
     protected DataSource jtaDataSource;
@@ -269,6 +273,17 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
         this.tempClassLoader = loader;
     }
     
+    /**
+     * @see PersistenceUnitInfo#setCaching()
+     * @since Java Persistence 2.0
+     */
+    public void setCaching(String cachingType) {
+        // If user enters in invalid caching type valueOf will throw an illegal
+        // argument exception, e.g. 
+        // java.lang.IllegalArgumentException: No enum const class javax.persistence.CachingType.ALLBOGUS
+        this.caching = CachingType.valueOf(cachingType);
+    }
+    
     public void setClassLoader(ClassLoader loader) {
         this.realClassLoader = loader;
     }
@@ -291,8 +306,7 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
      * @since Java Persistence 2.0
      */
     public CachingType getCaching() {
-        // TODO 
-        throw new PersistenceException("Not Yet Implemented");
+        return caching;
     }
 
     /**

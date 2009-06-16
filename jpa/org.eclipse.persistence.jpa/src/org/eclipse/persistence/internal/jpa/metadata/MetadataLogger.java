@@ -23,6 +23,8 @@
  *       - 270011: JPA 2.0 MappedById support
  *     06/09/2009-2.0 Guy Pelletier 
  *       - 249037: JPA 2.0 persisting list item index
+ *     06/16/2009-2.0 Guy Pelletier 
+ *       - 277039: JPA 2.0 Cache Usage Settings
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -71,11 +73,15 @@ public class MetadataLogger {
     public static final String IGNORE_SERIALIZED = "metadata_warning_ignore_serialized";
     public static final String IGNORE_TEMPORAL = "metadata_warning_ignore_temporal";
     
+    public static final String IGNORE_CACHEABLE_FALSE = "metadata_warning_ignore_cacheable_false";
+    public static final String IGNORE_CACHEABLE_TRUE = "metadata_warning_ignore_cacheable_true";
+    
     public static final String IGNORE_ATTRIBUTE_OVERRIDE = "metadata_warning_ignore_attribute_override";
     public static final String IGNORE_ASSOCIATION_OVERRIDE = "metadata_warning_ignore_association_override";
     
     public static final String IGNORE_VERSION_LOCKING = "metadata_warning_ignore_version_locking";
     public static final String IGNORE_INHERITANCE_SUBCLASS_CACHE = "metadata_warning_ignore_inheritance_subclass_cache";
+    public static final String IGNORE_INHERITANCE_SUBCLASS_CACHEABLE = "metadata_warning_ignore_inheritance_subclass_cacheable";
     public static final String IGNORE_INHERITANCE_SUBCLASS_CACHE_INTERCEPTOR = "metadata_warning_ignore_inheritance_subclass_cache_interceptor";
     public static final String IGNORE_INHERITANCE_SUBCLASS_DEFAULT_REDIRECTORS = "metadata_warning_ignore_inheritance_subclass_default_redirectors";
     public static final String IGNORE_INHERITANCE_SUBCLASS_READ_ONLY = "metadata_warning_ignore_inheritance_subclass_read_only";
@@ -84,6 +90,7 @@ public class MetadataLogger {
     public static final String IGNORE_MAPPED_SUPERCLASS_ASSOCIATION_OVERRIDE = "metadata_warning_ignore_mapped_superclass_association_override";
     public static final String IGNORE_MAPPED_SUPERCLASS_ATTRIBUTE_OVERRIDE = "metadata_warning_ignore_mapped_superclass_attribute_override";
     public static final String IGNORE_MAPPED_SUPERCLASS_CACHE = "metadata_warning_ignore_mapped_superclass_cache";
+    public static final String IGNORE_MAPPED_SUPERCLASS_CACHEABLE = "metadata_warning_ignore_mapped_superclass_cacheable";
     public static final String IGNORE_MAPPED_SUPERCLASS_CACHE_INTERCEPTOR = "metadata_warning_ignore_mapped_superclass_cache_interceptor";
     public static final String IGNORE_MAPPED_SUPERCLASS_DEFAULT_REDIRECTORS = "metadata_warning_ignore_mapped_superclass_default_redirectors";
     public static final String IGNORE_MAPPED_SUPERCLASS_CHANGE_TRACKING = "metadata_warning_ignore_mapped_superclass_change_tracking";
@@ -173,109 +180,121 @@ public class MetadataLogger {
         m_ctxStrings = new HashMap();
         
         // Generic override messages for XML and annotations.
-        m_ctxStrings.put(OVERRIDE_ANNOTATION_WITH_XML, OVERRIDE_ANNOTATION_WITH_XML);
-        m_ctxStrings.put(OVERRIDE_NAMED_ANNOTATION_WITH_XML, OVERRIDE_NAMED_ANNOTATION_WITH_XML);
-        m_ctxStrings.put(OVERRIDE_XML_WITH_ECLIPSELINK_XML, OVERRIDE_XML_WITH_ECLIPSELINK_XML);
-        m_ctxStrings.put(OVERRIDE_NAMED_XML_WITH_ECLIPSELINK_XML, OVERRIDE_NAMED_XML_WITH_ECLIPSELINK_XML);
+        addContextString(OVERRIDE_ANNOTATION_WITH_XML);
+        addContextString(OVERRIDE_NAMED_ANNOTATION_WITH_XML);
+        addContextString(OVERRIDE_XML_WITH_ECLIPSELINK_XML);
+        addContextString(OVERRIDE_NAMED_XML_WITH_ECLIPSELINK_XML);
         
         // Annotation specific ignore messages. These are typically used when
         // ignoring annotations from an incorrect location on a mapping or 
         // class. Since we have XML schema validation these do not apply to XML.
-        m_ctxStrings.put(IGNORE_ANNOTATION, IGNORE_ANNOTATION);
-        m_ctxStrings.put(IGNORE_PRIVATE_OWNED_ANNOTATION, IGNORE_PRIVATE_OWNED_ANNOTATION);
-        m_ctxStrings.put(IGNORE_RETURN_INSERT_ANNOTATION, IGNORE_RETURN_INSERT_ANNOTATION);
-        m_ctxStrings.put(IGNORE_RETURN_UPDATE_ANNOTATION, IGNORE_RETURN_UPDATE_ANNOTATION);
+        addContextString(IGNORE_ANNOTATION);
+        addContextString(IGNORE_PRIVATE_OWNED_ANNOTATION);
+        addContextString(IGNORE_RETURN_INSERT_ANNOTATION);
+        addContextString(IGNORE_RETURN_UPDATE_ANNOTATION);
 
         // Generic ignore messages that could apply to XML and annotation
         // configurations.
-        m_ctxStrings.put(IGNORE_LOB, IGNORE_LOB);
-        m_ctxStrings.put(IGNORE_TEMPORAL, IGNORE_TEMPORAL);
-        m_ctxStrings.put(IGNORE_ENUMERATED, IGNORE_ENUMERATED);
-        m_ctxStrings.put(IGNORE_SERIALIZED, IGNORE_SERIALIZED);
-        m_ctxStrings.put(IGNORE_VERSION_LOCKING, IGNORE_VERSION_LOCKING);
+        addContextString(IGNORE_LOB);
+        addContextString(IGNORE_TEMPORAL);
+        addContextString(IGNORE_ENUMERATED);
+        addContextString(IGNORE_SERIALIZED);
+        addContextString(IGNORE_VERSION_LOCKING);
         
-        m_ctxStrings.put(IGNORE_ATTRIBUTE_OVERRIDE, IGNORE_ATTRIBUTE_OVERRIDE);
-        m_ctxStrings.put(IGNORE_ASSOCIATION_OVERRIDE, IGNORE_ASSOCIATION_OVERRIDE);
+        addContextString(IGNORE_CACHEABLE_FALSE);
+        addContextString(IGNORE_CACHEABLE_TRUE);
         
-        m_ctxStrings.put(IGNORE_INHERITANCE_SUBCLASS_CACHE, IGNORE_INHERITANCE_SUBCLASS_CACHE);
-        m_ctxStrings.put(IGNORE_INHERITANCE_SUBCLASS_CACHE_INTERCEPTOR, IGNORE_INHERITANCE_SUBCLASS_CACHE_INTERCEPTOR);
-        m_ctxStrings.put(IGNORE_INHERITANCE_SUBCLASS_DEFAULT_REDIRECTORS, IGNORE_INHERITANCE_SUBCLASS_DEFAULT_REDIRECTORS);
-        m_ctxStrings.put(IGNORE_INHERITANCE_SUBCLASS_READ_ONLY, IGNORE_INHERITANCE_SUBCLASS_READ_ONLY);
+        addContextString(IGNORE_ATTRIBUTE_OVERRIDE);
+        addContextString(IGNORE_ASSOCIATION_OVERRIDE);
+        
+        addContextString(IGNORE_INHERITANCE_SUBCLASS_CACHE);
+        addContextString(IGNORE_INHERITANCE_SUBCLASS_CACHEABLE);
+        addContextString(IGNORE_INHERITANCE_SUBCLASS_CACHE_INTERCEPTOR);
+        addContextString(IGNORE_INHERITANCE_SUBCLASS_DEFAULT_REDIRECTORS);
+        addContextString(IGNORE_INHERITANCE_SUBCLASS_READ_ONLY);
        
-        m_ctxStrings.put(IGNORE_MAPPED_SUPERCLASS_COPY_POLICY, IGNORE_MAPPED_SUPERCLASS_COPY_POLICY);
-        m_ctxStrings.put(IGNORE_MAPPED_SUPERCLASS_ASSOCIATION_OVERRIDE, IGNORE_MAPPED_SUPERCLASS_ASSOCIATION_OVERRIDE);
-        m_ctxStrings.put(IGNORE_MAPPED_SUPERCLASS_ATTRIBUTE_OVERRIDE, IGNORE_MAPPED_SUPERCLASS_ATTRIBUTE_OVERRIDE);
-        m_ctxStrings.put(IGNORE_MAPPED_SUPERCLASS_OPTIMISTIC_LOCKING, IGNORE_MAPPED_SUPERCLASS_OPTIMISTIC_LOCKING);
-        m_ctxStrings.put(IGNORE_MAPPED_SUPERCLASS_CACHE, IGNORE_MAPPED_SUPERCLASS_CACHE);
-        m_ctxStrings.put(IGNORE_MAPPED_SUPERCLASS_CACHE_INTERCEPTOR, IGNORE_MAPPED_SUPERCLASS_CACHE_INTERCEPTOR);
-        m_ctxStrings.put(IGNORE_MAPPED_SUPERCLASS_DEFAULT_REDIRECTORS, IGNORE_MAPPED_SUPERCLASS_DEFAULT_REDIRECTORS);
-        m_ctxStrings.put(IGNORE_MAPPED_SUPERCLASS_CHANGE_TRACKING, IGNORE_MAPPED_SUPERCLASS_CHANGE_TRACKING);
-        m_ctxStrings.put(IGNORE_MAPPED_SUPERCLASS_CUSTOMIZER, IGNORE_MAPPED_SUPERCLASS_CUSTOMIZER);
-        m_ctxStrings.put(IGNORE_MAPPED_SUPERCLASS_ID_CLASS, IGNORE_MAPPED_SUPERCLASS_ID_CLASS);
-        m_ctxStrings.put(IGNORE_MAPPED_SUPERCLASS_READ_ONLY, IGNORE_MAPPED_SUPERCLASS_READ_ONLY);
-        m_ctxStrings.put(IGNORE_MAPPED_SUPERCLASS_EXISTENCE_CHECKING, IGNORE_MAPPED_SUPERCLASS_EXISTENCE_CHECKING);
+        addContextString(IGNORE_MAPPED_SUPERCLASS_COPY_POLICY);
+        addContextString(IGNORE_MAPPED_SUPERCLASS_ASSOCIATION_OVERRIDE);
+        addContextString(IGNORE_MAPPED_SUPERCLASS_ATTRIBUTE_OVERRIDE);
+        addContextString(IGNORE_MAPPED_SUPERCLASS_OPTIMISTIC_LOCKING);
+        addContextString(IGNORE_MAPPED_SUPERCLASS_CACHE);
+        addContextString(IGNORE_MAPPED_SUPERCLASS_CACHEABLE);
+        addContextString(IGNORE_MAPPED_SUPERCLASS_CACHE_INTERCEPTOR);
+        addContextString(IGNORE_MAPPED_SUPERCLASS_DEFAULT_REDIRECTORS);
+        addContextString(IGNORE_MAPPED_SUPERCLASS_CHANGE_TRACKING);
+        addContextString(IGNORE_MAPPED_SUPERCLASS_CUSTOMIZER);
+        addContextString(IGNORE_MAPPED_SUPERCLASS_ID_CLASS);
+        addContextString(IGNORE_MAPPED_SUPERCLASS_READ_ONLY);
+        addContextString(IGNORE_MAPPED_SUPERCLASS_EXISTENCE_CHECKING);
         
         // Generic default messages that could apply to XML and annotation
         // configurations.
-        m_ctxStrings.put(ACCESS_TYPE, ACCESS_TYPE);
+        addContextString(ACCESS_TYPE);
         
-        m_ctxStrings.put(ALIAS, ALIAS);
-        m_ctxStrings.put(MAP_KEY_ATTRIBUTE_NAME, MAP_KEY_ATTRIBUTE_NAME);
+        addContextString(ALIAS);
+        addContextString(MAP_KEY_ATTRIBUTE_NAME);
         
-        m_ctxStrings.put(TABLE_NAME, TABLE_NAME);
-        m_ctxStrings.put(TABLE_SCHEMA, TABLE_SCHEMA);
-        m_ctxStrings.put(TABLE_CATALOG, TABLE_CATALOG);
+        addContextString(TABLE_NAME);
+        addContextString(TABLE_SCHEMA);
+        addContextString(TABLE_CATALOG);
         
-        m_ctxStrings.put(TABLE_GENERATOR_NAME, TABLE_GENERATOR_NAME);
-        m_ctxStrings.put(TABLE_GENERATOR_SCHEMA, TABLE_GENERATOR_SCHEMA);
-        m_ctxStrings.put(TABLE_GENERATOR_CATALOG, TABLE_GENERATOR_CATALOG);
+        addContextString(TABLE_GENERATOR_NAME);
+        addContextString(TABLE_GENERATOR_SCHEMA);
+        addContextString(TABLE_GENERATOR_CATALOG);
         
-        m_ctxStrings.put(JOIN_TABLE_NAME, JOIN_TABLE_NAME);
-        m_ctxStrings.put(JOIN_TABLE_SCHEMA, JOIN_TABLE_SCHEMA);
-        m_ctxStrings.put(JOIN_TABLE_CATALOG, JOIN_TABLE_CATALOG);
+        addContextString(JOIN_TABLE_NAME);
+        addContextString(JOIN_TABLE_SCHEMA);
+        addContextString(JOIN_TABLE_CATALOG);
         
-        m_ctxStrings.put(SECONDARY_TABLE_NAME, SECONDARY_TABLE_NAME);
-        m_ctxStrings.put(SECONDARY_TABLE_SCHEMA, SECONDARY_TABLE_SCHEMA);
-        m_ctxStrings.put(SECONDARY_TABLE_CATALOG, SECONDARY_TABLE_CATALOG);
+        addContextString(SECONDARY_TABLE_NAME);
+        addContextString(SECONDARY_TABLE_SCHEMA);
+        addContextString(SECONDARY_TABLE_CATALOG);
         
-        m_ctxStrings.put(COLLECTION_TABLE_NAME, COLLECTION_TABLE_NAME);
-        m_ctxStrings.put(COLLECTION_TABLE_SCHEMA, COLLECTION_TABLE_SCHEMA);
-        m_ctxStrings.put(COLLECTION_TABLE_CATALOG, COLLECTION_TABLE_CATALOG);
+        addContextString(COLLECTION_TABLE_NAME);
+        addContextString(COLLECTION_TABLE_SCHEMA);
+        addContextString(COLLECTION_TABLE_CATALOG);
     
-        m_ctxStrings.put(CONVERTER_DATA_TYPE, CONVERTER_DATA_TYPE);
-        m_ctxStrings.put(CONVERTER_OBJECT_TYPE, CONVERTER_OBJECT_TYPE);
+        addContextString(CONVERTER_DATA_TYPE);
+        addContextString(CONVERTER_OBJECT_TYPE);
         
-        m_ctxStrings.put(COLUMN, COLUMN);
-        m_ctxStrings.put(PK_COLUMN, PK_COLUMN);
-        m_ctxStrings.put(FK_COLUMN, FK_COLUMN);
-        m_ctxStrings.put(QK_COLUMN, QK_COLUMN);      
-        m_ctxStrings.put(ORDER_COLUMN, ORDER_COLUMN);
-        m_ctxStrings.put(VALUE_COLUMN, VALUE_COLUMN);
-        m_ctxStrings.put(MAP_KEY_COLUMN, MAP_KEY_COLUMN);
-        m_ctxStrings.put(SOURCE_PK_COLUMN, SOURCE_PK_COLUMN);
-        m_ctxStrings.put(SOURCE_FK_COLUMN, SOURCE_FK_COLUMN);
-        m_ctxStrings.put(TARGET_PK_COLUMN, TARGET_PK_COLUMN);
-        m_ctxStrings.put(TARGET_FK_COLUMN, TARGET_FK_COLUMN);
-        m_ctxStrings.put(VARIABLE_ONE_TO_ONE_DISCRIMINATOR_COLUMN, VARIABLE_ONE_TO_ONE_DISCRIMINATOR_COLUMN); 
-        m_ctxStrings.put(INHERITANCE_DISCRIMINATOR_COLUMN, INHERITANCE_DISCRIMINATOR_COLUMN);
-        m_ctxStrings.put(INHERITANCE_PK_COLUMN, INHERITANCE_PK_COLUMN);
-        m_ctxStrings.put(INHERITANCE_FK_COLUMN, INHERITANCE_FK_COLUMN);
-        m_ctxStrings.put(SECONDARY_TABLE_PK_COLUMN, SECONDARY_TABLE_PK_COLUMN);
-        m_ctxStrings.put(SECONDARY_TABLE_FK_COLUMN, SECONDARY_TABLE_FK_COLUMN);
+        addContextString(COLUMN);
+        addContextString(PK_COLUMN);
+        addContextString(FK_COLUMN);
+        addContextString(QK_COLUMN);      
+        addContextString(ORDER_COLUMN);
+        addContextString(VALUE_COLUMN);
+        addContextString(MAP_KEY_COLUMN);
+        addContextString(SOURCE_PK_COLUMN);
+        addContextString(SOURCE_FK_COLUMN);
+        addContextString(TARGET_PK_COLUMN);
+        addContextString(TARGET_FK_COLUMN);
+        addContextString(VARIABLE_ONE_TO_ONE_DISCRIMINATOR_COLUMN); 
+        addContextString(INHERITANCE_DISCRIMINATOR_COLUMN);
+        addContextString(INHERITANCE_PK_COLUMN);
+        addContextString(INHERITANCE_FK_COLUMN);
+        addContextString(SECONDARY_TABLE_PK_COLUMN);
+        addContextString(SECONDARY_TABLE_FK_COLUMN);
         
-        m_ctxStrings.put(ONE_TO_ONE_MAPPING, ONE_TO_ONE_MAPPING);
-        m_ctxStrings.put(ONE_TO_MANY_MAPPING, ONE_TO_MANY_MAPPING);
-        m_ctxStrings.put(VARIABLE_ONE_TO_ONE_MAPPING, VARIABLE_ONE_TO_ONE_MAPPING);
-        m_ctxStrings.put(ONE_TO_ONE_MAPPING_REFERENCE_CLASS, ONE_TO_ONE_MAPPING_REFERENCE_CLASS);
-        m_ctxStrings.put(ONE_TO_MANY_MAPPING_REFERENCE_CLASS, ONE_TO_MANY_MAPPING_REFERENCE_CLASS);
-        m_ctxStrings.put(MANY_TO_ONE_MAPPING_REFERENCE_CLASS, MANY_TO_ONE_MAPPING_REFERENCE_CLASS);
-        m_ctxStrings.put(MANY_TO_MANY_MAPPING_REFERENCE_CLASS, MANY_TO_MANY_MAPPING_REFERENCE_CLASS);
-        m_ctxStrings.put(VARIABLE_ONE_TO_ONE_MAPPING_REFERENCE_CLASS, VARIABLE_ONE_TO_ONE_MAPPING_REFERENCE_CLASS);
-        m_ctxStrings.put(ELEMENT_COLLECTION_MAPPING_REFERENCE_CLASS, ELEMENT_COLLECTION_MAPPING_REFERENCE_CLASS);
+        addContextString(ONE_TO_ONE_MAPPING);
+        addContextString(ONE_TO_MANY_MAPPING);
+        addContextString(VARIABLE_ONE_TO_ONE_MAPPING);
+        addContextString(ONE_TO_ONE_MAPPING_REFERENCE_CLASS);
+        addContextString(ONE_TO_MANY_MAPPING_REFERENCE_CLASS);
+        addContextString(MANY_TO_ONE_MAPPING_REFERENCE_CLASS);
+        addContextString(MANY_TO_MANY_MAPPING_REFERENCE_CLASS);
+        addContextString(VARIABLE_ONE_TO_ONE_MAPPING_REFERENCE_CLASS);
+        addContextString(ELEMENT_COLLECTION_MAPPING_REFERENCE_CLASS);
         
-        m_ctxStrings.put(WARNING_INVALID_COLLECTION_USED_ON_LAZY_RELATION, WARNING_INVALID_COLLECTION_USED_ON_LAZY_RELATION);
-        m_ctxStrings.put(WARNING_INCORRECT_DISCRIMINATOR_FORMAT, WARNING_INCORRECT_DISCRIMINATOR_FORMAT);
-   
+        addContextString(WARNING_INVALID_COLLECTION_USED_ON_LAZY_RELATION);
+        addContextString(WARNING_INCORRECT_DISCRIMINATOR_FORMAT);
+    }
+    
+    /**
+     * INTERNAL:
+     * Add a context string to the map of contexts.
+     */
+    protected void addContextString(String context) {
+        m_ctxStrings.put(context, context);
     }
     
     /**
