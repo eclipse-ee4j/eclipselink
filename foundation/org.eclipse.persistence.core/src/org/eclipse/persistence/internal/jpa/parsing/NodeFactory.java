@@ -59,6 +59,10 @@ public interface NodeFactory {
     /** */
     public Object newSelectClause(int line, int column, 
                                   boolean distinct, List selectExprs);
+    
+    /** */
+    public Object newSelectClause(int line, int column, 
+                                  boolean distinct, List selectExprs, List identifiers);
 
     /** */
     public Object newFromClause(int line, int column, List varDecls);

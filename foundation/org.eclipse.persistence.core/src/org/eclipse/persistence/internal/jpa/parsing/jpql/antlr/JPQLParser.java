@@ -1,4 +1,4 @@
-// $ANTLR 3.0 JPQL.g 2009-06-12 14:18:32
+// $ANTLR 3.0 JPQL.g 2009-06-16 13:44:28
 
     package org.eclipse.persistence.internal.jpa.parsing.jpql.antlr;
 
@@ -143,7 +143,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
         public JPQLParser(TokenStream input) {
             super(input);
-            ruleMemo = new HashMap[109+1];
+            ruleMemo = new HashMap[110+1];
          }
         
 
@@ -1199,33 +1199,35 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     protected static class selectClause_scope {
         boolean distinct;
         List exprs;
+        List idents;
     }
     protected Stack selectClause_stack = new Stack();
     
     
     // $ANTLR start selectClause
-    // JPQL.g:316:1: selectClause returns [Object node] : t= SELECT ( DISTINCT )? n= selectExpression ( COMMA n= selectExpression )* ;
+    // JPQL.g:316:1: selectClause returns [Object node] : t= SELECT ( DISTINCT )? n= selectItem ( COMMA n= selectItem )* ;
     public final Object selectClause() throws RecognitionException {
         selectClause_stack.push(new selectClause_scope());
 
         Object node = null;
     
         Token t=null;
-        Object n = null;
+        selectItem_return n = null;
         
     
          
             node = null;
             ((selectClause_scope)selectClause_stack.peek()).distinct = false;
             ((selectClause_scope)selectClause_stack.peek()).exprs = new ArrayList();
+            ((selectClause_scope)selectClause_stack.peek()).idents = new ArrayList();
     
         try {
-            // JPQL.g:326:7: (t= SELECT ( DISTINCT )? n= selectExpression ( COMMA n= selectExpression )* )
-            // JPQL.g:326:7: t= SELECT ( DISTINCT )? n= selectExpression ( COMMA n= selectExpression )*
+            // JPQL.g:328:7: (t= SELECT ( DISTINCT )? n= selectItem ( COMMA n= selectItem )* )
+            // JPQL.g:328:7: t= SELECT ( DISTINCT )? n= selectItem ( COMMA n= selectItem )*
             {
             t=(Token)input.LT(1);
             match(input,SELECT,FOLLOW_SELECT_in_selectClause1440); if (failed) return node;
-            // JPQL.g:326:16: ( DISTINCT )?
+            // JPQL.g:328:16: ( DISTINCT )?
             int alt15=2;
             int LA15_0 = input.LA(1);
             
@@ -1234,7 +1236,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             }
             switch (alt15) {
                 case 1 :
-                    // JPQL.g:326:17: DISTINCT
+                    // JPQL.g:328:17: DISTINCT
                     {
                     match(input,DISTINCT,FOLLOW_DISTINCT_in_selectClause1443); if (failed) return node;
                     if ( backtracking==0 ) {
@@ -1246,14 +1248,17 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
             }
 
-            pushFollow(FOLLOW_selectExpression_in_selectClause1459);
-            n=selectExpression();
+            pushFollow(FOLLOW_selectItem_in_selectClause1459);
+            n=selectItem();
             _fsp--;
             if (failed) return node;
             if ( backtracking==0 ) {
-              ((selectClause_scope)selectClause_stack.peek()).exprs.add(n); 
+              
+                            ((selectClause_scope)selectClause_stack.peek()).exprs.add(n.expr);
+                            ((selectClause_scope)selectClause_stack.peek()).idents.add(n.ident);
+                        
             }
-            // JPQL.g:328:7: ( COMMA n= selectExpression )*
+            // JPQL.g:334:11: ( COMMA n= selectItem )*
             loop16:
             do {
                 int alt16=2;
@@ -1266,15 +1271,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
                 switch (alt16) {
             	case 1 :
-            	    // JPQL.g:328:9: COMMA n= selectExpression
+            	    // JPQL.g:334:13: COMMA n= selectItem
             	    {
-            	    match(input,COMMA,FOLLOW_COMMA_in_selectClause1471); if (failed) return node;
-            	    pushFollow(FOLLOW_selectExpression_in_selectClause1477);
-            	    n=selectExpression();
+            	    match(input,COMMA,FOLLOW_COMMA_in_selectClause1487); if (failed) return node;
+            	    pushFollow(FOLLOW_selectItem_in_selectClause1493);
+            	    n=selectItem();
             	    _fsp--;
             	    if (failed) return node;
             	    if ( backtracking==0 ) {
-            	       ((selectClause_scope)selectClause_stack.peek()).exprs.add(n); 
+            	      
+            	                        ((selectClause_scope)selectClause_stack.peek()).exprs.add(n.expr);
+            	                        ((selectClause_scope)selectClause_stack.peek()).idents.add(n.ident);
+            	                     
             	    }
             	    
             	    }
@@ -1288,7 +1296,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             if ( backtracking==0 ) {
                
                           node = factory.newSelectClause(t.getLine(), t.getCharPositionInLine(), 
-                                                         ((selectClause_scope)selectClause_stack.peek()).distinct, ((selectClause_scope)selectClause_stack.peek()).exprs); 
+                                                         ((selectClause_scope)selectClause_stack.peek()).distinct, ((selectClause_scope)selectClause_stack.peek()).exprs, ((selectClause_scope)selectClause_stack.peek()).idents); 
                       
             }
             
@@ -1306,9 +1314,96 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     }
     // $ANTLR end selectClause
 
+    public static class selectItem_return extends ParserRuleReturnScope {
+        public Object expr;
+        public Object ident;
+    };
+    
+    // $ANTLR start selectItem
+    // JPQL.g:347:1: selectItem returns [Object expr, Object ident] : e= selectExpression ( ( AS )? identifier= IDENT )? ;
+    public final selectItem_return selectItem() throws RecognitionException {
+        selectItem_return retval = new selectItem_return();
+        retval.start = input.LT(1);
+    
+        Token identifier=null;
+        Object e = null;
+        
+    
+        try {
+            // JPQL.g:348:7: (e= selectExpression ( ( AS )? identifier= IDENT )? )
+            // JPQL.g:348:7: e= selectExpression ( ( AS )? identifier= IDENT )?
+            {
+            pushFollow(FOLLOW_selectExpression_in_selectItem1589);
+            e=selectExpression();
+            _fsp--;
+            if (failed) return retval;
+            // JPQL.g:348:28: ( ( AS )? identifier= IDENT )?
+            int alt18=2;
+            int LA18_0 = input.LA(1);
+            
+            if ( (LA18_0==AS||LA18_0==IDENT) ) {
+                alt18=1;
+            }
+            switch (alt18) {
+                case 1 :
+                    // JPQL.g:348:29: ( AS )? identifier= IDENT
+                    {
+                    // JPQL.g:348:29: ( AS )?
+                    int alt17=2;
+                    int LA17_0 = input.LA(1);
+                    
+                    if ( (LA17_0==AS) ) {
+                        alt17=1;
+                    }
+                    switch (alt17) {
+                        case 1 :
+                            // JPQL.g:348:30: AS
+                            {
+                            match(input,AS,FOLLOW_AS_in_selectItem1593); if (failed) return retval;
+                            
+                            }
+                            break;
+                    
+                    }
+
+                    identifier=(Token)input.LT(1);
+                    match(input,IDENT,FOLLOW_IDENT_in_selectItem1601); if (failed) return retval;
+                    
+                    }
+                    break;
+            
+            }
+
+            if ( backtracking==0 ) {
+              
+                          retval.expr = e;
+                          if (identifier == null){
+                              retval.ident = null;
+                          } else {
+                              retval.ident = identifier.getText();
+                          }
+                              
+                      
+            }
+            
+            }
+    
+            retval.stop = input.LT(-1);
+    
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+        }
+        return retval;
+    }
+    // $ANTLR end selectItem
+
     
     // $ANTLR start selectExpression
-    // JPQL.g:335:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );
+    // JPQL.g:360:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );
     public final Object selectExpression() throws RecognitionException {
 
         Object node = null;
@@ -1318,29 +1413,29 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // JPQL.g:337:7: (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression )
-            int alt17=5;
+            // JPQL.g:362:7: (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression )
+            int alt19=5;
             switch ( input.LA(1) ) {
             case AVG:
                 {
-                int LA17_1 = input.LA(2);
+                int LA19_1 = input.LA(2);
                 
-                if ( (LA17_1==LEFT_ROUND_BRACKET) ) {
+                if ( (LA19_1==LEFT_ROUND_BRACKET) ) {
                     switch ( input.LA(3) ) {
                     case DISTINCT:
                         {
-                        int LA17_49 = input.LA(4);
+                        int LA19_49 = input.LA(4);
                         
                         if ( (!( aggregatesAllowed() )) ) {
-                            alt17=1;
+                            alt19=1;
                         }
                         else if ( ( aggregatesAllowed() ) ) {
-                            alt17=2;
+                            alt19=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("335:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 17, 49, input);
+                                new NoViableAltException("360:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 19, 49, input);
                         
                             throw nvae;
                         }
@@ -1348,18 +1443,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case IDENT:
                         {
-                        int LA17_50 = input.LA(4);
+                        int LA19_50 = input.LA(4);
                         
                         if ( (!( aggregatesAllowed() )) ) {
-                            alt17=1;
+                            alt19=1;
                         }
                         else if ( ( aggregatesAllowed() ) ) {
-                            alt17=2;
+                            alt19=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("335:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 17, 50, input);
+                                new NoViableAltException("360:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 19, 50, input);
                         
                             throw nvae;
                         }
@@ -1367,18 +1462,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case KEY:
                         {
-                        int LA17_51 = input.LA(4);
+                        int LA19_51 = input.LA(4);
                         
                         if ( (!( aggregatesAllowed() )) ) {
-                            alt17=1;
+                            alt19=1;
                         }
                         else if ( ( aggregatesAllowed() ) ) {
-                            alt17=2;
+                            alt19=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("335:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 17, 51, input);
+                                new NoViableAltException("360:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 19, 51, input);
                         
                             throw nvae;
                         }
@@ -1386,18 +1481,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case VALUE:
                         {
-                        int LA17_52 = input.LA(4);
+                        int LA19_52 = input.LA(4);
                         
                         if ( (!( aggregatesAllowed() )) ) {
-                            alt17=1;
+                            alt19=1;
                         }
                         else if ( ( aggregatesAllowed() ) ) {
-                            alt17=2;
+                            alt19=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("335:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 17, 52, input);
+                                new NoViableAltException("360:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 19, 52, input);
                         
                             throw nvae;
                         }
@@ -1406,7 +1501,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     default:
                         if (backtracking>0) {failed=true; return node;}
                         NoViableAltException nvae =
-                            new NoViableAltException("335:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 17, 44, input);
+                            new NoViableAltException("360:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 19, 44, input);
                     
                         throw nvae;
                     }
@@ -1415,7 +1510,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 else {
                     if (backtracking>0) {failed=true; return node;}
                     NoViableAltException nvae =
-                        new NoViableAltException("335:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 17, 1, input);
+                        new NoViableAltException("360:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 19, 1, input);
                 
                     throw nvae;
                 }
@@ -1423,24 +1518,24 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 break;
             case MAX:
                 {
-                int LA17_2 = input.LA(2);
+                int LA19_2 = input.LA(2);
                 
-                if ( (LA17_2==LEFT_ROUND_BRACKET) ) {
+                if ( (LA19_2==LEFT_ROUND_BRACKET) ) {
                     switch ( input.LA(3) ) {
                     case DISTINCT:
                         {
-                        int LA17_53 = input.LA(4);
+                        int LA19_53 = input.LA(4);
                         
                         if ( (!( aggregatesAllowed() )) ) {
-                            alt17=1;
+                            alt19=1;
                         }
                         else if ( ( aggregatesAllowed() ) ) {
-                            alt17=2;
+                            alt19=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("335:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 17, 53, input);
+                                new NoViableAltException("360:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 19, 53, input);
                         
                             throw nvae;
                         }
@@ -1448,18 +1543,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case IDENT:
                         {
-                        int LA17_54 = input.LA(4);
+                        int LA19_54 = input.LA(4);
                         
                         if ( (!( aggregatesAllowed() )) ) {
-                            alt17=1;
+                            alt19=1;
                         }
                         else if ( ( aggregatesAllowed() ) ) {
-                            alt17=2;
+                            alt19=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("335:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 17, 54, input);
+                                new NoViableAltException("360:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 19, 54, input);
                         
                             throw nvae;
                         }
@@ -1467,18 +1562,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case KEY:
                         {
-                        int LA17_55 = input.LA(4);
+                        int LA19_55 = input.LA(4);
                         
                         if ( (!( aggregatesAllowed() )) ) {
-                            alt17=1;
+                            alt19=1;
                         }
                         else if ( ( aggregatesAllowed() ) ) {
-                            alt17=2;
+                            alt19=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("335:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 17, 55, input);
+                                new NoViableAltException("360:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 19, 55, input);
                         
                             throw nvae;
                         }
@@ -1486,18 +1581,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case VALUE:
                         {
-                        int LA17_56 = input.LA(4);
+                        int LA19_56 = input.LA(4);
                         
                         if ( (!( aggregatesAllowed() )) ) {
-                            alt17=1;
+                            alt19=1;
                         }
                         else if ( ( aggregatesAllowed() ) ) {
-                            alt17=2;
+                            alt19=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("335:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 17, 56, input);
+                                new NoViableAltException("360:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 19, 56, input);
                         
                             throw nvae;
                         }
@@ -1506,7 +1601,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     default:
                         if (backtracking>0) {failed=true; return node;}
                         NoViableAltException nvae =
-                            new NoViableAltException("335:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 17, 45, input);
+                            new NoViableAltException("360:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 19, 45, input);
                     
                         throw nvae;
                     }
@@ -1515,7 +1610,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 else {
                     if (backtracking>0) {failed=true; return node;}
                     NoViableAltException nvae =
-                        new NoViableAltException("335:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 17, 2, input);
+                        new NoViableAltException("360:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 19, 2, input);
                 
                     throw nvae;
                 }
@@ -1523,24 +1618,24 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 break;
             case MIN:
                 {
-                int LA17_3 = input.LA(2);
+                int LA19_3 = input.LA(2);
                 
-                if ( (LA17_3==LEFT_ROUND_BRACKET) ) {
+                if ( (LA19_3==LEFT_ROUND_BRACKET) ) {
                     switch ( input.LA(3) ) {
                     case DISTINCT:
                         {
-                        int LA17_57 = input.LA(4);
+                        int LA19_57 = input.LA(4);
                         
                         if ( (!( aggregatesAllowed() )) ) {
-                            alt17=1;
+                            alt19=1;
                         }
                         else if ( ( aggregatesAllowed() ) ) {
-                            alt17=2;
+                            alt19=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("335:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 17, 57, input);
+                                new NoViableAltException("360:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 19, 57, input);
                         
                             throw nvae;
                         }
@@ -1548,18 +1643,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case IDENT:
                         {
-                        int LA17_58 = input.LA(4);
+                        int LA19_58 = input.LA(4);
                         
                         if ( (!( aggregatesAllowed() )) ) {
-                            alt17=1;
+                            alt19=1;
                         }
                         else if ( ( aggregatesAllowed() ) ) {
-                            alt17=2;
+                            alt19=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("335:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 17, 58, input);
+                                new NoViableAltException("360:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 19, 58, input);
                         
                             throw nvae;
                         }
@@ -1567,18 +1662,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case KEY:
                         {
-                        int LA17_59 = input.LA(4);
+                        int LA19_59 = input.LA(4);
                         
                         if ( (!( aggregatesAllowed() )) ) {
-                            alt17=1;
+                            alt19=1;
                         }
                         else if ( ( aggregatesAllowed() ) ) {
-                            alt17=2;
+                            alt19=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("335:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 17, 59, input);
+                                new NoViableAltException("360:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 19, 59, input);
                         
                             throw nvae;
                         }
@@ -1586,18 +1681,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case VALUE:
                         {
-                        int LA17_60 = input.LA(4);
+                        int LA19_60 = input.LA(4);
                         
                         if ( (!( aggregatesAllowed() )) ) {
-                            alt17=1;
+                            alt19=1;
                         }
                         else if ( ( aggregatesAllowed() ) ) {
-                            alt17=2;
+                            alt19=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("335:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 17, 60, input);
+                                new NoViableAltException("360:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 19, 60, input);
                         
                             throw nvae;
                         }
@@ -1606,7 +1701,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     default:
                         if (backtracking>0) {failed=true; return node;}
                         NoViableAltException nvae =
-                            new NoViableAltException("335:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 17, 46, input);
+                            new NoViableAltException("360:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 19, 46, input);
                     
                         throw nvae;
                     }
@@ -1615,7 +1710,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 else {
                     if (backtracking>0) {failed=true; return node;}
                     NoViableAltException nvae =
-                        new NoViableAltException("335:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 17, 3, input);
+                        new NoViableAltException("360:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 19, 3, input);
                 
                     throw nvae;
                 }
@@ -1623,24 +1718,24 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 break;
             case SUM:
                 {
-                int LA17_4 = input.LA(2);
+                int LA19_4 = input.LA(2);
                 
-                if ( (LA17_4==LEFT_ROUND_BRACKET) ) {
+                if ( (LA19_4==LEFT_ROUND_BRACKET) ) {
                     switch ( input.LA(3) ) {
                     case DISTINCT:
                         {
-                        int LA17_61 = input.LA(4);
+                        int LA19_61 = input.LA(4);
                         
                         if ( (!( aggregatesAllowed() )) ) {
-                            alt17=1;
+                            alt19=1;
                         }
                         else if ( ( aggregatesAllowed() ) ) {
-                            alt17=2;
+                            alt19=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("335:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 17, 61, input);
+                                new NoViableAltException("360:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 19, 61, input);
                         
                             throw nvae;
                         }
@@ -1648,18 +1743,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case IDENT:
                         {
-                        int LA17_62 = input.LA(4);
+                        int LA19_62 = input.LA(4);
                         
                         if ( (!( aggregatesAllowed() )) ) {
-                            alt17=1;
+                            alt19=1;
                         }
                         else if ( ( aggregatesAllowed() ) ) {
-                            alt17=2;
+                            alt19=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("335:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 17, 62, input);
+                                new NoViableAltException("360:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 19, 62, input);
                         
                             throw nvae;
                         }
@@ -1667,18 +1762,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case KEY:
                         {
-                        int LA17_63 = input.LA(4);
+                        int LA19_63 = input.LA(4);
                         
                         if ( (!( aggregatesAllowed() )) ) {
-                            alt17=1;
+                            alt19=1;
                         }
                         else if ( ( aggregatesAllowed() ) ) {
-                            alt17=2;
+                            alt19=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("335:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 17, 63, input);
+                                new NoViableAltException("360:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 19, 63, input);
                         
                             throw nvae;
                         }
@@ -1686,18 +1781,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case VALUE:
                         {
-                        int LA17_64 = input.LA(4);
+                        int LA19_64 = input.LA(4);
                         
                         if ( (!( aggregatesAllowed() )) ) {
-                            alt17=1;
+                            alt19=1;
                         }
                         else if ( ( aggregatesAllowed() ) ) {
-                            alt17=2;
+                            alt19=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("335:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 17, 64, input);
+                                new NoViableAltException("360:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 19, 64, input);
                         
                             throw nvae;
                         }
@@ -1706,7 +1801,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     default:
                         if (backtracking>0) {failed=true; return node;}
                         NoViableAltException nvae =
-                            new NoViableAltException("335:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 17, 47, input);
+                            new NoViableAltException("360:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 19, 47, input);
                     
                         throw nvae;
                     }
@@ -1715,7 +1810,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 else {
                     if (backtracking>0) {failed=true; return node;}
                     NoViableAltException nvae =
-                        new NoViableAltException("335:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 17, 4, input);
+                        new NoViableAltException("360:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 19, 4, input);
                 
                     throw nvae;
                 }
@@ -1723,24 +1818,24 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 break;
             case COUNT:
                 {
-                int LA17_5 = input.LA(2);
+                int LA19_5 = input.LA(2);
                 
-                if ( (LA17_5==LEFT_ROUND_BRACKET) ) {
+                if ( (LA19_5==LEFT_ROUND_BRACKET) ) {
                     switch ( input.LA(3) ) {
                     case DISTINCT:
                         {
-                        int LA17_65 = input.LA(4);
+                        int LA19_65 = input.LA(4);
                         
                         if ( (!( aggregatesAllowed() )) ) {
-                            alt17=1;
+                            alt19=1;
                         }
                         else if ( ( aggregatesAllowed() ) ) {
-                            alt17=2;
+                            alt19=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("335:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 17, 65, input);
+                                new NoViableAltException("360:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 19, 65, input);
                         
                             throw nvae;
                         }
@@ -1748,18 +1843,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case IDENT:
                         {
-                        int LA17_66 = input.LA(4);
+                        int LA19_66 = input.LA(4);
                         
                         if ( (!( aggregatesAllowed() )) ) {
-                            alt17=1;
+                            alt19=1;
                         }
                         else if ( ( aggregatesAllowed() ) ) {
-                            alt17=2;
+                            alt19=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("335:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 17, 66, input);
+                                new NoViableAltException("360:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 19, 66, input);
                         
                             throw nvae;
                         }
@@ -1767,18 +1862,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case KEY:
                         {
-                        int LA17_67 = input.LA(4);
+                        int LA19_67 = input.LA(4);
                         
                         if ( (!( aggregatesAllowed() )) ) {
-                            alt17=1;
+                            alt19=1;
                         }
                         else if ( ( aggregatesAllowed() ) ) {
-                            alt17=2;
+                            alt19=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("335:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 17, 67, input);
+                                new NoViableAltException("360:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 19, 67, input);
                         
                             throw nvae;
                         }
@@ -1786,18 +1881,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case VALUE:
                         {
-                        int LA17_68 = input.LA(4);
+                        int LA19_68 = input.LA(4);
                         
                         if ( (!( aggregatesAllowed() )) ) {
-                            alt17=1;
+                            alt19=1;
                         }
                         else if ( ( aggregatesAllowed() ) ) {
-                            alt17=2;
+                            alt19=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("335:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 17, 68, input);
+                                new NoViableAltException("360:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 19, 68, input);
                         
                             throw nvae;
                         }
@@ -1806,7 +1901,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     default:
                         if (backtracking>0) {failed=true; return node;}
                         NoViableAltException nvae =
-                            new NoViableAltException("335:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 17, 48, input);
+                            new NoViableAltException("360:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 19, 48, input);
                     
                         throw nvae;
                     }
@@ -1815,7 +1910,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 else {
                     if (backtracking>0) {failed=true; return node;}
                     NoViableAltException nvae =
-                        new NoViableAltException("335:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 17, 5, input);
+                        new NoViableAltException("360:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 19, 5, input);
                 
                     throw nvae;
                 }
@@ -1857,37 +1952,37 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             case POSITIONAL_PARAM:
             case NAMED_PARAM:
                 {
-                alt17=2;
+                alt19=2;
                 }
                 break;
             case OBJECT:
                 {
-                alt17=3;
+                alt19=3;
                 }
                 break;
             case NEW:
                 {
-                alt17=4;
+                alt19=4;
                 }
                 break;
             case ENTRY:
                 {
-                alt17=5;
+                alt19=5;
                 }
                 break;
             default:
                 if (backtracking>0) {failed=true; return node;}
                 NoViableAltException nvae =
-                    new NoViableAltException("335:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 17, 0, input);
+                    new NoViableAltException("360:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );", 19, 0, input);
             
                 throw nvae;
             }
             
-            switch (alt17) {
+            switch (alt19) {
                 case 1 :
-                    // JPQL.g:337:7: n= aggregateExpression
+                    // JPQL.g:362:7: n= aggregateExpression
                     {
-                    pushFollow(FOLLOW_aggregateExpression_in_selectExpression1523);
+                    pushFollow(FOLLOW_aggregateExpression_in_selectExpression1644);
                     n=aggregateExpression();
                     _fsp--;
                     if (failed) return node;
@@ -1898,9 +1993,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // JPQL.g:338:7: n= scalarExpression
+                    // JPQL.g:363:7: n= scalarExpression
                     {
-                    pushFollow(FOLLOW_scalarExpression_in_selectExpression1537);
+                    pushFollow(FOLLOW_scalarExpression_in_selectExpression1658);
                     n=scalarExpression();
                     _fsp--;
                     if (failed) return node;
@@ -1911,15 +2006,15 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 3 :
-                    // JPQL.g:339:7: OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET
+                    // JPQL.g:364:7: OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET
                     {
-                    match(input,OBJECT,FOLLOW_OBJECT_in_selectExpression1547); if (failed) return node;
-                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_selectExpression1549); if (failed) return node;
-                    pushFollow(FOLLOW_variableAccessOrTypeConstant_in_selectExpression1555);
+                    match(input,OBJECT,FOLLOW_OBJECT_in_selectExpression1668); if (failed) return node;
+                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_selectExpression1670); if (failed) return node;
+                    pushFollow(FOLLOW_variableAccessOrTypeConstant_in_selectExpression1676);
                     n=variableAccessOrTypeConstant();
                     _fsp--;
                     if (failed) return node;
-                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_selectExpression1557); if (failed) return node;
+                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_selectExpression1678); if (failed) return node;
                     if ( backtracking==0 ) {
                       node = n;
                     }
@@ -1927,9 +2022,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 4 :
-                    // JPQL.g:340:7: n= constructorExpression
+                    // JPQL.g:365:7: n= constructorExpression
                     {
-                    pushFollow(FOLLOW_constructorExpression_in_selectExpression1572);
+                    pushFollow(FOLLOW_constructorExpression_in_selectExpression1693);
                     n=constructorExpression();
                     _fsp--;
                     if (failed) return node;
@@ -1940,9 +2035,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 5 :
-                    // JPQL.g:341:7: n= mapEntryExpression
+                    // JPQL.g:366:7: n= mapEntryExpression
                     {
-                    pushFollow(FOLLOW_mapEntryExpression_in_selectExpression1587);
+                    pushFollow(FOLLOW_mapEntryExpression_in_selectExpression1708);
                     n=mapEntryExpression();
                     _fsp--;
                     if (failed) return node;
@@ -1967,7 +2062,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start mapEntryExpression
-    // JPQL.g:344:1: mapEntryExpression returns [Object node] : l= ENTRY LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET ;
+    // JPQL.g:369:1: mapEntryExpression returns [Object node] : l= ENTRY LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET ;
     public final Object mapEntryExpression() throws RecognitionException {
 
         Object node = null;
@@ -1978,17 +2073,17 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // JPQL.g:346:7: (l= ENTRY LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET )
-            // JPQL.g:346:7: l= ENTRY LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET
+            // JPQL.g:371:7: (l= ENTRY LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET )
+            // JPQL.g:371:7: l= ENTRY LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET
             {
             l=(Token)input.LT(1);
-            match(input,ENTRY,FOLLOW_ENTRY_in_mapEntryExpression1619); if (failed) return node;
-            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_mapEntryExpression1621); if (failed) return node;
-            pushFollow(FOLLOW_variableAccessOrTypeConstant_in_mapEntryExpression1627);
+            match(input,ENTRY,FOLLOW_ENTRY_in_mapEntryExpression1740); if (failed) return node;
+            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_mapEntryExpression1742); if (failed) return node;
+            pushFollow(FOLLOW_variableAccessOrTypeConstant_in_mapEntryExpression1748);
             n=variableAccessOrTypeConstant();
             _fsp--;
             if (failed) return node;
-            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_mapEntryExpression1629); if (failed) return node;
+            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_mapEntryExpression1750); if (failed) return node;
             if ( backtracking==0 ) {
                node = factory.newMapEntry(l.getLine(), l.getCharPositionInLine(), n);
             }
@@ -2008,7 +2103,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start pathExprOrVariableAccess
-    // JPQL.g:349:1: pathExprOrVariableAccess returns [Object node] : n= qualifiedIdentificationVariable (d= DOT right= attribute )* ;
+    // JPQL.g:374:1: pathExprOrVariableAccess returns [Object node] : n= qualifiedIdentificationVariable (d= DOT right= attribute )* ;
     public final Object pathExprOrVariableAccess() throws RecognitionException {
 
         Object node = null;
@@ -2023,34 +2118,34 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             node = null;
     
         try {
-            // JPQL.g:353:7: (n= qualifiedIdentificationVariable (d= DOT right= attribute )* )
-            // JPQL.g:353:7: n= qualifiedIdentificationVariable (d= DOT right= attribute )*
+            // JPQL.g:378:7: (n= qualifiedIdentificationVariable (d= DOT right= attribute )* )
+            // JPQL.g:378:7: n= qualifiedIdentificationVariable (d= DOT right= attribute )*
             {
-            pushFollow(FOLLOW_qualifiedIdentificationVariable_in_pathExprOrVariableAccess1661);
+            pushFollow(FOLLOW_qualifiedIdentificationVariable_in_pathExprOrVariableAccess1782);
             n=qualifiedIdentificationVariable();
             _fsp--;
             if (failed) return node;
             if ( backtracking==0 ) {
               node = n;
             }
-            // JPQL.g:354:9: (d= DOT right= attribute )*
-            loop18:
+            // JPQL.g:379:9: (d= DOT right= attribute )*
+            loop20:
             do {
-                int alt18=2;
-                int LA18_0 = input.LA(1);
+                int alt20=2;
+                int LA20_0 = input.LA(1);
                 
-                if ( (LA18_0==DOT) ) {
-                    alt18=1;
+                if ( (LA20_0==DOT) ) {
+                    alt20=1;
                 }
                 
             
-                switch (alt18) {
+                switch (alt20) {
             	case 1 :
-            	    // JPQL.g:354:10: d= DOT right= attribute
+            	    // JPQL.g:379:10: d= DOT right= attribute
             	    {
             	    d=(Token)input.LT(1);
-            	    match(input,DOT,FOLLOW_DOT_in_pathExprOrVariableAccess1676); if (failed) return node;
-            	    pushFollow(FOLLOW_attribute_in_pathExprOrVariableAccess1682);
+            	    match(input,DOT,FOLLOW_DOT_in_pathExprOrVariableAccess1797); if (failed) return node;
+            	    pushFollow(FOLLOW_attribute_in_pathExprOrVariableAccess1803);
             	    right=attribute();
             	    _fsp--;
             	    if (failed) return node;
@@ -2062,7 +2157,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             	    break;
             
             	default :
-            	    break loop18;
+            	    break loop20;
                 }
             } while (true);
 
@@ -2082,7 +2177,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start qualifiedIdentificationVariable
-    // JPQL.g:359:1: qualifiedIdentificationVariable returns [Object node] : (n= variableAccessOrTypeConstant | l= KEY LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | l= VALUE LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET );
+    // JPQL.g:384:1: qualifiedIdentificationVariable returns [Object node] : (n= variableAccessOrTypeConstant | l= KEY LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | l= VALUE LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET );
     public final Object qualifiedIdentificationVariable() throws RecognitionException {
 
         Object node = null;
@@ -2093,37 +2188,37 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // JPQL.g:361:7: (n= variableAccessOrTypeConstant | l= KEY LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | l= VALUE LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET )
-            int alt19=3;
+            // JPQL.g:386:7: (n= variableAccessOrTypeConstant | l= KEY LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | l= VALUE LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET )
+            int alt21=3;
             switch ( input.LA(1) ) {
             case IDENT:
                 {
-                alt19=1;
+                alt21=1;
                 }
                 break;
             case KEY:
                 {
-                alt19=2;
+                alt21=2;
                 }
                 break;
             case VALUE:
                 {
-                alt19=3;
+                alt21=3;
                 }
                 break;
             default:
                 if (backtracking>0) {failed=true; return node;}
                 NoViableAltException nvae =
-                    new NoViableAltException("359:1: qualifiedIdentificationVariable returns [Object node] : (n= variableAccessOrTypeConstant | l= KEY LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | l= VALUE LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET );", 19, 0, input);
+                    new NoViableAltException("384:1: qualifiedIdentificationVariable returns [Object node] : (n= variableAccessOrTypeConstant | l= KEY LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | l= VALUE LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET );", 21, 0, input);
             
                 throw nvae;
             }
             
-            switch (alt19) {
+            switch (alt21) {
                 case 1 :
-                    // JPQL.g:361:7: n= variableAccessOrTypeConstant
+                    // JPQL.g:386:7: n= variableAccessOrTypeConstant
                     {
-                    pushFollow(FOLLOW_variableAccessOrTypeConstant_in_qualifiedIdentificationVariable1738);
+                    pushFollow(FOLLOW_variableAccessOrTypeConstant_in_qualifiedIdentificationVariable1859);
                     n=variableAccessOrTypeConstant();
                     _fsp--;
                     if (failed) return node;
@@ -2134,16 +2229,16 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // JPQL.g:362:7: l= KEY LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET
+                    // JPQL.g:387:7: l= KEY LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET
                     {
                     l=(Token)input.LT(1);
-                    match(input,KEY,FOLLOW_KEY_in_qualifiedIdentificationVariable1752); if (failed) return node;
-                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_qualifiedIdentificationVariable1754); if (failed) return node;
-                    pushFollow(FOLLOW_variableAccessOrTypeConstant_in_qualifiedIdentificationVariable1760);
+                    match(input,KEY,FOLLOW_KEY_in_qualifiedIdentificationVariable1873); if (failed) return node;
+                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_qualifiedIdentificationVariable1875); if (failed) return node;
+                    pushFollow(FOLLOW_variableAccessOrTypeConstant_in_qualifiedIdentificationVariable1881);
                     n=variableAccessOrTypeConstant();
                     _fsp--;
                     if (failed) return node;
-                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_qualifiedIdentificationVariable1762); if (failed) return node;
+                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_qualifiedIdentificationVariable1883); if (failed) return node;
                     if ( backtracking==0 ) {
                        node = factory.newKey(l.getLine(), l.getCharPositionInLine(), n); 
                     }
@@ -2151,16 +2246,16 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 3 :
-                    // JPQL.g:363:7: l= VALUE LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET
+                    // JPQL.g:388:7: l= VALUE LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET
                     {
                     l=(Token)input.LT(1);
-                    match(input,VALUE,FOLLOW_VALUE_in_qualifiedIdentificationVariable1777); if (failed) return node;
-                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_qualifiedIdentificationVariable1779); if (failed) return node;
-                    pushFollow(FOLLOW_variableAccessOrTypeConstant_in_qualifiedIdentificationVariable1785);
+                    match(input,VALUE,FOLLOW_VALUE_in_qualifiedIdentificationVariable1898); if (failed) return node;
+                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_qualifiedIdentificationVariable1900); if (failed) return node;
+                    pushFollow(FOLLOW_variableAccessOrTypeConstant_in_qualifiedIdentificationVariable1906);
                     n=variableAccessOrTypeConstant();
                     _fsp--;
                     if (failed) return node;
-                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_qualifiedIdentificationVariable1787); if (failed) return node;
+                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_qualifiedIdentificationVariable1908); if (failed) return node;
                     if ( backtracking==0 ) {
                        node = n;
                     }
@@ -2187,7 +2282,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
     
     // $ANTLR start aggregateExpression
-    // JPQL.g:366:1: aggregateExpression returns [Object node] : (t1= AVG LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET | t2= MAX LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET | t3= MIN LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET | t4= SUM LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET | t5= COUNT LEFT_ROUND_BRACKET ( DISTINCT )? n= pathExprOrVariableAccess RIGHT_ROUND_BRACKET );
+    // JPQL.g:391:1: aggregateExpression returns [Object node] : (t1= AVG LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET | t2= MAX LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET | t3= MIN LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET | t4= SUM LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET | t5= COUNT LEFT_ROUND_BRACKET ( DISTINCT )? n= pathExprOrVariableAccess RIGHT_ROUND_BRACKET );
     public final Object aggregateExpression() throws RecognitionException {
         aggregateExpression_stack.push(new aggregateExpression_scope());
 
@@ -2206,126 +2301,50 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             ((aggregateExpression_scope)aggregateExpression_stack.peek()).distinct = false;
     
         try {
-            // JPQL.g:374:7: (t1= AVG LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET | t2= MAX LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET | t3= MIN LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET | t4= SUM LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET | t5= COUNT LEFT_ROUND_BRACKET ( DISTINCT )? n= pathExprOrVariableAccess RIGHT_ROUND_BRACKET )
-            int alt25=5;
+            // JPQL.g:399:7: (t1= AVG LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET | t2= MAX LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET | t3= MIN LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET | t4= SUM LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET | t5= COUNT LEFT_ROUND_BRACKET ( DISTINCT )? n= pathExprOrVariableAccess RIGHT_ROUND_BRACKET )
+            int alt27=5;
             switch ( input.LA(1) ) {
             case AVG:
                 {
-                alt25=1;
+                alt27=1;
                 }
                 break;
             case MAX:
                 {
-                alt25=2;
+                alt27=2;
                 }
                 break;
             case MIN:
                 {
-                alt25=3;
+                alt27=3;
                 }
                 break;
             case SUM:
                 {
-                alt25=4;
+                alt27=4;
                 }
                 break;
             case COUNT:
                 {
-                alt25=5;
+                alt27=5;
                 }
                 break;
             default:
                 if (backtracking>0) {failed=true; return node;}
                 NoViableAltException nvae =
-                    new NoViableAltException("366:1: aggregateExpression returns [Object node] : (t1= AVG LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET | t2= MAX LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET | t3= MIN LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET | t4= SUM LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET | t5= COUNT LEFT_ROUND_BRACKET ( DISTINCT )? n= pathExprOrVariableAccess RIGHT_ROUND_BRACKET );", 25, 0, input);
+                    new NoViableAltException("391:1: aggregateExpression returns [Object node] : (t1= AVG LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET | t2= MAX LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET | t3= MIN LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET | t4= SUM LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET | t5= COUNT LEFT_ROUND_BRACKET ( DISTINCT )? n= pathExprOrVariableAccess RIGHT_ROUND_BRACKET );", 27, 0, input);
             
                 throw nvae;
             }
             
-            switch (alt25) {
+            switch (alt27) {
                 case 1 :
-                    // JPQL.g:374:7: t1= AVG LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET
+                    // JPQL.g:399:7: t1= AVG LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET
                     {
                     t1=(Token)input.LT(1);
-                    match(input,AVG,FOLLOW_AVG_in_aggregateExpression1820); if (failed) return node;
-                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_aggregateExpression1822); if (failed) return node;
-                    // JPQL.g:374:33: ( DISTINCT )?
-                    int alt20=2;
-                    int LA20_0 = input.LA(1);
-                    
-                    if ( (LA20_0==DISTINCT) ) {
-                        alt20=1;
-                    }
-                    switch (alt20) {
-                        case 1 :
-                            // JPQL.g:374:34: DISTINCT
-                            {
-                            match(input,DISTINCT,FOLLOW_DISTINCT_in_aggregateExpression1825); if (failed) return node;
-                            if ( backtracking==0 ) {
-                               ((aggregateExpression_scope)aggregateExpression_stack.peek()).distinct = true; 
-                            }
-                            
-                            }
-                            break;
-                    
-                    }
-
-                    pushFollow(FOLLOW_stateFieldPathExpression_in_aggregateExpression1843);
-                    n=stateFieldPathExpression();
-                    _fsp--;
-                    if (failed) return node;
-                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_aggregateExpression1845); if (failed) return node;
-                    if ( backtracking==0 ) {
-                       node = factory.newAvg(t1.getLine(), t1.getCharPositionInLine(), ((aggregateExpression_scope)aggregateExpression_stack.peek()).distinct, n); 
-                    }
-                    
-                    }
-                    break;
-                case 2 :
-                    // JPQL.g:377:7: t2= MAX LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET
-                    {
-                    t2=(Token)input.LT(1);
-                    match(input,MAX,FOLLOW_MAX_in_aggregateExpression1866); if (failed) return node;
-                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_aggregateExpression1868); if (failed) return node;
-                    // JPQL.g:377:33: ( DISTINCT )?
-                    int alt21=2;
-                    int LA21_0 = input.LA(1);
-                    
-                    if ( (LA21_0==DISTINCT) ) {
-                        alt21=1;
-                    }
-                    switch (alt21) {
-                        case 1 :
-                            // JPQL.g:377:34: DISTINCT
-                            {
-                            match(input,DISTINCT,FOLLOW_DISTINCT_in_aggregateExpression1871); if (failed) return node;
-                            if ( backtracking==0 ) {
-                               ((aggregateExpression_scope)aggregateExpression_stack.peek()).distinct = true; 
-                            }
-                            
-                            }
-                            break;
-                    
-                    }
-
-                    pushFollow(FOLLOW_stateFieldPathExpression_in_aggregateExpression1890);
-                    n=stateFieldPathExpression();
-                    _fsp--;
-                    if (failed) return node;
-                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_aggregateExpression1892); if (failed) return node;
-                    if ( backtracking==0 ) {
-                       node = factory.newMax(t2.getLine(), t2.getCharPositionInLine(), ((aggregateExpression_scope)aggregateExpression_stack.peek()).distinct, n); 
-                    }
-                    
-                    }
-                    break;
-                case 3 :
-                    // JPQL.g:380:7: t3= MIN LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET
-                    {
-                    t3=(Token)input.LT(1);
-                    match(input,MIN,FOLLOW_MIN_in_aggregateExpression1912); if (failed) return node;
-                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_aggregateExpression1914); if (failed) return node;
-                    // JPQL.g:380:33: ( DISTINCT )?
+                    match(input,AVG,FOLLOW_AVG_in_aggregateExpression1941); if (failed) return node;
+                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_aggregateExpression1943); if (failed) return node;
+                    // JPQL.g:399:33: ( DISTINCT )?
                     int alt22=2;
                     int LA22_0 = input.LA(1);
                     
@@ -2334,9 +2353,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     switch (alt22) {
                         case 1 :
-                            // JPQL.g:380:34: DISTINCT
+                            // JPQL.g:399:34: DISTINCT
                             {
-                            match(input,DISTINCT,FOLLOW_DISTINCT_in_aggregateExpression1917); if (failed) return node;
+                            match(input,DISTINCT,FOLLOW_DISTINCT_in_aggregateExpression1946); if (failed) return node;
                             if ( backtracking==0 ) {
                                ((aggregateExpression_scope)aggregateExpression_stack.peek()).distinct = true; 
                             }
@@ -2346,24 +2365,24 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     
                     }
 
-                    pushFollow(FOLLOW_stateFieldPathExpression_in_aggregateExpression1935);
+                    pushFollow(FOLLOW_stateFieldPathExpression_in_aggregateExpression1964);
                     n=stateFieldPathExpression();
                     _fsp--;
                     if (failed) return node;
-                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_aggregateExpression1937); if (failed) return node;
+                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_aggregateExpression1966); if (failed) return node;
                     if ( backtracking==0 ) {
-                       node = factory.newMin(t3.getLine(), t3.getCharPositionInLine(), ((aggregateExpression_scope)aggregateExpression_stack.peek()).distinct, n); 
+                       node = factory.newAvg(t1.getLine(), t1.getCharPositionInLine(), ((aggregateExpression_scope)aggregateExpression_stack.peek()).distinct, n); 
                     }
                     
                     }
                     break;
-                case 4 :
-                    // JPQL.g:383:7: t4= SUM LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET
+                case 2 :
+                    // JPQL.g:402:7: t2= MAX LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET
                     {
-                    t4=(Token)input.LT(1);
-                    match(input,SUM,FOLLOW_SUM_in_aggregateExpression1957); if (failed) return node;
-                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_aggregateExpression1959); if (failed) return node;
-                    // JPQL.g:383:33: ( DISTINCT )?
+                    t2=(Token)input.LT(1);
+                    match(input,MAX,FOLLOW_MAX_in_aggregateExpression1987); if (failed) return node;
+                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_aggregateExpression1989); if (failed) return node;
+                    // JPQL.g:402:33: ( DISTINCT )?
                     int alt23=2;
                     int LA23_0 = input.LA(1);
                     
@@ -2372,9 +2391,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     switch (alt23) {
                         case 1 :
-                            // JPQL.g:383:34: DISTINCT
+                            // JPQL.g:402:34: DISTINCT
                             {
-                            match(input,DISTINCT,FOLLOW_DISTINCT_in_aggregateExpression1962); if (failed) return node;
+                            match(input,DISTINCT,FOLLOW_DISTINCT_in_aggregateExpression1992); if (failed) return node;
                             if ( backtracking==0 ) {
                                ((aggregateExpression_scope)aggregateExpression_stack.peek()).distinct = true; 
                             }
@@ -2384,24 +2403,24 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     
                     }
 
-                    pushFollow(FOLLOW_stateFieldPathExpression_in_aggregateExpression1980);
+                    pushFollow(FOLLOW_stateFieldPathExpression_in_aggregateExpression2011);
                     n=stateFieldPathExpression();
                     _fsp--;
                     if (failed) return node;
-                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_aggregateExpression1982); if (failed) return node;
+                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_aggregateExpression2013); if (failed) return node;
                     if ( backtracking==0 ) {
-                       node = factory.newSum(t4.getLine(), t4.getCharPositionInLine(), ((aggregateExpression_scope)aggregateExpression_stack.peek()).distinct, n); 
+                       node = factory.newMax(t2.getLine(), t2.getCharPositionInLine(), ((aggregateExpression_scope)aggregateExpression_stack.peek()).distinct, n); 
                     }
                     
                     }
                     break;
-                case 5 :
-                    // JPQL.g:386:7: t5= COUNT LEFT_ROUND_BRACKET ( DISTINCT )? n= pathExprOrVariableAccess RIGHT_ROUND_BRACKET
+                case 3 :
+                    // JPQL.g:405:7: t3= MIN LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET
                     {
-                    t5=(Token)input.LT(1);
-                    match(input,COUNT,FOLLOW_COUNT_in_aggregateExpression2002); if (failed) return node;
-                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_aggregateExpression2004); if (failed) return node;
-                    // JPQL.g:386:35: ( DISTINCT )?
+                    t3=(Token)input.LT(1);
+                    match(input,MIN,FOLLOW_MIN_in_aggregateExpression2033); if (failed) return node;
+                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_aggregateExpression2035); if (failed) return node;
+                    // JPQL.g:405:33: ( DISTINCT )?
                     int alt24=2;
                     int LA24_0 = input.LA(1);
                     
@@ -2410,9 +2429,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     switch (alt24) {
                         case 1 :
-                            // JPQL.g:386:36: DISTINCT
+                            // JPQL.g:405:34: DISTINCT
                             {
-                            match(input,DISTINCT,FOLLOW_DISTINCT_in_aggregateExpression2007); if (failed) return node;
+                            match(input,DISTINCT,FOLLOW_DISTINCT_in_aggregateExpression2038); if (failed) return node;
                             if ( backtracking==0 ) {
                                ((aggregateExpression_scope)aggregateExpression_stack.peek()).distinct = true; 
                             }
@@ -2422,11 +2441,87 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     
                     }
 
-                    pushFollow(FOLLOW_pathExprOrVariableAccess_in_aggregateExpression2025);
+                    pushFollow(FOLLOW_stateFieldPathExpression_in_aggregateExpression2056);
+                    n=stateFieldPathExpression();
+                    _fsp--;
+                    if (failed) return node;
+                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_aggregateExpression2058); if (failed) return node;
+                    if ( backtracking==0 ) {
+                       node = factory.newMin(t3.getLine(), t3.getCharPositionInLine(), ((aggregateExpression_scope)aggregateExpression_stack.peek()).distinct, n); 
+                    }
+                    
+                    }
+                    break;
+                case 4 :
+                    // JPQL.g:408:7: t4= SUM LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET
+                    {
+                    t4=(Token)input.LT(1);
+                    match(input,SUM,FOLLOW_SUM_in_aggregateExpression2078); if (failed) return node;
+                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_aggregateExpression2080); if (failed) return node;
+                    // JPQL.g:408:33: ( DISTINCT )?
+                    int alt25=2;
+                    int LA25_0 = input.LA(1);
+                    
+                    if ( (LA25_0==DISTINCT) ) {
+                        alt25=1;
+                    }
+                    switch (alt25) {
+                        case 1 :
+                            // JPQL.g:408:34: DISTINCT
+                            {
+                            match(input,DISTINCT,FOLLOW_DISTINCT_in_aggregateExpression2083); if (failed) return node;
+                            if ( backtracking==0 ) {
+                               ((aggregateExpression_scope)aggregateExpression_stack.peek()).distinct = true; 
+                            }
+                            
+                            }
+                            break;
+                    
+                    }
+
+                    pushFollow(FOLLOW_stateFieldPathExpression_in_aggregateExpression2101);
+                    n=stateFieldPathExpression();
+                    _fsp--;
+                    if (failed) return node;
+                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_aggregateExpression2103); if (failed) return node;
+                    if ( backtracking==0 ) {
+                       node = factory.newSum(t4.getLine(), t4.getCharPositionInLine(), ((aggregateExpression_scope)aggregateExpression_stack.peek()).distinct, n); 
+                    }
+                    
+                    }
+                    break;
+                case 5 :
+                    // JPQL.g:411:7: t5= COUNT LEFT_ROUND_BRACKET ( DISTINCT )? n= pathExprOrVariableAccess RIGHT_ROUND_BRACKET
+                    {
+                    t5=(Token)input.LT(1);
+                    match(input,COUNT,FOLLOW_COUNT_in_aggregateExpression2123); if (failed) return node;
+                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_aggregateExpression2125); if (failed) return node;
+                    // JPQL.g:411:35: ( DISTINCT )?
+                    int alt26=2;
+                    int LA26_0 = input.LA(1);
+                    
+                    if ( (LA26_0==DISTINCT) ) {
+                        alt26=1;
+                    }
+                    switch (alt26) {
+                        case 1 :
+                            // JPQL.g:411:36: DISTINCT
+                            {
+                            match(input,DISTINCT,FOLLOW_DISTINCT_in_aggregateExpression2128); if (failed) return node;
+                            if ( backtracking==0 ) {
+                               ((aggregateExpression_scope)aggregateExpression_stack.peek()).distinct = true; 
+                            }
+                            
+                            }
+                            break;
+                    
+                    }
+
+                    pushFollow(FOLLOW_pathExprOrVariableAccess_in_aggregateExpression2146);
                     n=pathExprOrVariableAccess();
                     _fsp--;
                     if (failed) return node;
-                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_aggregateExpression2027); if (failed) return node;
+                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_aggregateExpression2148); if (failed) return node;
                     if ( backtracking==0 ) {
                        node = factory.newCount(t5.getLine(), t5.getCharPositionInLine(), ((aggregateExpression_scope)aggregateExpression_stack.peek()).distinct, n); 
                     }
@@ -2454,7 +2549,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
     
     // $ANTLR start constructorExpression
-    // JPQL.g:391:1: constructorExpression returns [Object node] : t= NEW className= constructorName LEFT_ROUND_BRACKET n= constructorItem ( COMMA n= constructorItem )* RIGHT_ROUND_BRACKET ;
+    // JPQL.g:416:1: constructorExpression returns [Object node] : t= NEW className= constructorName LEFT_ROUND_BRACKET n= constructorItem ( COMMA n= constructorItem )* RIGHT_ROUND_BRACKET ;
     public final Object constructorExpression() throws RecognitionException {
         constructorExpression_stack.push(new constructorExpression_scope());
 
@@ -2471,40 +2566,40 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             ((constructorExpression_scope)constructorExpression_stack.peek()).args = new ArrayList();
     
         try {
-            // JPQL.g:399:7: (t= NEW className= constructorName LEFT_ROUND_BRACKET n= constructorItem ( COMMA n= constructorItem )* RIGHT_ROUND_BRACKET )
-            // JPQL.g:399:7: t= NEW className= constructorName LEFT_ROUND_BRACKET n= constructorItem ( COMMA n= constructorItem )* RIGHT_ROUND_BRACKET
+            // JPQL.g:424:7: (t= NEW className= constructorName LEFT_ROUND_BRACKET n= constructorItem ( COMMA n= constructorItem )* RIGHT_ROUND_BRACKET )
+            // JPQL.g:424:7: t= NEW className= constructorName LEFT_ROUND_BRACKET n= constructorItem ( COMMA n= constructorItem )* RIGHT_ROUND_BRACKET
             {
             t=(Token)input.LT(1);
-            match(input,NEW,FOLLOW_NEW_in_constructorExpression2070); if (failed) return node;
-            pushFollow(FOLLOW_constructorName_in_constructorExpression2076);
+            match(input,NEW,FOLLOW_NEW_in_constructorExpression2191); if (failed) return node;
+            pushFollow(FOLLOW_constructorName_in_constructorExpression2197);
             className=constructorName();
             _fsp--;
             if (failed) return node;
-            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_constructorExpression2086); if (failed) return node;
-            pushFollow(FOLLOW_constructorItem_in_constructorExpression2101);
+            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_constructorExpression2207); if (failed) return node;
+            pushFollow(FOLLOW_constructorItem_in_constructorExpression2222);
             n=constructorItem();
             _fsp--;
             if (failed) return node;
             if ( backtracking==0 ) {
               ((constructorExpression_scope)constructorExpression_stack.peek()).args.add(n); 
             }
-            // JPQL.g:402:9: ( COMMA n= constructorItem )*
-            loop26:
+            // JPQL.g:427:9: ( COMMA n= constructorItem )*
+            loop28:
             do {
-                int alt26=2;
-                int LA26_0 = input.LA(1);
+                int alt28=2;
+                int LA28_0 = input.LA(1);
                 
-                if ( (LA26_0==COMMA) ) {
-                    alt26=1;
+                if ( (LA28_0==COMMA) ) {
+                    alt28=1;
                 }
                 
             
-                switch (alt26) {
+                switch (alt28) {
             	case 1 :
-            	    // JPQL.g:402:11: COMMA n= constructorItem
+            	    // JPQL.g:427:11: COMMA n= constructorItem
             	    {
-            	    match(input,COMMA,FOLLOW_COMMA_in_constructorExpression2116); if (failed) return node;
-            	    pushFollow(FOLLOW_constructorItem_in_constructorExpression2122);
+            	    match(input,COMMA,FOLLOW_COMMA_in_constructorExpression2237); if (failed) return node;
+            	    pushFollow(FOLLOW_constructorItem_in_constructorExpression2243);
             	    n=constructorItem();
             	    _fsp--;
             	    if (failed) return node;
@@ -2516,11 +2611,11 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             	    break;
             
             	default :
-            	    break loop26;
+            	    break loop28;
                 }
             } while (true);
 
-            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_constructorExpression2137); if (failed) return node;
+            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_constructorExpression2258); if (failed) return node;
             if ( backtracking==0 ) {
                
                           node = factory.newConstructor(t.getLine(), t.getCharPositionInLine(), 
@@ -2549,7 +2644,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
     
     // $ANTLR start constructorName
-    // JPQL.g:410:1: constructorName returns [String className] : i1= IDENT ( DOT i2= IDENT )* ;
+    // JPQL.g:435:1: constructorName returns [String className] : i1= IDENT ( DOT i2= IDENT )* ;
     public final String constructorName() throws RecognitionException {
         constructorName_stack.push(new constructorName_scope());
 
@@ -2563,32 +2658,32 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             ((constructorName_scope)constructorName_stack.peek()).buf = new StringBuffer(); 
     
         try {
-            // JPQL.g:418:7: (i1= IDENT ( DOT i2= IDENT )* )
-            // JPQL.g:418:7: i1= IDENT ( DOT i2= IDENT )*
+            // JPQL.g:443:7: (i1= IDENT ( DOT i2= IDENT )* )
+            // JPQL.g:443:7: i1= IDENT ( DOT i2= IDENT )*
             {
             i1=(Token)input.LT(1);
-            match(input,IDENT,FOLLOW_IDENT_in_constructorName2178); if (failed) return className;
+            match(input,IDENT,FOLLOW_IDENT_in_constructorName2299); if (failed) return className;
             if ( backtracking==0 ) {
                ((constructorName_scope)constructorName_stack.peek()).buf.append(i1.getText()); 
             }
-            // JPQL.g:419:9: ( DOT i2= IDENT )*
-            loop27:
+            // JPQL.g:444:9: ( DOT i2= IDENT )*
+            loop29:
             do {
-                int alt27=2;
-                int LA27_0 = input.LA(1);
+                int alt29=2;
+                int LA29_0 = input.LA(1);
                 
-                if ( (LA27_0==DOT) ) {
-                    alt27=1;
+                if ( (LA29_0==DOT) ) {
+                    alt29=1;
                 }
                 
             
-                switch (alt27) {
+                switch (alt29) {
             	case 1 :
-            	    // JPQL.g:419:11: DOT i2= IDENT
+            	    // JPQL.g:444:11: DOT i2= IDENT
             	    {
-            	    match(input,DOT,FOLLOW_DOT_in_constructorName2192); if (failed) return className;
+            	    match(input,DOT,FOLLOW_DOT_in_constructorName2313); if (failed) return className;
             	    i2=(Token)input.LT(1);
-            	    match(input,IDENT,FOLLOW_IDENT_in_constructorName2196); if (failed) return className;
+            	    match(input,IDENT,FOLLOW_IDENT_in_constructorName2317); if (failed) return className;
             	    if ( backtracking==0 ) {
             	       ((constructorName_scope)constructorName_stack.peek()).buf.append('.').append(i2.getText()); 
             	    }
@@ -2597,7 +2692,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             	    break;
             
             	default :
-            	    break loop27;
+            	    break loop29;
                 }
             } while (true);
 
@@ -2621,7 +2716,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start constructorItem
-    // JPQL.g:423:1: constructorItem returns [Object node] : (n= pathExprOrVariableAccess | n= aggregateExpression );
+    // JPQL.g:448:1: constructorItem returns [Object node] : (n= scalarExpression | n= aggregateExpression );
     public final Object constructorItem() throws RecognitionException {
 
         Object node = null;
@@ -2631,41 +2726,574 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // JPQL.g:425:7: (n= pathExprOrVariableAccess | n= aggregateExpression )
-            int alt28=2;
-            int LA28_0 = input.LA(1);
-            
-            if ( (LA28_0==KEY||LA28_0==VALUE||LA28_0==IDENT) ) {
-                alt28=1;
-            }
-            else if ( (LA28_0==AVG||LA28_0==COUNT||LA28_0==MAX||LA28_0==MIN||LA28_0==SUM) ) {
-                alt28=2;
-            }
-            else {
+            // JPQL.g:450:7: (n= scalarExpression | n= aggregateExpression )
+            int alt30=2;
+            switch ( input.LA(1) ) {
+            case ABS:
+            case CASE:
+            case COALESCE:
+            case CONCAT:
+            case CURRENT_DATE:
+            case CURRENT_TIME:
+            case CURRENT_TIMESTAMP:
+            case FALSE:
+            case INDEX:
+            case KEY:
+            case LENGTH:
+            case LOCATE:
+            case LOWER:
+            case MOD:
+            case NULLIF:
+            case SIZE:
+            case SQRT:
+            case SUBSTRING:
+            case TRIM:
+            case TRUE:
+            case TYPE:
+            case UPPER:
+            case VALUE:
+            case IDENT:
+            case LEFT_ROUND_BRACKET:
+            case PLUS:
+            case MINUS:
+            case INTEGER_LITERAL:
+            case LONG_LITERAL:
+            case FLOAT_LITERAL:
+            case DOUBLE_LITERAL:
+            case STRING_LITERAL_DOUBLE_QUOTED:
+            case STRING_LITERAL_SINGLE_QUOTED:
+            case POSITIONAL_PARAM:
+            case NAMED_PARAM:
+                {
+                alt30=1;
+                }
+                break;
+            case AVG:
+                {
+                int LA30_3 = input.LA(2);
+                
+                if ( (LA30_3==LEFT_ROUND_BRACKET) ) {
+                    switch ( input.LA(3) ) {
+                    case DISTINCT:
+                        {
+                        int LA30_46 = input.LA(4);
+                        
+                        if ( ( aggregatesAllowed() ) ) {
+                            alt30=1;
+                        }
+                        else if ( (true) ) {
+                            alt30=2;
+                        }
+                        else {
+                            if (backtracking>0) {failed=true; return node;}
+                            NoViableAltException nvae =
+                                new NoViableAltException("448:1: constructorItem returns [Object node] : (n= scalarExpression | n= aggregateExpression );", 30, 46, input);
+                        
+                            throw nvae;
+                        }
+                        }
+                        break;
+                    case IDENT:
+                        {
+                        int LA30_47 = input.LA(4);
+                        
+                        if ( ( aggregatesAllowed() ) ) {
+                            alt30=1;
+                        }
+                        else if ( (true) ) {
+                            alt30=2;
+                        }
+                        else {
+                            if (backtracking>0) {failed=true; return node;}
+                            NoViableAltException nvae =
+                                new NoViableAltException("448:1: constructorItem returns [Object node] : (n= scalarExpression | n= aggregateExpression );", 30, 47, input);
+                        
+                            throw nvae;
+                        }
+                        }
+                        break;
+                    case KEY:
+                        {
+                        int LA30_48 = input.LA(4);
+                        
+                        if ( ( aggregatesAllowed() ) ) {
+                            alt30=1;
+                        }
+                        else if ( (true) ) {
+                            alt30=2;
+                        }
+                        else {
+                            if (backtracking>0) {failed=true; return node;}
+                            NoViableAltException nvae =
+                                new NoViableAltException("448:1: constructorItem returns [Object node] : (n= scalarExpression | n= aggregateExpression );", 30, 48, input);
+                        
+                            throw nvae;
+                        }
+                        }
+                        break;
+                    case VALUE:
+                        {
+                        int LA30_49 = input.LA(4);
+                        
+                        if ( ( aggregatesAllowed() ) ) {
+                            alt30=1;
+                        }
+                        else if ( (true) ) {
+                            alt30=2;
+                        }
+                        else {
+                            if (backtracking>0) {failed=true; return node;}
+                            NoViableAltException nvae =
+                                new NoViableAltException("448:1: constructorItem returns [Object node] : (n= scalarExpression | n= aggregateExpression );", 30, 49, input);
+                        
+                            throw nvae;
+                        }
+                        }
+                        break;
+                    default:
+                        if (backtracking>0) {failed=true; return node;}
+                        NoViableAltException nvae =
+                            new NoViableAltException("448:1: constructorItem returns [Object node] : (n= scalarExpression | n= aggregateExpression );", 30, 41, input);
+                    
+                        throw nvae;
+                    }
+                
+                }
+                else {
+                    if (backtracking>0) {failed=true; return node;}
+                    NoViableAltException nvae =
+                        new NoViableAltException("448:1: constructorItem returns [Object node] : (n= scalarExpression | n= aggregateExpression );", 30, 3, input);
+                
+                    throw nvae;
+                }
+                }
+                break;
+            case MAX:
+                {
+                int LA30_4 = input.LA(2);
+                
+                if ( (LA30_4==LEFT_ROUND_BRACKET) ) {
+                    switch ( input.LA(3) ) {
+                    case DISTINCT:
+                        {
+                        int LA30_50 = input.LA(4);
+                        
+                        if ( ( aggregatesAllowed() ) ) {
+                            alt30=1;
+                        }
+                        else if ( (true) ) {
+                            alt30=2;
+                        }
+                        else {
+                            if (backtracking>0) {failed=true; return node;}
+                            NoViableAltException nvae =
+                                new NoViableAltException("448:1: constructorItem returns [Object node] : (n= scalarExpression | n= aggregateExpression );", 30, 50, input);
+                        
+                            throw nvae;
+                        }
+                        }
+                        break;
+                    case IDENT:
+                        {
+                        int LA30_51 = input.LA(4);
+                        
+                        if ( ( aggregatesAllowed() ) ) {
+                            alt30=1;
+                        }
+                        else if ( (true) ) {
+                            alt30=2;
+                        }
+                        else {
+                            if (backtracking>0) {failed=true; return node;}
+                            NoViableAltException nvae =
+                                new NoViableAltException("448:1: constructorItem returns [Object node] : (n= scalarExpression | n= aggregateExpression );", 30, 51, input);
+                        
+                            throw nvae;
+                        }
+                        }
+                        break;
+                    case KEY:
+                        {
+                        int LA30_52 = input.LA(4);
+                        
+                        if ( ( aggregatesAllowed() ) ) {
+                            alt30=1;
+                        }
+                        else if ( (true) ) {
+                            alt30=2;
+                        }
+                        else {
+                            if (backtracking>0) {failed=true; return node;}
+                            NoViableAltException nvae =
+                                new NoViableAltException("448:1: constructorItem returns [Object node] : (n= scalarExpression | n= aggregateExpression );", 30, 52, input);
+                        
+                            throw nvae;
+                        }
+                        }
+                        break;
+                    case VALUE:
+                        {
+                        int LA30_53 = input.LA(4);
+                        
+                        if ( ( aggregatesAllowed() ) ) {
+                            alt30=1;
+                        }
+                        else if ( (true) ) {
+                            alt30=2;
+                        }
+                        else {
+                            if (backtracking>0) {failed=true; return node;}
+                            NoViableAltException nvae =
+                                new NoViableAltException("448:1: constructorItem returns [Object node] : (n= scalarExpression | n= aggregateExpression );", 30, 53, input);
+                        
+                            throw nvae;
+                        }
+                        }
+                        break;
+                    default:
+                        if (backtracking>0) {failed=true; return node;}
+                        NoViableAltException nvae =
+                            new NoViableAltException("448:1: constructorItem returns [Object node] : (n= scalarExpression | n= aggregateExpression );", 30, 42, input);
+                    
+                        throw nvae;
+                    }
+                
+                }
+                else {
+                    if (backtracking>0) {failed=true; return node;}
+                    NoViableAltException nvae =
+                        new NoViableAltException("448:1: constructorItem returns [Object node] : (n= scalarExpression | n= aggregateExpression );", 30, 4, input);
+                
+                    throw nvae;
+                }
+                }
+                break;
+            case MIN:
+                {
+                int LA30_5 = input.LA(2);
+                
+                if ( (LA30_5==LEFT_ROUND_BRACKET) ) {
+                    switch ( input.LA(3) ) {
+                    case DISTINCT:
+                        {
+                        int LA30_54 = input.LA(4);
+                        
+                        if ( ( aggregatesAllowed() ) ) {
+                            alt30=1;
+                        }
+                        else if ( (true) ) {
+                            alt30=2;
+                        }
+                        else {
+                            if (backtracking>0) {failed=true; return node;}
+                            NoViableAltException nvae =
+                                new NoViableAltException("448:1: constructorItem returns [Object node] : (n= scalarExpression | n= aggregateExpression );", 30, 54, input);
+                        
+                            throw nvae;
+                        }
+                        }
+                        break;
+                    case IDENT:
+                        {
+                        int LA30_55 = input.LA(4);
+                        
+                        if ( ( aggregatesAllowed() ) ) {
+                            alt30=1;
+                        }
+                        else if ( (true) ) {
+                            alt30=2;
+                        }
+                        else {
+                            if (backtracking>0) {failed=true; return node;}
+                            NoViableAltException nvae =
+                                new NoViableAltException("448:1: constructorItem returns [Object node] : (n= scalarExpression | n= aggregateExpression );", 30, 55, input);
+                        
+                            throw nvae;
+                        }
+                        }
+                        break;
+                    case KEY:
+                        {
+                        int LA30_56 = input.LA(4);
+                        
+                        if ( ( aggregatesAllowed() ) ) {
+                            alt30=1;
+                        }
+                        else if ( (true) ) {
+                            alt30=2;
+                        }
+                        else {
+                            if (backtracking>0) {failed=true; return node;}
+                            NoViableAltException nvae =
+                                new NoViableAltException("448:1: constructorItem returns [Object node] : (n= scalarExpression | n= aggregateExpression );", 30, 56, input);
+                        
+                            throw nvae;
+                        }
+                        }
+                        break;
+                    case VALUE:
+                        {
+                        int LA30_57 = input.LA(4);
+                        
+                        if ( ( aggregatesAllowed() ) ) {
+                            alt30=1;
+                        }
+                        else if ( (true) ) {
+                            alt30=2;
+                        }
+                        else {
+                            if (backtracking>0) {failed=true; return node;}
+                            NoViableAltException nvae =
+                                new NoViableAltException("448:1: constructorItem returns [Object node] : (n= scalarExpression | n= aggregateExpression );", 30, 57, input);
+                        
+                            throw nvae;
+                        }
+                        }
+                        break;
+                    default:
+                        if (backtracking>0) {failed=true; return node;}
+                        NoViableAltException nvae =
+                            new NoViableAltException("448:1: constructorItem returns [Object node] : (n= scalarExpression | n= aggregateExpression );", 30, 43, input);
+                    
+                        throw nvae;
+                    }
+                
+                }
+                else {
+                    if (backtracking>0) {failed=true; return node;}
+                    NoViableAltException nvae =
+                        new NoViableAltException("448:1: constructorItem returns [Object node] : (n= scalarExpression | n= aggregateExpression );", 30, 5, input);
+                
+                    throw nvae;
+                }
+                }
+                break;
+            case SUM:
+                {
+                int LA30_6 = input.LA(2);
+                
+                if ( (LA30_6==LEFT_ROUND_BRACKET) ) {
+                    switch ( input.LA(3) ) {
+                    case DISTINCT:
+                        {
+                        int LA30_58 = input.LA(4);
+                        
+                        if ( ( aggregatesAllowed() ) ) {
+                            alt30=1;
+                        }
+                        else if ( (true) ) {
+                            alt30=2;
+                        }
+                        else {
+                            if (backtracking>0) {failed=true; return node;}
+                            NoViableAltException nvae =
+                                new NoViableAltException("448:1: constructorItem returns [Object node] : (n= scalarExpression | n= aggregateExpression );", 30, 58, input);
+                        
+                            throw nvae;
+                        }
+                        }
+                        break;
+                    case IDENT:
+                        {
+                        int LA30_59 = input.LA(4);
+                        
+                        if ( ( aggregatesAllowed() ) ) {
+                            alt30=1;
+                        }
+                        else if ( (true) ) {
+                            alt30=2;
+                        }
+                        else {
+                            if (backtracking>0) {failed=true; return node;}
+                            NoViableAltException nvae =
+                                new NoViableAltException("448:1: constructorItem returns [Object node] : (n= scalarExpression | n= aggregateExpression );", 30, 59, input);
+                        
+                            throw nvae;
+                        }
+                        }
+                        break;
+                    case KEY:
+                        {
+                        int LA30_60 = input.LA(4);
+                        
+                        if ( ( aggregatesAllowed() ) ) {
+                            alt30=1;
+                        }
+                        else if ( (true) ) {
+                            alt30=2;
+                        }
+                        else {
+                            if (backtracking>0) {failed=true; return node;}
+                            NoViableAltException nvae =
+                                new NoViableAltException("448:1: constructorItem returns [Object node] : (n= scalarExpression | n= aggregateExpression );", 30, 60, input);
+                        
+                            throw nvae;
+                        }
+                        }
+                        break;
+                    case VALUE:
+                        {
+                        int LA30_61 = input.LA(4);
+                        
+                        if ( ( aggregatesAllowed() ) ) {
+                            alt30=1;
+                        }
+                        else if ( (true) ) {
+                            alt30=2;
+                        }
+                        else {
+                            if (backtracking>0) {failed=true; return node;}
+                            NoViableAltException nvae =
+                                new NoViableAltException("448:1: constructorItem returns [Object node] : (n= scalarExpression | n= aggregateExpression );", 30, 61, input);
+                        
+                            throw nvae;
+                        }
+                        }
+                        break;
+                    default:
+                        if (backtracking>0) {failed=true; return node;}
+                        NoViableAltException nvae =
+                            new NoViableAltException("448:1: constructorItem returns [Object node] : (n= scalarExpression | n= aggregateExpression );", 30, 44, input);
+                    
+                        throw nvae;
+                    }
+                
+                }
+                else {
+                    if (backtracking>0) {failed=true; return node;}
+                    NoViableAltException nvae =
+                        new NoViableAltException("448:1: constructorItem returns [Object node] : (n= scalarExpression | n= aggregateExpression );", 30, 6, input);
+                
+                    throw nvae;
+                }
+                }
+                break;
+            case COUNT:
+                {
+                int LA30_7 = input.LA(2);
+                
+                if ( (LA30_7==LEFT_ROUND_BRACKET) ) {
+                    switch ( input.LA(3) ) {
+                    case DISTINCT:
+                        {
+                        int LA30_62 = input.LA(4);
+                        
+                        if ( ( aggregatesAllowed() ) ) {
+                            alt30=1;
+                        }
+                        else if ( (true) ) {
+                            alt30=2;
+                        }
+                        else {
+                            if (backtracking>0) {failed=true; return node;}
+                            NoViableAltException nvae =
+                                new NoViableAltException("448:1: constructorItem returns [Object node] : (n= scalarExpression | n= aggregateExpression );", 30, 62, input);
+                        
+                            throw nvae;
+                        }
+                        }
+                        break;
+                    case IDENT:
+                        {
+                        int LA30_63 = input.LA(4);
+                        
+                        if ( ( aggregatesAllowed() ) ) {
+                            alt30=1;
+                        }
+                        else if ( (true) ) {
+                            alt30=2;
+                        }
+                        else {
+                            if (backtracking>0) {failed=true; return node;}
+                            NoViableAltException nvae =
+                                new NoViableAltException("448:1: constructorItem returns [Object node] : (n= scalarExpression | n= aggregateExpression );", 30, 63, input);
+                        
+                            throw nvae;
+                        }
+                        }
+                        break;
+                    case KEY:
+                        {
+                        int LA30_64 = input.LA(4);
+                        
+                        if ( ( aggregatesAllowed() ) ) {
+                            alt30=1;
+                        }
+                        else if ( (true) ) {
+                            alt30=2;
+                        }
+                        else {
+                            if (backtracking>0) {failed=true; return node;}
+                            NoViableAltException nvae =
+                                new NoViableAltException("448:1: constructorItem returns [Object node] : (n= scalarExpression | n= aggregateExpression );", 30, 64, input);
+                        
+                            throw nvae;
+                        }
+                        }
+                        break;
+                    case VALUE:
+                        {
+                        int LA30_65 = input.LA(4);
+                        
+                        if ( ( aggregatesAllowed() ) ) {
+                            alt30=1;
+                        }
+                        else if ( (true) ) {
+                            alt30=2;
+                        }
+                        else {
+                            if (backtracking>0) {failed=true; return node;}
+                            NoViableAltException nvae =
+                                new NoViableAltException("448:1: constructorItem returns [Object node] : (n= scalarExpression | n= aggregateExpression );", 30, 65, input);
+                        
+                            throw nvae;
+                        }
+                        }
+                        break;
+                    default:
+                        if (backtracking>0) {failed=true; return node;}
+                        NoViableAltException nvae =
+                            new NoViableAltException("448:1: constructorItem returns [Object node] : (n= scalarExpression | n= aggregateExpression );", 30, 45, input);
+                    
+                        throw nvae;
+                    }
+                
+                }
+                else {
+                    if (backtracking>0) {failed=true; return node;}
+                    NoViableAltException nvae =
+                        new NoViableAltException("448:1: constructorItem returns [Object node] : (n= scalarExpression | n= aggregateExpression );", 30, 7, input);
+                
+                    throw nvae;
+                }
+                }
+                break;
+            default:
                 if (backtracking>0) {failed=true; return node;}
                 NoViableAltException nvae =
-                    new NoViableAltException("423:1: constructorItem returns [Object node] : (n= pathExprOrVariableAccess | n= aggregateExpression );", 28, 0, input);
+                    new NoViableAltException("448:1: constructorItem returns [Object node] : (n= scalarExpression | n= aggregateExpression );", 30, 0, input);
             
                 throw nvae;
             }
-            switch (alt28) {
+            
+            switch (alt30) {
                 case 1 :
-                    // JPQL.g:425:7: n= pathExprOrVariableAccess
+                    // JPQL.g:450:7: n= scalarExpression
                     {
-                    pushFollow(FOLLOW_pathExprOrVariableAccess_in_constructorItem2240);
-                    n=pathExprOrVariableAccess();
+                    pushFollow(FOLLOW_scalarExpression_in_constructorItem2361);
+                    n=scalarExpression();
                     _fsp--;
                     if (failed) return node;
                     if ( backtracking==0 ) {
-                       node = n;
+                      node = n;
                     }
                     
                     }
                     break;
                 case 2 :
-                    // JPQL.g:426:7: n= aggregateExpression
+                    // JPQL.g:451:7: n= aggregateExpression
                     {
-                    pushFollow(FOLLOW_aggregateExpression_in_constructorItem2254);
+                    pushFollow(FOLLOW_aggregateExpression_in_constructorItem2375);
                     n=aggregateExpression();
                     _fsp--;
                     if (failed) return node;
@@ -2695,7 +3323,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
     
     // $ANTLR start fromClause
-    // JPQL.g:429:1: fromClause returns [Object node] : t= FROM identificationVariableDeclaration[$fromClause::varDecls] ( COMMA ( identificationVariableDeclaration[$fromClause::varDecls] | n= collectionMemberDeclaration ) )* ;
+    // JPQL.g:455:1: fromClause returns [Object node] : t= FROM identificationVariableDeclaration[$fromClause::varDecls] ( COMMA ( identificationVariableDeclaration[$fromClause::varDecls] | n= collectionMemberDeclaration ) )* ;
     public final Object fromClause() throws RecognitionException {
         fromClause_stack.push(new fromClause_scope());
 
@@ -2710,67 +3338,67 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             ((fromClause_scope)fromClause_stack.peek()).varDecls = new ArrayList();
     
         try {
-            // JPQL.g:437:7: (t= FROM identificationVariableDeclaration[$fromClause::varDecls] ( COMMA ( identificationVariableDeclaration[$fromClause::varDecls] | n= collectionMemberDeclaration ) )* )
-            // JPQL.g:437:7: t= FROM identificationVariableDeclaration[$fromClause::varDecls] ( COMMA ( identificationVariableDeclaration[$fromClause::varDecls] | n= collectionMemberDeclaration ) )*
+            // JPQL.g:463:7: (t= FROM identificationVariableDeclaration[$fromClause::varDecls] ( COMMA ( identificationVariableDeclaration[$fromClause::varDecls] | n= collectionMemberDeclaration ) )* )
+            // JPQL.g:463:7: t= FROM identificationVariableDeclaration[$fromClause::varDecls] ( COMMA ( identificationVariableDeclaration[$fromClause::varDecls] | n= collectionMemberDeclaration ) )*
             {
             t=(Token)input.LT(1);
-            match(input,FROM,FOLLOW_FROM_in_fromClause2287); if (failed) return node;
-            pushFollow(FOLLOW_identificationVariableDeclaration_in_fromClause2289);
+            match(input,FROM,FOLLOW_FROM_in_fromClause2409); if (failed) return node;
+            pushFollow(FOLLOW_identificationVariableDeclaration_in_fromClause2411);
             identificationVariableDeclaration(((fromClause_scope)fromClause_stack.peek()).varDecls);
             _fsp--;
             if (failed) return node;
-            // JPQL.g:438:9: ( COMMA ( identificationVariableDeclaration[$fromClause::varDecls] | n= collectionMemberDeclaration ) )*
-            loop30:
+            // JPQL.g:464:9: ( COMMA ( identificationVariableDeclaration[$fromClause::varDecls] | n= collectionMemberDeclaration ) )*
+            loop32:
             do {
-                int alt30=2;
-                int LA30_0 = input.LA(1);
+                int alt32=2;
+                int LA32_0 = input.LA(1);
                 
-                if ( (LA30_0==COMMA) ) {
-                    alt30=1;
+                if ( (LA32_0==COMMA) ) {
+                    alt32=1;
                 }
                 
             
-                switch (alt30) {
+                switch (alt32) {
             	case 1 :
-            	    // JPQL.g:438:10: COMMA ( identificationVariableDeclaration[$fromClause::varDecls] | n= collectionMemberDeclaration )
+            	    // JPQL.g:464:10: COMMA ( identificationVariableDeclaration[$fromClause::varDecls] | n= collectionMemberDeclaration )
             	    {
-            	    match(input,COMMA,FOLLOW_COMMA_in_fromClause2301); if (failed) return node;
-            	    // JPQL.g:438:17: ( identificationVariableDeclaration[$fromClause::varDecls] | n= collectionMemberDeclaration )
-            	    int alt29=2;
-            	    int LA29_0 = input.LA(1);
+            	    match(input,COMMA,FOLLOW_COMMA_in_fromClause2423); if (failed) return node;
+            	    // JPQL.g:464:17: ( identificationVariableDeclaration[$fromClause::varDecls] | n= collectionMemberDeclaration )
+            	    int alt31=2;
+            	    int LA31_0 = input.LA(1);
             	    
-            	    if ( (LA29_0==IN) ) {
-            	        int LA29_1 = input.LA(2);
+            	    if ( (LA31_0==IN) ) {
+            	        int LA31_1 = input.LA(2);
             	        
-            	        if ( (LA29_1==LEFT_ROUND_BRACKET) ) {
-            	            alt29=2;
+            	        if ( (LA31_1==LEFT_ROUND_BRACKET) ) {
+            	            alt31=2;
             	        }
-            	        else if ( (LA29_1==AS||LA29_1==IDENT) ) {
-            	            alt29=1;
+            	        else if ( (LA31_1==AS||LA31_1==IDENT) ) {
+            	            alt31=1;
             	        }
             	        else {
             	            if (backtracking>0) {failed=true; return node;}
             	            NoViableAltException nvae =
-            	                new NoViableAltException("438:17: ( identificationVariableDeclaration[$fromClause::varDecls] | n= collectionMemberDeclaration )", 29, 1, input);
+            	                new NoViableAltException("464:17: ( identificationVariableDeclaration[$fromClause::varDecls] | n= collectionMemberDeclaration )", 31, 1, input);
             	        
             	            throw nvae;
             	        }
             	    }
-            	    else if ( ((LA29_0>=ABS && LA29_0<=HAVING)||(LA29_0>=INDEX && LA29_0<=FLOAT_SUFFIX)) ) {
-            	        alt29=1;
+            	    else if ( ((LA31_0>=ABS && LA31_0<=HAVING)||(LA31_0>=INDEX && LA31_0<=FLOAT_SUFFIX)) ) {
+            	        alt31=1;
             	    }
             	    else {
             	        if (backtracking>0) {failed=true; return node;}
             	        NoViableAltException nvae =
-            	            new NoViableAltException("438:17: ( identificationVariableDeclaration[$fromClause::varDecls] | n= collectionMemberDeclaration )", 29, 0, input);
+            	            new NoViableAltException("464:17: ( identificationVariableDeclaration[$fromClause::varDecls] | n= collectionMemberDeclaration )", 31, 0, input);
             	    
             	        throw nvae;
             	    }
-            	    switch (alt29) {
+            	    switch (alt31) {
             	        case 1 :
-            	            // JPQL.g:438:19: identificationVariableDeclaration[$fromClause::varDecls]
+            	            // JPQL.g:464:19: identificationVariableDeclaration[$fromClause::varDecls]
             	            {
-            	            pushFollow(FOLLOW_identificationVariableDeclaration_in_fromClause2306);
+            	            pushFollow(FOLLOW_identificationVariableDeclaration_in_fromClause2428);
             	            identificationVariableDeclaration(((fromClause_scope)fromClause_stack.peek()).varDecls);
             	            _fsp--;
             	            if (failed) return node;
@@ -2778,9 +3406,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             	            }
             	            break;
             	        case 2 :
-            	            // JPQL.g:439:19: n= collectionMemberDeclaration
+            	            // JPQL.g:465:19: n= collectionMemberDeclaration
             	            {
-            	            pushFollow(FOLLOW_collectionMemberDeclaration_in_fromClause2331);
+            	            pushFollow(FOLLOW_collectionMemberDeclaration_in_fromClause2453);
             	            n=collectionMemberDeclaration();
             	            _fsp--;
             	            if (failed) return node;
@@ -2798,7 +3426,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             	    break;
             
             	default :
-            	    break loop30;
+            	    break loop32;
                 }
             } while (true);
 
@@ -2822,38 +3450,38 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start identificationVariableDeclaration
-    // JPQL.g:445:1: identificationVariableDeclaration[List varDecls] : node= rangeVariableDeclaration (node= join )* ;
+    // JPQL.g:471:1: identificationVariableDeclaration[List varDecls] : node= rangeVariableDeclaration (node= join )* ;
     public final void identificationVariableDeclaration(List varDecls) throws RecognitionException {
         Object node = null;
         
     
         try {
-            // JPQL.g:446:7: (node= rangeVariableDeclaration (node= join )* )
-            // JPQL.g:446:7: node= rangeVariableDeclaration (node= join )*
+            // JPQL.g:472:7: (node= rangeVariableDeclaration (node= join )* )
+            // JPQL.g:472:7: node= rangeVariableDeclaration (node= join )*
             {
-            pushFollow(FOLLOW_rangeVariableDeclaration_in_identificationVariableDeclaration2397);
+            pushFollow(FOLLOW_rangeVariableDeclaration_in_identificationVariableDeclaration2519);
             node=rangeVariableDeclaration();
             _fsp--;
             if (failed) return ;
             if ( backtracking==0 ) {
                varDecls.add(node); 
             }
-            // JPQL.g:447:9: (node= join )*
-            loop31:
+            // JPQL.g:473:9: (node= join )*
+            loop33:
             do {
-                int alt31=2;
-                int LA31_0 = input.LA(1);
+                int alt33=2;
+                int LA33_0 = input.LA(1);
                 
-                if ( (LA31_0==INNER||LA31_0==JOIN||LA31_0==LEFT) ) {
-                    alt31=1;
+                if ( (LA33_0==INNER||LA33_0==JOIN||LA33_0==LEFT) ) {
+                    alt33=1;
                 }
                 
             
-                switch (alt31) {
+                switch (alt33) {
             	case 1 :
-            	    // JPQL.g:447:11: node= join
+            	    // JPQL.g:473:11: node= join
             	    {
-            	    pushFollow(FOLLOW_join_in_identificationVariableDeclaration2416);
+            	    pushFollow(FOLLOW_join_in_identificationVariableDeclaration2538);
             	    node=join();
             	    _fsp--;
             	    if (failed) return ;
@@ -2865,7 +3493,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             	    break;
             
             	default :
-            	    break loop31;
+            	    break loop33;
                 }
             } while (true);
 
@@ -2885,7 +3513,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start rangeVariableDeclaration
-    // JPQL.g:450:1: rangeVariableDeclaration returns [Object node] : schema= abstractSchemaName ( AS )? i= IDENT ;
+    // JPQL.g:476:1: rangeVariableDeclaration returns [Object node] : schema= abstractSchemaName ( AS )? i= IDENT ;
     public final Object rangeVariableDeclaration() throws RecognitionException {
 
         Object node = null;
@@ -2898,25 +3526,25 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             node = null; 
     
         try {
-            // JPQL.g:454:7: (schema= abstractSchemaName ( AS )? i= IDENT )
-            // JPQL.g:454:7: schema= abstractSchemaName ( AS )? i= IDENT
+            // JPQL.g:480:7: (schema= abstractSchemaName ( AS )? i= IDENT )
+            // JPQL.g:480:7: schema= abstractSchemaName ( AS )? i= IDENT
             {
-            pushFollow(FOLLOW_abstractSchemaName_in_rangeVariableDeclaration2451);
+            pushFollow(FOLLOW_abstractSchemaName_in_rangeVariableDeclaration2573);
             schema=abstractSchemaName();
             _fsp--;
             if (failed) return node;
-            // JPQL.g:454:35: ( AS )?
-            int alt32=2;
-            int LA32_0 = input.LA(1);
+            // JPQL.g:480:35: ( AS )?
+            int alt34=2;
+            int LA34_0 = input.LA(1);
             
-            if ( (LA32_0==AS) ) {
-                alt32=1;
+            if ( (LA34_0==AS) ) {
+                alt34=1;
             }
-            switch (alt32) {
+            switch (alt34) {
                 case 1 :
-                    // JPQL.g:454:36: AS
+                    // JPQL.g:480:36: AS
                     {
-                    match(input,AS,FOLLOW_AS_in_rangeVariableDeclaration2454); if (failed) return node;
+                    match(input,AS,FOLLOW_AS_in_rangeVariableDeclaration2576); if (failed) return node;
                     
                     }
                     break;
@@ -2924,7 +3552,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             }
 
             i=(Token)input.LT(1);
-            match(input,IDENT,FOLLOW_IDENT_in_rangeVariableDeclaration2460); if (failed) return node;
+            match(input,IDENT,FOLLOW_IDENT_in_rangeVariableDeclaration2582); if (failed) return node;
             if ( backtracking==0 ) {
                
                           node = factory.newRangeVariableDecl(i.getLine(), i.getCharPositionInLine(), 
@@ -2947,7 +3575,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start abstractSchemaName
-    // JPQL.g:465:1: abstractSchemaName returns [String schema] : ident= . ;
+    // JPQL.g:491:1: abstractSchemaName returns [String schema] : ident= . ;
     public final String abstractSchemaName() throws RecognitionException {
 
         String schema = null;
@@ -2956,8 +3584,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          schema = null; 
         try {
-            // JPQL.g:467:7: (ident= . )
-            // JPQL.g:467:7: ident= .
+            // JPQL.g:493:7: (ident= . )
+            // JPQL.g:493:7: ident= .
             {
             ident=(Token)input.LT(1);
             matchAny(input); if (failed) return schema;
@@ -2983,7 +3611,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start join
-    // JPQL.g:474:1: join returns [Object node] : outerJoin= joinSpec (n= joinAssociationPathExpression ( AS )? i= IDENT | t= FETCH n= joinAssociationPathExpression ) ;
+    // JPQL.g:500:1: join returns [Object node] : outerJoin= joinSpec (n= joinAssociationPathExpression ( AS )? i= IDENT | t= FETCH n= joinAssociationPathExpression ) ;
     public final Object join() throws RecognitionException {
 
         Object node = null;
@@ -2999,50 +3627,50 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             node = null;
     
         try {
-            // JPQL.g:478:7: (outerJoin= joinSpec (n= joinAssociationPathExpression ( AS )? i= IDENT | t= FETCH n= joinAssociationPathExpression ) )
-            // JPQL.g:478:7: outerJoin= joinSpec (n= joinAssociationPathExpression ( AS )? i= IDENT | t= FETCH n= joinAssociationPathExpression )
+            // JPQL.g:504:7: (outerJoin= joinSpec (n= joinAssociationPathExpression ( AS )? i= IDENT | t= FETCH n= joinAssociationPathExpression ) )
+            // JPQL.g:504:7: outerJoin= joinSpec (n= joinAssociationPathExpression ( AS )? i= IDENT | t= FETCH n= joinAssociationPathExpression )
             {
-            pushFollow(FOLLOW_joinSpec_in_join2543);
+            pushFollow(FOLLOW_joinSpec_in_join2665);
             outerJoin=joinSpec();
             _fsp--;
             if (failed) return node;
-            // JPQL.g:479:7: (n= joinAssociationPathExpression ( AS )? i= IDENT | t= FETCH n= joinAssociationPathExpression )
-            int alt34=2;
-            int LA34_0 = input.LA(1);
+            // JPQL.g:505:7: (n= joinAssociationPathExpression ( AS )? i= IDENT | t= FETCH n= joinAssociationPathExpression )
+            int alt36=2;
+            int LA36_0 = input.LA(1);
             
-            if ( (LA34_0==IDENT) ) {
-                alt34=1;
+            if ( (LA36_0==IDENT) ) {
+                alt36=1;
             }
-            else if ( (LA34_0==FETCH) ) {
-                alt34=2;
+            else if ( (LA36_0==FETCH) ) {
+                alt36=2;
             }
             else {
                 if (backtracking>0) {failed=true; return node;}
                 NoViableAltException nvae =
-                    new NoViableAltException("479:7: (n= joinAssociationPathExpression ( AS )? i= IDENT | t= FETCH n= joinAssociationPathExpression )", 34, 0, input);
+                    new NoViableAltException("505:7: (n= joinAssociationPathExpression ( AS )? i= IDENT | t= FETCH n= joinAssociationPathExpression )", 36, 0, input);
             
                 throw nvae;
             }
-            switch (alt34) {
+            switch (alt36) {
                 case 1 :
-                    // JPQL.g:479:9: n= joinAssociationPathExpression ( AS )? i= IDENT
+                    // JPQL.g:505:9: n= joinAssociationPathExpression ( AS )? i= IDENT
                     {
-                    pushFollow(FOLLOW_joinAssociationPathExpression_in_join2557);
+                    pushFollow(FOLLOW_joinAssociationPathExpression_in_join2679);
                     n=joinAssociationPathExpression();
                     _fsp--;
                     if (failed) return node;
-                    // JPQL.g:479:43: ( AS )?
-                    int alt33=2;
-                    int LA33_0 = input.LA(1);
+                    // JPQL.g:505:43: ( AS )?
+                    int alt35=2;
+                    int LA35_0 = input.LA(1);
                     
-                    if ( (LA33_0==AS) ) {
-                        alt33=1;
+                    if ( (LA35_0==AS) ) {
+                        alt35=1;
                     }
-                    switch (alt33) {
+                    switch (alt35) {
                         case 1 :
-                            // JPQL.g:479:44: AS
+                            // JPQL.g:505:44: AS
                             {
-                            match(input,AS,FOLLOW_AS_in_join2560); if (failed) return node;
+                            match(input,AS,FOLLOW_AS_in_join2682); if (failed) return node;
                             
                             }
                             break;
@@ -3050,7 +3678,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
 
                     i=(Token)input.LT(1);
-                    match(input,IDENT,FOLLOW_IDENT_in_join2566); if (failed) return node;
+                    match(input,IDENT,FOLLOW_IDENT_in_join2688); if (failed) return node;
                     if ( backtracking==0 ) {
                       
                                   node = factory.newJoinVariableDecl(i.getLine(), i.getCharPositionInLine(), 
@@ -3061,11 +3689,11 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // JPQL.g:484:9: t= FETCH n= joinAssociationPathExpression
+                    // JPQL.g:510:9: t= FETCH n= joinAssociationPathExpression
                     {
                     t=(Token)input.LT(1);
-                    match(input,FETCH,FOLLOW_FETCH_in_join2588); if (failed) return node;
-                    pushFollow(FOLLOW_joinAssociationPathExpression_in_join2594);
+                    match(input,FETCH,FOLLOW_FETCH_in_join2710); if (failed) return node;
+                    pushFollow(FOLLOW_joinAssociationPathExpression_in_join2716);
                     n=joinAssociationPathExpression();
                     _fsp--;
                     if (failed) return node;
@@ -3096,43 +3724,43 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start joinSpec
-    // JPQL.g:491:1: joinSpec returns [boolean outer] : ( LEFT ( OUTER )? | INNER )? JOIN ;
+    // JPQL.g:517:1: joinSpec returns [boolean outer] : ( LEFT ( OUTER )? | INNER )? JOIN ;
     public final boolean joinSpec() throws RecognitionException {
 
         boolean outer = false;
     
          outer = false; 
         try {
-            // JPQL.g:493:7: ( ( LEFT ( OUTER )? | INNER )? JOIN )
-            // JPQL.g:493:7: ( LEFT ( OUTER )? | INNER )? JOIN
+            // JPQL.g:519:7: ( ( LEFT ( OUTER )? | INNER )? JOIN )
+            // JPQL.g:519:7: ( LEFT ( OUTER )? | INNER )? JOIN
             {
-            // JPQL.g:493:7: ( LEFT ( OUTER )? | INNER )?
-            int alt36=3;
-            int LA36_0 = input.LA(1);
+            // JPQL.g:519:7: ( LEFT ( OUTER )? | INNER )?
+            int alt38=3;
+            int LA38_0 = input.LA(1);
             
-            if ( (LA36_0==LEFT) ) {
-                alt36=1;
+            if ( (LA38_0==LEFT) ) {
+                alt38=1;
             }
-            else if ( (LA36_0==INNER) ) {
-                alt36=2;
+            else if ( (LA38_0==INNER) ) {
+                alt38=2;
             }
-            switch (alt36) {
+            switch (alt38) {
                 case 1 :
-                    // JPQL.g:493:8: LEFT ( OUTER )?
+                    // JPQL.g:519:8: LEFT ( OUTER )?
                     {
-                    match(input,LEFT,FOLLOW_LEFT_in_joinSpec2640); if (failed) return outer;
-                    // JPQL.g:493:13: ( OUTER )?
-                    int alt35=2;
-                    int LA35_0 = input.LA(1);
+                    match(input,LEFT,FOLLOW_LEFT_in_joinSpec2762); if (failed) return outer;
+                    // JPQL.g:519:13: ( OUTER )?
+                    int alt37=2;
+                    int LA37_0 = input.LA(1);
                     
-                    if ( (LA35_0==OUTER) ) {
-                        alt35=1;
+                    if ( (LA37_0==OUTER) ) {
+                        alt37=1;
                     }
-                    switch (alt35) {
+                    switch (alt37) {
                         case 1 :
-                            // JPQL.g:493:14: OUTER
+                            // JPQL.g:519:14: OUTER
                             {
-                            match(input,OUTER,FOLLOW_OUTER_in_joinSpec2643); if (failed) return outer;
+                            match(input,OUTER,FOLLOW_OUTER_in_joinSpec2765); if (failed) return outer;
                             
                             }
                             break;
@@ -3146,16 +3774,16 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // JPQL.g:493:44: INNER
+                    // JPQL.g:519:44: INNER
                     {
-                    match(input,INNER,FOLLOW_INNER_in_joinSpec2652); if (failed) return outer;
+                    match(input,INNER,FOLLOW_INNER_in_joinSpec2774); if (failed) return outer;
                     
                     }
                     break;
             
             }
 
-            match(input,JOIN,FOLLOW_JOIN_in_joinSpec2658); if (failed) return outer;
+            match(input,JOIN,FOLLOW_JOIN_in_joinSpec2780); if (failed) return outer;
             
             }
     
@@ -3172,7 +3800,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start collectionMemberDeclaration
-    // JPQL.g:496:1: collectionMemberDeclaration returns [Object node] : t= IN LEFT_ROUND_BRACKET n= collectionValuedPathExpression RIGHT_ROUND_BRACKET ( AS )? i= IDENT ;
+    // JPQL.g:522:1: collectionMemberDeclaration returns [Object node] : t= IN LEFT_ROUND_BRACKET n= collectionValuedPathExpression RIGHT_ROUND_BRACKET ( AS )? i= IDENT ;
     public final Object collectionMemberDeclaration() throws RecognitionException {
 
         Object node = null;
@@ -3184,29 +3812,29 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // JPQL.g:498:7: (t= IN LEFT_ROUND_BRACKET n= collectionValuedPathExpression RIGHT_ROUND_BRACKET ( AS )? i= IDENT )
-            // JPQL.g:498:7: t= IN LEFT_ROUND_BRACKET n= collectionValuedPathExpression RIGHT_ROUND_BRACKET ( AS )? i= IDENT
+            // JPQL.g:524:7: (t= IN LEFT_ROUND_BRACKET n= collectionValuedPathExpression RIGHT_ROUND_BRACKET ( AS )? i= IDENT )
+            // JPQL.g:524:7: t= IN LEFT_ROUND_BRACKET n= collectionValuedPathExpression RIGHT_ROUND_BRACKET ( AS )? i= IDENT
             {
             t=(Token)input.LT(1);
-            match(input,IN,FOLLOW_IN_in_collectionMemberDeclaration2686); if (failed) return node;
-            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_collectionMemberDeclaration2688); if (failed) return node;
-            pushFollow(FOLLOW_collectionValuedPathExpression_in_collectionMemberDeclaration2694);
+            match(input,IN,FOLLOW_IN_in_collectionMemberDeclaration2808); if (failed) return node;
+            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_collectionMemberDeclaration2810); if (failed) return node;
+            pushFollow(FOLLOW_collectionValuedPathExpression_in_collectionMemberDeclaration2816);
             n=collectionValuedPathExpression();
             _fsp--;
             if (failed) return node;
-            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_collectionMemberDeclaration2696); if (failed) return node;
-            // JPQL.g:499:7: ( AS )?
-            int alt37=2;
-            int LA37_0 = input.LA(1);
+            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_collectionMemberDeclaration2818); if (failed) return node;
+            // JPQL.g:525:7: ( AS )?
+            int alt39=2;
+            int LA39_0 = input.LA(1);
             
-            if ( (LA37_0==AS) ) {
-                alt37=1;
+            if ( (LA39_0==AS) ) {
+                alt39=1;
             }
-            switch (alt37) {
+            switch (alt39) {
                 case 1 :
-                    // JPQL.g:499:8: AS
+                    // JPQL.g:525:8: AS
                     {
-                    match(input,AS,FOLLOW_AS_in_collectionMemberDeclaration2706); if (failed) return node;
+                    match(input,AS,FOLLOW_AS_in_collectionMemberDeclaration2828); if (failed) return node;
                     
                     }
                     break;
@@ -3214,7 +3842,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             }
 
             i=(Token)input.LT(1);
-            match(input,IDENT,FOLLOW_IDENT_in_collectionMemberDeclaration2712); if (failed) return node;
+            match(input,IDENT,FOLLOW_IDENT_in_collectionMemberDeclaration2834); if (failed) return node;
             if ( backtracking==0 ) {
                
                         node = factory.newCollectionMemberVariableDecl(
@@ -3237,7 +3865,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start collectionValuedPathExpression
-    // JPQL.g:506:1: collectionValuedPathExpression returns [Object node] : n= pathExpression ;
+    // JPQL.g:532:1: collectionValuedPathExpression returns [Object node] : n= pathExpression ;
     public final Object collectionValuedPathExpression() throws RecognitionException {
 
         Object node = null;
@@ -3247,10 +3875,10 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // JPQL.g:508:7: (n= pathExpression )
-            // JPQL.g:508:7: n= pathExpression
+            // JPQL.g:534:7: (n= pathExpression )
+            // JPQL.g:534:7: n= pathExpression
             {
-            pushFollow(FOLLOW_pathExpression_in_collectionValuedPathExpression2750);
+            pushFollow(FOLLOW_pathExpression_in_collectionValuedPathExpression2872);
             n=pathExpression();
             _fsp--;
             if (failed) return node;
@@ -3273,7 +3901,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start associationPathExpression
-    // JPQL.g:511:1: associationPathExpression returns [Object node] : n= pathExpression ;
+    // JPQL.g:537:1: associationPathExpression returns [Object node] : n= pathExpression ;
     public final Object associationPathExpression() throws RecognitionException {
 
         Object node = null;
@@ -3283,10 +3911,10 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // JPQL.g:513:7: (n= pathExpression )
-            // JPQL.g:513:7: n= pathExpression
+            // JPQL.g:539:7: (n= pathExpression )
+            // JPQL.g:539:7: n= pathExpression
             {
-            pushFollow(FOLLOW_pathExpression_in_associationPathExpression2782);
+            pushFollow(FOLLOW_pathExpression_in_associationPathExpression2904);
             n=pathExpression();
             _fsp--;
             if (failed) return node;
@@ -3309,7 +3937,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start joinAssociationPathExpression
-    // JPQL.g:516:1: joinAssociationPathExpression returns [Object node] : left= variableAccessOrTypeConstant d= DOT right= attribute ;
+    // JPQL.g:542:1: joinAssociationPathExpression returns [Object node] : left= variableAccessOrTypeConstant d= DOT right= attribute ;
     public final Object joinAssociationPathExpression() throws RecognitionException {
 
         Object node = null;
@@ -3324,16 +3952,16 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             node = null; 
     
         try {
-            // JPQL.g:520:7: (left= variableAccessOrTypeConstant d= DOT right= attribute )
-            // JPQL.g:520:7: left= variableAccessOrTypeConstant d= DOT right= attribute
+            // JPQL.g:546:7: (left= variableAccessOrTypeConstant d= DOT right= attribute )
+            // JPQL.g:546:7: left= variableAccessOrTypeConstant d= DOT right= attribute
             {
-            pushFollow(FOLLOW_variableAccessOrTypeConstant_in_joinAssociationPathExpression2814);
+            pushFollow(FOLLOW_variableAccessOrTypeConstant_in_joinAssociationPathExpression2936);
             left=variableAccessOrTypeConstant();
             _fsp--;
             if (failed) return node;
             d=(Token)input.LT(1);
-            match(input,DOT,FOLLOW_DOT_in_joinAssociationPathExpression2818); if (failed) return node;
-            pushFollow(FOLLOW_attribute_in_joinAssociationPathExpression2824);
+            match(input,DOT,FOLLOW_DOT_in_joinAssociationPathExpression2940); if (failed) return node;
+            pushFollow(FOLLOW_attribute_in_joinAssociationPathExpression2946);
             right=attribute();
             _fsp--;
             if (failed) return node;
@@ -3356,7 +3984,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start singleValuedPathExpression
-    // JPQL.g:524:1: singleValuedPathExpression returns [Object node] : n= pathExpression ;
+    // JPQL.g:550:1: singleValuedPathExpression returns [Object node] : n= pathExpression ;
     public final Object singleValuedPathExpression() throws RecognitionException {
 
         Object node = null;
@@ -3366,10 +3994,10 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // JPQL.g:526:7: (n= pathExpression )
-            // JPQL.g:526:7: n= pathExpression
+            // JPQL.g:552:7: (n= pathExpression )
+            // JPQL.g:552:7: n= pathExpression
             {
-            pushFollow(FOLLOW_pathExpression_in_singleValuedPathExpression2864);
+            pushFollow(FOLLOW_pathExpression_in_singleValuedPathExpression2986);
             n=pathExpression();
             _fsp--;
             if (failed) return node;
@@ -3392,7 +4020,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start stateFieldPathExpression
-    // JPQL.g:529:1: stateFieldPathExpression returns [Object node] : n= pathExpression ;
+    // JPQL.g:555:1: stateFieldPathExpression returns [Object node] : n= pathExpression ;
     public final Object stateFieldPathExpression() throws RecognitionException {
 
         Object node = null;
@@ -3402,10 +4030,10 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // JPQL.g:531:7: (n= pathExpression )
-            // JPQL.g:531:7: n= pathExpression
+            // JPQL.g:557:7: (n= pathExpression )
+            // JPQL.g:557:7: n= pathExpression
             {
-            pushFollow(FOLLOW_pathExpression_in_stateFieldPathExpression2896);
+            pushFollow(FOLLOW_pathExpression_in_stateFieldPathExpression3018);
             n=pathExpression();
             _fsp--;
             if (failed) return node;
@@ -3428,7 +4056,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start pathExpression
-    // JPQL.g:534:1: pathExpression returns [Object node] : n= qualifiedIdentificationVariable (d= DOT right= attribute )+ ;
+    // JPQL.g:560:1: pathExpression returns [Object node] : n= qualifiedIdentificationVariable (d= DOT right= attribute )+ ;
     public final Object pathExpression() throws RecognitionException {
 
         Object node = null;
@@ -3443,35 +4071,35 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             node = null; 
     
         try {
-            // JPQL.g:538:7: (n= qualifiedIdentificationVariable (d= DOT right= attribute )+ )
-            // JPQL.g:538:7: n= qualifiedIdentificationVariable (d= DOT right= attribute )+
+            // JPQL.g:564:7: (n= qualifiedIdentificationVariable (d= DOT right= attribute )+ )
+            // JPQL.g:564:7: n= qualifiedIdentificationVariable (d= DOT right= attribute )+
             {
-            pushFollow(FOLLOW_qualifiedIdentificationVariable_in_pathExpression2928);
+            pushFollow(FOLLOW_qualifiedIdentificationVariable_in_pathExpression3050);
             n=qualifiedIdentificationVariable();
             _fsp--;
             if (failed) return node;
             if ( backtracking==0 ) {
               node = n;
             }
-            // JPQL.g:539:9: (d= DOT right= attribute )+
-            int cnt38=0;
-            loop38:
+            // JPQL.g:565:9: (d= DOT right= attribute )+
+            int cnt40=0;
+            loop40:
             do {
-                int alt38=2;
-                int LA38_0 = input.LA(1);
+                int alt40=2;
+                int LA40_0 = input.LA(1);
                 
-                if ( (LA38_0==DOT) ) {
-                    alt38=1;
+                if ( (LA40_0==DOT) ) {
+                    alt40=1;
                 }
                 
             
-                switch (alt38) {
+                switch (alt40) {
             	case 1 :
-            	    // JPQL.g:539:10: d= DOT right= attribute
+            	    // JPQL.g:565:10: d= DOT right= attribute
             	    {
             	    d=(Token)input.LT(1);
-            	    match(input,DOT,FOLLOW_DOT_in_pathExpression2943); if (failed) return node;
-            	    pushFollow(FOLLOW_attribute_in_pathExpression2949);
+            	    match(input,DOT,FOLLOW_DOT_in_pathExpression3065); if (failed) return node;
+            	    pushFollow(FOLLOW_attribute_in_pathExpression3071);
             	    right=attribute();
             	    _fsp--;
             	    if (failed) return node;
@@ -3485,13 +4113,13 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             	    break;
             
             	default :
-            	    if ( cnt38 >= 1 ) break loop38;
+            	    if ( cnt40 >= 1 ) break loop40;
             	    if (backtracking>0) {failed=true; return node;}
                         EarlyExitException eee =
-                            new EarlyExitException(38, input);
+                            new EarlyExitException(40, input);
                         throw eee;
                 }
-                cnt38++;
+                cnt40++;
             } while (true);
 
             
@@ -3510,7 +4138,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start attribute
-    // JPQL.g:550:1: attribute returns [Object node] : i= . ;
+    // JPQL.g:576:1: attribute returns [Object node] : i= . ;
     public final Object attribute() throws RecognitionException {
 
         Object node = null;
@@ -3519,8 +4147,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // JPQL.g:553:7: (i= . )
-            // JPQL.g:553:7: i= .
+            // JPQL.g:579:7: (i= . )
+            // JPQL.g:579:7: i= .
             {
             i=(Token)input.LT(1);
             matchAny(input); if (failed) return node;
@@ -3546,7 +4174,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start variableAccessOrTypeConstant
-    // JPQL.g:560:1: variableAccessOrTypeConstant returns [Object node] : i= IDENT ;
+    // JPQL.g:586:1: variableAccessOrTypeConstant returns [Object node] : i= IDENT ;
     public final Object variableAccessOrTypeConstant() throws RecognitionException {
 
         Object node = null;
@@ -3555,11 +4183,11 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // JPQL.g:562:7: (i= IDENT )
-            // JPQL.g:562:7: i= IDENT
+            // JPQL.g:588:7: (i= IDENT )
+            // JPQL.g:588:7: i= IDENT
             {
             i=(Token)input.LT(1);
-            match(input,IDENT,FOLLOW_IDENT_in_variableAccessOrTypeConstant3045); if (failed) return node;
+            match(input,IDENT,FOLLOW_IDENT_in_variableAccessOrTypeConstant3167); if (failed) return node;
             if ( backtracking==0 ) {
                node = factory.newVariableAccessOrTypeConstant(i.getLine(), i.getCharPositionInLine(), i.getText()); 
             }
@@ -3579,7 +4207,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start whereClause
-    // JPQL.g:566:1: whereClause returns [Object node] : t= WHERE n= conditionalExpression ;
+    // JPQL.g:592:1: whereClause returns [Object node] : t= WHERE n= conditionalExpression ;
     public final Object whereClause() throws RecognitionException {
 
         Object node = null;
@@ -3590,12 +4218,12 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // JPQL.g:568:7: (t= WHERE n= conditionalExpression )
-            // JPQL.g:568:7: t= WHERE n= conditionalExpression
+            // JPQL.g:594:7: (t= WHERE n= conditionalExpression )
+            // JPQL.g:594:7: t= WHERE n= conditionalExpression
             {
             t=(Token)input.LT(1);
-            match(input,WHERE,FOLLOW_WHERE_in_whereClause3083); if (failed) return node;
-            pushFollow(FOLLOW_conditionalExpression_in_whereClause3089);
+            match(input,WHERE,FOLLOW_WHERE_in_whereClause3205); if (failed) return node;
+            pushFollow(FOLLOW_conditionalExpression_in_whereClause3211);
             n=conditionalExpression();
             _fsp--;
             if (failed) return node;
@@ -3620,7 +4248,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start conditionalExpression
-    // JPQL.g:574:1: conditionalExpression returns [Object node] : n= conditionalTerm (t= OR right= conditionalTerm )* ;
+    // JPQL.g:600:1: conditionalExpression returns [Object node] : n= conditionalTerm (t= OR right= conditionalTerm )* ;
     public final Object conditionalExpression() throws RecognitionException {
 
         Object node = null;
@@ -3635,34 +4263,34 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             node = null; 
     
         try {
-            // JPQL.g:578:7: (n= conditionalTerm (t= OR right= conditionalTerm )* )
-            // JPQL.g:578:7: n= conditionalTerm (t= OR right= conditionalTerm )*
+            // JPQL.g:604:7: (n= conditionalTerm (t= OR right= conditionalTerm )* )
+            // JPQL.g:604:7: n= conditionalTerm (t= OR right= conditionalTerm )*
             {
-            pushFollow(FOLLOW_conditionalTerm_in_conditionalExpression3131);
+            pushFollow(FOLLOW_conditionalTerm_in_conditionalExpression3253);
             n=conditionalTerm();
             _fsp--;
             if (failed) return node;
             if ( backtracking==0 ) {
               node = n;
             }
-            // JPQL.g:579:9: (t= OR right= conditionalTerm )*
-            loop39:
+            // JPQL.g:605:9: (t= OR right= conditionalTerm )*
+            loop41:
             do {
-                int alt39=2;
-                int LA39_0 = input.LA(1);
+                int alt41=2;
+                int LA41_0 = input.LA(1);
                 
-                if ( (LA39_0==OR) ) {
-                    alt39=1;
+                if ( (LA41_0==OR) ) {
+                    alt41=1;
                 }
                 
             
-                switch (alt39) {
+                switch (alt41) {
             	case 1 :
-            	    // JPQL.g:579:10: t= OR right= conditionalTerm
+            	    // JPQL.g:605:10: t= OR right= conditionalTerm
             	    {
             	    t=(Token)input.LT(1);
-            	    match(input,OR,FOLLOW_OR_in_conditionalExpression3146); if (failed) return node;
-            	    pushFollow(FOLLOW_conditionalTerm_in_conditionalExpression3152);
+            	    match(input,OR,FOLLOW_OR_in_conditionalExpression3268); if (failed) return node;
+            	    pushFollow(FOLLOW_conditionalTerm_in_conditionalExpression3274);
             	    right=conditionalTerm();
             	    _fsp--;
             	    if (failed) return node;
@@ -3674,7 +4302,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             	    break;
             
             	default :
-            	    break loop39;
+            	    break loop41;
                 }
             } while (true);
 
@@ -3694,7 +4322,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start conditionalTerm
-    // JPQL.g:584:1: conditionalTerm returns [Object node] : n= conditionalFactor (t= AND right= conditionalFactor )* ;
+    // JPQL.g:610:1: conditionalTerm returns [Object node] : n= conditionalFactor (t= AND right= conditionalFactor )* ;
     public final Object conditionalTerm() throws RecognitionException {
 
         Object node = null;
@@ -3709,34 +4337,34 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             node = null; 
     
         try {
-            // JPQL.g:588:7: (n= conditionalFactor (t= AND right= conditionalFactor )* )
-            // JPQL.g:588:7: n= conditionalFactor (t= AND right= conditionalFactor )*
+            // JPQL.g:614:7: (n= conditionalFactor (t= AND right= conditionalFactor )* )
+            // JPQL.g:614:7: n= conditionalFactor (t= AND right= conditionalFactor )*
             {
-            pushFollow(FOLLOW_conditionalFactor_in_conditionalTerm3207);
+            pushFollow(FOLLOW_conditionalFactor_in_conditionalTerm3329);
             n=conditionalFactor();
             _fsp--;
             if (failed) return node;
             if ( backtracking==0 ) {
               node = n;
             }
-            // JPQL.g:589:9: (t= AND right= conditionalFactor )*
-            loop40:
+            // JPQL.g:615:9: (t= AND right= conditionalFactor )*
+            loop42:
             do {
-                int alt40=2;
-                int LA40_0 = input.LA(1);
+                int alt42=2;
+                int LA42_0 = input.LA(1);
                 
-                if ( (LA40_0==AND) ) {
-                    alt40=1;
+                if ( (LA42_0==AND) ) {
+                    alt42=1;
                 }
                 
             
-                switch (alt40) {
+                switch (alt42) {
             	case 1 :
-            	    // JPQL.g:589:10: t= AND right= conditionalFactor
+            	    // JPQL.g:615:10: t= AND right= conditionalFactor
             	    {
             	    t=(Token)input.LT(1);
-            	    match(input,AND,FOLLOW_AND_in_conditionalTerm3222); if (failed) return node;
-            	    pushFollow(FOLLOW_conditionalFactor_in_conditionalTerm3228);
+            	    match(input,AND,FOLLOW_AND_in_conditionalTerm3344); if (failed) return node;
+            	    pushFollow(FOLLOW_conditionalFactor_in_conditionalTerm3350);
             	    right=conditionalFactor();
             	    _fsp--;
             	    if (failed) return node;
@@ -3748,7 +4376,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             	    break;
             
             	default :
-            	    break loop40;
+            	    break loop42;
                 }
             } while (true);
 
@@ -3768,7 +4396,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start conditionalFactor
-    // JPQL.g:594:1: conditionalFactor returns [Object node] : (n= NOT )? (n1= conditionalPrimary | n1= existsExpression[(n!=null)] ) ;
+    // JPQL.g:620:1: conditionalFactor returns [Object node] : (n= NOT )? (n1= conditionalPrimary | n1= existsExpression[(n!=null)] ) ;
     public final Object conditionalFactor() throws RecognitionException {
 
         Object node = null;
@@ -3779,50 +4407,50 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // JPQL.g:596:7: ( (n= NOT )? (n1= conditionalPrimary | n1= existsExpression[(n!=null)] ) )
-            // JPQL.g:596:7: (n= NOT )? (n1= conditionalPrimary | n1= existsExpression[(n!=null)] )
+            // JPQL.g:622:7: ( (n= NOT )? (n1= conditionalPrimary | n1= existsExpression[(n!=null)] ) )
+            // JPQL.g:622:7: (n= NOT )? (n1= conditionalPrimary | n1= existsExpression[(n!=null)] )
             {
-            // JPQL.g:596:7: (n= NOT )?
-            int alt41=2;
-            int LA41_0 = input.LA(1);
+            // JPQL.g:622:7: (n= NOT )?
+            int alt43=2;
+            int LA43_0 = input.LA(1);
             
-            if ( (LA41_0==NOT) ) {
-                alt41=1;
+            if ( (LA43_0==NOT) ) {
+                alt43=1;
             }
-            switch (alt41) {
+            switch (alt43) {
                 case 1 :
-                    // JPQL.g:596:8: n= NOT
+                    // JPQL.g:622:8: n= NOT
                     {
                     n=(Token)input.LT(1);
-                    match(input,NOT,FOLLOW_NOT_in_conditionalFactor3283); if (failed) return node;
+                    match(input,NOT,FOLLOW_NOT_in_conditionalFactor3405); if (failed) return node;
                     
                     }
                     break;
             
             }
 
-            // JPQL.g:597:9: (n1= conditionalPrimary | n1= existsExpression[(n!=null)] )
-            int alt42=2;
-            int LA42_0 = input.LA(1);
+            // JPQL.g:623:9: (n1= conditionalPrimary | n1= existsExpression[(n!=null)] )
+            int alt44=2;
+            int LA44_0 = input.LA(1);
             
-            if ( (LA42_0==ABS||LA42_0==AVG||(LA42_0>=CASE && LA42_0<=CURRENT_TIMESTAMP)||LA42_0==FALSE||LA42_0==INDEX||LA42_0==KEY||LA42_0==LENGTH||(LA42_0>=LOCATE && LA42_0<=MAX)||(LA42_0>=MIN && LA42_0<=MOD)||LA42_0==NULLIF||(LA42_0>=SIZE && LA42_0<=SQRT)||(LA42_0>=SUBSTRING && LA42_0<=SUM)||(LA42_0>=TRIM && LA42_0<=TYPE)||(LA42_0>=UPPER && LA42_0<=VALUE)||LA42_0==IDENT||LA42_0==LEFT_ROUND_BRACKET||(LA42_0>=PLUS && LA42_0<=MINUS)||(LA42_0>=INTEGER_LITERAL && LA42_0<=NAMED_PARAM)) ) {
-                alt42=1;
+            if ( (LA44_0==ABS||LA44_0==AVG||(LA44_0>=CASE && LA44_0<=CURRENT_TIMESTAMP)||LA44_0==FALSE||LA44_0==INDEX||LA44_0==KEY||LA44_0==LENGTH||(LA44_0>=LOCATE && LA44_0<=MAX)||(LA44_0>=MIN && LA44_0<=MOD)||LA44_0==NULLIF||(LA44_0>=SIZE && LA44_0<=SQRT)||(LA44_0>=SUBSTRING && LA44_0<=SUM)||(LA44_0>=TRIM && LA44_0<=TYPE)||(LA44_0>=UPPER && LA44_0<=VALUE)||LA44_0==IDENT||LA44_0==LEFT_ROUND_BRACKET||(LA44_0>=PLUS && LA44_0<=MINUS)||(LA44_0>=INTEGER_LITERAL && LA44_0<=NAMED_PARAM)) ) {
+                alt44=1;
             }
-            else if ( (LA42_0==EXISTS) ) {
-                alt42=2;
+            else if ( (LA44_0==EXISTS) ) {
+                alt44=2;
             }
             else {
                 if (backtracking>0) {failed=true; return node;}
                 NoViableAltException nvae =
-                    new NoViableAltException("597:9: (n1= conditionalPrimary | n1= existsExpression[(n!=null)] )", 42, 0, input);
+                    new NoViableAltException("623:9: (n1= conditionalPrimary | n1= existsExpression[(n!=null)] )", 44, 0, input);
             
                 throw nvae;
             }
-            switch (alt42) {
+            switch (alt44) {
                 case 1 :
-                    // JPQL.g:597:11: n1= conditionalPrimary
+                    // JPQL.g:623:11: n1= conditionalPrimary
                     {
-                    pushFollow(FOLLOW_conditionalPrimary_in_conditionalFactor3302);
+                    pushFollow(FOLLOW_conditionalPrimary_in_conditionalFactor3424);
                     n1=conditionalPrimary();
                     _fsp--;
                     if (failed) return node;
@@ -3838,9 +4466,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // JPQL.g:604:11: n1= existsExpression[(n!=null)]
+                    // JPQL.g:630:11: n1= existsExpression[(n!=null)]
                     {
-                    pushFollow(FOLLOW_existsExpression_in_conditionalFactor3331);
+                    pushFollow(FOLLOW_existsExpression_in_conditionalFactor3453);
                     n1=existsExpression((n!=null));
                     _fsp--;
                     if (failed) return node;
@@ -3869,7 +4497,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start conditionalPrimary
-    // JPQL.g:608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );
+    // JPQL.g:634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );
     public final Object conditionalPrimary() throws RecognitionException {
 
         Object node = null;
@@ -3879,550 +4507,550 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // JPQL.g:610:7: ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression )
-            int alt43=2;
-            int LA43_0 = input.LA(1);
+            // JPQL.g:636:7: ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression )
+            int alt45=2;
+            int LA45_0 = input.LA(1);
             
-            if ( (LA43_0==LEFT_ROUND_BRACKET) ) {
-                int LA43_1 = input.LA(2);
+            if ( (LA45_0==LEFT_ROUND_BRACKET) ) {
+                int LA45_1 = input.LA(2);
                 
-                if ( (LA43_1==NOT) && (synpred1())) {
-                    alt43=1;
+                if ( (LA45_1==NOT) && (synpred1())) {
+                    alt45=1;
                 }
-                else if ( (LA43_1==LEFT_ROUND_BRACKET) ) {
-                    int LA43_42 = input.LA(3);
+                else if ( (LA45_1==LEFT_ROUND_BRACKET) ) {
+                    int LA45_42 = input.LA(3);
                     
-                    if ( (LA43_42==PLUS) ) {
-                        int LA43_84 = input.LA(4);
+                    if ( (LA45_42==NOT) && (synpred1())) {
+                        alt45=1;
+                    }
+                    else if ( (LA45_42==LEFT_ROUND_BRACKET) ) {
+                        int LA45_85 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 84, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 85, input);
                         
                             throw nvae;
                         }
                     }
-                    else if ( (LA43_42==MINUS) ) {
-                        int LA43_85 = input.LA(4);
+                    else if ( (LA45_42==PLUS) ) {
+                        int LA45_86 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 85, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 86, input);
                         
                             throw nvae;
                         }
                     }
-                    else if ( (LA43_42==AVG) ) {
-                        int LA43_86 = input.LA(4);
+                    else if ( (LA45_42==MINUS) ) {
+                        int LA45_87 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 86, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 87, input);
                         
                             throw nvae;
                         }
                     }
-                    else if ( (LA43_42==MAX) ) {
-                        int LA43_87 = input.LA(4);
+                    else if ( (LA45_42==AVG) ) {
+                        int LA45_88 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 87, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 88, input);
                         
                             throw nvae;
                         }
                     }
-                    else if ( (LA43_42==MIN) ) {
-                        int LA43_88 = input.LA(4);
+                    else if ( (LA45_42==MAX) ) {
+                        int LA45_89 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 88, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 89, input);
                         
                             throw nvae;
                         }
                     }
-                    else if ( (LA43_42==SUM) ) {
-                        int LA43_89 = input.LA(4);
+                    else if ( (LA45_42==MIN) ) {
+                        int LA45_90 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 89, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 90, input);
                         
                             throw nvae;
                         }
                     }
-                    else if ( (LA43_42==COUNT) ) {
-                        int LA43_90 = input.LA(4);
+                    else if ( (LA45_42==SUM) ) {
+                        int LA45_91 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 90, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 91, input);
                         
                             throw nvae;
                         }
                     }
-                    else if ( (LA43_42==IDENT) ) {
-                        int LA43_91 = input.LA(4);
+                    else if ( (LA45_42==COUNT) ) {
+                        int LA45_92 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 91, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 92, input);
                         
                             throw nvae;
                         }
                     }
-                    else if ( (LA43_42==KEY) ) {
-                        int LA43_92 = input.LA(4);
+                    else if ( (LA45_42==IDENT) ) {
+                        int LA45_93 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 92, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 93, input);
                         
                             throw nvae;
                         }
                     }
-                    else if ( (LA43_42==VALUE) ) {
-                        int LA43_93 = input.LA(4);
+                    else if ( (LA45_42==KEY) ) {
+                        int LA45_94 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 93, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 94, input);
                         
                             throw nvae;
                         }
                     }
-                    else if ( (LA43_42==POSITIONAL_PARAM) ) {
-                        int LA43_94 = input.LA(4);
+                    else if ( (LA45_42==VALUE) ) {
+                        int LA45_95 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 94, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 95, input);
                         
                             throw nvae;
                         }
                     }
-                    else if ( (LA43_42==NAMED_PARAM) ) {
-                        int LA43_95 = input.LA(4);
+                    else if ( (LA45_42==POSITIONAL_PARAM) ) {
+                        int LA45_96 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 95, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 96, input);
                         
                             throw nvae;
                         }
                     }
-                    else if ( (LA43_42==CASE) ) {
-                        int LA43_96 = input.LA(4);
+                    else if ( (LA45_42==NAMED_PARAM) ) {
+                        int LA45_97 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 96, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 97, input);
                         
                             throw nvae;
                         }
                     }
-                    else if ( (LA43_42==COALESCE) ) {
-                        int LA43_97 = input.LA(4);
+                    else if ( (LA45_42==CASE) ) {
+                        int LA45_98 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 97, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 98, input);
                         
                             throw nvae;
                         }
                     }
-                    else if ( (LA43_42==NULLIF) ) {
-                        int LA43_98 = input.LA(4);
+                    else if ( (LA45_42==COALESCE) ) {
+                        int LA45_99 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 98, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 99, input);
                         
                             throw nvae;
                         }
                     }
-                    else if ( (LA43_42==ABS) ) {
-                        int LA43_99 = input.LA(4);
+                    else if ( (LA45_42==NULLIF) ) {
+                        int LA45_100 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 99, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 100, input);
                         
                             throw nvae;
                         }
                     }
-                    else if ( (LA43_42==LENGTH) ) {
-                        int LA43_100 = input.LA(4);
+                    else if ( (LA45_42==ABS) ) {
+                        int LA45_101 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 100, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 101, input);
                         
                             throw nvae;
                         }
                     }
-                    else if ( (LA43_42==MOD) ) {
-                        int LA43_101 = input.LA(4);
+                    else if ( (LA45_42==LENGTH) ) {
+                        int LA45_102 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 101, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 102, input);
                         
                             throw nvae;
                         }
                     }
-                    else if ( (LA43_42==SQRT) ) {
-                        int LA43_102 = input.LA(4);
+                    else if ( (LA45_42==MOD) ) {
+                        int LA45_103 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 102, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 103, input);
                         
                             throw nvae;
                         }
                     }
-                    else if ( (LA43_42==LOCATE) ) {
-                        int LA43_103 = input.LA(4);
+                    else if ( (LA45_42==SQRT) ) {
+                        int LA45_104 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 103, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 104, input);
                         
                             throw nvae;
                         }
                     }
-                    else if ( (LA43_42==SIZE) ) {
-                        int LA43_104 = input.LA(4);
+                    else if ( (LA45_42==LOCATE) ) {
+                        int LA45_105 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 104, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 105, input);
                         
                             throw nvae;
                         }
                     }
-                    else if ( (LA43_42==INDEX) ) {
-                        int LA43_105 = input.LA(4);
+                    else if ( (LA45_42==SIZE) ) {
+                        int LA45_106 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 105, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 106, input);
                         
                             throw nvae;
                         }
                     }
-                    else if ( (LA43_42==LEFT_ROUND_BRACKET) ) {
-                        int LA43_106 = input.LA(4);
+                    else if ( (LA45_42==INDEX) ) {
+                        int LA45_107 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 106, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 107, input);
                         
                             throw nvae;
                         }
                     }
-                    else if ( (LA43_42==INTEGER_LITERAL) ) {
-                        int LA43_107 = input.LA(4);
+                    else if ( (LA45_42==INTEGER_LITERAL) ) {
+                        int LA45_108 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 107, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 108, input);
                         
                             throw nvae;
                         }
                     }
-                    else if ( (LA43_42==LONG_LITERAL) ) {
-                        int LA43_108 = input.LA(4);
+                    else if ( (LA45_42==LONG_LITERAL) ) {
+                        int LA45_109 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 108, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 109, input);
                         
                             throw nvae;
                         }
                     }
-                    else if ( (LA43_42==FLOAT_LITERAL) ) {
-                        int LA43_109 = input.LA(4);
+                    else if ( (LA45_42==FLOAT_LITERAL) ) {
+                        int LA45_110 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 109, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 110, input);
                         
                             throw nvae;
                         }
                     }
-                    else if ( (LA43_42==DOUBLE_LITERAL) ) {
-                        int LA43_110 = input.LA(4);
+                    else if ( (LA45_42==DOUBLE_LITERAL) ) {
+                        int LA45_111 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 110, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 111, input);
                         
                             throw nvae;
                         }
                     }
-                    else if ( (LA43_42==SELECT) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_42==CURRENT_DATE) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_42==NOT) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_42==CURRENT_TIME) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_42==CURRENT_DATE) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_42==CURRENT_TIMESTAMP) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_42==CURRENT_TIME) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_42==CONCAT) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_42==CURRENT_TIMESTAMP) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_42==SUBSTRING) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_42==CONCAT) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_42==TRIM) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_42==SUBSTRING) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_42==UPPER) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_42==TRIM) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_42==LOWER) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_42==UPPER) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_42==STRING_LITERAL_DOUBLE_QUOTED) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_42==LOWER) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_42==STRING_LITERAL_SINGLE_QUOTED) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_42==STRING_LITERAL_DOUBLE_QUOTED) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_42==TRUE) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_42==STRING_LITERAL_SINGLE_QUOTED) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_42==FALSE) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_42==TRUE) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_42==TYPE) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_42==FALSE) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_42==EXISTS) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_42==TYPE) && (synpred1())) {
-                        alt43=1;
-                    }
-                    else if ( (LA43_42==EXISTS) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_42==SELECT) && (synpred1())) {
+                        alt45=1;
                     }
                     else {
                         if (backtracking>0) {failed=true; return node;}
                         NoViableAltException nvae =
-                            new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 42, input);
+                            new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 42, input);
                     
                         throw nvae;
                     }
                 }
-                else if ( (LA43_1==PLUS) ) {
+                else if ( (LA45_1==PLUS) ) {
                     switch ( input.LA(3) ) {
                     case AVG:
                         {
-                        int LA43_127 = input.LA(4);
+                        int LA45_127 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 127, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 127, input);
                         
                             throw nvae;
                         }
@@ -4430,18 +5058,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case MAX:
                         {
-                        int LA43_128 = input.LA(4);
+                        int LA45_128 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 128, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 128, input);
                         
                             throw nvae;
                         }
@@ -4449,18 +5077,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case MIN:
                         {
-                        int LA43_129 = input.LA(4);
+                        int LA45_129 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 129, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 129, input);
                         
                             throw nvae;
                         }
@@ -4468,18 +5096,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case SUM:
                         {
-                        int LA43_130 = input.LA(4);
+                        int LA45_130 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 130, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 130, input);
                         
                             throw nvae;
                         }
@@ -4487,18 +5115,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case COUNT:
                         {
-                        int LA43_131 = input.LA(4);
+                        int LA45_131 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 131, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 131, input);
                         
                             throw nvae;
                         }
@@ -4506,18 +5134,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case IDENT:
                         {
-                        int LA43_132 = input.LA(4);
+                        int LA45_132 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 132, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 132, input);
                         
                             throw nvae;
                         }
@@ -4525,18 +5153,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case KEY:
                         {
-                        int LA43_133 = input.LA(4);
+                        int LA45_133 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 133, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 133, input);
                         
                             throw nvae;
                         }
@@ -4544,18 +5172,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case VALUE:
                         {
-                        int LA43_134 = input.LA(4);
+                        int LA45_134 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 134, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 134, input);
                         
                             throw nvae;
                         }
@@ -4563,18 +5191,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case POSITIONAL_PARAM:
                         {
-                        int LA43_135 = input.LA(4);
+                        int LA45_135 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 135, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 135, input);
                         
                             throw nvae;
                         }
@@ -4582,18 +5210,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case NAMED_PARAM:
                         {
-                        int LA43_136 = input.LA(4);
+                        int LA45_136 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 136, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 136, input);
                         
                             throw nvae;
                         }
@@ -4601,18 +5229,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case CASE:
                         {
-                        int LA43_137 = input.LA(4);
+                        int LA45_137 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 137, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 137, input);
                         
                             throw nvae;
                         }
@@ -4620,18 +5248,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case COALESCE:
                         {
-                        int LA43_138 = input.LA(4);
+                        int LA45_138 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 138, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 138, input);
                         
                             throw nvae;
                         }
@@ -4639,18 +5267,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case NULLIF:
                         {
-                        int LA43_139 = input.LA(4);
+                        int LA45_139 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 139, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 139, input);
                         
                             throw nvae;
                         }
@@ -4658,18 +5286,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case ABS:
                         {
-                        int LA43_140 = input.LA(4);
+                        int LA45_140 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 140, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 140, input);
                         
                             throw nvae;
                         }
@@ -4677,18 +5305,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case LENGTH:
                         {
-                        int LA43_141 = input.LA(4);
+                        int LA45_141 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 141, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 141, input);
                         
                             throw nvae;
                         }
@@ -4696,18 +5324,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case MOD:
                         {
-                        int LA43_142 = input.LA(4);
+                        int LA45_142 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 142, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 142, input);
                         
                             throw nvae;
                         }
@@ -4715,18 +5343,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case SQRT:
                         {
-                        int LA43_143 = input.LA(4);
+                        int LA45_143 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 143, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 143, input);
                         
                             throw nvae;
                         }
@@ -4734,18 +5362,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case LOCATE:
                         {
-                        int LA43_144 = input.LA(4);
+                        int LA45_144 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 144, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 144, input);
                         
                             throw nvae;
                         }
@@ -4753,18 +5381,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case SIZE:
                         {
-                        int LA43_145 = input.LA(4);
+                        int LA45_145 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 145, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 145, input);
                         
                             throw nvae;
                         }
@@ -4772,18 +5400,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case INDEX:
                         {
-                        int LA43_146 = input.LA(4);
+                        int LA45_146 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 146, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 146, input);
                         
                             throw nvae;
                         }
@@ -4791,18 +5419,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case LEFT_ROUND_BRACKET:
                         {
-                        int LA43_147 = input.LA(4);
+                        int LA45_147 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 147, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 147, input);
                         
                             throw nvae;
                         }
@@ -4810,18 +5438,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case INTEGER_LITERAL:
                         {
-                        int LA43_148 = input.LA(4);
+                        int LA45_148 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 148, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 148, input);
                         
                             throw nvae;
                         }
@@ -4829,18 +5457,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case LONG_LITERAL:
                         {
-                        int LA43_149 = input.LA(4);
+                        int LA45_149 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 149, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 149, input);
                         
                             throw nvae;
                         }
@@ -4848,18 +5476,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case FLOAT_LITERAL:
                         {
-                        int LA43_150 = input.LA(4);
+                        int LA45_150 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 150, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 150, input);
                         
                             throw nvae;
                         }
@@ -4867,18 +5495,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case DOUBLE_LITERAL:
                         {
-                        int LA43_151 = input.LA(4);
+                        int LA45_151 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 151, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 151, input);
                         
                             throw nvae;
                         }
@@ -4887,28 +5515,28 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     default:
                         if (backtracking>0) {failed=true; return node;}
                         NoViableAltException nvae =
-                            new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 43, input);
+                            new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 43, input);
                     
                         throw nvae;
                     }
                 
                 }
-                else if ( (LA43_1==MINUS) ) {
+                else if ( (LA45_1==MINUS) ) {
                     switch ( input.LA(3) ) {
                     case AVG:
                         {
-                        int LA43_152 = input.LA(4);
+                        int LA45_152 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 152, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 152, input);
                         
                             throw nvae;
                         }
@@ -4916,18 +5544,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case MAX:
                         {
-                        int LA43_153 = input.LA(4);
+                        int LA45_153 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 153, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 153, input);
                         
                             throw nvae;
                         }
@@ -4935,18 +5563,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case MIN:
                         {
-                        int LA43_154 = input.LA(4);
+                        int LA45_154 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 154, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 154, input);
                         
                             throw nvae;
                         }
@@ -4954,18 +5582,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case SUM:
                         {
-                        int LA43_155 = input.LA(4);
+                        int LA45_155 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 155, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 155, input);
                         
                             throw nvae;
                         }
@@ -4973,18 +5601,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case COUNT:
                         {
-                        int LA43_156 = input.LA(4);
+                        int LA45_156 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 156, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 156, input);
                         
                             throw nvae;
                         }
@@ -4992,18 +5620,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case IDENT:
                         {
-                        int LA43_157 = input.LA(4);
+                        int LA45_157 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 157, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 157, input);
                         
                             throw nvae;
                         }
@@ -5011,18 +5639,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case KEY:
                         {
-                        int LA43_158 = input.LA(4);
+                        int LA45_158 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 158, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 158, input);
                         
                             throw nvae;
                         }
@@ -5030,18 +5658,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case VALUE:
                         {
-                        int LA43_159 = input.LA(4);
+                        int LA45_159 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 159, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 159, input);
                         
                             throw nvae;
                         }
@@ -5049,18 +5677,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case POSITIONAL_PARAM:
                         {
-                        int LA43_160 = input.LA(4);
+                        int LA45_160 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 160, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 160, input);
                         
                             throw nvae;
                         }
@@ -5068,18 +5696,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case NAMED_PARAM:
                         {
-                        int LA43_161 = input.LA(4);
+                        int LA45_161 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 161, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 161, input);
                         
                             throw nvae;
                         }
@@ -5087,18 +5715,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case CASE:
                         {
-                        int LA43_162 = input.LA(4);
+                        int LA45_162 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 162, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 162, input);
                         
                             throw nvae;
                         }
@@ -5106,18 +5734,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case COALESCE:
                         {
-                        int LA43_163 = input.LA(4);
+                        int LA45_163 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 163, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 163, input);
                         
                             throw nvae;
                         }
@@ -5125,18 +5753,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case NULLIF:
                         {
-                        int LA43_164 = input.LA(4);
+                        int LA45_164 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 164, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 164, input);
                         
                             throw nvae;
                         }
@@ -5144,18 +5772,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case ABS:
                         {
-                        int LA43_165 = input.LA(4);
+                        int LA45_165 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 165, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 165, input);
                         
                             throw nvae;
                         }
@@ -5163,18 +5791,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case LENGTH:
                         {
-                        int LA43_166 = input.LA(4);
+                        int LA45_166 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 166, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 166, input);
                         
                             throw nvae;
                         }
@@ -5182,18 +5810,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case MOD:
                         {
-                        int LA43_167 = input.LA(4);
+                        int LA45_167 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 167, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 167, input);
                         
                             throw nvae;
                         }
@@ -5201,18 +5829,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case SQRT:
                         {
-                        int LA43_168 = input.LA(4);
+                        int LA45_168 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 168, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 168, input);
                         
                             throw nvae;
                         }
@@ -5220,18 +5848,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case LOCATE:
                         {
-                        int LA43_169 = input.LA(4);
+                        int LA45_169 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 169, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 169, input);
                         
                             throw nvae;
                         }
@@ -5239,18 +5867,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case SIZE:
                         {
-                        int LA43_170 = input.LA(4);
+                        int LA45_170 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 170, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 170, input);
                         
                             throw nvae;
                         }
@@ -5258,18 +5886,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case INDEX:
                         {
-                        int LA43_171 = input.LA(4);
+                        int LA45_171 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 171, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 171, input);
                         
                             throw nvae;
                         }
@@ -5277,18 +5905,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case LEFT_ROUND_BRACKET:
                         {
-                        int LA43_172 = input.LA(4);
+                        int LA45_172 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 172, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 172, input);
                         
                             throw nvae;
                         }
@@ -5296,18 +5924,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case INTEGER_LITERAL:
                         {
-                        int LA43_173 = input.LA(4);
+                        int LA45_173 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 173, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 173, input);
                         
                             throw nvae;
                         }
@@ -5315,18 +5943,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case LONG_LITERAL:
                         {
-                        int LA43_174 = input.LA(4);
+                        int LA45_174 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 174, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 174, input);
                         
                             throw nvae;
                         }
@@ -5334,18 +5962,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case FLOAT_LITERAL:
                         {
-                        int LA43_175 = input.LA(4);
+                        int LA45_175 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 175, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 175, input);
                         
                             throw nvae;
                         }
@@ -5353,18 +5981,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case DOUBLE_LITERAL:
                         {
-                        int LA43_176 = input.LA(4);
+                        int LA45_176 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 176, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 176, input);
                         
                             throw nvae;
                         }
@@ -5373,28 +6001,28 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     default:
                         if (backtracking>0) {failed=true; return node;}
                         NoViableAltException nvae =
-                            new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 44, input);
+                            new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 44, input);
                     
                         throw nvae;
                     }
                 
                 }
-                else if ( (LA43_1==AVG) ) {
-                    int LA43_45 = input.LA(3);
+                else if ( (LA45_1==AVG) ) {
+                    int LA45_45 = input.LA(3);
                     
-                    if ( (LA43_45==LEFT_ROUND_BRACKET) ) {
-                        int LA43_177 = input.LA(4);
+                    if ( (LA45_45==LEFT_ROUND_BRACKET) ) {
+                        int LA45_177 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 177, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 177, input);
                         
                             throw nvae;
                         }
@@ -5402,27 +6030,27 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     else {
                         if (backtracking>0) {failed=true; return node;}
                         NoViableAltException nvae =
-                            new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 45, input);
+                            new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 45, input);
                     
                         throw nvae;
                     }
                 }
-                else if ( (LA43_1==MAX) ) {
-                    int LA43_46 = input.LA(3);
+                else if ( (LA45_1==MAX) ) {
+                    int LA45_46 = input.LA(3);
                     
-                    if ( (LA43_46==LEFT_ROUND_BRACKET) ) {
-                        int LA43_178 = input.LA(4);
+                    if ( (LA45_46==LEFT_ROUND_BRACKET) ) {
+                        int LA45_178 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 178, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 178, input);
                         
                             throw nvae;
                         }
@@ -5430,27 +6058,27 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     else {
                         if (backtracking>0) {failed=true; return node;}
                         NoViableAltException nvae =
-                            new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 46, input);
+                            new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 46, input);
                     
                         throw nvae;
                     }
                 }
-                else if ( (LA43_1==MIN) ) {
-                    int LA43_47 = input.LA(3);
+                else if ( (LA45_1==MIN) ) {
+                    int LA45_47 = input.LA(3);
                     
-                    if ( (LA43_47==LEFT_ROUND_BRACKET) ) {
-                        int LA43_179 = input.LA(4);
+                    if ( (LA45_47==LEFT_ROUND_BRACKET) ) {
+                        int LA45_179 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 179, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 179, input);
                         
                             throw nvae;
                         }
@@ -5458,27 +6086,27 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     else {
                         if (backtracking>0) {failed=true; return node;}
                         NoViableAltException nvae =
-                            new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 47, input);
+                            new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 47, input);
                     
                         throw nvae;
                     }
                 }
-                else if ( (LA43_1==SUM) ) {
-                    int LA43_48 = input.LA(3);
+                else if ( (LA45_1==SUM) ) {
+                    int LA45_48 = input.LA(3);
                     
-                    if ( (LA43_48==LEFT_ROUND_BRACKET) ) {
-                        int LA43_180 = input.LA(4);
+                    if ( (LA45_48==LEFT_ROUND_BRACKET) ) {
+                        int LA45_180 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 180, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 180, input);
                         
                             throw nvae;
                         }
@@ -5486,27 +6114,27 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     else {
                         if (backtracking>0) {failed=true; return node;}
                         NoViableAltException nvae =
-                            new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 48, input);
+                            new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 48, input);
                     
                         throw nvae;
                     }
                 }
-                else if ( (LA43_1==COUNT) ) {
-                    int LA43_49 = input.LA(3);
+                else if ( (LA45_1==COUNT) ) {
+                    int LA45_49 = input.LA(3);
                     
-                    if ( (LA43_49==LEFT_ROUND_BRACKET) ) {
-                        int LA43_181 = input.LA(4);
+                    if ( (LA45_49==LEFT_ROUND_BRACKET) ) {
+                        int LA45_181 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 181, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 181, input);
                         
                             throw nvae;
                         }
@@ -5514,190 +6142,162 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     else {
                         if (backtracking>0) {failed=true; return node;}
                         NoViableAltException nvae =
-                            new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 49, input);
+                            new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 49, input);
                     
                         throw nvae;
                     }
                 }
-                else if ( (LA43_1==IDENT) ) {
-                    int LA43_50 = input.LA(3);
+                else if ( (LA45_1==IDENT) ) {
+                    int LA45_50 = input.LA(3);
                     
-                    if ( (LA43_50==DOT) ) {
-                        int LA43_182 = input.LA(4);
+                    if ( (LA45_50==DOT) ) {
+                        int LA45_182 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 182, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 182, input);
                         
                             throw nvae;
                         }
                     }
-                    else if ( (LA43_50==MULTIPLY) ) {
-                        int LA43_183 = input.LA(4);
+                    else if ( (LA45_50==MULTIPLY) ) {
+                        int LA45_183 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 183, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 183, input);
                         
                             throw nvae;
                         }
                     }
-                    else if ( (LA43_50==DIVIDE) ) {
-                        int LA43_184 = input.LA(4);
+                    else if ( (LA45_50==DIVIDE) ) {
+                        int LA45_184 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 184, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 184, input);
                         
                             throw nvae;
                         }
                     }
-                    else if ( (LA43_50==PLUS) ) {
-                        int LA43_185 = input.LA(4);
+                    else if ( (LA45_50==PLUS) ) {
+                        int LA45_185 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 185, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 185, input);
                         
                             throw nvae;
                         }
                     }
-                    else if ( (LA43_50==MINUS) ) {
-                        int LA43_186 = input.LA(4);
+                    else if ( (LA45_50==MINUS) ) {
+                        int LA45_186 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 186, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 186, input);
                         
                             throw nvae;
                         }
                     }
-                    else if ( (LA43_50==EQUALS) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_50==EQUALS) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_50==NOT_EQUAL_TO) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_50==NOT_EQUAL_TO) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_50==GREATER_THAN) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_50==GREATER_THAN) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_50==GREATER_THAN_EQUAL_TO) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_50==GREATER_THAN_EQUAL_TO) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_50==LESS_THAN) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_50==LESS_THAN) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_50==LESS_THAN_EQUAL_TO) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_50==LESS_THAN_EQUAL_TO) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_50==NOT) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_50==NOT) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_50==BETWEEN) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_50==BETWEEN) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_50==LIKE) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_50==LIKE) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_50==IN) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_50==IN) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_50==MEMBER) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_50==MEMBER) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_50==IS) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_50==IS) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_50==RIGHT_ROUND_BRACKET) ) {
-                        alt43=2;
+                    else if ( (LA45_50==RIGHT_ROUND_BRACKET) ) {
+                        alt45=2;
                     }
                     else {
                         if (backtracking>0) {failed=true; return node;}
                         NoViableAltException nvae =
-                            new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 50, input);
+                            new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 50, input);
                     
                         throw nvae;
                     }
                 }
-                else if ( (LA43_1==KEY) ) {
-                    int LA43_51 = input.LA(3);
+                else if ( (LA45_1==KEY) ) {
+                    int LA45_51 = input.LA(3);
                     
-                    if ( (LA43_51==LEFT_ROUND_BRACKET) ) {
-                        int LA43_200 = input.LA(4);
+                    if ( (LA45_51==LEFT_ROUND_BRACKET) ) {
+                        int LA45_200 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 200, input);
-                        
-                            throw nvae;
-                        }
-                    }
-                    else {
-                        if (backtracking>0) {failed=true; return node;}
-                        NoViableAltException nvae =
-                            new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 51, input);
-                    
-                        throw nvae;
-                    }
-                }
-                else if ( (LA43_1==VALUE) ) {
-                    int LA43_52 = input.LA(3);
-                    
-                    if ( (LA43_52==LEFT_ROUND_BRACKET) ) {
-                        int LA43_201 = input.LA(4);
-                        
-                        if ( (synpred1()) ) {
-                            alt43=1;
-                        }
-                        else if ( (true) ) {
-                            alt43=2;
-                        }
-                        else {
-                            if (backtracking>0) {failed=true; return node;}
-                            NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 201, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 200, input);
                         
                             throw nvae;
                         }
@@ -5705,263 +6305,291 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     else {
                         if (backtracking>0) {failed=true; return node;}
                         NoViableAltException nvae =
-                            new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 52, input);
+                            new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 51, input);
                     
                         throw nvae;
                     }
                 }
-                else if ( (LA43_1==POSITIONAL_PARAM) ) {
-                    int LA43_53 = input.LA(3);
+                else if ( (LA45_1==VALUE) ) {
+                    int LA45_52 = input.LA(3);
                     
-                    if ( (LA43_53==MULTIPLY) ) {
-                        int LA43_202 = input.LA(4);
+                    if ( (LA45_52==LEFT_ROUND_BRACKET) ) {
+                        int LA45_201 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 202, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 201, input);
                         
                             throw nvae;
                         }
-                    }
-                    else if ( (LA43_53==DIVIDE) ) {
-                        int LA43_203 = input.LA(4);
-                        
-                        if ( (synpred1()) ) {
-                            alt43=1;
-                        }
-                        else if ( (true) ) {
-                            alt43=2;
-                        }
-                        else {
-                            if (backtracking>0) {failed=true; return node;}
-                            NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 203, input);
-                        
-                            throw nvae;
-                        }
-                    }
-                    else if ( (LA43_53==PLUS) ) {
-                        int LA43_204 = input.LA(4);
-                        
-                        if ( (synpred1()) ) {
-                            alt43=1;
-                        }
-                        else if ( (true) ) {
-                            alt43=2;
-                        }
-                        else {
-                            if (backtracking>0) {failed=true; return node;}
-                            NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 204, input);
-                        
-                            throw nvae;
-                        }
-                    }
-                    else if ( (LA43_53==MINUS) ) {
-                        int LA43_205 = input.LA(4);
-                        
-                        if ( (synpred1()) ) {
-                            alt43=1;
-                        }
-                        else if ( (true) ) {
-                            alt43=2;
-                        }
-                        else {
-                            if (backtracking>0) {failed=true; return node;}
-                            NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 205, input);
-                        
-                            throw nvae;
-                        }
-                    }
-                    else if ( (LA43_53==EQUALS) && (synpred1())) {
-                        alt43=1;
-                    }
-                    else if ( (LA43_53==NOT_EQUAL_TO) && (synpred1())) {
-                        alt43=1;
-                    }
-                    else if ( (LA43_53==GREATER_THAN) && (synpred1())) {
-                        alt43=1;
-                    }
-                    else if ( (LA43_53==GREATER_THAN_EQUAL_TO) && (synpred1())) {
-                        alt43=1;
-                    }
-                    else if ( (LA43_53==LESS_THAN) && (synpred1())) {
-                        alt43=1;
-                    }
-                    else if ( (LA43_53==LESS_THAN_EQUAL_TO) && (synpred1())) {
-                        alt43=1;
-                    }
-                    else if ( (LA43_53==NOT) && (synpred1())) {
-                        alt43=1;
-                    }
-                    else if ( (LA43_53==BETWEEN) && (synpred1())) {
-                        alt43=1;
-                    }
-                    else if ( (LA43_53==LIKE) && (synpred1())) {
-                        alt43=1;
-                    }
-                    else if ( (LA43_53==IN) && (synpred1())) {
-                        alt43=1;
-                    }
-                    else if ( (LA43_53==MEMBER) && (synpred1())) {
-                        alt43=1;
-                    }
-                    else if ( (LA43_53==IS) && (synpred1())) {
-                        alt43=1;
-                    }
-                    else if ( (LA43_53==RIGHT_ROUND_BRACKET) ) {
-                        alt43=2;
                     }
                     else {
                         if (backtracking>0) {failed=true; return node;}
                         NoViableAltException nvae =
-                            new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 53, input);
+                            new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 52, input);
                     
                         throw nvae;
                     }
                 }
-                else if ( (LA43_1==NAMED_PARAM) ) {
-                    int LA43_54 = input.LA(3);
+                else if ( (LA45_1==POSITIONAL_PARAM) ) {
+                    int LA45_53 = input.LA(3);
                     
-                    if ( (LA43_54==MULTIPLY) ) {
-                        int LA43_219 = input.LA(4);
+                    if ( (LA45_53==MULTIPLY) ) {
+                        int LA45_202 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 219, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 202, input);
                         
                             throw nvae;
                         }
                     }
-                    else if ( (LA43_54==DIVIDE) ) {
-                        int LA43_220 = input.LA(4);
+                    else if ( (LA45_53==DIVIDE) ) {
+                        int LA45_203 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 220, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 203, input);
                         
                             throw nvae;
                         }
                     }
-                    else if ( (LA43_54==PLUS) ) {
-                        int LA43_221 = input.LA(4);
+                    else if ( (LA45_53==PLUS) ) {
+                        int LA45_204 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 221, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 204, input);
                         
                             throw nvae;
                         }
                     }
-                    else if ( (LA43_54==MINUS) ) {
-                        int LA43_222 = input.LA(4);
+                    else if ( (LA45_53==MINUS) ) {
+                        int LA45_205 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 222, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 205, input);
                         
                             throw nvae;
                         }
                     }
-                    else if ( (LA43_54==EQUALS) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_53==RIGHT_ROUND_BRACKET) ) {
+                        alt45=2;
                     }
-                    else if ( (LA43_54==NOT_EQUAL_TO) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_53==EQUALS) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_54==GREATER_THAN) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_53==NOT_EQUAL_TO) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_54==GREATER_THAN_EQUAL_TO) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_53==GREATER_THAN) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_54==LESS_THAN) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_53==GREATER_THAN_EQUAL_TO) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_54==LESS_THAN_EQUAL_TO) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_53==LESS_THAN) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_54==NOT) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_53==LESS_THAN_EQUAL_TO) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_54==BETWEEN) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_53==NOT) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_54==LIKE) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_53==BETWEEN) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_54==IN) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_53==LIKE) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_54==MEMBER) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_53==IN) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_54==IS) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_53==MEMBER) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_54==RIGHT_ROUND_BRACKET) ) {
-                        alt43=2;
+                    else if ( (LA45_53==IS) && (synpred1())) {
+                        alt45=1;
                     }
                     else {
                         if (backtracking>0) {failed=true; return node;}
                         NoViableAltException nvae =
-                            new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 54, input);
+                            new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 53, input);
                     
                         throw nvae;
                     }
                 }
-                else if ( (LA43_1==CASE) ) {
+                else if ( (LA45_1==NAMED_PARAM) ) {
+                    int LA45_54 = input.LA(3);
+                    
+                    if ( (LA45_54==MULTIPLY) ) {
+                        int LA45_219 = input.LA(4);
+                        
+                        if ( (synpred1()) ) {
+                            alt45=1;
+                        }
+                        else if ( (true) ) {
+                            alt45=2;
+                        }
+                        else {
+                            if (backtracking>0) {failed=true; return node;}
+                            NoViableAltException nvae =
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 219, input);
+                        
+                            throw nvae;
+                        }
+                    }
+                    else if ( (LA45_54==DIVIDE) ) {
+                        int LA45_220 = input.LA(4);
+                        
+                        if ( (synpred1()) ) {
+                            alt45=1;
+                        }
+                        else if ( (true) ) {
+                            alt45=2;
+                        }
+                        else {
+                            if (backtracking>0) {failed=true; return node;}
+                            NoViableAltException nvae =
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 220, input);
+                        
+                            throw nvae;
+                        }
+                    }
+                    else if ( (LA45_54==PLUS) ) {
+                        int LA45_221 = input.LA(4);
+                        
+                        if ( (synpred1()) ) {
+                            alt45=1;
+                        }
+                        else if ( (true) ) {
+                            alt45=2;
+                        }
+                        else {
+                            if (backtracking>0) {failed=true; return node;}
+                            NoViableAltException nvae =
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 221, input);
+                        
+                            throw nvae;
+                        }
+                    }
+                    else if ( (LA45_54==MINUS) ) {
+                        int LA45_222 = input.LA(4);
+                        
+                        if ( (synpred1()) ) {
+                            alt45=1;
+                        }
+                        else if ( (true) ) {
+                            alt45=2;
+                        }
+                        else {
+                            if (backtracking>0) {failed=true; return node;}
+                            NoViableAltException nvae =
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 222, input);
+                        
+                            throw nvae;
+                        }
+                    }
+                    else if ( (LA45_54==RIGHT_ROUND_BRACKET) ) {
+                        alt45=2;
+                    }
+                    else if ( (LA45_54==EQUALS) && (synpred1())) {
+                        alt45=1;
+                    }
+                    else if ( (LA45_54==NOT_EQUAL_TO) && (synpred1())) {
+                        alt45=1;
+                    }
+                    else if ( (LA45_54==GREATER_THAN) && (synpred1())) {
+                        alt45=1;
+                    }
+                    else if ( (LA45_54==GREATER_THAN_EQUAL_TO) && (synpred1())) {
+                        alt45=1;
+                    }
+                    else if ( (LA45_54==LESS_THAN) && (synpred1())) {
+                        alt45=1;
+                    }
+                    else if ( (LA45_54==LESS_THAN_EQUAL_TO) && (synpred1())) {
+                        alt45=1;
+                    }
+                    else if ( (LA45_54==NOT) && (synpred1())) {
+                        alt45=1;
+                    }
+                    else if ( (LA45_54==BETWEEN) && (synpred1())) {
+                        alt45=1;
+                    }
+                    else if ( (LA45_54==LIKE) && (synpred1())) {
+                        alt45=1;
+                    }
+                    else if ( (LA45_54==IN) && (synpred1())) {
+                        alt45=1;
+                    }
+                    else if ( (LA45_54==MEMBER) && (synpred1())) {
+                        alt45=1;
+                    }
+                    else if ( (LA45_54==IS) && (synpred1())) {
+                        alt45=1;
+                    }
+                    else {
+                        if (backtracking>0) {failed=true; return node;}
+                        NoViableAltException nvae =
+                            new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 54, input);
+                    
+                        throw nvae;
+                    }
+                }
+                else if ( (LA45_1==CASE) ) {
                     switch ( input.LA(3) ) {
                     case WHEN:
                         {
-                        int LA43_236 = input.LA(4);
+                        int LA45_236 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 236, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 236, input);
                         
                             throw nvae;
                         }
@@ -5969,18 +6597,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case IDENT:
                         {
-                        int LA43_237 = input.LA(4);
+                        int LA45_237 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 237, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 237, input);
                         
                             throw nvae;
                         }
@@ -5988,18 +6616,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case KEY:
                         {
-                        int LA43_238 = input.LA(4);
+                        int LA45_238 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 238, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 238, input);
                         
                             throw nvae;
                         }
@@ -6007,18 +6635,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case VALUE:
                         {
-                        int LA43_239 = input.LA(4);
+                        int LA45_239 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 239, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 239, input);
                         
                             throw nvae;
                         }
@@ -6026,18 +6654,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         break;
                     case TYPE:
                         {
-                        int LA43_240 = input.LA(4);
+                        int LA45_240 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 240, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 240, input);
                         
                             throw nvae;
                         }
@@ -6046,28 +6674,28 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     default:
                         if (backtracking>0) {failed=true; return node;}
                         NoViableAltException nvae =
-                            new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 55, input);
+                            new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 55, input);
                     
                         throw nvae;
                     }
                 
                 }
-                else if ( (LA43_1==COALESCE) ) {
-                    int LA43_56 = input.LA(3);
+                else if ( (LA45_1==COALESCE) ) {
+                    int LA45_56 = input.LA(3);
                     
-                    if ( (LA43_56==RIGHT_ROUND_BRACKET) ) {
-                        int LA43_241 = input.LA(4);
+                    if ( (LA45_56==RIGHT_ROUND_BRACKET) ) {
+                        int LA45_241 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 241, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 241, input);
                         
                             throw nvae;
                         }
@@ -6075,27 +6703,27 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     else {
                         if (backtracking>0) {failed=true; return node;}
                         NoViableAltException nvae =
-                            new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 56, input);
+                            new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 56, input);
                     
                         throw nvae;
                     }
                 }
-                else if ( (LA43_1==NULLIF) ) {
-                    int LA43_57 = input.LA(3);
+                else if ( (LA45_1==NULLIF) ) {
+                    int LA45_57 = input.LA(3);
                     
-                    if ( (LA43_57==RIGHT_ROUND_BRACKET) ) {
-                        int LA43_242 = input.LA(4);
+                    if ( (LA45_57==RIGHT_ROUND_BRACKET) ) {
+                        int LA45_242 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 242, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 242, input);
                         
                             throw nvae;
                         }
@@ -6103,27 +6731,27 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     else {
                         if (backtracking>0) {failed=true; return node;}
                         NoViableAltException nvae =
-                            new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 57, input);
+                            new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 57, input);
                     
                         throw nvae;
                     }
                 }
-                else if ( (LA43_1==ABS) ) {
-                    int LA43_58 = input.LA(3);
+                else if ( (LA45_1==ABS) ) {
+                    int LA45_58 = input.LA(3);
                     
-                    if ( (LA43_58==LEFT_ROUND_BRACKET) ) {
-                        int LA43_243 = input.LA(4);
+                    if ( (LA45_58==LEFT_ROUND_BRACKET) ) {
+                        int LA45_243 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 243, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 243, input);
                         
                             throw nvae;
                         }
@@ -6131,27 +6759,27 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     else {
                         if (backtracking>0) {failed=true; return node;}
                         NoViableAltException nvae =
-                            new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 58, input);
+                            new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 58, input);
                     
                         throw nvae;
                     }
                 }
-                else if ( (LA43_1==LENGTH) ) {
-                    int LA43_59 = input.LA(3);
+                else if ( (LA45_1==LENGTH) ) {
+                    int LA45_59 = input.LA(3);
                     
-                    if ( (LA43_59==LEFT_ROUND_BRACKET) ) {
-                        int LA43_244 = input.LA(4);
+                    if ( (LA45_59==LEFT_ROUND_BRACKET) ) {
+                        int LA45_244 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 244, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 244, input);
                         
                             throw nvae;
                         }
@@ -6159,27 +6787,27 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     else {
                         if (backtracking>0) {failed=true; return node;}
                         NoViableAltException nvae =
-                            new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 59, input);
+                            new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 59, input);
                     
                         throw nvae;
                     }
                 }
-                else if ( (LA43_1==MOD) ) {
-                    int LA43_60 = input.LA(3);
+                else if ( (LA45_1==MOD) ) {
+                    int LA45_60 = input.LA(3);
                     
-                    if ( (LA43_60==LEFT_ROUND_BRACKET) ) {
-                        int LA43_245 = input.LA(4);
+                    if ( (LA45_60==LEFT_ROUND_BRACKET) ) {
+                        int LA45_245 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 245, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 245, input);
                         
                             throw nvae;
                         }
@@ -6187,27 +6815,27 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     else {
                         if (backtracking>0) {failed=true; return node;}
                         NoViableAltException nvae =
-                            new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 60, input);
+                            new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 60, input);
                     
                         throw nvae;
                     }
                 }
-                else if ( (LA43_1==SQRT) ) {
-                    int LA43_61 = input.LA(3);
+                else if ( (LA45_1==SQRT) ) {
+                    int LA45_61 = input.LA(3);
                     
-                    if ( (LA43_61==LEFT_ROUND_BRACKET) ) {
-                        int LA43_246 = input.LA(4);
+                    if ( (LA45_61==LEFT_ROUND_BRACKET) ) {
+                        int LA45_246 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 246, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 246, input);
                         
                             throw nvae;
                         }
@@ -6215,27 +6843,27 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     else {
                         if (backtracking>0) {failed=true; return node;}
                         NoViableAltException nvae =
-                            new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 61, input);
+                            new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 61, input);
                     
                         throw nvae;
                     }
                 }
-                else if ( (LA43_1==LOCATE) ) {
-                    int LA43_62 = input.LA(3);
+                else if ( (LA45_1==LOCATE) ) {
+                    int LA45_62 = input.LA(3);
                     
-                    if ( (LA43_62==LEFT_ROUND_BRACKET) ) {
-                        int LA43_247 = input.LA(4);
+                    if ( (LA45_62==LEFT_ROUND_BRACKET) ) {
+                        int LA45_247 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 247, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 247, input);
                         
                             throw nvae;
                         }
@@ -6243,27 +6871,27 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     else {
                         if (backtracking>0) {failed=true; return node;}
                         NoViableAltException nvae =
-                            new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 62, input);
+                            new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 62, input);
                     
                         throw nvae;
                     }
                 }
-                else if ( (LA43_1==SIZE) ) {
-                    int LA43_63 = input.LA(3);
+                else if ( (LA45_1==SIZE) ) {
+                    int LA45_63 = input.LA(3);
                     
-                    if ( (LA43_63==LEFT_ROUND_BRACKET) ) {
-                        int LA43_248 = input.LA(4);
+                    if ( (LA45_63==LEFT_ROUND_BRACKET) ) {
+                        int LA45_248 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 248, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 248, input);
                         
                             throw nvae;
                         }
@@ -6271,27 +6899,27 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     else {
                         if (backtracking>0) {failed=true; return node;}
                         NoViableAltException nvae =
-                            new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 63, input);
+                            new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 63, input);
                     
                         throw nvae;
                     }
                 }
-                else if ( (LA43_1==INDEX) ) {
-                    int LA43_64 = input.LA(3);
+                else if ( (LA45_1==INDEX) ) {
+                    int LA45_64 = input.LA(3);
                     
-                    if ( (LA43_64==LEFT_ROUND_BRACKET) ) {
-                        int LA43_249 = input.LA(4);
+                    if ( (LA45_64==LEFT_ROUND_BRACKET) ) {
+                        int LA45_249 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 249, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 249, input);
                         
                             throw nvae;
                         }
@@ -6299,556 +6927,556 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     else {
                         if (backtracking>0) {failed=true; return node;}
                         NoViableAltException nvae =
-                            new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 64, input);
+                            new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 64, input);
                     
                         throw nvae;
                     }
                 }
-                else if ( (LA43_1==INTEGER_LITERAL) ) {
-                    int LA43_65 = input.LA(3);
+                else if ( (LA45_1==INTEGER_LITERAL) ) {
+                    int LA45_65 = input.LA(3);
                     
-                    if ( (LA43_65==MULTIPLY) ) {
-                        int LA43_250 = input.LA(4);
+                    if ( (LA45_65==MULTIPLY) ) {
+                        int LA45_250 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 250, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 250, input);
                         
                             throw nvae;
                         }
                     }
-                    else if ( (LA43_65==DIVIDE) ) {
-                        int LA43_251 = input.LA(4);
+                    else if ( (LA45_65==DIVIDE) ) {
+                        int LA45_251 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 251, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 251, input);
                         
                             throw nvae;
                         }
                     }
-                    else if ( (LA43_65==PLUS) ) {
-                        int LA43_252 = input.LA(4);
+                    else if ( (LA45_65==PLUS) ) {
+                        int LA45_252 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 252, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 252, input);
                         
                             throw nvae;
                         }
                     }
-                    else if ( (LA43_65==MINUS) ) {
-                        int LA43_253 = input.LA(4);
+                    else if ( (LA45_65==MINUS) ) {
+                        int LA45_253 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 253, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 253, input);
                         
                             throw nvae;
                         }
                     }
-                    else if ( (LA43_65==RIGHT_ROUND_BRACKET) ) {
-                        alt43=2;
+                    else if ( (LA45_65==EQUALS) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_65==EQUALS) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_65==NOT_EQUAL_TO) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_65==NOT_EQUAL_TO) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_65==GREATER_THAN) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_65==GREATER_THAN) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_65==GREATER_THAN_EQUAL_TO) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_65==GREATER_THAN_EQUAL_TO) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_65==LESS_THAN) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_65==LESS_THAN) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_65==LESS_THAN_EQUAL_TO) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_65==LESS_THAN_EQUAL_TO) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_65==NOT) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_65==NOT) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_65==BETWEEN) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_65==BETWEEN) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_65==LIKE) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_65==LIKE) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_65==IN) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_65==IN) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_65==MEMBER) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_65==MEMBER) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_65==IS) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_65==IS) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_65==RIGHT_ROUND_BRACKET) ) {
+                        alt45=2;
                     }
                     else {
                         if (backtracking>0) {failed=true; return node;}
                         NoViableAltException nvae =
-                            new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 65, input);
+                            new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 65, input);
                     
                         throw nvae;
                     }
                 }
-                else if ( (LA43_1==LONG_LITERAL) ) {
-                    int LA43_66 = input.LA(3);
+                else if ( (LA45_1==LONG_LITERAL) ) {
+                    int LA45_66 = input.LA(3);
                     
-                    if ( (LA43_66==MULTIPLY) ) {
-                        int LA43_267 = input.LA(4);
+                    if ( (LA45_66==MULTIPLY) ) {
+                        int LA45_267 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 267, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 267, input);
                         
                             throw nvae;
                         }
                     }
-                    else if ( (LA43_66==DIVIDE) ) {
-                        int LA43_268 = input.LA(4);
+                    else if ( (LA45_66==DIVIDE) ) {
+                        int LA45_268 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 268, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 268, input);
                         
                             throw nvae;
                         }
                     }
-                    else if ( (LA43_66==PLUS) ) {
-                        int LA43_269 = input.LA(4);
+                    else if ( (LA45_66==PLUS) ) {
+                        int LA45_269 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 269, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 269, input);
                         
                             throw nvae;
                         }
                     }
-                    else if ( (LA43_66==MINUS) ) {
-                        int LA43_270 = input.LA(4);
+                    else if ( (LA45_66==MINUS) ) {
+                        int LA45_270 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 270, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 270, input);
                         
                             throw nvae;
                         }
                     }
-                    else if ( (LA43_66==RIGHT_ROUND_BRACKET) ) {
-                        alt43=2;
+                    else if ( (LA45_66==EQUALS) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_66==EQUALS) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_66==NOT_EQUAL_TO) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_66==NOT_EQUAL_TO) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_66==GREATER_THAN) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_66==GREATER_THAN) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_66==GREATER_THAN_EQUAL_TO) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_66==GREATER_THAN_EQUAL_TO) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_66==LESS_THAN) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_66==LESS_THAN) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_66==LESS_THAN_EQUAL_TO) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_66==LESS_THAN_EQUAL_TO) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_66==NOT) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_66==NOT) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_66==BETWEEN) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_66==BETWEEN) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_66==LIKE) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_66==LIKE) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_66==IN) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_66==IN) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_66==MEMBER) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_66==MEMBER) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_66==IS) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_66==IS) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_66==RIGHT_ROUND_BRACKET) ) {
+                        alt45=2;
                     }
                     else {
                         if (backtracking>0) {failed=true; return node;}
                         NoViableAltException nvae =
-                            new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 66, input);
+                            new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 66, input);
                     
                         throw nvae;
                     }
                 }
-                else if ( (LA43_1==FLOAT_LITERAL) ) {
-                    int LA43_67 = input.LA(3);
+                else if ( (LA45_1==FLOAT_LITERAL) ) {
+                    int LA45_67 = input.LA(3);
                     
-                    if ( (LA43_67==MULTIPLY) ) {
-                        int LA43_284 = input.LA(4);
+                    if ( (LA45_67==MULTIPLY) ) {
+                        int LA45_284 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 284, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 284, input);
                         
                             throw nvae;
                         }
                     }
-                    else if ( (LA43_67==DIVIDE) ) {
-                        int LA43_285 = input.LA(4);
+                    else if ( (LA45_67==DIVIDE) ) {
+                        int LA45_285 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 285, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 285, input);
                         
                             throw nvae;
                         }
                     }
-                    else if ( (LA43_67==PLUS) ) {
-                        int LA43_286 = input.LA(4);
+                    else if ( (LA45_67==PLUS) ) {
+                        int LA45_286 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 286, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 286, input);
                         
                             throw nvae;
                         }
                     }
-                    else if ( (LA43_67==MINUS) ) {
-                        int LA43_287 = input.LA(4);
+                    else if ( (LA45_67==MINUS) ) {
+                        int LA45_287 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 287, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 287, input);
                         
                             throw nvae;
                         }
                     }
-                    else if ( (LA43_67==RIGHT_ROUND_BRACKET) ) {
-                        alt43=2;
+                    else if ( (LA45_67==RIGHT_ROUND_BRACKET) ) {
+                        alt45=2;
                     }
-                    else if ( (LA43_67==EQUALS) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_67==EQUALS) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_67==NOT_EQUAL_TO) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_67==NOT_EQUAL_TO) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_67==GREATER_THAN) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_67==GREATER_THAN) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_67==GREATER_THAN_EQUAL_TO) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_67==GREATER_THAN_EQUAL_TO) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_67==LESS_THAN) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_67==LESS_THAN) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_67==LESS_THAN_EQUAL_TO) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_67==LESS_THAN_EQUAL_TO) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_67==NOT) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_67==NOT) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_67==BETWEEN) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_67==BETWEEN) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_67==LIKE) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_67==LIKE) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_67==IN) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_67==IN) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_67==MEMBER) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_67==MEMBER) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_67==IS) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_67==IS) && (synpred1())) {
+                        alt45=1;
                     }
                     else {
                         if (backtracking>0) {failed=true; return node;}
                         NoViableAltException nvae =
-                            new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 67, input);
+                            new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 67, input);
                     
                         throw nvae;
                     }
                 }
-                else if ( (LA43_1==DOUBLE_LITERAL) ) {
-                    int LA43_68 = input.LA(3);
+                else if ( (LA45_1==DOUBLE_LITERAL) ) {
+                    int LA45_68 = input.LA(3);
                     
-                    if ( (LA43_68==MULTIPLY) ) {
-                        int LA43_301 = input.LA(4);
+                    if ( (LA45_68==MULTIPLY) ) {
+                        int LA45_301 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 301, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 301, input);
                         
                             throw nvae;
                         }
                     }
-                    else if ( (LA43_68==DIVIDE) ) {
-                        int LA43_302 = input.LA(4);
+                    else if ( (LA45_68==DIVIDE) ) {
+                        int LA45_302 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 302, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 302, input);
                         
                             throw nvae;
                         }
                     }
-                    else if ( (LA43_68==PLUS) ) {
-                        int LA43_303 = input.LA(4);
+                    else if ( (LA45_68==PLUS) ) {
+                        int LA45_303 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 303, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 303, input);
                         
                             throw nvae;
                         }
                     }
-                    else if ( (LA43_68==MINUS) ) {
-                        int LA43_304 = input.LA(4);
+                    else if ( (LA45_68==MINUS) ) {
+                        int LA45_304 = input.LA(4);
                         
                         if ( (synpred1()) ) {
-                            alt43=1;
+                            alt45=1;
                         }
                         else if ( (true) ) {
-                            alt43=2;
+                            alt45=2;
                         }
                         else {
                             if (backtracking>0) {failed=true; return node;}
                             NoViableAltException nvae =
-                                new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 304, input);
+                                new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 304, input);
                         
                             throw nvae;
                         }
                     }
-                    else if ( (LA43_68==RIGHT_ROUND_BRACKET) ) {
-                        alt43=2;
+                    else if ( (LA45_68==RIGHT_ROUND_BRACKET) ) {
+                        alt45=2;
                     }
-                    else if ( (LA43_68==EQUALS) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_68==EQUALS) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_68==NOT_EQUAL_TO) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_68==NOT_EQUAL_TO) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_68==GREATER_THAN) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_68==GREATER_THAN) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_68==GREATER_THAN_EQUAL_TO) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_68==GREATER_THAN_EQUAL_TO) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_68==LESS_THAN) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_68==LESS_THAN) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_68==LESS_THAN_EQUAL_TO) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_68==LESS_THAN_EQUAL_TO) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_68==NOT) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_68==NOT) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_68==BETWEEN) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_68==BETWEEN) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_68==LIKE) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_68==LIKE) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_68==IN) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_68==IN) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_68==MEMBER) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_68==MEMBER) && (synpred1())) {
+                        alt45=1;
                     }
-                    else if ( (LA43_68==IS) && (synpred1())) {
-                        alt43=1;
+                    else if ( (LA45_68==IS) && (synpred1())) {
+                        alt45=1;
                     }
                     else {
                         if (backtracking>0) {failed=true; return node;}
                         NoViableAltException nvae =
-                            new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 68, input);
+                            new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 68, input);
                     
                         throw nvae;
                     }
                 }
-                else if ( (LA43_1==CURRENT_DATE) && (synpred1())) {
-                    alt43=1;
+                else if ( (LA45_1==CURRENT_DATE) && (synpred1())) {
+                    alt45=1;
                 }
-                else if ( (LA43_1==CURRENT_TIME) && (synpred1())) {
-                    alt43=1;
+                else if ( (LA45_1==CURRENT_TIME) && (synpred1())) {
+                    alt45=1;
                 }
-                else if ( (LA43_1==CURRENT_TIMESTAMP) && (synpred1())) {
-                    alt43=1;
+                else if ( (LA45_1==CURRENT_TIMESTAMP) && (synpred1())) {
+                    alt45=1;
                 }
-                else if ( (LA43_1==CONCAT) && (synpred1())) {
-                    alt43=1;
+                else if ( (LA45_1==CONCAT) && (synpred1())) {
+                    alt45=1;
                 }
-                else if ( (LA43_1==SUBSTRING) && (synpred1())) {
-                    alt43=1;
+                else if ( (LA45_1==SUBSTRING) && (synpred1())) {
+                    alt45=1;
                 }
-                else if ( (LA43_1==TRIM) && (synpred1())) {
-                    alt43=1;
+                else if ( (LA45_1==TRIM) && (synpred1())) {
+                    alt45=1;
                 }
-                else if ( (LA43_1==UPPER) && (synpred1())) {
-                    alt43=1;
+                else if ( (LA45_1==UPPER) && (synpred1())) {
+                    alt45=1;
                 }
-                else if ( (LA43_1==LOWER) && (synpred1())) {
-                    alt43=1;
+                else if ( (LA45_1==LOWER) && (synpred1())) {
+                    alt45=1;
                 }
-                else if ( (LA43_1==STRING_LITERAL_DOUBLE_QUOTED) && (synpred1())) {
-                    alt43=1;
+                else if ( (LA45_1==STRING_LITERAL_DOUBLE_QUOTED) && (synpred1())) {
+                    alt45=1;
                 }
-                else if ( (LA43_1==STRING_LITERAL_SINGLE_QUOTED) && (synpred1())) {
-                    alt43=1;
+                else if ( (LA45_1==STRING_LITERAL_SINGLE_QUOTED) && (synpred1())) {
+                    alt45=1;
                 }
-                else if ( (LA43_1==TRUE) && (synpred1())) {
-                    alt43=1;
+                else if ( (LA45_1==TRUE) && (synpred1())) {
+                    alt45=1;
                 }
-                else if ( (LA43_1==FALSE) && (synpred1())) {
-                    alt43=1;
+                else if ( (LA45_1==FALSE) && (synpred1())) {
+                    alt45=1;
                 }
-                else if ( (LA43_1==TYPE) && (synpred1())) {
-                    alt43=1;
+                else if ( (LA45_1==TYPE) && (synpred1())) {
+                    alt45=1;
                 }
-                else if ( (LA43_1==EXISTS) && (synpred1())) {
-                    alt43=1;
+                else if ( (LA45_1==EXISTS) && (synpred1())) {
+                    alt45=1;
                 }
-                else if ( (LA43_1==SELECT) ) {
-                    alt43=2;
+                else if ( (LA45_1==SELECT) ) {
+                    alt45=2;
                 }
                 else {
                     if (backtracking>0) {failed=true; return node;}
                     NoViableAltException nvae =
-                        new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 1, input);
+                        new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 1, input);
                 
                     throw nvae;
                 }
             }
-            else if ( (LA43_0==ABS||LA43_0==AVG||(LA43_0>=CASE && LA43_0<=CURRENT_TIMESTAMP)||LA43_0==FALSE||LA43_0==INDEX||LA43_0==KEY||LA43_0==LENGTH||(LA43_0>=LOCATE && LA43_0<=MAX)||(LA43_0>=MIN && LA43_0<=MOD)||LA43_0==NULLIF||(LA43_0>=SIZE && LA43_0<=SQRT)||(LA43_0>=SUBSTRING && LA43_0<=SUM)||(LA43_0>=TRIM && LA43_0<=TYPE)||(LA43_0>=UPPER && LA43_0<=VALUE)||LA43_0==IDENT||(LA43_0>=PLUS && LA43_0<=MINUS)||(LA43_0>=INTEGER_LITERAL && LA43_0<=NAMED_PARAM)) ) {
-                alt43=2;
+            else if ( (LA45_0==ABS||LA45_0==AVG||(LA45_0>=CASE && LA45_0<=CURRENT_TIMESTAMP)||LA45_0==FALSE||LA45_0==INDEX||LA45_0==KEY||LA45_0==LENGTH||(LA45_0>=LOCATE && LA45_0<=MAX)||(LA45_0>=MIN && LA45_0<=MOD)||LA45_0==NULLIF||(LA45_0>=SIZE && LA45_0<=SQRT)||(LA45_0>=SUBSTRING && LA45_0<=SUM)||(LA45_0>=TRIM && LA45_0<=TYPE)||(LA45_0>=UPPER && LA45_0<=VALUE)||LA45_0==IDENT||(LA45_0>=PLUS && LA45_0<=MINUS)||(LA45_0>=INTEGER_LITERAL && LA45_0<=NAMED_PARAM)) ) {
+                alt45=2;
             }
             else {
                 if (backtracking>0) {failed=true; return node;}
                 NoViableAltException nvae =
-                    new NoViableAltException("608:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 43, 0, input);
+                    new NoViableAltException("634:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 45, 0, input);
             
                 throw nvae;
             }
-            switch (alt43) {
+            switch (alt45) {
                 case 1 :
-                    // JPQL.g:610:7: ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET
+                    // JPQL.g:636:7: ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET
                     {
-                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_conditionalPrimary3388); if (failed) return node;
-                    pushFollow(FOLLOW_conditionalExpression_in_conditionalPrimary3394);
+                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_conditionalPrimary3510); if (failed) return node;
+                    pushFollow(FOLLOW_conditionalExpression_in_conditionalPrimary3516);
                     n=conditionalExpression();
                     _fsp--;
                     if (failed) return node;
-                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_conditionalPrimary3396); if (failed) return node;
+                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_conditionalPrimary3518); if (failed) return node;
                     if ( backtracking==0 ) {
                       node = n;
                     }
@@ -6856,9 +7484,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // JPQL.g:612:7: n= simpleConditionalExpression
+                    // JPQL.g:638:7: n= simpleConditionalExpression
                     {
-                    pushFollow(FOLLOW_simpleConditionalExpression_in_conditionalPrimary3410);
+                    pushFollow(FOLLOW_simpleConditionalExpression_in_conditionalPrimary3532);
                     n=simpleConditionalExpression();
                     _fsp--;
                     if (failed) return node;
@@ -6883,7 +7511,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start simpleConditionalExpression
-    // JPQL.g:615:1: simpleConditionalExpression returns [Object node] : (left= arithmeticExpression n= simpleConditionalExpressionRemainder[$left.node] | left= nonArithmeticScalarExpression n= simpleConditionalExpressionRemainder[$left.node] );
+    // JPQL.g:641:1: simpleConditionalExpression returns [Object node] : (left= arithmeticExpression n= simpleConditionalExpressionRemainder[$left.node] | left= nonArithmeticScalarExpression n= simpleConditionalExpressionRemainder[$left.node] );
     public final Object simpleConditionalExpression() throws RecognitionException {
 
         Object node = null;
@@ -6897,32 +7525,32 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             node = null; 
     
         try {
-            // JPQL.g:619:7: (left= arithmeticExpression n= simpleConditionalExpressionRemainder[$left.node] | left= nonArithmeticScalarExpression n= simpleConditionalExpressionRemainder[$left.node] )
-            int alt44=2;
-            int LA44_0 = input.LA(1);
+            // JPQL.g:645:7: (left= arithmeticExpression n= simpleConditionalExpressionRemainder[$left.node] | left= nonArithmeticScalarExpression n= simpleConditionalExpressionRemainder[$left.node] )
+            int alt46=2;
+            int LA46_0 = input.LA(1);
             
-            if ( (LA44_0==ABS||LA44_0==AVG||(LA44_0>=CASE && LA44_0<=COALESCE)||LA44_0==COUNT||LA44_0==INDEX||LA44_0==KEY||LA44_0==LENGTH||LA44_0==LOCATE||LA44_0==MAX||(LA44_0>=MIN && LA44_0<=MOD)||LA44_0==NULLIF||(LA44_0>=SIZE && LA44_0<=SQRT)||LA44_0==SUM||LA44_0==VALUE||LA44_0==IDENT||LA44_0==LEFT_ROUND_BRACKET||(LA44_0>=PLUS && LA44_0<=MINUS)||(LA44_0>=INTEGER_LITERAL && LA44_0<=DOUBLE_LITERAL)||(LA44_0>=POSITIONAL_PARAM && LA44_0<=NAMED_PARAM)) ) {
-                alt44=1;
+            if ( (LA46_0==ABS||LA46_0==AVG||(LA46_0>=CASE && LA46_0<=COALESCE)||LA46_0==COUNT||LA46_0==INDEX||LA46_0==KEY||LA46_0==LENGTH||LA46_0==LOCATE||LA46_0==MAX||(LA46_0>=MIN && LA46_0<=MOD)||LA46_0==NULLIF||(LA46_0>=SIZE && LA46_0<=SQRT)||LA46_0==SUM||LA46_0==VALUE||LA46_0==IDENT||LA46_0==LEFT_ROUND_BRACKET||(LA46_0>=PLUS && LA46_0<=MINUS)||(LA46_0>=INTEGER_LITERAL && LA46_0<=DOUBLE_LITERAL)||(LA46_0>=POSITIONAL_PARAM && LA46_0<=NAMED_PARAM)) ) {
+                alt46=1;
             }
-            else if ( (LA44_0==CONCAT||(LA44_0>=CURRENT_DATE && LA44_0<=CURRENT_TIMESTAMP)||LA44_0==FALSE||LA44_0==LOWER||LA44_0==SUBSTRING||(LA44_0>=TRIM && LA44_0<=TYPE)||LA44_0==UPPER||(LA44_0>=STRING_LITERAL_DOUBLE_QUOTED && LA44_0<=STRING_LITERAL_SINGLE_QUOTED)) ) {
-                alt44=2;
+            else if ( (LA46_0==CONCAT||(LA46_0>=CURRENT_DATE && LA46_0<=CURRENT_TIMESTAMP)||LA46_0==FALSE||LA46_0==LOWER||LA46_0==SUBSTRING||(LA46_0>=TRIM && LA46_0<=TYPE)||LA46_0==UPPER||(LA46_0>=STRING_LITERAL_DOUBLE_QUOTED && LA46_0<=STRING_LITERAL_SINGLE_QUOTED)) ) {
+                alt46=2;
             }
             else {
                 if (backtracking>0) {failed=true; return node;}
                 NoViableAltException nvae =
-                    new NoViableAltException("615:1: simpleConditionalExpression returns [Object node] : (left= arithmeticExpression n= simpleConditionalExpressionRemainder[$left.node] | left= nonArithmeticScalarExpression n= simpleConditionalExpressionRemainder[$left.node] );", 44, 0, input);
+                    new NoViableAltException("641:1: simpleConditionalExpression returns [Object node] : (left= arithmeticExpression n= simpleConditionalExpressionRemainder[$left.node] | left= nonArithmeticScalarExpression n= simpleConditionalExpressionRemainder[$left.node] );", 46, 0, input);
             
                 throw nvae;
             }
-            switch (alt44) {
+            switch (alt46) {
                 case 1 :
-                    // JPQL.g:619:7: left= arithmeticExpression n= simpleConditionalExpressionRemainder[$left.node]
+                    // JPQL.g:645:7: left= arithmeticExpression n= simpleConditionalExpressionRemainder[$left.node]
                     {
-                    pushFollow(FOLLOW_arithmeticExpression_in_simpleConditionalExpression3442);
+                    pushFollow(FOLLOW_arithmeticExpression_in_simpleConditionalExpression3564);
                     left=arithmeticExpression();
                     _fsp--;
                     if (failed) return node;
-                    pushFollow(FOLLOW_simpleConditionalExpressionRemainder_in_simpleConditionalExpression3448);
+                    pushFollow(FOLLOW_simpleConditionalExpressionRemainder_in_simpleConditionalExpression3570);
                     n=simpleConditionalExpressionRemainder(left);
                     _fsp--;
                     if (failed) return node;
@@ -6933,13 +7561,13 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // JPQL.g:620:7: left= nonArithmeticScalarExpression n= simpleConditionalExpressionRemainder[$left.node]
+                    // JPQL.g:646:7: left= nonArithmeticScalarExpression n= simpleConditionalExpressionRemainder[$left.node]
                     {
-                    pushFollow(FOLLOW_nonArithmeticScalarExpression_in_simpleConditionalExpression3463);
+                    pushFollow(FOLLOW_nonArithmeticScalarExpression_in_simpleConditionalExpression3585);
                     left=nonArithmeticScalarExpression();
                     _fsp--;
                     if (failed) return node;
-                    pushFollow(FOLLOW_simpleConditionalExpressionRemainder_in_simpleConditionalExpression3469);
+                    pushFollow(FOLLOW_simpleConditionalExpressionRemainder_in_simpleConditionalExpression3591);
                     n=simpleConditionalExpressionRemainder(left);
                     _fsp--;
                     if (failed) return node;
@@ -6964,7 +7592,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start simpleConditionalExpressionRemainder
-    // JPQL.g:623:1: simpleConditionalExpressionRemainder[Object left] returns [Object node] : (n= comparisonExpression[left] | (n1= NOT )? n= conditionWithNotExpression[(n1!=null), left] | IS (n2= NOT )? n= isExpression[(n2!=null), left] );
+    // JPQL.g:649:1: simpleConditionalExpressionRemainder[Object left] returns [Object node] : (n= comparisonExpression[left] | (n1= NOT )? n= conditionWithNotExpression[(n1!=null), left] | IS (n2= NOT )? n= isExpression[(n2!=null), left] );
     public final Object simpleConditionalExpressionRemainder(Object left) throws RecognitionException {
 
         Object node = null;
@@ -6976,8 +7604,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // JPQL.g:625:7: (n= comparisonExpression[left] | (n1= NOT )? n= conditionWithNotExpression[(n1!=null), left] | IS (n2= NOT )? n= isExpression[(n2!=null), left] )
-            int alt47=3;
+            // JPQL.g:651:7: (n= comparisonExpression[left] | (n1= NOT )? n= conditionWithNotExpression[(n1!=null), left] | IS (n2= NOT )? n= isExpression[(n2!=null), left] )
+            int alt49=3;
             switch ( input.LA(1) ) {
             case EQUALS:
             case NOT_EQUAL_TO:
@@ -6986,7 +7614,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             case LESS_THAN:
             case LESS_THAN_EQUAL_TO:
                 {
-                alt47=1;
+                alt49=1;
                 }
                 break;
             case BETWEEN:
@@ -6995,27 +7623,27 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             case MEMBER:
             case NOT:
                 {
-                alt47=2;
+                alt49=2;
                 }
                 break;
             case IS:
                 {
-                alt47=3;
+                alt49=3;
                 }
                 break;
             default:
                 if (backtracking>0) {failed=true; return node;}
                 NoViableAltException nvae =
-                    new NoViableAltException("623:1: simpleConditionalExpressionRemainder[Object left] returns [Object node] : (n= comparisonExpression[left] | (n1= NOT )? n= conditionWithNotExpression[(n1!=null), left] | IS (n2= NOT )? n= isExpression[(n2!=null), left] );", 47, 0, input);
+                    new NoViableAltException("649:1: simpleConditionalExpressionRemainder[Object left] returns [Object node] : (n= comparisonExpression[left] | (n1= NOT )? n= conditionWithNotExpression[(n1!=null), left] | IS (n2= NOT )? n= isExpression[(n2!=null), left] );", 49, 0, input);
             
                 throw nvae;
             }
             
-            switch (alt47) {
+            switch (alt49) {
                 case 1 :
-                    // JPQL.g:625:7: n= comparisonExpression[left]
+                    // JPQL.g:651:7: n= comparisonExpression[left]
                     {
-                    pushFollow(FOLLOW_comparisonExpression_in_simpleConditionalExpressionRemainder3504);
+                    pushFollow(FOLLOW_comparisonExpression_in_simpleConditionalExpressionRemainder3626);
                     n=comparisonExpression(left);
                     _fsp--;
                     if (failed) return node;
@@ -7026,28 +7654,28 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // JPQL.g:626:7: (n1= NOT )? n= conditionWithNotExpression[(n1!=null), left]
+                    // JPQL.g:652:7: (n1= NOT )? n= conditionWithNotExpression[(n1!=null), left]
                     {
-                    // JPQL.g:626:7: (n1= NOT )?
-                    int alt45=2;
-                    int LA45_0 = input.LA(1);
+                    // JPQL.g:652:7: (n1= NOT )?
+                    int alt47=2;
+                    int LA47_0 = input.LA(1);
                     
-                    if ( (LA45_0==NOT) ) {
-                        alt45=1;
+                    if ( (LA47_0==NOT) ) {
+                        alt47=1;
                     }
-                    switch (alt45) {
+                    switch (alt47) {
                         case 1 :
-                            // JPQL.g:626:8: n1= NOT
+                            // JPQL.g:652:8: n1= NOT
                             {
                             n1=(Token)input.LT(1);
-                            match(input,NOT,FOLLOW_NOT_in_simpleConditionalExpressionRemainder3518); if (failed) return node;
+                            match(input,NOT,FOLLOW_NOT_in_simpleConditionalExpressionRemainder3640); if (failed) return node;
                             
                             }
                             break;
                     
                     }
 
-                    pushFollow(FOLLOW_conditionWithNotExpression_in_simpleConditionalExpressionRemainder3526);
+                    pushFollow(FOLLOW_conditionWithNotExpression_in_simpleConditionalExpressionRemainder3648);
                     n=conditionWithNotExpression((n1!=null),  left);
                     _fsp--;
                     if (failed) return node;
@@ -7058,29 +7686,29 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 3 :
-                    // JPQL.g:627:7: IS (n2= NOT )? n= isExpression[(n2!=null), left]
+                    // JPQL.g:653:7: IS (n2= NOT )? n= isExpression[(n2!=null), left]
                     {
-                    match(input,IS,FOLLOW_IS_in_simpleConditionalExpressionRemainder3537); if (failed) return node;
-                    // JPQL.g:627:10: (n2= NOT )?
-                    int alt46=2;
-                    int LA46_0 = input.LA(1);
+                    match(input,IS,FOLLOW_IS_in_simpleConditionalExpressionRemainder3659); if (failed) return node;
+                    // JPQL.g:653:10: (n2= NOT )?
+                    int alt48=2;
+                    int LA48_0 = input.LA(1);
                     
-                    if ( (LA46_0==NOT) ) {
-                        alt46=1;
+                    if ( (LA48_0==NOT) ) {
+                        alt48=1;
                     }
-                    switch (alt46) {
+                    switch (alt48) {
                         case 1 :
-                            // JPQL.g:627:11: n2= NOT
+                            // JPQL.g:653:11: n2= NOT
                             {
                             n2=(Token)input.LT(1);
-                            match(input,NOT,FOLLOW_NOT_in_simpleConditionalExpressionRemainder3542); if (failed) return node;
+                            match(input,NOT,FOLLOW_NOT_in_simpleConditionalExpressionRemainder3664); if (failed) return node;
                             
                             }
                             break;
                     
                     }
 
-                    pushFollow(FOLLOW_isExpression_in_simpleConditionalExpressionRemainder3550);
+                    pushFollow(FOLLOW_isExpression_in_simpleConditionalExpressionRemainder3672);
                     n=isExpression((n2!=null),  left);
                     _fsp--;
                     if (failed) return node;
@@ -7105,7 +7733,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start conditionWithNotExpression
-    // JPQL.g:630:1: conditionWithNotExpression[boolean not, Object left] returns [Object node] : (n= betweenExpression[not, left] | n= likeExpression[not, left] | n= inExpression[not, left] | n= collectionMemberExpression[not, left] );
+    // JPQL.g:656:1: conditionWithNotExpression[boolean not, Object left] returns [Object node] : (n= betweenExpression[not, left] | n= likeExpression[not, left] | n= inExpression[not, left] | n= collectionMemberExpression[not, left] );
     public final Object conditionWithNotExpression(boolean not, Object left) throws RecognitionException {
 
         Object node = null;
@@ -7115,42 +7743,42 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // JPQL.g:632:7: (n= betweenExpression[not, left] | n= likeExpression[not, left] | n= inExpression[not, left] | n= collectionMemberExpression[not, left] )
-            int alt48=4;
+            // JPQL.g:658:7: (n= betweenExpression[not, left] | n= likeExpression[not, left] | n= inExpression[not, left] | n= collectionMemberExpression[not, left] )
+            int alt50=4;
             switch ( input.LA(1) ) {
             case BETWEEN:
                 {
-                alt48=1;
+                alt50=1;
                 }
                 break;
             case LIKE:
                 {
-                alt48=2;
+                alt50=2;
                 }
                 break;
             case IN:
                 {
-                alt48=3;
+                alt50=3;
                 }
                 break;
             case MEMBER:
                 {
-                alt48=4;
+                alt50=4;
                 }
                 break;
             default:
                 if (backtracking>0) {failed=true; return node;}
                 NoViableAltException nvae =
-                    new NoViableAltException("630:1: conditionWithNotExpression[boolean not, Object left] returns [Object node] : (n= betweenExpression[not, left] | n= likeExpression[not, left] | n= inExpression[not, left] | n= collectionMemberExpression[not, left] );", 48, 0, input);
+                    new NoViableAltException("656:1: conditionWithNotExpression[boolean not, Object left] returns [Object node] : (n= betweenExpression[not, left] | n= likeExpression[not, left] | n= inExpression[not, left] | n= collectionMemberExpression[not, left] );", 50, 0, input);
             
                 throw nvae;
             }
             
-            switch (alt48) {
+            switch (alt50) {
                 case 1 :
-                    // JPQL.g:632:7: n= betweenExpression[not, left]
+                    // JPQL.g:658:7: n= betweenExpression[not, left]
                     {
-                    pushFollow(FOLLOW_betweenExpression_in_conditionWithNotExpression3585);
+                    pushFollow(FOLLOW_betweenExpression_in_conditionWithNotExpression3707);
                     n=betweenExpression(not,  left);
                     _fsp--;
                     if (failed) return node;
@@ -7161,9 +7789,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // JPQL.g:633:7: n= likeExpression[not, left]
+                    // JPQL.g:659:7: n= likeExpression[not, left]
                     {
-                    pushFollow(FOLLOW_likeExpression_in_conditionWithNotExpression3600);
+                    pushFollow(FOLLOW_likeExpression_in_conditionWithNotExpression3722);
                     n=likeExpression(not,  left);
                     _fsp--;
                     if (failed) return node;
@@ -7174,9 +7802,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 3 :
-                    // JPQL.g:634:7: n= inExpression[not, left]
+                    // JPQL.g:660:7: n= inExpression[not, left]
                     {
-                    pushFollow(FOLLOW_inExpression_in_conditionWithNotExpression3614);
+                    pushFollow(FOLLOW_inExpression_in_conditionWithNotExpression3736);
                     n=inExpression(not,  left);
                     _fsp--;
                     if (failed) return node;
@@ -7187,9 +7815,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 4 :
-                    // JPQL.g:635:7: n= collectionMemberExpression[not, left]
+                    // JPQL.g:661:7: n= collectionMemberExpression[not, left]
                     {
-                    pushFollow(FOLLOW_collectionMemberExpression_in_conditionWithNotExpression3628);
+                    pushFollow(FOLLOW_collectionMemberExpression_in_conditionWithNotExpression3750);
                     n=collectionMemberExpression(not,  left);
                     _fsp--;
                     if (failed) return node;
@@ -7214,7 +7842,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start isExpression
-    // JPQL.g:638:1: isExpression[boolean not, Object left] returns [Object node] : (n= nullComparisonExpression[not, left] | n= emptyCollectionComparisonExpression[not, left] );
+    // JPQL.g:664:1: isExpression[boolean not, Object left] returns [Object node] : (n= nullComparisonExpression[not, left] | n= emptyCollectionComparisonExpression[not, left] );
     public final Object isExpression(boolean not, Object left) throws RecognitionException {
 
         Object node = null;
@@ -7224,28 +7852,28 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // JPQL.g:640:7: (n= nullComparisonExpression[not, left] | n= emptyCollectionComparisonExpression[not, left] )
-            int alt49=2;
-            int LA49_0 = input.LA(1);
+            // JPQL.g:666:7: (n= nullComparisonExpression[not, left] | n= emptyCollectionComparisonExpression[not, left] )
+            int alt51=2;
+            int LA51_0 = input.LA(1);
             
-            if ( (LA49_0==NULL) ) {
-                alt49=1;
+            if ( (LA51_0==NULL) ) {
+                alt51=1;
             }
-            else if ( (LA49_0==EMPTY) ) {
-                alt49=2;
+            else if ( (LA51_0==EMPTY) ) {
+                alt51=2;
             }
             else {
                 if (backtracking>0) {failed=true; return node;}
                 NoViableAltException nvae =
-                    new NoViableAltException("638:1: isExpression[boolean not, Object left] returns [Object node] : (n= nullComparisonExpression[not, left] | n= emptyCollectionComparisonExpression[not, left] );", 49, 0, input);
+                    new NoViableAltException("664:1: isExpression[boolean not, Object left] returns [Object node] : (n= nullComparisonExpression[not, left] | n= emptyCollectionComparisonExpression[not, left] );", 51, 0, input);
             
                 throw nvae;
             }
-            switch (alt49) {
+            switch (alt51) {
                 case 1 :
-                    // JPQL.g:640:7: n= nullComparisonExpression[not, left]
+                    // JPQL.g:666:7: n= nullComparisonExpression[not, left]
                     {
-                    pushFollow(FOLLOW_nullComparisonExpression_in_isExpression3663);
+                    pushFollow(FOLLOW_nullComparisonExpression_in_isExpression3785);
                     n=nullComparisonExpression(not,  left);
                     _fsp--;
                     if (failed) return node;
@@ -7256,9 +7884,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // JPQL.g:641:7: n= emptyCollectionComparisonExpression[not, left]
+                    // JPQL.g:667:7: n= emptyCollectionComparisonExpression[not, left]
                     {
-                    pushFollow(FOLLOW_emptyCollectionComparisonExpression_in_isExpression3678);
+                    pushFollow(FOLLOW_emptyCollectionComparisonExpression_in_isExpression3800);
                     n=emptyCollectionComparisonExpression(not,  left);
                     _fsp--;
                     if (failed) return node;
@@ -7283,7 +7911,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start betweenExpression
-    // JPQL.g:644:1: betweenExpression[boolean not, Object left] returns [Object node] : t= BETWEEN lowerBound= arithmeticExpression AND upperBound= arithmeticExpression ;
+    // JPQL.g:670:1: betweenExpression[boolean not, Object left] returns [Object node] : t= BETWEEN lowerBound= arithmeticExpression AND upperBound= arithmeticExpression ;
     public final Object betweenExpression(boolean not, Object left) throws RecognitionException {
 
         Object node = null;
@@ -7298,17 +7926,17 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             node = null;
     
         try {
-            // JPQL.g:648:7: (t= BETWEEN lowerBound= arithmeticExpression AND upperBound= arithmeticExpression )
-            // JPQL.g:648:7: t= BETWEEN lowerBound= arithmeticExpression AND upperBound= arithmeticExpression
+            // JPQL.g:674:7: (t= BETWEEN lowerBound= arithmeticExpression AND upperBound= arithmeticExpression )
+            // JPQL.g:674:7: t= BETWEEN lowerBound= arithmeticExpression AND upperBound= arithmeticExpression
             {
             t=(Token)input.LT(1);
-            match(input,BETWEEN,FOLLOW_BETWEEN_in_betweenExpression3711); if (failed) return node;
-            pushFollow(FOLLOW_arithmeticExpression_in_betweenExpression3725);
+            match(input,BETWEEN,FOLLOW_BETWEEN_in_betweenExpression3833); if (failed) return node;
+            pushFollow(FOLLOW_arithmeticExpression_in_betweenExpression3847);
             lowerBound=arithmeticExpression();
             _fsp--;
             if (failed) return node;
-            match(input,AND,FOLLOW_AND_in_betweenExpression3727); if (failed) return node;
-            pushFollow(FOLLOW_arithmeticExpression_in_betweenExpression3733);
+            match(input,AND,FOLLOW_AND_in_betweenExpression3849); if (failed) return node;
+            pushFollow(FOLLOW_arithmeticExpression_in_betweenExpression3855);
             upperBound=arithmeticExpression();
             _fsp--;
             if (failed) return node;
@@ -7339,7 +7967,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
     
     // $ANTLR start inExpression
-    // JPQL.g:656:1: inExpression[boolean not, Object left] returns [Object node] : (t= IN n= inputParameter | t= IN LEFT_ROUND_BRACKET (itemNode= inItem ( COMMA itemNode= inItem )* | subqueryNode= subquery ) RIGHT_ROUND_BRACKET );
+    // JPQL.g:682:1: inExpression[boolean not, Object left] returns [Object node] : (t= IN n= inputParameter | t= IN LEFT_ROUND_BRACKET (itemNode= inItem ( COMMA itemNode= inItem )* | subqueryNode= subquery ) RIGHT_ROUND_BRACKET );
     public final Object inExpression(boolean not, Object left) throws RecognitionException {
         inExpression_stack.push(new inExpression_scope());
 
@@ -7358,23 +7986,23 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             ((inExpression_scope)inExpression_stack.peek()).items = new ArrayList();
     
         try {
-            // JPQL.g:664:8: (t= IN n= inputParameter | t= IN LEFT_ROUND_BRACKET (itemNode= inItem ( COMMA itemNode= inItem )* | subqueryNode= subquery ) RIGHT_ROUND_BRACKET )
-            int alt52=2;
-            int LA52_0 = input.LA(1);
+            // JPQL.g:690:8: (t= IN n= inputParameter | t= IN LEFT_ROUND_BRACKET (itemNode= inItem ( COMMA itemNode= inItem )* | subqueryNode= subquery ) RIGHT_ROUND_BRACKET )
+            int alt54=2;
+            int LA54_0 = input.LA(1);
             
-            if ( (LA52_0==IN) ) {
-                int LA52_1 = input.LA(2);
+            if ( (LA54_0==IN) ) {
+                int LA54_1 = input.LA(2);
                 
-                if ( (LA52_1==LEFT_ROUND_BRACKET) ) {
-                    alt52=2;
+                if ( (LA54_1==LEFT_ROUND_BRACKET) ) {
+                    alt54=2;
                 }
-                else if ( ((LA52_1>=POSITIONAL_PARAM && LA52_1<=NAMED_PARAM)) ) {
-                    alt52=1;
+                else if ( ((LA54_1>=POSITIONAL_PARAM && LA54_1<=NAMED_PARAM)) ) {
+                    alt54=1;
                 }
                 else {
                     if (backtracking>0) {failed=true; return node;}
                     NoViableAltException nvae =
-                        new NoViableAltException("656:1: inExpression[boolean not, Object left] returns [Object node] : (t= IN n= inputParameter | t= IN LEFT_ROUND_BRACKET (itemNode= inItem ( COMMA itemNode= inItem )* | subqueryNode= subquery ) RIGHT_ROUND_BRACKET );", 52, 1, input);
+                        new NoViableAltException("682:1: inExpression[boolean not, Object left] returns [Object node] : (t= IN n= inputParameter | t= IN LEFT_ROUND_BRACKET (itemNode= inItem ( COMMA itemNode= inItem )* | subqueryNode= subquery ) RIGHT_ROUND_BRACKET );", 54, 1, input);
                 
                     throw nvae;
                 }
@@ -7382,17 +8010,17 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             else {
                 if (backtracking>0) {failed=true; return node;}
                 NoViableAltException nvae =
-                    new NoViableAltException("656:1: inExpression[boolean not, Object left] returns [Object node] : (t= IN n= inputParameter | t= IN LEFT_ROUND_BRACKET (itemNode= inItem ( COMMA itemNode= inItem )* | subqueryNode= subquery ) RIGHT_ROUND_BRACKET );", 52, 0, input);
+                    new NoViableAltException("682:1: inExpression[boolean not, Object left] returns [Object node] : (t= IN n= inputParameter | t= IN LEFT_ROUND_BRACKET (itemNode= inItem ( COMMA itemNode= inItem )* | subqueryNode= subquery ) RIGHT_ROUND_BRACKET );", 54, 0, input);
             
                 throw nvae;
             }
-            switch (alt52) {
+            switch (alt54) {
                 case 1 :
-                    // JPQL.g:664:8: t= IN n= inputParameter
+                    // JPQL.g:690:8: t= IN n= inputParameter
                     {
                     t=(Token)input.LT(1);
-                    match(input,IN,FOLLOW_IN_in_inExpression3779); if (failed) return node;
-                    pushFollow(FOLLOW_inputParameter_in_inExpression3785);
+                    match(input,IN,FOLLOW_IN_in_inExpression3901); if (failed) return node;
+                    pushFollow(FOLLOW_inputParameter_in_inExpression3907);
                     n=inputParameter();
                     _fsp--;
                     if (failed) return node;
@@ -7406,56 +8034,56 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // JPQL.g:669:9: t= IN LEFT_ROUND_BRACKET (itemNode= inItem ( COMMA itemNode= inItem )* | subqueryNode= subquery ) RIGHT_ROUND_BRACKET
+                    // JPQL.g:695:9: t= IN LEFT_ROUND_BRACKET (itemNode= inItem ( COMMA itemNode= inItem )* | subqueryNode= subquery ) RIGHT_ROUND_BRACKET
                     {
                     t=(Token)input.LT(1);
-                    match(input,IN,FOLLOW_IN_in_inExpression3812); if (failed) return node;
-                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_inExpression3822); if (failed) return node;
-                    // JPQL.g:671:9: (itemNode= inItem ( COMMA itemNode= inItem )* | subqueryNode= subquery )
-                    int alt51=2;
-                    int LA51_0 = input.LA(1);
+                    match(input,IN,FOLLOW_IN_in_inExpression3934); if (failed) return node;
+                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_inExpression3944); if (failed) return node;
+                    // JPQL.g:697:9: (itemNode= inItem ( COMMA itemNode= inItem )* | subqueryNode= subquery )
+                    int alt53=2;
+                    int LA53_0 = input.LA(1);
                     
-                    if ( (LA51_0==IDENT||(LA51_0>=INTEGER_LITERAL && LA51_0<=NAMED_PARAM)) ) {
-                        alt51=1;
+                    if ( (LA53_0==IDENT||(LA53_0>=INTEGER_LITERAL && LA53_0<=NAMED_PARAM)) ) {
+                        alt53=1;
                     }
-                    else if ( (LA51_0==SELECT) ) {
-                        alt51=2;
+                    else if ( (LA53_0==SELECT) ) {
+                        alt53=2;
                     }
                     else {
                         if (backtracking>0) {failed=true; return node;}
                         NoViableAltException nvae =
-                            new NoViableAltException("671:9: (itemNode= inItem ( COMMA itemNode= inItem )* | subqueryNode= subquery )", 51, 0, input);
+                            new NoViableAltException("697:9: (itemNode= inItem ( COMMA itemNode= inItem )* | subqueryNode= subquery )", 53, 0, input);
                     
                         throw nvae;
                     }
-                    switch (alt51) {
+                    switch (alt53) {
                         case 1 :
-                            // JPQL.g:671:11: itemNode= inItem ( COMMA itemNode= inItem )*
+                            // JPQL.g:697:11: itemNode= inItem ( COMMA itemNode= inItem )*
                             {
-                            pushFollow(FOLLOW_inItem_in_inExpression3838);
+                            pushFollow(FOLLOW_inItem_in_inExpression3960);
                             itemNode=inItem();
                             _fsp--;
                             if (failed) return node;
                             if ( backtracking==0 ) {
                                ((inExpression_scope)inExpression_stack.peek()).items.add(itemNode); 
                             }
-                            // JPQL.g:672:13: ( COMMA itemNode= inItem )*
-                            loop50:
+                            // JPQL.g:698:13: ( COMMA itemNode= inItem )*
+                            loop52:
                             do {
-                                int alt50=2;
-                                int LA50_0 = input.LA(1);
+                                int alt52=2;
+                                int LA52_0 = input.LA(1);
                                 
-                                if ( (LA50_0==COMMA) ) {
-                                    alt50=1;
+                                if ( (LA52_0==COMMA) ) {
+                                    alt52=1;
                                 }
                                 
                             
-                                switch (alt50) {
+                                switch (alt52) {
                             	case 1 :
-                            	    // JPQL.g:672:15: COMMA itemNode= inItem
+                            	    // JPQL.g:698:15: COMMA itemNode= inItem
                             	    {
-                            	    match(input,COMMA,FOLLOW_COMMA_in_inExpression3856); if (failed) return node;
-                            	    pushFollow(FOLLOW_inItem_in_inExpression3862);
+                            	    match(input,COMMA,FOLLOW_COMMA_in_inExpression3978); if (failed) return node;
+                            	    pushFollow(FOLLOW_inItem_in_inExpression3984);
                             	    itemNode=inItem();
                             	    _fsp--;
                             	    if (failed) return node;
@@ -7467,7 +8095,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                             	    break;
                             
                             	default :
-                            	    break loop50;
+                            	    break loop52;
                                 }
                             } while (true);
 
@@ -7481,9 +8109,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                             }
                             break;
                         case 2 :
-                            // JPQL.g:677:11: subqueryNode= subquery
+                            // JPQL.g:703:11: subqueryNode= subquery
                             {
-                            pushFollow(FOLLOW_subquery_in_inExpression3897);
+                            pushFollow(FOLLOW_subquery_in_inExpression4019);
                             subqueryNode=subquery();
                             _fsp--;
                             if (failed) return node;
@@ -7499,7 +8127,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     
                     }
 
-                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_inExpression3931); if (failed) return node;
+                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_inExpression4053); if (failed) return node;
                     
                     }
                     break;
@@ -7519,7 +8147,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start inItem
-    // JPQL.g:686:1: inItem returns [Object node] : (n= literalString | n= literalNumeric | n= inputParameter | n= variableAccessOrTypeConstant );
+    // JPQL.g:712:1: inItem returns [Object node] : (n= literalString | n= literalNumeric | n= inputParameter | n= variableAccessOrTypeConstant );
     public final Object inItem() throws RecognitionException {
 
         Object node = null;
@@ -7529,13 +8157,13 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // JPQL.g:688:7: (n= literalString | n= literalNumeric | n= inputParameter | n= variableAccessOrTypeConstant )
-            int alt53=4;
+            // JPQL.g:714:7: (n= literalString | n= literalNumeric | n= inputParameter | n= variableAccessOrTypeConstant )
+            int alt55=4;
             switch ( input.LA(1) ) {
             case STRING_LITERAL_DOUBLE_QUOTED:
             case STRING_LITERAL_SINGLE_QUOTED:
                 {
-                alt53=1;
+                alt55=1;
                 }
                 break;
             case INTEGER_LITERAL:
@@ -7543,33 +8171,33 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             case FLOAT_LITERAL:
             case DOUBLE_LITERAL:
                 {
-                alt53=2;
+                alt55=2;
                 }
                 break;
             case POSITIONAL_PARAM:
             case NAMED_PARAM:
                 {
-                alt53=3;
+                alt55=3;
                 }
                 break;
             case IDENT:
                 {
-                alt53=4;
+                alt55=4;
                 }
                 break;
             default:
                 if (backtracking>0) {failed=true; return node;}
                 NoViableAltException nvae =
-                    new NoViableAltException("686:1: inItem returns [Object node] : (n= literalString | n= literalNumeric | n= inputParameter | n= variableAccessOrTypeConstant );", 53, 0, input);
+                    new NoViableAltException("712:1: inItem returns [Object node] : (n= literalString | n= literalNumeric | n= inputParameter | n= variableAccessOrTypeConstant );", 55, 0, input);
             
                 throw nvae;
             }
             
-            switch (alt53) {
+            switch (alt55) {
                 case 1 :
-                    // JPQL.g:688:7: n= literalString
+                    // JPQL.g:714:7: n= literalString
                     {
-                    pushFollow(FOLLOW_literalString_in_inItem3961);
+                    pushFollow(FOLLOW_literalString_in_inItem4083);
                     n=literalString();
                     _fsp--;
                     if (failed) return node;
@@ -7580,9 +8208,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // JPQL.g:689:7: n= literalNumeric
+                    // JPQL.g:715:7: n= literalNumeric
                     {
-                    pushFollow(FOLLOW_literalNumeric_in_inItem3975);
+                    pushFollow(FOLLOW_literalNumeric_in_inItem4097);
                     n=literalNumeric();
                     _fsp--;
                     if (failed) return node;
@@ -7593,9 +8221,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 3 :
-                    // JPQL.g:690:7: n= inputParameter
+                    // JPQL.g:716:7: n= inputParameter
                     {
-                    pushFollow(FOLLOW_inputParameter_in_inItem3989);
+                    pushFollow(FOLLOW_inputParameter_in_inItem4111);
                     n=inputParameter();
                     _fsp--;
                     if (failed) return node;
@@ -7606,9 +8234,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 4 :
-                    // JPQL.g:691:7: n= variableAccessOrTypeConstant
+                    // JPQL.g:717:7: n= variableAccessOrTypeConstant
                     {
-                    pushFollow(FOLLOW_variableAccessOrTypeConstant_in_inItem4003);
+                    pushFollow(FOLLOW_variableAccessOrTypeConstant_in_inItem4125);
                     n=variableAccessOrTypeConstant();
                     _fsp--;
                     if (failed) return node;
@@ -7633,7 +8261,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start likeExpression
-    // JPQL.g:694:1: likeExpression[boolean not, Object left] returns [Object node] : t= LIKE pattern= likeValue (escapeChars= escape )? ;
+    // JPQL.g:720:1: likeExpression[boolean not, Object left] returns [Object node] : t= LIKE pattern= likeValue (escapeChars= escape )? ;
     public final Object likeExpression(boolean not, Object left) throws RecognitionException {
 
         Object node = null;
@@ -7648,27 +8276,27 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             node = null;
     
         try {
-            // JPQL.g:698:7: (t= LIKE pattern= likeValue (escapeChars= escape )? )
-            // JPQL.g:698:7: t= LIKE pattern= likeValue (escapeChars= escape )?
+            // JPQL.g:724:7: (t= LIKE pattern= likeValue (escapeChars= escape )? )
+            // JPQL.g:724:7: t= LIKE pattern= likeValue (escapeChars= escape )?
             {
             t=(Token)input.LT(1);
-            match(input,LIKE,FOLLOW_LIKE_in_likeExpression4035); if (failed) return node;
-            pushFollow(FOLLOW_likeValue_in_likeExpression4041);
+            match(input,LIKE,FOLLOW_LIKE_in_likeExpression4157); if (failed) return node;
+            pushFollow(FOLLOW_likeValue_in_likeExpression4163);
             pattern=likeValue();
             _fsp--;
             if (failed) return node;
-            // JPQL.g:699:9: (escapeChars= escape )?
-            int alt54=2;
-            int LA54_0 = input.LA(1);
+            // JPQL.g:725:9: (escapeChars= escape )?
+            int alt56=2;
+            int LA56_0 = input.LA(1);
             
-            if ( (LA54_0==ESCAPE) ) {
-                alt54=1;
+            if ( (LA56_0==ESCAPE) ) {
+                alt56=1;
             }
-            switch (alt54) {
+            switch (alt56) {
                 case 1 :
-                    // JPQL.g:699:10: escapeChars= escape
+                    // JPQL.g:725:10: escapeChars= escape
                     {
-                    pushFollow(FOLLOW_escape_in_likeExpression4056);
+                    pushFollow(FOLLOW_escape_in_likeExpression4178);
                     escapeChars=escape();
                     _fsp--;
                     if (failed) return node;
@@ -7700,7 +8328,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start escape
-    // JPQL.g:706:1: escape returns [Object node] : t= ESCAPE escapeClause= likeValue ;
+    // JPQL.g:732:1: escape returns [Object node] : t= ESCAPE escapeClause= likeValue ;
     public final Object escape() throws RecognitionException {
 
         Object node = null;
@@ -7713,12 +8341,12 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             node = null; 
     
         try {
-            // JPQL.g:710:7: (t= ESCAPE escapeClause= likeValue )
-            // JPQL.g:710:7: t= ESCAPE escapeClause= likeValue
+            // JPQL.g:736:7: (t= ESCAPE escapeClause= likeValue )
+            // JPQL.g:736:7: t= ESCAPE escapeClause= likeValue
             {
             t=(Token)input.LT(1);
-            match(input,ESCAPE,FOLLOW_ESCAPE_in_escape4096); if (failed) return node;
-            pushFollow(FOLLOW_likeValue_in_escape4102);
+            match(input,ESCAPE,FOLLOW_ESCAPE_in_escape4218); if (failed) return node;
+            pushFollow(FOLLOW_likeValue_in_escape4224);
             escapeClause=likeValue();
             _fsp--;
             if (failed) return node;
@@ -7741,7 +8369,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start likeValue
-    // JPQL.g:714:1: likeValue returns [Object node] : (n= literalString | n= inputParameter );
+    // JPQL.g:740:1: likeValue returns [Object node] : (n= literalString | n= inputParameter );
     public final Object likeValue() throws RecognitionException {
 
         Object node = null;
@@ -7751,28 +8379,28 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // JPQL.g:716:7: (n= literalString | n= inputParameter )
-            int alt55=2;
-            int LA55_0 = input.LA(1);
+            // JPQL.g:742:7: (n= literalString | n= inputParameter )
+            int alt57=2;
+            int LA57_0 = input.LA(1);
             
-            if ( ((LA55_0>=STRING_LITERAL_DOUBLE_QUOTED && LA55_0<=STRING_LITERAL_SINGLE_QUOTED)) ) {
-                alt55=1;
+            if ( ((LA57_0>=STRING_LITERAL_DOUBLE_QUOTED && LA57_0<=STRING_LITERAL_SINGLE_QUOTED)) ) {
+                alt57=1;
             }
-            else if ( ((LA55_0>=POSITIONAL_PARAM && LA55_0<=NAMED_PARAM)) ) {
-                alt55=2;
+            else if ( ((LA57_0>=POSITIONAL_PARAM && LA57_0<=NAMED_PARAM)) ) {
+                alt57=2;
             }
             else {
                 if (backtracking>0) {failed=true; return node;}
                 NoViableAltException nvae =
-                    new NoViableAltException("714:1: likeValue returns [Object node] : (n= literalString | n= inputParameter );", 55, 0, input);
+                    new NoViableAltException("740:1: likeValue returns [Object node] : (n= literalString | n= inputParameter );", 57, 0, input);
             
                 throw nvae;
             }
-            switch (alt55) {
+            switch (alt57) {
                 case 1 :
-                    // JPQL.g:716:7: n= literalString
+                    // JPQL.g:742:7: n= literalString
                     {
-                    pushFollow(FOLLOW_literalString_in_likeValue4142);
+                    pushFollow(FOLLOW_literalString_in_likeValue4264);
                     n=literalString();
                     _fsp--;
                     if (failed) return node;
@@ -7783,9 +8411,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // JPQL.g:717:7: n= inputParameter
+                    // JPQL.g:743:7: n= inputParameter
                     {
-                    pushFollow(FOLLOW_inputParameter_in_likeValue4156);
+                    pushFollow(FOLLOW_inputParameter_in_likeValue4278);
                     n=inputParameter();
                     _fsp--;
                     if (failed) return node;
@@ -7810,7 +8438,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start nullComparisonExpression
-    // JPQL.g:720:1: nullComparisonExpression[boolean not, Object left] returns [Object node] : t= NULL ;
+    // JPQL.g:746:1: nullComparisonExpression[boolean not, Object left] returns [Object node] : t= NULL ;
     public final Object nullComparisonExpression(boolean not, Object left) throws RecognitionException {
 
         Object node = null;
@@ -7819,11 +8447,11 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // JPQL.g:722:7: (t= NULL )
-            // JPQL.g:722:7: t= NULL
+            // JPQL.g:748:7: (t= NULL )
+            // JPQL.g:748:7: t= NULL
             {
             t=(Token)input.LT(1);
-            match(input,NULL,FOLLOW_NULL_in_nullComparisonExpression4189); if (failed) return node;
+            match(input,NULL,FOLLOW_NULL_in_nullComparisonExpression4311); if (failed) return node;
             if ( backtracking==0 ) {
                node = factory.newIsNull(t.getLine(), t.getCharPositionInLine(), not, left); 
             }
@@ -7843,7 +8471,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start emptyCollectionComparisonExpression
-    // JPQL.g:726:1: emptyCollectionComparisonExpression[boolean not, Object left] returns [Object node] : t= EMPTY ;
+    // JPQL.g:752:1: emptyCollectionComparisonExpression[boolean not, Object left] returns [Object node] : t= EMPTY ;
     public final Object emptyCollectionComparisonExpression(boolean not, Object left) throws RecognitionException {
 
         Object node = null;
@@ -7852,11 +8480,11 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // JPQL.g:728:7: (t= EMPTY )
-            // JPQL.g:728:7: t= EMPTY
+            // JPQL.g:754:7: (t= EMPTY )
+            // JPQL.g:754:7: t= EMPTY
             {
             t=(Token)input.LT(1);
-            match(input,EMPTY,FOLLOW_EMPTY_in_emptyCollectionComparisonExpression4230); if (failed) return node;
+            match(input,EMPTY,FOLLOW_EMPTY_in_emptyCollectionComparisonExpression4352); if (failed) return node;
             if ( backtracking==0 ) {
                node = factory.newIsEmpty(t.getLine(), t.getCharPositionInLine(), not, left); 
             }
@@ -7876,7 +8504,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start collectionMemberExpression
-    // JPQL.g:732:1: collectionMemberExpression[boolean not, Object left] returns [Object node] : t= MEMBER ( OF )? n= collectionValuedPathExpression ;
+    // JPQL.g:758:1: collectionMemberExpression[boolean not, Object left] returns [Object node] : t= MEMBER ( OF )? n= collectionValuedPathExpression ;
     public final Object collectionMemberExpression(boolean not, Object left) throws RecognitionException {
 
         Object node = null;
@@ -7887,30 +8515,30 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // JPQL.g:734:7: (t= MEMBER ( OF )? n= collectionValuedPathExpression )
-            // JPQL.g:734:7: t= MEMBER ( OF )? n= collectionValuedPathExpression
+            // JPQL.g:760:7: (t= MEMBER ( OF )? n= collectionValuedPathExpression )
+            // JPQL.g:760:7: t= MEMBER ( OF )? n= collectionValuedPathExpression
             {
             t=(Token)input.LT(1);
-            match(input,MEMBER,FOLLOW_MEMBER_in_collectionMemberExpression4271); if (failed) return node;
-            // JPQL.g:734:17: ( OF )?
-            int alt56=2;
-            int LA56_0 = input.LA(1);
+            match(input,MEMBER,FOLLOW_MEMBER_in_collectionMemberExpression4393); if (failed) return node;
+            // JPQL.g:760:17: ( OF )?
+            int alt58=2;
+            int LA58_0 = input.LA(1);
             
-            if ( (LA56_0==OF) ) {
-                alt56=1;
+            if ( (LA58_0==OF) ) {
+                alt58=1;
             }
-            switch (alt56) {
+            switch (alt58) {
                 case 1 :
-                    // JPQL.g:734:18: OF
+                    // JPQL.g:760:18: OF
                     {
-                    match(input,OF,FOLLOW_OF_in_collectionMemberExpression4274); if (failed) return node;
+                    match(input,OF,FOLLOW_OF_in_collectionMemberExpression4396); if (failed) return node;
                     
                     }
                     break;
             
             }
 
-            pushFollow(FOLLOW_collectionValuedPathExpression_in_collectionMemberExpression4282);
+            pushFollow(FOLLOW_collectionValuedPathExpression_in_collectionMemberExpression4404);
             n=collectionValuedPathExpression();
             _fsp--;
             if (failed) return node;
@@ -7936,7 +8564,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start existsExpression
-    // JPQL.g:741:1: existsExpression[boolean not] returns [Object node] : t= EXISTS LEFT_ROUND_BRACKET subqueryNode= subquery RIGHT_ROUND_BRACKET ;
+    // JPQL.g:767:1: existsExpression[boolean not] returns [Object node] : t= EXISTS LEFT_ROUND_BRACKET subqueryNode= subquery RIGHT_ROUND_BRACKET ;
     public final Object existsExpression(boolean not) throws RecognitionException {
 
         Object node = null;
@@ -7949,17 +8577,17 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             node = null;
     
         try {
-            // JPQL.g:745:7: (t= EXISTS LEFT_ROUND_BRACKET subqueryNode= subquery RIGHT_ROUND_BRACKET )
-            // JPQL.g:745:7: t= EXISTS LEFT_ROUND_BRACKET subqueryNode= subquery RIGHT_ROUND_BRACKET
+            // JPQL.g:771:7: (t= EXISTS LEFT_ROUND_BRACKET subqueryNode= subquery RIGHT_ROUND_BRACKET )
+            // JPQL.g:771:7: t= EXISTS LEFT_ROUND_BRACKET subqueryNode= subquery RIGHT_ROUND_BRACKET
             {
             t=(Token)input.LT(1);
-            match(input,EXISTS,FOLLOW_EXISTS_in_existsExpression4322); if (failed) return node;
-            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_existsExpression4324); if (failed) return node;
-            pushFollow(FOLLOW_subquery_in_existsExpression4330);
+            match(input,EXISTS,FOLLOW_EXISTS_in_existsExpression4444); if (failed) return node;
+            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_existsExpression4446); if (failed) return node;
+            pushFollow(FOLLOW_subquery_in_existsExpression4452);
             subqueryNode=subquery();
             _fsp--;
             if (failed) return node;
-            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_existsExpression4332); if (failed) return node;
+            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_existsExpression4454); if (failed) return node;
             if ( backtracking==0 ) {
                
                           node = factory.newExists(t.getLine(), t.getCharPositionInLine(), 
@@ -7982,7 +8610,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start comparisonExpression
-    // JPQL.g:752:1: comparisonExpression[Object left] returns [Object node] : (t1= EQUALS n= comparisonExpressionRightOperand | t2= NOT_EQUAL_TO n= comparisonExpressionRightOperand | t3= GREATER_THAN n= comparisonExpressionRightOperand | t4= GREATER_THAN_EQUAL_TO n= comparisonExpressionRightOperand | t5= LESS_THAN n= comparisonExpressionRightOperand | t6= LESS_THAN_EQUAL_TO n= comparisonExpressionRightOperand );
+    // JPQL.g:778:1: comparisonExpression[Object left] returns [Object node] : (t1= EQUALS n= comparisonExpressionRightOperand | t2= NOT_EQUAL_TO n= comparisonExpressionRightOperand | t3= GREATER_THAN n= comparisonExpressionRightOperand | t4= GREATER_THAN_EQUAL_TO n= comparisonExpressionRightOperand | t5= LESS_THAN n= comparisonExpressionRightOperand | t6= LESS_THAN_EQUAL_TO n= comparisonExpressionRightOperand );
     public final Object comparisonExpression(Object left) throws RecognitionException {
 
         Object node = null;
@@ -7998,54 +8626,54 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // JPQL.g:754:7: (t1= EQUALS n= comparisonExpressionRightOperand | t2= NOT_EQUAL_TO n= comparisonExpressionRightOperand | t3= GREATER_THAN n= comparisonExpressionRightOperand | t4= GREATER_THAN_EQUAL_TO n= comparisonExpressionRightOperand | t5= LESS_THAN n= comparisonExpressionRightOperand | t6= LESS_THAN_EQUAL_TO n= comparisonExpressionRightOperand )
-            int alt57=6;
+            // JPQL.g:780:7: (t1= EQUALS n= comparisonExpressionRightOperand | t2= NOT_EQUAL_TO n= comparisonExpressionRightOperand | t3= GREATER_THAN n= comparisonExpressionRightOperand | t4= GREATER_THAN_EQUAL_TO n= comparisonExpressionRightOperand | t5= LESS_THAN n= comparisonExpressionRightOperand | t6= LESS_THAN_EQUAL_TO n= comparisonExpressionRightOperand )
+            int alt59=6;
             switch ( input.LA(1) ) {
             case EQUALS:
                 {
-                alt57=1;
+                alt59=1;
                 }
                 break;
             case NOT_EQUAL_TO:
                 {
-                alt57=2;
+                alt59=2;
                 }
                 break;
             case GREATER_THAN:
                 {
-                alt57=3;
+                alt59=3;
                 }
                 break;
             case GREATER_THAN_EQUAL_TO:
                 {
-                alt57=4;
+                alt59=4;
                 }
                 break;
             case LESS_THAN:
                 {
-                alt57=5;
+                alt59=5;
                 }
                 break;
             case LESS_THAN_EQUAL_TO:
                 {
-                alt57=6;
+                alt59=6;
                 }
                 break;
             default:
                 if (backtracking>0) {failed=true; return node;}
                 NoViableAltException nvae =
-                    new NoViableAltException("752:1: comparisonExpression[Object left] returns [Object node] : (t1= EQUALS n= comparisonExpressionRightOperand | t2= NOT_EQUAL_TO n= comparisonExpressionRightOperand | t3= GREATER_THAN n= comparisonExpressionRightOperand | t4= GREATER_THAN_EQUAL_TO n= comparisonExpressionRightOperand | t5= LESS_THAN n= comparisonExpressionRightOperand | t6= LESS_THAN_EQUAL_TO n= comparisonExpressionRightOperand );", 57, 0, input);
+                    new NoViableAltException("778:1: comparisonExpression[Object left] returns [Object node] : (t1= EQUALS n= comparisonExpressionRightOperand | t2= NOT_EQUAL_TO n= comparisonExpressionRightOperand | t3= GREATER_THAN n= comparisonExpressionRightOperand | t4= GREATER_THAN_EQUAL_TO n= comparisonExpressionRightOperand | t5= LESS_THAN n= comparisonExpressionRightOperand | t6= LESS_THAN_EQUAL_TO n= comparisonExpressionRightOperand );", 59, 0, input);
             
                 throw nvae;
             }
             
-            switch (alt57) {
+            switch (alt59) {
                 case 1 :
-                    // JPQL.g:754:7: t1= EQUALS n= comparisonExpressionRightOperand
+                    // JPQL.g:780:7: t1= EQUALS n= comparisonExpressionRightOperand
                     {
                     t1=(Token)input.LT(1);
-                    match(input,EQUALS,FOLLOW_EQUALS_in_comparisonExpression4372); if (failed) return node;
-                    pushFollow(FOLLOW_comparisonExpressionRightOperand_in_comparisonExpression4378);
+                    match(input,EQUALS,FOLLOW_EQUALS_in_comparisonExpression4494); if (failed) return node;
+                    pushFollow(FOLLOW_comparisonExpressionRightOperand_in_comparisonExpression4500);
                     n=comparisonExpressionRightOperand();
                     _fsp--;
                     if (failed) return node;
@@ -8056,11 +8684,11 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // JPQL.g:756:7: t2= NOT_EQUAL_TO n= comparisonExpressionRightOperand
+                    // JPQL.g:782:7: t2= NOT_EQUAL_TO n= comparisonExpressionRightOperand
                     {
                     t2=(Token)input.LT(1);
-                    match(input,NOT_EQUAL_TO,FOLLOW_NOT_EQUAL_TO_in_comparisonExpression4399); if (failed) return node;
-                    pushFollow(FOLLOW_comparisonExpressionRightOperand_in_comparisonExpression4405);
+                    match(input,NOT_EQUAL_TO,FOLLOW_NOT_EQUAL_TO_in_comparisonExpression4521); if (failed) return node;
+                    pushFollow(FOLLOW_comparisonExpressionRightOperand_in_comparisonExpression4527);
                     n=comparisonExpressionRightOperand();
                     _fsp--;
                     if (failed) return node;
@@ -8071,11 +8699,11 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 3 :
-                    // JPQL.g:758:7: t3= GREATER_THAN n= comparisonExpressionRightOperand
+                    // JPQL.g:784:7: t3= GREATER_THAN n= comparisonExpressionRightOperand
                     {
                     t3=(Token)input.LT(1);
-                    match(input,GREATER_THAN,FOLLOW_GREATER_THAN_in_comparisonExpression4426); if (failed) return node;
-                    pushFollow(FOLLOW_comparisonExpressionRightOperand_in_comparisonExpression4432);
+                    match(input,GREATER_THAN,FOLLOW_GREATER_THAN_in_comparisonExpression4548); if (failed) return node;
+                    pushFollow(FOLLOW_comparisonExpressionRightOperand_in_comparisonExpression4554);
                     n=comparisonExpressionRightOperand();
                     _fsp--;
                     if (failed) return node;
@@ -8086,11 +8714,11 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 4 :
-                    // JPQL.g:760:7: t4= GREATER_THAN_EQUAL_TO n= comparisonExpressionRightOperand
+                    // JPQL.g:786:7: t4= GREATER_THAN_EQUAL_TO n= comparisonExpressionRightOperand
                     {
                     t4=(Token)input.LT(1);
-                    match(input,GREATER_THAN_EQUAL_TO,FOLLOW_GREATER_THAN_EQUAL_TO_in_comparisonExpression4453); if (failed) return node;
-                    pushFollow(FOLLOW_comparisonExpressionRightOperand_in_comparisonExpression4459);
+                    match(input,GREATER_THAN_EQUAL_TO,FOLLOW_GREATER_THAN_EQUAL_TO_in_comparisonExpression4575); if (failed) return node;
+                    pushFollow(FOLLOW_comparisonExpressionRightOperand_in_comparisonExpression4581);
                     n=comparisonExpressionRightOperand();
                     _fsp--;
                     if (failed) return node;
@@ -8101,11 +8729,11 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 5 :
-                    // JPQL.g:762:7: t5= LESS_THAN n= comparisonExpressionRightOperand
+                    // JPQL.g:788:7: t5= LESS_THAN n= comparisonExpressionRightOperand
                     {
                     t5=(Token)input.LT(1);
-                    match(input,LESS_THAN,FOLLOW_LESS_THAN_in_comparisonExpression4480); if (failed) return node;
-                    pushFollow(FOLLOW_comparisonExpressionRightOperand_in_comparisonExpression4486);
+                    match(input,LESS_THAN,FOLLOW_LESS_THAN_in_comparisonExpression4602); if (failed) return node;
+                    pushFollow(FOLLOW_comparisonExpressionRightOperand_in_comparisonExpression4608);
                     n=comparisonExpressionRightOperand();
                     _fsp--;
                     if (failed) return node;
@@ -8116,11 +8744,11 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 6 :
-                    // JPQL.g:764:7: t6= LESS_THAN_EQUAL_TO n= comparisonExpressionRightOperand
+                    // JPQL.g:790:7: t6= LESS_THAN_EQUAL_TO n= comparisonExpressionRightOperand
                     {
                     t6=(Token)input.LT(1);
-                    match(input,LESS_THAN_EQUAL_TO,FOLLOW_LESS_THAN_EQUAL_TO_in_comparisonExpression4507); if (failed) return node;
-                    pushFollow(FOLLOW_comparisonExpressionRightOperand_in_comparisonExpression4513);
+                    match(input,LESS_THAN_EQUAL_TO,FOLLOW_LESS_THAN_EQUAL_TO_in_comparisonExpression4629); if (failed) return node;
+                    pushFollow(FOLLOW_comparisonExpressionRightOperand_in_comparisonExpression4635);
                     n=comparisonExpressionRightOperand();
                     _fsp--;
                     if (failed) return node;
@@ -8145,7 +8773,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start comparisonExpressionRightOperand
-    // JPQL.g:768:1: comparisonExpressionRightOperand returns [Object node] : (n= arithmeticExpression | n= nonArithmeticScalarExpression | n= anyOrAllExpression );
+    // JPQL.g:794:1: comparisonExpressionRightOperand returns [Object node] : (n= arithmeticExpression | n= nonArithmeticScalarExpression | n= anyOrAllExpression );
     public final Object comparisonExpressionRightOperand() throws RecognitionException {
 
         Object node = null;
@@ -8155,8 +8783,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // JPQL.g:770:7: (n= arithmeticExpression | n= nonArithmeticScalarExpression | n= anyOrAllExpression )
-            int alt58=3;
+            // JPQL.g:796:7: (n= arithmeticExpression | n= nonArithmeticScalarExpression | n= anyOrAllExpression )
+            int alt60=3;
             switch ( input.LA(1) ) {
             case ABS:
             case AVG:
@@ -8186,7 +8814,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             case POSITIONAL_PARAM:
             case NAMED_PARAM:
                 {
-                alt58=1;
+                alt60=1;
                 }
                 break;
             case CONCAT:
@@ -8203,29 +8831,29 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             case STRING_LITERAL_DOUBLE_QUOTED:
             case STRING_LITERAL_SINGLE_QUOTED:
                 {
-                alt58=2;
+                alt60=2;
                 }
                 break;
             case ALL:
             case ANY:
             case SOME:
                 {
-                alt58=3;
+                alt60=3;
                 }
                 break;
             default:
                 if (backtracking>0) {failed=true; return node;}
                 NoViableAltException nvae =
-                    new NoViableAltException("768:1: comparisonExpressionRightOperand returns [Object node] : (n= arithmeticExpression | n= nonArithmeticScalarExpression | n= anyOrAllExpression );", 58, 0, input);
+                    new NoViableAltException("794:1: comparisonExpressionRightOperand returns [Object node] : (n= arithmeticExpression | n= nonArithmeticScalarExpression | n= anyOrAllExpression );", 60, 0, input);
             
                 throw nvae;
             }
             
-            switch (alt58) {
+            switch (alt60) {
                 case 1 :
-                    // JPQL.g:770:7: n= arithmeticExpression
+                    // JPQL.g:796:7: n= arithmeticExpression
                     {
-                    pushFollow(FOLLOW_arithmeticExpression_in_comparisonExpressionRightOperand4554);
+                    pushFollow(FOLLOW_arithmeticExpression_in_comparisonExpressionRightOperand4676);
                     n=arithmeticExpression();
                     _fsp--;
                     if (failed) return node;
@@ -8236,9 +8864,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // JPQL.g:771:7: n= nonArithmeticScalarExpression
+                    // JPQL.g:797:7: n= nonArithmeticScalarExpression
                     {
-                    pushFollow(FOLLOW_nonArithmeticScalarExpression_in_comparisonExpressionRightOperand4568);
+                    pushFollow(FOLLOW_nonArithmeticScalarExpression_in_comparisonExpressionRightOperand4690);
                     n=nonArithmeticScalarExpression();
                     _fsp--;
                     if (failed) return node;
@@ -8249,9 +8877,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 3 :
-                    // JPQL.g:772:7: n= anyOrAllExpression
+                    // JPQL.g:798:7: n= anyOrAllExpression
                     {
-                    pushFollow(FOLLOW_anyOrAllExpression_in_comparisonExpressionRightOperand4582);
+                    pushFollow(FOLLOW_anyOrAllExpression_in_comparisonExpressionRightOperand4704);
                     n=anyOrAllExpression();
                     _fsp--;
                     if (failed) return node;
@@ -8276,7 +8904,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start arithmeticExpression
-    // JPQL.g:775:1: arithmeticExpression returns [Object node] : (n= simpleArithmeticExpression | LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET );
+    // JPQL.g:801:1: arithmeticExpression returns [Object node] : (n= simpleArithmeticExpression | LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET );
     public final Object arithmeticExpression() throws RecognitionException {
 
         Object node = null;
@@ -8286,26 +8914,26 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // JPQL.g:777:7: (n= simpleArithmeticExpression | LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET )
-            int alt59=2;
-            int LA59_0 = input.LA(1);
+            // JPQL.g:803:7: (n= simpleArithmeticExpression | LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET )
+            int alt61=2;
+            int LA61_0 = input.LA(1);
             
-            if ( (LA59_0==ABS||LA59_0==AVG||(LA59_0>=CASE && LA59_0<=COALESCE)||LA59_0==COUNT||LA59_0==INDEX||LA59_0==KEY||LA59_0==LENGTH||LA59_0==LOCATE||LA59_0==MAX||(LA59_0>=MIN && LA59_0<=MOD)||LA59_0==NULLIF||(LA59_0>=SIZE && LA59_0<=SQRT)||LA59_0==SUM||LA59_0==VALUE||LA59_0==IDENT||(LA59_0>=PLUS && LA59_0<=MINUS)||(LA59_0>=INTEGER_LITERAL && LA59_0<=DOUBLE_LITERAL)||(LA59_0>=POSITIONAL_PARAM && LA59_0<=NAMED_PARAM)) ) {
-                alt59=1;
+            if ( (LA61_0==ABS||LA61_0==AVG||(LA61_0>=CASE && LA61_0<=COALESCE)||LA61_0==COUNT||LA61_0==INDEX||LA61_0==KEY||LA61_0==LENGTH||LA61_0==LOCATE||LA61_0==MAX||(LA61_0>=MIN && LA61_0<=MOD)||LA61_0==NULLIF||(LA61_0>=SIZE && LA61_0<=SQRT)||LA61_0==SUM||LA61_0==VALUE||LA61_0==IDENT||(LA61_0>=PLUS && LA61_0<=MINUS)||(LA61_0>=INTEGER_LITERAL && LA61_0<=DOUBLE_LITERAL)||(LA61_0>=POSITIONAL_PARAM && LA61_0<=NAMED_PARAM)) ) {
+                alt61=1;
             }
-            else if ( (LA59_0==LEFT_ROUND_BRACKET) ) {
-                int LA59_23 = input.LA(2);
+            else if ( (LA61_0==LEFT_ROUND_BRACKET) ) {
+                int LA61_23 = input.LA(2);
                 
-                if ( (LA59_23==SELECT) ) {
-                    alt59=2;
+                if ( (LA61_23==ABS||LA61_23==AVG||(LA61_23>=CASE && LA61_23<=COALESCE)||LA61_23==COUNT||LA61_23==INDEX||LA61_23==KEY||LA61_23==LENGTH||LA61_23==LOCATE||LA61_23==MAX||(LA61_23>=MIN && LA61_23<=MOD)||LA61_23==NULLIF||(LA61_23>=SIZE && LA61_23<=SQRT)||LA61_23==SUM||LA61_23==VALUE||LA61_23==IDENT||LA61_23==LEFT_ROUND_BRACKET||(LA61_23>=PLUS && LA61_23<=MINUS)||(LA61_23>=INTEGER_LITERAL && LA61_23<=DOUBLE_LITERAL)||(LA61_23>=POSITIONAL_PARAM && LA61_23<=NAMED_PARAM)) ) {
+                    alt61=1;
                 }
-                else if ( (LA59_23==ABS||LA59_23==AVG||(LA59_23>=CASE && LA59_23<=COALESCE)||LA59_23==COUNT||LA59_23==INDEX||LA59_23==KEY||LA59_23==LENGTH||LA59_23==LOCATE||LA59_23==MAX||(LA59_23>=MIN && LA59_23<=MOD)||LA59_23==NULLIF||(LA59_23>=SIZE && LA59_23<=SQRT)||LA59_23==SUM||LA59_23==VALUE||LA59_23==IDENT||LA59_23==LEFT_ROUND_BRACKET||(LA59_23>=PLUS && LA59_23<=MINUS)||(LA59_23>=INTEGER_LITERAL && LA59_23<=DOUBLE_LITERAL)||(LA59_23>=POSITIONAL_PARAM && LA59_23<=NAMED_PARAM)) ) {
-                    alt59=1;
+                else if ( (LA61_23==SELECT) ) {
+                    alt61=2;
                 }
                 else {
                     if (backtracking>0) {failed=true; return node;}
                     NoViableAltException nvae =
-                        new NoViableAltException("775:1: arithmeticExpression returns [Object node] : (n= simpleArithmeticExpression | LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET );", 59, 23, input);
+                        new NoViableAltException("801:1: arithmeticExpression returns [Object node] : (n= simpleArithmeticExpression | LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET );", 61, 23, input);
                 
                     throw nvae;
                 }
@@ -8313,15 +8941,15 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             else {
                 if (backtracking>0) {failed=true; return node;}
                 NoViableAltException nvae =
-                    new NoViableAltException("775:1: arithmeticExpression returns [Object node] : (n= simpleArithmeticExpression | LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET );", 59, 0, input);
+                    new NoViableAltException("801:1: arithmeticExpression returns [Object node] : (n= simpleArithmeticExpression | LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET );", 61, 0, input);
             
                 throw nvae;
             }
-            switch (alt59) {
+            switch (alt61) {
                 case 1 :
-                    // JPQL.g:777:7: n= simpleArithmeticExpression
+                    // JPQL.g:803:7: n= simpleArithmeticExpression
                     {
-                    pushFollow(FOLLOW_simpleArithmeticExpression_in_arithmeticExpression4614);
+                    pushFollow(FOLLOW_simpleArithmeticExpression_in_arithmeticExpression4736);
                     n=simpleArithmeticExpression();
                     _fsp--;
                     if (failed) return node;
@@ -8332,14 +8960,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // JPQL.g:778:7: LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET
+                    // JPQL.g:804:7: LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET
                     {
-                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_arithmeticExpression4624); if (failed) return node;
-                    pushFollow(FOLLOW_subquery_in_arithmeticExpression4630);
+                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_arithmeticExpression4746); if (failed) return node;
+                    pushFollow(FOLLOW_subquery_in_arithmeticExpression4752);
                     n=subquery();
                     _fsp--;
                     if (failed) return node;
-                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_arithmeticExpression4632); if (failed) return node;
+                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_arithmeticExpression4754); if (failed) return node;
                     if ( backtracking==0 ) {
                       node = n;
                     }
@@ -8361,7 +8989,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start simpleArithmeticExpression
-    // JPQL.g:781:1: simpleArithmeticExpression returns [Object node] : n= arithmeticTerm (p= PLUS right= arithmeticTerm | m= MINUS right= arithmeticTerm )* ;
+    // JPQL.g:807:1: simpleArithmeticExpression returns [Object node] : n= arithmeticTerm (p= PLUS right= arithmeticTerm | m= MINUS right= arithmeticTerm )* ;
     public final Object simpleArithmeticExpression() throws RecognitionException {
 
         Object node = null;
@@ -8377,37 +9005,37 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             node = null; 
     
         try {
-            // JPQL.g:785:7: (n= arithmeticTerm (p= PLUS right= arithmeticTerm | m= MINUS right= arithmeticTerm )* )
-            // JPQL.g:785:7: n= arithmeticTerm (p= PLUS right= arithmeticTerm | m= MINUS right= arithmeticTerm )*
+            // JPQL.g:811:7: (n= arithmeticTerm (p= PLUS right= arithmeticTerm | m= MINUS right= arithmeticTerm )* )
+            // JPQL.g:811:7: n= arithmeticTerm (p= PLUS right= arithmeticTerm | m= MINUS right= arithmeticTerm )*
             {
-            pushFollow(FOLLOW_arithmeticTerm_in_simpleArithmeticExpression4664);
+            pushFollow(FOLLOW_arithmeticTerm_in_simpleArithmeticExpression4786);
             n=arithmeticTerm();
             _fsp--;
             if (failed) return node;
             if ( backtracking==0 ) {
               node = n;
             }
-            // JPQL.g:786:9: (p= PLUS right= arithmeticTerm | m= MINUS right= arithmeticTerm )*
-            loop60:
+            // JPQL.g:812:9: (p= PLUS right= arithmeticTerm | m= MINUS right= arithmeticTerm )*
+            loop62:
             do {
-                int alt60=3;
-                int LA60_0 = input.LA(1);
+                int alt62=3;
+                int LA62_0 = input.LA(1);
                 
-                if ( (LA60_0==PLUS) ) {
-                    alt60=1;
+                if ( (LA62_0==PLUS) ) {
+                    alt62=1;
                 }
-                else if ( (LA60_0==MINUS) ) {
-                    alt60=2;
+                else if ( (LA62_0==MINUS) ) {
+                    alt62=2;
                 }
                 
             
-                switch (alt60) {
+                switch (alt62) {
             	case 1 :
-            	    // JPQL.g:786:11: p= PLUS right= arithmeticTerm
+            	    // JPQL.g:812:11: p= PLUS right= arithmeticTerm
             	    {
             	    p=(Token)input.LT(1);
-            	    match(input,PLUS,FOLLOW_PLUS_in_simpleArithmeticExpression4680); if (failed) return node;
-            	    pushFollow(FOLLOW_arithmeticTerm_in_simpleArithmeticExpression4686);
+            	    match(input,PLUS,FOLLOW_PLUS_in_simpleArithmeticExpression4802); if (failed) return node;
+            	    pushFollow(FOLLOW_arithmeticTerm_in_simpleArithmeticExpression4808);
             	    right=arithmeticTerm();
             	    _fsp--;
             	    if (failed) return node;
@@ -8418,11 +9046,11 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             	    }
             	    break;
             	case 2 :
-            	    // JPQL.g:788:11: m= MINUS right= arithmeticTerm
+            	    // JPQL.g:814:11: m= MINUS right= arithmeticTerm
             	    {
             	    m=(Token)input.LT(1);
-            	    match(input,MINUS,FOLLOW_MINUS_in_simpleArithmeticExpression4715); if (failed) return node;
-            	    pushFollow(FOLLOW_arithmeticTerm_in_simpleArithmeticExpression4721);
+            	    match(input,MINUS,FOLLOW_MINUS_in_simpleArithmeticExpression4837); if (failed) return node;
+            	    pushFollow(FOLLOW_arithmeticTerm_in_simpleArithmeticExpression4843);
             	    right=arithmeticTerm();
             	    _fsp--;
             	    if (failed) return node;
@@ -8434,7 +9062,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             	    break;
             
             	default :
-            	    break loop60;
+            	    break loop62;
                 }
             } while (true);
 
@@ -8454,7 +9082,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start arithmeticTerm
-    // JPQL.g:793:1: arithmeticTerm returns [Object node] : n= arithmeticFactor (m= MULTIPLY right= arithmeticFactor | d= DIVIDE right= arithmeticFactor )* ;
+    // JPQL.g:819:1: arithmeticTerm returns [Object node] : n= arithmeticFactor (m= MULTIPLY right= arithmeticFactor | d= DIVIDE right= arithmeticFactor )* ;
     public final Object arithmeticTerm() throws RecognitionException {
 
         Object node = null;
@@ -8470,37 +9098,37 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             node = null; 
     
         try {
-            // JPQL.g:797:7: (n= arithmeticFactor (m= MULTIPLY right= arithmeticFactor | d= DIVIDE right= arithmeticFactor )* )
-            // JPQL.g:797:7: n= arithmeticFactor (m= MULTIPLY right= arithmeticFactor | d= DIVIDE right= arithmeticFactor )*
+            // JPQL.g:823:7: (n= arithmeticFactor (m= MULTIPLY right= arithmeticFactor | d= DIVIDE right= arithmeticFactor )* )
+            // JPQL.g:823:7: n= arithmeticFactor (m= MULTIPLY right= arithmeticFactor | d= DIVIDE right= arithmeticFactor )*
             {
-            pushFollow(FOLLOW_arithmeticFactor_in_arithmeticTerm4778);
+            pushFollow(FOLLOW_arithmeticFactor_in_arithmeticTerm4900);
             n=arithmeticFactor();
             _fsp--;
             if (failed) return node;
             if ( backtracking==0 ) {
               node = n;
             }
-            // JPQL.g:798:9: (m= MULTIPLY right= arithmeticFactor | d= DIVIDE right= arithmeticFactor )*
-            loop61:
+            // JPQL.g:824:9: (m= MULTIPLY right= arithmeticFactor | d= DIVIDE right= arithmeticFactor )*
+            loop63:
             do {
-                int alt61=3;
-                int LA61_0 = input.LA(1);
+                int alt63=3;
+                int LA63_0 = input.LA(1);
                 
-                if ( (LA61_0==MULTIPLY) ) {
-                    alt61=1;
+                if ( (LA63_0==MULTIPLY) ) {
+                    alt63=1;
                 }
-                else if ( (LA61_0==DIVIDE) ) {
-                    alt61=2;
+                else if ( (LA63_0==DIVIDE) ) {
+                    alt63=2;
                 }
                 
             
-                switch (alt61) {
+                switch (alt63) {
             	case 1 :
-            	    // JPQL.g:798:11: m= MULTIPLY right= arithmeticFactor
+            	    // JPQL.g:824:11: m= MULTIPLY right= arithmeticFactor
             	    {
             	    m=(Token)input.LT(1);
-            	    match(input,MULTIPLY,FOLLOW_MULTIPLY_in_arithmeticTerm4794); if (failed) return node;
-            	    pushFollow(FOLLOW_arithmeticFactor_in_arithmeticTerm4800);
+            	    match(input,MULTIPLY,FOLLOW_MULTIPLY_in_arithmeticTerm4916); if (failed) return node;
+            	    pushFollow(FOLLOW_arithmeticFactor_in_arithmeticTerm4922);
             	    right=arithmeticFactor();
             	    _fsp--;
             	    if (failed) return node;
@@ -8511,11 +9139,11 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             	    }
             	    break;
             	case 2 :
-            	    // JPQL.g:800:11: d= DIVIDE right= arithmeticFactor
+            	    // JPQL.g:826:11: d= DIVIDE right= arithmeticFactor
             	    {
             	    d=(Token)input.LT(1);
-            	    match(input,DIVIDE,FOLLOW_DIVIDE_in_arithmeticTerm4829); if (failed) return node;
-            	    pushFollow(FOLLOW_arithmeticFactor_in_arithmeticTerm4835);
+            	    match(input,DIVIDE,FOLLOW_DIVIDE_in_arithmeticTerm4951); if (failed) return node;
+            	    pushFollow(FOLLOW_arithmeticFactor_in_arithmeticTerm4957);
             	    right=arithmeticFactor();
             	    _fsp--;
             	    if (failed) return node;
@@ -8527,7 +9155,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             	    break;
             
             	default :
-            	    break loop61;
+            	    break loop63;
                 }
             } while (true);
 
@@ -8547,7 +9175,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start arithmeticFactor
-    // JPQL.g:805:1: arithmeticFactor returns [Object node] : (p= PLUS n= arithmeticPrimary | m= MINUS n= arithmeticPrimary | n= arithmeticPrimary );
+    // JPQL.g:831:1: arithmeticFactor returns [Object node] : (p= PLUS n= arithmeticPrimary | m= MINUS n= arithmeticPrimary | n= arithmeticPrimary );
     public final Object arithmeticFactor() throws RecognitionException {
 
         Object node = null;
@@ -8559,17 +9187,17 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // JPQL.g:807:7: (p= PLUS n= arithmeticPrimary | m= MINUS n= arithmeticPrimary | n= arithmeticPrimary )
-            int alt62=3;
+            // JPQL.g:833:7: (p= PLUS n= arithmeticPrimary | m= MINUS n= arithmeticPrimary | n= arithmeticPrimary )
+            int alt64=3;
             switch ( input.LA(1) ) {
             case PLUS:
                 {
-                alt62=1;
+                alt64=1;
                 }
                 break;
             case MINUS:
                 {
-                alt62=2;
+                alt64=2;
                 }
                 break;
             case ABS:
@@ -8598,24 +9226,24 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             case POSITIONAL_PARAM:
             case NAMED_PARAM:
                 {
-                alt62=3;
+                alt64=3;
                 }
                 break;
             default:
                 if (backtracking>0) {failed=true; return node;}
                 NoViableAltException nvae =
-                    new NoViableAltException("805:1: arithmeticFactor returns [Object node] : (p= PLUS n= arithmeticPrimary | m= MINUS n= arithmeticPrimary | n= arithmeticPrimary );", 62, 0, input);
+                    new NoViableAltException("831:1: arithmeticFactor returns [Object node] : (p= PLUS n= arithmeticPrimary | m= MINUS n= arithmeticPrimary | n= arithmeticPrimary );", 64, 0, input);
             
                 throw nvae;
             }
             
-            switch (alt62) {
+            switch (alt64) {
                 case 1 :
-                    // JPQL.g:807:7: p= PLUS n= arithmeticPrimary
+                    // JPQL.g:833:7: p= PLUS n= arithmeticPrimary
                     {
                     p=(Token)input.LT(1);
-                    match(input,PLUS,FOLLOW_PLUS_in_arithmeticFactor4889); if (failed) return node;
-                    pushFollow(FOLLOW_arithmeticPrimary_in_arithmeticFactor4896);
+                    match(input,PLUS,FOLLOW_PLUS_in_arithmeticFactor5011); if (failed) return node;
+                    pushFollow(FOLLOW_arithmeticPrimary_in_arithmeticFactor5018);
                     n=arithmeticPrimary();
                     _fsp--;
                     if (failed) return node;
@@ -8626,11 +9254,11 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // JPQL.g:809:7: m= MINUS n= arithmeticPrimary
+                    // JPQL.g:835:7: m= MINUS n= arithmeticPrimary
                     {
                     m=(Token)input.LT(1);
-                    match(input,MINUS,FOLLOW_MINUS_in_arithmeticFactor4918); if (failed) return node;
-                    pushFollow(FOLLOW_arithmeticPrimary_in_arithmeticFactor4924);
+                    match(input,MINUS,FOLLOW_MINUS_in_arithmeticFactor5040); if (failed) return node;
+                    pushFollow(FOLLOW_arithmeticPrimary_in_arithmeticFactor5046);
                     n=arithmeticPrimary();
                     _fsp--;
                     if (failed) return node;
@@ -8641,9 +9269,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 3 :
-                    // JPQL.g:811:7: n= arithmeticPrimary
+                    // JPQL.g:837:7: n= arithmeticPrimary
                     {
-                    pushFollow(FOLLOW_arithmeticPrimary_in_arithmeticFactor4948);
+                    pushFollow(FOLLOW_arithmeticPrimary_in_arithmeticFactor5070);
                     n=arithmeticPrimary();
                     _fsp--;
                     if (failed) return node;
@@ -8668,7 +9296,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start arithmeticPrimary
-    // JPQL.g:814:1: arithmeticPrimary returns [Object node] : ({...}?n= aggregateExpression | n= pathExprOrVariableAccess | n= inputParameter | n= caseExpression | n= functionsReturningNumerics | LEFT_ROUND_BRACKET n= simpleArithmeticExpression RIGHT_ROUND_BRACKET | n= literalNumeric );
+    // JPQL.g:840:1: arithmeticPrimary returns [Object node] : ({...}?n= aggregateExpression | n= pathExprOrVariableAccess | n= inputParameter | n= caseExpression | n= functionsReturningNumerics | LEFT_ROUND_BRACKET n= simpleArithmeticExpression RIGHT_ROUND_BRACKET | n= literalNumeric );
     public final Object arithmeticPrimary() throws RecognitionException {
 
         Object node = null;
@@ -8678,8 +9306,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // JPQL.g:816:7: ({...}?n= aggregateExpression | n= pathExprOrVariableAccess | n= inputParameter | n= caseExpression | n= functionsReturningNumerics | LEFT_ROUND_BRACKET n= simpleArithmeticExpression RIGHT_ROUND_BRACKET | n= literalNumeric )
-            int alt63=7;
+            // JPQL.g:842:7: ({...}?n= aggregateExpression | n= pathExprOrVariableAccess | n= inputParameter | n= caseExpression | n= functionsReturningNumerics | LEFT_ROUND_BRACKET n= simpleArithmeticExpression RIGHT_ROUND_BRACKET | n= literalNumeric )
+            int alt65=7;
             switch ( input.LA(1) ) {
             case AVG:
             case COUNT:
@@ -8687,27 +9315,27 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             case MIN:
             case SUM:
                 {
-                alt63=1;
+                alt65=1;
                 }
                 break;
             case KEY:
             case VALUE:
             case IDENT:
                 {
-                alt63=2;
+                alt65=2;
                 }
                 break;
             case POSITIONAL_PARAM:
             case NAMED_PARAM:
                 {
-                alt63=3;
+                alt65=3;
                 }
                 break;
             case CASE:
             case COALESCE:
             case NULLIF:
                 {
-                alt63=4;
+                alt65=4;
                 }
                 break;
             case ABS:
@@ -8718,12 +9346,12 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             case SIZE:
             case SQRT:
                 {
-                alt63=5;
+                alt65=5;
                 }
                 break;
             case LEFT_ROUND_BRACKET:
                 {
-                alt63=6;
+                alt65=6;
                 }
                 break;
             case INTEGER_LITERAL:
@@ -8731,26 +9359,26 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             case FLOAT_LITERAL:
             case DOUBLE_LITERAL:
                 {
-                alt63=7;
+                alt65=7;
                 }
                 break;
             default:
                 if (backtracking>0) {failed=true; return node;}
                 NoViableAltException nvae =
-                    new NoViableAltException("814:1: arithmeticPrimary returns [Object node] : ({...}?n= aggregateExpression | n= pathExprOrVariableAccess | n= inputParameter | n= caseExpression | n= functionsReturningNumerics | LEFT_ROUND_BRACKET n= simpleArithmeticExpression RIGHT_ROUND_BRACKET | n= literalNumeric );", 63, 0, input);
+                    new NoViableAltException("840:1: arithmeticPrimary returns [Object node] : ({...}?n= aggregateExpression | n= pathExprOrVariableAccess | n= inputParameter | n= caseExpression | n= functionsReturningNumerics | LEFT_ROUND_BRACKET n= simpleArithmeticExpression RIGHT_ROUND_BRACKET | n= literalNumeric );", 65, 0, input);
             
                 throw nvae;
             }
             
-            switch (alt63) {
+            switch (alt65) {
                 case 1 :
-                    // JPQL.g:816:7: {...}?n= aggregateExpression
+                    // JPQL.g:842:7: {...}?n= aggregateExpression
                     {
                     if ( !( aggregatesAllowed() ) ) {
                         if (backtracking>0) {failed=true; return node;}
                         throw new FailedPredicateException(input, "arithmeticPrimary", " aggregatesAllowed() ");
                     }
-                    pushFollow(FOLLOW_aggregateExpression_in_arithmeticPrimary4982);
+                    pushFollow(FOLLOW_aggregateExpression_in_arithmeticPrimary5104);
                     n=aggregateExpression();
                     _fsp--;
                     if (failed) return node;
@@ -8761,9 +9389,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // JPQL.g:817:7: n= pathExprOrVariableAccess
+                    // JPQL.g:843:7: n= pathExprOrVariableAccess
                     {
-                    pushFollow(FOLLOW_pathExprOrVariableAccess_in_arithmeticPrimary4996);
+                    pushFollow(FOLLOW_pathExprOrVariableAccess_in_arithmeticPrimary5118);
                     n=pathExprOrVariableAccess();
                     _fsp--;
                     if (failed) return node;
@@ -8774,9 +9402,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 3 :
-                    // JPQL.g:818:7: n= inputParameter
+                    // JPQL.g:844:7: n= inputParameter
                     {
-                    pushFollow(FOLLOW_inputParameter_in_arithmeticPrimary5010);
+                    pushFollow(FOLLOW_inputParameter_in_arithmeticPrimary5132);
                     n=inputParameter();
                     _fsp--;
                     if (failed) return node;
@@ -8787,9 +9415,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 4 :
-                    // JPQL.g:819:7: n= caseExpression
+                    // JPQL.g:845:7: n= caseExpression
                     {
-                    pushFollow(FOLLOW_caseExpression_in_arithmeticPrimary5024);
+                    pushFollow(FOLLOW_caseExpression_in_arithmeticPrimary5146);
                     n=caseExpression();
                     _fsp--;
                     if (failed) return node;
@@ -8800,9 +9428,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 5 :
-                    // JPQL.g:820:7: n= functionsReturningNumerics
+                    // JPQL.g:846:7: n= functionsReturningNumerics
                     {
-                    pushFollow(FOLLOW_functionsReturningNumerics_in_arithmeticPrimary5038);
+                    pushFollow(FOLLOW_functionsReturningNumerics_in_arithmeticPrimary5160);
                     n=functionsReturningNumerics();
                     _fsp--;
                     if (failed) return node;
@@ -8813,14 +9441,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 6 :
-                    // JPQL.g:821:7: LEFT_ROUND_BRACKET n= simpleArithmeticExpression RIGHT_ROUND_BRACKET
+                    // JPQL.g:847:7: LEFT_ROUND_BRACKET n= simpleArithmeticExpression RIGHT_ROUND_BRACKET
                     {
-                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_arithmeticPrimary5048); if (failed) return node;
-                    pushFollow(FOLLOW_simpleArithmeticExpression_in_arithmeticPrimary5054);
+                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_arithmeticPrimary5170); if (failed) return node;
+                    pushFollow(FOLLOW_simpleArithmeticExpression_in_arithmeticPrimary5176);
                     n=simpleArithmeticExpression();
                     _fsp--;
                     if (failed) return node;
-                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_arithmeticPrimary5056); if (failed) return node;
+                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_arithmeticPrimary5178); if (failed) return node;
                     if ( backtracking==0 ) {
                       node = n;
                     }
@@ -8828,9 +9456,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 7 :
-                    // JPQL.g:822:7: n= literalNumeric
+                    // JPQL.g:848:7: n= literalNumeric
                     {
-                    pushFollow(FOLLOW_literalNumeric_in_arithmeticPrimary5070);
+                    pushFollow(FOLLOW_literalNumeric_in_arithmeticPrimary5192);
                     n=literalNumeric();
                     _fsp--;
                     if (failed) return node;
@@ -8855,7 +9483,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start scalarExpression
-    // JPQL.g:825:1: scalarExpression returns [Object node] : (n= simpleArithmeticExpression | n= nonArithmeticScalarExpression );
+    // JPQL.g:851:1: scalarExpression returns [Object node] : (n= simpleArithmeticExpression | n= nonArithmeticScalarExpression );
     public final Object scalarExpression() throws RecognitionException {
 
         Object node = null;
@@ -8865,28 +9493,28 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
         node = null; 
         try {
-            // JPQL.g:827:7: (n= simpleArithmeticExpression | n= nonArithmeticScalarExpression )
-            int alt64=2;
-            int LA64_0 = input.LA(1);
+            // JPQL.g:853:7: (n= simpleArithmeticExpression | n= nonArithmeticScalarExpression )
+            int alt66=2;
+            int LA66_0 = input.LA(1);
             
-            if ( (LA64_0==ABS||LA64_0==AVG||(LA64_0>=CASE && LA64_0<=COALESCE)||LA64_0==COUNT||LA64_0==INDEX||LA64_0==KEY||LA64_0==LENGTH||LA64_0==LOCATE||LA64_0==MAX||(LA64_0>=MIN && LA64_0<=MOD)||LA64_0==NULLIF||(LA64_0>=SIZE && LA64_0<=SQRT)||LA64_0==SUM||LA64_0==VALUE||LA64_0==IDENT||LA64_0==LEFT_ROUND_BRACKET||(LA64_0>=PLUS && LA64_0<=MINUS)||(LA64_0>=INTEGER_LITERAL && LA64_0<=DOUBLE_LITERAL)||(LA64_0>=POSITIONAL_PARAM && LA64_0<=NAMED_PARAM)) ) {
-                alt64=1;
+            if ( (LA66_0==ABS||LA66_0==AVG||(LA66_0>=CASE && LA66_0<=COALESCE)||LA66_0==COUNT||LA66_0==INDEX||LA66_0==KEY||LA66_0==LENGTH||LA66_0==LOCATE||LA66_0==MAX||(LA66_0>=MIN && LA66_0<=MOD)||LA66_0==NULLIF||(LA66_0>=SIZE && LA66_0<=SQRT)||LA66_0==SUM||LA66_0==VALUE||LA66_0==IDENT||LA66_0==LEFT_ROUND_BRACKET||(LA66_0>=PLUS && LA66_0<=MINUS)||(LA66_0>=INTEGER_LITERAL && LA66_0<=DOUBLE_LITERAL)||(LA66_0>=POSITIONAL_PARAM && LA66_0<=NAMED_PARAM)) ) {
+                alt66=1;
             }
-            else if ( (LA64_0==CONCAT||(LA64_0>=CURRENT_DATE && LA64_0<=CURRENT_TIMESTAMP)||LA64_0==FALSE||LA64_0==LOWER||LA64_0==SUBSTRING||(LA64_0>=TRIM && LA64_0<=TYPE)||LA64_0==UPPER||(LA64_0>=STRING_LITERAL_DOUBLE_QUOTED && LA64_0<=STRING_LITERAL_SINGLE_QUOTED)) ) {
-                alt64=2;
+            else if ( (LA66_0==CONCAT||(LA66_0>=CURRENT_DATE && LA66_0<=CURRENT_TIMESTAMP)||LA66_0==FALSE||LA66_0==LOWER||LA66_0==SUBSTRING||(LA66_0>=TRIM && LA66_0<=TYPE)||LA66_0==UPPER||(LA66_0>=STRING_LITERAL_DOUBLE_QUOTED && LA66_0<=STRING_LITERAL_SINGLE_QUOTED)) ) {
+                alt66=2;
             }
             else {
                 if (backtracking>0) {failed=true; return node;}
                 NoViableAltException nvae =
-                    new NoViableAltException("825:1: scalarExpression returns [Object node] : (n= simpleArithmeticExpression | n= nonArithmeticScalarExpression );", 64, 0, input);
+                    new NoViableAltException("851:1: scalarExpression returns [Object node] : (n= simpleArithmeticExpression | n= nonArithmeticScalarExpression );", 66, 0, input);
             
                 throw nvae;
             }
-            switch (alt64) {
+            switch (alt66) {
                 case 1 :
-                    // JPQL.g:827:7: n= simpleArithmeticExpression
+                    // JPQL.g:853:7: n= simpleArithmeticExpression
                     {
-                    pushFollow(FOLLOW_simpleArithmeticExpression_in_scalarExpression5102);
+                    pushFollow(FOLLOW_simpleArithmeticExpression_in_scalarExpression5224);
                     n=simpleArithmeticExpression();
                     _fsp--;
                     if (failed) return node;
@@ -8897,9 +9525,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // JPQL.g:828:7: n= nonArithmeticScalarExpression
+                    // JPQL.g:854:7: n= nonArithmeticScalarExpression
                     {
-                    pushFollow(FOLLOW_nonArithmeticScalarExpression_in_scalarExpression5117);
+                    pushFollow(FOLLOW_nonArithmeticScalarExpression_in_scalarExpression5239);
                     n=nonArithmeticScalarExpression();
                     _fsp--;
                     if (failed) return node;
@@ -8924,7 +9552,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start nonArithmeticScalarExpression
-    // JPQL.g:831:1: nonArithmeticScalarExpression returns [Object node] : (n= functionsReturningDatetime | n= functionsReturningStrings | n= literalString | n= literalBoolean | n= entityTypeExpression );
+    // JPQL.g:857:1: nonArithmeticScalarExpression returns [Object node] : (n= functionsReturningDatetime | n= functionsReturningStrings | n= literalString | n= literalBoolean | n= entityTypeExpression );
     public final Object nonArithmeticScalarExpression() throws RecognitionException {
 
         Object node = null;
@@ -8934,14 +9562,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
         node = null; 
         try {
-            // JPQL.g:833:7: (n= functionsReturningDatetime | n= functionsReturningStrings | n= literalString | n= literalBoolean | n= entityTypeExpression )
-            int alt65=5;
+            // JPQL.g:859:7: (n= functionsReturningDatetime | n= functionsReturningStrings | n= literalString | n= literalBoolean | n= entityTypeExpression )
+            int alt67=5;
             switch ( input.LA(1) ) {
             case CURRENT_DATE:
             case CURRENT_TIME:
             case CURRENT_TIMESTAMP:
                 {
-                alt65=1;
+                alt67=1;
                 }
                 break;
             case CONCAT:
@@ -8950,39 +9578,39 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             case TRIM:
             case UPPER:
                 {
-                alt65=2;
+                alt67=2;
                 }
                 break;
             case STRING_LITERAL_DOUBLE_QUOTED:
             case STRING_LITERAL_SINGLE_QUOTED:
                 {
-                alt65=3;
+                alt67=3;
                 }
                 break;
             case FALSE:
             case TRUE:
                 {
-                alt65=4;
+                alt67=4;
                 }
                 break;
             case TYPE:
                 {
-                alt65=5;
+                alt67=5;
                 }
                 break;
             default:
                 if (backtracking>0) {failed=true; return node;}
                 NoViableAltException nvae =
-                    new NoViableAltException("831:1: nonArithmeticScalarExpression returns [Object node] : (n= functionsReturningDatetime | n= functionsReturningStrings | n= literalString | n= literalBoolean | n= entityTypeExpression );", 65, 0, input);
+                    new NoViableAltException("857:1: nonArithmeticScalarExpression returns [Object node] : (n= functionsReturningDatetime | n= functionsReturningStrings | n= literalString | n= literalBoolean | n= entityTypeExpression );", 67, 0, input);
             
                 throw nvae;
             }
             
-            switch (alt65) {
+            switch (alt67) {
                 case 1 :
-                    // JPQL.g:833:7: n= functionsReturningDatetime
+                    // JPQL.g:859:7: n= functionsReturningDatetime
                     {
-                    pushFollow(FOLLOW_functionsReturningDatetime_in_nonArithmeticScalarExpression5149);
+                    pushFollow(FOLLOW_functionsReturningDatetime_in_nonArithmeticScalarExpression5271);
                     n=functionsReturningDatetime();
                     _fsp--;
                     if (failed) return node;
@@ -8993,9 +9621,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // JPQL.g:834:7: n= functionsReturningStrings
+                    // JPQL.g:860:7: n= functionsReturningStrings
                     {
-                    pushFollow(FOLLOW_functionsReturningStrings_in_nonArithmeticScalarExpression5163);
+                    pushFollow(FOLLOW_functionsReturningStrings_in_nonArithmeticScalarExpression5285);
                     n=functionsReturningStrings();
                     _fsp--;
                     if (failed) return node;
@@ -9006,9 +9634,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 3 :
-                    // JPQL.g:835:7: n= literalString
+                    // JPQL.g:861:7: n= literalString
                     {
-                    pushFollow(FOLLOW_literalString_in_nonArithmeticScalarExpression5177);
+                    pushFollow(FOLLOW_literalString_in_nonArithmeticScalarExpression5299);
                     n=literalString();
                     _fsp--;
                     if (failed) return node;
@@ -9019,9 +9647,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 4 :
-                    // JPQL.g:836:7: n= literalBoolean
+                    // JPQL.g:862:7: n= literalBoolean
                     {
-                    pushFollow(FOLLOW_literalBoolean_in_nonArithmeticScalarExpression5191);
+                    pushFollow(FOLLOW_literalBoolean_in_nonArithmeticScalarExpression5313);
                     n=literalBoolean();
                     _fsp--;
                     if (failed) return node;
@@ -9032,9 +9660,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 5 :
-                    // JPQL.g:837:7: n= entityTypeExpression
+                    // JPQL.g:863:7: n= entityTypeExpression
                     {
-                    pushFollow(FOLLOW_entityTypeExpression_in_nonArithmeticScalarExpression5205);
+                    pushFollow(FOLLOW_entityTypeExpression_in_nonArithmeticScalarExpression5327);
                     n=entityTypeExpression();
                     _fsp--;
                     if (failed) return node;
@@ -9059,7 +9687,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start anyOrAllExpression
-    // JPQL.g:840:1: anyOrAllExpression returns [Object node] : (a= ALL LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET | y= ANY LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET | s= SOME LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET );
+    // JPQL.g:866:1: anyOrAllExpression returns [Object node] : (a= ALL LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET | y= ANY LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET | s= SOME LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET );
     public final Object anyOrAllExpression() throws RecognitionException {
 
         Object node = null;
@@ -9072,44 +9700,44 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // JPQL.g:842:7: (a= ALL LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET | y= ANY LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET | s= SOME LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET )
-            int alt66=3;
+            // JPQL.g:868:7: (a= ALL LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET | y= ANY LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET | s= SOME LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET )
+            int alt68=3;
             switch ( input.LA(1) ) {
             case ALL:
                 {
-                alt66=1;
+                alt68=1;
                 }
                 break;
             case ANY:
                 {
-                alt66=2;
+                alt68=2;
                 }
                 break;
             case SOME:
                 {
-                alt66=3;
+                alt68=3;
                 }
                 break;
             default:
                 if (backtracking>0) {failed=true; return node;}
                 NoViableAltException nvae =
-                    new NoViableAltException("840:1: anyOrAllExpression returns [Object node] : (a= ALL LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET | y= ANY LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET | s= SOME LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET );", 66, 0, input);
+                    new NoViableAltException("866:1: anyOrAllExpression returns [Object node] : (a= ALL LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET | y= ANY LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET | s= SOME LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET );", 68, 0, input);
             
                 throw nvae;
             }
             
-            switch (alt66) {
+            switch (alt68) {
                 case 1 :
-                    // JPQL.g:842:7: a= ALL LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET
+                    // JPQL.g:868:7: a= ALL LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET
                     {
                     a=(Token)input.LT(1);
-                    match(input,ALL,FOLLOW_ALL_in_anyOrAllExpression5235); if (failed) return node;
-                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_anyOrAllExpression5237); if (failed) return node;
-                    pushFollow(FOLLOW_subquery_in_anyOrAllExpression5243);
+                    match(input,ALL,FOLLOW_ALL_in_anyOrAllExpression5357); if (failed) return node;
+                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_anyOrAllExpression5359); if (failed) return node;
+                    pushFollow(FOLLOW_subquery_in_anyOrAllExpression5365);
                     n=subquery();
                     _fsp--;
                     if (failed) return node;
-                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_anyOrAllExpression5245); if (failed) return node;
+                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_anyOrAllExpression5367); if (failed) return node;
                     if ( backtracking==0 ) {
                        node = factory.newAll(a.getLine(), a.getCharPositionInLine(), n); 
                     }
@@ -9117,16 +9745,16 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // JPQL.g:844:7: y= ANY LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET
+                    // JPQL.g:870:7: y= ANY LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET
                     {
                     y=(Token)input.LT(1);
-                    match(input,ANY,FOLLOW_ANY_in_anyOrAllExpression5265); if (failed) return node;
-                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_anyOrAllExpression5267); if (failed) return node;
-                    pushFollow(FOLLOW_subquery_in_anyOrAllExpression5273);
+                    match(input,ANY,FOLLOW_ANY_in_anyOrAllExpression5387); if (failed) return node;
+                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_anyOrAllExpression5389); if (failed) return node;
+                    pushFollow(FOLLOW_subquery_in_anyOrAllExpression5395);
                     n=subquery();
                     _fsp--;
                     if (failed) return node;
-                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_anyOrAllExpression5275); if (failed) return node;
+                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_anyOrAllExpression5397); if (failed) return node;
                     if ( backtracking==0 ) {
                        node = factory.newAny(y.getLine(), y.getCharPositionInLine(), n); 
                     }
@@ -9134,16 +9762,16 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 3 :
-                    // JPQL.g:846:7: s= SOME LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET
+                    // JPQL.g:872:7: s= SOME LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET
                     {
                     s=(Token)input.LT(1);
-                    match(input,SOME,FOLLOW_SOME_in_anyOrAllExpression5295); if (failed) return node;
-                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_anyOrAllExpression5297); if (failed) return node;
-                    pushFollow(FOLLOW_subquery_in_anyOrAllExpression5303);
+                    match(input,SOME,FOLLOW_SOME_in_anyOrAllExpression5417); if (failed) return node;
+                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_anyOrAllExpression5419); if (failed) return node;
+                    pushFollow(FOLLOW_subquery_in_anyOrAllExpression5425);
                     n=subquery();
                     _fsp--;
                     if (failed) return node;
-                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_anyOrAllExpression5305); if (failed) return node;
+                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_anyOrAllExpression5427); if (failed) return node;
                     if ( backtracking==0 ) {
                        node = factory.newSome(s.getLine(), s.getCharPositionInLine(), n); 
                     }
@@ -9165,7 +9793,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start entityTypeExpression
-    // JPQL.g:850:1: entityTypeExpression returns [Object node] : n= typeDiscriminator ;
+    // JPQL.g:876:1: entityTypeExpression returns [Object node] : n= typeDiscriminator ;
     public final Object entityTypeExpression() throws RecognitionException {
 
         Object node = null;
@@ -9175,10 +9803,10 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
         node = null;
         try {
-            // JPQL.g:852:7: (n= typeDiscriminator )
-            // JPQL.g:852:7: n= typeDiscriminator
+            // JPQL.g:878:7: (n= typeDiscriminator )
+            // JPQL.g:878:7: n= typeDiscriminator
             {
-            pushFollow(FOLLOW_typeDiscriminator_in_entityTypeExpression5345);
+            pushFollow(FOLLOW_typeDiscriminator_in_entityTypeExpression5467);
             n=typeDiscriminator();
             _fsp--;
             if (failed) return node;
@@ -9201,7 +9829,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start typeDiscriminator
-    // JPQL.g:855:1: typeDiscriminator returns [Object node] : (a= TYPE LEFT_ROUND_BRACKET n= variableOrSingleValuedPath RIGHT_ROUND_BRACKET | c= TYPE LEFT_ROUND_BRACKET n= inputParameter RIGHT_ROUND_BRACKET );
+    // JPQL.g:881:1: typeDiscriminator returns [Object node] : (a= TYPE LEFT_ROUND_BRACKET n= variableOrSingleValuedPath RIGHT_ROUND_BRACKET | c= TYPE LEFT_ROUND_BRACKET n= inputParameter RIGHT_ROUND_BRACKET );
     public final Object typeDiscriminator() throws RecognitionException {
 
         Object node = null;
@@ -9213,26 +9841,26 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
         node = null;
         try {
-            // JPQL.g:857:7: (a= TYPE LEFT_ROUND_BRACKET n= variableOrSingleValuedPath RIGHT_ROUND_BRACKET | c= TYPE LEFT_ROUND_BRACKET n= inputParameter RIGHT_ROUND_BRACKET )
-            int alt67=2;
-            int LA67_0 = input.LA(1);
+            // JPQL.g:883:7: (a= TYPE LEFT_ROUND_BRACKET n= variableOrSingleValuedPath RIGHT_ROUND_BRACKET | c= TYPE LEFT_ROUND_BRACKET n= inputParameter RIGHT_ROUND_BRACKET )
+            int alt69=2;
+            int LA69_0 = input.LA(1);
             
-            if ( (LA67_0==TYPE) ) {
-                int LA67_1 = input.LA(2);
+            if ( (LA69_0==TYPE) ) {
+                int LA69_1 = input.LA(2);
                 
-                if ( (LA67_1==LEFT_ROUND_BRACKET) ) {
-                    int LA67_2 = input.LA(3);
+                if ( (LA69_1==LEFT_ROUND_BRACKET) ) {
+                    int LA69_2 = input.LA(3);
                     
-                    if ( (LA67_2==KEY||LA67_2==VALUE||LA67_2==IDENT) ) {
-                        alt67=1;
+                    if ( (LA69_2==KEY||LA69_2==VALUE||LA69_2==IDENT) ) {
+                        alt69=1;
                     }
-                    else if ( ((LA67_2>=POSITIONAL_PARAM && LA67_2<=NAMED_PARAM)) ) {
-                        alt67=2;
+                    else if ( ((LA69_2>=POSITIONAL_PARAM && LA69_2<=NAMED_PARAM)) ) {
+                        alt69=2;
                     }
                     else {
                         if (backtracking>0) {failed=true; return node;}
                         NoViableAltException nvae =
-                            new NoViableAltException("855:1: typeDiscriminator returns [Object node] : (a= TYPE LEFT_ROUND_BRACKET n= variableOrSingleValuedPath RIGHT_ROUND_BRACKET | c= TYPE LEFT_ROUND_BRACKET n= inputParameter RIGHT_ROUND_BRACKET );", 67, 2, input);
+                            new NoViableAltException("881:1: typeDiscriminator returns [Object node] : (a= TYPE LEFT_ROUND_BRACKET n= variableOrSingleValuedPath RIGHT_ROUND_BRACKET | c= TYPE LEFT_ROUND_BRACKET n= inputParameter RIGHT_ROUND_BRACKET );", 69, 2, input);
                     
                         throw nvae;
                     }
@@ -9240,7 +9868,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 else {
                     if (backtracking>0) {failed=true; return node;}
                     NoViableAltException nvae =
-                        new NoViableAltException("855:1: typeDiscriminator returns [Object node] : (a= TYPE LEFT_ROUND_BRACKET n= variableOrSingleValuedPath RIGHT_ROUND_BRACKET | c= TYPE LEFT_ROUND_BRACKET n= inputParameter RIGHT_ROUND_BRACKET );", 67, 1, input);
+                        new NoViableAltException("881:1: typeDiscriminator returns [Object node] : (a= TYPE LEFT_ROUND_BRACKET n= variableOrSingleValuedPath RIGHT_ROUND_BRACKET | c= TYPE LEFT_ROUND_BRACKET n= inputParameter RIGHT_ROUND_BRACKET );", 69, 1, input);
                 
                     throw nvae;
                 }
@@ -9248,22 +9876,22 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             else {
                 if (backtracking>0) {failed=true; return node;}
                 NoViableAltException nvae =
-                    new NoViableAltException("855:1: typeDiscriminator returns [Object node] : (a= TYPE LEFT_ROUND_BRACKET n= variableOrSingleValuedPath RIGHT_ROUND_BRACKET | c= TYPE LEFT_ROUND_BRACKET n= inputParameter RIGHT_ROUND_BRACKET );", 67, 0, input);
+                    new NoViableAltException("881:1: typeDiscriminator returns [Object node] : (a= TYPE LEFT_ROUND_BRACKET n= variableOrSingleValuedPath RIGHT_ROUND_BRACKET | c= TYPE LEFT_ROUND_BRACKET n= inputParameter RIGHT_ROUND_BRACKET );", 69, 0, input);
             
                 throw nvae;
             }
-            switch (alt67) {
+            switch (alt69) {
                 case 1 :
-                    // JPQL.g:857:7: a= TYPE LEFT_ROUND_BRACKET n= variableOrSingleValuedPath RIGHT_ROUND_BRACKET
+                    // JPQL.g:883:7: a= TYPE LEFT_ROUND_BRACKET n= variableOrSingleValuedPath RIGHT_ROUND_BRACKET
                     {
                     a=(Token)input.LT(1);
-                    match(input,TYPE,FOLLOW_TYPE_in_typeDiscriminator5378); if (failed) return node;
-                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_typeDiscriminator5380); if (failed) return node;
-                    pushFollow(FOLLOW_variableOrSingleValuedPath_in_typeDiscriminator5386);
+                    match(input,TYPE,FOLLOW_TYPE_in_typeDiscriminator5500); if (failed) return node;
+                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_typeDiscriminator5502); if (failed) return node;
+                    pushFollow(FOLLOW_variableOrSingleValuedPath_in_typeDiscriminator5508);
                     n=variableOrSingleValuedPath();
                     _fsp--;
                     if (failed) return node;
-                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_typeDiscriminator5388); if (failed) return node;
+                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_typeDiscriminator5510); if (failed) return node;
                     if ( backtracking==0 ) {
                        node = factory.newType(a.getLine(), a.getCharPositionInLine(), n);
                     }
@@ -9271,16 +9899,16 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // JPQL.g:858:7: c= TYPE LEFT_ROUND_BRACKET n= inputParameter RIGHT_ROUND_BRACKET
+                    // JPQL.g:884:7: c= TYPE LEFT_ROUND_BRACKET n= inputParameter RIGHT_ROUND_BRACKET
                     {
                     c=(Token)input.LT(1);
-                    match(input,TYPE,FOLLOW_TYPE_in_typeDiscriminator5403); if (failed) return node;
-                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_typeDiscriminator5405); if (failed) return node;
-                    pushFollow(FOLLOW_inputParameter_in_typeDiscriminator5411);
+                    match(input,TYPE,FOLLOW_TYPE_in_typeDiscriminator5525); if (failed) return node;
+                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_typeDiscriminator5527); if (failed) return node;
+                    pushFollow(FOLLOW_inputParameter_in_typeDiscriminator5533);
                     n=inputParameter();
                     _fsp--;
                     if (failed) return node;
-                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_typeDiscriminator5413); if (failed) return node;
+                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_typeDiscriminator5535); if (failed) return node;
                     if ( backtracking==0 ) {
                        node = factory.newType(c.getLine(), c.getCharPositionInLine(), n);
                     }
@@ -9302,7 +9930,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start caseExpression
-    // JPQL.g:861:1: caseExpression returns [Object node] : (n= simpleCaseExpression | n= generalCaseExpression | n= coalesceExpression | n= nullIfExpression );
+    // JPQL.g:887:1: caseExpression returns [Object node] : (n= simpleCaseExpression | n= generalCaseExpression | n= coalesceExpression | n= nullIfExpression );
     public final Object caseExpression() throws RecognitionException {
 
         Object node = null;
@@ -9312,23 +9940,23 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
         node = null;
         try {
-            // JPQL.g:863:6: (n= simpleCaseExpression | n= generalCaseExpression | n= coalesceExpression | n= nullIfExpression )
-            int alt68=4;
+            // JPQL.g:889:6: (n= simpleCaseExpression | n= generalCaseExpression | n= coalesceExpression | n= nullIfExpression )
+            int alt70=4;
             switch ( input.LA(1) ) {
             case CASE:
                 {
-                int LA68_1 = input.LA(2);
+                int LA70_1 = input.LA(2);
                 
-                if ( (LA68_1==WHEN) ) {
-                    alt68=2;
+                if ( (LA70_1==KEY||LA70_1==TYPE||LA70_1==VALUE||LA70_1==IDENT) ) {
+                    alt70=1;
                 }
-                else if ( (LA68_1==KEY||LA68_1==TYPE||LA68_1==VALUE||LA68_1==IDENT) ) {
-                    alt68=1;
+                else if ( (LA70_1==WHEN) ) {
+                    alt70=2;
                 }
                 else {
                     if (backtracking>0) {failed=true; return node;}
                     NoViableAltException nvae =
-                        new NoViableAltException("861:1: caseExpression returns [Object node] : (n= simpleCaseExpression | n= generalCaseExpression | n= coalesceExpression | n= nullIfExpression );", 68, 1, input);
+                        new NoViableAltException("887:1: caseExpression returns [Object node] : (n= simpleCaseExpression | n= generalCaseExpression | n= coalesceExpression | n= nullIfExpression );", 70, 1, input);
                 
                     throw nvae;
                 }
@@ -9336,27 +9964,27 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 break;
             case COALESCE:
                 {
-                alt68=3;
+                alt70=3;
                 }
                 break;
             case NULLIF:
                 {
-                alt68=4;
+                alt70=4;
                 }
                 break;
             default:
                 if (backtracking>0) {failed=true; return node;}
                 NoViableAltException nvae =
-                    new NoViableAltException("861:1: caseExpression returns [Object node] : (n= simpleCaseExpression | n= generalCaseExpression | n= coalesceExpression | n= nullIfExpression );", 68, 0, input);
+                    new NoViableAltException("887:1: caseExpression returns [Object node] : (n= simpleCaseExpression | n= generalCaseExpression | n= coalesceExpression | n= nullIfExpression );", 70, 0, input);
             
                 throw nvae;
             }
             
-            switch (alt68) {
+            switch (alt70) {
                 case 1 :
-                    // JPQL.g:863:6: n= simpleCaseExpression
+                    // JPQL.g:889:6: n= simpleCaseExpression
                     {
-                    pushFollow(FOLLOW_simpleCaseExpression_in_caseExpression5448);
+                    pushFollow(FOLLOW_simpleCaseExpression_in_caseExpression5570);
                     n=simpleCaseExpression();
                     _fsp--;
                     if (failed) return node;
@@ -9367,9 +9995,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // JPQL.g:864:6: n= generalCaseExpression
+                    // JPQL.g:890:6: n= generalCaseExpression
                     {
-                    pushFollow(FOLLOW_generalCaseExpression_in_caseExpression5461);
+                    pushFollow(FOLLOW_generalCaseExpression_in_caseExpression5583);
                     n=generalCaseExpression();
                     _fsp--;
                     if (failed) return node;
@@ -9380,9 +10008,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 3 :
-                    // JPQL.g:865:6: n= coalesceExpression
+                    // JPQL.g:891:6: n= coalesceExpression
                     {
-                    pushFollow(FOLLOW_coalesceExpression_in_caseExpression5474);
+                    pushFollow(FOLLOW_coalesceExpression_in_caseExpression5596);
                     n=coalesceExpression();
                     _fsp--;
                     if (failed) return node;
@@ -9393,9 +10021,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 4 :
-                    // JPQL.g:866:6: n= nullIfExpression
+                    // JPQL.g:892:6: n= nullIfExpression
                     {
-                    pushFollow(FOLLOW_nullIfExpression_in_caseExpression5487);
+                    pushFollow(FOLLOW_nullIfExpression_in_caseExpression5609);
                     n=nullIfExpression();
                     _fsp--;
                     if (failed) return node;
@@ -9425,7 +10053,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
     
     // $ANTLR start simpleCaseExpression
-    // JPQL.g:869:1: simpleCaseExpression returns [Object node] : a= CASE caseOperand w= simpleWhenClause (w= simpleWhenClause )* ELSE e= scalarExpression END ;
+    // JPQL.g:895:1: simpleCaseExpression returns [Object node] : a= CASE caseOperand w= simpleWhenClause (w= simpleWhenClause )* ELSE e= scalarExpression END ;
     public final Object simpleCaseExpression() throws RecognitionException {
         simpleCaseExpression_stack.push(new simpleCaseExpression_scope());
 
@@ -9442,38 +10070,38 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             ((simpleCaseExpression_scope)simpleCaseExpression_stack.peek()).whens = new ArrayList();
     
         try {
-            // JPQL.g:877:6: (a= CASE caseOperand w= simpleWhenClause (w= simpleWhenClause )* ELSE e= scalarExpression END )
-            // JPQL.g:877:6: a= CASE caseOperand w= simpleWhenClause (w= simpleWhenClause )* ELSE e= scalarExpression END
+            // JPQL.g:903:6: (a= CASE caseOperand w= simpleWhenClause (w= simpleWhenClause )* ELSE e= scalarExpression END )
+            // JPQL.g:903:6: a= CASE caseOperand w= simpleWhenClause (w= simpleWhenClause )* ELSE e= scalarExpression END
             {
             a=(Token)input.LT(1);
-            match(input,CASE,FOLLOW_CASE_in_simpleCaseExpression5525); if (failed) return node;
-            pushFollow(FOLLOW_caseOperand_in_simpleCaseExpression5527);
+            match(input,CASE,FOLLOW_CASE_in_simpleCaseExpression5647); if (failed) return node;
+            pushFollow(FOLLOW_caseOperand_in_simpleCaseExpression5649);
             caseOperand();
             _fsp--;
             if (failed) return node;
-            pushFollow(FOLLOW_simpleWhenClause_in_simpleCaseExpression5533);
+            pushFollow(FOLLOW_simpleWhenClause_in_simpleCaseExpression5655);
             w=simpleWhenClause();
             _fsp--;
             if (failed) return node;
             if ( backtracking==0 ) {
               ((simpleCaseExpression_scope)simpleCaseExpression_stack.peek()).whens.add(w);
             }
-            // JPQL.g:877:93: (w= simpleWhenClause )*
-            loop69:
+            // JPQL.g:903:93: (w= simpleWhenClause )*
+            loop71:
             do {
-                int alt69=2;
-                int LA69_0 = input.LA(1);
+                int alt71=2;
+                int LA71_0 = input.LA(1);
                 
-                if ( (LA69_0==WHEN) ) {
-                    alt69=1;
+                if ( (LA71_0==WHEN) ) {
+                    alt71=1;
                 }
                 
             
-                switch (alt69) {
+                switch (alt71) {
             	case 1 :
-            	    // JPQL.g:877:94: w= simpleWhenClause
+            	    // JPQL.g:903:94: w= simpleWhenClause
             	    {
-            	    pushFollow(FOLLOW_simpleWhenClause_in_simpleCaseExpression5542);
+            	    pushFollow(FOLLOW_simpleWhenClause_in_simpleCaseExpression5664);
             	    w=simpleWhenClause();
             	    _fsp--;
             	    if (failed) return node;
@@ -9485,16 +10113,16 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             	    break;
             
             	default :
-            	    break loop69;
+            	    break loop71;
                 }
             } while (true);
 
-            match(input,ELSE,FOLLOW_ELSE_in_simpleCaseExpression5548); if (failed) return node;
-            pushFollow(FOLLOW_scalarExpression_in_simpleCaseExpression5554);
+            match(input,ELSE,FOLLOW_ELSE_in_simpleCaseExpression5670); if (failed) return node;
+            pushFollow(FOLLOW_scalarExpression_in_simpleCaseExpression5676);
             e=scalarExpression();
             _fsp--;
             if (failed) return node;
-            match(input,END,FOLLOW_END_in_simpleCaseExpression5556); if (failed) return node;
+            match(input,END,FOLLOW_END_in_simpleCaseExpression5678); if (failed) return node;
             if ( backtracking==0 ) {
               
                              node = factory.newCaseClause(a.getLine(), a.getCharPositionInLine(), 
@@ -9523,7 +10151,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
     
     // $ANTLR start generalCaseExpression
-    // JPQL.g:884:1: generalCaseExpression returns [Object node] : a= CASE w= whenClause ( whenClause )* ELSE e= scalarExpression END ;
+    // JPQL.g:910:1: generalCaseExpression returns [Object node] : a= CASE w= whenClause ( whenClause )* ELSE e= scalarExpression END ;
     public final Object generalCaseExpression() throws RecognitionException {
         generalCaseExpression_stack.push(new generalCaseExpression_scope());
 
@@ -9540,34 +10168,34 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             ((generalCaseExpression_scope)generalCaseExpression_stack.peek()).whens = new ArrayList();
     
         try {
-            // JPQL.g:892:6: (a= CASE w= whenClause ( whenClause )* ELSE e= scalarExpression END )
-            // JPQL.g:892:6: a= CASE w= whenClause ( whenClause )* ELSE e= scalarExpression END
+            // JPQL.g:918:6: (a= CASE w= whenClause ( whenClause )* ELSE e= scalarExpression END )
+            // JPQL.g:918:6: a= CASE w= whenClause ( whenClause )* ELSE e= scalarExpression END
             {
             a=(Token)input.LT(1);
-            match(input,CASE,FOLLOW_CASE_in_generalCaseExpression5600); if (failed) return node;
-            pushFollow(FOLLOW_whenClause_in_generalCaseExpression5606);
+            match(input,CASE,FOLLOW_CASE_in_generalCaseExpression5722); if (failed) return node;
+            pushFollow(FOLLOW_whenClause_in_generalCaseExpression5728);
             w=whenClause();
             _fsp--;
             if (failed) return node;
             if ( backtracking==0 ) {
               ((generalCaseExpression_scope)generalCaseExpression_stack.peek()).whens.add(w);
             }
-            // JPQL.g:892:76: ( whenClause )*
-            loop70:
+            // JPQL.g:918:76: ( whenClause )*
+            loop72:
             do {
-                int alt70=2;
-                int LA70_0 = input.LA(1);
+                int alt72=2;
+                int LA72_0 = input.LA(1);
                 
-                if ( (LA70_0==WHEN) ) {
-                    alt70=1;
+                if ( (LA72_0==WHEN) ) {
+                    alt72=1;
                 }
                 
             
-                switch (alt70) {
+                switch (alt72) {
             	case 1 :
-            	    // JPQL.g:892:77: whenClause
+            	    // JPQL.g:918:77: whenClause
             	    {
-            	    pushFollow(FOLLOW_whenClause_in_generalCaseExpression5611);
+            	    pushFollow(FOLLOW_whenClause_in_generalCaseExpression5733);
             	    whenClause();
             	    _fsp--;
             	    if (failed) return node;
@@ -9579,16 +10207,16 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             	    break;
             
             	default :
-            	    break loop70;
+            	    break loop72;
                 }
             } while (true);
 
-            match(input,ELSE,FOLLOW_ELSE_in_generalCaseExpression5617); if (failed) return node;
-            pushFollow(FOLLOW_scalarExpression_in_generalCaseExpression5623);
+            match(input,ELSE,FOLLOW_ELSE_in_generalCaseExpression5739); if (failed) return node;
+            pushFollow(FOLLOW_scalarExpression_in_generalCaseExpression5745);
             e=scalarExpression();
             _fsp--;
             if (failed) return node;
-            match(input,END,FOLLOW_END_in_generalCaseExpression5625); if (failed) return node;
+            match(input,END,FOLLOW_END_in_generalCaseExpression5747); if (failed) return node;
             if ( backtracking==0 ) {
               
                              node = factory.newCaseClause(a.getLine(), a.getCharPositionInLine(), 
@@ -9617,7 +10245,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
     
     // $ANTLR start coalesceExpression
-    // JPQL.g:899:1: coalesceExpression returns [Object node] : c= COALESCE RIGHT_ROUND_BRACKET p= scalarExpression ( COMMA scalarExpression )+ LEFT_ROUND_BRACKET ;
+    // JPQL.g:925:1: coalesceExpression returns [Object node] : c= COALESCE RIGHT_ROUND_BRACKET p= scalarExpression ( COMMA scalarExpression )+ LEFT_ROUND_BRACKET ;
     public final Object coalesceExpression() throws RecognitionException {
         coalesceExpression_stack.push(new coalesceExpression_scope());
 
@@ -9632,37 +10260,37 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             ((coalesceExpression_scope)coalesceExpression_stack.peek()).primaries = new ArrayList();
     
         try {
-            // JPQL.g:907:6: (c= COALESCE RIGHT_ROUND_BRACKET p= scalarExpression ( COMMA scalarExpression )+ LEFT_ROUND_BRACKET )
-            // JPQL.g:907:6: c= COALESCE RIGHT_ROUND_BRACKET p= scalarExpression ( COMMA scalarExpression )+ LEFT_ROUND_BRACKET
+            // JPQL.g:933:6: (c= COALESCE RIGHT_ROUND_BRACKET p= scalarExpression ( COMMA scalarExpression )+ LEFT_ROUND_BRACKET )
+            // JPQL.g:933:6: c= COALESCE RIGHT_ROUND_BRACKET p= scalarExpression ( COMMA scalarExpression )+ LEFT_ROUND_BRACKET
             {
             c=(Token)input.LT(1);
-            match(input,COALESCE,FOLLOW_COALESCE_in_coalesceExpression5669); if (failed) return node;
-            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_coalesceExpression5671); if (failed) return node;
-            pushFollow(FOLLOW_scalarExpression_in_coalesceExpression5677);
+            match(input,COALESCE,FOLLOW_COALESCE_in_coalesceExpression5791); if (failed) return node;
+            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_coalesceExpression5793); if (failed) return node;
+            pushFollow(FOLLOW_scalarExpression_in_coalesceExpression5799);
             p=scalarExpression();
             _fsp--;
             if (failed) return node;
             if ( backtracking==0 ) {
               ((coalesceExpression_scope)coalesceExpression_stack.peek()).primaries.add(p);
             }
-            // JPQL.g:907:107: ( COMMA scalarExpression )+
-            int cnt71=0;
-            loop71:
+            // JPQL.g:933:107: ( COMMA scalarExpression )+
+            int cnt73=0;
+            loop73:
             do {
-                int alt71=2;
-                int LA71_0 = input.LA(1);
+                int alt73=2;
+                int LA73_0 = input.LA(1);
                 
-                if ( (LA71_0==COMMA) ) {
-                    alt71=1;
+                if ( (LA73_0==COMMA) ) {
+                    alt73=1;
                 }
                 
             
-                switch (alt71) {
+                switch (alt73) {
             	case 1 :
-            	    // JPQL.g:907:108: COMMA scalarExpression
+            	    // JPQL.g:933:108: COMMA scalarExpression
             	    {
-            	    match(input,COMMA,FOLLOW_COMMA_in_coalesceExpression5682); if (failed) return node;
-            	    pushFollow(FOLLOW_scalarExpression_in_coalesceExpression5684);
+            	    match(input,COMMA,FOLLOW_COMMA_in_coalesceExpression5804); if (failed) return node;
+            	    pushFollow(FOLLOW_scalarExpression_in_coalesceExpression5806);
             	    scalarExpression();
             	    _fsp--;
             	    if (failed) return node;
@@ -9674,16 +10302,16 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             	    break;
             
             	default :
-            	    if ( cnt71 >= 1 ) break loop71;
+            	    if ( cnt73 >= 1 ) break loop73;
             	    if (backtracking>0) {failed=true; return node;}
                         EarlyExitException eee =
-                            new EarlyExitException(71, input);
+                            new EarlyExitException(73, input);
                         throw eee;
                 }
-                cnt71++;
+                cnt73++;
             } while (true);
 
-            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_coalesceExpression5690); if (failed) return node;
+            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_coalesceExpression5812); if (failed) return node;
             if ( backtracking==0 ) {
               
                              node = factory.newCoalesceClause(c.getLine(), c.getCharPositionInLine(), 
@@ -9707,7 +10335,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start nullIfExpression
-    // JPQL.g:914:1: nullIfExpression returns [Object node] : n= NULLIF RIGHT_ROUND_BRACKET l= scalarExpression COMMA r= scalarExpression LEFT_ROUND_BRACKET ;
+    // JPQL.g:940:1: nullIfExpression returns [Object node] : n= NULLIF RIGHT_ROUND_BRACKET l= scalarExpression COMMA r= scalarExpression LEFT_ROUND_BRACKET ;
     public final Object nullIfExpression() throws RecognitionException {
 
         Object node = null;
@@ -9720,22 +10348,22 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
         node = null;
         try {
-            // JPQL.g:916:6: (n= NULLIF RIGHT_ROUND_BRACKET l= scalarExpression COMMA r= scalarExpression LEFT_ROUND_BRACKET )
-            // JPQL.g:916:6: n= NULLIF RIGHT_ROUND_BRACKET l= scalarExpression COMMA r= scalarExpression LEFT_ROUND_BRACKET
+            // JPQL.g:942:6: (n= NULLIF RIGHT_ROUND_BRACKET l= scalarExpression COMMA r= scalarExpression LEFT_ROUND_BRACKET )
+            // JPQL.g:942:6: n= NULLIF RIGHT_ROUND_BRACKET l= scalarExpression COMMA r= scalarExpression LEFT_ROUND_BRACKET
             {
             n=(Token)input.LT(1);
-            match(input,NULLIF,FOLLOW_NULLIF_in_nullIfExpression5731); if (failed) return node;
-            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_nullIfExpression5733); if (failed) return node;
-            pushFollow(FOLLOW_scalarExpression_in_nullIfExpression5739);
+            match(input,NULLIF,FOLLOW_NULLIF_in_nullIfExpression5853); if (failed) return node;
+            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_nullIfExpression5855); if (failed) return node;
+            pushFollow(FOLLOW_scalarExpression_in_nullIfExpression5861);
             l=scalarExpression();
             _fsp--;
             if (failed) return node;
-            match(input,COMMA,FOLLOW_COMMA_in_nullIfExpression5741); if (failed) return node;
-            pushFollow(FOLLOW_scalarExpression_in_nullIfExpression5747);
+            match(input,COMMA,FOLLOW_COMMA_in_nullIfExpression5863); if (failed) return node;
+            pushFollow(FOLLOW_scalarExpression_in_nullIfExpression5869);
             r=scalarExpression();
             _fsp--;
             if (failed) return node;
-            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_nullIfExpression5749); if (failed) return node;
+            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_nullIfExpression5871); if (failed) return node;
             if ( backtracking==0 ) {
               
                              node = factory.newNullIfClause(n.getLine(), n.getCharPositionInLine(), 
@@ -9758,7 +10386,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start caseOperand
-    // JPQL.g:924:1: caseOperand returns [Object node] : (n= stateFieldPathExpression | n= typeDiscriminator );
+    // JPQL.g:950:1: caseOperand returns [Object node] : (n= stateFieldPathExpression | n= typeDiscriminator );
     public final Object caseOperand() throws RecognitionException {
 
         Object node = null;
@@ -9768,28 +10396,28 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
         node = null;
         try {
-            // JPQL.g:926:6: (n= stateFieldPathExpression | n= typeDiscriminator )
-            int alt72=2;
-            int LA72_0 = input.LA(1);
+            // JPQL.g:952:6: (n= stateFieldPathExpression | n= typeDiscriminator )
+            int alt74=2;
+            int LA74_0 = input.LA(1);
             
-            if ( (LA72_0==KEY||LA72_0==VALUE||LA72_0==IDENT) ) {
-                alt72=1;
+            if ( (LA74_0==KEY||LA74_0==VALUE||LA74_0==IDENT) ) {
+                alt74=1;
             }
-            else if ( (LA72_0==TYPE) ) {
-                alt72=2;
+            else if ( (LA74_0==TYPE) ) {
+                alt74=2;
             }
             else {
                 if (backtracking>0) {failed=true; return node;}
                 NoViableAltException nvae =
-                    new NoViableAltException("924:1: caseOperand returns [Object node] : (n= stateFieldPathExpression | n= typeDiscriminator );", 72, 0, input);
+                    new NoViableAltException("950:1: caseOperand returns [Object node] : (n= stateFieldPathExpression | n= typeDiscriminator );", 74, 0, input);
             
                 throw nvae;
             }
-            switch (alt72) {
+            switch (alt74) {
                 case 1 :
-                    // JPQL.g:926:6: n= stateFieldPathExpression
+                    // JPQL.g:952:6: n= stateFieldPathExpression
                     {
-                    pushFollow(FOLLOW_stateFieldPathExpression_in_caseOperand5796);
+                    pushFollow(FOLLOW_stateFieldPathExpression_in_caseOperand5918);
                     n=stateFieldPathExpression();
                     _fsp--;
                     if (failed) return node;
@@ -9800,9 +10428,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // JPQL.g:927:6: n= typeDiscriminator
+                    // JPQL.g:953:6: n= typeDiscriminator
                     {
-                    pushFollow(FOLLOW_typeDiscriminator_in_caseOperand5810);
+                    pushFollow(FOLLOW_typeDiscriminator_in_caseOperand5932);
                     n=typeDiscriminator();
                     _fsp--;
                     if (failed) return node;
@@ -9827,7 +10455,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start whenClause
-    // JPQL.g:930:1: whenClause returns [Object node] : w= WHEN c= conditionalExpression THEN a= scalarExpression ;
+    // JPQL.g:956:1: whenClause returns [Object node] : w= WHEN c= conditionalExpression THEN a= scalarExpression ;
     public final Object whenClause() throws RecognitionException {
 
         Object node = null;
@@ -9840,17 +10468,17 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
         node = null;
         try {
-            // JPQL.g:932:6: (w= WHEN c= conditionalExpression THEN a= scalarExpression )
-            // JPQL.g:932:6: w= WHEN c= conditionalExpression THEN a= scalarExpression
+            // JPQL.g:958:6: (w= WHEN c= conditionalExpression THEN a= scalarExpression )
+            // JPQL.g:958:6: w= WHEN c= conditionalExpression THEN a= scalarExpression
             {
             w=(Token)input.LT(1);
-            match(input,WHEN,FOLLOW_WHEN_in_whenClause5845); if (failed) return node;
-            pushFollow(FOLLOW_conditionalExpression_in_whenClause5851);
+            match(input,WHEN,FOLLOW_WHEN_in_whenClause5967); if (failed) return node;
+            pushFollow(FOLLOW_conditionalExpression_in_whenClause5973);
             c=conditionalExpression();
             _fsp--;
             if (failed) return node;
-            match(input,THEN,FOLLOW_THEN_in_whenClause5853); if (failed) return node;
-            pushFollow(FOLLOW_scalarExpression_in_whenClause5859);
+            match(input,THEN,FOLLOW_THEN_in_whenClause5975); if (failed) return node;
+            pushFollow(FOLLOW_scalarExpression_in_whenClause5981);
             a=scalarExpression();
             _fsp--;
             if (failed) return node;
@@ -9876,7 +10504,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start simpleWhenClause
-    // JPQL.g:939:1: simpleWhenClause returns [Object node] : w= WHEN c= scalarExpression THEN a= scalarExpression ;
+    // JPQL.g:965:1: simpleWhenClause returns [Object node] : w= WHEN c= scalarExpression THEN a= scalarExpression ;
     public final Object simpleWhenClause() throws RecognitionException {
 
         Object node = null;
@@ -9889,17 +10517,17 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
         node = null;
         try {
-            // JPQL.g:941:6: (w= WHEN c= scalarExpression THEN a= scalarExpression )
-            // JPQL.g:941:6: w= WHEN c= scalarExpression THEN a= scalarExpression
+            // JPQL.g:967:6: (w= WHEN c= scalarExpression THEN a= scalarExpression )
+            // JPQL.g:967:6: w= WHEN c= scalarExpression THEN a= scalarExpression
             {
             w=(Token)input.LT(1);
-            match(input,WHEN,FOLLOW_WHEN_in_simpleWhenClause5901); if (failed) return node;
-            pushFollow(FOLLOW_scalarExpression_in_simpleWhenClause5907);
+            match(input,WHEN,FOLLOW_WHEN_in_simpleWhenClause6023); if (failed) return node;
+            pushFollow(FOLLOW_scalarExpression_in_simpleWhenClause6029);
             c=scalarExpression();
             _fsp--;
             if (failed) return node;
-            match(input,THEN,FOLLOW_THEN_in_simpleWhenClause5909); if (failed) return node;
-            pushFollow(FOLLOW_scalarExpression_in_simpleWhenClause5915);
+            match(input,THEN,FOLLOW_THEN_in_simpleWhenClause6031); if (failed) return node;
+            pushFollow(FOLLOW_scalarExpression_in_simpleWhenClause6037);
             a=scalarExpression();
             _fsp--;
             if (failed) return node;
@@ -9925,7 +10553,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start variableOrSingleValuedPath
-    // JPQL.g:948:1: variableOrSingleValuedPath returns [Object node] : (n= singleValuedPathExpression | n= variableAccessOrTypeConstant );
+    // JPQL.g:974:1: variableOrSingleValuedPath returns [Object node] : (n= singleValuedPathExpression | n= variableAccessOrTypeConstant );
     public final Object variableOrSingleValuedPath() throws RecognitionException {
 
         Object node = null;
@@ -9935,42 +10563,42 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
         node = null;
         try {
-            // JPQL.g:950:7: (n= singleValuedPathExpression | n= variableAccessOrTypeConstant )
-            int alt73=2;
-            int LA73_0 = input.LA(1);
+            // JPQL.g:976:7: (n= singleValuedPathExpression | n= variableAccessOrTypeConstant )
+            int alt75=2;
+            int LA75_0 = input.LA(1);
             
-            if ( (LA73_0==IDENT) ) {
-                int LA73_1 = input.LA(2);
+            if ( (LA75_0==IDENT) ) {
+                int LA75_1 = input.LA(2);
                 
-                if ( (LA73_1==DOT) ) {
-                    alt73=1;
+                if ( (LA75_1==DOT) ) {
+                    alt75=1;
                 }
-                else if ( (LA73_1==RIGHT_ROUND_BRACKET) ) {
-                    alt73=2;
+                else if ( (LA75_1==RIGHT_ROUND_BRACKET) ) {
+                    alt75=2;
                 }
                 else {
                     if (backtracking>0) {failed=true; return node;}
                     NoViableAltException nvae =
-                        new NoViableAltException("948:1: variableOrSingleValuedPath returns [Object node] : (n= singleValuedPathExpression | n= variableAccessOrTypeConstant );", 73, 1, input);
+                        new NoViableAltException("974:1: variableOrSingleValuedPath returns [Object node] : (n= singleValuedPathExpression | n= variableAccessOrTypeConstant );", 75, 1, input);
                 
                     throw nvae;
                 }
             }
-            else if ( (LA73_0==KEY||LA73_0==VALUE) ) {
-                alt73=1;
+            else if ( (LA75_0==KEY||LA75_0==VALUE) ) {
+                alt75=1;
             }
             else {
                 if (backtracking>0) {failed=true; return node;}
                 NoViableAltException nvae =
-                    new NoViableAltException("948:1: variableOrSingleValuedPath returns [Object node] : (n= singleValuedPathExpression | n= variableAccessOrTypeConstant );", 73, 0, input);
+                    new NoViableAltException("974:1: variableOrSingleValuedPath returns [Object node] : (n= singleValuedPathExpression | n= variableAccessOrTypeConstant );", 75, 0, input);
             
                 throw nvae;
             }
-            switch (alt73) {
+            switch (alt75) {
                 case 1 :
-                    // JPQL.g:950:7: n= singleValuedPathExpression
+                    // JPQL.g:976:7: n= singleValuedPathExpression
                     {
-                    pushFollow(FOLLOW_singleValuedPathExpression_in_variableOrSingleValuedPath5952);
+                    pushFollow(FOLLOW_singleValuedPathExpression_in_variableOrSingleValuedPath6074);
                     n=singleValuedPathExpression();
                     _fsp--;
                     if (failed) return node;
@@ -9981,9 +10609,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // JPQL.g:951:7: n= variableAccessOrTypeConstant
+                    // JPQL.g:977:7: n= variableAccessOrTypeConstant
                     {
-                    pushFollow(FOLLOW_variableAccessOrTypeConstant_in_variableOrSingleValuedPath5966);
+                    pushFollow(FOLLOW_variableAccessOrTypeConstant_in_variableOrSingleValuedPath6088);
                     n=variableAccessOrTypeConstant();
                     _fsp--;
                     if (failed) return node;
@@ -10008,7 +10636,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start stringPrimary
-    // JPQL.g:954:1: stringPrimary returns [Object node] : (n= literalString | n= functionsReturningStrings | n= inputParameter | n= stateFieldPathExpression );
+    // JPQL.g:980:1: stringPrimary returns [Object node] : (n= literalString | n= functionsReturningStrings | n= inputParameter | n= stateFieldPathExpression );
     public final Object stringPrimary() throws RecognitionException {
 
         Object node = null;
@@ -10018,13 +10646,13 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // JPQL.g:956:7: (n= literalString | n= functionsReturningStrings | n= inputParameter | n= stateFieldPathExpression )
-            int alt74=4;
+            // JPQL.g:982:7: (n= literalString | n= functionsReturningStrings | n= inputParameter | n= stateFieldPathExpression )
+            int alt76=4;
             switch ( input.LA(1) ) {
             case STRING_LITERAL_DOUBLE_QUOTED:
             case STRING_LITERAL_SINGLE_QUOTED:
                 {
-                alt74=1;
+                alt76=1;
                 }
                 break;
             case CONCAT:
@@ -10033,35 +10661,35 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             case TRIM:
             case UPPER:
                 {
-                alt74=2;
+                alt76=2;
                 }
                 break;
             case POSITIONAL_PARAM:
             case NAMED_PARAM:
                 {
-                alt74=3;
+                alt76=3;
                 }
                 break;
             case KEY:
             case VALUE:
             case IDENT:
                 {
-                alt74=4;
+                alt76=4;
                 }
                 break;
             default:
                 if (backtracking>0) {failed=true; return node;}
                 NoViableAltException nvae =
-                    new NoViableAltException("954:1: stringPrimary returns [Object node] : (n= literalString | n= functionsReturningStrings | n= inputParameter | n= stateFieldPathExpression );", 74, 0, input);
+                    new NoViableAltException("980:1: stringPrimary returns [Object node] : (n= literalString | n= functionsReturningStrings | n= inputParameter | n= stateFieldPathExpression );", 76, 0, input);
             
                 throw nvae;
             }
             
-            switch (alt74) {
+            switch (alt76) {
                 case 1 :
-                    // JPQL.g:956:7: n= literalString
+                    // JPQL.g:982:7: n= literalString
                     {
-                    pushFollow(FOLLOW_literalString_in_stringPrimary5998);
+                    pushFollow(FOLLOW_literalString_in_stringPrimary6120);
                     n=literalString();
                     _fsp--;
                     if (failed) return node;
@@ -10072,9 +10700,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // JPQL.g:957:7: n= functionsReturningStrings
+                    // JPQL.g:983:7: n= functionsReturningStrings
                     {
-                    pushFollow(FOLLOW_functionsReturningStrings_in_stringPrimary6012);
+                    pushFollow(FOLLOW_functionsReturningStrings_in_stringPrimary6134);
                     n=functionsReturningStrings();
                     _fsp--;
                     if (failed) return node;
@@ -10085,9 +10713,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 3 :
-                    // JPQL.g:958:7: n= inputParameter
+                    // JPQL.g:984:7: n= inputParameter
                     {
-                    pushFollow(FOLLOW_inputParameter_in_stringPrimary6026);
+                    pushFollow(FOLLOW_inputParameter_in_stringPrimary6148);
                     n=inputParameter();
                     _fsp--;
                     if (failed) return node;
@@ -10098,9 +10726,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 4 :
-                    // JPQL.g:959:7: n= stateFieldPathExpression
+                    // JPQL.g:985:7: n= stateFieldPathExpression
                     {
-                    pushFollow(FOLLOW_stateFieldPathExpression_in_stringPrimary6040);
+                    pushFollow(FOLLOW_stateFieldPathExpression_in_stringPrimary6162);
                     n=stateFieldPathExpression();
                     _fsp--;
                     if (failed) return node;
@@ -10125,7 +10753,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start literal
-    // JPQL.g:964:1: literal returns [Object node] : (n= literalNumeric | n= literalBoolean | n= literalString );
+    // JPQL.g:990:1: literal returns [Object node] : (n= literalNumeric | n= literalBoolean | n= literalString );
     public final Object literal() throws RecognitionException {
 
         Object node = null;
@@ -10135,42 +10763,42 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // JPQL.g:966:7: (n= literalNumeric | n= literalBoolean | n= literalString )
-            int alt75=3;
+            // JPQL.g:992:7: (n= literalNumeric | n= literalBoolean | n= literalString )
+            int alt77=3;
             switch ( input.LA(1) ) {
             case INTEGER_LITERAL:
             case LONG_LITERAL:
             case FLOAT_LITERAL:
             case DOUBLE_LITERAL:
                 {
-                alt75=1;
+                alt77=1;
                 }
                 break;
             case FALSE:
             case TRUE:
                 {
-                alt75=2;
+                alt77=2;
                 }
                 break;
             case STRING_LITERAL_DOUBLE_QUOTED:
             case STRING_LITERAL_SINGLE_QUOTED:
                 {
-                alt75=3;
+                alt77=3;
                 }
                 break;
             default:
                 if (backtracking>0) {failed=true; return node;}
                 NoViableAltException nvae =
-                    new NoViableAltException("964:1: literal returns [Object node] : (n= literalNumeric | n= literalBoolean | n= literalString );", 75, 0, input);
+                    new NoViableAltException("990:1: literal returns [Object node] : (n= literalNumeric | n= literalBoolean | n= literalString );", 77, 0, input);
             
                 throw nvae;
             }
             
-            switch (alt75) {
+            switch (alt77) {
                 case 1 :
-                    // JPQL.g:966:7: n= literalNumeric
+                    // JPQL.g:992:7: n= literalNumeric
                     {
-                    pushFollow(FOLLOW_literalNumeric_in_literal6074);
+                    pushFollow(FOLLOW_literalNumeric_in_literal6196);
                     n=literalNumeric();
                     _fsp--;
                     if (failed) return node;
@@ -10181,9 +10809,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // JPQL.g:967:7: n= literalBoolean
+                    // JPQL.g:993:7: n= literalBoolean
                     {
-                    pushFollow(FOLLOW_literalBoolean_in_literal6088);
+                    pushFollow(FOLLOW_literalBoolean_in_literal6210);
                     n=literalBoolean();
                     _fsp--;
                     if (failed) return node;
@@ -10194,9 +10822,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 3 :
-                    // JPQL.g:968:7: n= literalString
+                    // JPQL.g:994:7: n= literalString
                     {
-                    pushFollow(FOLLOW_literalString_in_literal6102);
+                    pushFollow(FOLLOW_literalString_in_literal6224);
                     n=literalString();
                     _fsp--;
                     if (failed) return node;
@@ -10221,7 +10849,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start literalNumeric
-    // JPQL.g:971:1: literalNumeric returns [Object node] : (i= INTEGER_LITERAL | l= LONG_LITERAL | f= FLOAT_LITERAL | d= DOUBLE_LITERAL );
+    // JPQL.g:997:1: literalNumeric returns [Object node] : (i= INTEGER_LITERAL | l= LONG_LITERAL | f= FLOAT_LITERAL | d= DOUBLE_LITERAL );
     public final Object literalNumeric() throws RecognitionException {
 
         Object node = null;
@@ -10233,43 +10861,43 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // JPQL.g:973:7: (i= INTEGER_LITERAL | l= LONG_LITERAL | f= FLOAT_LITERAL | d= DOUBLE_LITERAL )
-            int alt76=4;
+            // JPQL.g:999:7: (i= INTEGER_LITERAL | l= LONG_LITERAL | f= FLOAT_LITERAL | d= DOUBLE_LITERAL )
+            int alt78=4;
             switch ( input.LA(1) ) {
             case INTEGER_LITERAL:
                 {
-                alt76=1;
+                alt78=1;
                 }
                 break;
             case LONG_LITERAL:
                 {
-                alt76=2;
+                alt78=2;
                 }
                 break;
             case FLOAT_LITERAL:
                 {
-                alt76=3;
+                alt78=3;
                 }
                 break;
             case DOUBLE_LITERAL:
                 {
-                alt76=4;
+                alt78=4;
                 }
                 break;
             default:
                 if (backtracking>0) {failed=true; return node;}
                 NoViableAltException nvae =
-                    new NoViableAltException("971:1: literalNumeric returns [Object node] : (i= INTEGER_LITERAL | l= LONG_LITERAL | f= FLOAT_LITERAL | d= DOUBLE_LITERAL );", 76, 0, input);
+                    new NoViableAltException("997:1: literalNumeric returns [Object node] : (i= INTEGER_LITERAL | l= LONG_LITERAL | f= FLOAT_LITERAL | d= DOUBLE_LITERAL );", 78, 0, input);
             
                 throw nvae;
             }
             
-            switch (alt76) {
+            switch (alt78) {
                 case 1 :
-                    // JPQL.g:973:7: i= INTEGER_LITERAL
+                    // JPQL.g:999:7: i= INTEGER_LITERAL
                     {
                     i=(Token)input.LT(1);
-                    match(input,INTEGER_LITERAL,FOLLOW_INTEGER_LITERAL_in_literalNumeric6132); if (failed) return node;
+                    match(input,INTEGER_LITERAL,FOLLOW_INTEGER_LITERAL_in_literalNumeric6254); if (failed) return node;
                     if ( backtracking==0 ) {
                        
                                   node = factory.newIntegerLiteral(i.getLine(), i.getCharPositionInLine(), 
@@ -10280,10 +10908,10 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // JPQL.g:978:7: l= LONG_LITERAL
+                    // JPQL.g:1004:7: l= LONG_LITERAL
                     {
                     l=(Token)input.LT(1);
-                    match(input,LONG_LITERAL,FOLLOW_LONG_LITERAL_in_literalNumeric6148); if (failed) return node;
+                    match(input,LONG_LITERAL,FOLLOW_LONG_LITERAL_in_literalNumeric6270); if (failed) return node;
                     if ( backtracking==0 ) {
                        
                                   String text = l.getText();
@@ -10297,10 +10925,10 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 3 :
-                    // JPQL.g:986:7: f= FLOAT_LITERAL
+                    // JPQL.g:1012:7: f= FLOAT_LITERAL
                     {
                     f=(Token)input.LT(1);
-                    match(input,FLOAT_LITERAL,FOLLOW_FLOAT_LITERAL_in_literalNumeric6169); if (failed) return node;
+                    match(input,FLOAT_LITERAL,FOLLOW_FLOAT_LITERAL_in_literalNumeric6291); if (failed) return node;
                     if ( backtracking==0 ) {
                        
                                   node = factory.newFloatLiteral(f.getLine(), f.getCharPositionInLine(),
@@ -10311,10 +10939,10 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 4 :
-                    // JPQL.g:991:7: d= DOUBLE_LITERAL
+                    // JPQL.g:1017:7: d= DOUBLE_LITERAL
                     {
                     d=(Token)input.LT(1);
-                    match(input,DOUBLE_LITERAL,FOLLOW_DOUBLE_LITERAL_in_literalNumeric6189); if (failed) return node;
+                    match(input,DOUBLE_LITERAL,FOLLOW_DOUBLE_LITERAL_in_literalNumeric6311); if (failed) return node;
                     if ( backtracking==0 ) {
                        
                                   node = factory.newDoubleLiteral(d.getLine(), d.getCharPositionInLine(),
@@ -10339,7 +10967,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start literalBoolean
-    // JPQL.g:998:1: literalBoolean returns [Object node] : (t= TRUE | f= FALSE );
+    // JPQL.g:1024:1: literalBoolean returns [Object node] : (t= TRUE | f= FALSE );
     public final Object literalBoolean() throws RecognitionException {
 
         Object node = null;
@@ -10349,29 +10977,29 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // JPQL.g:1000:7: (t= TRUE | f= FALSE )
-            int alt77=2;
-            int LA77_0 = input.LA(1);
+            // JPQL.g:1026:7: (t= TRUE | f= FALSE )
+            int alt79=2;
+            int LA79_0 = input.LA(1);
             
-            if ( (LA77_0==TRUE) ) {
-                alt77=1;
+            if ( (LA79_0==TRUE) ) {
+                alt79=1;
             }
-            else if ( (LA77_0==FALSE) ) {
-                alt77=2;
+            else if ( (LA79_0==FALSE) ) {
+                alt79=2;
             }
             else {
                 if (backtracking>0) {failed=true; return node;}
                 NoViableAltException nvae =
-                    new NoViableAltException("998:1: literalBoolean returns [Object node] : (t= TRUE | f= FALSE );", 77, 0, input);
+                    new NoViableAltException("1024:1: literalBoolean returns [Object node] : (t= TRUE | f= FALSE );", 79, 0, input);
             
                 throw nvae;
             }
-            switch (alt77) {
+            switch (alt79) {
                 case 1 :
-                    // JPQL.g:1000:7: t= TRUE
+                    // JPQL.g:1026:7: t= TRUE
                     {
                     t=(Token)input.LT(1);
-                    match(input,TRUE,FOLLOW_TRUE_in_literalBoolean6227); if (failed) return node;
+                    match(input,TRUE,FOLLOW_TRUE_in_literalBoolean6349); if (failed) return node;
                     if ( backtracking==0 ) {
                        node = factory.newBooleanLiteral(t.getLine(), t.getCharPositionInLine(), Boolean.TRUE); 
                     }
@@ -10379,10 +11007,10 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // JPQL.g:1002:7: f= FALSE
+                    // JPQL.g:1028:7: f= FALSE
                     {
                     f=(Token)input.LT(1);
-                    match(input,FALSE,FOLLOW_FALSE_in_literalBoolean6249); if (failed) return node;
+                    match(input,FALSE,FOLLOW_FALSE_in_literalBoolean6371); if (failed) return node;
                     if ( backtracking==0 ) {
                        node = factory.newBooleanLiteral(f.getLine(), f.getCharPositionInLine(), Boolean.FALSE); 
                     }
@@ -10404,7 +11032,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start literalString
-    // JPQL.g:1006:1: literalString returns [Object node] : (d= STRING_LITERAL_DOUBLE_QUOTED | s= STRING_LITERAL_SINGLE_QUOTED );
+    // JPQL.g:1032:1: literalString returns [Object node] : (d= STRING_LITERAL_DOUBLE_QUOTED | s= STRING_LITERAL_SINGLE_QUOTED );
     public final Object literalString() throws RecognitionException {
 
         Object node = null;
@@ -10414,29 +11042,29 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // JPQL.g:1008:7: (d= STRING_LITERAL_DOUBLE_QUOTED | s= STRING_LITERAL_SINGLE_QUOTED )
-            int alt78=2;
-            int LA78_0 = input.LA(1);
+            // JPQL.g:1034:7: (d= STRING_LITERAL_DOUBLE_QUOTED | s= STRING_LITERAL_SINGLE_QUOTED )
+            int alt80=2;
+            int LA80_0 = input.LA(1);
             
-            if ( (LA78_0==STRING_LITERAL_DOUBLE_QUOTED) ) {
-                alt78=1;
+            if ( (LA80_0==STRING_LITERAL_DOUBLE_QUOTED) ) {
+                alt80=1;
             }
-            else if ( (LA78_0==STRING_LITERAL_SINGLE_QUOTED) ) {
-                alt78=2;
+            else if ( (LA80_0==STRING_LITERAL_SINGLE_QUOTED) ) {
+                alt80=2;
             }
             else {
                 if (backtracking>0) {failed=true; return node;}
                 NoViableAltException nvae =
-                    new NoViableAltException("1006:1: literalString returns [Object node] : (d= STRING_LITERAL_DOUBLE_QUOTED | s= STRING_LITERAL_SINGLE_QUOTED );", 78, 0, input);
+                    new NoViableAltException("1032:1: literalString returns [Object node] : (d= STRING_LITERAL_DOUBLE_QUOTED | s= STRING_LITERAL_SINGLE_QUOTED );", 80, 0, input);
             
                 throw nvae;
             }
-            switch (alt78) {
+            switch (alt80) {
                 case 1 :
-                    // JPQL.g:1008:7: d= STRING_LITERAL_DOUBLE_QUOTED
+                    // JPQL.g:1034:7: d= STRING_LITERAL_DOUBLE_QUOTED
                     {
                     d=(Token)input.LT(1);
-                    match(input,STRING_LITERAL_DOUBLE_QUOTED,FOLLOW_STRING_LITERAL_DOUBLE_QUOTED_in_literalString6288); if (failed) return node;
+                    match(input,STRING_LITERAL_DOUBLE_QUOTED,FOLLOW_STRING_LITERAL_DOUBLE_QUOTED_in_literalString6410); if (failed) return node;
                     if ( backtracking==0 ) {
                        
                                   node = factory.newStringLiteral(d.getLine(), d.getCharPositionInLine(), 
@@ -10447,10 +11075,10 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // JPQL.g:1013:7: s= STRING_LITERAL_SINGLE_QUOTED
+                    // JPQL.g:1039:7: s= STRING_LITERAL_SINGLE_QUOTED
                     {
                     s=(Token)input.LT(1);
-                    match(input,STRING_LITERAL_SINGLE_QUOTED,FOLLOW_STRING_LITERAL_SINGLE_QUOTED_in_literalString6309); if (failed) return node;
+                    match(input,STRING_LITERAL_SINGLE_QUOTED,FOLLOW_STRING_LITERAL_SINGLE_QUOTED_in_literalString6431); if (failed) return node;
                     if ( backtracking==0 ) {
                        
                                   node = factory.newStringLiteral(s.getLine(), s.getCharPositionInLine(), 
@@ -10475,7 +11103,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start inputParameter
-    // JPQL.g:1020:1: inputParameter returns [Object node] : (p= POSITIONAL_PARAM | n= NAMED_PARAM );
+    // JPQL.g:1046:1: inputParameter returns [Object node] : (p= POSITIONAL_PARAM | n= NAMED_PARAM );
     public final Object inputParameter() throws RecognitionException {
 
         Object node = null;
@@ -10485,29 +11113,29 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // JPQL.g:1022:7: (p= POSITIONAL_PARAM | n= NAMED_PARAM )
-            int alt79=2;
-            int LA79_0 = input.LA(1);
+            // JPQL.g:1048:7: (p= POSITIONAL_PARAM | n= NAMED_PARAM )
+            int alt81=2;
+            int LA81_0 = input.LA(1);
             
-            if ( (LA79_0==POSITIONAL_PARAM) ) {
-                alt79=1;
+            if ( (LA81_0==POSITIONAL_PARAM) ) {
+                alt81=1;
             }
-            else if ( (LA79_0==NAMED_PARAM) ) {
-                alt79=2;
+            else if ( (LA81_0==NAMED_PARAM) ) {
+                alt81=2;
             }
             else {
                 if (backtracking>0) {failed=true; return node;}
                 NoViableAltException nvae =
-                    new NoViableAltException("1020:1: inputParameter returns [Object node] : (p= POSITIONAL_PARAM | n= NAMED_PARAM );", 79, 0, input);
+                    new NoViableAltException("1046:1: inputParameter returns [Object node] : (p= POSITIONAL_PARAM | n= NAMED_PARAM );", 81, 0, input);
             
                 throw nvae;
             }
-            switch (alt79) {
+            switch (alt81) {
                 case 1 :
-                    // JPQL.g:1022:7: p= POSITIONAL_PARAM
+                    // JPQL.g:1048:7: p= POSITIONAL_PARAM
                     {
                     p=(Token)input.LT(1);
-                    match(input,POSITIONAL_PARAM,FOLLOW_POSITIONAL_PARAM_in_inputParameter6347); if (failed) return node;
+                    match(input,POSITIONAL_PARAM,FOLLOW_POSITIONAL_PARAM_in_inputParameter6469); if (failed) return node;
                     if ( backtracking==0 ) {
                        
                                   // skip the leading ?
@@ -10519,10 +11147,10 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // JPQL.g:1028:7: n= NAMED_PARAM
+                    // JPQL.g:1054:7: n= NAMED_PARAM
                     {
                     n=(Token)input.LT(1);
-                    match(input,NAMED_PARAM,FOLLOW_NAMED_PARAM_in_inputParameter6367); if (failed) return node;
+                    match(input,NAMED_PARAM,FOLLOW_NAMED_PARAM_in_inputParameter6489); if (failed) return node;
                     if ( backtracking==0 ) {
                        
                                   // skip the leading :
@@ -10548,7 +11176,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start functionsReturningNumerics
-    // JPQL.g:1036:1: functionsReturningNumerics returns [Object node] : (n= abs | n= length | n= mod | n= sqrt | n= locate | n= size | n= index );
+    // JPQL.g:1062:1: functionsReturningNumerics returns [Object node] : (n= abs | n= length | n= mod | n= sqrt | n= locate | n= size | n= index );
     public final Object functionsReturningNumerics() throws RecognitionException {
 
         Object node = null;
@@ -10558,57 +11186,57 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // JPQL.g:1038:7: (n= abs | n= length | n= mod | n= sqrt | n= locate | n= size | n= index )
-            int alt80=7;
+            // JPQL.g:1064:7: (n= abs | n= length | n= mod | n= sqrt | n= locate | n= size | n= index )
+            int alt82=7;
             switch ( input.LA(1) ) {
             case ABS:
                 {
-                alt80=1;
+                alt82=1;
                 }
                 break;
             case LENGTH:
                 {
-                alt80=2;
+                alt82=2;
                 }
                 break;
             case MOD:
                 {
-                alt80=3;
+                alt82=3;
                 }
                 break;
             case SQRT:
                 {
-                alt80=4;
+                alt82=4;
                 }
                 break;
             case LOCATE:
                 {
-                alt80=5;
+                alt82=5;
                 }
                 break;
             case SIZE:
                 {
-                alt80=6;
+                alt82=6;
                 }
                 break;
             case INDEX:
                 {
-                alt80=7;
+                alt82=7;
                 }
                 break;
             default:
                 if (backtracking>0) {failed=true; return node;}
                 NoViableAltException nvae =
-                    new NoViableAltException("1036:1: functionsReturningNumerics returns [Object node] : (n= abs | n= length | n= mod | n= sqrt | n= locate | n= size | n= index );", 80, 0, input);
+                    new NoViableAltException("1062:1: functionsReturningNumerics returns [Object node] : (n= abs | n= length | n= mod | n= sqrt | n= locate | n= size | n= index );", 82, 0, input);
             
                 throw nvae;
             }
             
-            switch (alt80) {
+            switch (alt82) {
                 case 1 :
-                    // JPQL.g:1038:7: n= abs
+                    // JPQL.g:1064:7: n= abs
                     {
-                    pushFollow(FOLLOW_abs_in_functionsReturningNumerics6407);
+                    pushFollow(FOLLOW_abs_in_functionsReturningNumerics6529);
                     n=abs();
                     _fsp--;
                     if (failed) return node;
@@ -10619,9 +11247,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // JPQL.g:1039:7: n= length
+                    // JPQL.g:1065:7: n= length
                     {
-                    pushFollow(FOLLOW_length_in_functionsReturningNumerics6421);
+                    pushFollow(FOLLOW_length_in_functionsReturningNumerics6543);
                     n=length();
                     _fsp--;
                     if (failed) return node;
@@ -10632,9 +11260,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 3 :
-                    // JPQL.g:1040:7: n= mod
+                    // JPQL.g:1066:7: n= mod
                     {
-                    pushFollow(FOLLOW_mod_in_functionsReturningNumerics6435);
+                    pushFollow(FOLLOW_mod_in_functionsReturningNumerics6557);
                     n=mod();
                     _fsp--;
                     if (failed) return node;
@@ -10645,9 +11273,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 4 :
-                    // JPQL.g:1041:7: n= sqrt
+                    // JPQL.g:1067:7: n= sqrt
                     {
-                    pushFollow(FOLLOW_sqrt_in_functionsReturningNumerics6449);
+                    pushFollow(FOLLOW_sqrt_in_functionsReturningNumerics6571);
                     n=sqrt();
                     _fsp--;
                     if (failed) return node;
@@ -10658,9 +11286,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 5 :
-                    // JPQL.g:1042:7: n= locate
+                    // JPQL.g:1068:7: n= locate
                     {
-                    pushFollow(FOLLOW_locate_in_functionsReturningNumerics6463);
+                    pushFollow(FOLLOW_locate_in_functionsReturningNumerics6585);
                     n=locate();
                     _fsp--;
                     if (failed) return node;
@@ -10671,9 +11299,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 6 :
-                    // JPQL.g:1043:7: n= size
+                    // JPQL.g:1069:7: n= size
                     {
-                    pushFollow(FOLLOW_size_in_functionsReturningNumerics6477);
+                    pushFollow(FOLLOW_size_in_functionsReturningNumerics6599);
                     n=size();
                     _fsp--;
                     if (failed) return node;
@@ -10684,9 +11312,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 7 :
-                    // JPQL.g:1044:7: n= index
+                    // JPQL.g:1070:7: n= index
                     {
-                    pushFollow(FOLLOW_index_in_functionsReturningNumerics6491);
+                    pushFollow(FOLLOW_index_in_functionsReturningNumerics6613);
                     n=index();
                     _fsp--;
                     if (failed) return node;
@@ -10711,7 +11339,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start functionsReturningDatetime
-    // JPQL.g:1047:1: functionsReturningDatetime returns [Object node] : (d= CURRENT_DATE | t= CURRENT_TIME | ts= CURRENT_TIMESTAMP );
+    // JPQL.g:1073:1: functionsReturningDatetime returns [Object node] : (d= CURRENT_DATE | t= CURRENT_TIME | ts= CURRENT_TIMESTAMP );
     public final Object functionsReturningDatetime() throws RecognitionException {
 
         Object node = null;
@@ -10722,38 +11350,38 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // JPQL.g:1049:7: (d= CURRENT_DATE | t= CURRENT_TIME | ts= CURRENT_TIMESTAMP )
-            int alt81=3;
+            // JPQL.g:1075:7: (d= CURRENT_DATE | t= CURRENT_TIME | ts= CURRENT_TIMESTAMP )
+            int alt83=3;
             switch ( input.LA(1) ) {
             case CURRENT_DATE:
                 {
-                alt81=1;
+                alt83=1;
                 }
                 break;
             case CURRENT_TIME:
                 {
-                alt81=2;
+                alt83=2;
                 }
                 break;
             case CURRENT_TIMESTAMP:
                 {
-                alt81=3;
+                alt83=3;
                 }
                 break;
             default:
                 if (backtracking>0) {failed=true; return node;}
                 NoViableAltException nvae =
-                    new NoViableAltException("1047:1: functionsReturningDatetime returns [Object node] : (d= CURRENT_DATE | t= CURRENT_TIME | ts= CURRENT_TIMESTAMP );", 81, 0, input);
+                    new NoViableAltException("1073:1: functionsReturningDatetime returns [Object node] : (d= CURRENT_DATE | t= CURRENT_TIME | ts= CURRENT_TIMESTAMP );", 83, 0, input);
             
                 throw nvae;
             }
             
-            switch (alt81) {
+            switch (alt83) {
                 case 1 :
-                    // JPQL.g:1049:7: d= CURRENT_DATE
+                    // JPQL.g:1075:7: d= CURRENT_DATE
                     {
                     d=(Token)input.LT(1);
-                    match(input,CURRENT_DATE,FOLLOW_CURRENT_DATE_in_functionsReturningDatetime6521); if (failed) return node;
+                    match(input,CURRENT_DATE,FOLLOW_CURRENT_DATE_in_functionsReturningDatetime6643); if (failed) return node;
                     if ( backtracking==0 ) {
                        node = factory.newCurrentDate(d.getLine(), d.getCharPositionInLine()); 
                     }
@@ -10761,10 +11389,10 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // JPQL.g:1051:7: t= CURRENT_TIME
+                    // JPQL.g:1077:7: t= CURRENT_TIME
                     {
                     t=(Token)input.LT(1);
-                    match(input,CURRENT_TIME,FOLLOW_CURRENT_TIME_in_functionsReturningDatetime6542); if (failed) return node;
+                    match(input,CURRENT_TIME,FOLLOW_CURRENT_TIME_in_functionsReturningDatetime6664); if (failed) return node;
                     if ( backtracking==0 ) {
                        node = factory.newCurrentTime(t.getLine(), t.getCharPositionInLine()); 
                     }
@@ -10772,10 +11400,10 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 3 :
-                    // JPQL.g:1053:7: ts= CURRENT_TIMESTAMP
+                    // JPQL.g:1079:7: ts= CURRENT_TIMESTAMP
                     {
                     ts=(Token)input.LT(1);
-                    match(input,CURRENT_TIMESTAMP,FOLLOW_CURRENT_TIMESTAMP_in_functionsReturningDatetime6562); if (failed) return node;
+                    match(input,CURRENT_TIMESTAMP,FOLLOW_CURRENT_TIMESTAMP_in_functionsReturningDatetime6684); if (failed) return node;
                     if ( backtracking==0 ) {
                        node = factory.newCurrentTimestamp(ts.getLine(), ts.getCharPositionInLine()); 
                     }
@@ -10797,7 +11425,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start functionsReturningStrings
-    // JPQL.g:1057:1: functionsReturningStrings returns [Object node] : (n= concat | n= substring | n= trim | n= upper | n= lower );
+    // JPQL.g:1083:1: functionsReturningStrings returns [Object node] : (n= concat | n= substring | n= trim | n= upper | n= lower );
     public final Object functionsReturningStrings() throws RecognitionException {
 
         Object node = null;
@@ -10807,47 +11435,47 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // JPQL.g:1059:7: (n= concat | n= substring | n= trim | n= upper | n= lower )
-            int alt82=5;
+            // JPQL.g:1085:7: (n= concat | n= substring | n= trim | n= upper | n= lower )
+            int alt84=5;
             switch ( input.LA(1) ) {
             case CONCAT:
                 {
-                alt82=1;
+                alt84=1;
                 }
                 break;
             case SUBSTRING:
                 {
-                alt82=2;
+                alt84=2;
                 }
                 break;
             case TRIM:
                 {
-                alt82=3;
+                alt84=3;
                 }
                 break;
             case UPPER:
                 {
-                alt82=4;
+                alt84=4;
                 }
                 break;
             case LOWER:
                 {
-                alt82=5;
+                alt84=5;
                 }
                 break;
             default:
                 if (backtracking>0) {failed=true; return node;}
                 NoViableAltException nvae =
-                    new NoViableAltException("1057:1: functionsReturningStrings returns [Object node] : (n= concat | n= substring | n= trim | n= upper | n= lower );", 82, 0, input);
+                    new NoViableAltException("1083:1: functionsReturningStrings returns [Object node] : (n= concat | n= substring | n= trim | n= upper | n= lower );", 84, 0, input);
             
                 throw nvae;
             }
             
-            switch (alt82) {
+            switch (alt84) {
                 case 1 :
-                    // JPQL.g:1059:7: n= concat
+                    // JPQL.g:1085:7: n= concat
                     {
-                    pushFollow(FOLLOW_concat_in_functionsReturningStrings6602);
+                    pushFollow(FOLLOW_concat_in_functionsReturningStrings6724);
                     n=concat();
                     _fsp--;
                     if (failed) return node;
@@ -10858,9 +11486,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // JPQL.g:1060:7: n= substring
+                    // JPQL.g:1086:7: n= substring
                     {
-                    pushFollow(FOLLOW_substring_in_functionsReturningStrings6616);
+                    pushFollow(FOLLOW_substring_in_functionsReturningStrings6738);
                     n=substring();
                     _fsp--;
                     if (failed) return node;
@@ -10871,9 +11499,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 3 :
-                    // JPQL.g:1061:7: n= trim
+                    // JPQL.g:1087:7: n= trim
                     {
-                    pushFollow(FOLLOW_trim_in_functionsReturningStrings6630);
+                    pushFollow(FOLLOW_trim_in_functionsReturningStrings6752);
                     n=trim();
                     _fsp--;
                     if (failed) return node;
@@ -10884,9 +11512,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 4 :
-                    // JPQL.g:1062:7: n= upper
+                    // JPQL.g:1088:7: n= upper
                     {
-                    pushFollow(FOLLOW_upper_in_functionsReturningStrings6644);
+                    pushFollow(FOLLOW_upper_in_functionsReturningStrings6766);
                     n=upper();
                     _fsp--;
                     if (failed) return node;
@@ -10897,9 +11525,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 5 :
-                    // JPQL.g:1063:7: n= lower
+                    // JPQL.g:1089:7: n= lower
                     {
-                    pushFollow(FOLLOW_lower_in_functionsReturningStrings6658);
+                    pushFollow(FOLLOW_lower_in_functionsReturningStrings6780);
                     n=lower();
                     _fsp--;
                     if (failed) return node;
@@ -10929,7 +11557,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
     
     // $ANTLR start concat
-    // JPQL.g:1067:1: concat returns [Object node] : c= CONCAT LEFT_ROUND_BRACKET firstArg= stringPrimary ( COMMA arg= stringPrimary )+ RIGHT_ROUND_BRACKET ;
+    // JPQL.g:1093:1: concat returns [Object node] : c= CONCAT LEFT_ROUND_BRACKET firstArg= stringPrimary ( COMMA arg= stringPrimary )+ RIGHT_ROUND_BRACKET ;
     public final Object concat() throws RecognitionException {
         concat_stack.push(new concat_scope());
 
@@ -10946,37 +11574,37 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             ((concat_scope)concat_stack.peek()).items = new ArrayList();
     
         try {
-            // JPQL.g:1075:7: (c= CONCAT LEFT_ROUND_BRACKET firstArg= stringPrimary ( COMMA arg= stringPrimary )+ RIGHT_ROUND_BRACKET )
-            // JPQL.g:1075:7: c= CONCAT LEFT_ROUND_BRACKET firstArg= stringPrimary ( COMMA arg= stringPrimary )+ RIGHT_ROUND_BRACKET
+            // JPQL.g:1101:7: (c= CONCAT LEFT_ROUND_BRACKET firstArg= stringPrimary ( COMMA arg= stringPrimary )+ RIGHT_ROUND_BRACKET )
+            // JPQL.g:1101:7: c= CONCAT LEFT_ROUND_BRACKET firstArg= stringPrimary ( COMMA arg= stringPrimary )+ RIGHT_ROUND_BRACKET
             {
             c=(Token)input.LT(1);
-            match(input,CONCAT,FOLLOW_CONCAT_in_concat6693); if (failed) return node;
-            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_concat6704); if (failed) return node;
-            pushFollow(FOLLOW_stringPrimary_in_concat6719);
+            match(input,CONCAT,FOLLOW_CONCAT_in_concat6815); if (failed) return node;
+            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_concat6826); if (failed) return node;
+            pushFollow(FOLLOW_stringPrimary_in_concat6841);
             firstArg=stringPrimary();
             _fsp--;
             if (failed) return node;
             if ( backtracking==0 ) {
               ((concat_scope)concat_stack.peek()).items.add(firstArg);
             }
-            // JPQL.g:1077:72: ( COMMA arg= stringPrimary )+
-            int cnt83=0;
-            loop83:
+            // JPQL.g:1103:72: ( COMMA arg= stringPrimary )+
+            int cnt85=0;
+            loop85:
             do {
-                int alt83=2;
-                int LA83_0 = input.LA(1);
+                int alt85=2;
+                int LA85_0 = input.LA(1);
                 
-                if ( (LA83_0==COMMA) ) {
-                    alt83=1;
+                if ( (LA85_0==COMMA) ) {
+                    alt85=1;
                 }
                 
             
-                switch (alt83) {
+                switch (alt85) {
             	case 1 :
-            	    // JPQL.g:1077:73: COMMA arg= stringPrimary
+            	    // JPQL.g:1103:73: COMMA arg= stringPrimary
             	    {
-            	    match(input,COMMA,FOLLOW_COMMA_in_concat6724); if (failed) return node;
-            	    pushFollow(FOLLOW_stringPrimary_in_concat6730);
+            	    match(input,COMMA,FOLLOW_COMMA_in_concat6846); if (failed) return node;
+            	    pushFollow(FOLLOW_stringPrimary_in_concat6852);
             	    arg=stringPrimary();
             	    _fsp--;
             	    if (failed) return node;
@@ -10988,16 +11616,16 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             	    break;
             
             	default :
-            	    if ( cnt83 >= 1 ) break loop83;
+            	    if ( cnt85 >= 1 ) break loop85;
             	    if (backtracking>0) {failed=true; return node;}
                         EarlyExitException eee =
-                            new EarlyExitException(83, input);
+                            new EarlyExitException(85, input);
                         throw eee;
                 }
-                cnt83++;
+                cnt85++;
             } while (true);
 
-            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_concat6744); if (failed) return node;
+            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_concat6866); if (failed) return node;
             if ( backtracking==0 ) {
                node = factory.newConcat(c.getLine(), c.getCharPositionInLine(), ((concat_scope)concat_stack.peek()).items); 
             }
@@ -11018,7 +11646,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start substring
-    // JPQL.g:1082:1: substring returns [Object node] : s= SUBSTRING LEFT_ROUND_BRACKET string= stringPrimary COMMA start= simpleArithmeticExpression ( COMMA lengthNode= simpleArithmeticExpression )? RIGHT_ROUND_BRACKET ;
+    // JPQL.g:1108:1: substring returns [Object node] : s= SUBSTRING LEFT_ROUND_BRACKET string= stringPrimary COMMA start= simpleArithmeticExpression ( COMMA lengthNode= simpleArithmeticExpression )? RIGHT_ROUND_BRACKET ;
     public final Object substring() throws RecognitionException {
 
         Object node = null;
@@ -11036,34 +11664,34 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             lengthNode = null;
     
         try {
-            // JPQL.g:1087:7: (s= SUBSTRING LEFT_ROUND_BRACKET string= stringPrimary COMMA start= simpleArithmeticExpression ( COMMA lengthNode= simpleArithmeticExpression )? RIGHT_ROUND_BRACKET )
-            // JPQL.g:1087:7: s= SUBSTRING LEFT_ROUND_BRACKET string= stringPrimary COMMA start= simpleArithmeticExpression ( COMMA lengthNode= simpleArithmeticExpression )? RIGHT_ROUND_BRACKET
+            // JPQL.g:1113:7: (s= SUBSTRING LEFT_ROUND_BRACKET string= stringPrimary COMMA start= simpleArithmeticExpression ( COMMA lengthNode= simpleArithmeticExpression )? RIGHT_ROUND_BRACKET )
+            // JPQL.g:1113:7: s= SUBSTRING LEFT_ROUND_BRACKET string= stringPrimary COMMA start= simpleArithmeticExpression ( COMMA lengthNode= simpleArithmeticExpression )? RIGHT_ROUND_BRACKET
             {
             s=(Token)input.LT(1);
-            match(input,SUBSTRING,FOLLOW_SUBSTRING_in_substring6782); if (failed) return node;
-            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_substring6795); if (failed) return node;
-            pushFollow(FOLLOW_stringPrimary_in_substring6809);
+            match(input,SUBSTRING,FOLLOW_SUBSTRING_in_substring6904); if (failed) return node;
+            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_substring6917); if (failed) return node;
+            pushFollow(FOLLOW_stringPrimary_in_substring6931);
             string=stringPrimary();
             _fsp--;
             if (failed) return node;
-            match(input,COMMA,FOLLOW_COMMA_in_substring6811); if (failed) return node;
-            pushFollow(FOLLOW_simpleArithmeticExpression_in_substring6825);
+            match(input,COMMA,FOLLOW_COMMA_in_substring6933); if (failed) return node;
+            pushFollow(FOLLOW_simpleArithmeticExpression_in_substring6947);
             start=simpleArithmeticExpression();
             _fsp--;
             if (failed) return node;
-            // JPQL.g:1091:9: ( COMMA lengthNode= simpleArithmeticExpression )?
-            int alt84=2;
-            int LA84_0 = input.LA(1);
+            // JPQL.g:1117:9: ( COMMA lengthNode= simpleArithmeticExpression )?
+            int alt86=2;
+            int LA86_0 = input.LA(1);
             
-            if ( (LA84_0==COMMA) ) {
-                alt84=1;
+            if ( (LA86_0==COMMA) ) {
+                alt86=1;
             }
-            switch (alt84) {
+            switch (alt86) {
                 case 1 :
-                    // JPQL.g:1091:10: COMMA lengthNode= simpleArithmeticExpression
+                    // JPQL.g:1117:10: COMMA lengthNode= simpleArithmeticExpression
                     {
-                    match(input,COMMA,FOLLOW_COMMA_in_substring6836); if (failed) return node;
-                    pushFollow(FOLLOW_simpleArithmeticExpression_in_substring6842);
+                    match(input,COMMA,FOLLOW_COMMA_in_substring6958); if (failed) return node;
+                    pushFollow(FOLLOW_simpleArithmeticExpression_in_substring6964);
                     lengthNode=simpleArithmeticExpression();
                     _fsp--;
                     if (failed) return node;
@@ -11073,7 +11701,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
             }
 
-            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_substring6854); if (failed) return node;
+            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_substring6976); if (failed) return node;
             if ( backtracking==0 ) {
                
                           if (lengthNode != null){
@@ -11101,7 +11729,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start trim
-    // JPQL.g:1104:1: trim returns [Object node] : t= TRIM LEFT_ROUND_BRACKET ( ( trimSpec trimChar FROM )=>trimSpecIndicator= trimSpec trimCharNode= trimChar FROM )? n= stringPrimary RIGHT_ROUND_BRACKET ;
+    // JPQL.g:1130:1: trim returns [Object node] : t= TRIM LEFT_ROUND_BRACKET ( ( trimSpec trimChar FROM )=>trimSpecIndicator= trimSpec trimCharNode= trimChar FROM )? n= stringPrimary RIGHT_ROUND_BRACKET ;
     public final Object trim() throws RecognitionException {
 
         Object node = null;
@@ -11118,80 +11746,80 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             node = null; 
     
         try {
-            // JPQL.g:1108:7: (t= TRIM LEFT_ROUND_BRACKET ( ( trimSpec trimChar FROM )=>trimSpecIndicator= trimSpec trimCharNode= trimChar FROM )? n= stringPrimary RIGHT_ROUND_BRACKET )
-            // JPQL.g:1108:7: t= TRIM LEFT_ROUND_BRACKET ( ( trimSpec trimChar FROM )=>trimSpecIndicator= trimSpec trimCharNode= trimChar FROM )? n= stringPrimary RIGHT_ROUND_BRACKET
+            // JPQL.g:1134:7: (t= TRIM LEFT_ROUND_BRACKET ( ( trimSpec trimChar FROM )=>trimSpecIndicator= trimSpec trimCharNode= trimChar FROM )? n= stringPrimary RIGHT_ROUND_BRACKET )
+            // JPQL.g:1134:7: t= TRIM LEFT_ROUND_BRACKET ( ( trimSpec trimChar FROM )=>trimSpecIndicator= trimSpec trimCharNode= trimChar FROM )? n= stringPrimary RIGHT_ROUND_BRACKET
             {
             t=(Token)input.LT(1);
-            match(input,TRIM,FOLLOW_TRIM_in_trim6892); if (failed) return node;
-            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_trim6902); if (failed) return node;
-            // JPQL.g:1110:9: ( ( trimSpec trimChar FROM )=>trimSpecIndicator= trimSpec trimCharNode= trimChar FROM )?
-            int alt85=2;
-            int LA85_0 = input.LA(1);
+            match(input,TRIM,FOLLOW_TRIM_in_trim7014); if (failed) return node;
+            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_trim7024); if (failed) return node;
+            // JPQL.g:1136:9: ( ( trimSpec trimChar FROM )=>trimSpecIndicator= trimSpec trimCharNode= trimChar FROM )?
+            int alt87=2;
+            int LA87_0 = input.LA(1);
             
-            if ( (LA85_0==LEADING) && (synpred2())) {
-                alt85=1;
+            if ( (LA87_0==LEADING) && (synpred2())) {
+                alt87=1;
             }
-            else if ( (LA85_0==TRAILING) && (synpred2())) {
-                alt85=1;
+            else if ( (LA87_0==TRAILING) && (synpred2())) {
+                alt87=1;
             }
-            else if ( (LA85_0==BOTH) && (synpred2())) {
-                alt85=1;
+            else if ( (LA87_0==BOTH) && (synpred2())) {
+                alt87=1;
             }
-            else if ( (LA85_0==STRING_LITERAL_DOUBLE_QUOTED) ) {
-                int LA85_4 = input.LA(2);
+            else if ( (LA87_0==STRING_LITERAL_DOUBLE_QUOTED) ) {
+                int LA87_4 = input.LA(2);
                 
-                if ( (LA85_4==FROM) && (synpred2())) {
-                    alt85=1;
+                if ( (LA87_4==FROM) && (synpred2())) {
+                    alt87=1;
                 }
             }
-            else if ( (LA85_0==STRING_LITERAL_SINGLE_QUOTED) ) {
-                int LA85_5 = input.LA(2);
+            else if ( (LA87_0==STRING_LITERAL_SINGLE_QUOTED) ) {
+                int LA87_5 = input.LA(2);
                 
-                if ( (LA85_5==FROM) && (synpred2())) {
-                    alt85=1;
+                if ( (LA87_5==FROM) && (synpred2())) {
+                    alt87=1;
                 }
             }
-            else if ( (LA85_0==POSITIONAL_PARAM) ) {
-                int LA85_6 = input.LA(2);
+            else if ( (LA87_0==POSITIONAL_PARAM) ) {
+                int LA87_6 = input.LA(2);
                 
-                if ( (LA85_6==FROM) && (synpred2())) {
-                    alt85=1;
+                if ( (LA87_6==FROM) && (synpred2())) {
+                    alt87=1;
                 }
             }
-            else if ( (LA85_0==NAMED_PARAM) ) {
-                int LA85_7 = input.LA(2);
+            else if ( (LA87_0==NAMED_PARAM) ) {
+                int LA87_7 = input.LA(2);
                 
-                if ( (LA85_7==FROM) && (synpred2())) {
-                    alt85=1;
+                if ( (LA87_7==FROM) && (synpred2())) {
+                    alt87=1;
                 }
             }
-            else if ( (LA85_0==FROM) && (synpred2())) {
-                alt85=1;
+            else if ( (LA87_0==FROM) && (synpred2())) {
+                alt87=1;
             }
-            switch (alt85) {
+            switch (alt87) {
                 case 1 :
-                    // JPQL.g:1110:11: ( trimSpec trimChar FROM )=>trimSpecIndicator= trimSpec trimCharNode= trimChar FROM
+                    // JPQL.g:1136:11: ( trimSpec trimChar FROM )=>trimSpecIndicator= trimSpec trimCharNode= trimChar FROM
                     {
-                    pushFollow(FOLLOW_trimSpec_in_trim6930);
+                    pushFollow(FOLLOW_trimSpec_in_trim7052);
                     trimSpecIndicator=trimSpec();
                     _fsp--;
                     if (failed) return node;
-                    pushFollow(FOLLOW_trimChar_in_trim6936);
+                    pushFollow(FOLLOW_trimChar_in_trim7058);
                     trimCharNode=trimChar();
                     _fsp--;
                     if (failed) return node;
-                    match(input,FROM,FOLLOW_FROM_in_trim6938); if (failed) return node;
+                    match(input,FROM,FOLLOW_FROM_in_trim7060); if (failed) return node;
                     
                     }
                     break;
             
             }
 
-            pushFollow(FOLLOW_stringPrimary_in_trim6956);
+            pushFollow(FOLLOW_stringPrimary_in_trim7078);
             n=stringPrimary();
             _fsp--;
             if (failed) return node;
-            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_trim6966); if (failed) return node;
+            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_trim7088); if (failed) return node;
             if ( backtracking==0 ) {
               
                           node = factory.newTrim(t.getLine(), t.getCharPositionInLine(), 
@@ -11214,29 +11842,29 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start trimSpec
-    // JPQL.g:1119:1: trimSpec returns [TrimSpecification trimSpec] : ( LEADING | TRAILING | BOTH | );
+    // JPQL.g:1145:1: trimSpec returns [TrimSpecification trimSpec] : ( LEADING | TRAILING | BOTH | );
     public final TrimSpecification trimSpec() throws RecognitionException {
 
         TrimSpecification trimSpec = null;
     
          trimSpec = TrimSpecification.BOTH; 
         try {
-            // JPQL.g:1121:7: ( LEADING | TRAILING | BOTH | )
-            int alt86=4;
+            // JPQL.g:1147:7: ( LEADING | TRAILING | BOTH | )
+            int alt88=4;
             switch ( input.LA(1) ) {
             case LEADING:
                 {
-                alt86=1;
+                alt88=1;
                 }
                 break;
             case TRAILING:
                 {
-                alt86=2;
+                alt88=2;
                 }
                 break;
             case BOTH:
                 {
-                alt86=3;
+                alt88=3;
                 }
                 break;
             case FROM:
@@ -11245,22 +11873,22 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             case POSITIONAL_PARAM:
             case NAMED_PARAM:
                 {
-                alt86=4;
+                alt88=4;
                 }
                 break;
             default:
                 if (backtracking>0) {failed=true; return trimSpec;}
                 NoViableAltException nvae =
-                    new NoViableAltException("1119:1: trimSpec returns [TrimSpecification trimSpec] : ( LEADING | TRAILING | BOTH | );", 86, 0, input);
+                    new NoViableAltException("1145:1: trimSpec returns [TrimSpecification trimSpec] : ( LEADING | TRAILING | BOTH | );", 88, 0, input);
             
                 throw nvae;
             }
             
-            switch (alt86) {
+            switch (alt88) {
                 case 1 :
-                    // JPQL.g:1121:7: LEADING
+                    // JPQL.g:1147:7: LEADING
                     {
-                    match(input,LEADING,FOLLOW_LEADING_in_trimSpec7002); if (failed) return trimSpec;
+                    match(input,LEADING,FOLLOW_LEADING_in_trimSpec7124); if (failed) return trimSpec;
                     if ( backtracking==0 ) {
                        trimSpec = TrimSpecification.LEADING; 
                     }
@@ -11268,9 +11896,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // JPQL.g:1123:7: TRAILING
+                    // JPQL.g:1149:7: TRAILING
                     {
-                    match(input,TRAILING,FOLLOW_TRAILING_in_trimSpec7020); if (failed) return trimSpec;
+                    match(input,TRAILING,FOLLOW_TRAILING_in_trimSpec7142); if (failed) return trimSpec;
                     if ( backtracking==0 ) {
                        trimSpec = TrimSpecification.TRAILING; 
                     }
@@ -11278,9 +11906,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 3 :
-                    // JPQL.g:1125:7: BOTH
+                    // JPQL.g:1151:7: BOTH
                     {
-                    match(input,BOTH,FOLLOW_BOTH_in_trimSpec7038); if (failed) return trimSpec;
+                    match(input,BOTH,FOLLOW_BOTH_in_trimSpec7160); if (failed) return trimSpec;
                     if ( backtracking==0 ) {
                        trimSpec = TrimSpecification.BOTH; 
                     }
@@ -11288,7 +11916,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 4 :
-                    // JPQL.g:1128:5: 
+                    // JPQL.g:1154:5: 
                     {
                     }
                     break;
@@ -11307,7 +11935,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start trimChar
-    // JPQL.g:1130:1: trimChar returns [Object node] : (n= literalString | n= inputParameter | );
+    // JPQL.g:1156:1: trimChar returns [Object node] : (n= literalString | n= inputParameter | );
     public final Object trimChar() throws RecognitionException {
 
         Object node = null;
@@ -11317,39 +11945,39 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // JPQL.g:1132:7: (n= literalString | n= inputParameter | )
-            int alt87=3;
+            // JPQL.g:1158:7: (n= literalString | n= inputParameter | )
+            int alt89=3;
             switch ( input.LA(1) ) {
             case STRING_LITERAL_DOUBLE_QUOTED:
             case STRING_LITERAL_SINGLE_QUOTED:
                 {
-                alt87=1;
+                alt89=1;
                 }
                 break;
             case POSITIONAL_PARAM:
             case NAMED_PARAM:
                 {
-                alt87=2;
+                alt89=2;
                 }
                 break;
             case FROM:
                 {
-                alt87=3;
+                alt89=3;
                 }
                 break;
             default:
                 if (backtracking>0) {failed=true; return node;}
                 NoViableAltException nvae =
-                    new NoViableAltException("1130:1: trimChar returns [Object node] : (n= literalString | n= inputParameter | );", 87, 0, input);
+                    new NoViableAltException("1156:1: trimChar returns [Object node] : (n= literalString | n= inputParameter | );", 89, 0, input);
             
                 throw nvae;
             }
             
-            switch (alt87) {
+            switch (alt89) {
                 case 1 :
-                    // JPQL.g:1132:7: n= literalString
+                    // JPQL.g:1158:7: n= literalString
                     {
-                    pushFollow(FOLLOW_literalString_in_trimChar7085);
+                    pushFollow(FOLLOW_literalString_in_trimChar7207);
                     n=literalString();
                     _fsp--;
                     if (failed) return node;
@@ -11360,9 +11988,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // JPQL.g:1133:7: n= inputParameter
+                    // JPQL.g:1159:7: n= inputParameter
                     {
-                    pushFollow(FOLLOW_inputParameter_in_trimChar7099);
+                    pushFollow(FOLLOW_inputParameter_in_trimChar7221);
                     n=inputParameter();
                     _fsp--;
                     if (failed) return node;
@@ -11373,7 +12001,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 3 :
-                    // JPQL.g:1135:5: 
+                    // JPQL.g:1161:5: 
                     {
                     }
                     break;
@@ -11392,7 +12020,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start upper
-    // JPQL.g:1137:1: upper returns [Object node] : u= UPPER LEFT_ROUND_BRACKET n= stringPrimary RIGHT_ROUND_BRACKET ;
+    // JPQL.g:1163:1: upper returns [Object node] : u= UPPER LEFT_ROUND_BRACKET n= stringPrimary RIGHT_ROUND_BRACKET ;
     public final Object upper() throws RecognitionException {
 
         Object node = null;
@@ -11403,17 +12031,17 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // JPQL.g:1139:7: (u= UPPER LEFT_ROUND_BRACKET n= stringPrimary RIGHT_ROUND_BRACKET )
-            // JPQL.g:1139:7: u= UPPER LEFT_ROUND_BRACKET n= stringPrimary RIGHT_ROUND_BRACKET
+            // JPQL.g:1165:7: (u= UPPER LEFT_ROUND_BRACKET n= stringPrimary RIGHT_ROUND_BRACKET )
+            // JPQL.g:1165:7: u= UPPER LEFT_ROUND_BRACKET n= stringPrimary RIGHT_ROUND_BRACKET
             {
             u=(Token)input.LT(1);
-            match(input,UPPER,FOLLOW_UPPER_in_upper7136); if (failed) return node;
-            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_upper7138); if (failed) return node;
-            pushFollow(FOLLOW_stringPrimary_in_upper7144);
+            match(input,UPPER,FOLLOW_UPPER_in_upper7258); if (failed) return node;
+            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_upper7260); if (failed) return node;
+            pushFollow(FOLLOW_stringPrimary_in_upper7266);
             n=stringPrimary();
             _fsp--;
             if (failed) return node;
-            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_upper7146); if (failed) return node;
+            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_upper7268); if (failed) return node;
             if ( backtracking==0 ) {
                node = factory.newUpper(u.getLine(), u.getCharPositionInLine(), n); 
             }
@@ -11433,7 +12061,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start lower
-    // JPQL.g:1143:1: lower returns [Object node] : l= LOWER LEFT_ROUND_BRACKET n= stringPrimary RIGHT_ROUND_BRACKET ;
+    // JPQL.g:1169:1: lower returns [Object node] : l= LOWER LEFT_ROUND_BRACKET n= stringPrimary RIGHT_ROUND_BRACKET ;
     public final Object lower() throws RecognitionException {
 
         Object node = null;
@@ -11444,17 +12072,17 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // JPQL.g:1145:7: (l= LOWER LEFT_ROUND_BRACKET n= stringPrimary RIGHT_ROUND_BRACKET )
-            // JPQL.g:1145:7: l= LOWER LEFT_ROUND_BRACKET n= stringPrimary RIGHT_ROUND_BRACKET
+            // JPQL.g:1171:7: (l= LOWER LEFT_ROUND_BRACKET n= stringPrimary RIGHT_ROUND_BRACKET )
+            // JPQL.g:1171:7: l= LOWER LEFT_ROUND_BRACKET n= stringPrimary RIGHT_ROUND_BRACKET
             {
             l=(Token)input.LT(1);
-            match(input,LOWER,FOLLOW_LOWER_in_lower7184); if (failed) return node;
-            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_lower7186); if (failed) return node;
-            pushFollow(FOLLOW_stringPrimary_in_lower7192);
+            match(input,LOWER,FOLLOW_LOWER_in_lower7306); if (failed) return node;
+            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_lower7308); if (failed) return node;
+            pushFollow(FOLLOW_stringPrimary_in_lower7314);
             n=stringPrimary();
             _fsp--;
             if (failed) return node;
-            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_lower7194); if (failed) return node;
+            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_lower7316); if (failed) return node;
             if ( backtracking==0 ) {
                node = factory.newLower(l.getLine(), l.getCharPositionInLine(), n); 
             }
@@ -11474,7 +12102,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start abs
-    // JPQL.g:1150:1: abs returns [Object node] : a= ABS LEFT_ROUND_BRACKET n= simpleArithmeticExpression RIGHT_ROUND_BRACKET ;
+    // JPQL.g:1176:1: abs returns [Object node] : a= ABS LEFT_ROUND_BRACKET n= simpleArithmeticExpression RIGHT_ROUND_BRACKET ;
     public final Object abs() throws RecognitionException {
 
         Object node = null;
@@ -11485,17 +12113,17 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // JPQL.g:1152:7: (a= ABS LEFT_ROUND_BRACKET n= simpleArithmeticExpression RIGHT_ROUND_BRACKET )
-            // JPQL.g:1152:7: a= ABS LEFT_ROUND_BRACKET n= simpleArithmeticExpression RIGHT_ROUND_BRACKET
+            // JPQL.g:1178:7: (a= ABS LEFT_ROUND_BRACKET n= simpleArithmeticExpression RIGHT_ROUND_BRACKET )
+            // JPQL.g:1178:7: a= ABS LEFT_ROUND_BRACKET n= simpleArithmeticExpression RIGHT_ROUND_BRACKET
             {
             a=(Token)input.LT(1);
-            match(input,ABS,FOLLOW_ABS_in_abs7233); if (failed) return node;
-            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_abs7235); if (failed) return node;
-            pushFollow(FOLLOW_simpleArithmeticExpression_in_abs7241);
+            match(input,ABS,FOLLOW_ABS_in_abs7355); if (failed) return node;
+            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_abs7357); if (failed) return node;
+            pushFollow(FOLLOW_simpleArithmeticExpression_in_abs7363);
             n=simpleArithmeticExpression();
             _fsp--;
             if (failed) return node;
-            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_abs7243); if (failed) return node;
+            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_abs7365); if (failed) return node;
             if ( backtracking==0 ) {
                node = factory.newAbs(a.getLine(), a.getCharPositionInLine(), n); 
             }
@@ -11515,7 +12143,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start length
-    // JPQL.g:1156:1: length returns [Object node] : l= LENGTH LEFT_ROUND_BRACKET n= stringPrimary RIGHT_ROUND_BRACKET ;
+    // JPQL.g:1182:1: length returns [Object node] : l= LENGTH LEFT_ROUND_BRACKET n= stringPrimary RIGHT_ROUND_BRACKET ;
     public final Object length() throws RecognitionException {
 
         Object node = null;
@@ -11526,17 +12154,17 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // JPQL.g:1158:7: (l= LENGTH LEFT_ROUND_BRACKET n= stringPrimary RIGHT_ROUND_BRACKET )
-            // JPQL.g:1158:7: l= LENGTH LEFT_ROUND_BRACKET n= stringPrimary RIGHT_ROUND_BRACKET
+            // JPQL.g:1184:7: (l= LENGTH LEFT_ROUND_BRACKET n= stringPrimary RIGHT_ROUND_BRACKET )
+            // JPQL.g:1184:7: l= LENGTH LEFT_ROUND_BRACKET n= stringPrimary RIGHT_ROUND_BRACKET
             {
             l=(Token)input.LT(1);
-            match(input,LENGTH,FOLLOW_LENGTH_in_length7281); if (failed) return node;
-            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_length7283); if (failed) return node;
-            pushFollow(FOLLOW_stringPrimary_in_length7289);
+            match(input,LENGTH,FOLLOW_LENGTH_in_length7403); if (failed) return node;
+            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_length7405); if (failed) return node;
+            pushFollow(FOLLOW_stringPrimary_in_length7411);
             n=stringPrimary();
             _fsp--;
             if (failed) return node;
-            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_length7291); if (failed) return node;
+            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_length7413); if (failed) return node;
             if ( backtracking==0 ) {
                node = factory.newLength(l.getLine(), l.getCharPositionInLine(), n); 
             }
@@ -11556,7 +12184,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start locate
-    // JPQL.g:1162:1: locate returns [Object node] : l= LOCATE LEFT_ROUND_BRACKET pattern= stringPrimary COMMA n= stringPrimary ( COMMA startPos= simpleArithmeticExpression )? RIGHT_ROUND_BRACKET ;
+    // JPQL.g:1188:1: locate returns [Object node] : l= LOCATE LEFT_ROUND_BRACKET pattern= stringPrimary COMMA n= stringPrimary ( COMMA startPos= simpleArithmeticExpression )? RIGHT_ROUND_BRACKET ;
     public final Object locate() throws RecognitionException {
 
         Object node = null;
@@ -11573,34 +12201,34 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             node = null; 
     
         try {
-            // JPQL.g:1166:7: (l= LOCATE LEFT_ROUND_BRACKET pattern= stringPrimary COMMA n= stringPrimary ( COMMA startPos= simpleArithmeticExpression )? RIGHT_ROUND_BRACKET )
-            // JPQL.g:1166:7: l= LOCATE LEFT_ROUND_BRACKET pattern= stringPrimary COMMA n= stringPrimary ( COMMA startPos= simpleArithmeticExpression )? RIGHT_ROUND_BRACKET
+            // JPQL.g:1192:7: (l= LOCATE LEFT_ROUND_BRACKET pattern= stringPrimary COMMA n= stringPrimary ( COMMA startPos= simpleArithmeticExpression )? RIGHT_ROUND_BRACKET )
+            // JPQL.g:1192:7: l= LOCATE LEFT_ROUND_BRACKET pattern= stringPrimary COMMA n= stringPrimary ( COMMA startPos= simpleArithmeticExpression )? RIGHT_ROUND_BRACKET
             {
             l=(Token)input.LT(1);
-            match(input,LOCATE,FOLLOW_LOCATE_in_locate7329); if (failed) return node;
-            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_locate7339); if (failed) return node;
-            pushFollow(FOLLOW_stringPrimary_in_locate7354);
+            match(input,LOCATE,FOLLOW_LOCATE_in_locate7451); if (failed) return node;
+            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_locate7461); if (failed) return node;
+            pushFollow(FOLLOW_stringPrimary_in_locate7476);
             pattern=stringPrimary();
             _fsp--;
             if (failed) return node;
-            match(input,COMMA,FOLLOW_COMMA_in_locate7356); if (failed) return node;
-            pushFollow(FOLLOW_stringPrimary_in_locate7362);
+            match(input,COMMA,FOLLOW_COMMA_in_locate7478); if (failed) return node;
+            pushFollow(FOLLOW_stringPrimary_in_locate7484);
             n=stringPrimary();
             _fsp--;
             if (failed) return node;
-            // JPQL.g:1169:9: ( COMMA startPos= simpleArithmeticExpression )?
-            int alt88=2;
-            int LA88_0 = input.LA(1);
+            // JPQL.g:1195:9: ( COMMA startPos= simpleArithmeticExpression )?
+            int alt90=2;
+            int LA90_0 = input.LA(1);
             
-            if ( (LA88_0==COMMA) ) {
-                alt88=1;
+            if ( (LA90_0==COMMA) ) {
+                alt90=1;
             }
-            switch (alt88) {
+            switch (alt90) {
                 case 1 :
-                    // JPQL.g:1169:11: COMMA startPos= simpleArithmeticExpression
+                    // JPQL.g:1195:11: COMMA startPos= simpleArithmeticExpression
                     {
-                    match(input,COMMA,FOLLOW_COMMA_in_locate7374); if (failed) return node;
-                    pushFollow(FOLLOW_simpleArithmeticExpression_in_locate7380);
+                    match(input,COMMA,FOLLOW_COMMA_in_locate7496); if (failed) return node;
+                    pushFollow(FOLLOW_simpleArithmeticExpression_in_locate7502);
                     startPos=simpleArithmeticExpression();
                     _fsp--;
                     if (failed) return node;
@@ -11610,7 +12238,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
             }
 
-            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_locate7393); if (failed) return node;
+            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_locate7515); if (failed) return node;
             if ( backtracking==0 ) {
                
                           node = factory.newLocate(l.getLine(), l.getCharPositionInLine(), 
@@ -11633,7 +12261,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start size
-    // JPQL.g:1177:1: size returns [Object node] : s= SIZE LEFT_ROUND_BRACKET n= collectionValuedPathExpression RIGHT_ROUND_BRACKET ;
+    // JPQL.g:1203:1: size returns [Object node] : s= SIZE LEFT_ROUND_BRACKET n= collectionValuedPathExpression RIGHT_ROUND_BRACKET ;
     public final Object size() throws RecognitionException {
 
         Object node = null;
@@ -11644,17 +12272,17 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // JPQL.g:1179:7: (s= SIZE LEFT_ROUND_BRACKET n= collectionValuedPathExpression RIGHT_ROUND_BRACKET )
-            // JPQL.g:1179:7: s= SIZE LEFT_ROUND_BRACKET n= collectionValuedPathExpression RIGHT_ROUND_BRACKET
+            // JPQL.g:1205:7: (s= SIZE LEFT_ROUND_BRACKET n= collectionValuedPathExpression RIGHT_ROUND_BRACKET )
+            // JPQL.g:1205:7: s= SIZE LEFT_ROUND_BRACKET n= collectionValuedPathExpression RIGHT_ROUND_BRACKET
             {
             s=(Token)input.LT(1);
-            match(input,SIZE,FOLLOW_SIZE_in_size7431); if (failed) return node;
-            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_size7442); if (failed) return node;
-            pushFollow(FOLLOW_collectionValuedPathExpression_in_size7448);
+            match(input,SIZE,FOLLOW_SIZE_in_size7553); if (failed) return node;
+            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_size7564); if (failed) return node;
+            pushFollow(FOLLOW_collectionValuedPathExpression_in_size7570);
             n=collectionValuedPathExpression();
             _fsp--;
             if (failed) return node;
-            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_size7450); if (failed) return node;
+            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_size7572); if (failed) return node;
             if ( backtracking==0 ) {
                node = factory.newSize(s.getLine(), s.getCharPositionInLine(), n);
             }
@@ -11674,7 +12302,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start mod
-    // JPQL.g:1184:1: mod returns [Object node] : m= MOD LEFT_ROUND_BRACKET left= simpleArithmeticExpression COMMA right= simpleArithmeticExpression RIGHT_ROUND_BRACKET ;
+    // JPQL.g:1210:1: mod returns [Object node] : m= MOD LEFT_ROUND_BRACKET left= simpleArithmeticExpression COMMA right= simpleArithmeticExpression RIGHT_ROUND_BRACKET ;
     public final Object mod() throws RecognitionException {
 
         Object node = null;
@@ -11689,22 +12317,22 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             node = null; 
     
         try {
-            // JPQL.g:1188:7: (m= MOD LEFT_ROUND_BRACKET left= simpleArithmeticExpression COMMA right= simpleArithmeticExpression RIGHT_ROUND_BRACKET )
-            // JPQL.g:1188:7: m= MOD LEFT_ROUND_BRACKET left= simpleArithmeticExpression COMMA right= simpleArithmeticExpression RIGHT_ROUND_BRACKET
+            // JPQL.g:1214:7: (m= MOD LEFT_ROUND_BRACKET left= simpleArithmeticExpression COMMA right= simpleArithmeticExpression RIGHT_ROUND_BRACKET )
+            // JPQL.g:1214:7: m= MOD LEFT_ROUND_BRACKET left= simpleArithmeticExpression COMMA right= simpleArithmeticExpression RIGHT_ROUND_BRACKET
             {
             m=(Token)input.LT(1);
-            match(input,MOD,FOLLOW_MOD_in_mod7488); if (failed) return node;
-            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_mod7490); if (failed) return node;
-            pushFollow(FOLLOW_simpleArithmeticExpression_in_mod7504);
+            match(input,MOD,FOLLOW_MOD_in_mod7610); if (failed) return node;
+            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_mod7612); if (failed) return node;
+            pushFollow(FOLLOW_simpleArithmeticExpression_in_mod7626);
             left=simpleArithmeticExpression();
             _fsp--;
             if (failed) return node;
-            match(input,COMMA,FOLLOW_COMMA_in_mod7506); if (failed) return node;
-            pushFollow(FOLLOW_simpleArithmeticExpression_in_mod7521);
+            match(input,COMMA,FOLLOW_COMMA_in_mod7628); if (failed) return node;
+            pushFollow(FOLLOW_simpleArithmeticExpression_in_mod7643);
             right=simpleArithmeticExpression();
             _fsp--;
             if (failed) return node;
-            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_mod7531); if (failed) return node;
+            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_mod7653); if (failed) return node;
             if ( backtracking==0 ) {
                node = factory.newMod(m.getLine(), m.getCharPositionInLine(), left, right); 
             }
@@ -11724,7 +12352,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start sqrt
-    // JPQL.g:1195:1: sqrt returns [Object node] : s= SQRT LEFT_ROUND_BRACKET n= simpleArithmeticExpression RIGHT_ROUND_BRACKET ;
+    // JPQL.g:1221:1: sqrt returns [Object node] : s= SQRT LEFT_ROUND_BRACKET n= simpleArithmeticExpression RIGHT_ROUND_BRACKET ;
     public final Object sqrt() throws RecognitionException {
 
         Object node = null;
@@ -11735,17 +12363,17 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // JPQL.g:1197:7: (s= SQRT LEFT_ROUND_BRACKET n= simpleArithmeticExpression RIGHT_ROUND_BRACKET )
-            // JPQL.g:1197:7: s= SQRT LEFT_ROUND_BRACKET n= simpleArithmeticExpression RIGHT_ROUND_BRACKET
+            // JPQL.g:1223:7: (s= SQRT LEFT_ROUND_BRACKET n= simpleArithmeticExpression RIGHT_ROUND_BRACKET )
+            // JPQL.g:1223:7: s= SQRT LEFT_ROUND_BRACKET n= simpleArithmeticExpression RIGHT_ROUND_BRACKET
             {
             s=(Token)input.LT(1);
-            match(input,SQRT,FOLLOW_SQRT_in_sqrt7569); if (failed) return node;
-            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_sqrt7580); if (failed) return node;
-            pushFollow(FOLLOW_simpleArithmeticExpression_in_sqrt7586);
+            match(input,SQRT,FOLLOW_SQRT_in_sqrt7691); if (failed) return node;
+            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_sqrt7702); if (failed) return node;
+            pushFollow(FOLLOW_simpleArithmeticExpression_in_sqrt7708);
             n=simpleArithmeticExpression();
             _fsp--;
             if (failed) return node;
-            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_sqrt7588); if (failed) return node;
+            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_sqrt7710); if (failed) return node;
             if ( backtracking==0 ) {
                node = factory.newSqrt(s.getLine(), s.getCharPositionInLine(), n); 
             }
@@ -11765,7 +12393,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start index
-    // JPQL.g:1202:1: index returns [Object node] : s= INDEX LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET ;
+    // JPQL.g:1228:1: index returns [Object node] : s= INDEX LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET ;
     public final Object index() throws RecognitionException {
 
         Object node = null;
@@ -11776,17 +12404,17 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // JPQL.g:1204:7: (s= INDEX LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET )
-            // JPQL.g:1204:7: s= INDEX LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET
+            // JPQL.g:1230:7: (s= INDEX LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET )
+            // JPQL.g:1230:7: s= INDEX LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET
             {
             s=(Token)input.LT(1);
-            match(input,INDEX,FOLLOW_INDEX_in_index7630); if (failed) return node;
-            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_index7632); if (failed) return node;
-            pushFollow(FOLLOW_variableAccessOrTypeConstant_in_index7638);
+            match(input,INDEX,FOLLOW_INDEX_in_index7752); if (failed) return node;
+            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_index7754); if (failed) return node;
+            pushFollow(FOLLOW_variableAccessOrTypeConstant_in_index7760);
             n=variableAccessOrTypeConstant();
             _fsp--;
             if (failed) return node;
-            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_index7640); if (failed) return node;
+            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_index7762); if (failed) return node;
             if ( backtracking==0 ) {
                node = factory.newIndex(s.getLine(), s.getCharPositionInLine(), n); 
             }
@@ -11806,7 +12434,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start subquery
-    // JPQL.g:1208:1: subquery returns [Object node] : select= simpleSelectClause from= subqueryFromClause (where= whereClause )? (groupBy= groupByClause )? (having= havingClause )? ;
+    // JPQL.g:1234:1: subquery returns [Object node] : select= simpleSelectClause from= subqueryFromClause (where= whereClause )? (groupBy= groupByClause )? (having= havingClause )? ;
     public final Object subquery() throws RecognitionException {
 
         Object node = null;
@@ -11826,29 +12454,29 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             node = null; 
     
         try {
-            // JPQL.g:1212:7: (select= simpleSelectClause from= subqueryFromClause (where= whereClause )? (groupBy= groupByClause )? (having= havingClause )? )
-            // JPQL.g:1212:7: select= simpleSelectClause from= subqueryFromClause (where= whereClause )? (groupBy= groupByClause )? (having= havingClause )?
+            // JPQL.g:1238:7: (select= simpleSelectClause from= subqueryFromClause (where= whereClause )? (groupBy= groupByClause )? (having= havingClause )? )
+            // JPQL.g:1238:7: select= simpleSelectClause from= subqueryFromClause (where= whereClause )? (groupBy= groupByClause )? (having= havingClause )?
             {
-            pushFollow(FOLLOW_simpleSelectClause_in_subquery7681);
+            pushFollow(FOLLOW_simpleSelectClause_in_subquery7803);
             select=simpleSelectClause();
             _fsp--;
             if (failed) return node;
-            pushFollow(FOLLOW_subqueryFromClause_in_subquery7696);
+            pushFollow(FOLLOW_subqueryFromClause_in_subquery7818);
             from=subqueryFromClause();
             _fsp--;
             if (failed) return node;
-            // JPQL.g:1214:7: (where= whereClause )?
-            int alt89=2;
-            int LA89_0 = input.LA(1);
+            // JPQL.g:1240:7: (where= whereClause )?
+            int alt91=2;
+            int LA91_0 = input.LA(1);
             
-            if ( (LA89_0==WHERE) ) {
-                alt89=1;
+            if ( (LA91_0==WHERE) ) {
+                alt91=1;
             }
-            switch (alt89) {
+            switch (alt91) {
                 case 1 :
-                    // JPQL.g:1214:8: where= whereClause
+                    // JPQL.g:1240:8: where= whereClause
                     {
-                    pushFollow(FOLLOW_whereClause_in_subquery7711);
+                    pushFollow(FOLLOW_whereClause_in_subquery7833);
                     where=whereClause();
                     _fsp--;
                     if (failed) return node;
@@ -11858,18 +12486,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
             }
 
-            // JPQL.g:1215:7: (groupBy= groupByClause )?
-            int alt90=2;
-            int LA90_0 = input.LA(1);
+            // JPQL.g:1241:7: (groupBy= groupByClause )?
+            int alt92=2;
+            int LA92_0 = input.LA(1);
             
-            if ( (LA90_0==GROUP) ) {
-                alt90=1;
+            if ( (LA92_0==GROUP) ) {
+                alt92=1;
             }
-            switch (alt90) {
+            switch (alt92) {
                 case 1 :
-                    // JPQL.g:1215:8: groupBy= groupByClause
+                    // JPQL.g:1241:8: groupBy= groupByClause
                     {
-                    pushFollow(FOLLOW_groupByClause_in_subquery7726);
+                    pushFollow(FOLLOW_groupByClause_in_subquery7848);
                     groupBy=groupByClause();
                     _fsp--;
                     if (failed) return node;
@@ -11879,18 +12507,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
             }
 
-            // JPQL.g:1216:7: (having= havingClause )?
-            int alt91=2;
-            int LA91_0 = input.LA(1);
+            // JPQL.g:1242:7: (having= havingClause )?
+            int alt93=2;
+            int LA93_0 = input.LA(1);
             
-            if ( (LA91_0==HAVING) ) {
-                alt91=1;
+            if ( (LA93_0==HAVING) ) {
+                alt93=1;
             }
-            switch (alt91) {
+            switch (alt93) {
                 case 1 :
-                    // JPQL.g:1216:8: having= havingClause
+                    // JPQL.g:1242:8: having= havingClause
                     {
-                    pushFollow(FOLLOW_havingClause_in_subquery7742);
+                    pushFollow(FOLLOW_havingClause_in_subquery7864);
                     having=havingClause();
                     _fsp--;
                     if (failed) return node;
@@ -11927,7 +12555,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
     
     // $ANTLR start simpleSelectClause
-    // JPQL.g:1223:1: simpleSelectClause returns [Object node] : s= SELECT ( DISTINCT )? n= simpleSelectExpression ;
+    // JPQL.g:1249:1: simpleSelectClause returns [Object node] : s= SELECT ( DISTINCT )? n= simpleSelectExpression ;
     public final Object simpleSelectClause() throws RecognitionException {
         simpleSelectClause_stack.push(new simpleSelectClause_scope());
 
@@ -11942,23 +12570,23 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             ((simpleSelectClause_scope)simpleSelectClause_stack.peek()).distinct = false;
     
         try {
-            // JPQL.g:1231:7: (s= SELECT ( DISTINCT )? n= simpleSelectExpression )
-            // JPQL.g:1231:7: s= SELECT ( DISTINCT )? n= simpleSelectExpression
+            // JPQL.g:1257:7: (s= SELECT ( DISTINCT )? n= simpleSelectExpression )
+            // JPQL.g:1257:7: s= SELECT ( DISTINCT )? n= simpleSelectExpression
             {
             s=(Token)input.LT(1);
-            match(input,SELECT,FOLLOW_SELECT_in_simpleSelectClause7785); if (failed) return node;
-            // JPQL.g:1231:16: ( DISTINCT )?
-            int alt92=2;
-            int LA92_0 = input.LA(1);
+            match(input,SELECT,FOLLOW_SELECT_in_simpleSelectClause7907); if (failed) return node;
+            // JPQL.g:1257:16: ( DISTINCT )?
+            int alt94=2;
+            int LA94_0 = input.LA(1);
             
-            if ( (LA92_0==DISTINCT) ) {
-                alt92=1;
+            if ( (LA94_0==DISTINCT) ) {
+                alt94=1;
             }
-            switch (alt92) {
+            switch (alt94) {
                 case 1 :
-                    // JPQL.g:1231:17: DISTINCT
+                    // JPQL.g:1257:17: DISTINCT
                     {
-                    match(input,DISTINCT,FOLLOW_DISTINCT_in_simpleSelectClause7788); if (failed) return node;
+                    match(input,DISTINCT,FOLLOW_DISTINCT_in_simpleSelectClause7910); if (failed) return node;
                     if ( backtracking==0 ) {
                        ((simpleSelectClause_scope)simpleSelectClause_stack.peek()).distinct = true; 
                     }
@@ -11968,7 +12596,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
             }
 
-            pushFollow(FOLLOW_simpleSelectExpression_in_simpleSelectClause7804);
+            pushFollow(FOLLOW_simpleSelectExpression_in_simpleSelectClause7926);
             n=simpleSelectExpression();
             _fsp--;
             if (failed) return node;
@@ -11997,7 +12625,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start simpleSelectExpression
-    // JPQL.g:1241:1: simpleSelectExpression returns [Object node] : (n= singleValuedPathExpression | n= aggregateExpression | n= variableAccessOrTypeConstant );
+    // JPQL.g:1267:1: simpleSelectExpression returns [Object node] : (n= singleValuedPathExpression | n= aggregateExpression | n= variableAccessOrTypeConstant );
     public final Object simpleSelectExpression() throws RecognitionException {
 
         Object node = null;
@@ -12007,23 +12635,23 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // JPQL.g:1243:7: (n= singleValuedPathExpression | n= aggregateExpression | n= variableAccessOrTypeConstant )
-            int alt93=3;
+            // JPQL.g:1269:7: (n= singleValuedPathExpression | n= aggregateExpression | n= variableAccessOrTypeConstant )
+            int alt95=3;
             switch ( input.LA(1) ) {
             case IDENT:
                 {
-                int LA93_1 = input.LA(2);
+                int LA95_1 = input.LA(2);
                 
-                if ( (LA93_1==DOT) ) {
-                    alt93=1;
+                if ( (LA95_1==DOT) ) {
+                    alt95=1;
                 }
-                else if ( (LA93_1==FROM) ) {
-                    alt93=3;
+                else if ( (LA95_1==FROM) ) {
+                    alt95=3;
                 }
                 else {
                     if (backtracking>0) {failed=true; return node;}
                     NoViableAltException nvae =
-                        new NoViableAltException("1241:1: simpleSelectExpression returns [Object node] : (n= singleValuedPathExpression | n= aggregateExpression | n= variableAccessOrTypeConstant );", 93, 1, input);
+                        new NoViableAltException("1267:1: simpleSelectExpression returns [Object node] : (n= singleValuedPathExpression | n= aggregateExpression | n= variableAccessOrTypeConstant );", 95, 1, input);
                 
                     throw nvae;
                 }
@@ -12032,7 +12660,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             case KEY:
             case VALUE:
                 {
-                alt93=1;
+                alt95=1;
                 }
                 break;
             case AVG:
@@ -12041,22 +12669,22 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             case MIN:
             case SUM:
                 {
-                alt93=2;
+                alt95=2;
                 }
                 break;
             default:
                 if (backtracking>0) {failed=true; return node;}
                 NoViableAltException nvae =
-                    new NoViableAltException("1241:1: simpleSelectExpression returns [Object node] : (n= singleValuedPathExpression | n= aggregateExpression | n= variableAccessOrTypeConstant );", 93, 0, input);
+                    new NoViableAltException("1267:1: simpleSelectExpression returns [Object node] : (n= singleValuedPathExpression | n= aggregateExpression | n= variableAccessOrTypeConstant );", 95, 0, input);
             
                 throw nvae;
             }
             
-            switch (alt93) {
+            switch (alt95) {
                 case 1 :
-                    // JPQL.g:1243:7: n= singleValuedPathExpression
+                    // JPQL.g:1269:7: n= singleValuedPathExpression
                     {
-                    pushFollow(FOLLOW_singleValuedPathExpression_in_simpleSelectExpression7844);
+                    pushFollow(FOLLOW_singleValuedPathExpression_in_simpleSelectExpression7966);
                     n=singleValuedPathExpression();
                     _fsp--;
                     if (failed) return node;
@@ -12067,9 +12695,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // JPQL.g:1244:7: n= aggregateExpression
+                    // JPQL.g:1270:7: n= aggregateExpression
                     {
-                    pushFollow(FOLLOW_aggregateExpression_in_simpleSelectExpression7859);
+                    pushFollow(FOLLOW_aggregateExpression_in_simpleSelectExpression7981);
                     n=aggregateExpression();
                     _fsp--;
                     if (failed) return node;
@@ -12080,9 +12708,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 3 :
-                    // JPQL.g:1245:7: n= variableAccessOrTypeConstant
+                    // JPQL.g:1271:7: n= variableAccessOrTypeConstant
                     {
-                    pushFollow(FOLLOW_variableAccessOrTypeConstant_in_simpleSelectExpression7874);
+                    pushFollow(FOLLOW_variableAccessOrTypeConstant_in_simpleSelectExpression7996);
                     n=variableAccessOrTypeConstant();
                     _fsp--;
                     if (failed) return node;
@@ -12112,54 +12740,72 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
     
     // $ANTLR start subqueryFromClause
-    // JPQL.g:1249:1: subqueryFromClause returns [Object node] : f= FROM subselectIdentificationVariableDeclaration[$subqueryFromClause::varDecls] ( COMMA subselectIdentificationVariableDeclaration[$subqueryFromClause::varDecls] )* ;
+    // JPQL.g:1275:1: subqueryFromClause returns [Object node] : f= FROM subselectIdentificationVariableDeclaration[$subqueryFromClause::varDecls] ( COMMA subselectIdentificationVariableDeclaration[$subqueryFromClause::varDecls] | c= collectionMemberDeclaration )* ;
     public final Object subqueryFromClause() throws RecognitionException {
         subqueryFromClause_stack.push(new subqueryFromClause_scope());
 
         Object node = null;
     
         Token f=null;
+        Object c = null;
+        
     
          
             node = null; 
             ((subqueryFromClause_scope)subqueryFromClause_stack.peek()).varDecls = new ArrayList();
     
         try {
-            // JPQL.g:1257:7: (f= FROM subselectIdentificationVariableDeclaration[$subqueryFromClause::varDecls] ( COMMA subselectIdentificationVariableDeclaration[$subqueryFromClause::varDecls] )* )
-            // JPQL.g:1257:7: f= FROM subselectIdentificationVariableDeclaration[$subqueryFromClause::varDecls] ( COMMA subselectIdentificationVariableDeclaration[$subqueryFromClause::varDecls] )*
+            // JPQL.g:1283:7: (f= FROM subselectIdentificationVariableDeclaration[$subqueryFromClause::varDecls] ( COMMA subselectIdentificationVariableDeclaration[$subqueryFromClause::varDecls] | c= collectionMemberDeclaration )* )
+            // JPQL.g:1283:7: f= FROM subselectIdentificationVariableDeclaration[$subqueryFromClause::varDecls] ( COMMA subselectIdentificationVariableDeclaration[$subqueryFromClause::varDecls] | c= collectionMemberDeclaration )*
             {
             f=(Token)input.LT(1);
-            match(input,FROM,FOLLOW_FROM_in_subqueryFromClause7909); if (failed) return node;
-            pushFollow(FOLLOW_subselectIdentificationVariableDeclaration_in_subqueryFromClause7911);
+            match(input,FROM,FOLLOW_FROM_in_subqueryFromClause8031); if (failed) return node;
+            pushFollow(FOLLOW_subselectIdentificationVariableDeclaration_in_subqueryFromClause8033);
             subselectIdentificationVariableDeclaration(((subqueryFromClause_scope)subqueryFromClause_stack.peek()).varDecls);
             _fsp--;
             if (failed) return node;
-            // JPQL.g:1258:9: ( COMMA subselectIdentificationVariableDeclaration[$subqueryFromClause::varDecls] )*
-            loop94:
+            // JPQL.g:1284:9: ( COMMA subselectIdentificationVariableDeclaration[$subqueryFromClause::varDecls] | c= collectionMemberDeclaration )*
+            loop96:
             do {
-                int alt94=2;
-                int LA94_0 = input.LA(1);
+                int alt96=3;
+                int LA96_0 = input.LA(1);
                 
-                if ( (LA94_0==COMMA) ) {
-                    alt94=1;
+                if ( (LA96_0==COMMA) ) {
+                    alt96=1;
+                }
+                else if ( (LA96_0==IN) ) {
+                    alt96=2;
                 }
                 
             
-                switch (alt94) {
+                switch (alt96) {
             	case 1 :
-            	    // JPQL.g:1258:11: COMMA subselectIdentificationVariableDeclaration[$subqueryFromClause::varDecls]
+            	    // JPQL.g:1284:11: COMMA subselectIdentificationVariableDeclaration[$subqueryFromClause::varDecls]
             	    {
-            	    match(input,COMMA,FOLLOW_COMMA_in_subqueryFromClause7925); if (failed) return node;
-            	    pushFollow(FOLLOW_subselectIdentificationVariableDeclaration_in_subqueryFromClause7927);
+            	    match(input,COMMA,FOLLOW_COMMA_in_subqueryFromClause8047); if (failed) return node;
+            	    pushFollow(FOLLOW_subselectIdentificationVariableDeclaration_in_subqueryFromClause8049);
             	    subselectIdentificationVariableDeclaration(((subqueryFromClause_scope)subqueryFromClause_stack.peek()).varDecls);
             	    _fsp--;
             	    if (failed) return node;
             	    
             	    }
             	    break;
+            	case 2 :
+            	    // JPQL.g:1285:17: c= collectionMemberDeclaration
+            	    {
+            	    pushFollow(FOLLOW_collectionMemberDeclaration_in_subqueryFromClause8074);
+            	    c=collectionMemberDeclaration();
+            	    _fsp--;
+            	    if (failed) return node;
+            	    if ( backtracking==0 ) {
+            	      ((subqueryFromClause_scope)subqueryFromClause_stack.peek()).varDecls.add(c);
+            	    }
+            	    
+            	    }
+            	    break;
             
             	default :
-            	    break loop94;
+            	    break loop96;
                 }
             } while (true);
 
@@ -12183,7 +12829,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start subselectIdentificationVariableDeclaration
-    // JPQL.g:1262:1: subselectIdentificationVariableDeclaration[List varDecls] : ( identificationVariableDeclaration[varDecls] | n= associationPathExpression ( AS )? i= IDENT | n= collectionMemberDeclaration );
+    // JPQL.g:1289:1: subselectIdentificationVariableDeclaration[List varDecls] : ( identificationVariableDeclaration[varDecls] | n= associationPathExpression ( AS )? i= IDENT ( join )* | n= collectionMemberDeclaration );
     public final void subselectIdentificationVariableDeclaration(List varDecls) throws RecognitionException {
         Token i=null;
         Object n = null;
@@ -12191,23 +12837,23 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          Object node; 
         try {
-            // JPQL.g:1264:7: ( identificationVariableDeclaration[varDecls] | n= associationPathExpression ( AS )? i= IDENT | n= collectionMemberDeclaration )
-            int alt96=3;
+            // JPQL.g:1291:7: ( identificationVariableDeclaration[varDecls] | n= associationPathExpression ( AS )? i= IDENT ( join )* | n= collectionMemberDeclaration )
+            int alt99=3;
             switch ( input.LA(1) ) {
             case IDENT:
                 {
-                int LA96_1 = input.LA(2);
+                int LA99_1 = input.LA(2);
                 
-                if ( (LA96_1==AS||LA96_1==IDENT) ) {
-                    alt96=1;
+                if ( (LA99_1==DOT) ) {
+                    alt99=2;
                 }
-                else if ( (LA96_1==DOT) ) {
-                    alt96=2;
+                else if ( (LA99_1==AS||LA99_1==IDENT) ) {
+                    alt99=1;
                 }
                 else {
                     if (backtracking>0) {failed=true; return ;}
                     NoViableAltException nvae =
-                        new NoViableAltException("1262:1: subselectIdentificationVariableDeclaration[List varDecls] : ( identificationVariableDeclaration[varDecls] | n= associationPathExpression ( AS )? i= IDENT | n= collectionMemberDeclaration );", 96, 1, input);
+                        new NoViableAltException("1289:1: subselectIdentificationVariableDeclaration[List varDecls] : ( identificationVariableDeclaration[varDecls] | n= associationPathExpression ( AS )? i= IDENT ( join )* | n= collectionMemberDeclaration );", 99, 1, input);
                 
                     throw nvae;
                 }
@@ -12215,18 +12861,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 break;
             case KEY:
                 {
-                int LA96_2 = input.LA(2);
+                int LA99_2 = input.LA(2);
                 
-                if ( (LA96_2==LEFT_ROUND_BRACKET) ) {
-                    alt96=2;
+                if ( (LA99_2==LEFT_ROUND_BRACKET) ) {
+                    alt99=2;
                 }
-                else if ( (LA96_2==AS||LA96_2==IDENT) ) {
-                    alt96=1;
+                else if ( (LA99_2==AS||LA99_2==IDENT) ) {
+                    alt99=1;
                 }
                 else {
                     if (backtracking>0) {failed=true; return ;}
                     NoViableAltException nvae =
-                        new NoViableAltException("1262:1: subselectIdentificationVariableDeclaration[List varDecls] : ( identificationVariableDeclaration[varDecls] | n= associationPathExpression ( AS )? i= IDENT | n= collectionMemberDeclaration );", 96, 2, input);
+                        new NoViableAltException("1289:1: subselectIdentificationVariableDeclaration[List varDecls] : ( identificationVariableDeclaration[varDecls] | n= associationPathExpression ( AS )? i= IDENT ( join )* | n= collectionMemberDeclaration );", 99, 2, input);
                 
                     throw nvae;
                 }
@@ -12234,18 +12880,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 break;
             case VALUE:
                 {
-                int LA96_3 = input.LA(2);
+                int LA99_3 = input.LA(2);
                 
-                if ( (LA96_3==LEFT_ROUND_BRACKET) ) {
-                    alt96=2;
+                if ( (LA99_3==LEFT_ROUND_BRACKET) ) {
+                    alt99=2;
                 }
-                else if ( (LA96_3==AS||LA96_3==IDENT) ) {
-                    alt96=1;
+                else if ( (LA99_3==AS||LA99_3==IDENT) ) {
+                    alt99=1;
                 }
                 else {
                     if (backtracking>0) {failed=true; return ;}
                     NoViableAltException nvae =
-                        new NoViableAltException("1262:1: subselectIdentificationVariableDeclaration[List varDecls] : ( identificationVariableDeclaration[varDecls] | n= associationPathExpression ( AS )? i= IDENT | n= collectionMemberDeclaration );", 96, 3, input);
+                        new NoViableAltException("1289:1: subselectIdentificationVariableDeclaration[List varDecls] : ( identificationVariableDeclaration[varDecls] | n= associationPathExpression ( AS )? i= IDENT ( join )* | n= collectionMemberDeclaration );", 99, 3, input);
                 
                     throw nvae;
                 }
@@ -12253,18 +12899,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 break;
             case IN:
                 {
-                int LA96_4 = input.LA(2);
+                int LA99_4 = input.LA(2);
                 
-                if ( (LA96_4==LEFT_ROUND_BRACKET) ) {
-                    alt96=3;
+                if ( (LA99_4==LEFT_ROUND_BRACKET) ) {
+                    alt99=3;
                 }
-                else if ( (LA96_4==AS||LA96_4==IDENT) ) {
-                    alt96=1;
+                else if ( (LA99_4==AS||LA99_4==IDENT) ) {
+                    alt99=1;
                 }
                 else {
                     if (backtracking>0) {failed=true; return ;}
                     NoViableAltException nvae =
-                        new NoViableAltException("1262:1: subselectIdentificationVariableDeclaration[List varDecls] : ( identificationVariableDeclaration[varDecls] | n= associationPathExpression ( AS )? i= IDENT | n= collectionMemberDeclaration );", 96, 4, input);
+                        new NoViableAltException("1289:1: subselectIdentificationVariableDeclaration[List varDecls] : ( identificationVariableDeclaration[varDecls] | n= associationPathExpression ( AS )? i= IDENT ( join )* | n= collectionMemberDeclaration );", 99, 4, input);
                 
                     throw nvae;
                 }
@@ -12374,22 +13020,22 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             case EXPONENT:
             case FLOAT_SUFFIX:
                 {
-                alt96=1;
+                alt99=1;
                 }
                 break;
             default:
                 if (backtracking>0) {failed=true; return ;}
                 NoViableAltException nvae =
-                    new NoViableAltException("1262:1: subselectIdentificationVariableDeclaration[List varDecls] : ( identificationVariableDeclaration[varDecls] | n= associationPathExpression ( AS )? i= IDENT | n= collectionMemberDeclaration );", 96, 0, input);
+                    new NoViableAltException("1289:1: subselectIdentificationVariableDeclaration[List varDecls] : ( identificationVariableDeclaration[varDecls] | n= associationPathExpression ( AS )? i= IDENT ( join )* | n= collectionMemberDeclaration );", 99, 0, input);
             
                 throw nvae;
             }
             
-            switch (alt96) {
+            switch (alt99) {
                 case 1 :
-                    // JPQL.g:1264:7: identificationVariableDeclaration[varDecls]
+                    // JPQL.g:1291:7: identificationVariableDeclaration[varDecls]
                     {
-                    pushFollow(FOLLOW_identificationVariableDeclaration_in_subselectIdentificationVariableDeclaration7965);
+                    pushFollow(FOLLOW_identificationVariableDeclaration_in_subselectIdentificationVariableDeclaration8112);
                     identificationVariableDeclaration(varDecls);
                     _fsp--;
                     if (failed) return ;
@@ -12397,24 +13043,24 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // JPQL.g:1265:7: n= associationPathExpression ( AS )? i= IDENT
+                    // JPQL.g:1292:7: n= associationPathExpression ( AS )? i= IDENT ( join )*
                     {
-                    pushFollow(FOLLOW_associationPathExpression_in_subselectIdentificationVariableDeclaration7978);
+                    pushFollow(FOLLOW_associationPathExpression_in_subselectIdentificationVariableDeclaration8125);
                     n=associationPathExpression();
                     _fsp--;
                     if (failed) return ;
-                    // JPQL.g:1265:37: ( AS )?
-                    int alt95=2;
-                    int LA95_0 = input.LA(1);
+                    // JPQL.g:1292:37: ( AS )?
+                    int alt97=2;
+                    int LA97_0 = input.LA(1);
                     
-                    if ( (LA95_0==AS) ) {
-                        alt95=1;
+                    if ( (LA97_0==AS) ) {
+                        alt97=1;
                     }
-                    switch (alt95) {
+                    switch (alt97) {
                         case 1 :
-                            // JPQL.g:1265:38: AS
+                            // JPQL.g:1292:38: AS
                             {
-                            match(input,AS,FOLLOW_AS_in_subselectIdentificationVariableDeclaration7981); if (failed) return ;
+                            match(input,AS,FOLLOW_AS_in_subselectIdentificationVariableDeclaration8128); if (failed) return ;
                             
                             }
                             break;
@@ -12422,7 +13068,38 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
 
                     i=(Token)input.LT(1);
-                    match(input,IDENT,FOLLOW_IDENT_in_subselectIdentificationVariableDeclaration7987); if (failed) return ;
+                    match(input,IDENT,FOLLOW_IDENT_in_subselectIdentificationVariableDeclaration8134); if (failed) return ;
+                    // JPQL.g:1292:51: ( join )*
+                    loop98:
+                    do {
+                        int alt98=2;
+                        int LA98_0 = input.LA(1);
+                        
+                        if ( (LA98_0==INNER||LA98_0==JOIN||LA98_0==LEFT) ) {
+                            alt98=1;
+                        }
+                        
+                    
+                        switch (alt98) {
+                    	case 1 :
+                    	    // JPQL.g:1292:52: join
+                    	    {
+                    	    pushFollow(FOLLOW_join_in_subselectIdentificationVariableDeclaration8137);
+                    	    join();
+                    	    _fsp--;
+                    	    if (failed) return ;
+                    	    if ( backtracking==0 ) {
+                    	       varDecls.add(n); 
+                    	    }
+                    	    
+                    	    }
+                    	    break;
+                    
+                    	default :
+                    	    break loop98;
+                        }
+                    } while (true);
+
                     if ( backtracking==0 ) {
                        
                                   varDecls.add(factory.newVariableDecl(i.getLine(), i.getCharPositionInLine(), 
@@ -12433,9 +13110,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 3 :
-                    // JPQL.g:1270:7: n= collectionMemberDeclaration
+                    // JPQL.g:1297:7: n= collectionMemberDeclaration
                     {
-                    pushFollow(FOLLOW_collectionMemberDeclaration_in_subselectIdentificationVariableDeclaration8009);
+                    pushFollow(FOLLOW_collectionMemberDeclaration_in_subselectIdentificationVariableDeclaration8164);
                     n=collectionMemberDeclaration();
                     _fsp--;
                     if (failed) return ;
@@ -12465,7 +13142,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
     
     // $ANTLR start orderByClause
-    // JPQL.g:1273:1: orderByClause returns [Object node] : o= ORDER BY n= orderByItem ( COMMA n= orderByItem )* ;
+    // JPQL.g:1300:1: orderByClause returns [Object node] : o= ORDER BY n= orderByItem ( COMMA n= orderByItem )* ;
     public final Object orderByClause() throws RecognitionException {
         orderByClause_stack.push(new orderByClause_scope());
 
@@ -12480,36 +13157,36 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             ((orderByClause_scope)orderByClause_stack.peek()).items = new ArrayList();
     
         try {
-            // JPQL.g:1281:7: (o= ORDER BY n= orderByItem ( COMMA n= orderByItem )* )
-            // JPQL.g:1281:7: o= ORDER BY n= orderByItem ( COMMA n= orderByItem )*
+            // JPQL.g:1308:7: (o= ORDER BY n= orderByItem ( COMMA n= orderByItem )* )
+            // JPQL.g:1308:7: o= ORDER BY n= orderByItem ( COMMA n= orderByItem )*
             {
             o=(Token)input.LT(1);
-            match(input,ORDER,FOLLOW_ORDER_in_orderByClause8042); if (failed) return node;
-            match(input,BY,FOLLOW_BY_in_orderByClause8044); if (failed) return node;
-            pushFollow(FOLLOW_orderByItem_in_orderByClause8058);
+            match(input,ORDER,FOLLOW_ORDER_in_orderByClause8197); if (failed) return node;
+            match(input,BY,FOLLOW_BY_in_orderByClause8199); if (failed) return node;
+            pushFollow(FOLLOW_orderByItem_in_orderByClause8213);
             n=orderByItem();
             _fsp--;
             if (failed) return node;
             if ( backtracking==0 ) {
                ((orderByClause_scope)orderByClause_stack.peek()).items.add(n); 
             }
-            // JPQL.g:1283:9: ( COMMA n= orderByItem )*
-            loop97:
+            // JPQL.g:1310:9: ( COMMA n= orderByItem )*
+            loop100:
             do {
-                int alt97=2;
-                int LA97_0 = input.LA(1);
+                int alt100=2;
+                int LA100_0 = input.LA(1);
                 
-                if ( (LA97_0==COMMA) ) {
-                    alt97=1;
+                if ( (LA100_0==COMMA) ) {
+                    alt100=1;
                 }
                 
             
-                switch (alt97) {
+                switch (alt100) {
             	case 1 :
-            	    // JPQL.g:1283:10: COMMA n= orderByItem
+            	    // JPQL.g:1310:10: COMMA n= orderByItem
             	    {
-            	    match(input,COMMA,FOLLOW_COMMA_in_orderByClause8073); if (failed) return node;
-            	    pushFollow(FOLLOW_orderByItem_in_orderByClause8079);
+            	    match(input,COMMA,FOLLOW_COMMA_in_orderByClause8228); if (failed) return node;
+            	    pushFollow(FOLLOW_orderByItem_in_orderByClause8234);
             	    n=orderByItem();
             	    _fsp--;
             	    if (failed) return node;
@@ -12521,7 +13198,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             	    break;
             
             	default :
-            	    break loop97;
+            	    break loop100;
                 }
             } while (true);
 
@@ -12545,90 +13222,195 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start orderByItem
-    // JPQL.g:1287:1: orderByItem returns [Object node] : n= stateFieldPathExpression (a= ASC | d= DESC | ) ;
+    // JPQL.g:1314:1: orderByItem returns [Object node] : (n= stateFieldPathExpression (a= ASC | d= DESC | ) | i= IDENT (a= ASC | d= DESC | ) );
     public final Object orderByItem() throws RecognitionException {
 
         Object node = null;
     
         Token a=null;
         Token d=null;
+        Token i=null;
         Object n = null;
         
     
          node = null; 
         try {
-            // JPQL.g:1289:7: (n= stateFieldPathExpression (a= ASC | d= DESC | ) )
-            // JPQL.g:1289:7: n= stateFieldPathExpression (a= ASC | d= DESC | )
-            {
-            pushFollow(FOLLOW_stateFieldPathExpression_in_orderByItem8125);
-            n=stateFieldPathExpression();
-            _fsp--;
-            if (failed) return node;
-            // JPQL.g:1290:9: (a= ASC | d= DESC | )
-            int alt98=3;
-            switch ( input.LA(1) ) {
-            case ASC:
-                {
-                alt98=1;
+            // JPQL.g:1316:7: (n= stateFieldPathExpression (a= ASC | d= DESC | ) | i= IDENT (a= ASC | d= DESC | ) )
+            int alt103=2;
+            int LA103_0 = input.LA(1);
+            
+            if ( (LA103_0==IDENT) ) {
+                int LA103_1 = input.LA(2);
+                
+                if ( (LA103_1==EOF||LA103_1==ASC||LA103_1==DESC||LA103_1==COMMA) ) {
+                    alt103=2;
                 }
-                break;
-            case DESC:
-                {
-                alt98=2;
+                else if ( (LA103_1==DOT) ) {
+                    alt103=1;
                 }
-                break;
-            case EOF:
-            case COMMA:
-                {
-                alt98=3;
+                else {
+                    if (backtracking>0) {failed=true; return node;}
+                    NoViableAltException nvae =
+                        new NoViableAltException("1314:1: orderByItem returns [Object node] : (n= stateFieldPathExpression (a= ASC | d= DESC | ) | i= IDENT (a= ASC | d= DESC | ) );", 103, 1, input);
+                
+                    throw nvae;
                 }
-                break;
-            default:
+            }
+            else if ( (LA103_0==KEY||LA103_0==VALUE) ) {
+                alt103=1;
+            }
+            else {
                 if (backtracking>0) {failed=true; return node;}
                 NoViableAltException nvae =
-                    new NoViableAltException("1290:9: (a= ASC | d= DESC | )", 98, 0, input);
+                    new NoViableAltException("1314:1: orderByItem returns [Object node] : (n= stateFieldPathExpression (a= ASC | d= DESC | ) | i= IDENT (a= ASC | d= DESC | ) );", 103, 0, input);
             
                 throw nvae;
             }
-            
-            switch (alt98) {
+            switch (alt103) {
                 case 1 :
-                    // JPQL.g:1290:11: a= ASC
+                    // JPQL.g:1316:7: n= stateFieldPathExpression (a= ASC | d= DESC | )
                     {
-                    a=(Token)input.LT(1);
-                    match(input,ASC,FOLLOW_ASC_in_orderByItem8139); if (failed) return node;
-                    if ( backtracking==0 ) {
-                       node = factory.newAscOrdering(a.getLine(), a.getCharPositionInLine(), n); 
+                    pushFollow(FOLLOW_stateFieldPathExpression_in_orderByItem8280);
+                    n=stateFieldPathExpression();
+                    _fsp--;
+                    if (failed) return node;
+                    // JPQL.g:1317:9: (a= ASC | d= DESC | )
+                    int alt101=3;
+                    switch ( input.LA(1) ) {
+                    case ASC:
+                        {
+                        alt101=1;
+                        }
+                        break;
+                    case DESC:
+                        {
+                        alt101=2;
+                        }
+                        break;
+                    case EOF:
+                    case COMMA:
+                        {
+                        alt101=3;
+                        }
+                        break;
+                    default:
+                        if (backtracking>0) {failed=true; return node;}
+                        NoViableAltException nvae =
+                            new NoViableAltException("1317:9: (a= ASC | d= DESC | )", 101, 0, input);
+                    
+                        throw nvae;
                     }
+                    
+                    switch (alt101) {
+                        case 1 :
+                            // JPQL.g:1317:11: a= ASC
+                            {
+                            a=(Token)input.LT(1);
+                            match(input,ASC,FOLLOW_ASC_in_orderByItem8294); if (failed) return node;
+                            if ( backtracking==0 ) {
+                               node = factory.newAscOrdering(a.getLine(), a.getCharPositionInLine(), n); 
+                            }
+                            
+                            }
+                            break;
+                        case 2 :
+                            // JPQL.g:1319:11: d= DESC
+                            {
+                            d=(Token)input.LT(1);
+                            match(input,DESC,FOLLOW_DESC_in_orderByItem8323); if (failed) return node;
+                            if ( backtracking==0 ) {
+                               node = factory.newDescOrdering(d.getLine(), d.getCharPositionInLine(), n); 
+                            }
+                            
+                            }
+                            break;
+                        case 3 :
+                            // JPQL.g:1322:13: 
+                            {
+                            if ( backtracking==0 ) {
+                               node = factory.newAscOrdering(0, 0, n); 
+                            }
+                            
+                            }
+                            break;
+                    
+                    }
+
                     
                     }
                     break;
                 case 2 :
-                    // JPQL.g:1292:11: d= DESC
+                    // JPQL.g:1324:8: i= IDENT (a= ASC | d= DESC | )
                     {
-                    d=(Token)input.LT(1);
-                    match(input,DESC,FOLLOW_DESC_in_orderByItem8168); if (failed) return node;
-                    if ( backtracking==0 ) {
-                       node = factory.newDescOrdering(d.getLine(), d.getCharPositionInLine(), n); 
+                    i=(Token)input.LT(1);
+                    match(input,IDENT,FOLLOW_IDENT_in_orderByItem8385); if (failed) return node;
+                    // JPQL.g:1325:9: (a= ASC | d= DESC | )
+                    int alt102=3;
+                    switch ( input.LA(1) ) {
+                    case ASC:
+                        {
+                        alt102=1;
+                        }
+                        break;
+                    case DESC:
+                        {
+                        alt102=2;
+                        }
+                        break;
+                    case EOF:
+                    case COMMA:
+                        {
+                        alt102=3;
+                        }
+                        break;
+                    default:
+                        if (backtracking>0) {failed=true; return node;}
+                        NoViableAltException nvae =
+                            new NoViableAltException("1325:9: (a= ASC | d= DESC | )", 102, 0, input);
+                    
+                        throw nvae;
                     }
                     
-                    }
-                    break;
-                case 3 :
-                    // JPQL.g:1295:13: 
-                    {
-                    if ( backtracking==0 ) {
-                       node = factory.newAscOrdering(0, 0, n); 
-                    }
+                    switch (alt102) {
+                        case 1 :
+                            // JPQL.g:1325:11: a= ASC
+                            {
+                            a=(Token)input.LT(1);
+                            match(input,ASC,FOLLOW_ASC_in_orderByItem8399); if (failed) return node;
+                            if ( backtracking==0 ) {
+                               node = factory.newAscOrdering(a.getLine(), a.getCharPositionInLine(), i.getText()); 
+                            }
+                            
+                            }
+                            break;
+                        case 2 :
+                            // JPQL.g:1327:11: d= DESC
+                            {
+                            d=(Token)input.LT(1);
+                            match(input,DESC,FOLLOW_DESC_in_orderByItem8428); if (failed) return node;
+                            if ( backtracking==0 ) {
+                               node = factory.newDescOrdering(d.getLine(), d.getCharPositionInLine(), i.getText()); 
+                            }
+                            
+                            }
+                            break;
+                        case 3 :
+                            // JPQL.g:1330:13: 
+                            {
+                            if ( backtracking==0 ) {
+                               node = factory.newAscOrdering(0, 0, i.getText()); 
+                            }
+                            
+                            }
+                            break;
                     
                     }
-                    break;
-            
-            }
 
+                    
+                    }
+                    break;
             
             }
-    
         }
         catch (RecognitionException re) {
             reportError(re);
@@ -12647,7 +13429,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
     
     // $ANTLR start groupByClause
-    // JPQL.g:1299:1: groupByClause returns [Object node] : g= GROUP BY n= groupByItem ( COMMA n= groupByItem )* ;
+    // JPQL.g:1334:1: groupByClause returns [Object node] : g= GROUP BY n= groupByItem ( COMMA n= groupByItem )* ;
     public final Object groupByClause() throws RecognitionException {
         groupByClause_stack.push(new groupByClause_scope());
 
@@ -12662,36 +13444,36 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             ((groupByClause_scope)groupByClause_stack.peek()).items = new ArrayList();
     
         try {
-            // JPQL.g:1307:7: (g= GROUP BY n= groupByItem ( COMMA n= groupByItem )* )
-            // JPQL.g:1307:7: g= GROUP BY n= groupByItem ( COMMA n= groupByItem )*
+            // JPQL.g:1342:7: (g= GROUP BY n= groupByItem ( COMMA n= groupByItem )* )
+            // JPQL.g:1342:7: g= GROUP BY n= groupByItem ( COMMA n= groupByItem )*
             {
             g=(Token)input.LT(1);
-            match(input,GROUP,FOLLOW_GROUP_in_groupByClause8248); if (failed) return node;
-            match(input,BY,FOLLOW_BY_in_groupByClause8250); if (failed) return node;
-            pushFollow(FOLLOW_groupByItem_in_groupByClause8264);
+            match(input,GROUP,FOLLOW_GROUP_in_groupByClause8509); if (failed) return node;
+            match(input,BY,FOLLOW_BY_in_groupByClause8511); if (failed) return node;
+            pushFollow(FOLLOW_groupByItem_in_groupByClause8525);
             n=groupByItem();
             _fsp--;
             if (failed) return node;
             if ( backtracking==0 ) {
                ((groupByClause_scope)groupByClause_stack.peek()).items.add(n); 
             }
-            // JPQL.g:1309:9: ( COMMA n= groupByItem )*
-            loop99:
+            // JPQL.g:1344:9: ( COMMA n= groupByItem )*
+            loop104:
             do {
-                int alt99=2;
-                int LA99_0 = input.LA(1);
+                int alt104=2;
+                int LA104_0 = input.LA(1);
                 
-                if ( (LA99_0==COMMA) ) {
-                    alt99=1;
+                if ( (LA104_0==COMMA) ) {
+                    alt104=1;
                 }
                 
             
-                switch (alt99) {
+                switch (alt104) {
             	case 1 :
-            	    // JPQL.g:1309:10: COMMA n= groupByItem
+            	    // JPQL.g:1344:10: COMMA n= groupByItem
             	    {
-            	    match(input,COMMA,FOLLOW_COMMA_in_groupByClause8277); if (failed) return node;
-            	    pushFollow(FOLLOW_groupByItem_in_groupByClause8283);
+            	    match(input,COMMA,FOLLOW_COMMA_in_groupByClause8538); if (failed) return node;
+            	    pushFollow(FOLLOW_groupByItem_in_groupByClause8544);
             	    n=groupByItem();
             	    _fsp--;
             	    if (failed) return node;
@@ -12703,7 +13485,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             	    break;
             
             	default :
-            	    break loop99;
+            	    break loop104;
                 }
             } while (true);
 
@@ -12727,7 +13509,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start groupByItem
-    // JPQL.g:1313:1: groupByItem returns [Object node] : (n= stateFieldPathExpression | n= variableAccessOrTypeConstant );
+    // JPQL.g:1348:1: groupByItem returns [Object node] : (n= stateFieldPathExpression | n= variableAccessOrTypeConstant );
     public final Object groupByItem() throws RecognitionException {
 
         Object node = null;
@@ -12737,42 +13519,42 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // JPQL.g:1315:7: (n= stateFieldPathExpression | n= variableAccessOrTypeConstant )
-            int alt100=2;
-            int LA100_0 = input.LA(1);
+            // JPQL.g:1350:7: (n= stateFieldPathExpression | n= variableAccessOrTypeConstant )
+            int alt105=2;
+            int LA105_0 = input.LA(1);
             
-            if ( (LA100_0==IDENT) ) {
-                int LA100_1 = input.LA(2);
+            if ( (LA105_0==IDENT) ) {
+                int LA105_1 = input.LA(2);
                 
-                if ( (LA100_1==DOT) ) {
-                    alt100=1;
+                if ( (LA105_1==EOF||LA105_1==HAVING||LA105_1==ORDER||LA105_1==COMMA||LA105_1==RIGHT_ROUND_BRACKET) ) {
+                    alt105=2;
                 }
-                else if ( (LA100_1==EOF||LA100_1==HAVING||LA100_1==ORDER||LA100_1==COMMA||LA100_1==RIGHT_ROUND_BRACKET) ) {
-                    alt100=2;
+                else if ( (LA105_1==DOT) ) {
+                    alt105=1;
                 }
                 else {
                     if (backtracking>0) {failed=true; return node;}
                     NoViableAltException nvae =
-                        new NoViableAltException("1313:1: groupByItem returns [Object node] : (n= stateFieldPathExpression | n= variableAccessOrTypeConstant );", 100, 1, input);
+                        new NoViableAltException("1348:1: groupByItem returns [Object node] : (n= stateFieldPathExpression | n= variableAccessOrTypeConstant );", 105, 1, input);
                 
                     throw nvae;
                 }
             }
-            else if ( (LA100_0==KEY||LA100_0==VALUE) ) {
-                alt100=1;
+            else if ( (LA105_0==KEY||LA105_0==VALUE) ) {
+                alt105=1;
             }
             else {
                 if (backtracking>0) {failed=true; return node;}
                 NoViableAltException nvae =
-                    new NoViableAltException("1313:1: groupByItem returns [Object node] : (n= stateFieldPathExpression | n= variableAccessOrTypeConstant );", 100, 0, input);
+                    new NoViableAltException("1348:1: groupByItem returns [Object node] : (n= stateFieldPathExpression | n= variableAccessOrTypeConstant );", 105, 0, input);
             
                 throw nvae;
             }
-            switch (alt100) {
+            switch (alt105) {
                 case 1 :
-                    // JPQL.g:1315:7: n= stateFieldPathExpression
+                    // JPQL.g:1350:7: n= stateFieldPathExpression
                     {
-                    pushFollow(FOLLOW_stateFieldPathExpression_in_groupByItem8329);
+                    pushFollow(FOLLOW_stateFieldPathExpression_in_groupByItem8590);
                     n=stateFieldPathExpression();
                     _fsp--;
                     if (failed) return node;
@@ -12783,9 +13565,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // JPQL.g:1316:7: n= variableAccessOrTypeConstant
+                    // JPQL.g:1351:7: n= variableAccessOrTypeConstant
                     {
-                    pushFollow(FOLLOW_variableAccessOrTypeConstant_in_groupByItem8343);
+                    pushFollow(FOLLOW_variableAccessOrTypeConstant_in_groupByItem8604);
                     n=variableAccessOrTypeConstant();
                     _fsp--;
                     if (failed) return node;
@@ -12810,7 +13592,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start havingClause
-    // JPQL.g:1319:1: havingClause returns [Object node] : h= HAVING n= conditionalExpression ;
+    // JPQL.g:1354:1: havingClause returns [Object node] : h= HAVING n= conditionalExpression ;
     public final Object havingClause() throws RecognitionException {
 
         Object node = null;
@@ -12821,15 +13603,15 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // JPQL.g:1321:7: (h= HAVING n= conditionalExpression )
-            // JPQL.g:1321:7: h= HAVING n= conditionalExpression
+            // JPQL.g:1356:7: (h= HAVING n= conditionalExpression )
+            // JPQL.g:1356:7: h= HAVING n= conditionalExpression
             {
             h=(Token)input.LT(1);
-            match(input,HAVING,FOLLOW_HAVING_in_havingClause8373); if (failed) return node;
+            match(input,HAVING,FOLLOW_HAVING_in_havingClause8634); if (failed) return node;
             if ( backtracking==0 ) {
                setAggregatesAllowed(true); 
             }
-            pushFollow(FOLLOW_conditionalExpression_in_havingClause8390);
+            pushFollow(FOLLOW_conditionalExpression_in_havingClause8651);
             n=conditionalExpression();
             _fsp--;
             if (failed) return node;
@@ -12855,11 +13637,11 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     // $ANTLR start synpred1
     public final void synpred1_fragment() throws RecognitionException {   
-        // JPQL.g:610:7: ( LEFT_ROUND_BRACKET conditionalExpression )
-        // JPQL.g:610:8: LEFT_ROUND_BRACKET conditionalExpression
+        // JPQL.g:636:7: ( LEFT_ROUND_BRACKET conditionalExpression )
+        // JPQL.g:636:8: LEFT_ROUND_BRACKET conditionalExpression
         {
-        match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_synpred13373); if (failed) return ;
-        pushFollow(FOLLOW_conditionalExpression_in_synpred13375);
+        match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_synpred13495); if (failed) return ;
+        pushFollow(FOLLOW_conditionalExpression_in_synpred13497);
         conditionalExpression();
         _fsp--;
         if (failed) return ;
@@ -12870,18 +13652,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     // $ANTLR start synpred2
     public final void synpred2_fragment() throws RecognitionException {   
-        // JPQL.g:1110:11: ( trimSpec trimChar FROM )
-        // JPQL.g:1110:13: trimSpec trimChar FROM
+        // JPQL.g:1136:11: ( trimSpec trimChar FROM )
+        // JPQL.g:1136:13: trimSpec trimChar FROM
         {
-        pushFollow(FOLLOW_trimSpec_in_synpred26917);
+        pushFollow(FOLLOW_trimSpec_in_synpred27039);
         trimSpec();
         _fsp--;
         if (failed) return ;
-        pushFollow(FOLLOW_trimChar_in_synpred26919);
+        pushFollow(FOLLOW_trimChar_in_synpred27041);
         trimChar();
         _fsp--;
         if (failed) return ;
-        match(input,FROM,FOLLOW_FROM_in_synpred26921); if (failed) return ;
+        match(input,FROM,FOLLOW_FROM_in_synpred27043); if (failed) return ;
         
         }
     }
@@ -12958,424 +13740,432 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     public static final BitSet FOLLOW_IDENT_in_deleteClause1393 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_SELECT_in_selectClause1440 = new BitSet(new long[]{0xC0CEE910489FC410L,0x0000001FE6024CE6L});
     public static final BitSet FOLLOW_DISTINCT_in_selectClause1443 = new BitSet(new long[]{0xC0CEE910481FC410L,0x0000001FE6024CE6L});
-    public static final BitSet FOLLOW_selectExpression_in_selectClause1459 = new BitSet(new long[]{0x0000000000000002L,0x0000000000008000L});
-    public static final BitSet FOLLOW_COMMA_in_selectClause1471 = new BitSet(new long[]{0xC0CEE910481FC410L,0x0000001FE6024CE6L});
-    public static final BitSet FOLLOW_selectExpression_in_selectClause1477 = new BitSet(new long[]{0x0000000000000002L,0x0000000000008000L});
-    public static final BitSet FOLLOW_aggregateExpression_in_selectExpression1523 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_scalarExpression_in_selectExpression1537 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_OBJECT_in_selectExpression1547 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_selectExpression1549 = new BitSet(new long[]{0x0000000000000000L,0x0000000000004000L});
-    public static final BitSet FOLLOW_variableAccessOrTypeConstant_in_selectExpression1555 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_selectExpression1557 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_constructorExpression_in_selectExpression1572 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_mapEntryExpression_in_selectExpression1587 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ENTRY_in_mapEntryExpression1619 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_mapEntryExpression1621 = new BitSet(new long[]{0x0000000000000000L,0x0000000000004000L});
-    public static final BitSet FOLLOW_variableAccessOrTypeConstant_in_mapEntryExpression1627 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_mapEntryExpression1629 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_qualifiedIdentificationVariable_in_pathExprOrVariableAccess1661 = new BitSet(new long[]{0x0000000000000002L,0x0000000000080000L});
-    public static final BitSet FOLLOW_DOT_in_pathExprOrVariableAccess1676 = new BitSet(new long[]{0xFFFFFFFFFFFFFFF0L,0x00007FFFFFFFFFFFL});
-    public static final BitSet FOLLOW_attribute_in_pathExprOrVariableAccess1682 = new BitSet(new long[]{0x0000000000000002L,0x0000000000080000L});
-    public static final BitSet FOLLOW_variableAccessOrTypeConstant_in_qualifiedIdentificationVariable1738 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_KEY_in_qualifiedIdentificationVariable1752 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_qualifiedIdentificationVariable1754 = new BitSet(new long[]{0x0000000000000000L,0x0000000000004000L});
-    public static final BitSet FOLLOW_variableAccessOrTypeConstant_in_qualifiedIdentificationVariable1760 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_qualifiedIdentificationVariable1762 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_VALUE_in_qualifiedIdentificationVariable1777 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_qualifiedIdentificationVariable1779 = new BitSet(new long[]{0x0000000000000000L,0x0000000000004000L});
-    public static final BitSet FOLLOW_variableAccessOrTypeConstant_in_qualifiedIdentificationVariable1785 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_qualifiedIdentificationVariable1787 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_AVG_in_aggregateExpression1820 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_aggregateExpression1822 = new BitSet(new long[]{0x0000010000800000L,0x0000000000004800L});
-    public static final BitSet FOLLOW_DISTINCT_in_aggregateExpression1825 = new BitSet(new long[]{0x0000010000000000L,0x0000000000004800L});
-    public static final BitSet FOLLOW_stateFieldPathExpression_in_aggregateExpression1843 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_aggregateExpression1845 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_MAX_in_aggregateExpression1866 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_aggregateExpression1868 = new BitSet(new long[]{0x0000010000800000L,0x0000000000004800L});
-    public static final BitSet FOLLOW_DISTINCT_in_aggregateExpression1871 = new BitSet(new long[]{0x0000010000000000L,0x0000000000004800L});
-    public static final BitSet FOLLOW_stateFieldPathExpression_in_aggregateExpression1890 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_aggregateExpression1892 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_MIN_in_aggregateExpression1912 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_aggregateExpression1914 = new BitSet(new long[]{0x0000010000800000L,0x0000000000004800L});
-    public static final BitSet FOLLOW_DISTINCT_in_aggregateExpression1917 = new BitSet(new long[]{0x0000010000000000L,0x0000000000004800L});
-    public static final BitSet FOLLOW_stateFieldPathExpression_in_aggregateExpression1935 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_aggregateExpression1937 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_SUM_in_aggregateExpression1957 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_aggregateExpression1959 = new BitSet(new long[]{0x0000010000800000L,0x0000000000004800L});
-    public static final BitSet FOLLOW_DISTINCT_in_aggregateExpression1962 = new BitSet(new long[]{0x0000010000000000L,0x0000000000004800L});
-    public static final BitSet FOLLOW_stateFieldPathExpression_in_aggregateExpression1980 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_aggregateExpression1982 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_COUNT_in_aggregateExpression2002 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_aggregateExpression2004 = new BitSet(new long[]{0x0000010000800000L,0x0000000000004800L});
-    public static final BitSet FOLLOW_DISTINCT_in_aggregateExpression2007 = new BitSet(new long[]{0x0000010000000000L,0x0000000000004800L});
-    public static final BitSet FOLLOW_pathExprOrVariableAccess_in_aggregateExpression2025 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_aggregateExpression2027 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NEW_in_constructorExpression2070 = new BitSet(new long[]{0x0000000000000000L,0x0000000000004000L});
-    public static final BitSet FOLLOW_constructorName_in_constructorExpression2076 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_constructorExpression2086 = new BitSet(new long[]{0x0002810000020400L,0x0000000000004804L});
-    public static final BitSet FOLLOW_constructorItem_in_constructorExpression2101 = new BitSet(new long[]{0x0000000000000000L,0x0000000000048000L});
-    public static final BitSet FOLLOW_COMMA_in_constructorExpression2116 = new BitSet(new long[]{0x0002810000020400L,0x0000000000004804L});
-    public static final BitSet FOLLOW_constructorItem_in_constructorExpression2122 = new BitSet(new long[]{0x0000000000000000L,0x0000000000048000L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_constructorExpression2137 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_IDENT_in_constructorName2178 = new BitSet(new long[]{0x0000000000000002L,0x0000000000080000L});
-    public static final BitSet FOLLOW_DOT_in_constructorName2192 = new BitSet(new long[]{0x0000000000000000L,0x0000000000004000L});
-    public static final BitSet FOLLOW_IDENT_in_constructorName2196 = new BitSet(new long[]{0x0000000000000002L,0x0000000000080000L});
-    public static final BitSet FOLLOW_pathExprOrVariableAccess_in_constructorItem2240 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_aggregateExpression_in_constructorItem2254 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_FROM_in_fromClause2287 = new BitSet(new long[]{0xFFFFFFFFFFFFFFF0L,0x00007FFFFFFFFFFFL});
-    public static final BitSet FOLLOW_identificationVariableDeclaration_in_fromClause2289 = new BitSet(new long[]{0x0000000000000002L,0x0000000000008000L});
-    public static final BitSet FOLLOW_COMMA_in_fromClause2301 = new BitSet(new long[]{0xFFFFFFFFFFFFFFF0L,0x00007FFFFFFFFFFFL});
-    public static final BitSet FOLLOW_identificationVariableDeclaration_in_fromClause2306 = new BitSet(new long[]{0x0000000000000002L,0x0000000000008000L});
-    public static final BitSet FOLLOW_collectionMemberDeclaration_in_fromClause2331 = new BitSet(new long[]{0x0000000000000002L,0x0000000000008000L});
-    public static final BitSet FOLLOW_rangeVariableDeclaration_in_identificationVariableDeclaration2397 = new BitSet(new long[]{0x000004A000000002L});
-    public static final BitSet FOLLOW_join_in_identificationVariableDeclaration2416 = new BitSet(new long[]{0x000004A000000002L});
-    public static final BitSet FOLLOW_abstractSchemaName_in_rangeVariableDeclaration2451 = new BitSet(new long[]{0x0000000000000100L,0x0000000000004000L});
-    public static final BitSet FOLLOW_AS_in_rangeVariableDeclaration2454 = new BitSet(new long[]{0x0000000000000000L,0x0000000000004000L});
-    public static final BitSet FOLLOW_IDENT_in_rangeVariableDeclaration2460 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_joinSpec_in_join2543 = new BitSet(new long[]{0x0000000080000000L,0x0000000000004000L});
-    public static final BitSet FOLLOW_joinAssociationPathExpression_in_join2557 = new BitSet(new long[]{0x0000000000000100L,0x0000000000004000L});
-    public static final BitSet FOLLOW_AS_in_join2560 = new BitSet(new long[]{0x0000000000000000L,0x0000000000004000L});
-    public static final BitSet FOLLOW_IDENT_in_join2566 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_FETCH_in_join2588 = new BitSet(new long[]{0x0000000000000000L,0x0000000000004000L});
-    public static final BitSet FOLLOW_joinAssociationPathExpression_in_join2594 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LEFT_in_joinSpec2640 = new BitSet(new long[]{0x0800008000000000L});
-    public static final BitSet FOLLOW_OUTER_in_joinSpec2643 = new BitSet(new long[]{0x0000008000000000L});
-    public static final BitSet FOLLOW_INNER_in_joinSpec2652 = new BitSet(new long[]{0x0000008000000000L});
-    public static final BitSet FOLLOW_JOIN_in_joinSpec2658 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_IN_in_collectionMemberDeclaration2686 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_collectionMemberDeclaration2688 = new BitSet(new long[]{0x0000010000000000L,0x0000000000004800L});
-    public static final BitSet FOLLOW_collectionValuedPathExpression_in_collectionMemberDeclaration2694 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_collectionMemberDeclaration2696 = new BitSet(new long[]{0x0000000000000100L,0x0000000000004000L});
-    public static final BitSet FOLLOW_AS_in_collectionMemberDeclaration2706 = new BitSet(new long[]{0x0000000000000000L,0x0000000000004000L});
-    public static final BitSet FOLLOW_IDENT_in_collectionMemberDeclaration2712 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_pathExpression_in_collectionValuedPathExpression2750 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_pathExpression_in_associationPathExpression2782 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_variableAccessOrTypeConstant_in_joinAssociationPathExpression2814 = new BitSet(new long[]{0x0000000000000000L,0x0000000000080000L});
-    public static final BitSet FOLLOW_DOT_in_joinAssociationPathExpression2818 = new BitSet(new long[]{0xFFFFFFFFFFFFFFF0L,0x00007FFFFFFFFFFFL});
-    public static final BitSet FOLLOW_attribute_in_joinAssociationPathExpression2824 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_pathExpression_in_singleValuedPathExpression2864 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_pathExpression_in_stateFieldPathExpression2896 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_qualifiedIdentificationVariable_in_pathExpression2928 = new BitSet(new long[]{0x0000000000000000L,0x0000000000080000L});
-    public static final BitSet FOLLOW_DOT_in_pathExpression2943 = new BitSet(new long[]{0xFFFFFFFFFFFFFFF0L,0x00007FFFFFFFFFFFL});
-    public static final BitSet FOLLOW_attribute_in_pathExpression2949 = new BitSet(new long[]{0x0000000000000002L,0x0000000000080000L});
-    public static final BitSet FOLLOW_IDENT_in_variableAccessOrTypeConstant3045 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_WHERE_in_whereClause3083 = new BitSet(new long[]{0xC056E910601FC410L,0x0000001FE6024CE6L});
-    public static final BitSet FOLLOW_conditionalExpression_in_whereClause3089 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_conditionalTerm_in_conditionalExpression3131 = new BitSet(new long[]{0x0200000000000002L});
-    public static final BitSet FOLLOW_OR_in_conditionalExpression3146 = new BitSet(new long[]{0xC056E910601FC410L,0x0000001FE6024CE6L});
-    public static final BitSet FOLLOW_conditionalTerm_in_conditionalExpression3152 = new BitSet(new long[]{0x0200000000000002L});
-    public static final BitSet FOLLOW_conditionalFactor_in_conditionalTerm3207 = new BitSet(new long[]{0x0000000000000042L});
-    public static final BitSet FOLLOW_AND_in_conditionalTerm3222 = new BitSet(new long[]{0xC056E910601FC410L,0x0000001FE6024CE6L});
-    public static final BitSet FOLLOW_conditionalFactor_in_conditionalTerm3228 = new BitSet(new long[]{0x0000000000000042L});
-    public static final BitSet FOLLOW_NOT_in_conditionalFactor3283 = new BitSet(new long[]{0xC046E910601FC410L,0x0000001FE6024CE6L});
-    public static final BitSet FOLLOW_conditionalPrimary_in_conditionalFactor3302 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_existsExpression_in_conditionalFactor3331 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_conditionalPrimary3388 = new BitSet(new long[]{0xC056E910601FC410L,0x0000001FE6024CE6L});
-    public static final BitSet FOLLOW_conditionalExpression_in_conditionalPrimary3394 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_conditionalPrimary3396 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_simpleConditionalExpression_in_conditionalPrimary3410 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_arithmeticExpression_in_simpleConditionalExpression3442 = new BitSet(new long[]{0x0011104800000800L,0x0000000001F10000L});
-    public static final BitSet FOLLOW_simpleConditionalExpressionRemainder_in_simpleConditionalExpression3448 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_nonArithmeticScalarExpression_in_simpleConditionalExpression3463 = new BitSet(new long[]{0x0011104800000800L,0x0000000001F10000L});
-    public static final BitSet FOLLOW_simpleConditionalExpressionRemainder_in_simpleConditionalExpression3469 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_comparisonExpression_in_simpleConditionalExpressionRemainder3504 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NOT_in_simpleConditionalExpressionRemainder3518 = new BitSet(new long[]{0x0001100800000800L});
-    public static final BitSet FOLLOW_conditionWithNotExpression_in_simpleConditionalExpressionRemainder3526 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_IS_in_simpleConditionalExpressionRemainder3537 = new BitSet(new long[]{0x0030000002000000L});
-    public static final BitSet FOLLOW_NOT_in_simpleConditionalExpressionRemainder3542 = new BitSet(new long[]{0x0020000002000000L});
-    public static final BitSet FOLLOW_isExpression_in_simpleConditionalExpressionRemainder3550 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_betweenExpression_in_conditionWithNotExpression3585 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_likeExpression_in_conditionWithNotExpression3600 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_inExpression_in_conditionWithNotExpression3614 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_collectionMemberExpression_in_conditionWithNotExpression3628 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_nullComparisonExpression_in_isExpression3663 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_emptyCollectionComparisonExpression_in_isExpression3678 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_BETWEEN_in_betweenExpression3711 = new BitSet(new long[]{0xC046A9100002C410L,0x00000019E6024804L});
-    public static final BitSet FOLLOW_arithmeticExpression_in_betweenExpression3725 = new BitSet(new long[]{0x0000000000000040L});
-    public static final BitSet FOLLOW_AND_in_betweenExpression3727 = new BitSet(new long[]{0xC046A9100002C410L,0x00000019E6024804L});
-    public static final BitSet FOLLOW_arithmeticExpression_in_betweenExpression3733 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_IN_in_inExpression3779 = new BitSet(new long[]{0x0000000000000000L,0x0000001800000000L});
-    public static final BitSet FOLLOW_inputParameter_in_inExpression3785 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_IN_in_inExpression3812 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_inExpression3822 = new BitSet(new long[]{0x1000000000000000L,0x0000001FE0004000L});
-    public static final BitSet FOLLOW_inItem_in_inExpression3838 = new BitSet(new long[]{0x0000000000000000L,0x0000000000048000L});
-    public static final BitSet FOLLOW_COMMA_in_inExpression3856 = new BitSet(new long[]{0x0000000000000000L,0x0000001FE0004000L});
-    public static final BitSet FOLLOW_inItem_in_inExpression3862 = new BitSet(new long[]{0x0000000000000000L,0x0000000000048000L});
-    public static final BitSet FOLLOW_subquery_in_inExpression3897 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_inExpression3931 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_literalString_in_inItem3961 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_literalNumeric_in_inItem3975 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_inputParameter_in_inItem3989 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_variableAccessOrTypeConstant_in_inItem4003 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LIKE_in_likeExpression4035 = new BitSet(new long[]{0x0000000000000000L,0x0000001E00000000L});
-    public static final BitSet FOLLOW_likeValue_in_likeExpression4041 = new BitSet(new long[]{0x0000000010000002L});
-    public static final BitSet FOLLOW_escape_in_likeExpression4056 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ESCAPE_in_escape4096 = new BitSet(new long[]{0x0000000000000000L,0x0000001E00000000L});
-    public static final BitSet FOLLOW_likeValue_in_escape4102 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_literalString_in_likeValue4142 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_inputParameter_in_likeValue4156 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NULL_in_nullComparisonExpression4189 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_EMPTY_in_emptyCollectionComparisonExpression4230 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_MEMBER_in_collectionMemberExpression4271 = new BitSet(new long[]{0x0100010000000000L,0x0000000000004800L});
-    public static final BitSet FOLLOW_OF_in_collectionMemberExpression4274 = new BitSet(new long[]{0x0000010000000000L,0x0000000000004800L});
-    public static final BitSet FOLLOW_collectionValuedPathExpression_in_collectionMemberExpression4282 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_EXISTS_in_existsExpression4322 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_existsExpression4324 = new BitSet(new long[]{0x1000000000000000L});
-    public static final BitSet FOLLOW_subquery_in_existsExpression4330 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_existsExpression4332 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_EQUALS_in_comparisonExpression4372 = new BitSet(new long[]{0xC046E910401FC4B0L,0x0000001FE6024CE7L});
-    public static final BitSet FOLLOW_comparisonExpressionRightOperand_in_comparisonExpression4378 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NOT_EQUAL_TO_in_comparisonExpression4399 = new BitSet(new long[]{0xC046E910401FC4B0L,0x0000001FE6024CE7L});
-    public static final BitSet FOLLOW_comparisonExpressionRightOperand_in_comparisonExpression4405 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_GREATER_THAN_in_comparisonExpression4426 = new BitSet(new long[]{0xC046E910401FC4B0L,0x0000001FE6024CE7L});
-    public static final BitSet FOLLOW_comparisonExpressionRightOperand_in_comparisonExpression4432 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_GREATER_THAN_EQUAL_TO_in_comparisonExpression4453 = new BitSet(new long[]{0xC046E910401FC4B0L,0x0000001FE6024CE7L});
-    public static final BitSet FOLLOW_comparisonExpressionRightOperand_in_comparisonExpression4459 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LESS_THAN_in_comparisonExpression4480 = new BitSet(new long[]{0xC046E910401FC4B0L,0x0000001FE6024CE7L});
-    public static final BitSet FOLLOW_comparisonExpressionRightOperand_in_comparisonExpression4486 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LESS_THAN_EQUAL_TO_in_comparisonExpression4507 = new BitSet(new long[]{0xC046E910401FC4B0L,0x0000001FE6024CE7L});
-    public static final BitSet FOLLOW_comparisonExpressionRightOperand_in_comparisonExpression4513 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_arithmeticExpression_in_comparisonExpressionRightOperand4554 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_nonArithmeticScalarExpression_in_comparisonExpressionRightOperand4568 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_anyOrAllExpression_in_comparisonExpressionRightOperand4582 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_simpleArithmeticExpression_in_arithmeticExpression4614 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_arithmeticExpression4624 = new BitSet(new long[]{0x1000000000000000L});
-    public static final BitSet FOLLOW_subquery_in_arithmeticExpression4630 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_arithmeticExpression4632 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_arithmeticTerm_in_simpleArithmeticExpression4664 = new BitSet(new long[]{0x0000000000000002L,0x0000000006000000L});
-    public static final BitSet FOLLOW_PLUS_in_simpleArithmeticExpression4680 = new BitSet(new long[]{0xC046A9100002C410L,0x00000019E6024804L});
-    public static final BitSet FOLLOW_arithmeticTerm_in_simpleArithmeticExpression4686 = new BitSet(new long[]{0x0000000000000002L,0x0000000006000000L});
-    public static final BitSet FOLLOW_MINUS_in_simpleArithmeticExpression4715 = new BitSet(new long[]{0xC046A9100002C410L,0x00000019E6024804L});
-    public static final BitSet FOLLOW_arithmeticTerm_in_simpleArithmeticExpression4721 = new BitSet(new long[]{0x0000000000000002L,0x0000000006000000L});
-    public static final BitSet FOLLOW_arithmeticFactor_in_arithmeticTerm4778 = new BitSet(new long[]{0x0000000000000002L,0x0000000018000000L});
-    public static final BitSet FOLLOW_MULTIPLY_in_arithmeticTerm4794 = new BitSet(new long[]{0xC046A9100002C410L,0x00000019E6024804L});
-    public static final BitSet FOLLOW_arithmeticFactor_in_arithmeticTerm4800 = new BitSet(new long[]{0x0000000000000002L,0x0000000018000000L});
-    public static final BitSet FOLLOW_DIVIDE_in_arithmeticTerm4829 = new BitSet(new long[]{0xC046A9100002C410L,0x00000019E6024804L});
-    public static final BitSet FOLLOW_arithmeticFactor_in_arithmeticTerm4835 = new BitSet(new long[]{0x0000000000000002L,0x0000000018000000L});
-    public static final BitSet FOLLOW_PLUS_in_arithmeticFactor4889 = new BitSet(new long[]{0xC046A9100002C410L,0x00000019E0024804L});
-    public static final BitSet FOLLOW_arithmeticPrimary_in_arithmeticFactor4896 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_MINUS_in_arithmeticFactor4918 = new BitSet(new long[]{0xC046A9100002C410L,0x00000019E0024804L});
-    public static final BitSet FOLLOW_arithmeticPrimary_in_arithmeticFactor4924 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_arithmeticPrimary_in_arithmeticFactor4948 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_aggregateExpression_in_arithmeticPrimary4982 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_pathExprOrVariableAccess_in_arithmeticPrimary4996 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_inputParameter_in_arithmeticPrimary5010 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_caseExpression_in_arithmeticPrimary5024 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_functionsReturningNumerics_in_arithmeticPrimary5038 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_arithmeticPrimary5048 = new BitSet(new long[]{0xC046A9100002C410L,0x00000019E6024804L});
-    public static final BitSet FOLLOW_simpleArithmeticExpression_in_arithmeticPrimary5054 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_arithmeticPrimary5056 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_literalNumeric_in_arithmeticPrimary5070 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_simpleArithmeticExpression_in_scalarExpression5102 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_nonArithmeticScalarExpression_in_scalarExpression5117 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_functionsReturningDatetime_in_nonArithmeticScalarExpression5149 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_functionsReturningStrings_in_nonArithmeticScalarExpression5163 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_literalString_in_nonArithmeticScalarExpression5177 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_literalBoolean_in_nonArithmeticScalarExpression5191 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_entityTypeExpression_in_nonArithmeticScalarExpression5205 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ALL_in_anyOrAllExpression5235 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_anyOrAllExpression5237 = new BitSet(new long[]{0x1000000000000000L});
-    public static final BitSet FOLLOW_subquery_in_anyOrAllExpression5243 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_anyOrAllExpression5245 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ANY_in_anyOrAllExpression5265 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_anyOrAllExpression5267 = new BitSet(new long[]{0x1000000000000000L});
-    public static final BitSet FOLLOW_subquery_in_anyOrAllExpression5273 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_anyOrAllExpression5275 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_SOME_in_anyOrAllExpression5295 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_anyOrAllExpression5297 = new BitSet(new long[]{0x1000000000000000L});
-    public static final BitSet FOLLOW_subquery_in_anyOrAllExpression5303 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_anyOrAllExpression5305 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_typeDiscriminator_in_entityTypeExpression5345 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TYPE_in_typeDiscriminator5378 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_typeDiscriminator5380 = new BitSet(new long[]{0x0000010000000000L,0x0000000000004800L});
-    public static final BitSet FOLLOW_variableOrSingleValuedPath_in_typeDiscriminator5386 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_typeDiscriminator5388 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TYPE_in_typeDiscriminator5403 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_typeDiscriminator5405 = new BitSet(new long[]{0x0000000000000000L,0x0000001800000000L});
-    public static final BitSet FOLLOW_inputParameter_in_typeDiscriminator5411 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_typeDiscriminator5413 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_simpleCaseExpression_in_caseExpression5448 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_generalCaseExpression_in_caseExpression5461 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_coalesceExpression_in_caseExpression5474 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_nullIfExpression_in_caseExpression5487 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_CASE_in_simpleCaseExpression5525 = new BitSet(new long[]{0x0000010000000000L,0x0000000000004880L});
-    public static final BitSet FOLLOW_caseOperand_in_simpleCaseExpression5527 = new BitSet(new long[]{0x0000000000000000L,0x0000000000001000L});
-    public static final BitSet FOLLOW_simpleWhenClause_in_simpleCaseExpression5533 = new BitSet(new long[]{0x0000000001000000L,0x0000000000001000L});
-    public static final BitSet FOLLOW_simpleWhenClause_in_simpleCaseExpression5542 = new BitSet(new long[]{0x0000000001000000L,0x0000000000001000L});
-    public static final BitSet FOLLOW_ELSE_in_simpleCaseExpression5548 = new BitSet(new long[]{0xC046E910401FC410L,0x0000001FE6024CE6L});
-    public static final BitSet FOLLOW_scalarExpression_in_simpleCaseExpression5554 = new BitSet(new long[]{0x0000000004000000L});
-    public static final BitSet FOLLOW_END_in_simpleCaseExpression5556 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_CASE_in_generalCaseExpression5600 = new BitSet(new long[]{0x0000000000000000L,0x0000000000001000L});
-    public static final BitSet FOLLOW_whenClause_in_generalCaseExpression5606 = new BitSet(new long[]{0x0000000001000000L,0x0000000000001000L});
-    public static final BitSet FOLLOW_whenClause_in_generalCaseExpression5611 = new BitSet(new long[]{0x0000000001000000L,0x0000000000001000L});
-    public static final BitSet FOLLOW_ELSE_in_generalCaseExpression5617 = new BitSet(new long[]{0xC046E910401FC410L,0x0000001FE6024CE6L});
-    public static final BitSet FOLLOW_scalarExpression_in_generalCaseExpression5623 = new BitSet(new long[]{0x0000000004000000L});
-    public static final BitSet FOLLOW_END_in_generalCaseExpression5625 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_COALESCE_in_coalesceExpression5669 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_coalesceExpression5671 = new BitSet(new long[]{0xC046E910401FC410L,0x0000001FE6024CE6L});
-    public static final BitSet FOLLOW_scalarExpression_in_coalesceExpression5677 = new BitSet(new long[]{0x0000000000000000L,0x0000000000008000L});
-    public static final BitSet FOLLOW_COMMA_in_coalesceExpression5682 = new BitSet(new long[]{0xC046E910401FC410L,0x0000001FE6024CE6L});
-    public static final BitSet FOLLOW_scalarExpression_in_coalesceExpression5684 = new BitSet(new long[]{0x0000000000000000L,0x0000000000028000L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_coalesceExpression5690 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NULLIF_in_nullIfExpression5731 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_nullIfExpression5733 = new BitSet(new long[]{0xC046E910401FC410L,0x0000001FE6024CE6L});
-    public static final BitSet FOLLOW_scalarExpression_in_nullIfExpression5739 = new BitSet(new long[]{0x0000000000000000L,0x0000000000008000L});
-    public static final BitSet FOLLOW_COMMA_in_nullIfExpression5741 = new BitSet(new long[]{0xC046E910401FC410L,0x0000001FE6024CE6L});
-    public static final BitSet FOLLOW_scalarExpression_in_nullIfExpression5747 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_nullIfExpression5749 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_stateFieldPathExpression_in_caseOperand5796 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_typeDiscriminator_in_caseOperand5810 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_WHEN_in_whenClause5845 = new BitSet(new long[]{0xC056E910601FC410L,0x0000001FE6024CE6L});
-    public static final BitSet FOLLOW_conditionalExpression_in_whenClause5851 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000008L});
-    public static final BitSet FOLLOW_THEN_in_whenClause5853 = new BitSet(new long[]{0xC046E910401FC410L,0x0000001FE6024CE6L});
-    public static final BitSet FOLLOW_scalarExpression_in_whenClause5859 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_WHEN_in_simpleWhenClause5901 = new BitSet(new long[]{0xC046E910401FC410L,0x0000001FE6024CE6L});
-    public static final BitSet FOLLOW_scalarExpression_in_simpleWhenClause5907 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000008L});
-    public static final BitSet FOLLOW_THEN_in_simpleWhenClause5909 = new BitSet(new long[]{0xC046E910401FC410L,0x0000001FE6024CE6L});
-    public static final BitSet FOLLOW_scalarExpression_in_simpleWhenClause5915 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_singleValuedPathExpression_in_variableOrSingleValuedPath5952 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_variableAccessOrTypeConstant_in_variableOrSingleValuedPath5966 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_literalString_in_stringPrimary5998 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_functionsReturningStrings_in_stringPrimary6012 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_inputParameter_in_stringPrimary6026 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_stateFieldPathExpression_in_stringPrimary6040 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_literalNumeric_in_literal6074 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_literalBoolean_in_literal6088 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_literalString_in_literal6102 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_INTEGER_LITERAL_in_literalNumeric6132 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LONG_LITERAL_in_literalNumeric6148 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_FLOAT_LITERAL_in_literalNumeric6169 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_DOUBLE_LITERAL_in_literalNumeric6189 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TRUE_in_literalBoolean6227 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_FALSE_in_literalBoolean6249 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_STRING_LITERAL_DOUBLE_QUOTED_in_literalString6288 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_STRING_LITERAL_SINGLE_QUOTED_in_literalString6309 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_POSITIONAL_PARAM_in_inputParameter6347 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NAMED_PARAM_in_inputParameter6367 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_abs_in_functionsReturningNumerics6407 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_length_in_functionsReturningNumerics6421 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_mod_in_functionsReturningNumerics6435 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_sqrt_in_functionsReturningNumerics6449 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_locate_in_functionsReturningNumerics6463 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_size_in_functionsReturningNumerics6477 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_index_in_functionsReturningNumerics6491 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_CURRENT_DATE_in_functionsReturningDatetime6521 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_CURRENT_TIME_in_functionsReturningDatetime6542 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_CURRENT_TIMESTAMP_in_functionsReturningDatetime6562 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_concat_in_functionsReturningStrings6602 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_substring_in_functionsReturningStrings6616 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_trim_in_functionsReturningStrings6630 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_upper_in_functionsReturningStrings6644 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_lower_in_functionsReturningStrings6658 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_CONCAT_in_concat6693 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_concat6704 = new BitSet(new long[]{0x0000410000010000L,0x0000001E00004C22L});
-    public static final BitSet FOLLOW_stringPrimary_in_concat6719 = new BitSet(new long[]{0x0000000000000000L,0x0000000000008000L});
-    public static final BitSet FOLLOW_COMMA_in_concat6724 = new BitSet(new long[]{0x0000410000010000L,0x0000001E00004C22L});
-    public static final BitSet FOLLOW_stringPrimary_in_concat6730 = new BitSet(new long[]{0x0000000000000000L,0x0000000000048000L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_concat6744 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_SUBSTRING_in_substring6782 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_substring6795 = new BitSet(new long[]{0x0000410000010000L,0x0000001E00004C22L});
-    public static final BitSet FOLLOW_stringPrimary_in_substring6809 = new BitSet(new long[]{0x0000000000000000L,0x0000000000008000L});
-    public static final BitSet FOLLOW_COMMA_in_substring6811 = new BitSet(new long[]{0xC046A9100002C410L,0x00000019E6024804L});
-    public static final BitSet FOLLOW_simpleArithmeticExpression_in_substring6825 = new BitSet(new long[]{0x0000000000000000L,0x0000000000048000L});
-    public static final BitSet FOLLOW_COMMA_in_substring6836 = new BitSet(new long[]{0xC046A9100002C410L,0x00000019E6024804L});
-    public static final BitSet FOLLOW_simpleArithmeticExpression_in_substring6842 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_substring6854 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TRIM_in_trim6892 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_trim6902 = new BitSet(new long[]{0x0000430100011000L,0x0000001E00004C32L});
-    public static final BitSet FOLLOW_trimSpec_in_trim6930 = new BitSet(new long[]{0x0000000100000000L,0x0000001E00000000L});
-    public static final BitSet FOLLOW_trimChar_in_trim6936 = new BitSet(new long[]{0x0000000100000000L});
-    public static final BitSet FOLLOW_FROM_in_trim6938 = new BitSet(new long[]{0x0000410000010000L,0x0000001E00004C22L});
-    public static final BitSet FOLLOW_stringPrimary_in_trim6956 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_trim6966 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LEADING_in_trimSpec7002 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TRAILING_in_trimSpec7020 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_BOTH_in_trimSpec7038 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_literalString_in_trimChar7085 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_inputParameter_in_trimChar7099 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_UPPER_in_upper7136 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_upper7138 = new BitSet(new long[]{0x0000410000010000L,0x0000001E00004C22L});
-    public static final BitSet FOLLOW_stringPrimary_in_upper7144 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_upper7146 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LOWER_in_lower7184 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_lower7186 = new BitSet(new long[]{0x0000410000010000L,0x0000001E00004C22L});
-    public static final BitSet FOLLOW_stringPrimary_in_lower7192 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_lower7194 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ABS_in_abs7233 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_abs7235 = new BitSet(new long[]{0xC046A9100002C410L,0x00000019E6024804L});
-    public static final BitSet FOLLOW_simpleArithmeticExpression_in_abs7241 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_abs7243 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LENGTH_in_length7281 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_length7283 = new BitSet(new long[]{0x0000410000010000L,0x0000001E00004C22L});
-    public static final BitSet FOLLOW_stringPrimary_in_length7289 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_length7291 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LOCATE_in_locate7329 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_locate7339 = new BitSet(new long[]{0x0000410000010000L,0x0000001E00004C22L});
-    public static final BitSet FOLLOW_stringPrimary_in_locate7354 = new BitSet(new long[]{0x0000000000000000L,0x0000000000008000L});
-    public static final BitSet FOLLOW_COMMA_in_locate7356 = new BitSet(new long[]{0x0000410000010000L,0x0000001E00004C22L});
-    public static final BitSet FOLLOW_stringPrimary_in_locate7362 = new BitSet(new long[]{0x0000000000000000L,0x0000000000048000L});
-    public static final BitSet FOLLOW_COMMA_in_locate7374 = new BitSet(new long[]{0xC046A9100002C410L,0x00000019E6024804L});
-    public static final BitSet FOLLOW_simpleArithmeticExpression_in_locate7380 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_locate7393 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_SIZE_in_size7431 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_size7442 = new BitSet(new long[]{0x0000010000000000L,0x0000000000004800L});
-    public static final BitSet FOLLOW_collectionValuedPathExpression_in_size7448 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_size7450 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_MOD_in_mod7488 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_mod7490 = new BitSet(new long[]{0xC046A9100002C410L,0x00000019E6024804L});
-    public static final BitSet FOLLOW_simpleArithmeticExpression_in_mod7504 = new BitSet(new long[]{0x0000000000000000L,0x0000000000008000L});
-    public static final BitSet FOLLOW_COMMA_in_mod7506 = new BitSet(new long[]{0xC046A9100002C410L,0x00000019E6024804L});
-    public static final BitSet FOLLOW_simpleArithmeticExpression_in_mod7521 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_mod7531 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_SQRT_in_sqrt7569 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_sqrt7580 = new BitSet(new long[]{0xC046A9100002C410L,0x00000019E6024804L});
-    public static final BitSet FOLLOW_simpleArithmeticExpression_in_sqrt7586 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_sqrt7588 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_INDEX_in_index7630 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_index7632 = new BitSet(new long[]{0x0000000000000000L,0x0000000000004000L});
-    public static final BitSet FOLLOW_variableAccessOrTypeConstant_in_index7638 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_index7640 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_simpleSelectClause_in_subquery7681 = new BitSet(new long[]{0x0000000100000000L});
-    public static final BitSet FOLLOW_subqueryFromClause_in_subquery7696 = new BitSet(new long[]{0x0000000600000002L,0x0000000000002000L});
-    public static final BitSet FOLLOW_whereClause_in_subquery7711 = new BitSet(new long[]{0x0000000600000002L});
-    public static final BitSet FOLLOW_groupByClause_in_subquery7726 = new BitSet(new long[]{0x0000000400000002L});
-    public static final BitSet FOLLOW_havingClause_in_subquery7742 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_SELECT_in_simpleSelectClause7785 = new BitSet(new long[]{0x0002810000820400L,0x0000000000004804L});
-    public static final BitSet FOLLOW_DISTINCT_in_simpleSelectClause7788 = new BitSet(new long[]{0x0002810000020400L,0x0000000000004804L});
-    public static final BitSet FOLLOW_simpleSelectExpression_in_simpleSelectClause7804 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_singleValuedPathExpression_in_simpleSelectExpression7844 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_aggregateExpression_in_simpleSelectExpression7859 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_variableAccessOrTypeConstant_in_simpleSelectExpression7874 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_FROM_in_subqueryFromClause7909 = new BitSet(new long[]{0xFFFFFFFFFFFFFFF0L,0x00007FFFFFFFFFFFL});
-    public static final BitSet FOLLOW_subselectIdentificationVariableDeclaration_in_subqueryFromClause7911 = new BitSet(new long[]{0x0000000000000002L,0x0000000000008000L});
-    public static final BitSet FOLLOW_COMMA_in_subqueryFromClause7925 = new BitSet(new long[]{0xFFFFFFFFFFFFFFF0L,0x00007FFFFFFFFFFFL});
-    public static final BitSet FOLLOW_subselectIdentificationVariableDeclaration_in_subqueryFromClause7927 = new BitSet(new long[]{0x0000000000000002L,0x0000000000008000L});
-    public static final BitSet FOLLOW_identificationVariableDeclaration_in_subselectIdentificationVariableDeclaration7965 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_associationPathExpression_in_subselectIdentificationVariableDeclaration7978 = new BitSet(new long[]{0x0000000000000100L,0x0000000000004000L});
-    public static final BitSet FOLLOW_AS_in_subselectIdentificationVariableDeclaration7981 = new BitSet(new long[]{0x0000000000000000L,0x0000000000004000L});
-    public static final BitSet FOLLOW_IDENT_in_subselectIdentificationVariableDeclaration7987 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_collectionMemberDeclaration_in_subselectIdentificationVariableDeclaration8009 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ORDER_in_orderByClause8042 = new BitSet(new long[]{0x0000000000002000L});
-    public static final BitSet FOLLOW_BY_in_orderByClause8044 = new BitSet(new long[]{0x0000010000000000L,0x0000000000004800L});
-    public static final BitSet FOLLOW_orderByItem_in_orderByClause8058 = new BitSet(new long[]{0x0000000000000002L,0x0000000000008000L});
-    public static final BitSet FOLLOW_COMMA_in_orderByClause8073 = new BitSet(new long[]{0x0000010000000000L,0x0000000000004800L});
-    public static final BitSet FOLLOW_orderByItem_in_orderByClause8079 = new BitSet(new long[]{0x0000000000000002L,0x0000000000008000L});
-    public static final BitSet FOLLOW_stateFieldPathExpression_in_orderByItem8125 = new BitSet(new long[]{0x0000000000200202L});
-    public static final BitSet FOLLOW_ASC_in_orderByItem8139 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_DESC_in_orderByItem8168 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_GROUP_in_groupByClause8248 = new BitSet(new long[]{0x0000000000002000L});
-    public static final BitSet FOLLOW_BY_in_groupByClause8250 = new BitSet(new long[]{0x0000010000000000L,0x0000000000004800L});
-    public static final BitSet FOLLOW_groupByItem_in_groupByClause8264 = new BitSet(new long[]{0x0000000000000002L,0x0000000000008000L});
-    public static final BitSet FOLLOW_COMMA_in_groupByClause8277 = new BitSet(new long[]{0x0000010000000000L,0x0000000000004800L});
-    public static final BitSet FOLLOW_groupByItem_in_groupByClause8283 = new BitSet(new long[]{0x0000000000000002L,0x0000000000008000L});
-    public static final BitSet FOLLOW_stateFieldPathExpression_in_groupByItem8329 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_variableAccessOrTypeConstant_in_groupByItem8343 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_HAVING_in_havingClause8373 = new BitSet(new long[]{0xC056E910601FC410L,0x0000001FE6024CE6L});
-    public static final BitSet FOLLOW_conditionalExpression_in_havingClause8390 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_synpred13373 = new BitSet(new long[]{0xC056E910601FC410L,0x0000001FE6024CE6L});
-    public static final BitSet FOLLOW_conditionalExpression_in_synpred13375 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_trimSpec_in_synpred26917 = new BitSet(new long[]{0x0000000100000000L,0x0000001E00000000L});
-    public static final BitSet FOLLOW_trimChar_in_synpred26919 = new BitSet(new long[]{0x0000000100000000L});
-    public static final BitSet FOLLOW_FROM_in_synpred26921 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_selectItem_in_selectClause1459 = new BitSet(new long[]{0x0000000000000002L,0x0000000000008000L});
+    public static final BitSet FOLLOW_COMMA_in_selectClause1487 = new BitSet(new long[]{0xC0CEE910481FC410L,0x0000001FE6024CE6L});
+    public static final BitSet FOLLOW_selectItem_in_selectClause1493 = new BitSet(new long[]{0x0000000000000002L,0x0000000000008000L});
+    public static final BitSet FOLLOW_selectExpression_in_selectItem1589 = new BitSet(new long[]{0x0000000000000102L,0x0000000000004000L});
+    public static final BitSet FOLLOW_AS_in_selectItem1593 = new BitSet(new long[]{0x0000000000000000L,0x0000000000004000L});
+    public static final BitSet FOLLOW_IDENT_in_selectItem1601 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_aggregateExpression_in_selectExpression1644 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_scalarExpression_in_selectExpression1658 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_OBJECT_in_selectExpression1668 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_selectExpression1670 = new BitSet(new long[]{0x0000000000000000L,0x0000000000004000L});
+    public static final BitSet FOLLOW_variableAccessOrTypeConstant_in_selectExpression1676 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_selectExpression1678 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_constructorExpression_in_selectExpression1693 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_mapEntryExpression_in_selectExpression1708 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ENTRY_in_mapEntryExpression1740 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_mapEntryExpression1742 = new BitSet(new long[]{0x0000000000000000L,0x0000000000004000L});
+    public static final BitSet FOLLOW_variableAccessOrTypeConstant_in_mapEntryExpression1748 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_mapEntryExpression1750 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_qualifiedIdentificationVariable_in_pathExprOrVariableAccess1782 = new BitSet(new long[]{0x0000000000000002L,0x0000000000080000L});
+    public static final BitSet FOLLOW_DOT_in_pathExprOrVariableAccess1797 = new BitSet(new long[]{0xFFFFFFFFFFFFFFF0L,0x00007FFFFFFFFFFFL});
+    public static final BitSet FOLLOW_attribute_in_pathExprOrVariableAccess1803 = new BitSet(new long[]{0x0000000000000002L,0x0000000000080000L});
+    public static final BitSet FOLLOW_variableAccessOrTypeConstant_in_qualifiedIdentificationVariable1859 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_KEY_in_qualifiedIdentificationVariable1873 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_qualifiedIdentificationVariable1875 = new BitSet(new long[]{0x0000000000000000L,0x0000000000004000L});
+    public static final BitSet FOLLOW_variableAccessOrTypeConstant_in_qualifiedIdentificationVariable1881 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_qualifiedIdentificationVariable1883 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_VALUE_in_qualifiedIdentificationVariable1898 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_qualifiedIdentificationVariable1900 = new BitSet(new long[]{0x0000000000000000L,0x0000000000004000L});
+    public static final BitSet FOLLOW_variableAccessOrTypeConstant_in_qualifiedIdentificationVariable1906 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_qualifiedIdentificationVariable1908 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_AVG_in_aggregateExpression1941 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_aggregateExpression1943 = new BitSet(new long[]{0x0000010000800000L,0x0000000000004800L});
+    public static final BitSet FOLLOW_DISTINCT_in_aggregateExpression1946 = new BitSet(new long[]{0x0000010000000000L,0x0000000000004800L});
+    public static final BitSet FOLLOW_stateFieldPathExpression_in_aggregateExpression1964 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_aggregateExpression1966 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_MAX_in_aggregateExpression1987 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_aggregateExpression1989 = new BitSet(new long[]{0x0000010000800000L,0x0000000000004800L});
+    public static final BitSet FOLLOW_DISTINCT_in_aggregateExpression1992 = new BitSet(new long[]{0x0000010000000000L,0x0000000000004800L});
+    public static final BitSet FOLLOW_stateFieldPathExpression_in_aggregateExpression2011 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_aggregateExpression2013 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_MIN_in_aggregateExpression2033 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_aggregateExpression2035 = new BitSet(new long[]{0x0000010000800000L,0x0000000000004800L});
+    public static final BitSet FOLLOW_DISTINCT_in_aggregateExpression2038 = new BitSet(new long[]{0x0000010000000000L,0x0000000000004800L});
+    public static final BitSet FOLLOW_stateFieldPathExpression_in_aggregateExpression2056 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_aggregateExpression2058 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_SUM_in_aggregateExpression2078 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_aggregateExpression2080 = new BitSet(new long[]{0x0000010000800000L,0x0000000000004800L});
+    public static final BitSet FOLLOW_DISTINCT_in_aggregateExpression2083 = new BitSet(new long[]{0x0000010000000000L,0x0000000000004800L});
+    public static final BitSet FOLLOW_stateFieldPathExpression_in_aggregateExpression2101 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_aggregateExpression2103 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_COUNT_in_aggregateExpression2123 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_aggregateExpression2125 = new BitSet(new long[]{0x0000010000800000L,0x0000000000004800L});
+    public static final BitSet FOLLOW_DISTINCT_in_aggregateExpression2128 = new BitSet(new long[]{0x0000010000000000L,0x0000000000004800L});
+    public static final BitSet FOLLOW_pathExprOrVariableAccess_in_aggregateExpression2146 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_aggregateExpression2148 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NEW_in_constructorExpression2191 = new BitSet(new long[]{0x0000000000000000L,0x0000000000004000L});
+    public static final BitSet FOLLOW_constructorName_in_constructorExpression2197 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_constructorExpression2207 = new BitSet(new long[]{0xC046E910401FC410L,0x0000001FE6024CE6L});
+    public static final BitSet FOLLOW_constructorItem_in_constructorExpression2222 = new BitSet(new long[]{0x0000000000000000L,0x0000000000048000L});
+    public static final BitSet FOLLOW_COMMA_in_constructorExpression2237 = new BitSet(new long[]{0xC046E910401FC410L,0x0000001FE6024CE6L});
+    public static final BitSet FOLLOW_constructorItem_in_constructorExpression2243 = new BitSet(new long[]{0x0000000000000000L,0x0000000000048000L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_constructorExpression2258 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_IDENT_in_constructorName2299 = new BitSet(new long[]{0x0000000000000002L,0x0000000000080000L});
+    public static final BitSet FOLLOW_DOT_in_constructorName2313 = new BitSet(new long[]{0x0000000000000000L,0x0000000000004000L});
+    public static final BitSet FOLLOW_IDENT_in_constructorName2317 = new BitSet(new long[]{0x0000000000000002L,0x0000000000080000L});
+    public static final BitSet FOLLOW_scalarExpression_in_constructorItem2361 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_aggregateExpression_in_constructorItem2375 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_FROM_in_fromClause2409 = new BitSet(new long[]{0xFFFFFFFFFFFFFFF0L,0x00007FFFFFFFFFFFL});
+    public static final BitSet FOLLOW_identificationVariableDeclaration_in_fromClause2411 = new BitSet(new long[]{0x0000000000000002L,0x0000000000008000L});
+    public static final BitSet FOLLOW_COMMA_in_fromClause2423 = new BitSet(new long[]{0xFFFFFFFFFFFFFFF0L,0x00007FFFFFFFFFFFL});
+    public static final BitSet FOLLOW_identificationVariableDeclaration_in_fromClause2428 = new BitSet(new long[]{0x0000000000000002L,0x0000000000008000L});
+    public static final BitSet FOLLOW_collectionMemberDeclaration_in_fromClause2453 = new BitSet(new long[]{0x0000000000000002L,0x0000000000008000L});
+    public static final BitSet FOLLOW_rangeVariableDeclaration_in_identificationVariableDeclaration2519 = new BitSet(new long[]{0x000004A000000002L});
+    public static final BitSet FOLLOW_join_in_identificationVariableDeclaration2538 = new BitSet(new long[]{0x000004A000000002L});
+    public static final BitSet FOLLOW_abstractSchemaName_in_rangeVariableDeclaration2573 = new BitSet(new long[]{0x0000000000000100L,0x0000000000004000L});
+    public static final BitSet FOLLOW_AS_in_rangeVariableDeclaration2576 = new BitSet(new long[]{0x0000000000000000L,0x0000000000004000L});
+    public static final BitSet FOLLOW_IDENT_in_rangeVariableDeclaration2582 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_joinSpec_in_join2665 = new BitSet(new long[]{0x0000000080000000L,0x0000000000004000L});
+    public static final BitSet FOLLOW_joinAssociationPathExpression_in_join2679 = new BitSet(new long[]{0x0000000000000100L,0x0000000000004000L});
+    public static final BitSet FOLLOW_AS_in_join2682 = new BitSet(new long[]{0x0000000000000000L,0x0000000000004000L});
+    public static final BitSet FOLLOW_IDENT_in_join2688 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_FETCH_in_join2710 = new BitSet(new long[]{0x0000000000000000L,0x0000000000004000L});
+    public static final BitSet FOLLOW_joinAssociationPathExpression_in_join2716 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LEFT_in_joinSpec2762 = new BitSet(new long[]{0x0800008000000000L});
+    public static final BitSet FOLLOW_OUTER_in_joinSpec2765 = new BitSet(new long[]{0x0000008000000000L});
+    public static final BitSet FOLLOW_INNER_in_joinSpec2774 = new BitSet(new long[]{0x0000008000000000L});
+    public static final BitSet FOLLOW_JOIN_in_joinSpec2780 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_IN_in_collectionMemberDeclaration2808 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_collectionMemberDeclaration2810 = new BitSet(new long[]{0x0000010000000000L,0x0000000000004800L});
+    public static final BitSet FOLLOW_collectionValuedPathExpression_in_collectionMemberDeclaration2816 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_collectionMemberDeclaration2818 = new BitSet(new long[]{0x0000000000000100L,0x0000000000004000L});
+    public static final BitSet FOLLOW_AS_in_collectionMemberDeclaration2828 = new BitSet(new long[]{0x0000000000000000L,0x0000000000004000L});
+    public static final BitSet FOLLOW_IDENT_in_collectionMemberDeclaration2834 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_pathExpression_in_collectionValuedPathExpression2872 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_pathExpression_in_associationPathExpression2904 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_variableAccessOrTypeConstant_in_joinAssociationPathExpression2936 = new BitSet(new long[]{0x0000000000000000L,0x0000000000080000L});
+    public static final BitSet FOLLOW_DOT_in_joinAssociationPathExpression2940 = new BitSet(new long[]{0xFFFFFFFFFFFFFFF0L,0x00007FFFFFFFFFFFL});
+    public static final BitSet FOLLOW_attribute_in_joinAssociationPathExpression2946 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_pathExpression_in_singleValuedPathExpression2986 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_pathExpression_in_stateFieldPathExpression3018 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_qualifiedIdentificationVariable_in_pathExpression3050 = new BitSet(new long[]{0x0000000000000000L,0x0000000000080000L});
+    public static final BitSet FOLLOW_DOT_in_pathExpression3065 = new BitSet(new long[]{0xFFFFFFFFFFFFFFF0L,0x00007FFFFFFFFFFFL});
+    public static final BitSet FOLLOW_attribute_in_pathExpression3071 = new BitSet(new long[]{0x0000000000000002L,0x0000000000080000L});
+    public static final BitSet FOLLOW_IDENT_in_variableAccessOrTypeConstant3167 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_WHERE_in_whereClause3205 = new BitSet(new long[]{0xC056E910601FC410L,0x0000001FE6024CE6L});
+    public static final BitSet FOLLOW_conditionalExpression_in_whereClause3211 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_conditionalTerm_in_conditionalExpression3253 = new BitSet(new long[]{0x0200000000000002L});
+    public static final BitSet FOLLOW_OR_in_conditionalExpression3268 = new BitSet(new long[]{0xC056E910601FC410L,0x0000001FE6024CE6L});
+    public static final BitSet FOLLOW_conditionalTerm_in_conditionalExpression3274 = new BitSet(new long[]{0x0200000000000002L});
+    public static final BitSet FOLLOW_conditionalFactor_in_conditionalTerm3329 = new BitSet(new long[]{0x0000000000000042L});
+    public static final BitSet FOLLOW_AND_in_conditionalTerm3344 = new BitSet(new long[]{0xC056E910601FC410L,0x0000001FE6024CE6L});
+    public static final BitSet FOLLOW_conditionalFactor_in_conditionalTerm3350 = new BitSet(new long[]{0x0000000000000042L});
+    public static final BitSet FOLLOW_NOT_in_conditionalFactor3405 = new BitSet(new long[]{0xC046E910601FC410L,0x0000001FE6024CE6L});
+    public static final BitSet FOLLOW_conditionalPrimary_in_conditionalFactor3424 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_existsExpression_in_conditionalFactor3453 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_conditionalPrimary3510 = new BitSet(new long[]{0xC056E910601FC410L,0x0000001FE6024CE6L});
+    public static final BitSet FOLLOW_conditionalExpression_in_conditionalPrimary3516 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_conditionalPrimary3518 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_simpleConditionalExpression_in_conditionalPrimary3532 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_arithmeticExpression_in_simpleConditionalExpression3564 = new BitSet(new long[]{0x0011104800000800L,0x0000000001F10000L});
+    public static final BitSet FOLLOW_simpleConditionalExpressionRemainder_in_simpleConditionalExpression3570 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_nonArithmeticScalarExpression_in_simpleConditionalExpression3585 = new BitSet(new long[]{0x0011104800000800L,0x0000000001F10000L});
+    public static final BitSet FOLLOW_simpleConditionalExpressionRemainder_in_simpleConditionalExpression3591 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_comparisonExpression_in_simpleConditionalExpressionRemainder3626 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NOT_in_simpleConditionalExpressionRemainder3640 = new BitSet(new long[]{0x0001100800000800L});
+    public static final BitSet FOLLOW_conditionWithNotExpression_in_simpleConditionalExpressionRemainder3648 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_IS_in_simpleConditionalExpressionRemainder3659 = new BitSet(new long[]{0x0030000002000000L});
+    public static final BitSet FOLLOW_NOT_in_simpleConditionalExpressionRemainder3664 = new BitSet(new long[]{0x0020000002000000L});
+    public static final BitSet FOLLOW_isExpression_in_simpleConditionalExpressionRemainder3672 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_betweenExpression_in_conditionWithNotExpression3707 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_likeExpression_in_conditionWithNotExpression3722 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_inExpression_in_conditionWithNotExpression3736 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_collectionMemberExpression_in_conditionWithNotExpression3750 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_nullComparisonExpression_in_isExpression3785 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_emptyCollectionComparisonExpression_in_isExpression3800 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_BETWEEN_in_betweenExpression3833 = new BitSet(new long[]{0xC046A9100002C410L,0x00000019E6024804L});
+    public static final BitSet FOLLOW_arithmeticExpression_in_betweenExpression3847 = new BitSet(new long[]{0x0000000000000040L});
+    public static final BitSet FOLLOW_AND_in_betweenExpression3849 = new BitSet(new long[]{0xC046A9100002C410L,0x00000019E6024804L});
+    public static final BitSet FOLLOW_arithmeticExpression_in_betweenExpression3855 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_IN_in_inExpression3901 = new BitSet(new long[]{0x0000000000000000L,0x0000001800000000L});
+    public static final BitSet FOLLOW_inputParameter_in_inExpression3907 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_IN_in_inExpression3934 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_inExpression3944 = new BitSet(new long[]{0x1000000000000000L,0x0000001FE0004000L});
+    public static final BitSet FOLLOW_inItem_in_inExpression3960 = new BitSet(new long[]{0x0000000000000000L,0x0000000000048000L});
+    public static final BitSet FOLLOW_COMMA_in_inExpression3978 = new BitSet(new long[]{0x0000000000000000L,0x0000001FE0004000L});
+    public static final BitSet FOLLOW_inItem_in_inExpression3984 = new BitSet(new long[]{0x0000000000000000L,0x0000000000048000L});
+    public static final BitSet FOLLOW_subquery_in_inExpression4019 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_inExpression4053 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_literalString_in_inItem4083 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_literalNumeric_in_inItem4097 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_inputParameter_in_inItem4111 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_variableAccessOrTypeConstant_in_inItem4125 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LIKE_in_likeExpression4157 = new BitSet(new long[]{0x0000000000000000L,0x0000001E00000000L});
+    public static final BitSet FOLLOW_likeValue_in_likeExpression4163 = new BitSet(new long[]{0x0000000010000002L});
+    public static final BitSet FOLLOW_escape_in_likeExpression4178 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ESCAPE_in_escape4218 = new BitSet(new long[]{0x0000000000000000L,0x0000001E00000000L});
+    public static final BitSet FOLLOW_likeValue_in_escape4224 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_literalString_in_likeValue4264 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_inputParameter_in_likeValue4278 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NULL_in_nullComparisonExpression4311 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_EMPTY_in_emptyCollectionComparisonExpression4352 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_MEMBER_in_collectionMemberExpression4393 = new BitSet(new long[]{0x0100010000000000L,0x0000000000004800L});
+    public static final BitSet FOLLOW_OF_in_collectionMemberExpression4396 = new BitSet(new long[]{0x0000010000000000L,0x0000000000004800L});
+    public static final BitSet FOLLOW_collectionValuedPathExpression_in_collectionMemberExpression4404 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_EXISTS_in_existsExpression4444 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_existsExpression4446 = new BitSet(new long[]{0x1000000000000000L});
+    public static final BitSet FOLLOW_subquery_in_existsExpression4452 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_existsExpression4454 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_EQUALS_in_comparisonExpression4494 = new BitSet(new long[]{0xC046E910401FC4B0L,0x0000001FE6024CE7L});
+    public static final BitSet FOLLOW_comparisonExpressionRightOperand_in_comparisonExpression4500 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NOT_EQUAL_TO_in_comparisonExpression4521 = new BitSet(new long[]{0xC046E910401FC4B0L,0x0000001FE6024CE7L});
+    public static final BitSet FOLLOW_comparisonExpressionRightOperand_in_comparisonExpression4527 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_GREATER_THAN_in_comparisonExpression4548 = new BitSet(new long[]{0xC046E910401FC4B0L,0x0000001FE6024CE7L});
+    public static final BitSet FOLLOW_comparisonExpressionRightOperand_in_comparisonExpression4554 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_GREATER_THAN_EQUAL_TO_in_comparisonExpression4575 = new BitSet(new long[]{0xC046E910401FC4B0L,0x0000001FE6024CE7L});
+    public static final BitSet FOLLOW_comparisonExpressionRightOperand_in_comparisonExpression4581 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LESS_THAN_in_comparisonExpression4602 = new BitSet(new long[]{0xC046E910401FC4B0L,0x0000001FE6024CE7L});
+    public static final BitSet FOLLOW_comparisonExpressionRightOperand_in_comparisonExpression4608 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LESS_THAN_EQUAL_TO_in_comparisonExpression4629 = new BitSet(new long[]{0xC046E910401FC4B0L,0x0000001FE6024CE7L});
+    public static final BitSet FOLLOW_comparisonExpressionRightOperand_in_comparisonExpression4635 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_arithmeticExpression_in_comparisonExpressionRightOperand4676 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_nonArithmeticScalarExpression_in_comparisonExpressionRightOperand4690 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_anyOrAllExpression_in_comparisonExpressionRightOperand4704 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_simpleArithmeticExpression_in_arithmeticExpression4736 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_arithmeticExpression4746 = new BitSet(new long[]{0x1000000000000000L});
+    public static final BitSet FOLLOW_subquery_in_arithmeticExpression4752 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_arithmeticExpression4754 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_arithmeticTerm_in_simpleArithmeticExpression4786 = new BitSet(new long[]{0x0000000000000002L,0x0000000006000000L});
+    public static final BitSet FOLLOW_PLUS_in_simpleArithmeticExpression4802 = new BitSet(new long[]{0xC046A9100002C410L,0x00000019E6024804L});
+    public static final BitSet FOLLOW_arithmeticTerm_in_simpleArithmeticExpression4808 = new BitSet(new long[]{0x0000000000000002L,0x0000000006000000L});
+    public static final BitSet FOLLOW_MINUS_in_simpleArithmeticExpression4837 = new BitSet(new long[]{0xC046A9100002C410L,0x00000019E6024804L});
+    public static final BitSet FOLLOW_arithmeticTerm_in_simpleArithmeticExpression4843 = new BitSet(new long[]{0x0000000000000002L,0x0000000006000000L});
+    public static final BitSet FOLLOW_arithmeticFactor_in_arithmeticTerm4900 = new BitSet(new long[]{0x0000000000000002L,0x0000000018000000L});
+    public static final BitSet FOLLOW_MULTIPLY_in_arithmeticTerm4916 = new BitSet(new long[]{0xC046A9100002C410L,0x00000019E6024804L});
+    public static final BitSet FOLLOW_arithmeticFactor_in_arithmeticTerm4922 = new BitSet(new long[]{0x0000000000000002L,0x0000000018000000L});
+    public static final BitSet FOLLOW_DIVIDE_in_arithmeticTerm4951 = new BitSet(new long[]{0xC046A9100002C410L,0x00000019E6024804L});
+    public static final BitSet FOLLOW_arithmeticFactor_in_arithmeticTerm4957 = new BitSet(new long[]{0x0000000000000002L,0x0000000018000000L});
+    public static final BitSet FOLLOW_PLUS_in_arithmeticFactor5011 = new BitSet(new long[]{0xC046A9100002C410L,0x00000019E0024804L});
+    public static final BitSet FOLLOW_arithmeticPrimary_in_arithmeticFactor5018 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_MINUS_in_arithmeticFactor5040 = new BitSet(new long[]{0xC046A9100002C410L,0x00000019E0024804L});
+    public static final BitSet FOLLOW_arithmeticPrimary_in_arithmeticFactor5046 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_arithmeticPrimary_in_arithmeticFactor5070 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_aggregateExpression_in_arithmeticPrimary5104 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_pathExprOrVariableAccess_in_arithmeticPrimary5118 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_inputParameter_in_arithmeticPrimary5132 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_caseExpression_in_arithmeticPrimary5146 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_functionsReturningNumerics_in_arithmeticPrimary5160 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_arithmeticPrimary5170 = new BitSet(new long[]{0xC046A9100002C410L,0x00000019E6024804L});
+    public static final BitSet FOLLOW_simpleArithmeticExpression_in_arithmeticPrimary5176 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_arithmeticPrimary5178 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_literalNumeric_in_arithmeticPrimary5192 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_simpleArithmeticExpression_in_scalarExpression5224 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_nonArithmeticScalarExpression_in_scalarExpression5239 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_functionsReturningDatetime_in_nonArithmeticScalarExpression5271 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_functionsReturningStrings_in_nonArithmeticScalarExpression5285 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_literalString_in_nonArithmeticScalarExpression5299 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_literalBoolean_in_nonArithmeticScalarExpression5313 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_entityTypeExpression_in_nonArithmeticScalarExpression5327 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ALL_in_anyOrAllExpression5357 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_anyOrAllExpression5359 = new BitSet(new long[]{0x1000000000000000L});
+    public static final BitSet FOLLOW_subquery_in_anyOrAllExpression5365 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_anyOrAllExpression5367 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ANY_in_anyOrAllExpression5387 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_anyOrAllExpression5389 = new BitSet(new long[]{0x1000000000000000L});
+    public static final BitSet FOLLOW_subquery_in_anyOrAllExpression5395 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_anyOrAllExpression5397 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_SOME_in_anyOrAllExpression5417 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_anyOrAllExpression5419 = new BitSet(new long[]{0x1000000000000000L});
+    public static final BitSet FOLLOW_subquery_in_anyOrAllExpression5425 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_anyOrAllExpression5427 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_typeDiscriminator_in_entityTypeExpression5467 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TYPE_in_typeDiscriminator5500 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_typeDiscriminator5502 = new BitSet(new long[]{0x0000010000000000L,0x0000000000004800L});
+    public static final BitSet FOLLOW_variableOrSingleValuedPath_in_typeDiscriminator5508 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_typeDiscriminator5510 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TYPE_in_typeDiscriminator5525 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_typeDiscriminator5527 = new BitSet(new long[]{0x0000000000000000L,0x0000001800000000L});
+    public static final BitSet FOLLOW_inputParameter_in_typeDiscriminator5533 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_typeDiscriminator5535 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_simpleCaseExpression_in_caseExpression5570 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_generalCaseExpression_in_caseExpression5583 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_coalesceExpression_in_caseExpression5596 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_nullIfExpression_in_caseExpression5609 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_CASE_in_simpleCaseExpression5647 = new BitSet(new long[]{0x0000010000000000L,0x0000000000004880L});
+    public static final BitSet FOLLOW_caseOperand_in_simpleCaseExpression5649 = new BitSet(new long[]{0x0000000000000000L,0x0000000000001000L});
+    public static final BitSet FOLLOW_simpleWhenClause_in_simpleCaseExpression5655 = new BitSet(new long[]{0x0000000001000000L,0x0000000000001000L});
+    public static final BitSet FOLLOW_simpleWhenClause_in_simpleCaseExpression5664 = new BitSet(new long[]{0x0000000001000000L,0x0000000000001000L});
+    public static final BitSet FOLLOW_ELSE_in_simpleCaseExpression5670 = new BitSet(new long[]{0xC046E910401FC410L,0x0000001FE6024CE6L});
+    public static final BitSet FOLLOW_scalarExpression_in_simpleCaseExpression5676 = new BitSet(new long[]{0x0000000004000000L});
+    public static final BitSet FOLLOW_END_in_simpleCaseExpression5678 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_CASE_in_generalCaseExpression5722 = new BitSet(new long[]{0x0000000000000000L,0x0000000000001000L});
+    public static final BitSet FOLLOW_whenClause_in_generalCaseExpression5728 = new BitSet(new long[]{0x0000000001000000L,0x0000000000001000L});
+    public static final BitSet FOLLOW_whenClause_in_generalCaseExpression5733 = new BitSet(new long[]{0x0000000001000000L,0x0000000000001000L});
+    public static final BitSet FOLLOW_ELSE_in_generalCaseExpression5739 = new BitSet(new long[]{0xC046E910401FC410L,0x0000001FE6024CE6L});
+    public static final BitSet FOLLOW_scalarExpression_in_generalCaseExpression5745 = new BitSet(new long[]{0x0000000004000000L});
+    public static final BitSet FOLLOW_END_in_generalCaseExpression5747 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_COALESCE_in_coalesceExpression5791 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_coalesceExpression5793 = new BitSet(new long[]{0xC046E910401FC410L,0x0000001FE6024CE6L});
+    public static final BitSet FOLLOW_scalarExpression_in_coalesceExpression5799 = new BitSet(new long[]{0x0000000000000000L,0x0000000000008000L});
+    public static final BitSet FOLLOW_COMMA_in_coalesceExpression5804 = new BitSet(new long[]{0xC046E910401FC410L,0x0000001FE6024CE6L});
+    public static final BitSet FOLLOW_scalarExpression_in_coalesceExpression5806 = new BitSet(new long[]{0x0000000000000000L,0x0000000000028000L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_coalesceExpression5812 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NULLIF_in_nullIfExpression5853 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_nullIfExpression5855 = new BitSet(new long[]{0xC046E910401FC410L,0x0000001FE6024CE6L});
+    public static final BitSet FOLLOW_scalarExpression_in_nullIfExpression5861 = new BitSet(new long[]{0x0000000000000000L,0x0000000000008000L});
+    public static final BitSet FOLLOW_COMMA_in_nullIfExpression5863 = new BitSet(new long[]{0xC046E910401FC410L,0x0000001FE6024CE6L});
+    public static final BitSet FOLLOW_scalarExpression_in_nullIfExpression5869 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_nullIfExpression5871 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_stateFieldPathExpression_in_caseOperand5918 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_typeDiscriminator_in_caseOperand5932 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_WHEN_in_whenClause5967 = new BitSet(new long[]{0xC056E910601FC410L,0x0000001FE6024CE6L});
+    public static final BitSet FOLLOW_conditionalExpression_in_whenClause5973 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000008L});
+    public static final BitSet FOLLOW_THEN_in_whenClause5975 = new BitSet(new long[]{0xC046E910401FC410L,0x0000001FE6024CE6L});
+    public static final BitSet FOLLOW_scalarExpression_in_whenClause5981 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_WHEN_in_simpleWhenClause6023 = new BitSet(new long[]{0xC046E910401FC410L,0x0000001FE6024CE6L});
+    public static final BitSet FOLLOW_scalarExpression_in_simpleWhenClause6029 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000008L});
+    public static final BitSet FOLLOW_THEN_in_simpleWhenClause6031 = new BitSet(new long[]{0xC046E910401FC410L,0x0000001FE6024CE6L});
+    public static final BitSet FOLLOW_scalarExpression_in_simpleWhenClause6037 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_singleValuedPathExpression_in_variableOrSingleValuedPath6074 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_variableAccessOrTypeConstant_in_variableOrSingleValuedPath6088 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_literalString_in_stringPrimary6120 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_functionsReturningStrings_in_stringPrimary6134 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_inputParameter_in_stringPrimary6148 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_stateFieldPathExpression_in_stringPrimary6162 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_literalNumeric_in_literal6196 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_literalBoolean_in_literal6210 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_literalString_in_literal6224 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_INTEGER_LITERAL_in_literalNumeric6254 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LONG_LITERAL_in_literalNumeric6270 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_FLOAT_LITERAL_in_literalNumeric6291 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_DOUBLE_LITERAL_in_literalNumeric6311 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TRUE_in_literalBoolean6349 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_FALSE_in_literalBoolean6371 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_STRING_LITERAL_DOUBLE_QUOTED_in_literalString6410 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_STRING_LITERAL_SINGLE_QUOTED_in_literalString6431 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_POSITIONAL_PARAM_in_inputParameter6469 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NAMED_PARAM_in_inputParameter6489 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_abs_in_functionsReturningNumerics6529 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_length_in_functionsReturningNumerics6543 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_mod_in_functionsReturningNumerics6557 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_sqrt_in_functionsReturningNumerics6571 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_locate_in_functionsReturningNumerics6585 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_size_in_functionsReturningNumerics6599 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_index_in_functionsReturningNumerics6613 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_CURRENT_DATE_in_functionsReturningDatetime6643 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_CURRENT_TIME_in_functionsReturningDatetime6664 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_CURRENT_TIMESTAMP_in_functionsReturningDatetime6684 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_concat_in_functionsReturningStrings6724 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_substring_in_functionsReturningStrings6738 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_trim_in_functionsReturningStrings6752 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_upper_in_functionsReturningStrings6766 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_lower_in_functionsReturningStrings6780 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_CONCAT_in_concat6815 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_concat6826 = new BitSet(new long[]{0x0000410000010000L,0x0000001E00004C22L});
+    public static final BitSet FOLLOW_stringPrimary_in_concat6841 = new BitSet(new long[]{0x0000000000000000L,0x0000000000008000L});
+    public static final BitSet FOLLOW_COMMA_in_concat6846 = new BitSet(new long[]{0x0000410000010000L,0x0000001E00004C22L});
+    public static final BitSet FOLLOW_stringPrimary_in_concat6852 = new BitSet(new long[]{0x0000000000000000L,0x0000000000048000L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_concat6866 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_SUBSTRING_in_substring6904 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_substring6917 = new BitSet(new long[]{0x0000410000010000L,0x0000001E00004C22L});
+    public static final BitSet FOLLOW_stringPrimary_in_substring6931 = new BitSet(new long[]{0x0000000000000000L,0x0000000000008000L});
+    public static final BitSet FOLLOW_COMMA_in_substring6933 = new BitSet(new long[]{0xC046A9100002C410L,0x00000019E6024804L});
+    public static final BitSet FOLLOW_simpleArithmeticExpression_in_substring6947 = new BitSet(new long[]{0x0000000000000000L,0x0000000000048000L});
+    public static final BitSet FOLLOW_COMMA_in_substring6958 = new BitSet(new long[]{0xC046A9100002C410L,0x00000019E6024804L});
+    public static final BitSet FOLLOW_simpleArithmeticExpression_in_substring6964 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_substring6976 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TRIM_in_trim7014 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_trim7024 = new BitSet(new long[]{0x0000430100011000L,0x0000001E00004C32L});
+    public static final BitSet FOLLOW_trimSpec_in_trim7052 = new BitSet(new long[]{0x0000000100000000L,0x0000001E00000000L});
+    public static final BitSet FOLLOW_trimChar_in_trim7058 = new BitSet(new long[]{0x0000000100000000L});
+    public static final BitSet FOLLOW_FROM_in_trim7060 = new BitSet(new long[]{0x0000410000010000L,0x0000001E00004C22L});
+    public static final BitSet FOLLOW_stringPrimary_in_trim7078 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_trim7088 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LEADING_in_trimSpec7124 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TRAILING_in_trimSpec7142 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_BOTH_in_trimSpec7160 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_literalString_in_trimChar7207 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_inputParameter_in_trimChar7221 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_UPPER_in_upper7258 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_upper7260 = new BitSet(new long[]{0x0000410000010000L,0x0000001E00004C22L});
+    public static final BitSet FOLLOW_stringPrimary_in_upper7266 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_upper7268 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LOWER_in_lower7306 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_lower7308 = new BitSet(new long[]{0x0000410000010000L,0x0000001E00004C22L});
+    public static final BitSet FOLLOW_stringPrimary_in_lower7314 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_lower7316 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ABS_in_abs7355 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_abs7357 = new BitSet(new long[]{0xC046A9100002C410L,0x00000019E6024804L});
+    public static final BitSet FOLLOW_simpleArithmeticExpression_in_abs7363 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_abs7365 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LENGTH_in_length7403 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_length7405 = new BitSet(new long[]{0x0000410000010000L,0x0000001E00004C22L});
+    public static final BitSet FOLLOW_stringPrimary_in_length7411 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_length7413 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LOCATE_in_locate7451 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_locate7461 = new BitSet(new long[]{0x0000410000010000L,0x0000001E00004C22L});
+    public static final BitSet FOLLOW_stringPrimary_in_locate7476 = new BitSet(new long[]{0x0000000000000000L,0x0000000000008000L});
+    public static final BitSet FOLLOW_COMMA_in_locate7478 = new BitSet(new long[]{0x0000410000010000L,0x0000001E00004C22L});
+    public static final BitSet FOLLOW_stringPrimary_in_locate7484 = new BitSet(new long[]{0x0000000000000000L,0x0000000000048000L});
+    public static final BitSet FOLLOW_COMMA_in_locate7496 = new BitSet(new long[]{0xC046A9100002C410L,0x00000019E6024804L});
+    public static final BitSet FOLLOW_simpleArithmeticExpression_in_locate7502 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_locate7515 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_SIZE_in_size7553 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_size7564 = new BitSet(new long[]{0x0000010000000000L,0x0000000000004800L});
+    public static final BitSet FOLLOW_collectionValuedPathExpression_in_size7570 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_size7572 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_MOD_in_mod7610 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_mod7612 = new BitSet(new long[]{0xC046A9100002C410L,0x00000019E6024804L});
+    public static final BitSet FOLLOW_simpleArithmeticExpression_in_mod7626 = new BitSet(new long[]{0x0000000000000000L,0x0000000000008000L});
+    public static final BitSet FOLLOW_COMMA_in_mod7628 = new BitSet(new long[]{0xC046A9100002C410L,0x00000019E6024804L});
+    public static final BitSet FOLLOW_simpleArithmeticExpression_in_mod7643 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_mod7653 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_SQRT_in_sqrt7691 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_sqrt7702 = new BitSet(new long[]{0xC046A9100002C410L,0x00000019E6024804L});
+    public static final BitSet FOLLOW_simpleArithmeticExpression_in_sqrt7708 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_sqrt7710 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_INDEX_in_index7752 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_index7754 = new BitSet(new long[]{0x0000000000000000L,0x0000000000004000L});
+    public static final BitSet FOLLOW_variableAccessOrTypeConstant_in_index7760 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_index7762 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_simpleSelectClause_in_subquery7803 = new BitSet(new long[]{0x0000000100000000L});
+    public static final BitSet FOLLOW_subqueryFromClause_in_subquery7818 = new BitSet(new long[]{0x0000000600000002L,0x0000000000002000L});
+    public static final BitSet FOLLOW_whereClause_in_subquery7833 = new BitSet(new long[]{0x0000000600000002L});
+    public static final BitSet FOLLOW_groupByClause_in_subquery7848 = new BitSet(new long[]{0x0000000400000002L});
+    public static final BitSet FOLLOW_havingClause_in_subquery7864 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_SELECT_in_simpleSelectClause7907 = new BitSet(new long[]{0x0002810000820400L,0x0000000000004804L});
+    public static final BitSet FOLLOW_DISTINCT_in_simpleSelectClause7910 = new BitSet(new long[]{0x0002810000020400L,0x0000000000004804L});
+    public static final BitSet FOLLOW_simpleSelectExpression_in_simpleSelectClause7926 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_singleValuedPathExpression_in_simpleSelectExpression7966 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_aggregateExpression_in_simpleSelectExpression7981 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_variableAccessOrTypeConstant_in_simpleSelectExpression7996 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_FROM_in_subqueryFromClause8031 = new BitSet(new long[]{0xFFFFFFFFFFFFFFF0L,0x00007FFFFFFFFFFFL});
+    public static final BitSet FOLLOW_subselectIdentificationVariableDeclaration_in_subqueryFromClause8033 = new BitSet(new long[]{0x0000000800000002L,0x0000000000008000L});
+    public static final BitSet FOLLOW_COMMA_in_subqueryFromClause8047 = new BitSet(new long[]{0xFFFFFFFFFFFFFFF0L,0x00007FFFFFFFFFFFL});
+    public static final BitSet FOLLOW_subselectIdentificationVariableDeclaration_in_subqueryFromClause8049 = new BitSet(new long[]{0x0000000800000002L,0x0000000000008000L});
+    public static final BitSet FOLLOW_collectionMemberDeclaration_in_subqueryFromClause8074 = new BitSet(new long[]{0x0000000800000002L,0x0000000000008000L});
+    public static final BitSet FOLLOW_identificationVariableDeclaration_in_subselectIdentificationVariableDeclaration8112 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_associationPathExpression_in_subselectIdentificationVariableDeclaration8125 = new BitSet(new long[]{0x0000000000000100L,0x0000000000004000L});
+    public static final BitSet FOLLOW_AS_in_subselectIdentificationVariableDeclaration8128 = new BitSet(new long[]{0x0000000000000000L,0x0000000000004000L});
+    public static final BitSet FOLLOW_IDENT_in_subselectIdentificationVariableDeclaration8134 = new BitSet(new long[]{0x000004A000000002L});
+    public static final BitSet FOLLOW_join_in_subselectIdentificationVariableDeclaration8137 = new BitSet(new long[]{0x000004A000000002L});
+    public static final BitSet FOLLOW_collectionMemberDeclaration_in_subselectIdentificationVariableDeclaration8164 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ORDER_in_orderByClause8197 = new BitSet(new long[]{0x0000000000002000L});
+    public static final BitSet FOLLOW_BY_in_orderByClause8199 = new BitSet(new long[]{0x0000010000000000L,0x0000000000004800L});
+    public static final BitSet FOLLOW_orderByItem_in_orderByClause8213 = new BitSet(new long[]{0x0000000000000002L,0x0000000000008000L});
+    public static final BitSet FOLLOW_COMMA_in_orderByClause8228 = new BitSet(new long[]{0x0000010000000000L,0x0000000000004800L});
+    public static final BitSet FOLLOW_orderByItem_in_orderByClause8234 = new BitSet(new long[]{0x0000000000000002L,0x0000000000008000L});
+    public static final BitSet FOLLOW_stateFieldPathExpression_in_orderByItem8280 = new BitSet(new long[]{0x0000000000200202L});
+    public static final BitSet FOLLOW_ASC_in_orderByItem8294 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_DESC_in_orderByItem8323 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_IDENT_in_orderByItem8385 = new BitSet(new long[]{0x0000000000200202L});
+    public static final BitSet FOLLOW_ASC_in_orderByItem8399 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_DESC_in_orderByItem8428 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_GROUP_in_groupByClause8509 = new BitSet(new long[]{0x0000000000002000L});
+    public static final BitSet FOLLOW_BY_in_groupByClause8511 = new BitSet(new long[]{0x0000010000000000L,0x0000000000004800L});
+    public static final BitSet FOLLOW_groupByItem_in_groupByClause8525 = new BitSet(new long[]{0x0000000000000002L,0x0000000000008000L});
+    public static final BitSet FOLLOW_COMMA_in_groupByClause8538 = new BitSet(new long[]{0x0000010000000000L,0x0000000000004800L});
+    public static final BitSet FOLLOW_groupByItem_in_groupByClause8544 = new BitSet(new long[]{0x0000000000000002L,0x0000000000008000L});
+    public static final BitSet FOLLOW_stateFieldPathExpression_in_groupByItem8590 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_variableAccessOrTypeConstant_in_groupByItem8604 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_HAVING_in_havingClause8634 = new BitSet(new long[]{0xC056E910601FC410L,0x0000001FE6024CE6L});
+    public static final BitSet FOLLOW_conditionalExpression_in_havingClause8651 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_synpred13495 = new BitSet(new long[]{0xC056E910601FC410L,0x0000001FE6024CE6L});
+    public static final BitSet FOLLOW_conditionalExpression_in_synpred13497 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_trimSpec_in_synpred27039 = new BitSet(new long[]{0x0000000100000000L,0x0000001E00000000L});
+    public static final BitSet FOLLOW_trimChar_in_synpred27041 = new BitSet(new long[]{0x0000000100000000L});
+    public static final BitSet FOLLOW_FROM_in_synpred27043 = new BitSet(new long[]{0x0000000000000002L});
 
 }

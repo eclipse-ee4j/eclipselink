@@ -1,4 +1,4 @@
-// $ANTLR 3.0 JPQL.g 2009-06-12 10:47:47
+// $ANTLR 3.0 JPQL.g 2009-06-16 13:44:29
 
     package org.eclipse.persistence.internal.jpa.parsing.jpql.antlr;
 
@@ -1536,8 +1536,8 @@ public class JPQLLexer extends Lexer {
     public final void mDOT() throws RecognitionException {
         try {
             int _type = DOT;
-            // JPQL.g:1331:7: ( '.' )
-            // JPQL.g:1331:7: '.'
+            // JPQL.g:1366:7: ( '.' )
+            // JPQL.g:1366:7: '.'
             {
             match('.'); 
             
@@ -1554,10 +1554,10 @@ public class JPQLLexer extends Lexer {
     public final void mWS() throws RecognitionException {
         try {
             int _type = WS;
-            // JPQL.g:1334:7: ( ( ' ' | '\\t' | '\\n' | '\\r' )+ )
-            // JPQL.g:1334:7: ( ' ' | '\\t' | '\\n' | '\\r' )+
+            // JPQL.g:1369:7: ( ( ' ' | '\\t' | '\\n' | '\\r' )+ )
+            // JPQL.g:1369:7: ( ' ' | '\\t' | '\\n' | '\\r' )+
             {
-            // JPQL.g:1334:7: ( ' ' | '\\t' | '\\n' | '\\r' )+
+            // JPQL.g:1369:7: ( ' ' | '\\t' | '\\n' | '\\r' )+
             int cnt1=0;
             loop1:
             do {
@@ -1611,8 +1611,8 @@ public class JPQLLexer extends Lexer {
     public final void mLEFT_ROUND_BRACKET() throws RecognitionException {
         try {
             int _type = LEFT_ROUND_BRACKET;
-            // JPQL.g:1338:7: ( '(' )
-            // JPQL.g:1338:7: '('
+            // JPQL.g:1373:7: ( '(' )
+            // JPQL.g:1373:7: '('
             {
             match('('); 
             
@@ -1629,8 +1629,8 @@ public class JPQLLexer extends Lexer {
     public final void mRIGHT_ROUND_BRACKET() throws RecognitionException {
         try {
             int _type = RIGHT_ROUND_BRACKET;
-            // JPQL.g:1342:7: ( ')' )
-            // JPQL.g:1342:7: ')'
+            // JPQL.g:1377:7: ( ')' )
+            // JPQL.g:1377:7: ')'
             {
             match(')'); 
             
@@ -1647,8 +1647,8 @@ public class JPQLLexer extends Lexer {
     public final void mCOMMA() throws RecognitionException {
         try {
             int _type = COMMA;
-            // JPQL.g:1346:7: ( ',' )
-            // JPQL.g:1346:7: ','
+            // JPQL.g:1381:7: ( ',' )
+            // JPQL.g:1381:7: ','
             {
             match(','); 
             
@@ -1665,8 +1665,8 @@ public class JPQLLexer extends Lexer {
     public final void mIDENT() throws RecognitionException {
         try {
             int _type = IDENT;
-            // JPQL.g:1350:7: ( TEXTCHAR )
-            // JPQL.g:1350:7: TEXTCHAR
+            // JPQL.g:1385:7: ( TEXTCHAR )
+            // JPQL.g:1385:7: TEXTCHAR
             {
             mTEXTCHAR(); 
             
@@ -1685,10 +1685,10 @@ public class JPQLLexer extends Lexer {
             int c1;
             int c2;
     
-            // JPQL.g:1355:7: ( ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '$' | c1= '\\u0080' .. '\\uFFFE' ) ( 'a' .. 'z' | '_' | '$' | '0' .. '9' | c2= '\\u0080' .. '\\uFFFE' )* )
-            // JPQL.g:1355:7: ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '$' | c1= '\\u0080' .. '\\uFFFE' ) ( 'a' .. 'z' | '_' | '$' | '0' .. '9' | c2= '\\u0080' .. '\\uFFFE' )*
+            // JPQL.g:1390:7: ( ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '$' | c1= '\\u0080' .. '\\uFFFE' ) ( 'a' .. 'z' | '_' | '$' | '0' .. '9' | c2= '\\u0080' .. '\\uFFFE' )* )
+            // JPQL.g:1390:7: ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '$' | c1= '\\u0080' .. '\\uFFFE' ) ( 'a' .. 'z' | '_' | '$' | '0' .. '9' | c2= '\\u0080' .. '\\uFFFE' )*
             {
-            // JPQL.g:1355:7: ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '$' | c1= '\\u0080' .. '\\uFFFE' )
+            // JPQL.g:1390:7: ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '$' | c1= '\\u0080' .. '\\uFFFE' )
             int alt2=5;
             int LA2_0 = input.LA(1);
             
@@ -1709,41 +1709,41 @@ public class JPQLLexer extends Lexer {
             }
             else {
                 NoViableAltException nvae =
-                    new NoViableAltException("1355:7: ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '$' | c1= '\\u0080' .. '\\uFFFE' )", 2, 0, input);
+                    new NoViableAltException("1390:7: ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '$' | c1= '\\u0080' .. '\\uFFFE' )", 2, 0, input);
             
                 throw nvae;
             }
             switch (alt2) {
                 case 1 :
-                    // JPQL.g:1355:8: 'a' .. 'z'
+                    // JPQL.g:1390:8: 'a' .. 'z'
                     {
                     matchRange('a','z'); 
                     
                     }
                     break;
                 case 2 :
-                    // JPQL.g:1355:19: 'A' .. 'Z'
+                    // JPQL.g:1390:19: 'A' .. 'Z'
                     {
                     matchRange('A','Z'); 
                     
                     }
                     break;
                 case 3 :
-                    // JPQL.g:1355:30: '_'
+                    // JPQL.g:1390:30: '_'
                     {
                     match('_'); 
                     
                     }
                     break;
                 case 4 :
-                    // JPQL.g:1355:36: '$'
+                    // JPQL.g:1390:36: '$'
                     {
                     match('$'); 
                     
                     }
                     break;
                 case 5 :
-                    // JPQL.g:1356:8: c1= '\\u0080' .. '\\uFFFE'
+                    // JPQL.g:1391:8: c1= '\\u0080' .. '\\uFFFE'
                     {
                     c1 = input.LA(1);
                     matchRange('\u0080','\uFFFE'); 
@@ -1758,7 +1758,7 @@ public class JPQLLexer extends Lexer {
             
             }
 
-            // JPQL.g:1363:7: ( 'a' .. 'z' | '_' | '$' | '0' .. '9' | c2= '\\u0080' .. '\\uFFFE' )*
+            // JPQL.g:1398:7: ( 'a' .. 'z' | '_' | '$' | '0' .. '9' | c2= '\\u0080' .. '\\uFFFE' )*
             loop3:
             do {
                 int alt3=6;
@@ -1783,35 +1783,35 @@ public class JPQLLexer extends Lexer {
             
                 switch (alt3) {
             	case 1 :
-            	    // JPQL.g:1363:8: 'a' .. 'z'
+            	    // JPQL.g:1398:8: 'a' .. 'z'
             	    {
             	    matchRange('a','z'); 
             	    
             	    }
             	    break;
             	case 2 :
-            	    // JPQL.g:1363:19: '_'
+            	    // JPQL.g:1398:19: '_'
             	    {
             	    match('_'); 
             	    
             	    }
             	    break;
             	case 3 :
-            	    // JPQL.g:1363:25: '$'
+            	    // JPQL.g:1398:25: '$'
             	    {
             	    match('$'); 
             	    
             	    }
             	    break;
             	case 4 :
-            	    // JPQL.g:1363:31: '0' .. '9'
+            	    // JPQL.g:1398:31: '0' .. '9'
             	    {
             	    matchRange('0','9'); 
             	    
             	    }
             	    break;
             	case 5 :
-            	    // JPQL.g:1364:8: c2= '\\u0080' .. '\\uFFFE'
+            	    // JPQL.g:1399:8: c2= '\\u0080' .. '\\uFFFE'
             	    {
             	    c2 = input.LA(1);
             	    matchRange('\u0080','\uFFFE'); 
@@ -1842,8 +1842,8 @@ public class JPQLLexer extends Lexer {
     public final void mHEX_LITERAL() throws RecognitionException {
         try {
             int _type = HEX_LITERAL;
-            // JPQL.g:1374:15: ( '0' ( 'x' | 'X' ) ( HEX_DIGIT )+ )
-            // JPQL.g:1374:15: '0' ( 'x' | 'X' ) ( HEX_DIGIT )+
+            // JPQL.g:1409:15: ( '0' ( 'x' | 'X' ) ( HEX_DIGIT )+ )
+            // JPQL.g:1409:15: '0' ( 'x' | 'X' ) ( HEX_DIGIT )+
             {
             match('0'); 
             if ( input.LA(1)=='X'||input.LA(1)=='x' ) {
@@ -1856,7 +1856,7 @@ public class JPQLLexer extends Lexer {
                 recover(mse);    throw mse;
             }
 
-            // JPQL.g:1374:29: ( HEX_DIGIT )+
+            // JPQL.g:1409:29: ( HEX_DIGIT )+
             int cnt4=0;
             loop4:
             do {
@@ -1870,7 +1870,7 @@ public class JPQLLexer extends Lexer {
             
                 switch (alt4) {
             	case 1 :
-            	    // JPQL.g:1374:29: HEX_DIGIT
+            	    // JPQL.g:1409:29: HEX_DIGIT
             	    {
             	    mHEX_DIGIT(); 
             	    
@@ -1900,10 +1900,10 @@ public class JPQLLexer extends Lexer {
     public final void mINTEGER_LITERAL() throws RecognitionException {
         try {
             int _type = INTEGER_LITERAL;
-            // JPQL.g:1376:19: ( ( '0' | '1' .. '9' ( '0' .. '9' )* ) )
-            // JPQL.g:1376:19: ( '0' | '1' .. '9' ( '0' .. '9' )* )
+            // JPQL.g:1411:19: ( ( '0' | '1' .. '9' ( '0' .. '9' )* ) )
+            // JPQL.g:1411:19: ( '0' | '1' .. '9' ( '0' .. '9' )* )
             {
-            // JPQL.g:1376:19: ( '0' | '1' .. '9' ( '0' .. '9' )* )
+            // JPQL.g:1411:19: ( '0' | '1' .. '9' ( '0' .. '9' )* )
             int alt6=2;
             int LA6_0 = input.LA(1);
             
@@ -1915,23 +1915,23 @@ public class JPQLLexer extends Lexer {
             }
             else {
                 NoViableAltException nvae =
-                    new NoViableAltException("1376:19: ( '0' | '1' .. '9' ( '0' .. '9' )* )", 6, 0, input);
+                    new NoViableAltException("1411:19: ( '0' | '1' .. '9' ( '0' .. '9' )* )", 6, 0, input);
             
                 throw nvae;
             }
             switch (alt6) {
                 case 1 :
-                    // JPQL.g:1376:20: '0'
+                    // JPQL.g:1411:20: '0'
                     {
                     match('0'); 
                     
                     }
                     break;
                 case 2 :
-                    // JPQL.g:1376:26: '1' .. '9' ( '0' .. '9' )*
+                    // JPQL.g:1411:26: '1' .. '9' ( '0' .. '9' )*
                     {
                     matchRange('1','9'); 
-                    // JPQL.g:1376:35: ( '0' .. '9' )*
+                    // JPQL.g:1411:35: ( '0' .. '9' )*
                     loop5:
                     do {
                         int alt5=2;
@@ -1944,7 +1944,7 @@ public class JPQLLexer extends Lexer {
                     
                         switch (alt5) {
                     	case 1 :
-                    	    // JPQL.g:1376:35: '0' .. '9'
+                    	    // JPQL.g:1411:35: '0' .. '9'
                     	    {
                     	    matchRange('0','9'); 
                     	    
@@ -1976,8 +1976,8 @@ public class JPQLLexer extends Lexer {
     public final void mLONG_LITERAL() throws RecognitionException {
         try {
             int _type = LONG_LITERAL;
-            // JPQL.g:1378:16: ( INTEGER_LITERAL INTEGER_SUFFIX )
-            // JPQL.g:1378:16: INTEGER_LITERAL INTEGER_SUFFIX
+            // JPQL.g:1413:16: ( INTEGER_LITERAL INTEGER_SUFFIX )
+            // JPQL.g:1413:16: INTEGER_LITERAL INTEGER_SUFFIX
             {
             mINTEGER_LITERAL(); 
             mINTEGER_SUFFIX(); 
@@ -1995,11 +1995,11 @@ public class JPQLLexer extends Lexer {
     public final void mOCTAL_LITERAL() throws RecognitionException {
         try {
             int _type = OCTAL_LITERAL;
-            // JPQL.g:1380:17: ( '0' ( '0' .. '7' )+ )
-            // JPQL.g:1380:17: '0' ( '0' .. '7' )+
+            // JPQL.g:1415:17: ( '0' ( '0' .. '7' )+ )
+            // JPQL.g:1415:17: '0' ( '0' .. '7' )+
             {
             match('0'); 
-            // JPQL.g:1380:21: ( '0' .. '7' )+
+            // JPQL.g:1415:21: ( '0' .. '7' )+
             int cnt7=0;
             loop7:
             do {
@@ -2013,7 +2013,7 @@ public class JPQLLexer extends Lexer {
             
                 switch (alt7) {
             	case 1 :
-            	    // JPQL.g:1380:22: '0' .. '7'
+            	    // JPQL.g:1415:22: '0' .. '7'
             	    {
             	    matchRange('0','7'); 
             	    
@@ -2042,8 +2042,8 @@ public class JPQLLexer extends Lexer {
     // $ANTLR start HEX_DIGIT
     public final void mHEX_DIGIT() throws RecognitionException {
         try {
-            // JPQL.g:1385:9: ( ( '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' ) )
-            // JPQL.g:1385:9: ( '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' )
+            // JPQL.g:1420:9: ( ( '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' ) )
+            // JPQL.g:1420:9: ( '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' )
             {
             if ( (input.LA(1)>='0' && input.LA(1)<='9')||(input.LA(1)>='A' && input.LA(1)<='F')||(input.LA(1)>='a' && input.LA(1)<='f') ) {
                 input.consume();
@@ -2067,8 +2067,8 @@ public class JPQLLexer extends Lexer {
     // $ANTLR start INTEGER_SUFFIX
     public final void mINTEGER_SUFFIX() throws RecognitionException {
         try {
-            // JPQL.g:1389:18: ( ( 'l' | 'L' ) )
-            // JPQL.g:1389:18: ( 'l' | 'L' )
+            // JPQL.g:1424:18: ( ( 'l' | 'L' ) )
+            // JPQL.g:1424:18: ( 'l' | 'L' )
             {
             if ( input.LA(1)=='L'||input.LA(1)=='l' ) {
                 input.consume();
@@ -2092,14 +2092,14 @@ public class JPQLLexer extends Lexer {
     // $ANTLR start NUMERIC_DIGITS
     public final void mNUMERIC_DIGITS() throws RecognitionException {
         try {
-            // JPQL.g:1393:9: ( ( '0' .. '9' )+ '.' ( '0' .. '9' )* | '.' ( '0' .. '9' )+ | ( '0' .. '9' )+ )
+            // JPQL.g:1428:9: ( ( '0' .. '9' )+ '.' ( '0' .. '9' )* | '.' ( '0' .. '9' )+ | ( '0' .. '9' )+ )
             int alt12=3;
             alt12 = dfa12.predict(input);
             switch (alt12) {
                 case 1 :
-                    // JPQL.g:1393:9: ( '0' .. '9' )+ '.' ( '0' .. '9' )*
+                    // JPQL.g:1428:9: ( '0' .. '9' )+ '.' ( '0' .. '9' )*
                     {
-                    // JPQL.g:1393:9: ( '0' .. '9' )+
+                    // JPQL.g:1428:9: ( '0' .. '9' )+
                     int cnt8=0;
                     loop8:
                     do {
@@ -2113,7 +2113,7 @@ public class JPQLLexer extends Lexer {
                     
                         switch (alt8) {
                     	case 1 :
-                    	    // JPQL.g:1393:10: '0' .. '9'
+                    	    // JPQL.g:1428:10: '0' .. '9'
                     	    {
                     	    matchRange('0','9'); 
                     	    
@@ -2130,7 +2130,7 @@ public class JPQLLexer extends Lexer {
                     } while (true);
 
                     match('.'); 
-                    // JPQL.g:1393:25: ( '0' .. '9' )*
+                    // JPQL.g:1428:25: ( '0' .. '9' )*
                     loop9:
                     do {
                         int alt9=2;
@@ -2143,7 +2143,7 @@ public class JPQLLexer extends Lexer {
                     
                         switch (alt9) {
                     	case 1 :
-                    	    // JPQL.g:1393:26: '0' .. '9'
+                    	    // JPQL.g:1428:26: '0' .. '9'
                     	    {
                     	    matchRange('0','9'); 
                     	    
@@ -2159,10 +2159,10 @@ public class JPQLLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // JPQL.g:1394:9: '.' ( '0' .. '9' )+
+                    // JPQL.g:1429:9: '.' ( '0' .. '9' )+
                     {
                     match('.'); 
-                    // JPQL.g:1394:13: ( '0' .. '9' )+
+                    // JPQL.g:1429:13: ( '0' .. '9' )+
                     int cnt10=0;
                     loop10:
                     do {
@@ -2176,7 +2176,7 @@ public class JPQLLexer extends Lexer {
                     
                         switch (alt10) {
                     	case 1 :
-                    	    // JPQL.g:1394:14: '0' .. '9'
+                    	    // JPQL.g:1429:14: '0' .. '9'
                     	    {
                     	    matchRange('0','9'); 
                     	    
@@ -2196,9 +2196,9 @@ public class JPQLLexer extends Lexer {
                     }
                     break;
                 case 3 :
-                    // JPQL.g:1395:9: ( '0' .. '9' )+
+                    // JPQL.g:1430:9: ( '0' .. '9' )+
                     {
-                    // JPQL.g:1395:9: ( '0' .. '9' )+
+                    // JPQL.g:1430:9: ( '0' .. '9' )+
                     int cnt11=0;
                     loop11:
                     do {
@@ -2212,7 +2212,7 @@ public class JPQLLexer extends Lexer {
                     
                         switch (alt11) {
                     	case 1 :
-                    	    // JPQL.g:1395:10: '0' .. '9'
+                    	    // JPQL.g:1430:10: '0' .. '9'
                     	    {
                     	    matchRange('0','9'); 
                     	    
@@ -2243,11 +2243,11 @@ public class JPQLLexer extends Lexer {
     public final void mDOUBLE_LITERAL() throws RecognitionException {
         try {
             int _type = DOUBLE_LITERAL;
-            // JPQL.g:1399:9: ( NUMERIC_DIGITS ( DOUBLE_SUFFIX )? )
-            // JPQL.g:1399:9: NUMERIC_DIGITS ( DOUBLE_SUFFIX )?
+            // JPQL.g:1434:9: ( NUMERIC_DIGITS ( DOUBLE_SUFFIX )? )
+            // JPQL.g:1434:9: NUMERIC_DIGITS ( DOUBLE_SUFFIX )?
             {
             mNUMERIC_DIGITS(); 
-            // JPQL.g:1399:24: ( DOUBLE_SUFFIX )?
+            // JPQL.g:1434:24: ( DOUBLE_SUFFIX )?
             int alt13=2;
             int LA13_0 = input.LA(1);
             
@@ -2256,7 +2256,7 @@ public class JPQLLexer extends Lexer {
             }
             switch (alt13) {
                 case 1 :
-                    // JPQL.g:1399:24: DOUBLE_SUFFIX
+                    // JPQL.g:1434:24: DOUBLE_SUFFIX
                     {
                     mDOUBLE_SUFFIX(); 
                     
@@ -2279,16 +2279,16 @@ public class JPQLLexer extends Lexer {
     public final void mFLOAT_LITERAL() throws RecognitionException {
         try {
             int _type = FLOAT_LITERAL;
-            // JPQL.g:1403:9: ( NUMERIC_DIGITS EXPONENT ( FLOAT_SUFFIX )? | NUMERIC_DIGITS FLOAT_SUFFIX )
+            // JPQL.g:1438:9: ( NUMERIC_DIGITS EXPONENT ( FLOAT_SUFFIX )? | NUMERIC_DIGITS FLOAT_SUFFIX )
             int alt15=2;
             alt15 = dfa15.predict(input);
             switch (alt15) {
                 case 1 :
-                    // JPQL.g:1403:9: NUMERIC_DIGITS EXPONENT ( FLOAT_SUFFIX )?
+                    // JPQL.g:1438:9: NUMERIC_DIGITS EXPONENT ( FLOAT_SUFFIX )?
                     {
                     mNUMERIC_DIGITS(); 
                     mEXPONENT(); 
-                    // JPQL.g:1403:33: ( FLOAT_SUFFIX )?
+                    // JPQL.g:1438:33: ( FLOAT_SUFFIX )?
                     int alt14=2;
                     int LA14_0 = input.LA(1);
                     
@@ -2297,7 +2297,7 @@ public class JPQLLexer extends Lexer {
                     }
                     switch (alt14) {
                         case 1 :
-                            // JPQL.g:1403:33: FLOAT_SUFFIX
+                            // JPQL.g:1438:33: FLOAT_SUFFIX
                             {
                             mFLOAT_SUFFIX(); 
                             
@@ -2310,7 +2310,7 @@ public class JPQLLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // JPQL.g:1404:9: NUMERIC_DIGITS FLOAT_SUFFIX
+                    // JPQL.g:1439:9: NUMERIC_DIGITS FLOAT_SUFFIX
                     {
                     mNUMERIC_DIGITS(); 
                     mFLOAT_SUFFIX(); 
@@ -2329,8 +2329,8 @@ public class JPQLLexer extends Lexer {
     // $ANTLR start EXPONENT
     public final void mEXPONENT() throws RecognitionException {
         try {
-            // JPQL.g:1410:9: ( ( 'e' | 'E' ) ( '+' | '-' )? ( '0' .. '9' )+ )
-            // JPQL.g:1410:9: ( 'e' | 'E' ) ( '+' | '-' )? ( '0' .. '9' )+
+            // JPQL.g:1445:9: ( ( 'e' | 'E' ) ( '+' | '-' )? ( '0' .. '9' )+ )
+            // JPQL.g:1445:9: ( 'e' | 'E' ) ( '+' | '-' )? ( '0' .. '9' )+
             {
             if ( input.LA(1)=='E'||input.LA(1)=='e' ) {
                 input.consume();
@@ -2342,7 +2342,7 @@ public class JPQLLexer extends Lexer {
                 recover(mse);    throw mse;
             }
 
-            // JPQL.g:1410:21: ( '+' | '-' )?
+            // JPQL.g:1445:21: ( '+' | '-' )?
             int alt16=2;
             int LA16_0 = input.LA(1);
             
@@ -2369,7 +2369,7 @@ public class JPQLLexer extends Lexer {
             
             }
 
-            // JPQL.g:1410:32: ( '0' .. '9' )+
+            // JPQL.g:1445:32: ( '0' .. '9' )+
             int cnt17=0;
             loop17:
             do {
@@ -2383,7 +2383,7 @@ public class JPQLLexer extends Lexer {
             
                 switch (alt17) {
             	case 1 :
-            	    // JPQL.g:1410:33: '0' .. '9'
+            	    // JPQL.g:1445:33: '0' .. '9'
             	    {
             	    matchRange('0','9'); 
             	    
@@ -2411,8 +2411,8 @@ public class JPQLLexer extends Lexer {
     // $ANTLR start FLOAT_SUFFIX
     public final void mFLOAT_SUFFIX() throws RecognitionException {
         try {
-            // JPQL.g:1416:9: ( 'f' )
-            // JPQL.g:1416:9: 'f'
+            // JPQL.g:1451:9: ( 'f' )
+            // JPQL.g:1451:9: 'f'
             {
             match('f'); 
             
@@ -2427,8 +2427,8 @@ public class JPQLLexer extends Lexer {
     // $ANTLR start DOUBLE_SUFFIX
     public final void mDOUBLE_SUFFIX() throws RecognitionException {
         try {
-            // JPQL.g:1421:7: ( 'd' )
-            // JPQL.g:1421:7: 'd'
+            // JPQL.g:1456:7: ( 'd' )
+            // JPQL.g:1456:7: 'd'
             {
             match('d'); 
             
@@ -2444,8 +2444,8 @@ public class JPQLLexer extends Lexer {
     public final void mEQUALS() throws RecognitionException {
         try {
             int _type = EQUALS;
-            // JPQL.g:1425:7: ( '=' )
-            // JPQL.g:1425:7: '='
+            // JPQL.g:1460:7: ( '=' )
+            // JPQL.g:1460:7: '='
             {
             match('='); 
             
@@ -2462,8 +2462,8 @@ public class JPQLLexer extends Lexer {
     public final void mGREATER_THAN() throws RecognitionException {
         try {
             int _type = GREATER_THAN;
-            // JPQL.g:1429:7: ( '>' )
-            // JPQL.g:1429:7: '>'
+            // JPQL.g:1464:7: ( '>' )
+            // JPQL.g:1464:7: '>'
             {
             match('>'); 
             
@@ -2480,8 +2480,8 @@ public class JPQLLexer extends Lexer {
     public final void mGREATER_THAN_EQUAL_TO() throws RecognitionException {
         try {
             int _type = GREATER_THAN_EQUAL_TO;
-            // JPQL.g:1433:7: ( '>=' )
-            // JPQL.g:1433:7: '>='
+            // JPQL.g:1468:7: ( '>=' )
+            // JPQL.g:1468:7: '>='
             {
             match(">="); 
 
@@ -2499,8 +2499,8 @@ public class JPQLLexer extends Lexer {
     public final void mLESS_THAN() throws RecognitionException {
         try {
             int _type = LESS_THAN;
-            // JPQL.g:1437:7: ( '<' )
-            // JPQL.g:1437:7: '<'
+            // JPQL.g:1472:7: ( '<' )
+            // JPQL.g:1472:7: '<'
             {
             match('<'); 
             
@@ -2517,8 +2517,8 @@ public class JPQLLexer extends Lexer {
     public final void mLESS_THAN_EQUAL_TO() throws RecognitionException {
         try {
             int _type = LESS_THAN_EQUAL_TO;
-            // JPQL.g:1441:7: ( '<=' )
-            // JPQL.g:1441:7: '<='
+            // JPQL.g:1476:7: ( '<=' )
+            // JPQL.g:1476:7: '<='
             {
             match("<="); 
 
@@ -2536,8 +2536,8 @@ public class JPQLLexer extends Lexer {
     public final void mNOT_EQUAL_TO() throws RecognitionException {
         try {
             int _type = NOT_EQUAL_TO;
-            // JPQL.g:1445:7: ( '<>' )
-            // JPQL.g:1445:7: '<>'
+            // JPQL.g:1480:7: ( '<>' )
+            // JPQL.g:1480:7: '<>'
             {
             match("<>"); 
 
@@ -2555,8 +2555,8 @@ public class JPQLLexer extends Lexer {
     public final void mMULTIPLY() throws RecognitionException {
         try {
             int _type = MULTIPLY;
-            // JPQL.g:1449:7: ( '*' )
-            // JPQL.g:1449:7: '*'
+            // JPQL.g:1484:7: ( '*' )
+            // JPQL.g:1484:7: '*'
             {
             match('*'); 
             
@@ -2573,8 +2573,8 @@ public class JPQLLexer extends Lexer {
     public final void mDIVIDE() throws RecognitionException {
         try {
             int _type = DIVIDE;
-            // JPQL.g:1453:7: ( '/' )
-            // JPQL.g:1453:7: '/'
+            // JPQL.g:1488:7: ( '/' )
+            // JPQL.g:1488:7: '/'
             {
             match('/'); 
             
@@ -2591,8 +2591,8 @@ public class JPQLLexer extends Lexer {
     public final void mPLUS() throws RecognitionException {
         try {
             int _type = PLUS;
-            // JPQL.g:1457:7: ( '+' )
-            // JPQL.g:1457:7: '+'
+            // JPQL.g:1492:7: ( '+' )
+            // JPQL.g:1492:7: '+'
             {
             match('+'); 
             
@@ -2609,8 +2609,8 @@ public class JPQLLexer extends Lexer {
     public final void mMINUS() throws RecognitionException {
         try {
             int _type = MINUS;
-            // JPQL.g:1461:7: ( '-' )
-            // JPQL.g:1461:7: '-'
+            // JPQL.g:1496:7: ( '-' )
+            // JPQL.g:1496:7: '-'
             {
             match('-'); 
             
@@ -2627,18 +2627,18 @@ public class JPQLLexer extends Lexer {
     public final void mPOSITIONAL_PARAM() throws RecognitionException {
         try {
             int _type = POSITIONAL_PARAM;
-            // JPQL.g:1466:7: ( '?' ( '1' .. '9' ) ( '0' .. '9' )* )
-            // JPQL.g:1466:7: '?' ( '1' .. '9' ) ( '0' .. '9' )*
+            // JPQL.g:1501:7: ( '?' ( '1' .. '9' ) ( '0' .. '9' )* )
+            // JPQL.g:1501:7: '?' ( '1' .. '9' ) ( '0' .. '9' )*
             {
             match('?'); 
-            // JPQL.g:1466:11: ( '1' .. '9' )
-            // JPQL.g:1466:12: '1' .. '9'
+            // JPQL.g:1501:11: ( '1' .. '9' )
+            // JPQL.g:1501:12: '1' .. '9'
             {
             matchRange('1','9'); 
             
             }
 
-            // JPQL.g:1466:22: ( '0' .. '9' )*
+            // JPQL.g:1501:22: ( '0' .. '9' )*
             loop18:
             do {
                 int alt18=2;
@@ -2651,7 +2651,7 @@ public class JPQLLexer extends Lexer {
             
                 switch (alt18) {
             	case 1 :
-            	    // JPQL.g:1466:23: '0' .. '9'
+            	    // JPQL.g:1501:23: '0' .. '9'
             	    {
             	    matchRange('0','9'); 
             	    
@@ -2677,8 +2677,8 @@ public class JPQLLexer extends Lexer {
     public final void mNAMED_PARAM() throws RecognitionException {
         try {
             int _type = NAMED_PARAM;
-            // JPQL.g:1470:7: ( ':' TEXTCHAR )
-            // JPQL.g:1470:7: ':' TEXTCHAR
+            // JPQL.g:1505:7: ( ':' TEXTCHAR )
+            // JPQL.g:1505:7: ':' TEXTCHAR
             {
             match(':'); 
             mTEXTCHAR(); 
@@ -2696,11 +2696,11 @@ public class JPQLLexer extends Lexer {
     public final void mSTRING_LITERAL_DOUBLE_QUOTED() throws RecognitionException {
         try {
             int _type = STRING_LITERAL_DOUBLE_QUOTED;
-            // JPQL.g:1476:7: ( '\"' (~ ( '\"' ) )* '\"' )
-            // JPQL.g:1476:7: '\"' (~ ( '\"' ) )* '\"'
+            // JPQL.g:1511:7: ( '\"' (~ ( '\"' ) )* '\"' )
+            // JPQL.g:1511:7: '\"' (~ ( '\"' ) )* '\"'
             {
             match('\"'); 
-            // JPQL.g:1476:11: (~ ( '\"' ) )*
+            // JPQL.g:1511:11: (~ ( '\"' ) )*
             loop19:
             do {
                 int alt19=2;
@@ -2713,7 +2713,7 @@ public class JPQLLexer extends Lexer {
             
                 switch (alt19) {
             	case 1 :
-            	    // JPQL.g:1476:12: ~ ( '\"' )
+            	    // JPQL.g:1511:12: ~ ( '\"' )
             	    {
             	    if ( (input.LA(1)>='\u0000' && input.LA(1)<='!')||(input.LA(1)>='#' && input.LA(1)<='\uFFFE') ) {
             	        input.consume();
@@ -2749,11 +2749,11 @@ public class JPQLLexer extends Lexer {
     public final void mSTRING_LITERAL_SINGLE_QUOTED() throws RecognitionException {
         try {
             int _type = STRING_LITERAL_SINGLE_QUOTED;
-            // JPQL.g:1480:7: ( '\\'' (~ ( '\\'' ) | ( '\\'\\'' ) )* '\\'' )
-            // JPQL.g:1480:7: '\\'' (~ ( '\\'' ) | ( '\\'\\'' ) )* '\\''
+            // JPQL.g:1515:7: ( '\\'' (~ ( '\\'' ) | ( '\\'\\'' ) )* '\\'' )
+            // JPQL.g:1515:7: '\\'' (~ ( '\\'' ) | ( '\\'\\'' ) )* '\\''
             {
             match('\''); 
-            // JPQL.g:1480:12: (~ ( '\\'' ) | ( '\\'\\'' ) )*
+            // JPQL.g:1515:12: (~ ( '\\'' ) | ( '\\'\\'' ) )*
             loop20:
             do {
                 int alt20=3;
@@ -2775,7 +2775,7 @@ public class JPQLLexer extends Lexer {
             
                 switch (alt20) {
             	case 1 :
-            	    // JPQL.g:1480:13: ~ ( '\\'' )
+            	    // JPQL.g:1515:13: ~ ( '\\'' )
             	    {
             	    if ( (input.LA(1)>='\u0000' && input.LA(1)<='&')||(input.LA(1)>='(' && input.LA(1)<='\uFFFE') ) {
             	        input.consume();
@@ -2791,10 +2791,10 @@ public class JPQLLexer extends Lexer {
             	    }
             	    break;
             	case 2 :
-            	    // JPQL.g:1480:24: ( '\\'\\'' )
+            	    // JPQL.g:1515:24: ( '\\'\\'' )
             	    {
-            	    // JPQL.g:1480:24: ( '\\'\\'' )
-            	    // JPQL.g:1480:25: '\\'\\''
+            	    // JPQL.g:1515:24: ( '\\'\\'' )
+            	    // JPQL.g:1515:25: '\\'\\''
             	    {
             	    match("\'\'"); 
 
@@ -3585,7 +3585,7 @@ public class JPQLLexer extends Lexer {
             this.transition = DFA12_transition;
         }
         public String getDescription() {
-            return "1391:1: fragment NUMERIC_DIGITS : ( ( '0' .. '9' )+ '.' ( '0' .. '9' )* | '.' ( '0' .. '9' )+ | ( '0' .. '9' )+ );";
+            return "1426:1: fragment NUMERIC_DIGITS : ( ( '0' .. '9' )+ '.' ( '0' .. '9' )* | '.' ( '0' .. '9' )+ | ( '0' .. '9' )+ );";
         }
     }
     static final String DFA15_eotS =
@@ -3641,7 +3641,7 @@ public class JPQLLexer extends Lexer {
             this.transition = DFA15_transition;
         }
         public String getDescription() {
-            return "1402:1: FLOAT_LITERAL : ( NUMERIC_DIGITS EXPONENT ( FLOAT_SUFFIX )? | NUMERIC_DIGITS FLOAT_SUFFIX );";
+            return "1437:1: FLOAT_LITERAL : ( NUMERIC_DIGITS EXPONENT ( FLOAT_SUFFIX )? | NUMERIC_DIGITS FLOAT_SUFFIX );";
         }
     }
     static final String DFA21_eotS =

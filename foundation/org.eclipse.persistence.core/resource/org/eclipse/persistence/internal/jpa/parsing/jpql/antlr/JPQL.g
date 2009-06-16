@@ -317,18 +317,43 @@ selectClause returns [Object node]
 scope{
     boolean distinct;
     List exprs;
+    List idents;
 }
 @init { 
     node = null;
     $selectClause::distinct = false;
     $selectClause::exprs = new ArrayList();
+    $selectClause::idents = new ArrayList();
 }
     : t=SELECT (DISTINCT { $selectClause::distinct = true; })?
-      n = selectExpression {$selectClause::exprs.add($n.node); }
-      ( COMMA n = selectExpression  { $selectClause::exprs.add($n.node); } )*
+      n = selectItem  
+          {
+              $selectClause::exprs.add($n.expr);
+              $selectClause::idents.add($n.ident);
+          }
+          ( COMMA n = selectItem  
+               {
+                  $selectClause::exprs.add($n.expr);
+                  $selectClause::idents.add($n.ident);
+               }           
+            
+           )*
         { 
             $node = factory.newSelectClause($t.getLine(), $t.getCharPositionInLine(), 
-                                           $selectClause::distinct, $selectClause::exprs); 
+                                           $selectClause::distinct, $selectClause::exprs, $selectClause::idents); 
+        }
+    ;
+    
+selectItem returns [Object expr, Object ident]
+    : e = selectExpression ((AS)? identifier = IDENT)? 
+        {
+            $expr = $e.node;
+            if ($identifier == null){
+                $ident = null;
+            } else {
+                $ident = $identifier.getText();
+            }
+                
         }
     ;
 
@@ -422,8 +447,9 @@ scope{
 
 constructorItem returns [Object node]
 @init { node = null; }
-    : n = pathExprOrVariableAccess { $node = $n.node;}
+    : n = scalarExpression {$node = $n.node;}
     | n = aggregateExpression {$node = $n.node;}
+
     ;
 
 fromClause returns [Object node]
@@ -1087,8 +1113,8 @@ substring returns [Object node]
     : s=SUBSTRING   
         LEFT_ROUND_BRACKET
         string = stringPrimary COMMA
-        start = simpleArithmeticExpression COMMA
-        (lengthNode = simpleArithmeticExpression)?
+        start = simpleArithmeticExpression
+        (COMMA lengthNode = simpleArithmeticExpression)?
         RIGHT_ROUND_BRACKET
         { 
             if (lengthNode != null){
@@ -1255,14 +1281,18 @@ scope{
     $subqueryFromClause::varDecls = new ArrayList();
 }
     : f=FROM subselectIdentificationVariableDeclaration[$subqueryFromClause::varDecls] 
-        ( COMMA subselectIdentificationVariableDeclaration[$subqueryFromClause::varDecls] )*
+        ( 
+            COMMA 
+                subselectIdentificationVariableDeclaration[$subqueryFromClause::varDecls] 
+                | c = collectionMemberDeclaration {$subqueryFromClause::varDecls.add($c.node);}
+        )*
         { $node = factory.newFromClause($f.getLine(), $f.getCharPositionInLine(), $subqueryFromClause::varDecls); }
     ;
 
 subselectIdentificationVariableDeclaration [List varDecls]
 @init { Object node; }
     : identificationVariableDeclaration[varDecls]
-    | n = associationPathExpression (AS)? i=IDENT
+    | n = associationPathExpression (AS)? i=IDENT (join { varDecls.add($n.node); } )*
         { 
             $varDecls.add(factory.newVariableDecl($i.getLine(), $i.getCharPositionInLine(), 
                                                  $n.node, $i.getText())); 
@@ -1294,7 +1324,15 @@ orderByItem returns [Object node]
         | // empty rule
             { $node = factory.newAscOrdering(0, 0, $n.node); }
         )
-    ;
+     | i = IDENT
+        ( a=ASC 
+            { $node = factory.newAscOrdering($a.getLine(), $a.getCharPositionInLine(), $i.getText()); }
+        | d=DESC
+            { $node = factory.newDescOrdering($d.getLine(), $d.getCharPositionInLine(), $i.getText()); }
+        | // empty rule
+            { $node = factory.newAscOrdering(0, 0, $i.getText()); }
+        )
+     ;
 
 groupByClause returns [Object node]
 scope{

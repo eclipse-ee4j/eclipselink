@@ -111,6 +111,13 @@ public class NodeFactoryImpl implements NodeFactory {
         setPosition(node, line, column);
         return node;
     }
+    
+    public Object newSelectClause(int line, int column, 
+                                    boolean distinct, List selectExprs, List idents) {
+        SelectNode node = (SelectNode)newSelectClause(line, column, distinct, selectExprs);
+        // TODO: Make use of idents
+        return node;
+    }
 
     /** */
     public Object newFromClause(int line, int column, List decls) {

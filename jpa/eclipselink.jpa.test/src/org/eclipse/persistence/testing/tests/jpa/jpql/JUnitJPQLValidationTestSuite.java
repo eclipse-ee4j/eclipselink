@@ -306,7 +306,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         catch(IllegalArgumentException ex)
         {
             Assert.assertEquals(JPQLException.syntaxErrorAt, ((JPQLException) ex.getCause()).getErrorCode());
-            assertTrue("Failed to throw expected IllegalArgumentException for a query having an unexpected keyword FORM.", ex.getCause().getMessage().contains("at [FORM]"));
+            assertTrue("Failed to throw expected IllegalArgumentException for a query having an unexpected keyword FORM.", ex.getCause().getMessage().contains("syntax error at [Customer]"));
         }         
 
         ejbqlString =  "SELECT COUNT(c FROM Customer c";
