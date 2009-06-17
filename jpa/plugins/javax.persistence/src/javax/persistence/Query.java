@@ -312,7 +312,7 @@ public interface Query {
      * 
      * @return parameter object
      * @throws IllegalArgumentException
-     *             if the parameter of the specified name and type doesn’t exist
+     *             if the parameter of the specified name and type doesn't exist
      */
     <T> Parameter<T> getParameter(String name, Class<T> type);
 
@@ -321,7 +321,7 @@ public interface Query {
      * 
      * @return parameter object
      * @throws IllegalArgumentException
-     *             if the parameter with the specified position and type doesn’t
+     *             if the parameter with the specified position and type doesn't
      *             exist
      */
     <T> Parameter<T> getParameter(int position, Class<T> type);

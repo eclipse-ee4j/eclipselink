@@ -92,7 +92,7 @@ public interface EntityManager {
      * @return the found entity instance or null if the entity does not exist
      * @throws IllegalArgumentException
      *             if the first argument does not denote an entity type or the
-     *             second argument is is not a valid type for that entity’s
+     *             second argument is is not a valid type for that entity's
      *             primary key or is null
      */
     public <T> T find(Class<T> entityClass, Object primaryKey);
@@ -111,7 +111,7 @@ public interface EntityManager {
      * @return the found entity instance or null if the entity does not exist
      * @throws IllegalArgumentException
      *             if the first argument does not denote an entity type or the
-     *             second argument is is not a valid type for that entity’s
+     *             second argument is is not a valid type for that entity's
      *             primary key or is null
      */
     public <T> T find(Class<T> entityClass, Object primaryKey, Map<String, Object> properties);
@@ -215,7 +215,7 @@ public interface EntityManager {
      * @return the found entity instance
      * @throws IllegalArgumentException
      *             if the first argument does not denote an entity type or the
-     *             second argument is not a valid type for that entity’s primary
+     *             second argument is not a valid type for that entity's primary
      *             key or is null
      * @throws EntityNotFoundException
      *             if the entity state cannot be accessed

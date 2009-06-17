@@ -372,7 +372,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * @return the found entity instance or null if the entity does not exist
      * @throws IllegalArgumentException
      *             if the first argument does not denote an entity type or the
-     *             second argument is is not a valid type for that entity’s
+     *             second argument is is not a valid type for that entity's
      *             primary key or is null
      * 
      * @since Java Persistence API 2.0
