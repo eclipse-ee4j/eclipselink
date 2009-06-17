@@ -14,9 +14,13 @@ package org.eclipse.persistence.platform.database;
 
 import java.io.*;
 import java.util.*;
+
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.queries.ValueReadQuery;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 
 /**
  *    <p><b>Purpose</b>: Provides Microsoft Access specific behavior.
@@ -161,4 +165,48 @@ public class AccessPlatform extends org.eclipse.persistence.platform.database.Da
     public boolean shouldUseJDBCOuterJoinSyntax() {
         return false;
     }
+    
+	/**
+	 * INTERNAL: Build the identity query for native sequencing.
+	 */
+	public ValueReadQuery buildSelectQueryForIdentity() {
+		ValueReadQuery selectQuery = new ValueReadQuery();
+		StringWriter writer = new StringWriter();
+		writer.write("SELECT @@IDENTITY");
+		selectQuery.setSQLString(writer.toString());
+		return selectQuery;
+	}
+
+	/** Append the receiver's field 'identity' constraint clause to a writer. */
+	public void printFieldIdentityClause(Writer writer)	throws ValidationException {
+		try {
+			writer.write(" COUNTER");
+		} catch (IOException ioException) {
+			throw ValidationException.fileError(ioException);
+		}
+	}
+
+	/**
+	 * INTERNAL: Indicates whether the platform supports identity. Sybase does
+	 * through IDENTITY field types. This method is to be used *ONLY* by
+	 * sequencing classes
+	 */
+	public boolean supportsIdentity() {
+		return true;
+	}
+
+	public void printFieldTypeSize(Writer writer, FieldDefinition field,FieldTypeDefinition fieldType, boolean shouldPrintFieldIdentityClause) throws IOException {
+		if (!shouldPrintFieldIdentityClause) {
+			super.printFieldTypeSize(writer, field, fieldType,
+					shouldPrintFieldIdentityClause);
+		}
+	}
+
+	public void printFieldUnique(Writer writer,	boolean shouldPrintFieldIdentityClause) throws IOException {
+		if (!shouldPrintFieldIdentityClause) {
+			super.printFieldUnique(writer, shouldPrintFieldIdentityClause);
+		}
+	}
+
+
 }
