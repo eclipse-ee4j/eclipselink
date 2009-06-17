@@ -49,6 +49,11 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
     protected boolean isFirstToRemove = true;
 
     /**
+     * Indicates whether IndirectList's order has been repaired.
+     */
+    protected boolean orderHasBeenRepaired;
+    
+    /**
      * This default constructor.
      */
     public DirectCollectionChangeRecord() {
@@ -430,4 +435,10 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
             this.addObjectMap.clear();
         }
     }
+   public void setOrderHasBeenRepaired(boolean hasBeenRepaired) {
+       this.orderHasBeenRepaired = hasBeenRepaired;
+   }
+   public boolean orderHasBeenRepaired() {
+       return this.orderHasBeenRepaired;
+   }
 }

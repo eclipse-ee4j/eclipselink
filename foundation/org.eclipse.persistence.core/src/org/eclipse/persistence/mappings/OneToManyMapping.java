@@ -350,11 +350,39 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
     }
 
     /**
+     * INTERNAL:
+     * Extract the source primary key value from the target row.
+     * Used for batch reading, most following same order and fields as in the mapping.
+     */
+    protected Vector extractKeyFromTargetRow(AbstractRecord row, AbstractSession session) {
+        int size = sourceKeyFields.size();
+        Vector key = new Vector(size);
+        ConversionManager conversionManager = session.getDatasourcePlatform().getConversionManager();
+
+        for (int index = 0; index < size; index++) {
+            DatabaseField targetField = targetForeignKeyFields.get(index);
+            DatabaseField sourceField = sourceKeyFields.get(index);
+            Object value = row.get(targetField);
+
+            // Must ensure the classification gets a cache hit.
+            try {
+                value = conversionManager.convertObject(value, sourceField.getType());
+            } catch (ConversionException e) {
+                throw ConversionException.couldNotBeConverted(this, getDescriptor(), e);
+            }
+
+            key.addElement(value);
+        }
+
+        return key;
+    }
+
+    /**
      * Extract the key field values from the specified row.
      * Used for batch reading. Keep the fields in the same order
      * as in the targetForeignKeysToSourceKeys hashtable.
      */
-    protected Vector extractKeyFromRow(AbstractRecord row, AbstractSession session) {
+    protected Vector extractPrimaryKeyFromRow(AbstractRecord row, AbstractSession session) {
         Vector key = new Vector(this.getTargetForeignKeysToSourceKeys().size());
 
         for (Iterator stream = getTargetForeignKeysToSourceKeys().values().iterator();
@@ -379,6 +407,9 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * Extract the value from the batch optimized query.
      */
     public Object extractResultFromBatchQuery(DatabaseQuery query, AbstractRecord row, AbstractSession session, AbstractRecord argumentRow) {
+        if(((ReadAllQuery)query).shouldIncludeData()) {
+            return super.extractResultFromBatchQuery(query, row, session, argumentRow);
+        }
         //this can be null, because either one exists in the query or it will be created
         Hashtable batchedObjects = null;
         synchronized (query) {
@@ -388,7 +419,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
                 setBatchReadObjects(batchedObjects, query, session);
             }
         }
-        Object result = batchedObjects.get(new CacheKey(extractKeyFromRow(row, session)));
+        Object result = batchedObjects.get(new CacheKey(extractPrimaryKeyFromRow(row, session)));
 
         // The source object might not have any target objects
         if (result == null) {
@@ -975,6 +1006,15 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         Object objectsInDB = readPrivateOwnedForObject(query);
     
         compareObjectsAndWrite(objectsInDB, objectsInMemory, query);
+    }
+
+    /**
+     * INTERNAL:
+     * Add additional fields
+     */
+    protected void postPrepareNestedBatchQuery(ReadQuery batchQuery, ReadAllQuery query) {
+        ReadAllQuery mappingBatchQuery = (ReadAllQuery)batchQuery;
+        mappingBatchQuery.setShouldIncludeData(this.getSelectionQueryContainerPolicy().shouldAddAll());
     }
 
     /**

@@ -18,6 +18,7 @@ import java.beans.PropertyChangeListener;
 
 import java.util.*;
 
+import org.eclipse.persistence.annotations.OrderCorrectionType;
 import org.eclipse.persistence.descriptors.CMPPolicy;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.*;
@@ -55,12 +56,15 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
 
     /** Field holds the order of elements in the list in the db, requires collection of type List, may be not null only in case isListOrderFieldSupported==true */
     protected DatabaseField listOrderField;
-    /** indicates whether the mapping supports listOrderField, if it doesn't attempt to set listOrderField throws exception. */
+    /** Indicates whether the mapping supports listOrderField, if it doesn't attempt to set listOrderField throws exception. */
     protected boolean isListOrderFieldSupported;
-    /** query used when order of list members is changed. Used only if listOrderField!=null */
+    /** Query used when order of list members is changed. Used only if listOrderField!=null */
     protected transient DataModifyQuery changeOrderTargetQuery;
-    /** specifies whether/how listOrderField values in the db should be validated. There should be no nulls, no "holes" in order.*/ 
-    protected OrderedListContainerPolicy.OrderValidationMode listOrderFieldValidationMode;
+    /** 
+     * Specifies what should be done if the list of values read from listOrserField is invalid
+     * (there should be no nulls, no duplicates, no "holes").
+     **/ 
+    protected OrderCorrectionType orderCorrectionType;
     
     /**
      * PUBLIC:
@@ -573,6 +577,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                     }
                     if(shouldRepairOrder) {
                         ((IndirectList)currentList).setIsListOrderBrokenInDb(false);
+                        record.setOrderHasBeenRepaired(true);
                     }
                 }
             }
@@ -782,6 +787,103 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
 
     /**
      * INTERNAL:
+     * Extract the value from the batch optimized query.
+     */
+    public Object extractResultFromBatchQuery(DatabaseQuery query, AbstractRecord databaseRow, AbstractSession session, AbstractRecord argumentRow) {
+        //this can be null, because either one exists in the query or it will be created
+        Hashtable referenceObjectsByKey = null;
+        synchronized (query) {
+            referenceObjectsByKey = getBatchReadObjects(query, session);
+            if (referenceObjectsByKey == null) {
+                ReadAllQuery batchQuery = (ReadAllQuery)query;
+                ComplexQueryResult complexResult = (ComplexQueryResult)session.executeQuery(batchQuery, argumentRow);
+                Object results = complexResult.getResult();
+                referenceObjectsByKey = new Hashtable();
+                Enumeration rowsEnum = ((Vector)complexResult.getData()).elements();
+                ContainerPolicy queryContainerPolicy = batchQuery.getContainerPolicy();
+                if(this.containerPolicy.shouldAddAll()) {
+                    HashMap<CacheKey, List[]> referenceObjectsAndRowsByKey = new HashMap();
+                    for (Object elementsIterator = queryContainerPolicy.iteratorFor(results); queryContainerPolicy.hasNext(elementsIterator);) {
+                        Object eachReferenceObject = queryContainerPolicy.next(elementsIterator, session);
+                        AbstractRecord row = (AbstractRecord)rowsEnum.nextElement();
+                        CacheKey eachReferenceKey = new CacheKey(extractKeyFromTargetRow(row, session));
+                        
+                        List[] objectsAndRows = referenceObjectsAndRowsByKey.get(eachReferenceKey);
+                        if(objectsAndRows == null) {
+                            objectsAndRows = new List[]{new ArrayList(), new ArrayList()};
+                            referenceObjectsAndRowsByKey.put(eachReferenceKey, objectsAndRows);
+                        }
+                        objectsAndRows[0].add(eachReferenceObject);
+                        objectsAndRows[1].add(row);
+                    }
+
+                    Iterator<Map.Entry<CacheKey, List[]>> it = referenceObjectsAndRowsByKey.entrySet().iterator();
+                    while(it.hasNext()) {
+                        Map.Entry<CacheKey, List[]> entry = it.next();
+                        CacheKey eachReferenceKey = entry.getKey(); 
+                        List objects = entry.getValue()[0];
+                        List<AbstractRecord> rows = (List<AbstractRecord>)entry.getValue()[1];
+                        Object container = this.containerPolicy.containerInstance(objects.size());
+                        this.containerPolicy.addAll(objects, container, query.getSession(), rows, batchQuery);
+                        referenceObjectsByKey.put(eachReferenceKey, container);
+                    }
+                } else {
+                    for (Object elementsIterator = queryContainerPolicy.iteratorFor(results); queryContainerPolicy.hasNext(elementsIterator);) {
+                        Object eachReferenceObject = queryContainerPolicy.next(elementsIterator, session);
+                        AbstractRecord row = (AbstractRecord)rowsEnum.nextElement();
+                        CacheKey eachReferenceKey = new CacheKey(extractKeyFromTargetRow(row, session));
+                        
+                        Object container = referenceObjectsByKey.get(eachReferenceKey);
+                        if (container == null) {
+                            container = this.containerPolicy.containerInstance();
+                            referenceObjectsByKey.put(eachReferenceKey, container);
+                        }
+                        this.containerPolicy.addInto(eachReferenceObject, container, session);
+                    }
+                }
+                setBatchReadObjects(referenceObjectsByKey, query, session);
+            }
+        }
+        Object result = referenceObjectsByKey.get(new CacheKey(extractPrimaryKeyFromRow(databaseRow, session)));
+
+        // The source object might not have any target objects
+        if (result == null) {
+            return this.containerPolicy.containerInstance();
+        } else {
+            return result;
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Extract the source primary key value from the target row.
+     * Used for batch reading, most following same order and fields as in the mapping.
+     * 
+     * Should have made it an abstract method but that breaks derived classes EISOneToManyMapping
+     * and NestedTableMapping that don't use batch reading.
+     * The method should be overridden by classes that use batch reading: 
+     * for those classes extractResultFromBatchQuery method is called. 
+     */
+    protected Vector extractKeyFromTargetRow(AbstractRecord row, AbstractSession session) {
+        return new Vector(0);
+    }
+
+        /**
+     * INTERNAL:
+     * Extract the primary key value from the source row.
+     * Used for batch reading, most following same order and fields as in the mapping.
+     * 
+     * Should have made it an abstract method but that breaks derived classes EISOneToManyMapping
+     * and NestedTableMapping that don't use batch reading.
+     * The method should be overridden by classes that use batch reading: 
+     * for those classes extractResultFromBatchQuery method is called. 
+     */
+    protected Vector extractPrimaryKeyFromRow(AbstractRecord row, AbstractSession session) {
+        return new Vector(0);
+    }
+    
+    /**
+     * INTERNAL:
      * We are not using a remote valueholder
      * so we need to replace the reference object(s) with
      * the corresponding object(s) from the remote session.
@@ -912,11 +1014,11 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     
     /**
      * PUBLIC:
-     * Specifies whether/how listOrderField values in the db should be validated;
-     * ignored unless listOrderField != null.
+     * Specifies what should be done if the list of values read from listOrserField is invalid
+     * (there should be no nulls, no duplicates, no "holes").
      */
-    public OrderedListContainerPolicy.OrderValidationMode getListOrderFieldValidationMode() {
-        return this.listOrderFieldValidationMode;
+    public OrderCorrectionType getOrderCorrectionType() {
+        return this.orderCorrectionType;
     }
     
     protected boolean hasCustomDeleteAllQuery() {
@@ -960,11 +1062,19 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         if(!List.class.isAssignableFrom(getAttributeAccessor().getAttributeClass())) {
             throw DescriptorException.listOrderFieldRequiersList(getDescriptor(), this);
         }
-        if(this.listOrderFieldValidationMode == null) {
-            this.listOrderFieldValidationMode = OrderedListContainerPolicy.OrderValidationMode.NONE;
-        } else if(this.listOrderFieldValidationMode == OrderedListContainerPolicy.OrderValidationMode.CORRECTION) {
+        
+        boolean isAttributeAssignableFromIndirectList = getAttributeAccessor().getAttributeClass().isAssignableFrom(IndirectList.class);
+        
+        if(this.orderCorrectionType == null) {
+            // set default validation mode
+            if(isAttributeAssignableFromIndirectList) {
+                this.orderCorrectionType = OrderCorrectionType.READ_WRITE;
+            } else {
+                this.orderCorrectionType = OrderCorrectionType.READ;
+            }
+        } else if(this.orderCorrectionType == OrderCorrectionType.READ_WRITE) {
             //OrderValidationMode.CORRECTION sets container class to IndirectList, make sure the attribute is of compatible type.
-            if(!getAttributeAccessor().getAttributeClass().isAssignableFrom(IndirectList.class)) {
+            if(!isAttributeAssignableFromIndirectList) {
                 throw DescriptorException.listOrderFieldRequiersIndirectList(getDescriptor(), this);
             }
         }
@@ -976,28 +1086,30 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         }
         OrderedListContainerPolicy orderedListContainerPolicy = (OrderedListContainerPolicy)getContainerPolicy();  
         orderedListContainerPolicy.setListOrderField(this.listOrderField);
-        orderedListContainerPolicy.setOrderValidationMode(this.listOrderFieldValidationMode);
+        orderedListContainerPolicy.setOrderCorrectionType(this.orderCorrectionType);
 
         // If ContainerPolicy's container class is IndirectList, originalQueryContainerPolicy's container class is not (likely Vector)
-        // and listOrderFieldValidationMode doesn't require query to use IndirectList - then query will keep a separate container policy
+        // and orderCorrectionType doesn't require query to use IndirectList - then query will keep a separate container policy
         // that uses its original container class (likely Vector) - this is the same optimization as used in useTransparentList method.
         if(getContainerPolicy().getContainerClass().isAssignableFrom(IndirectList.class) && 
            !IndirectList.class.isAssignableFrom(originalQueryContainerPolicy.getContainerClass()) &&
-           this.listOrderFieldValidationMode != OrderedListContainerPolicy.OrderValidationMode.CORRECTION ||
+           this.orderCorrectionType != OrderCorrectionType.READ_WRITE ||
            originalQueryContainerPolicy == this.getSelectionQueryContainerPolicy())
         {
             OrderedListContainerPolicy queryOrderedListContainerPolicy; 
-            if(originalQueryContainerPolicy.isOrderedListPolicy()) {
+            if(originalQueryContainerPolicy.getClass().equals(orderedListContainerPolicy.getClass())) {
+                // original query container policy
                 queryOrderedListContainerPolicy = (OrderedListContainerPolicy)originalQueryContainerPolicy;  
+                queryOrderedListContainerPolicy.setListOrderField(this.listOrderField);
+                queryOrderedListContainerPolicy.setOrderCorrectionType(this.orderCorrectionType);
             } else {
-                queryOrderedListContainerPolicy = new OrderedListContainerPolicy(originalQueryContainerPolicy.getContainerClass());
+                // clone mapping's container policy
+                queryOrderedListContainerPolicy = (OrderedListContainerPolicy)orderedListContainerPolicy.clone();
+                queryOrderedListContainerPolicy.setContainerClass(originalQueryContainerPolicy.getContainerClass());
+                setSelectionQueryContainerPolicy(queryOrderedListContainerPolicy);
             }
-            queryOrderedListContainerPolicy.setListOrderField(this.listOrderField);
-            queryOrderedListContainerPolicy.setOrderValidationMode(this.listOrderFieldValidationMode);
-            setSelectionQueryContainerPolicy(queryOrderedListContainerPolicy);
         }
         
-
         if(this.listOrderField.getType() == null) {
             this.listOrderField.setType(Integer.class);
         }
@@ -1008,7 +1120,6 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         if(getSelectionQuery().isReadAllQuery()) {
             ReadAllQuery readAllQuery = (ReadAllQuery)getSelectionQuery();
             Expression expField = getListOrderFieldExpression(readAllQuery.getExpressionBuilder());
-            readAllQuery.addOrdering(expField);
             readAllQuery.addAdditionalField(expField);
         }
         
@@ -1468,6 +1579,24 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
 
     /**
      * INTERNAL:
+     * Clone and prepare the selection query as a nested batch read query.
+     * This is used for nested batch reading.
+     */
+    public ReadQuery prepareNestedBatchQuery(ReadAllQuery query) {
+        ReadAllQuery batchQuery = (ReadAllQuery)super.prepareNestedBatchQuery(query);
+        if(this.listOrderField != null) {
+            batchQuery.addAdditionalField(getListOrderFieldExpression(batchQuery.getExpressionBuilder()));
+        }
+        if (batchQuery.shouldPrepare()) {
+            batchQuery.checkPrepare(query.getSession(), query.getTranslationRow());
+        }
+        batchQuery.setSession(null);
+
+        return batchQuery;
+    }
+    
+    /**
+     * INTERNAL:
      * copies the non primary key information into the row currently used only in ManyToMany
      */
     protected void prepareTranslationRow(AbstractRecord translationRow, Object object, AbstractSession session) {
@@ -1824,11 +1953,11 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     
     /**
      * PUBLIC:
-     * Specifies whether/how listOrderField values in the db should be validated;
-     * ignored unless listOrderField != null.
+     * Specifies what should be done if the list of values read from listOrserField is invalid
+     * (there should be no nulls, no duplicates, no "holes").
      */
-    public void setListOrderFieldValidationMode(OrderedListContainerPolicy.OrderValidationMode orderValidationMode) {
-        this.listOrderFieldValidationMode = orderValidationMode;
+    public void setOrderCorrectionType(OrderCorrectionType orderCorrectionType) {
+        this.orderCorrectionType = orderCorrectionType;
     }
 
     /**
@@ -2163,46 +2292,62 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         CacheKey sourceCacheKey = new CacheKey(sourceKey);
         // If the query was using joining, all of the result rows by primary key will have been computed.
         List rows = joinManager.getDataResultsByPrimaryKey().get(sourceCacheKey);
-        // A nested query must be built to pass to the descriptor that looks like the real query execution would,
-        // these should be cached on the query during prepare.
-        ObjectLevelReadQuery nestedQuery = prepareNestedJoinQueryClone(row, rows, joinManager, sourceQuery, executionSession);
-        
-        // A set of target cache keys must be maintained to avoid duplicates from multiple 1-m joins.
-        Set targetCacheKeys = new HashSet();
-        // For each rows, extract the target row and build the target object and add to the collection.
-        for (int index = 0; index < rows.size(); index++) {
-            AbstractRecord sourceRow = (AbstractRecord)rows.get(index);
-            AbstractRecord targetRow = sourceRow;
-            // The field for many objects may be in the row,
-            // so build the subpartion of the row through the computed values in the query,
-            // this also helps the field indexing match.
-            targetRow = trimRowForJoin(targetRow, joinManager, executionSession);
+        int size = rows.size();
+        if(size > 0) {
+            // A nested query must be built to pass to the descriptor that looks like the real query execution would,
+            // these should be cached on the query during prepare.
+            ObjectLevelReadQuery nestedQuery = prepareNestedJoinQueryClone(row, rows, joinManager, sourceQuery, executionSession);
             
-            // Partial object queries must select the primary key of the source and related objects.
-            // If the target joined rows in null (outerjoin) means an empty collection.
-            Vector targetKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromRow(targetRow, executionSession);
-            if (targetKey == null) {
-                // A null primary key means an empty collection returned as nulls from an outerjoin.
-                return getIndirectionPolicy().valueFromRow(value);
+            // A set of target cache keys must be maintained to avoid duplicates from multiple 1-m joins.
+            Set targetCacheKeys = new HashSet();
+            
+            ArrayList targetObjects = null;
+            ArrayList<AbstractRecord> targetRows = null;
+            boolean shouldAddAll = getContainerPolicy().shouldAddAll();
+            if(shouldAddAll) {
+                targetObjects = new ArrayList(size);
+                targetRows = new ArrayList(size);
             }
             
-            CacheKey targetCacheKey = new CacheKey(targetKey);            
-            // Only build/add the target object once, skip duplicates from multiple 1-m joins.
-            if (!targetCacheKeys.contains(targetCacheKey)) {
-                nestedQuery.setTranslationRow(targetRow);
-                targetCacheKeys.add(targetCacheKey);
-                Object targetObject = getReferenceDescriptor().getObjectBuilder().buildObject(nestedQuery, targetRow);
-                Object targetMapKey = getContainerPolicy().buildKeyFromJoinedRow(targetRow, joinManager, nestedQuery, executionSession);
-                nestedQuery.setTranslationRow(null);
-                if (targetMapKey == null){
-                    if(this.listOrderField != null) {
-                        getContainerPolicy().addInto(targetObject, value, executionSession, targetRow, nestedQuery);
-                    } else {
-                        getContainerPolicy().addInto(targetObject, value, executionSession);
-                    }
-                } else {
-                    getContainerPolicy().addInto(targetMapKey, targetObject, value, executionSession);
+            // For each rows, extract the target row and build the target object and add to the collection.
+            for (int index = 0; index < size; index++) {
+                AbstractRecord sourceRow = (AbstractRecord)rows.get(index);
+                AbstractRecord targetRow = sourceRow;
+                // The field for many objects may be in the row,
+                // so build the subpartion of the row through the computed values in the query,
+                // this also helps the field indexing match.
+                targetRow = trimRowForJoin(targetRow, joinManager, executionSession);
+                
+                // Partial object queries must select the primary key of the source and related objects.
+                // If the target joined rows in null (outerjoin) means an empty collection.
+                Vector targetKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromRow(targetRow, executionSession);
+                if (targetKey == null) {
+                    // A null primary key means an empty collection returned as nulls from an outerjoin.
+                    return getIndirectionPolicy().valueFromRow(value);
                 }
+                
+                CacheKey targetCacheKey = new CacheKey(targetKey);            
+                // Only build/add the target object once, skip duplicates from multiple 1-m joins.
+                if (!targetCacheKeys.contains(targetCacheKey)) {
+                    nestedQuery.setTranslationRow(targetRow);
+                    targetCacheKeys.add(targetCacheKey);
+                    Object targetObject = getReferenceDescriptor().getObjectBuilder().buildObject(nestedQuery, targetRow);
+                    Object targetMapKey = getContainerPolicy().buildKeyFromJoinedRow(targetRow, joinManager, nestedQuery, executionSession);
+                    nestedQuery.setTranslationRow(null);
+                    if (targetMapKey == null){
+                        if(shouldAddAll) {
+                            targetObjects.add(targetObject);
+                            targetRows.add(targetRow);
+                        } else {
+                            getContainerPolicy().addInto(targetObject, value, executionSession);
+                        }
+                    } else {
+                        getContainerPolicy().addInto(targetMapKey, targetObject, value, executionSession);
+                    }
+                }
+            }
+            if(shouldAddAll) {
+                getContainerPolicy().addAll(targetObjects, value, executionSession, targetRows, nestedQuery);
             }
         }
         return getIndirectionPolicy().valueFromRow(value);

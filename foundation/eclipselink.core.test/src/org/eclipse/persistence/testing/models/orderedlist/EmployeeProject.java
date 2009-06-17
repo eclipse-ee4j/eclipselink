@@ -14,14 +14,17 @@
 package org.eclipse.persistence.testing.models.orderedlist;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 import org.eclipse.persistence.sessions.DatabaseLogin;
+import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.testing.models.orderedlist.EmployeeSystem.ChangeTracking;
 import org.eclipse.persistence.testing.models.orderedlist.EmployeeSystem.JoinFetchOrBatchRead;
+import org.eclipse.persistence.annotations.OrderCorrectionType;
 import org.eclipse.persistence.descriptors.*;
 import org.eclipse.persistence.indirection.IndirectList;
-import org.eclipse.persistence.internal.queries.OrderedListContainerPolicy.OrderValidationMode;
 import org.eclipse.persistence.mappings.*;
 
 public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
@@ -29,16 +32,20 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
     boolean useListOrderField;
     boolean useIndirection;
     boolean useSecondaryTable;
+    boolean useVarcharOrder;
     ChangeTracking changeTracking;
+    OrderCorrectionType orderCorrectionType;
+    boolean shouldOverrideContainerPolicy; 
     JoinFetchOrBatchRead joinFetchOrBatchRead;
-    OrderValidationMode orderValidationMode;
     
-    public EmployeeProject(boolean useListOrderField, boolean useIndirection, boolean useSecondaryTable, ChangeTracking changeTracking, OrderValidationMode orderValidationMode, JoinFetchOrBatchRead joinFetchOrBatchRead) {
+    public EmployeeProject(boolean useListOrderField, boolean useIndirection, boolean useSecondaryTable, boolean useVarcharOrder, ChangeTracking changeTracking, OrderCorrectionType orderCorrectionType, boolean shouldOverrideContainerPolicy, JoinFetchOrBatchRead joinFetchOrBatchRead) {
         this.useListOrderField = useListOrderField;
         this.useIndirection = useIndirection;
         this.useSecondaryTable = useSecondaryTable;
+        this.useVarcharOrder = useVarcharOrder;
         this.changeTracking = changeTracking;
-        this.orderValidationMode = orderValidationMode;
+        this.orderCorrectionType = orderCorrectionType;
+        this.shouldOverrideContainerPolicy = shouldOverrideContainerPolicy;
         this.joinFetchOrBatchRead = joinFetchOrBatchRead;
         
         setName("OL_Employee");
@@ -154,8 +161,12 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
             // either specify listOrderField with target foreign key table
 //            responsibilitiesListMapping.setListOrderFieldName("OL_RESPONS.RESPONS_ORDER");
             // or don't specify listOrderField's table at all - it will be defaulted to foreign key table.
-            responsibilitiesListMapping.setListOrderFieldName("RESPONS_ORDER");
-            responsibilitiesListMapping.setListOrderFieldValidationMode(orderValidationMode);
+            if(useVarcharOrder) {
+                responsibilitiesListMapping.setListOrderFieldName("RESPONS_ORDER_VARCHAR");
+            } else {
+                responsibilitiesListMapping.setListOrderFieldName("RESPONS_ORDER");
+            }
+            responsibilitiesListMapping.setOrderCorrectionType(orderCorrectionType);
         }
         if(useIndirection) {
             responsibilitiesListMapping.useTransparentList();
@@ -211,8 +222,12 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
                 // or don't specify listOrderField's table at all - it will be defaulted to foreign key table.
                 // If secondary table used then the field is in SALARY table, otherwise in EMPLOYEE table
                 // (both tables have MANAGED_ORDER field, only one of them used at a time).
-                managedEmployeesMapping.setListOrderFieldName("MANAGED_ORDER");
-                managedEmployeesMapping.setListOrderFieldValidationMode(orderValidationMode);
+                if(useVarcharOrder) {
+                    managedEmployeesMapping.setListOrderFieldName("MANAGED_ORDER_VARCHAR");
+                } else {
+                    managedEmployeesMapping.setListOrderFieldName("MANAGED_ORDER");
+                }
+                managedEmployeesMapping.setOrderCorrectionType(orderCorrectionType);
             }
             if(useSecondaryTable) {
                 managedEmployeesMapping.addTargetForeignKeyFieldName("OL_SALARY.MANAGER_ID", "EMP_ID");
@@ -237,8 +252,12 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
             // or don't specify listOrderField's table at all - it will be defaulted to foreign key table.
             // If secondary table used then the field is in ALLOWANCE table, otherwise in CHILD table
             // (both tables have CHILDREN_ORDER field, only one of them used at a time).
-            childrenMapping.setListOrderFieldName("CHILDREN_ORDER");
-            childrenMapping.setListOrderFieldValidationMode(orderValidationMode);
+            if(useVarcharOrder) {
+                childrenMapping.setListOrderFieldName("CHILDREN_ORDER_VARCHAR");
+            } else {
+                childrenMapping.setListOrderFieldName("CHILDREN_ORDER");
+            }
+            childrenMapping.setOrderCorrectionType(orderCorrectionType);
         }
         if(useIndirection) {
             childrenMapping.useTransparentList();
@@ -274,8 +293,12 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
                 // either specify listOrderField with target foreign key table
 //                phoneNumbersMapping.setListOrderFieldName("OL_PHONE.PHONE_ORDER");
                 // or don't specify listOrderField's table at all - it will be defaulted to foreign key table.
-                phoneNumbersMapping.setListOrderFieldName("PHONE_ORDER");
-                phoneNumbersMapping.setListOrderFieldValidationMode(orderValidationMode);
+                if(useVarcharOrder) {
+                    phoneNumbersMapping.setListOrderFieldName("PHONE_ORDER_VARCHAR");
+                } else {
+                    phoneNumbersMapping.setListOrderFieldName("PHONE_ORDER");
+                }
+                phoneNumbersMapping.setOrderCorrectionType(orderCorrectionType);
             }
             if(useIndirection) {
                 phoneNumbersMapping.useTransparentList();
@@ -309,8 +332,12 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
             // either specify listOrderField with target foreign key table
 //            projectsMapping.setListOrderFieldName("OL_PROJ_EMP.PROJ_ORDER");
             // or don't specify listOrderField's table at all - it will be defaulted to foreign key table.
-            projectsMapping.setListOrderFieldName("PROJ_ORDER");
-            projectsMapping.setListOrderFieldValidationMode(orderValidationMode);
+            if(useVarcharOrder) {
+                projectsMapping.setListOrderFieldName("PROJ_ORDER_VARCHAR");
+            } else {
+                projectsMapping.setListOrderFieldName("PROJ_ORDER");
+            }
+            projectsMapping.setOrderCorrectionType(orderCorrectionType);
         }
         projectsMapping.setRelationTableName("OL_PROJ_EMP");
         projectsMapping.addSourceRelationKeyFieldName("OL_PROJ_EMP.EMP_ID", "EMP_ID");
@@ -325,7 +352,7 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
             projectsLedMapping.setReferenceClass(Project.class);
             if(useListOrderField) {
                 projectsLedMapping.setListOrderFieldName("OL_PROJECT.PROJECTS_LED_ORDER");
-                projectsLedMapping.setListOrderFieldValidationMode(orderValidationMode);
+                projectsLedMapping.setOrderCorrectionType(orderCorrectionType);
             }
             if(useIndirection) {
                 projectsLedMapping.useTransparentList();
@@ -440,8 +467,12 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
             // either specify listOrderField with target foreign key table
 //            employeesMapping.setListOrderFieldName("OL_PROJ_EMP.EMP_ORDER");
             // or don't specify listOrderField's table at all - it will be defaulted to foreign key table.
-            employeesMapping.setListOrderFieldName("EMP_ORDER");
-            employeesMapping.setListOrderFieldValidationMode(orderValidationMode);
+            if(useVarcharOrder) {
+                employeesMapping.setListOrderFieldName("EMP_ORDER_VARCHAR");
+            } else {
+                employeesMapping.setListOrderFieldName("EMP_ORDER");
+            }
+            employeesMapping.setOrderCorrectionType(orderCorrectionType);
         }
         if(useIndirection) {
             employeesMapping.useTransparentList();
@@ -522,5 +553,35 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         } else if(joinFetchOrBatchRead == JoinFetchOrBatchRead.BATCH_READ) {
             mapping.setUsesBatchReading(true);
         }
+    }
+    
+    List<CollectionMapping> getListOrderMappings() {
+        List<CollectionMapping> list = new ArrayList();
+        Iterator<ClassDescriptor> it = this.getDescriptors().values().iterator();
+        while(it.hasNext()) {
+            list.addAll(getListOrderMappings(it.next()));
+        }
+        return list;
+    }
+
+    static List<CollectionMapping> getListOrderMappings(DatabaseSession session) {
+        List<CollectionMapping> list = new ArrayList();
+        list.addAll(getListOrderMappings(session.getDescriptor(Employee.class)));
+        list.addAll(getListOrderMappings(session.getDescriptor(Project.class)));
+        return list;
+    }
+
+    static List<CollectionMapping> getListOrderMappings(ClassDescriptor desc) {
+        List<CollectionMapping> list = new ArrayList();
+        List<DatabaseMapping> mappings = desc.getMappings();
+        for(int i=0; i < mappings.size(); i++) {
+            if(mappings.get(i).isCollectionMapping()) {
+                CollectionMapping collectionMapping = (CollectionMapping)mappings.get(i); 
+                if(collectionMapping.getListOrderField() != null) {
+                    list.add(collectionMapping);                    
+                }
+             }
+        }
+        return list;
     }
 }

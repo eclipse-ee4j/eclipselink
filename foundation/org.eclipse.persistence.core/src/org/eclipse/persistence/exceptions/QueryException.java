@@ -12,6 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.exceptions;
 
+import java.util.List;
+
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.internal.queries.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -1467,8 +1469,8 @@ public class QueryException extends ValidationException {
         return queryException;
     }
 
-    public static QueryException listOrderFieldWrongValue(DatabaseQuery query, DatabaseField field, Integer wrongValue, Integer expectedValue) {
-        Object[] args = { field, wrongValue, expectedValue };
+    public static QueryException listOrderFieldWrongValue(DatabaseQuery query, DatabaseField field, List wrongOrderValuesList) {
+        Object[] args = { field, wrongOrderValuesList, CR };
 
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, LIST_ORDER_FIELD_WRONG_VALUE, args), query);
         queryException.setErrorCode(LIST_ORDER_FIELD_WRONG_VALUE);

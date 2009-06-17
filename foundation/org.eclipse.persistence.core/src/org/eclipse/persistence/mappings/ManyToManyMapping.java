@@ -20,7 +20,6 @@ import org.eclipse.persistence.history.*;
 import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.internal.expressions.*;
 import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.identitymaps.*;
 import org.eclipse.persistence.internal.queries.*;
 import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.mappings.foundation.MapComponentMapping;
@@ -173,7 +172,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * Extract the source primary key value from the relation row.
      * Used for batch reading, most following same order and fields as in the mapping.
      */
-    protected Vector extractKeyFromRelationRow(AbstractRecord row, AbstractSession session) {
+    protected Vector extractKeyFromTargetRow(AbstractRecord row, AbstractSession session) {
         Vector key = new Vector(getSourceRelationKeyFields().size());
 
         for (int index = 0; index < getSourceRelationKeyFields().size(); index++) {
@@ -242,44 +241,6 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
         }
     }
     
-    /**
-     * INTERNAL:
-     * Extract the value from the batch optimized query.
-     */
-    public Object extractResultFromBatchQuery(DatabaseQuery query, AbstractRecord databaseRow, AbstractSession session, AbstractRecord argumentRow) {
-        //this can be null, because either one exists in the query or it will be created
-        Hashtable referenceObjectsByKey = null;
-        ContainerPolicy mappingContainerPolicy = getContainerPolicy();
-        synchronized (query) {
-            referenceObjectsByKey = getBatchReadObjects(query, session);
-            mappingContainerPolicy = getContainerPolicy();
-            if (referenceObjectsByKey == null) {
-                ReadAllQuery batchQuery = (ReadAllQuery)query;
-                ComplexQueryResult complexResult = (ComplexQueryResult)session.executeQuery(batchQuery, argumentRow);
-                Object results = complexResult.getResult();
-                referenceObjectsByKey = new Hashtable();
-                Enumeration rowsEnum = ((Vector)complexResult.getData()).elements();
-                ContainerPolicy queryContainerPolicy = batchQuery.getContainerPolicy();
-                for (Object elementsIterator = queryContainerPolicy.iteratorFor(results); queryContainerPolicy.hasNext(elementsIterator);) {
-                    Object eachReferenceObject = queryContainerPolicy.next(elementsIterator, session);
-                    CacheKey eachReferenceKey = new CacheKey(extractKeyFromRelationRow((AbstractRecord)rowsEnum.nextElement(), session));
-                    if (!referenceObjectsByKey.containsKey(eachReferenceKey)) {
-                        referenceObjectsByKey.put(eachReferenceKey, mappingContainerPolicy.containerInstance());
-                    }
-                    mappingContainerPolicy.addInto(eachReferenceObject, referenceObjectsByKey.get(eachReferenceKey), session);
-                }
-                setBatchReadObjects(referenceObjectsByKey, query, session);
-            }
-        }
-        Object result = referenceObjectsByKey.get(new CacheKey(extractPrimaryKeyFromRow(databaseRow, session)));
-
-        // The source object might not have any target objects
-        if (result == null) {
-            return mappingContainerPolicy.containerInstance();
-        } else {
-            return result;
-        }
-    }
 
     protected DataModifyQuery getDeleteQuery() {
         return deleteQuery;

@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import org.eclipse.persistence.annotations.OrderCorrectionType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackingPolicy;
 import org.eclipse.persistence.descriptors.changetracking.ObjectChangeTrackingPolicy;
@@ -28,11 +29,11 @@ import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.indirection.IndirectList;
 import org.eclipse.persistence.internal.queries.OrderedListContainerPolicy;
-import org.eclipse.persistence.internal.queries.OrderedListContainerPolicy.OrderValidationMode;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.queries.ReportQueryResult;
 import org.eclipse.persistence.sessions.UnitOfWork;
@@ -40,6 +41,7 @@ import org.eclipse.persistence.testing.framework.TestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.framework.TestModel;
 import org.eclipse.persistence.testing.models.orderedlist.*;
+import org.eclipse.persistence.testing.models.orderedlist.EmployeeSystem;
 import org.eclipse.persistence.testing.models.orderedlist.EmployeeSystem.ChangeTracking;
 import org.eclipse.persistence.testing.models.orderedlist.EmployeeSystem.JoinFetchOrBatchRead;
 
@@ -66,8 +68,10 @@ public class OrderListTestModel extends TestModel {
     boolean useListOrderField; 
     boolean useIndirection; 
     boolean useSecondaryTable;
+    boolean useVarcharOrder;
     ChangeTracking changeTracking;
-    OrderValidationMode orderValidationMode;
+    OrderCorrectionType orderCorrectionType;
+    boolean shouldOverrideContainerPolicy;
     JoinFetchOrBatchRead joinFetchOrBatchRead;
     
     /*
@@ -81,9 +85,9 @@ public class OrderListTestModel extends TestModel {
     /*
      * Constants used by WhereToAdd tests.
      */
-    static String front = "front";
-    static String middle = "middle";
-    static String end = "end";
+    static final String front = "front";
+    static final String middle = "middle";
+    static final String end = "end";
 
     /**
      * Return the JUnit suite to allow JUnit runner to find it.
@@ -108,18 +112,24 @@ public class OrderListTestModel extends TestModel {
         do {
             do {
                 do {
-                    for(int i=0; i < ChangeTracking.values().length; i++) {
-                        changeTracking = ChangeTracking.values()[i];
-                        for(int j=0; j < OrderValidationMode.values().length; j++) {
-                            orderValidationMode = OrderValidationMode.values()[j];
-                            for(int k=0; k < JoinFetchOrBatchRead.values().length; k++) {
-                                joinFetchOrBatchRead = JoinFetchOrBatchRead.values()[k];
-                                if(shouldAddModel()) {
-                                    addTest(new OrderListTestModel(useListOrderField, useIndirection, useSecondaryTable, changeTracking, orderValidationMode, joinFetchOrBatchRead));
-                                }
+                    do {
+                        for(int i=0; i < ChangeTracking.values().length; i++) {
+                            changeTracking = ChangeTracking.values()[i];
+                            for(int j=0; j < OrderCorrectionType.values().length; j++) {
+                                orderCorrectionType = OrderCorrectionType.values()[j];
+                                do{ 
+                                    for(int k=0; k < JoinFetchOrBatchRead.values().length; k++) {
+                                        joinFetchOrBatchRead = JoinFetchOrBatchRead.values()[k];
+                                        if(shouldAddModel()) {
+                                            addTest(new OrderListTestModel(useListOrderField, useIndirection, useSecondaryTable, useVarcharOrder, changeTracking, orderCorrectionType, shouldOverrideContainerPolicy, joinFetchOrBatchRead));
+                                        }
+                                    }
+                                    shouldOverrideContainerPolicy = !shouldOverrideContainerPolicy;
+                                } while(shouldOverrideContainerPolicy);
                             }
                         }
-                    }
+                        useVarcharOrder = !useVarcharOrder;
+                    } while(useVarcharOrder);
                 useSecondaryTable = !useSecondaryTable;
                 } while(useSecondaryTable);
             useIndirection = !useIndirection;
@@ -139,8 +149,61 @@ public class OrderListTestModel extends TestModel {
             if(!shouldRunWithoutListOrderField) {
                 return false;
             }
-            // the model would be identical to OrderValidationMode.NONE
-            if(orderValidationMode != OrderValidationMode.NONE) {
+            // the model would be identical to OrderCorrectionType.READ
+            if(orderCorrectionType != OrderCorrectionType.READ) {
+                return false;
+            }
+            // the model would be identical to useVarcharOrder==false
+            if(useVarcharOrder) {
+                return false;
+            }
+        }
+        
+        // Don't need too many tests for varcharOrder (listOrderField VARCHAR in the db) -
+        // just one model is enough.
+        // Note that other varcharOrder test models are bypassed for time saving sake only -
+        // this condition may be removed and all the tests should pass.
+        if(useVarcharOrder) {
+            if(!useIndirection) {
+                return false;
+            }
+            if(useSecondaryTable) {
+                return false;
+            }
+            if(changeTracking != ChangeTracking.DEFERRED) {
+                return false;
+            }
+            if(orderCorrectionType != orderCorrectionType.READ) {
+                return false;
+            }
+            if(joinFetchOrBatchRead != JoinFetchOrBatchRead.NONE) {
+                return false;
+            }
+        }
+        
+        // Don't need too many tests for overrideContainerPolicy -
+        // just one model is enough.
+        // Note that other overrideContainerPolicy test models are bypassed for time saving sake only -
+        // this condition may be removed and all the tests should pass.
+        if(shouldOverrideContainerPolicy) {
+            if(!useIndirection) {
+                return false;
+            }
+            if(useSecondaryTable) {
+                return false;
+            }
+            if(changeTracking != ChangeTracking.DEFERRED) {
+                return false;
+            }
+            // READ and READ_WRITE are the cases when the overridden method OrderedListContainerPolicy.correctOrderList is used,
+            // let's choose one of them. Doesn't make sense to run with EXCEPTION.
+            if(orderCorrectionType != orderCorrectionType.READ_WRITE) {
+                return false;
+            }
+            if(joinFetchOrBatchRead != JoinFetchOrBatchRead.NONE) {
+                return false;
+            }
+            if(useVarcharOrder) {
                 return false;
             }
         }
@@ -148,12 +211,14 @@ public class OrderListTestModel extends TestModel {
         return true;
     }
     
-    public OrderListTestModel(boolean useListOrderField, boolean useIndirection, boolean useSecondaryTable, ChangeTracking changeTracking, OrderValidationMode orderValidationMode, JoinFetchOrBatchRead joinFetchOrBatchRead) {
+    public OrderListTestModel(boolean useListOrderField, boolean useIndirection, boolean useSecondaryTable, boolean useVarcharOrder, ChangeTracking changeTracking, OrderCorrectionType orderCorrectionType, boolean shouldOverrideContainerPolicy, JoinFetchOrBatchRead joinFetchOrBatchRead) {
         this.useListOrderField = useListOrderField;
         this.useIndirection = useIndirection; 
-        this.useSecondaryTable = useSecondaryTable; 
+        this.useSecondaryTable = useSecondaryTable;
+        this.useVarcharOrder = useVarcharOrder;
         this.changeTracking = changeTracking;
-        this.orderValidationMode = orderValidationMode;
+        this.orderCorrectionType = orderCorrectionType;
+        this.shouldOverrideContainerPolicy = shouldOverrideContainerPolicy;
         this.joinFetchOrBatchRead = joinFetchOrBatchRead;
         
         setDescription("This model tests ordered list");
@@ -162,8 +227,10 @@ public class OrderListTestModel extends TestModel {
         addToName(useListOrderField ? "" : "NO_ORDER_LIST");
         addToName(useIndirection ? "" : "NO_INDIRECTION");
         addToName(useSecondaryTable ? "SECONDARY_TABLE" : "");
+        addToName(useVarcharOrder ? "VARCHAR_ORDER" : "");
         addToName(changeTracking.toString());
-        addToName(orderValidationMode == OrderValidationMode.NONE ? "" : orderValidationMode.toString());
+        addToName(orderCorrectionType == OrderCorrectionType.READ ? "" : orderCorrectionType.toString());
+        addToName(shouldOverrideContainerPolicy ? "OVERRIDE_CONTAINER_POLICY" : "");
         addToName(joinFetchOrBatchRead.toString());
     }
 
@@ -175,7 +242,7 @@ public class OrderListTestModel extends TestModel {
     
     public void addRequiredSystems() {
         if(!isTopLevel) {
-            addRequiredSystem(new EmployeeSystem(useListOrderField, useIndirection, useSecondaryTable, changeTracking, orderValidationMode, joinFetchOrBatchRead));
+            addRequiredSystem(new EmployeeSystem(useListOrderField, useIndirection, useSecondaryTable, useVarcharOrder, changeTracking, orderCorrectionType, shouldOverrideContainerPolicy, joinFetchOrBatchRead));
         }
     }
 
@@ -215,15 +282,20 @@ public class OrderListTestModel extends TestModel {
             }
             if(this.useListOrderField) {
                 addTest(new SimpleIndexTest(true));
-                if(orderValidationMode == OrderValidationMode.EXCEPTION) {
-                    addTest(new BreakOrderExceptionTest_OneToMany());
+                if(this.shouldOverrideContainerPolicy) {
+                    addTest(new VerifyContainerPolicyClassTest());
+                }
+                if(orderCorrectionType == OrderCorrectionType.EXCEPTION) {
+                    if(joinFetchOrBatchRead != JoinFetchOrBatchRead.INNER_JOIN) {
+                        addTest(new BreakOrderExceptionTest_OneToMany());
+                    }
                     addTest(new BreakOrderExceptionTest_UnidirectionalOneToMany());
                     addTest(new BreakOrderExceptionTest_ManyToMany());
                     addTest(new BreakOrderExceptionTest_DirectCollection());
                     if(this.changeTracking == ChangeTracking.DEFERRED) {
                         addTest(new BreakOrderExceptionTest_AggregateCollection());
                     }
-                } else if(orderValidationMode == OrderValidationMode.CORRECTION) {
+                } else if(orderCorrectionType == OrderCorrectionType.READ_WRITE) {
                     addTest(new BreakOrderCorrectionTest(false));
                     addTest(new BreakOrderCorrectionTest(true));
                 }
@@ -755,27 +827,67 @@ public class OrderListTestModel extends TestModel {
          * Breaks order in the db by assigning wrong values to order fields 
          */
         void breakManagedEmployeesOrder() {
+            String tableName;
+            String fieldName;
             if(useSecondaryTable) {
-                getSession().executeNonSelectingSQL("UPDATE OL_SALARY SET MANAGED_ORDER = NULL WHERE MANAGED_ORDER = 1");
+                tableName = "OL_SALARY";
             } else {
-                getSession().executeNonSelectingSQL("UPDATE OL_EMPLOYEE SET MANAGED_ORDER = NULL WHERE MANAGED_ORDER = 1");
+                tableName = "OL_EMPLOYEE";
             }
+            if(useVarcharOrder) {
+                fieldName = "MANAGED_ORDER_VARCHAR";
+            } else {
+                fieldName = "MANAGED_ORDER";
+            }
+            executeBreak(tableName, fieldName, "1", "NULL");
         }
         void breakChildrenOrder() {
+            String tableName;
+            String fieldName;
             if(useSecondaryTable) {
-                getSession().executeNonSelectingSQL("UPDATE OL_ALLOWANCE SET CHILDREN_ORDER = null WHERE CHILDREN_ORDER = 0");
+                tableName = "OL_ALLOWANCE";
             } else {
-                getSession().executeNonSelectingSQL("UPDATE OL_CHILD SET CHILDREN_ORDER = null WHERE CHILDREN_ORDER = 0");
+                tableName = "OL_CHILD";
             }
+            if(useVarcharOrder) {
+                fieldName = "CHILDREN_ORDER_VARCHAR";
+            } else {
+                fieldName = "CHILDREN_ORDER";
+            }
+            executeBreak(tableName, fieldName, "0", "NULL");
         }
         void breakProjectsOrder() {
-            getSession().executeNonSelectingSQL("UPDATE OL_PROJ_EMP SET PROJ_ORDER = 5 WHERE PROJ_ORDER = 0");
+            String tableName = "OL_PROJ_EMP";
+            String fieldName;
+            if(useVarcharOrder) {
+                fieldName = "PROJ_ORDER_VARCHAR";
+            } else {
+                fieldName = "PROJ_ORDER";
+            }
+            executeBreak(tableName, fieldName, "0", "5");
         }
         void breakResponsibilitiesOrder() {
-            getSession().executeNonSelectingSQL("UPDATE OL_RESPONS SET RESPONS_ORDER = 0 WHERE RESPONS_ORDER = 1");
+            String tableName = "OL_RESPONS";
+            String fieldName;
+            if(useVarcharOrder) {
+                fieldName = "RESPONS_ORDER_VARCHAR";
+            } else {
+                fieldName = "RESPONS_ORDER";
+            }
+            executeBreak(tableName, fieldName, "1", "0");
         }
         void breakPhonesOrder() {
-            getSession().executeNonSelectingSQL("UPDATE OL_PHONE SET PHONE_ORDER = 1 WHERE PHONE_ORDER = 0");
+            String tableName = "OL_PHONE";
+            String fieldName;
+            if(useVarcharOrder) {
+                fieldName = "PHONE_ORDER_VARCHAR";
+            } else {
+                fieldName = "PHONE_ORDER";
+            }
+            executeBreak(tableName, fieldName, "0", "1");
+        }
+        void executeBreak(String tableName, String fieldName, String oldValue, String newValue) {
+            getSession().executeNonSelectingSQL("UPDATE "+tableName+" SET "+fieldName+" = "+newValue+" WHERE "+fieldName+" = " + oldValue);
         }
         void breakOrder() {
             if(useManagedEmployees) {
@@ -796,43 +908,43 @@ public class OrderListTestModel extends TestModel {
         }
         
         /*
-         * Set the new OrderValidationMode, return the old one.
+         * Set the new OrderCorrectionType, return the old one.
          * Verify that the old modes are the same for all mappings. 
          */
-        OrderValidationMode changeOrderValidationMode(OrderValidationMode mode) {
-            OrderValidationMode oldMode = null;
+        OrderCorrectionType changeOrderCorrectionType(OrderCorrectionType mode) {
+            OrderCorrectionType oldMode = null;
             if(useManagedEmployees) {
-                oldMode = changeOrderValidationMode("managedEmployees", mode, oldMode);
+                oldMode = changeOrderCorrectionType("managedEmployees", mode, oldMode);
             }
             if(useChildren) {
-                oldMode = changeOrderValidationMode("children", mode, oldMode);
+                oldMode = changeOrderCorrectionType("children", mode, oldMode);
             }
             if(useProjects) {
-                oldMode = changeOrderValidationMode("projects", mode, oldMode);
+                oldMode = changeOrderCorrectionType("projects", mode, oldMode);
             }
             if(useResponsibilities) {
-                oldMode = changeOrderValidationMode("responsibilitiesList", mode, oldMode);
+                oldMode = changeOrderCorrectionType("responsibilitiesList", mode, oldMode);
             }
             if(usePhones) {
-                oldMode = changeOrderValidationMode("phoneNumbers", mode, oldMode);
+                oldMode = changeOrderCorrectionType("phoneNumbers", mode, oldMode);
             }
             return oldMode;
         }
-        OrderValidationMode changeOrderValidationMode(String attribute, OrderValidationMode mode, OrderValidationMode oldMode) {
+        OrderCorrectionType changeOrderCorrectionType(String attribute, OrderCorrectionType mode, OrderCorrectionType oldMode) {
             ClassDescriptor desc = getSession().getDescriptor(Employee.class);
             CollectionMapping mapping = (CollectionMapping)desc.getMappingForAttributeName(attribute);
-            OrderValidationMode currOldMode = changeOrderValidationMode((CollectionMapping)mapping, mode);
+            OrderCorrectionType currOldMode = changeOrderCorrectionType((CollectionMapping)mapping, mode);
             if(oldMode != null) {
                 if(oldMode != currOldMode) {
-                    throw new TestProblemException("OrderValidationModes for " + attribute+ " is " + currOldMode +"; for previous mapping(s) it was " + oldMode);
+                    throw new TestProblemException("OrderCorrectionTypes for " + attribute+ " is " + currOldMode +"; for previous mapping(s) it was " + oldMode);
                 }
             }
             return currOldMode;
         }
-        OrderValidationMode changeOrderValidationMode(CollectionMapping mapping, OrderValidationMode mode) {
+        OrderCorrectionType changeOrderCorrectionType(CollectionMapping mapping, OrderCorrectionType mode) {
             OrderedListContainerPolicy policy = (OrderedListContainerPolicy)mapping.getContainerPolicy(); 
-            OrderValidationMode oldMode = policy.getOrderValidationMode();
-            policy.setOrderValidationMode(mode);
+            OrderCorrectionType oldMode = policy.getOrderCorrectionType();
+            policy.setOrderCorrectionType(mode);
             
             OrderedListContainerPolicy queryPolicy = null;
             if(mapping.getSelectionQuery().isReadAllQuery()) {
@@ -841,11 +953,11 @@ public class OrderListTestModel extends TestModel {
                 queryPolicy = (OrderedListContainerPolicy)((DataReadQuery)mapping.getSelectionQuery()).getContainerPolicy();
             }
             if(policy != queryPolicy) {
-                OrderValidationMode oldModeQuery = queryPolicy.getOrderValidationMode();
+                OrderCorrectionType oldModeQuery = queryPolicy.getOrderCorrectionType();
                 if(oldMode != oldModeQuery) {
-                    throw new TestErrorException(mapping.getAttributeName() + ": OrderValidationModes in container policy is " + oldMode +"; is query is " + oldModeQuery);
+                    throw new TestErrorException(mapping.getAttributeName() + ": OrderCorrectionTypes in container policy is " + oldMode +"; is query is " + oldModeQuery);
                 }
-                queryPolicy.setOrderValidationMode(mode);
+                queryPolicy.setOrderCorrectionType(mode);
             }
             return oldMode;
         }
@@ -984,7 +1096,6 @@ public class OrderListTestModel extends TestModel {
                 throw new TestErrorException("manager == null. Nothing to verify");
             }
             
-            errorMsg = "";
             String textNameExt;
             Object objectToCompare;
             for(int k=0; k<2; k++) {
@@ -1495,8 +1606,8 @@ public class OrderListTestModel extends TestModel {
     abstract class BreakOrderExceptionTest extends ChangeTest {
         BreakOrderExceptionTest() {
             super();
-            if(orderValidationMode != OrderValidationMode.EXCEPTION) {
-                throw new TestProblemException("Requires OrderValidationMode.EXCEPTION");
+            if(orderCorrectionType != OrderCorrectionType.EXCEPTION) {
+                throw new TestProblemException("Requires OrderCorrectionType.EXCEPTION");
             }
         }
         abstract public void test();
@@ -1504,6 +1615,7 @@ public class OrderListTestModel extends TestModel {
         protected void verify() {
             try {
                 super.verify();
+                throw new TestErrorException("Expected QueryException.LIST_ORDER_FIELD_WRONG_VALUE was not thrown.");
             } catch (QueryException queryException) {
                 if(queryException.getErrorCode() == QueryException.LIST_ORDER_FIELD_WRONG_VALUE) {
                     // expected query exception on attempt to read broken order list
@@ -1567,8 +1679,8 @@ public class OrderListTestModel extends TestModel {
             this.nSize = 4;
             this.shoulReadManagerThroughUow = shoulReadManagerThroughUow;
                         
-            if(orderValidationMode != OrderValidationMode.CORRECTION) {
-                throw new TestProblemException("Requires OrderValidationMode.CORRECTION");
+            if(orderCorrectionType != OrderCorrectionType.READ_WRITE) {
+                throw new TestProblemException("Requires OrderCorrectionType.CORRECTION");
             }
             setName(getName() + (shoulReadManagerThroughUow ? " ReadThroughUow" : " ReadThroughSession"));
         }
@@ -1616,7 +1728,7 @@ public class OrderListTestModel extends TestModel {
         }
         
         protected void verify() {
-            OrderValidationMode originalMode = this.changeOrderValidationMode(OrderValidationMode.EXCEPTION); 
+            OrderCorrectionType originalMode = this.changeOrderCorrectionType(OrderCorrectionType.EXCEPTION); 
             try {                
                 if(shoulReadManagerThroughUow) {
                     // manager is not in shared cache - bring the one from the shared cache.
@@ -1625,19 +1737,19 @@ public class OrderListTestModel extends TestModel {
                     query.checkCacheOnly();
                     manager = (Employee)getSession().readObject(manager);
                 }
+                // verify that all attribute values are marked as having NOT broken order
+                errorMsg = this.verifyIsListOrderBrokenInDb(manager, false);
+                if(errorMsg.length() > 0) {
+                    errorMsg = "manager in verify: " + errorMsg;
+                }
+                String localErrorMsg = this.verifyIsListOrderBrokenInDb(managerClone, false);
+                if(localErrorMsg.length() > 0) {
+                    localErrorMsg = "managerClone in verify: " + localErrorMsg;
+                    errorMsg += localErrorMsg;
+                }
                 super.verify();
             } finally {
-                this.changeOrderValidationMode(originalMode); 
-            }
-            // verify that all attribute values are marked as having NOT broken order
-            errorMsg = this.verifyIsListOrderBrokenInDb(manager, false);
-            if(errorMsg.length() > 0) {
-                errorMsg = "manager in verify: " + errorMsg + "; ";
-            }
-            String localErrorMsg = this.verifyIsListOrderBrokenInDb(managerClone, false);
-            if(localErrorMsg.length() > 0) {
-                localErrorMsg = "managerClone in verify: " + localErrorMsg;
-                errorMsg += localErrorMsg;
+                this.changeOrderCorrectionType(originalMode); 
             }
         }
     }    
@@ -1752,6 +1864,41 @@ public class OrderListTestModel extends TestModel {
         CreateEmptyManagersTest() {
             super();
             nSize = 0;
+        }
+    }
+    
+    class VerifyContainerPolicyClassTest extends TestCase {
+        Class expectedClass;
+        VerifyContainerPolicyClassTest() {
+            this(NullsLastOrderedListContainerPolicy.class);
+        }
+        VerifyContainerPolicyClassTest(Class expectedClass) {
+            super();
+            this.expectedClass = expectedClass;
+            setName("VerifyContainerPolicyClassTest");
+        }
+        public void verify() {
+            String errorMsg = "";
+            List<CollectionMapping> listOrderMappings = EmployeeSystem.getListOrderMappings(getDatabaseSession());
+            for(int i=0; i < listOrderMappings.size(); i++) {
+                CollectionMapping mapping = listOrderMappings.get(i); 
+                if(!mapping.getContainerPolicy().getClass().equals(expectedClass)) {
+                    errorMsg += mapping.getAttributeName() + ".containerPolicy type is wrong; ";
+                }
+                ReadQuery selectQuery = mapping.getSelectionQuery(); 
+                if(selectQuery.isReadAllQuery()) {
+                    if(!((ReadAllQuery)selectQuery).getContainerPolicy().getClass().equals(expectedClass)) {
+                        errorMsg += mapping.getAttributeName() + ".queryContainerPolicy type is wrong; ";
+                    }
+                } else {
+                    if(!((DataReadQuery)selectQuery).getContainerPolicy().getClass().equals(expectedClass)) {
+                        errorMsg += mapping.getAttributeName() + ".queryContainerPolicy type is wrong; ";
+                    }
+                }
+            }
+            if(errorMsg.length() > 0) {
+                throw new TestErrorException(errorMsg);
+            }
         }
     }
 }

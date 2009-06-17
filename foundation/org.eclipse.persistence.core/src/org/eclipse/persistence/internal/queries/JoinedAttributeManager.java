@@ -100,6 +100,9 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
     //** Stores orderBy expressions of the joined CollectionMappings - in case the mapping has listFieldOrder */ 
     protected transient List<Expression> orderByExpressions;
     
+    //** Stores additional field expressions of the joined CollectionMappings - in case the mapping has listFieldOrder */ 
+    protected transient List<Expression> additionalFieldExpressions;
+    
     public JoinedAttributeManager(){
     }
     
@@ -184,6 +187,9 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
         if(this.orderByExpressions != null) {
             joinManager.orderByExpressions = new ArrayList<Expression>(this.orderByExpressions);
         }
+        if(this.additionalFieldExpressions != null) {
+            joinManager.additionalFieldExpressions = new ArrayList<Expression>(this.additionalFieldExpressions);
+        }
         return joinManager;
     }
     
@@ -200,6 +206,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
         this.joinedMappingQueries = null;
         this.joinedMappingQueryClones = null;
         this.orderByExpressions = null;
+        this.additionalFieldExpressions = null;
     }
 
     /**
@@ -352,6 +359,37 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
         return this.descriptor;
     }
     
+    /**
+     * Get the list of additional field expressions.
+     */
+    public List<Expression> getAdditionalFieldExpressions() {
+        if (this.additionalFieldExpressions == null){
+            this.additionalFieldExpressions = new ArrayList<Expression>();
+        }
+        return additionalFieldExpressions;
+    }
+
+    /**
+     * Get the list of additional field expressions.
+     */
+    public List<Expression> getAdditionalFieldExpressions_() {
+        return additionalFieldExpressions;
+    }
+
+    /**
+     * Return if there are additional field expressions.
+     */
+    public boolean hasAdditionalFieldExpressions() {
+        return (this.additionalFieldExpressions != null) && (!this.additionalFieldExpressions.isEmpty());
+    }
+
+    /**
+     * Set the list of additional field expressions.
+     */
+    public void setAdditionalFieldExpressions_(List<Expression> expressions) {
+        this.additionalFieldExpressions = expressions;
+    }
+
     /**
      * Return the attributes that must be joined.
      */
@@ -654,8 +692,8 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
             if(joinMappingExpression != null) {
                 addJoinedMappingExpression(joinMappingExpression);
                 if(((CollectionMapping)mapping).getListOrderField() != null) {
-                    Expression fieldExpression = ((CollectionMapping)mapping).getListOrderFieldExpression(joinMappingExpression);
-                    getOrderByExpressions().add(fieldExpression);
+                    Expression expField = ((CollectionMapping)mapping).getListOrderFieldExpression(joinMappingExpression);
+                    getAdditionalFieldExpressions().add(expField);
                 }
             }
         } else {

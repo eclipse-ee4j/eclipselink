@@ -29,7 +29,6 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 public class FieldExpression extends DataExpression {
     protected DatabaseField field;
     protected transient DatabaseField aliasedField;
-    protected boolean isIndex;
 
     /**
      * FieldExpression constructor comment.
@@ -200,24 +199,9 @@ public class FieldExpression extends DataExpression {
 
     /**
      * INTERNAL:
-     * Indicates whether it is an index -
-     * the field expression created by QueryKeyExpressionm.index() method.
-     */
-    public boolean isIndex() {
-        return isIndex;
-    }
-    
-    /**
-     * INTERNAL:
      * Normalize the expression into a printable structure.
      */
     public Expression normalize(ExpressionNormalizer normalizer) {
-        if(isIndex) {
-            // index must have base expression (QueryKeyExpression).
-            // Base expression should be normalized first: it sets the field, possibly changes base expression
-            // (from the original QueryKeyExpression to TableExpression).
-            getBaseExpression().normalize(normalizer);
-        }
         Expression expression = super.normalize(normalizer);
         // to support custom types, print expressions derived from field expressions, table expressions and direct query keys with their aliases
         if (getBaseExpression() != null && getBaseExpression().isFieldExpression() || getBaseExpression().isTableExpression() ||
@@ -270,15 +254,6 @@ public class FieldExpression extends DataExpression {
         field = newField;
     }
 
-    /**
-     * INTERNAL:
-     * QueryKeyExpressionm.index() method sets this to true
-     * to indicate an index field.
-     */
-    public void setIsIndex(boolean isIndex) {
-        this.isIndex = isIndex;
-    }
-    
     /**
      * INTERNAL:
      * Rebuild myself against the base, with the values of parameters supplied by the context

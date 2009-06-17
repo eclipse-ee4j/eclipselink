@@ -14,6 +14,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.queries;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +26,10 @@ import java.util.IdentityHashMap;
 import java.util.ListIterator;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
+import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.IndexedObject;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
@@ -33,11 +37,11 @@ import org.eclipse.persistence.internal.sessions.OrderedChangeObject;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
 import org.eclipse.persistence.internal.sessions.CollectionChangeRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.annotations.OrderCorrectionType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
 import org.eclipse.persistence.indirection.IndirectCollection;
 import org.eclipse.persistence.indirection.IndirectList;
-import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ReadQuery;
@@ -54,23 +58,10 @@ import org.eclipse.persistence.queries.ReadQuery;
  * @see ListContainerPolicy
  */
 public class OrderedListContainerPolicy extends ListContainerPolicy {
-    /** 
-     * orderValidationMode used only in case listOrderField != null.
-     * Indicates whether validation of listOrderField values should be
-     * performed when the objects are read from the db:
-     * there should be no rows with listOrderField set to null, no "holes" in order.
-     */
-    public static enum OrderValidationMode {
-        /** Don't validate */
-        NONE,
-        /** Validate, if validation fails set a flag in IndirectList (must use IndirectList as container class) */
-        CORRECTION,
-        /** Validate, if validation fails throw exception */
-        EXCEPTION
-    }
-    protected OrderValidationMode orderValidationMode = OrderValidationMode.NONE;
-    protected DatabaseField listOrderField; 
-    
+    protected static final String NOT_SET = "NOT_SET";
+    protected DatabaseField listOrderField;    
+    protected OrderCorrectionType orderCorrectionType;
+        
     /**
      * INTERNAL:
      * Construct a new policy.
@@ -97,59 +88,113 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
     
     /**
      * INTERNAL:
-     * Add element to container.
+     * Add a list of elements to container.
      * This is used to add to a collection independent of JDK 1.1 and 1.2.
      * The session may be required to wrap for the wrapper policy.
      * The row may be required by subclasses
      * Return whether the container changed
      */
-    public boolean addInto(Object element, Object container, AbstractSession session, AbstractRecord dbRow, ObjectBuildingQuery query) {
-        validateOrder(element, container, session, dbRow, query);
-        return super.addInto(element, container, session, dbRow, query);
+    public boolean addAll(List elements, Object container, AbstractSession session, List<AbstractRecord> dbRows, ObjectBuildingQuery query) {
+        if(this.listOrderField == null) {
+            return super.addAll(elements, container, session, dbRows, query);
+        } else {
+            return addAll(elements, container, session, dbRows, (ReadQuery)query);
+        }
     }
-
+    
     /**
      * INTERNAL:
-     * Add element to container.
+     * Add a list of elements to container.
      * This is used to add to a collection independent of JDK 1.1 and 1.2.
      * The session may be required to wrap for the wrapper policy.
      * The row may be required by subclasses
      * Return whether the container changed
      */
-    public boolean addInto(Object element, Object container, AbstractSession session, AbstractRecord dbRow, DataReadQuery query) {
-        validateOrder(element, container, session, dbRow, query);
-        return super.addInto(element, container, session, dbRow, query);
+    public boolean addAll(List elements, Object container, AbstractSession session, List<AbstractRecord> dbRows, DataReadQuery query) {
+        if(this.listOrderField == null) {
+            return super.addAll(elements, container, session, dbRows, query);
+        } else {
+            return addAll(elements, container, session, dbRows, (ReadQuery)query);
+        }
     }
 
-    /**
-     * INTERNAL:
-     * Validate order extracted from listOrderField - it should be the same as the index to hold the element in the list.
-     */
-    protected void validateOrder(Object element, Object container, AbstractSession session, AbstractRecord dbRow, ReadQuery query) {
-        if(this.orderValidationMode != OrderValidationMode.NONE) {
-            Number numOrderValue = (Number)dbRow.get(this.listOrderField);
-            if(numOrderValue != null) {
-                int intOrderValue = numOrderValue.intValue();
-                // verify that the order value read from the db is the same as would be index in the list.
-                if(intOrderValue != ((List)container).size()) {
-                    QueryException exception = QueryException.listOrderFieldWrongValue(query, this.listOrderField, intOrderValue, ((List)container).size()); 
-                    if(this.orderValidationMode == OrderValidationMode.CORRECTION) {
-                        session.logThrowable(SessionLog.WARNING, SessionLog.QUERY, exception);
-                        ((IndirectList)container).setIsListOrderBrokenInDb(true);
-                    } else if(this.orderValidationMode == OrderValidationMode.EXCEPTION) {
-                        throw exception;
-                    }
+    protected boolean addAll(List elements, Object container, AbstractSession session, List<AbstractRecord> dbRows, ReadQuery query) {
+        int size = dbRows.size();
+
+        if(this.elementDescriptor != null && this.elementDescriptor.getObjectBuilder().hasWrapperPolicy()) {
+            ObjectBuilder objectBuilder = this.elementDescriptor.getObjectBuilder();
+            List wrappedElements = new ArrayList(size);
+            for(int i=0; i < size; i++) {
+                wrappedElements.add(objectBuilder.wrapObject(elements.get(i), session));
+            }
+            elements = wrappedElements;
+        }
+        
+        ConversionManager conversionManager = session.getDatasourcePlatform().getConversionManager();
+
+        // populate container with a dummy so the container.set(i, obj) could be used later.
+        for(int i=0; i < size; i++) {
+            ((List)container).add(NOT_SET);
+        }
+        // insert the elements into container        
+        boolean failed = false;
+        for(int i=0; i < size; i++) {
+            AbstractRecord row = dbRows.get(i);
+            Object orderValue = row.get(this.listOrderField);
+            // order value is null
+            if(orderValue == null) {
+                failed = true;
+                break;
+            }
+            int intOrderValue = ((Integer)conversionManager.convertObject(orderValue, Integer.class)).intValue();
+            try {
+                // one or more elements have the same order value
+                if(NOT_SET != ((List)container).set(intOrderValue, elements.get(i))) {
+                    failed = true;
+                    break;
                 }
-            } else {
-                QueryException exception = QueryException.listOrderFieldWrongValue(query, this.listOrderField, null, ((List)container).size()); 
-                if(this.orderValidationMode == OrderValidationMode.CORRECTION) {
-                    session.logThrowable(SessionLog.WARNING, SessionLog.QUERY, exception);
-                    ((IndirectList)container).setIsListOrderBrokenInDb(true);
-                } else if(this.orderValidationMode == OrderValidationMode.EXCEPTION) {
-                    throw exception;
-                }
+            } catch(IndexOutOfBoundsException indexException) {
+                // order value negative or greater/equal to size
+                failed = true;
+                break;
             }
         }
+
+        if(failed) {
+            ((List)container).clear();
+            
+            // extract order list - it will be set into exception or used by order correction.
+            List<Integer> orderList = new ArrayList(size);
+            for(int i=0; i < size; i++) {
+                AbstractRecord row = dbRows.get(i);
+                Object orderValue = row.get(this.listOrderField);
+                if(orderValue == null) {
+                    orderList.add(null);
+                } else {
+                    orderList.add((Integer)conversionManager.convertObject(orderValue, Integer.class));
+                }
+            }
+            
+            if(this.orderCorrectionType == OrderCorrectionType.READ || this.orderCorrectionType == OrderCorrectionType.READ_WRITE) {
+                // pair each element with its order index
+                List<IndexedObject> indexedElements = new ArrayList(size);
+                for(int i=0; i < size; i++) {
+                    indexedElements.add(new IndexedObject(orderList.get(i), elements.get(i)));
+                }
+
+                // put elements in order and add to container 
+                ((List)container).addAll(correctOrderList(indexedElements));
+
+                if(this.orderCorrectionType == OrderCorrectionType.READ_WRITE) {
+                    // mark IndirectList to have broken order
+                    ((IndirectList)container).setIsListOrderBrokenInDb(true);
+                }
+            } else {
+                // this.orderCorrectionType == OrderCorrectionType.EXCEPTION
+                throw QueryException.listOrderFieldWrongValue(query, this.listOrderField, orderList);                
+            }
+        }
+        return size > 0;
     }
 
     /**
@@ -305,6 +350,33 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
     }
     
     /**
+     * PUBLIC:
+     * Correct object's order in the list.
+     * The method is called only in one case - when the list of order indexes read from db is invalid
+     * (contains nulls, duplicates, negative values, values greater/equal list size).
+     * Each element of the indexedObjects is a pair of the order index and the corresponding object.
+     * The goal of the method is to return back the list of objects (not indexed objects!) in the correct order.
+     * The objects should not be altered.
+     * 
+     * The default implementation of the method sorts indexedObjects according to their indexes (null less than any non-null).
+     * For example: 
+     *   indexedObjects = {{2, objectA}, {5, ObjectB}}  returns {objectA, objectB};
+     *   indexedObjects = {{2, objectA}, {-1, ObjectB}}  returns {objectB, objectA};
+     *   indexedObjects = {{2, objectA}, {null, ObjectB}}  returns {objectB, objectA};
+     *   
+     * This method could be overridden by the user.
+     */
+    public List correctOrderList(List<IndexedObject> indexedObjects) {
+        Collections.sort(indexedObjects);
+        int size = indexedObjects.size();
+        List objects = new ArrayList(size);
+        for(int i=0; i < size; i++) {
+            objects.add(indexedObjects.get(i).getObject());
+        }
+        return objects;
+    }
+    
+    /**
      * INTERNAL:
      * Used to create an iterator on a the Map object passed to CollectionChangeRecord.addRemoveChange()
      * to access the values to be removed.  In the case of some container policies the values will actually
@@ -323,19 +395,20 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
         this.listOrderField = field;
     }
     
-    public OrderValidationMode getOrderValidationMode() {
-        return this.orderValidationMode;
+    public OrderCorrectionType getOrderCorrectionType() {
+        return this.orderCorrectionType;
     }
     
-    public void setOrderValidationMode(OrderValidationMode orderValidationMode) {
-        if(orderValidationMode == OrderValidationMode.CORRECTION && this.orderValidationMode != OrderValidationMode.CORRECTION) {
-            if(!getContainerClass().equals(IndirectList.class)) {
+    public void setOrderCorrectionType(OrderCorrectionType orderCorrectionType) {
+        if(this.orderCorrectionType == orderCorrectionType) {
+            return;
+        }
+        if(orderCorrectionType == OrderCorrectionType.READ_WRITE) {
+            if(getContainerClass() == null || !IndirectList.class.isAssignableFrom(getContainerClass())) {
                 setContainerClass(IndirectList.class);
             }
-        } else if(orderValidationMode == null) {
-            orderValidationMode = OrderValidationMode.NONE;
         }
-        this.orderValidationMode = orderValidationMode;
+        this.orderCorrectionType = orderCorrectionType;
     }
     
     /**
@@ -364,6 +437,11 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
         Object synchronizedValueOfTarget = valueOfTarget;
         if (valueOfTarget instanceof IndirectCollection) {
             synchronizedValueOfTarget = ((IndirectCollection)valueOfTarget).getDelegateObject();
+            if(changeRecord.orderHasBeenRepaired()) {
+                if(valueOfTarget instanceof IndirectList) {
+                    ((IndirectList)valueOfTarget).setIsListOrderBrokenInDb(false);
+                }
+            }
         }
         synchronized (synchronizedValueOfTarget) {
             if (!changeRecord.getOrderedChangeObjectList().isEmpty()){
@@ -558,5 +636,15 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
 
         OrderedChangeObject orderedChangeObject = new OrderedChangeObject(changeType, event.getIndex(), changeSet, event.getNewValue());
         collectionChangeRecord.getOrderedChangeObjectList().add(orderedChangeObject);
+    }
+    
+    /**
+     * INTERNAL:
+     * Indicates whether addAll method should be called to add entire collection,
+     * or it's possible to call addInto multiple times instead.
+     * @return
+     */
+    public boolean shouldAddAll(){
+        return this.listOrderField != null;
     }
 }

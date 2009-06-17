@@ -81,12 +81,12 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     /** indicates whether listOrderField value could be updated in the db. Used only if listOrderField!=null */
     protected boolean isListOrderFieldUpdatable;
     
-    protected static String min = "min";
-    protected static String max = "max";
-    protected static String shift = "shift";
+    protected static final String min = "min";
+    protected static final String max = "max";
+    protected static final String shift = "shift";
 
-    protected static String pk = "pk";
-    protected static String bulk = "bulk";
+    protected static final String pk = "pk";
+    protected static final String bulk = "bulk";
 
     /**
      * PUBLIC:
@@ -1058,49 +1058,6 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         aggregateBatchQuery.setShouldIncludeData(true);
         for (Enumeration relationFieldsEnum = getTargetForeignKeyFields().elements(); relationFieldsEnum.hasMoreElements();) {
             aggregateBatchQuery.getAdditionalFields().addElement(relationFieldsEnum.nextElement());
-        }
-    }
-    
-    /**
-     * INTERNAL:
-     * Extract the value from the batch optimized query.
-     */
-    public Object extractResultFromBatchQuery(DatabaseQuery query, AbstractRecord databaseRow, AbstractSession session, AbstractRecord argumentRow) {
-        //this can be null, because either one exists in the query or it will be created
-        Hashtable referenceObjectsByKey = null;
-        ContainerPolicy mappingContainerPolicy = getContainerPolicy();
-        synchronized (query) {
-            mappingContainerPolicy = getContainerPolicy();
-            referenceObjectsByKey = getBatchReadObjects(query, session);
-            if (referenceObjectsByKey == null) {
-                ReadAllQuery batchQuery = (ReadAllQuery)query;
-                ComplexQueryResult complexResult = null;
-                complexResult = (ComplexQueryResult)session.executeQuery(query, argumentRow);
-                Object results = complexResult.getResult();
-
-                referenceObjectsByKey = new Hashtable();
-                Enumeration rowsEnum = ((Vector)complexResult.getData()).elements();
-                ContainerPolicy queryContainerPolicy = batchQuery.getContainerPolicy();
-                for (Object elementsIterator = queryContainerPolicy.iteratorFor(results);
-                         queryContainerPolicy.hasNext(elementsIterator);) {
-                    Object eachReferenceObject = queryContainerPolicy.next(elementsIterator, session);
-                    CacheKey eachReferenceKey = new CacheKey(extractKeyFromTargetRow((AbstractRecord)rowsEnum.nextElement(), session));
-
-                    if (!referenceObjectsByKey.containsKey(eachReferenceKey)) {
-                        referenceObjectsByKey.put(eachReferenceKey, mappingContainerPolicy.containerInstance());
-                    }
-                    mappingContainerPolicy.addInto(eachReferenceObject, referenceObjectsByKey.get(eachReferenceKey), session);
-                }
-                setBatchReadObjects(referenceObjectsByKey, query, session);
-            }
-        }
-        Object result = referenceObjectsByKey.get(new CacheKey(extractPrimaryKeyFromRow(databaseRow, session)));
-
-        // The source object might not have any target objects
-        if (result == null) {
-            return mappingContainerPolicy.containerInstance();
-        } else {
-            return result;
         }
     }
 

@@ -142,6 +142,22 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
+     * Add a list of elements to container.
+     * This is used to add to a collection independent of JDK 1.1 and 1.2.
+     * The session may be required to wrap for the wrapper policy.
+     * The row may be required by subclasses
+     * Return whether the container changed
+     */
+    public boolean addAll(List elements, Object container, AbstractSession session, List<AbstractRecord> dbRows, ObjectBuildingQuery query) {
+        boolean changed = false;
+        for(int i=0; i < elements.size(); i++) {
+            changed |= addInto(elements.get(i), container, session, dbRows.get(i), query);
+        }
+        return changed;
+    }
+
+    /**
+     * INTERNAL:
      * Add element to container.
      * This is used to add to a collection independent of JDK 1.1 and 1.2.
      * The session may be required to wrap for the wrapper policy.
@@ -150,6 +166,22 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      */
     public boolean addInto(Object element, Object container, AbstractSession session, AbstractRecord dbRow, DataReadQuery query) {
         return addInto(null, element, container, session);
+    }
+
+    /**
+     * INTERNAL:
+     * Add a list of elements to container.
+     * This is used to add to a collection independent of JDK 1.1 and 1.2.
+     * The session may be required to wrap for the wrapper policy.
+     * The row may be required by subclasses
+     * Return whether the container changed
+     */
+    public boolean addAll(List elements, Object container, AbstractSession session, List<AbstractRecord> dbRows, DataReadQuery query) {
+        boolean changed = false;
+        for(int i=0; i < elements.size(); i++) {
+            changed |= addInto(elements.get(i), container, session, dbRows.get(i), query);
+        }
+        return changed;
     }
 
     /**
@@ -1476,7 +1508,17 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
     
     /**
      * INTERNAL:
-     * Return whether data for a map key must be included on a Delete datamodification event
+     * Indicates whether addAll method should be called to add entire collection,
+     * or it's possible to call addInto multiple times instead.
+     * @return
+     */
+    public boolean shouldAddAll(){
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return whether data for a map key must be included on a Delete data modification event
      * This will be overridden by subclasses that handle maps
      * 
      * @return

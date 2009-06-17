@@ -72,6 +72,11 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
     protected Map removeObjectList;
         
     /**
+     * Indicates whether IndirectList's order has been repaired.
+     */
+    protected boolean orderHasBeenRepaired;
+    
+    /**
      * This default constructor.
      */
     public CollectionChangeRecord() {
@@ -540,4 +545,11 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
             }
         }
     }
+   
+   public void setOrderHasBeenRepaired(boolean hasBeenRepaired) {
+       this.orderHasBeenRepaired = hasBeenRepaired;
+   }
+   public boolean orderHasBeenRepaired() {
+       return this.orderHasBeenRepaired;
+   }
 }

@@ -222,11 +222,8 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         batchStatement.addField(builder.getTable(getReferenceTable()).getField(getDirectField()));
 
         if(listOrderField != null) {
-            Vector order = new Vector(1);
-            Expression fieldExp = builder.getTable(getReferenceTable()).getField(this.listOrderField);
-            order.add(fieldExp);
-            batchStatement.setOrderByExpressions(order);
-            batchStatement.addField(fieldExp);
+            Expression expField = getListOrderFieldExpression(builder);
+            batchStatement.addField(expField);
         }
 
         batchStatement.setWhereClause(twisted);
@@ -235,7 +232,6 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
 
         batchStatement.normalize(query.getSession(), getDescriptor(), clonedExpressions);
 
-        
         return batchQuery;
     }
     
@@ -262,38 +258,52 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         CacheKey sourceCacheKey = new CacheKey(sourceKey);
         // If the query was using joining, all of the result rows by primary key will have been computed.
         List rows = joinManager.getDataResultsByPrimaryKey().get(sourceCacheKey);
+        int size = rows.size();
         
-        // A set of direct values must be maintained to avoid duplicates from multiple 1-m joins.
-        Set directValues = new HashSet();
-
-        Converter valueConverter = getValueConverter();
-        // For each rows, extract the target row and build the target object and add to the collection.
-        for (int index = 0; index < rows.size(); index++) {
-            AbstractRecord sourceRow = (AbstractRecord)rows.get(index);
-            AbstractRecord targetRow = sourceRow;            
-            // The field for many objects may be in the row,
-            // so build the subpartion of the row through the computed values in the query,
-            // this also helps the field indexing match.
-            targetRow = trimRowForJoin(targetRow, joinManager, executionSession);            
-            // Partial object queries must select the primary key of the source and related objects.
-            // If the target joined rows in null (outerjoin) means an empty collection.
-            Object directValue = targetRow.get(getDirectField());
-            if (directValue == null && rows.size()==1) {
-                // A null direct value means an empty collection returned as nulls from an outerjoin.
-                return getIndirectionPolicy().valueFromRow(value);
-            }                        
-            // Only build/add the target object once, skip duplicates from multiple 1-m joins.
-            if (!directValues.contains(directValue)) {
-                directValues.add(directValue);                            
-                // Allow for value conversion.
-                if (valueConverter != null) {
-                    directValue = valueConverter.convertDataValueToObjectValue(directValue, executionSession);
+        if(size > 0) {
+            // A set of direct values must be maintained to avoid duplicates from multiple 1-m joins.
+            Set directValues = new HashSet();
+    
+            ArrayList directValuesList = null;
+            ArrayList<AbstractRecord> targetRows = null;
+            boolean shouldAddAll = policy.shouldAddAll();
+            if(shouldAddAll) {
+                directValuesList = new ArrayList(size);
+                targetRows = new ArrayList(size);
+            }
+            Converter valueConverter = getValueConverter();
+            // For each rows, extract the target row and build the target object and add to the collection.
+            for (int index = 0; index < size; index++) {
+                AbstractRecord sourceRow = (AbstractRecord)rows.get(index);
+                AbstractRecord targetRow = sourceRow;            
+                // The field for many objects may be in the row,
+                // so build the subpartion of the row through the computed values in the query,
+                // this also helps the field indexing match.
+                targetRow = trimRowForJoin(targetRow, joinManager, executionSession);            
+                // Partial object queries must select the primary key of the source and related objects.
+                // If the target joined rows in null (outerjoin) means an empty collection.
+                Object directValue = targetRow.get(getDirectField());
+                if (directValue == null && size==1) {
+                    // A null direct value means an empty collection returned as nulls from an outerjoin.
+                    return getIndirectionPolicy().valueFromRow(value);
+                }                        
+                // Only build/add the target object once, skip duplicates from multiple 1-m joins.
+                if (!directValues.contains(directValue)) {
+                    directValues.add(directValue);                            
+                    // Allow for value conversion.
+                    if (valueConverter != null) {
+                        directValue = valueConverter.convertDataValueToObjectValue(directValue, executionSession);
+                    }
+                    if(shouldAddAll) {
+                        directValuesList.add(directValue);
+                        targetRows.add(targetRow);
+                    } else {
+                        policy.addInto(directValue, value, executionSession, targetRow, sourceQuery);
+                    }
                 }
-                if(this.listOrderField != null) {
-                    policy.addInto(directValue, value, executionSession, targetRow, sourceQuery);
-                } else {
-                    policy.addInto(directValue, value, executionSession);
-                }
+            }
+            if(shouldAddAll) {
+                policy.addAll(directValuesList, value, executionSession, targetRows, sourceQuery);
             }
         }
         return getIndirectionPolicy().valueFromRow(value);
@@ -780,7 +790,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * Extract the source primary key value from the reference direct row.
      * Used for batch reading, most following same order and fields as in the mapping.
      */
-    protected Vector extractKeyFromReferenceRow(AbstractRecord row, AbstractSession session) {
+    protected Vector extractKeyFromTargetRow(AbstractRecord row, AbstractSession session) {
         Vector key = new Vector(getReferenceKeyFields().size());
 
         for (int index = 0; index < getReferenceKeyFields().size(); index++) {
@@ -839,27 +849,60 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
             mappingContainerPolicy = getContainerPolicy();
             if (referenceDataByKey == null) {
                 Vector rows = (Vector)session.executeQuery(query, argumentRow);
-
+                int size = rows.size();
                 referenceDataByKey = new Hashtable();
+                if(mappingContainerPolicy.shouldAddAll()) {
+                    if(size > 0) {
+                        HashMap<CacheKey, List[]> referenceDataAndRowsByKey = new HashMap();
+                        for (int i=0; i < size; i++) {
+                            AbstractRecord referenceRow = (AbstractRecord)rows.get(i);
+                            Object referenceValue = referenceRow.get(getDirectField());
+                            CacheKey eachReferenceKey = new CacheKey(extractKeyFromTargetRow(referenceRow, session));
+        
+                            // Allow for value conversion.
+                            if (getValueConverter() != null) {
+                                referenceValue = getValueConverter().convertDataValueToObjectValue(referenceValue, query.getSession());
+                            }
+                            List[] valuesAndRows = referenceDataAndRowsByKey.get(eachReferenceKey);
+                            if(valuesAndRows == null) {
+                                valuesAndRows = new List[]{new ArrayList(), new ArrayList()};
+                                referenceDataAndRowsByKey.put(eachReferenceKey, valuesAndRows);
+                            }
+                            valuesAndRows[0].add(referenceValue);
+                            valuesAndRows[1].add(referenceRow);
+                        }
 
-                for (Enumeration rowsEnum = rows.elements(); rowsEnum.hasMoreElements();) {
-                    AbstractRecord referenceRow = (AbstractRecord)rowsEnum.nextElement();
-                    Object referenceValue = referenceRow.get(getDirectField());
-                    CacheKey eachReferenceKey = new CacheKey(extractKeyFromReferenceRow(referenceRow, session));
-
-                    Object container = referenceDataByKey.get(eachReferenceKey);
-                    if (container == null) {
-                        container = mappingContainerPolicy.containerInstance();
-                        referenceDataByKey.put(eachReferenceKey, container);
+                        Iterator<Map.Entry<CacheKey, List[]>> it = referenceDataAndRowsByKey.entrySet().iterator();
+                        while(it.hasNext()) {
+                            Map.Entry<CacheKey, List[]> entry = it.next();
+                            CacheKey eachReferenceKey = entry.getKey();
+                            List referenceValues = entry.getValue()[0];
+                            List<AbstractRecord> referenceRows = (List<AbstractRecord>)entry.getValue()[1];
+                            Object container = mappingContainerPolicy.containerInstance(referenceValues.size());
+                            mappingContainerPolicy.addAll(referenceValues, container, query.getSession(), referenceRows, (DataReadQuery)query);
+                            referenceDataByKey.put(eachReferenceKey, container);
+                        }
                     }
-
-                    // Allow for value conversion.
-                    if (getValueConverter() != null) {
-                        referenceValue = getValueConverter().convertDataValueToObjectValue(referenceValue, query.getSession());
+                } else {
+                    for (int i=0; i < size; i++) {
+                        AbstractRecord referenceRow = (AbstractRecord)rows.get(i);
+                        Object referenceValue = referenceRow.get(getDirectField());
+                        CacheKey eachReferenceKey = new CacheKey(extractKeyFromTargetRow(referenceRow, session));
+    
+                        Object container = referenceDataByKey.get(eachReferenceKey);
+                        if (container == null) {
+                            container = mappingContainerPolicy.containerInstance();
+                            referenceDataByKey.put(eachReferenceKey, container);
+                        }
+    
+                        // Allow for value conversion.
+                        if (getValueConverter() != null) {
+                            referenceValue = getValueConverter().convertDataValueToObjectValue(referenceValue, query.getSession());
+                        }
+                        mappingContainerPolicy.addInto(referenceValue, container, query.getSession());
                     }
-                    mappingContainerPolicy.addInto(referenceValue, container, query.getSession());
                 }
-
+                    
                 setBatchReadObjects(referenceDataByKey, query, session);
             }
         }
@@ -1444,11 +1487,8 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         statement.addField((DatabaseField)getDirectField().clone());
         statement.setWhereClause(getSelectionCriteria());
         if(listOrderField != null) {
-            Vector order = new Vector(1);
-            Expression fieldExp = getListOrderFieldExpression(statement.getBuilder());
-            order.add(fieldExp);
-            statement.setOrderByExpressions(order);
-            statement.addField(fieldExp);
+            Expression expField = getListOrderFieldExpression(statement.getBuilder());
+            statement.addField(expField);
         }
         statement.normalize(session, null);
         getSelectionQuery().setSQLStatement(statement);
@@ -1565,13 +1605,17 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
                      containerPolicy.hasNext(iterator);) {
                 containerPolicy.addInto(containerPolicy.next(iterator, session), valueOfTarget, session);
             }
-            // TODO: How to handle this case for listOrderField != null.
         } else {
             Object synchronizationTarget = valueOfTarget;
             // For indirect containers the delegate must be synchronized on,
             // not the wrapper as the clone synchs on the delegate, see bug#5685287.
             if (valueOfTarget instanceof IndirectCollection) {
                 synchronizationTarget = ((IndirectCollection)valueOfTarget).getDelegateObject();
+                if(((DirectCollectionChangeRecord)changeRecord).orderHasBeenRepaired()) {
+                    if(valueOfTarget instanceof IndirectList) {
+                        ((IndirectList)valueOfTarget).setIsListOrderBrokenInDb(false);
+                    }
+                }
             }
             synchronized (synchronizationTarget) {
                 // Next iterate over the changes and add them to the container
@@ -1990,6 +2034,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
             }
             
             ((IndirectList)changeRecord.getLatestCollection()).setIsListOrderBrokenInDb(false);
+            changeRecord.setOrderHasBeenRepaired(true);
             return;
         }
         
@@ -2494,17 +2539,12 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
             Object collection = getRealAttributeValueFromObject(changeSet.getUnitOfWorkClone(), session);
             if(this.listOrderField != null) {
                 List originalListCopy = new ArrayList((List)collection);
-                // collection already doesn't contain the removed object - to bring it to the original state it should be added or set back
-                if(index == null) {
-                    // should never happen - IndirectList does remove through indexOf.
-                    // TODO: which exception to throw here?
-                    throw new RuntimeException("Remove event must come with an index");
+                // collection already doesn't contain the removed object - to bring it to the original state it should be added or set back.
+                // index is not null because IndirectList does remove through indexOf.
+                if(isSet) {
+                    originalListCopy.set(index, objectToRemove);
                 } else {
-                    if(isSet) {
-                        originalListCopy.set(index, objectToRemove);
-                    } else {
-                        originalListCopy.add(index, objectToRemove);
-                    }
+                    originalListCopy.add(index, objectToRemove);
                 }
                 collectionChangeRecord.setOriginalCollection(originalListCopy);
                 collectionChangeRecord.setLatestCollection(collection);

@@ -65,7 +65,18 @@ public class EmployeeTableCreator extends org.eclipse.persistence.tools.schemafr
         field1.setUnique(false);
         field1.setIsIdentity(false);
         tabledefinition.addField(field1);
-        addTableDefinition(tabledefinition);
+
+        // SECTION: FIELD
+        org.eclipse.persistence.tools.schemaframework.FieldDefinition field5 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+        field5.setName("PARENT_ID");
+        field5.setTypeName("NUMERIC");
+        field5.setSize(15);
+        field5.setShouldAllowNull(true);
+        field5.setIsPrimaryKey(false);
+        field5.setUnique(false);
+        field5.setIsIdentity(false);
+        field5.setForeignKeyFieldName("OL_EMPLOYEE.EMP_ID");
+        tabledefinition.addField(field5);        
 
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field6 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
@@ -79,16 +90,17 @@ public class EmployeeTableCreator extends org.eclipse.persistence.tools.schemafr
         tabledefinition.addField(field6);
         
         // SECTION: FIELD
-        org.eclipse.persistence.tools.schemaframework.FieldDefinition field5 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
-        field5.setName("PARENT_ID");
-        field5.setTypeName("NUMERIC");
-        field5.setSize(15);
-        field5.setShouldAllowNull(true);
-        field5.setIsPrimaryKey(false);
-        field5.setUnique(false);
-        field5.setIsIdentity(false);
-        field5.setForeignKeyFieldName("OL_EMPLOYEE.EMP_ID");
-        tabledefinition.addField(field5);        
+        org.eclipse.persistence.tools.schemaframework.FieldDefinition field7 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+        field7.setName("CHILDREN_ORDER_VARCHAR");
+        field7.setTypeName("VARCHAR");
+        field7.setSize(40);
+        field7.setShouldAllowNull(true);
+        field7.setIsPrimaryKey(false);
+        field7.setUnique(false);
+        field7.setIsIdentity(false);
+        tabledefinition.addField(field7);
+
+        addTableDefinition(tabledefinition);
     }
 
     protected void buildCHILDTable() {
@@ -153,6 +165,17 @@ public class EmployeeTableCreator extends org.eclipse.persistence.tools.schemafr
         field6.setIsIdentity(false);
         tabledefinition.addField(field6);
         
+        // SECTION: FIELD
+        org.eclipse.persistence.tools.schemaframework.FieldDefinition field7 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+        field7.setName("CHILDREN_ORDER_VARCHAR");
+        field7.setTypeName("VARCHAR");
+        field7.setSize(40);
+        field7.setShouldAllowNull(true);
+        field7.setIsPrimaryKey(false);
+        field7.setUnique(false);
+        field7.setIsIdentity(false);
+        tabledefinition.addField(field7);
+
         addTableDefinition(tabledefinition);
     }
 
@@ -228,7 +251,6 @@ public class EmployeeTableCreator extends org.eclipse.persistence.tools.schemafr
         field10.setUnique(false);
         field10.setIsIdentity(false);
         tabledefinition.addField(field10);
-        addTableDefinition(tabledefinition);
 
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field11 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
@@ -240,6 +262,19 @@ public class EmployeeTableCreator extends org.eclipse.persistence.tools.schemafr
         field11.setUnique(false);
         field11.setIsIdentity(false);
         tabledefinition.addField(field11);
+
+        // SECTION: FIELD
+        org.eclipse.persistence.tools.schemaframework.FieldDefinition field12 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+        field12.setName("MANAGED_ORDER_VARCHAR");
+        field12.setTypeName("VARCHAR");
+        field12.setSize(40);
+        field12.setShouldAllowNull(true);
+        field12.setIsPrimaryKey(false);
+        field12.setUnique(false);
+        field12.setIsIdentity(false);
+        tabledefinition.addField(field12);
+
+        addTableDefinition(tabledefinition);
     }
 
     protected void buildLPROJECTTable() {
@@ -281,6 +316,7 @@ public class EmployeeTableCreator extends org.eclipse.persistence.tools.schemafr
         field2.setUnique(false);
         field2.setIsIdentity(false);
         tabledefinition.addField(field2);
+
         addTableDefinition(tabledefinition);
     }
 
@@ -334,7 +370,6 @@ public class EmployeeTableCreator extends org.eclipse.persistence.tools.schemafr
         field3.setUnique(false);
         field3.setIsIdentity(false);
         tabledefinition.addField(field3);
-        addTableDefinition(tabledefinition);
 
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field6 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
@@ -346,6 +381,19 @@ public class EmployeeTableCreator extends org.eclipse.persistence.tools.schemafr
         field6.setUnique(false);
         field6.setIsIdentity(false);
         tabledefinition.addField(field6);
+
+        // SECTION: FIELD
+        org.eclipse.persistence.tools.schemaframework.FieldDefinition field7 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+        field7.setName("PHONE_ORDER_VARCHAR");
+        field7.setTypeName("VARCHAR");
+        field7.setSize(40);
+        field7.setShouldAllowNull(true);
+        field7.setIsPrimaryKey(false);
+        field7.setUnique(false);
+        field7.setIsIdentity(false);
+        tabledefinition.addField(field7);
+
+        addTableDefinition(tabledefinition);
     }
 
     protected void buildPROJ_EMPTable() {
@@ -377,29 +425,52 @@ public class EmployeeTableCreator extends org.eclipse.persistence.tools.schemafr
         field1.setIsIdentity(false);
         field1.setForeignKeyFieldName("OL_PROJECT.PROJ_ID");
         tabledefinition.addField(field1);
-        addTableDefinition(tabledefinition);
 
         // SECTION: FIELD
-        org.eclipse.persistence.tools.schemaframework.FieldDefinition field6 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
-        field6.setName("EMP_ORDER");
-        field6.setTypeName("NUMERIC");
-        field6.setSize(15);
-        field6.setShouldAllowNull(true);
-        field6.setIsPrimaryKey(false);
-        field6.setUnique(false);
-        field6.setIsIdentity(false);
-        tabledefinition.addField(field6);
+        org.eclipse.persistence.tools.schemaframework.FieldDefinition field2 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+        field2.setName("EMP_ORDER");
+        field2.setTypeName("NUMERIC");
+        field2.setSize(15);
+        field2.setShouldAllowNull(true);
+        field2.setIsPrimaryKey(false);
+        field2.setUnique(false);
+        field2.setIsIdentity(false);
+        tabledefinition.addField(field2);
         
         // SECTION: FIELD
-        org.eclipse.persistence.tools.schemaframework.FieldDefinition field7 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
-        field7.setName("PROJ_ORDER");
-        field7.setTypeName("NUMERIC");
-        field7.setSize(15);
-        field7.setShouldAllowNull(true);
-        field7.setIsPrimaryKey(false);
-        field7.setUnique(false);
-        field7.setIsIdentity(false);
-        tabledefinition.addField(field7);
+        org.eclipse.persistence.tools.schemaframework.FieldDefinition field3 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+        field3.setName("PROJ_ORDER");
+        field3.setTypeName("NUMERIC");
+        field3.setSize(15);
+        field3.setShouldAllowNull(true);
+        field3.setIsPrimaryKey(false);
+        field3.setUnique(false);
+        field3.setIsIdentity(false);
+        tabledefinition.addField(field3);
+
+        // SECTION: FIELD
+        org.eclipse.persistence.tools.schemaframework.FieldDefinition field4 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+        field4.setName("EMP_ORDER_VARCHAR");
+        field4.setTypeName("VARCHAR");
+        field4.setSize(40);
+        field4.setShouldAllowNull(true);
+        field4.setIsPrimaryKey(false);
+        field4.setUnique(false);
+        field4.setIsIdentity(false);
+        tabledefinition.addField(field4);
+
+        // SECTION: FIELD
+        org.eclipse.persistence.tools.schemaframework.FieldDefinition field5 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+        field5.setName("PROJ_ORDER_VARCHAR");
+        field5.setTypeName("VARCHAR");
+        field5.setSize(40);
+        field5.setShouldAllowNull(true);
+        field5.setIsPrimaryKey(false);
+        field5.setUnique(false);
+        field5.setIsIdentity(false);
+        tabledefinition.addField(field5);
+
+        addTableDefinition(tabledefinition);
     }
 
     protected void buildPROJECTTable() {
@@ -474,7 +545,6 @@ public class EmployeeTableCreator extends org.eclipse.persistence.tools.schemafr
         field5.setUnique(false);
         field5.setIsIdentity(false);
         tabledefinition.addField(field5);
-        addTableDefinition(tabledefinition);
 
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field6 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
@@ -486,6 +556,8 @@ public class EmployeeTableCreator extends org.eclipse.persistence.tools.schemafr
         field6.setUnique(false);
         field6.setIsIdentity(false);
         tabledefinition.addField(field6);
+
+        addTableDefinition(tabledefinition);
     }
 
     protected void buildRESPONSTable() {
@@ -516,7 +588,6 @@ public class EmployeeTableCreator extends org.eclipse.persistence.tools.schemafr
         field1.setUnique(false);
         field1.setIsIdentity(false);
         tabledefinition.addField(field1);
-        addTableDefinition(tabledefinition);
 
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field6 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
@@ -528,6 +599,19 @@ public class EmployeeTableCreator extends org.eclipse.persistence.tools.schemafr
         field6.setUnique(false);
         field6.setIsIdentity(false);
         tabledefinition.addField(field6);
+
+        // SECTION: FIELD
+        org.eclipse.persistence.tools.schemaframework.FieldDefinition field7 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+        field7.setName("RESPONS_ORDER_VARCHAR");
+        field7.setTypeName("VARCHAR");
+        field7.setSize(40);
+        field7.setShouldAllowNull(true);
+        field7.setIsPrimaryKey(false);
+        field7.setUnique(false);
+        field7.setIsIdentity(false);
+        tabledefinition.addField(field7);
+
+        addTableDefinition(tabledefinition);
     }
 
     protected void buildSALARYTable() {
@@ -558,18 +642,6 @@ public class EmployeeTableCreator extends org.eclipse.persistence.tools.schemafr
         field1.setUnique(false);
         field1.setIsIdentity(false);
         tabledefinition.addField(field1);
-        addTableDefinition(tabledefinition);
-
-        // SECTION: FIELD
-        org.eclipse.persistence.tools.schemaframework.FieldDefinition field11 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
-        field11.setName("MANAGED_ORDER");
-        field11.setTypeName("NUMERIC");
-        field11.setSize(15);
-        field11.setShouldAllowNull(true);
-        field11.setIsPrimaryKey(false);
-        field11.setUnique(false);
-        field11.setIsIdentity(false);
-        tabledefinition.addField(field11);
 
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field9 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
@@ -583,5 +655,28 @@ public class EmployeeTableCreator extends org.eclipse.persistence.tools.schemafr
         field9.setForeignKeyFieldName("OL_EMPLOYEE.EMP_ID");
         tabledefinition.addField(field9);
 
+        // SECTION: FIELD
+        org.eclipse.persistence.tools.schemaframework.FieldDefinition field11 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+        field11.setName("MANAGED_ORDER");
+        field11.setTypeName("NUMERIC");
+        field11.setSize(15);
+        field11.setShouldAllowNull(true);
+        field11.setIsPrimaryKey(false);
+        field11.setUnique(false);
+        field11.setIsIdentity(false);
+        tabledefinition.addField(field11);
+
+        // SECTION: FIELD
+        org.eclipse.persistence.tools.schemaframework.FieldDefinition field12 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+        field12.setName("MANAGED_ORDER_VARCHAR");
+        field12.setTypeName("VARCHAR");
+        field12.setSize(40);
+        field12.setShouldAllowNull(true);
+        field12.setIsPrimaryKey(false);
+        field12.setUnique(false);
+        field12.setIsIdentity(false);
+        tabledefinition.addField(field12);
+
+        addTableDefinition(tabledefinition);
     }
 }

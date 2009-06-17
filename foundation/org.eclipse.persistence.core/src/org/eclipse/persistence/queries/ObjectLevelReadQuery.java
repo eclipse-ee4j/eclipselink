@@ -1818,6 +1818,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
                 thisManager.setJoinedMappingIndexes_(queryManager.getJoinedMappingIndexes_());
                 thisManager.setJoinedMappingQueries_(queryManager.getJoinedMappingQueries_());
                 thisManager.setOrderByExpressions_(queryManager.getOrderByExpressions_());
+                thisManager.setAdditionalFieldExpressions_(queryManager.getAdditionalFieldExpressions_());
             }
             this.nonFetchJoinAttributeExpressions = objectQuery.nonFetchJoinAttributeExpressions;
             this.defaultBuilder = objectQuery.defaultBuilder;
@@ -1852,6 +1853,12 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
                 Iterator<Expression> it = getJoinedAttributeManager().getOrderByExpressions().iterator();
                 while(it.hasNext()) {
                     addOrdering(it.next());
+                }
+            }
+            if(getJoinedAttributeManager().hasAdditionalFieldExpressions()) {
+                Iterator<Expression> it = getJoinedAttributeManager().getAdditionalFieldExpressions().iterator();
+                while(it.hasNext()) {
+                    addAdditionalField(it.next());
                 }
             }
         }

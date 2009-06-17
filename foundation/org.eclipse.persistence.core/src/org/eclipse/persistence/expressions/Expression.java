@@ -2061,6 +2061,27 @@ public abstract class Expression implements Serializable, Cloneable {
         return anOperator.expressionFor(this, subQuery);
     }
 
+    /*
+     * PUBLIC:
+     * Index method could be applied to QueryKeyExpression corresponding to CollectionMapping
+     * that has non-null listOrderField (the field holding the index values).
+     * <p>Example:
+     * <pre><blockquote>
+     *    ReportQuery query = new ReportQuery();
+     *    query.setReferenceClass(Employee.class);
+     *    ExpressionBuilder builder = query.getExpressionBuilder();
+     *    Expression firstNameJohn = builder.get("firstName").equal("John");
+     *    Expression anyOfProjects = builder.anyOf("projects");
+     *    Expression exp = firstNameJohn.and(anyOfProjects.index().between(2, 4));
+     *    query.setSelectionCriteria(exp);
+     *    query.addAttribute("projects", anyOfProjects);
+     *       
+     *    SELECT DISTINCT t0.PROJ_ID, t0.PROJ_TYPE, t0.DESCRIP, t0.PROJ_NAME, t0.LEADER_ID, t0.VERSION, t1.PROJ_ID, t1.BUDGET, t1.MILESTONE 
+     *    FROM OL_PROJ_EMP t4, OL_SALARY t3, OL_EMPLOYEE t2, OL_LPROJECT t1, OL_PROJECT t0 
+     *    WHERE ((((t2.F_NAME = 'John') AND (t4.PROJ_ORDER BETWEEN 2 AND 4)) AND (t3.OWNER_EMP_ID = t2.EMP_ID)) AND
+     *    (((t4.EMP_ID = t2.EMP_ID) AND (t0.PROJ_ID = t4.PROJ_ID)) AND (t1.PROJ_ID (+) = t0.PROJ_ID)))
+     * </blockquote></pre>
+     */
     public Expression index() {
         throw QueryException.indexRequiresQueryKeyExpression(this);
     }

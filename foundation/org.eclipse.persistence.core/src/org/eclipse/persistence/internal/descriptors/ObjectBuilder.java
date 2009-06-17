@@ -811,20 +811,36 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * Set the fields of the instance to the values stored in the database rows.
      */
     public Object buildObjectsInto(ReadAllQuery query, List databaseRows, Object domainObjects) throws DatabaseException {
-        AbstractSession session = query.getSession();
         int size = databaseRows.size();
-        // PERF: Avoid lazy init of join manager if no joining.
-        JoinedAttributeManager joinManager = null;
-        if (query.hasJoining()) {
-            joinManager = query.getJoinedAttributeManager();
-        }
-        ContainerPolicy policy = query.getContainerPolicy();
-        for (int index = 0; index < size; index++) {
-            AbstractRecord databaseRow = (AbstractRecord)databaseRows.get(index);
-            // PERF: 1-m joining nulls out duplicate rows.
-            if (databaseRow != null) {
-                Object domainObject = buildObject(query, databaseRow, joinManager);
-                policy.addInto(domainObject, domainObjects, session, databaseRow, query);
+        if(size > 0) {
+            AbstractSession session = query.getSession();
+            // PERF: Avoid lazy init of join manager if no joining.
+            JoinedAttributeManager joinManager = null;
+            if (query.hasJoining()) {
+                joinManager = query.getJoinedAttributeManager();
+            }
+            ContainerPolicy policy = query.getContainerPolicy();
+            if(policy.shouldAddAll()) {
+                List domainObjectsIn = new ArrayList(size);
+                List<AbstractRecord> databaseRowsIn = new ArrayList(size);
+                for (int index = 0; index < size; index++) {
+                    AbstractRecord databaseRow = (AbstractRecord)databaseRows.get(index);
+                    // PERF: 1-m joining nulls out duplicate rows.
+                    if (databaseRow != null) {
+                        domainObjectsIn.add(buildObject(query, databaseRow, joinManager));
+                        databaseRowsIn.add(databaseRow);
+                    }
+                }
+                policy.addAll(domainObjectsIn, domainObjects, session, databaseRowsIn, query);
+            } else {
+                for (int index = 0; index < size; index++) {
+                    AbstractRecord databaseRow = (AbstractRecord)databaseRows.get(index);
+                    // PERF: 1-m joining nulls out duplicate rows.
+                    if (databaseRow != null) {
+                        Object domainObject = buildObject(query, databaseRow, joinManager);
+                        policy.addInto(domainObject, domainObjects, session, databaseRow, query);
+                    }
+                }
             }
         }
         return domainObjects;

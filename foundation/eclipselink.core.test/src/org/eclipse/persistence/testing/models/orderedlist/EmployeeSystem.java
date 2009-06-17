@@ -13,7 +13,10 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.orderedlist;
 
-import org.eclipse.persistence.internal.queries.OrderedListContainerPolicy.OrderValidationMode;
+import java.util.List;
+
+import org.eclipse.persistence.annotations.OrderCorrectionType;
+import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.testing.framework.TestSystem;
 
@@ -43,18 +46,22 @@ public class EmployeeSystem extends TestSystem {
     // if true all collection mappings use TransparentIndirection; otherwise collection mappings use no indirection.
     boolean useIndirection;
     boolean useSecondaryTable;
+    boolean useVarcharOrder;
     ChangeTracking changeTracking;
-    OrderValidationMode orderValidationMode;
+    OrderCorrectionType orderCorrectionType;
+    boolean shouldOverrideContainerPolicy;
     JoinFetchOrBatchRead joinFetchOrBatchRead;
     
-    public EmployeeSystem(boolean useListOrderField, boolean useIndirection, boolean useSecondaryTable, ChangeTracking changeTracking, OrderValidationMode orderValidationMode, JoinFetchOrBatchRead joinFetchOrBatchRead) {
+    public EmployeeSystem(boolean useListOrderField, boolean useIndirection, boolean useSecondaryTable, boolean useVarcharOrder, ChangeTracking changeTracking, OrderCorrectionType orderCorrectionType, boolean shouldOverrideContainerPolicy, JoinFetchOrBatchRead joinFetchOrBatchRead) {
         this.useIndirection = useIndirection;
         this.useListOrderField = useListOrderField;
         this.useSecondaryTable = useSecondaryTable;
+        this.useVarcharOrder = useVarcharOrder;
         this.changeTracking = changeTracking;
-        this.orderValidationMode = orderValidationMode;
+        this.orderCorrectionType = orderCorrectionType;
+        this.shouldOverrideContainerPolicy = shouldOverrideContainerPolicy;
         this.joinFetchOrBatchRead = joinFetchOrBatchRead;
-        this.project = new EmployeeProject(useListOrderField, useIndirection, useSecondaryTable, changeTracking, orderValidationMode, joinFetchOrBatchRead);
+        this.project = new EmployeeProject(useListOrderField, useIndirection, useSecondaryTable, useVarcharOrder, changeTracking, orderCorrectionType, shouldOverrideContainerPolicy, joinFetchOrBatchRead);
     }
 
     public void createTables(DatabaseSession session) {
@@ -62,6 +69,17 @@ public class EmployeeSystem extends TestSystem {
     }
 
     public void addDescriptors(DatabaseSession session) {
+        if(shouldOverrideContainerPolicy) {
+            List<CollectionMapping> listOrderMappings = ((EmployeeProject)this.project).getListOrderMappings();
+            for(int i=0; i < listOrderMappings.size(); i++) {
+                CollectionMapping mapping = listOrderMappings.get(i); 
+                mapping.setContainerPolicy(new NullsLastOrderedListContainerPolicy(mapping.getContainerPolicy().getContainerClass()));
+            }
+        }
         session.addDescriptors(project);
+    }    
+    
+    public static List<CollectionMapping> getListOrderMappings(DatabaseSession session) {
+        return EmployeeProject.getListOrderMappings(session);
     }
 }

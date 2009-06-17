@@ -12,9 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.mappings;
 
-import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Vector;
 
 import org.eclipse.persistence.exceptions.ConversionException;
@@ -24,7 +22,6 @@ import org.eclipse.persistence.exceptions.OptimisticLockException;
 import org.eclipse.persistence.internal.descriptors.CascadeLockingPolicy;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.ChangeRecord;
@@ -32,8 +29,6 @@ import org.eclipse.persistence.internal.sessions.CollectionChangeRecord;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
-import org.eclipse.persistence.queries.ComplexQueryResult;
-import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.DeleteObjectQuery;
 import org.eclipse.persistence.queries.ObjectLevelModifyQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
@@ -157,44 +152,6 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
         }
 
         return key;
-    }
-
-    /**
-     * INTERNAL:
-     * Extract the value from the batch optimized query.
-     */
-    public Object extractResultFromBatchQuery(DatabaseQuery query, AbstractRecord databaseRow, AbstractSession session, AbstractRecord argumentRow) {
-        //this can be null, because either one exists in the query or it will be created
-        Hashtable referenceObjectsByKey = null;
-        synchronized (query) {
-            referenceObjectsByKey = getBatchReadObjects(query, session);
-            if (referenceObjectsByKey == null) {
-                ReadAllQuery batchQuery = (ReadAllQuery)query;
-                ComplexQueryResult complexResult = (ComplexQueryResult)session.executeQuery(batchQuery, argumentRow);
-                // Batch query created in ForeignReferenceMapping.prepareNestedBatchQuery without specifying container policy - uses ListContainerPolicy by default.
-                List results = (List)complexResult.getResult();
-                referenceObjectsByKey = new Hashtable();
-                List rows = (List)complexResult.getData();
-                int size = results.size();
-                for (int index = 0; index < size; index++) {
-                    Object eachReferenceObject = results.get(index);
-                    CacheKey eachReferenceKey = new CacheKey(extractSourceKeyFromRow((AbstractRecord)rows.get(index), session));
-                    if (!referenceObjectsByKey.containsKey(eachReferenceKey)) {
-                        referenceObjectsByKey.put(eachReferenceKey, containerPolicy.containerInstance());
-                    }
-                    containerPolicy.addInto(eachReferenceObject, referenceObjectsByKey.get(eachReferenceKey), session);
-                }
-                setBatchReadObjects(referenceObjectsByKey, query, session);
-            }
-        }
-        Object result = referenceObjectsByKey.get(new CacheKey(extractPrimaryKeyFromRow(databaseRow, session)));
-
-        // The source object might not have any target objects
-        if (result == null) {
-            return containerPolicy.containerInstance();
-        } else {
-            return result;
-        }
     }
 
     /**

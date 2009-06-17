@@ -969,7 +969,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
                         referenceKey = getDirectMapUsableContainerPolicy().buildKey(databaseRow, null, session);
                     }
                     Object referenceValue = referenceRow.get(getDirectField());
-                    CacheKey eachCacheKey = new CacheKey(extractKeyFromReferenceRow(referenceRow, session));
+                    CacheKey eachCacheKey = new CacheKey(extractKeyFromTargetRow(referenceRow, session));
 
                     Object container = referenceDataByKey.get(eachCacheKey);
                     if (container == null) {

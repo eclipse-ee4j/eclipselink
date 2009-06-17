@@ -202,10 +202,22 @@ public class DataReadQuery extends ReadQuery {
             int size = rows.size();
             ContainerPolicy containerPolicy = getContainerPolicy();
             results = containerPolicy.containerInstance(size);
-            for (int index = 0;  index < size; index++) {
-                AbstractRecord row = (AbstractRecord)rows.get(index);
-                Object value = buildObject(row);
-                containerPolicy.addInto(value, results, this.session, row, this);
+            if(containerPolicy.shouldAddAll()) {
+                if(size > 0) {
+                    List values = new ArrayList(size);
+                    for (int index = 0;  index < size; index++) {
+                        AbstractRecord row = (AbstractRecord)rows.get(index);
+                        Object value = buildObject(row);
+                        values.add(value);
+                    }
+                    containerPolicy.addAll(values, results, this.session, rows, this);
+                }
+            } else {
+                for (int index = 0;  index < size; index++) {
+                    AbstractRecord row = (AbstractRecord)rows.get(index);
+                    Object value = buildObject(row);
+                    containerPolicy.addInto(value, results, this.session, row, this);
+                }
             }
         }
         // Bug 6135563 - cache DataReadQuery results verbatim, as ObjectBuilder is not invoked
