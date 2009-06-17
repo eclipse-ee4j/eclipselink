@@ -78,6 +78,7 @@ public final class MWReportAttributeItem extends MWAttributeItem {
 		converter.addConversionValue(STANDARD_DEVIATION_FUNCTION, STANDARD_DEVIATION_FUNCTION);
 		converter.addConversionValue(VARIANCE_FUNCTION, VARIANCE_FUNCTION);
 		converter.addConversionValue(SUM_FUNCTION, SUM_FUNCTION);
+		functionMapping.setConverter(converter);
 		functionMapping.setNullValue(NO_FUNCTION);
 
 				
