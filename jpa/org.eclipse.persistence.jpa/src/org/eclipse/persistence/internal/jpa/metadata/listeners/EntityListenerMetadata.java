@@ -39,7 +39,6 @@ import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataFactory;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataMethod;
 
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
@@ -57,7 +56,7 @@ import org.eclipse.persistence.internal.security.PrivilegedGetMethods;
  * @author Guy Pelletier
  * @since TopLink 10.1.3/EJB 3.0 Preview
  */
-public class EntityListenerMetadata extends ORMetadata {
+public class EntityListenerMetadata extends ORMetadata implements Cloneable {
     private MetadataClass m_entityListenerClass;
     
     protected EntityListener m_listener;
@@ -93,19 +92,11 @@ public class EntityListenerMetadata extends ORMetadata {
      * This method should be called when dealing with default listeners.
      */
     public Object clone() {
-        EntityListenerMetadata listener = new EntityListenerMetadata();
-    
-        listener.setClassName(getClassName());
-        
-        listener.setPostLoad(getPostLoad());
-        listener.setPostPersist(getPostPersist());
-        listener.setPostRemove(getPostRemove());
-        listener.setPostUpdate(getPostUpdate());
-        listener.setPrePersist(getPrePersist());
-        listener.setPreRemove(getPreRemove());
-        listener.setPreUpdate(getPreUpdate());
-        
-        return listener;
+        try {
+            return super.clone();
+        } catch (CloneNotSupportedException error) {
+            throw new InternalError(error.getMessage());
+        }
     }
     
     /**
@@ -313,7 +304,7 @@ public class EntityListenerMetadata extends ORMetadata {
         // Make sure the entityListenerClass is initialized (default listeners
         // are cloned and m_entityListenerClass may be null)
         if (m_entityListenerClass == null) {
-            m_entityListenerClass = MetadataFactory.getClassMetadata(m_className);
+            m_entityListenerClass = getMetadataFactory().getClassMetadata(m_className);
         }
         
         // Initialize the listener class (reload the listener class)

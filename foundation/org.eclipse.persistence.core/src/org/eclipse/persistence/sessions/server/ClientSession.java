@@ -121,7 +121,7 @@ public class ClientSession extends AbstractSession {
         if (getWriteConnection() == null) {
             // Ensure that the client is logged in for lazy clients.
             if (getConnectionPolicy().isLazy()) {
-                getParent().acquireClientConnection(this);
+                this.parent.acquireClientConnection(this);
             }
         }
         try {
@@ -132,7 +132,7 @@ public class ClientSession extends AbstractSession {
                     // If not released right away the accessor
                     // may never be released (in case of repeated attempt to begin transaction).
                     // In case of internal connection pool it would mean less connections available.
-                    getParent().releaseClientSession(this);
+                    this.parent.releaseClientSession(this);
                 }
             }
             throw ex;
@@ -197,7 +197,7 @@ public class ClientSession extends AbstractSession {
     public boolean containsQuery(String queryName) {
         boolean containsQuery = getQueries().containsKey(queryName);
         if (containsQuery == false) {
-            containsQuery = getParent().containsQuery(queryName);
+            containsQuery = this.parent.containsQuery(queryName);
         }
         return containsQuery;
     }
@@ -239,7 +239,7 @@ public class ClientSession extends AbstractSession {
      * The clients session inherits its parent's descriptors.
      */
     public Map getDescriptors() {
-        return getParent().getDescriptors();
+        return this.parent.getDescriptors();
     }
 
     /**
@@ -262,7 +262,7 @@ public class ClientSession extends AbstractSession {
         // Note could return self as ClientSession shares the same identity map
         // as parent.  This reveals a deep problem, as queries will be cached in
         // the Server identity map but executed here using the write connection.
-        return getParent().getParentIdentityMapSession(query, canReturnSelf, terminalOnly);
+        return this.parent.getParentIdentityMapSession(query, canReturnSelf, terminalOnly);
     }
     
     /**
@@ -270,9 +270,9 @@ public class ClientSession extends AbstractSession {
      * from parent.
      */
     public Object getProperty(String name){
-        Object propertyValue = super.getProperties().get(name);
+        Object propertyValue = super.getProperty(name);
         if (propertyValue == null) {
-           propertyValue = getParent().getProperty(name);
+           propertyValue = this.parent.getProperty(name);
         }
         return propertyValue;
     }
@@ -304,7 +304,7 @@ public class ClientSession extends AbstractSession {
         if (isInTransaction()) {
             return this;
         }
-        return getParent().getExecutionSession(query);
+        return this.parent.getExecutionSession(query);
     }
 
     /**
@@ -325,7 +325,7 @@ public class ClientSession extends AbstractSession {
     public DatabaseQuery getQuery(String name) {
         DatabaseQuery query = super.getQuery(name);
         if (query == null) {
-            query = getParent().getQuery(name);
+            query = this.parent.getQuery(name);
         }
 
         return query;
@@ -337,7 +337,7 @@ public class ClientSession extends AbstractSession {
     public DatabaseQuery getQuery(String name, Vector args) {// CR3716; Predrag;
         DatabaseQuery query = super.getQuery(name, args);
         if (query == null) {
-            query = getParent().getQuery(name, args);
+            query = this.parent.getQuery(name, args);
         }
         return query;
     }
@@ -373,7 +373,7 @@ public class ClientSession extends AbstractSession {
      * (i.e. not DatabaseSession)
      */
     public ServerPlatform getServerPlatform() {
-        return getParent().getServerPlatform();
+        return this.parent.getServerPlatform();
     }
 
     /**
@@ -443,7 +443,7 @@ public class ClientSession extends AbstractSession {
      * Return if this session has been connected to the database.
      */
     public boolean isConnected() {
-        return getParent().isConnected();
+        return this.parent.isConnected();
     }
 
     /**
@@ -464,7 +464,7 @@ public class ClientSession extends AbstractSession {
         //the client session has been released.  It is also required for the 
         //behavior of a subclass ExclusiveIsolatedClientSession
         if (getWriteConnection() != null) {
-            getParent().releaseClientSession(this);
+            this.parent.releaseClientSession(this);
         }
 
         // we are not inactive until the connection is  released
@@ -479,7 +479,7 @@ public class ClientSession extends AbstractSession {
      */
     protected void releaseWriteConnection() {
         if (getConnectionPolicy().isLazy() && getWriteConnection()!= null) {
-            getParent().releaseClientSession(this);
+            this.parent.releaseClientSession(this);
         }
     }
 
@@ -546,7 +546,7 @@ public class ClientSession extends AbstractSession {
      * @return a remote command manager
      */
     public CommandManager getCommandManager() {
-        return getParent().getCommandManager();
+        return this.parent.getCommandManager();
     }
 
     /**
@@ -555,7 +555,7 @@ public class ClientSession extends AbstractSession {
      * cache synchronization setting
      */
     public boolean shouldPropagateChanges() {
-        return getParent().shouldPropagateChanges();
+        return this.parent.shouldPropagateChanges();
     }
 
     /**
@@ -563,7 +563,7 @@ public class ClientSession extends AbstractSession {
      */
     public void releaseReadConnection(Accessor connection) {
         //bug 4668234 -- used to only release connections on server sessions but should always release
-        getParent().releaseReadConnection(connection);
+        this.parent.releaseReadConnection(connection);
     }
 
     /**

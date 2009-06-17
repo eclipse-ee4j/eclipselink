@@ -707,12 +707,12 @@ public class EJBQueryImpl implements JpaQuery {
             // arguments.
             // This may have issues, it is better if the query set its arguments
             // when parsing the SQL.
-            arguments = new Vector(this.parameters.keySet());
+            arguments = new NonSynchronizedVector(this.parameters.keySet());
             query.setArguments((Vector) arguments);
         }
         // now create parameterValues in the same order as the argument list
         int size = arguments.size();
-        List parameterValues = new Vector(size);
+        List parameterValues = new NonSynchronizedVector(size);
         for (int index = 0; index < size; index++) {
             String name = (String) arguments.get(index);
             Object parameter = this.parameters.get(name);
@@ -1093,7 +1093,7 @@ public class EJBQueryImpl implements JpaQuery {
                     throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-argument-name", new Object[] { name, query.getEJBQLString() }));
                 }
             }
-            Class type = (Class) query.getArgumentTypes().get(index);
+            Class type = query.getArgumentTypes().get(index);
             // PERF: Only validate the type if known, and different.
             if ((type != null) && (type != ClassConstants.OBJECT) && (value != null) && (type != value.getClass())) {
                 if (!isValidActualParameter(value, type)) {

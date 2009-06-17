@@ -29,7 +29,7 @@ public class MetadataFile extends MetadataAccessibleObject {
      * INTERNAL:
      */
     public MetadataFile(XMLEntityMappings entityMappings) {
-        super(entityMappings.getLogger());
+        super(entityMappings.getMetadataFactory(), entityMappings.getLogger());
         m_entityMappings = entityMappings;
     }
     

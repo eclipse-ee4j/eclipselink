@@ -28,6 +28,7 @@ import java.sql.SQLWarning;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Vector;
@@ -82,7 +83,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
     public static boolean shouldUseDynamicStatements = true;
 
     /** Stores statement handles for common used prepared statements. */
-    protected Hashtable statementCache;
+    protected Map<String, Statement> statementCache;
 
     /** Cache of the connection's java.sql.DatabaseMetaData */
     protected DatabaseMetaData metaData;
@@ -113,13 +114,29 @@ public class DatabaseAccessor extends DatasourceAccessor {
 
     public DatabaseAccessor() {
         super();
-        this.statementCache = new Hashtable(50);
-        this.dynamicSQLMechanism = new DynamicSQLBatchWritingMechanism(this);
-        this.parameterizedMechanism = new ParameterizedSQLBatchWritingMechanism(this);
-        this.activeBatchWritingMechanism = this.parameterizedMechanism;
         this.lobWriter = null;
         this.shouldUseThreadCursors = false;
         this.isDynamicStatementInUse = false;
+    }
+    
+    /**
+     * Lazy init the dynamic SQL mechanism.
+     */
+    protected DynamicSQLBatchWritingMechanism getDynamicSQLMechanism() {
+        if (this.dynamicSQLMechanism == null) {
+            this.dynamicSQLMechanism = new DynamicSQLBatchWritingMechanism(this);
+        }
+        return this.dynamicSQLMechanism;
+    }
+    
+    /**
+     * Lazy init the parameterized SQL mechanism.
+     */
+    protected ParameterizedSQLBatchWritingMechanism getParameterizedMechanism() {
+        if (this.parameterizedMechanism == null) {
+            this.parameterizedMechanism = new ParameterizedSQLBatchWritingMechanism(this);
+        }
+        return this.parameterizedMechanism;
     }
 
     /**
@@ -290,9 +307,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
      */
     public void clearStatementCache(AbstractSession session) {
         if (hasStatementCache()) {
-            for (Enumeration statements = getStatementCache().elements();
-                     statements.hasMoreElements();) {
-                Statement statement = (Statement)statements.nextElement();
+            for (Statement statement : getStatementCache().values()) {
                 try {
                     statement.close();
                 } catch (SQLException exception) {
@@ -300,7 +315,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
                     // a statement is closed twice.
                 }
             }
-            setStatementCache(null);
+            this.statementCache = null;
         }
 
         // Close cached dynamic statement.
@@ -321,9 +336,10 @@ public class DatabaseAccessor extends DatasourceAccessor {
      */
     public Object clone() {
         DatabaseAccessor accessor = (DatabaseAccessor)super.clone();
-        accessor.dynamicSQLMechanism = new DynamicSQLBatchWritingMechanism(accessor);
-        accessor.activeBatchWritingMechanism = accessor.dynamicSQLMechanism;
-        accessor.parameterizedMechanism = new ParameterizedSQLBatchWritingMechanism(accessor);
+        accessor.dynamicSQLMechanism = null;
+        accessor.activeBatchWritingMechanism = null;
+        accessor.parameterizedMechanism = null;
+        accessor.statementCache = null;
         return accessor;
     }
 
@@ -904,6 +920,9 @@ public class DatabaseAccessor extends DatasourceAccessor {
      * This method is used internally to return the active batch writing mechanism to batch the statement
      */
     public BatchWritingMechanism getActiveBatchWritingMechanism() {
+        if (this.activeBatchWritingMechanism == null) {
+            this.activeBatchWritingMechanism = getParameterizedMechanism();
+        }
         return this.activeBatchWritingMechanism;
     }
 
@@ -1190,9 +1209,9 @@ public class DatabaseAccessor extends DatasourceAccessor {
     /**
      * The statement cache stores a fixed sized number of prepared statements.
      */
-    protected synchronized Hashtable getStatementCache() {
+    protected synchronized Map<String, Statement> getStatementCache() {
         if (statementCache == null) {
-            statementCache = new Hashtable(50);
+            statementCache = new HashMap<String, Statement>(50);
         }
         return statementCache;
     }
@@ -1391,20 +1410,21 @@ public class DatabaseAccessor extends DatasourceAccessor {
      */
     public void releaseStatement(Statement statement, String sqlString, DatabaseCall call, AbstractSession session) throws SQLException {
         if (call.usesBinding(session) && call.shouldCacheStatement(session)) {
-            synchronized (getStatementCache()) {
+            Map<String, Statement> statementCache = getStatementCache();
+            synchronized (statementCache) {
                 PreparedStatement preparedStatement = (PreparedStatement)statement;
-                if (!getStatementCache().containsKey(sqlString)) {// May already be there by other thread.
+                if (!statementCache.containsKey(sqlString)) {// May already be there by other thread.
                     preparedStatement.clearParameters();
                     // Bug 5709179 - reset statement settings on cached statements (dminsky) - inclusion of reset
                     resetStatementFromCall(preparedStatement, call);
-                    if (getStatementCache().size() > getPlatform().getStatementCacheSize()) {
+                    if (statementCache.size() > getPlatform().getStatementCacheSize()) {
                         // Currently one is removed at random...
-                        PreparedStatement removedStatement = (PreparedStatement)getStatementCache().remove(getStatementCache().keys().nextElement());
+                        PreparedStatement removedStatement = (PreparedStatement)statementCache.remove(statementCache.keySet().iterator().next());
                         closeStatement(removedStatement, session, call);
                     } else {
                         decrementCallCount();
                     }
-                    getStatementCache().put(sqlString, preparedStatement);
+                    statementCache.put(sqlString, preparedStatement);
                 } else {
                     // CR... Must close the statement if not cached.
                     closeStatement(statement, session, call);
@@ -1469,7 +1489,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
      *  This method is used to set the active Batch Mechanism on the accessor
      */
     public void setActiveBatchWritingMechanismToParameterizedSQL() {
-        this.activeBatchWritingMechanism = this.parameterizedMechanism;
+        this.activeBatchWritingMechanism = getParameterizedMechanism();
 
         //Bug#3214927 The size for ParameterizedBatchWriting represents the number of statements 
         //and the max size is only 100.
@@ -1483,7 +1503,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
      *  This method is used to set the active Batch Mechanism on the accessor
      */
     public void setActiveBatchWritingMechanismToDynamicSQL() {
-        this.activeBatchWritingMechanism = this.dynamicSQLMechanism;
+        this.activeBatchWritingMechanism = getDynamicSQLMechanism();
         // Bug#3214927-fix - Also the size must be switched back when switch back from param to dynamic.
         if (((DatabaseLogin)this.login).getMaxBatchWritingSize() == DatabasePlatform.DEFAULT_PARAMETERIZED_MAX_BATCH_WRITING_SIZE) {
             ((DatabaseLogin)this.login).setMaxBatchWritingSize(DatabasePlatform.DEFAULT_MAX_BATCH_WRITING_SIZE);

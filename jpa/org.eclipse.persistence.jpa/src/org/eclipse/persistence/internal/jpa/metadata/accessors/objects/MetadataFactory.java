@@ -46,48 +46,42 @@ public class MetadataFactory {
     public static final String PRIMITIVES = "VJIBZCSFD";
     /** Set of desc token characters. */
     public static final String TOKENS = "()<>;";
+    /** Backdoor to allow mapping of JDK classes. */
+    public static boolean ALLOW_JDK = false;
     
     /** Stores all metadata for classes. */
-    // TODO: probably can't be static as can have multiple deployments.
-    protected static Map<String, MetadataClass> metadata;
+    protected Map<String, MetadataClass> metadata;
     
-    public static MetadataLogger logger;
-    public static ClassLoader loader;
-    
-    public static void main(String[] args) {
-        loader = MetadataFactory.class.getClassLoader();
-        MetadataFactory.getClassMetadata("org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass");
-    }
-    
-    static {
-        clear();
+    public MetadataLogger logger;
+    public ClassLoader loader;
+
+    public MetadataFactory(MetadataLogger logger, ClassLoader loader) {
+        this.logger = logger;
+        this.loader = loader;
+        this.metadata = new HashMap<String, MetadataClass>();
+        this.metadata.put("void", new MetadataClass(this, void.class));
+        this.metadata.put("", new MetadataClass(this, void.class));
+        this.metadata.put(null, new MetadataClass(this, void.class));
+        this.metadata.put("int", new MetadataClass(this, int.class));
+        this.metadata.put("long", new MetadataClass(this, long.class));
+        this.metadata.put("short", new MetadataClass(this, short.class));
+        this.metadata.put("boolean", new MetadataClass(this, boolean.class));
+        this.metadata.put("float", new MetadataClass(this, float.class));
+        this.metadata.put("double", new MetadataClass(this, double.class));
+        this.metadata.put("char", new MetadataClass(this, char.class));
+        this.metadata.put("byte", new MetadataClass(this, byte.class));
+        this.metadata.put("V", new MetadataClass(this, void.class));
+        this.metadata.put("I", new MetadataClass(this, int.class));
+        this.metadata.put("J", new MetadataClass(this, long.class));
+        this.metadata.put("S", new MetadataClass(this, short.class));
+        this.metadata.put("Z", new MetadataClass(this, boolean.class));
+        this.metadata.put("F", new MetadataClass(this, float.class));
+        this.metadata.put("D", new MetadataClass(this, double.class));
+        this.metadata.put("C", new MetadataClass(this, char.class));
+        this.metadata.put("B", new MetadataClass(this, byte.class));
     }
 
-    public static void clear() {
-        metadata = new HashMap<String, MetadataClass>();
-        metadata.put("void", new MetadataClass(void.class));
-        metadata.put("", new MetadataClass(void.class));
-        metadata.put(null, new MetadataClass(void.class));
-        metadata.put("int", new MetadataClass(int.class));
-        metadata.put("long", new MetadataClass(long.class));
-        metadata.put("short", new MetadataClass(short.class));
-        metadata.put("boolean", new MetadataClass(boolean.class));
-        metadata.put("float", new MetadataClass(float.class));
-        metadata.put("double", new MetadataClass(double.class));
-        metadata.put("char", new MetadataClass(char.class));
-        metadata.put("byte", new MetadataClass(byte.class));
-        metadata.put("V", new MetadataClass(void.class));
-        metadata.put("I", new MetadataClass(int.class));
-        metadata.put("J", new MetadataClass(long.class));
-        metadata.put("S", new MetadataClass(short.class));
-        metadata.put("Z", new MetadataClass(boolean.class));
-        metadata.put("F", new MetadataClass(float.class));
-        metadata.put("D", new MetadataClass(double.class));
-        metadata.put("C", new MetadataClass(char.class));
-        metadata.put("B", new MetadataClass(byte.class));
-    }
-
-    public static String toClassName(String classDescription) {
+    public String toClassName(String classDescription) {
         if (classDescription == null) {
             return "void";
         }
@@ -97,7 +91,7 @@ public class MetadataFactory {
     /**
      * Walk the class byte codes and collect the class info.
      */
-    public static class ClassMetadataVisitor implements ClassVisitor {
+    public class ClassMetadataVisitor implements ClassVisitor {
         
         MetadataClass classMetadata;
 
@@ -105,11 +99,15 @@ public class MetadataFactory {
         }
         
         public void visit(int version, int access, String name, String superName, String[] interfaces, String sourceFile) {
-            this.classMetadata = new MetadataClass(toClassName(name));
-            metadata.put(toClassName(name), this.classMetadata);
-            this.classMetadata.setName(toClassName(name));
+            String className = toClassName(name);
+            this.classMetadata = new MetadataClass(MetadataFactory.this, className);
+            metadata.put(className, this.classMetadata);
+            this.classMetadata.setName(className);
             this.classMetadata.setSuperclassName(toClassName(superName));
             this.classMetadata.setModifiers(access);
+            if ((!ALLOW_JDK) && (className.startsWith("java") || className.startsWith("javax"))) {
+                this.classMetadata.setIsJDK(true);
+            }
             
             List<String> interfacesNames = new ArrayList<String>();
             for (String interfaceName : interfaces) {
@@ -123,7 +121,10 @@ public class MetadataFactory {
         }
 
         public void visitField(int access, String name, String desc, Object value, Attribute attrs) {
-            MetadataField field = new MetadataField(logger);
+            if (this.classMetadata.isJDK()) {
+                return;
+            }
+            MetadataField field = new MetadataField(MetadataFactory.this, logger);
             field.setName(name);
             field.setAttributeName(name);
             field.setGenericType(getGenericType(attrs));
@@ -229,13 +230,16 @@ public class MetadataFactory {
         }
         
         public CodeVisitor visitMethod(int access, String name, String desc, String[] exceptions, Attribute attrs) {
+            if (this.classMetadata.isJDK()) {
+                return null;
+            }
             MetadataMethod method = null;
             // Ignore generated constructors.
             if (name.indexOf("init>") != -1) {
                 return null;
             }
             List<String> argumentNames = processDescription(desc, false);                
-            method = new MetadataMethod(this.classMetadata, logger);
+            method = new MetadataMethod(MetadataFactory.this, this.classMetadata, logger);
             method.setName(name);
             method.setAttributeName(Helper.getAttributeNameFromMethodName(name));
             method.setModifiers(access);
@@ -258,6 +262,9 @@ public class MetadataFactory {
         }
 
         public void visitAttribute(Attribute attr) {
+            if (this.classMetadata.isJDK()) {
+                return;
+            }
             if (attr instanceof SignatureAttribute) {
                 // Process generic signature.
                 this.classMetadata.setGenericType(getGenericType(attr));
@@ -329,14 +336,14 @@ public class MetadataFactory {
     /**
      * Return the class metadata for the class name.
      */
-    public static MetadataClass getClassMetadata(String className) {
+    public MetadataClass getClassMetadata(String className) {
         if (className == null) {
             return null;
         }
-        MetadataClass metadataClass = metadata.get(className);
+        MetadataClass metadataClass = this.metadata.get(className);
         if (metadataClass == null) {
             buildClassMetadata(className);
-            metadataClass = metadata.get(className);
+            metadataClass = this.metadata.get(className);
         }
         return metadataClass;
     }
@@ -345,15 +352,31 @@ public class MetadataFactory {
      * Build the class metadata for the class name using ASM to read the class byte
      * codes.
      */
-    public static void buildClassMetadata(String className) {
+    public void buildClassMetadata(String className) {
         ClassMetadataVisitor visitor = new ClassMetadataVisitor();
         try {
-            ClassReader reader = new ClassReader(loader.getResourceAsStream(className.replace('.', '/') + ".class"));
+            ClassReader reader = new ClassReader(this.loader.getResourceAsStream(className.replace('.', '/') + ".class"));
             Attribute[] attributes = new Attribute[] { new RuntimeVisibleAnnotations(), new RuntimeVisibleParameterAnnotations(), new SignatureAttribute() };
             reader.accept(visitor, attributes, false);
         } catch (Exception exception) {
             // Some basic types can't be found, so can just be registered (i.e. arrays).
-            metadata.put(className, new MetadataClass(className));
+            this.metadata.put(className, new MetadataClass(this, className));
         }
+    }
+
+    public MetadataLogger getLogger() {
+        return logger;
+    }
+
+    public void setLogger(MetadataLogger logger) {
+        this.logger = logger;
+    }
+
+    public ClassLoader getLoader() {
+        return loader;
+    }
+
+    public void setLoader(ClassLoader loader) {
+        this.loader = loader;
     }
 }

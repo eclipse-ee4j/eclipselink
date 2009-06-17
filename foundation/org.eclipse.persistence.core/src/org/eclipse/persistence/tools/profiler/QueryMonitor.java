@@ -12,7 +12,10 @@
  ******************************************************************************/  
 package org.eclipse.persistence.tools.profiler;
 
+import java.io.StringWriter;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.eclipse.persistence.queries.*;
 
 /**
@@ -27,8 +30,8 @@ import org.eclipse.persistence.queries.*;
  */
 public class QueryMonitor {
 
-    public static Hashtable cacheHits = new Hashtable();
-    public static Hashtable cacheMisses = new Hashtable();
+    public static Map<String, Number> cacheHits = new ConcurrentHashMap<String, Number>();
+    public static Map<String, Number> cacheMisses = new ConcurrentHashMap<String, Number>();
     public static long dumpTime = System.currentTimeMillis();
     public static Boolean shouldMonitor;
     
@@ -46,15 +49,42 @@ public class QueryMonitor {
     public static void checkDumpTime() {
         if ((System.currentTimeMillis() - dumpTime) > 100000) {
             dumpTime = System.currentTimeMillis();
-            System.out.println("Cache Hits:" + cacheHits);
-            System.out.println("Cache Misses:" + cacheMisses);
+            StringWriter writer = new StringWriter();
+            writer.write("Query Monitor:");
+            writer.write(String.valueOf(dumpTime));
+            writer.write("\n");
+            writer.write("Query");
+            writer.write("\t");
+            writer.write("Cache");
+            writer.write("\t");
+            writer.write("Database");
+            writer.write("\n");
+            Set<String> queries = new TreeSet<String>(cacheMisses.keySet());
+            queries.addAll(cacheHits.keySet());
+            for (String query : queries) {
+                Number hits = cacheHits.get(query);
+                if (hits == null) {
+                    hits = new Integer(0);
+                }
+                Number misses = cacheMisses.get(query);
+                if (misses == null) {
+                    misses = new Integer(0);
+                }
+                writer.write(query);
+                writer.write("\t");
+                writer.write(hits.toString());
+                writer.write("\t");
+                writer.write(misses.toString());
+                writer.write("\n");
+            }
+            System.out.println(writer.toString());
         }
     }
 
     public static void incrementReadObjectHits(ReadObjectQuery query) {
         checkDumpTime();
         String name = query.getReferenceClass().getName() + "-findByPrimaryKey";
-        Number hits = (Number) cacheHits.get(name);
+        Number hits = cacheHits.get(name);
         if (hits == null) {
             hits = new Integer(0);
         }
@@ -65,7 +95,7 @@ public class QueryMonitor {
     public static void incrementReadObjectMisses(ReadObjectQuery query) {
         checkDumpTime();
         String name = query.getReferenceClass().getName() + "-findByPrimaryKey";
-        Number misses = (Number) cacheMisses.get(name);
+        Number misses = cacheMisses.get(name);
         if (misses == null) {
             misses = new Integer(0);
         }
@@ -81,7 +111,7 @@ public class QueryMonitor {
         } else {
             name = name + "-" + query.getName();
         }
-        Number hits = (Number) cacheHits.get(name);
+        Number hits = cacheHits.get(name);
         if (hits == null) {
             hits = new Integer(0);
         }
@@ -97,7 +127,7 @@ public class QueryMonitor {
         } else {
             name = name + "-" + query.getName();
         }
-        Number misses = (Number) cacheMisses.get(name);
+        Number misses = cacheMisses.get(name);
         if (misses == null) {
             misses = new Integer(0);
         }
@@ -108,7 +138,7 @@ public class QueryMonitor {
     public static void incrementInsert(WriteObjectQuery query) {
         checkDumpTime();
         String name = query.getReferenceClass().getName() + "-insert";
-        Number misses = (Number) cacheMisses.get(name);
+        Number misses = cacheMisses.get(name);
         if (misses == null) {
             misses = new Integer(0);
         }
@@ -119,7 +149,7 @@ public class QueryMonitor {
     public static void incrementUpdate(WriteObjectQuery query) {
         checkDumpTime();
         String name = query.getReferenceClass().getName() + "-update";
-        Number misses = (Number) cacheMisses.get(name);
+        Number misses = cacheMisses.get(name);
         if (misses == null) {
             misses = new Integer(0);
         }
@@ -130,7 +160,7 @@ public class QueryMonitor {
     public static void incrementDelete(DeleteObjectQuery query) {
         checkDumpTime();
         String name = query.getReferenceClass().getName() + "-delete";
-        Number misses = (Number) cacheMisses.get(name);
+        Number misses = cacheMisses.get(name);
         if (misses == null) {
             misses = new Integer(0);
         }

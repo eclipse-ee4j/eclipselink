@@ -32,7 +32,6 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAcce
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataFactory;
 import org.eclipse.persistence.internal.jpa.metadata.tables.CollectionTableMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.mappings.CollectionMapping;
@@ -152,7 +151,7 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
     @Override
     public MetadataClass getReferenceClass() {
         MetadataClass cls = getReferenceClassFromGeneric();
-        return (cls == null) ? MetadataFactory.getClassMetadata(void.class.getName()) : cls;
+        return (cls == null) ? getMetadataFactory().getClassMetadata(void.class.getName()) : cls;
     }
     
     /**

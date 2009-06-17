@@ -37,6 +37,7 @@ public class MetadataClass extends MetadataAnnotatedElement {
     protected List<String> interfaces;
     protected int modifiers;
     protected boolean isPrimitive;
+    protected boolean isJDK;
     
     /** Store the classes field metadata, keyed by the field's name. */
     protected Map<String, MetadataField> fields = new HashMap<String, MetadataField>();
@@ -50,8 +51,8 @@ public class MetadataClass extends MetadataAnnotatedElement {
     /**
      * Create the metadata class with the class name.
      */
-    public MetadataClass(String name) {
-        super(MetadataFactory.logger);
+    public MetadataClass(MetadataFactory factory, String name) {
+        super(factory, factory.logger);
         setName(name);
     }
     
@@ -59,8 +60,8 @@ public class MetadataClass extends MetadataAnnotatedElement {
      * Create the metadata class based on the class.
      * Mainly used for primitive defaults.
      */
-    public MetadataClass(Class cls) {
-        this(cls.getName());
+    public MetadataClass(MetadataFactory factory, Class cls) {
+        this(factory, cls.getName());
         this.isPrimitive = cls.isPrimitive();
     }
 
@@ -156,7 +157,7 @@ public class MetadataClass extends MetadataAnnotatedElement {
     }
     
     public MetadataClass getSuperclass() {
-        return MetadataFactory.getClassMetadata(this.superclass);
+        return getMetadataFactory().getClassMetadata(this.superclass);
     }
 
     public String getSuperclassName() {
@@ -242,7 +243,7 @@ public class MetadataClass extends MetadataAnnotatedElement {
             return true;
         }
         for (String interfaceName : getInterfaces()) {
-            if (MetadataFactory.getClassMetadata(interfaceName).extendsInterface(className)) {
+            if (getMetadataFactory().getClassMetadata(interfaceName).extendsInterface(className)) {
                 return true;
             }
         }
@@ -295,6 +296,13 @@ public class MetadataClass extends MetadataAnnotatedElement {
     }
     
     /**
+     * Return if this is a JDK (java/javax) class.
+     */
+    public boolean isJDK() {
+        return isJDK;
+    }
+    
+    /**
      * Return if this is an interface (super is null).
      */
     public boolean isInterface() {
@@ -329,5 +337,9 @@ public class MetadataClass extends MetadataAnnotatedElement {
 
     public void setModifiers(int modifiers) {
         this.modifiers = modifiers;
+    }
+
+    public void setIsJDK(boolean isJDK) {
+        this.isJDK = isJDK;
     }
 }

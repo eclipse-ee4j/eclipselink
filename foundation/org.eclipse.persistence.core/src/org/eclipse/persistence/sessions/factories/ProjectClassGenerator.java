@@ -1228,10 +1228,10 @@ public class ProjectClassGenerator {
         }
         
         // Query arguments.
-        Enumeration argumentTypes = query.getArgumentTypeNames().elements();
-        for (Enumeration arguments = query.getArguments().elements(); arguments.hasMoreElements();) {
-            String argument = (String)arguments.nextElement();
-            String argumentTypeName = (String)argumentTypes.nextElement();
+        Iterator argumentTypes = query.getArgumentTypeNames().iterator();
+        for (Iterator arguments = query.getArguments().iterator(); arguments.hasNext();) {
+            String argument = (String)arguments.next();
+            String argumentTypeName = (String)argumentTypes.next();
             method.addLine(queryIdentifier + ".addArgument(\"" + argument + "\", " + argumentTypeName + ".class);");
         }
 

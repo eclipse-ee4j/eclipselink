@@ -98,8 +98,8 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     /**
      * INTERNAL:
      */
-    public MetadataAnnotatedElement(MetadataLogger logger) {
-        super(logger);
+    public MetadataAnnotatedElement(MetadataFactory factory, MetadataLogger logger) {
+        super(factory, logger);
     }
 
     /**
@@ -167,9 +167,9 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
             // The Map key may be a generic itself, or just the class value.
             String type = descriptor.getGenericType(this.genericType.get(2));
             if (type != null) {
-                return MetadataFactory.getClassMetadata(type);
+                return getMetadataFactory().getClassMetadata(type);
             }
-            return MetadataFactory.getClassMetadata(this.genericType.get(1));
+            return getMetadataFactory().getClassMetadata(this.genericType.get(1));
         } else {
             return null;
         }
@@ -194,11 +194,11 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
             if (isGenericType()) {
                 String type = descriptor.getGenericType(getGenericType().get(0));
                 if (type == null) {
-                    return MetadataFactory.getClassMetadata("java.lang.String");
+                    return getMetadataFactory().getClassMetadata("java.lang.String");
                 }
-                return MetadataFactory.getClassMetadata(type);
+                return getMetadataFactory().getClassMetadata(type);
             }
-            return MetadataFactory.getClassMetadata(getType());
+            return getMetadataFactory().getClassMetadata(getType());
         }
         
         return m_rawClass;    
@@ -240,7 +240,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
                 // Assume is a generic type variable, find real type.
                 elementClass = descriptor.getGenericType(elementClass);
             }            
-            return MetadataFactory.getClassMetadata(elementClass);
+            return getMetadataFactory().getClassMetadata(elementClass);
         } else {
             return null;
         }

@@ -71,6 +71,7 @@ public class XMLEntityMappings extends ORMetadata {
     private boolean m_isEclipseLinkORMFile;
     
     private ClassLoader m_loader;
+    private MetadataFactory m_factory;
     
     private List<EntityAccessor> m_entities;
     private List<ConverterMetadata> m_converters;
@@ -105,6 +106,14 @@ public class XMLEntityMappings extends ORMetadata {
     public XMLEntityMappings() {
         super("<entity-mappings>");
         m_isEclipseLinkORMFile = false;
+    }
+
+    public MetadataFactory getMetadataFactory() {
+        return m_factory;
+    }
+
+    public void setMetadataFactory(MetadataFactory factory) {
+        m_factory = factory;
     }
     
     /**
@@ -659,6 +668,8 @@ public class XMLEntityMappings extends ORMetadata {
             // be done, that is, any and all default listeners specified across
             // the persistence unit will be added to the project.
             for (EntityListenerMetadata defaultListener : m_persistenceUnitMetadata.getDefaultListeners()) {
+                // Set the accessible object for persistence unit metadata.
+                defaultListener.initXMLObject(m_file, this);
                 m_project.addDefaultListener(defaultListener);
             }
         }
@@ -682,7 +693,7 @@ public class XMLEntityMappings extends ORMetadata {
             
         // Initialize the newly loaded/built entity
         EntityAccessor entity = xmlEntityMappings.getEntities().get(0);
-        MetadataClass metadataClass = MetadataFactory.getClassMetadata(getFullClassName(entity.getClassName()));
+        MetadataClass metadataClass = getMetadataFactory().getClassMetadata(getFullClassName(entity.getClassName()));
         entity.initXMLClassAccessor(metadataClass, descriptor, m_project, this);
         
         return entity;
@@ -706,7 +717,7 @@ public class XMLEntityMappings extends ORMetadata {
         
         // Initialize the newly loaded/built mapped superclass
         MappedSuperclassAccessor mappedSuperclass = xmlEntityMappings.getMappedSuperclasses().get(0);
-        MetadataClass metadataClass = MetadataFactory.getClassMetadata(getFullClassName(mappedSuperclass.getClassName()));
+        MetadataClass metadataClass = getMetadataFactory().getClassMetadata(getFullClassName(mappedSuperclass.getClassName()));
         mappedSuperclass.initXMLClassAccessor(metadataClass, descriptor, m_project, this);
         
         

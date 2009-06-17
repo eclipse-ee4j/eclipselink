@@ -14,6 +14,7 @@ package org.eclipse.persistence.testing.tests.feature;
 
 import java.lang.reflect.Method;
 import java.sql.*;
+import java.util.Map;
 
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -65,12 +66,12 @@ public class CacheStatementBatchWritingTest extends TransactionalTestCase {
 
         //get statement
         PreparedStatement statement = null;
-        java.util.Hashtable statementCache = null;
+        Map statementCache = null;
         String sql = getSession().getDescriptor(Address.class).getQueryManager().getInsertQuery().getSQLString();
         try {
             Method method = uow.getParent().getAccessor().getClass().getDeclaredMethod("getStatementCache", new Class[] { });
             method.setAccessible(true);
-            statementCache = (java.util.Hashtable)method.invoke((DatabaseAccessor)uow.getParent().getAccessor(), new Object[] { });
+            statementCache = (Map)method.invoke((DatabaseAccessor)uow.getParent().getAccessor(), new Object[] { });
             statement =  (PreparedStatement)statementCache.get(sql);
         } catch (Exception ex) {
             throw new TestErrorException("Failed to run test. Check java.policy file \"SupressAccessChecks\" perission required :" + 

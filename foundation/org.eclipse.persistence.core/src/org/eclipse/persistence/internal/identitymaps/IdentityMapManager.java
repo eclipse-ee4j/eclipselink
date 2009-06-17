@@ -54,7 +54,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
     protected Map<Class, IdentityMap> identityMaps;
 
     /** A table of identity maps with the key being the query */
-    protected Map queryResults;
+    protected Map<Object, IdentityMap> queryResults;
 
     /** A reference to the session owning this manager. */
     protected AbstractSession session;
@@ -401,8 +401,12 @@ public class IdentityMapManager implements Serializable, Cloneable {
      * This is used to clean up cached clones of queries.
      */
     public void clearQueryCache(ReadQuery query) {
-        if (query != null) {
-            queryResults.remove(query);
+        if (query != null) {// PERF: use query name, unless no name.
+            Object queryKey = query.getName();
+            if ((queryKey == null) || ((String)queryKey).length() == 0) {
+                queryKey = query;
+            }
+            this.queryResults.remove(queryKey);
         }
     }
     
@@ -804,14 +808,19 @@ public class IdentityMapManager implements Serializable, Cloneable {
         if (query.getQueryResultsCachePolicy() == null) {
             return null;
         }
-        IdentityMap map = (IdentityMap)queryResults.get(query);
+        // PERF: use query name, unless no name.
+        Object queryKey = query.getName();
+        if ((queryKey == null) || ((String)queryKey).length() == 0) {
+            queryKey = query;
+        }
+        IdentityMap map = this.queryResults.get(queryKey);
         if (map == null) {
             return null;
         }
 
         Vector lookupParameters = parameters;
         if (lookupParameters == null) {
-            lookupParameters = new Vector();
+            lookupParameters = new NonSynchronizedVector(0);
         }
 
         CacheKey key = map.getCacheKey(lookupParameters);
@@ -1088,19 +1097,24 @@ public class IdentityMapManager implements Serializable, Cloneable {
      * different parameter values access different caches.
      */
     public void putQueryResult(ReadQuery query, Vector parameters, Object results) {
-        IdentityMap map = (IdentityMap)queryResults.get(query);
+        // PERF: use query name, unless no name.
+        Object queryKey = query.getName();
+        if ((queryKey == null) || ((String)queryKey).length() == 0) {
+            queryKey = query;
+        }
+        IdentityMap map = this.queryResults.get(queryKey);
         if (map == null) {
-            synchronized (queryResults) {
-                map = (IdentityMap)queryResults.get(query);
+            synchronized (this.queryResults) {
+                map = this.queryResults.get(queryKey);
                 if (map == null) {
                     map = new CacheIdentityMap(query.getQueryResultsCachePolicy().getMaximumCachedResults());
-                    queryResults.put(query, map);
+                    this.queryResults.put(queryKey, map);
                 }
             }
         }
         Vector lookupParameters = parameters;
         if (lookupParameters == null) {
-            lookupParameters = new Vector();
+            lookupParameters = new NonSynchronizedVector(0);
         }
         long queryTime = 0;
         if (query.isObjectLevelReadQuery()) {

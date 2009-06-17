@@ -127,12 +127,12 @@ public class ClearQueryOptionsOnStatementTest extends AutoVerifyTestCase {
         org.eclipse.persistence.internal.sessions.DatabaseSessionImpl impl = 
             (org.eclipse.persistence.internal.sessions.DatabaseSessionImpl) session;
         DatabaseAccessor accessor = (DatabaseAccessor) impl.getAccessor();
-        Hashtable statementCache = null;
+        Map statementCache = null;
         try {
             Method method = PrivilegedAccessHelper.getDeclaredMethod(DatabaseAccessor.class,
                 "getStatementCache", new Class[]{});
             method.setAccessible(true);
-            statementCache = (Hashtable) method.invoke(accessor, new Object[] {});
+            statementCache = (Map) method.invoke(accessor, new Object[] {});
         } catch (Exception nsme) {
             throwError("Could not invoke DatabaseAccessor>>getStatementCache()", nsme);
         }

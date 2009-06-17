@@ -173,8 +173,10 @@ public class CommitManager {
         if (newObjectChangesList != null) { // may be no changes for that class type.
             AbstractSession session = getSession();
             ClassDescriptor descriptor = session.getDescriptor(theClass);
-            for (Iterator pendingEnum = new ArrayList(newObjectChangesList.values()).iterator(); pendingEnum.hasNext();) {
-                ObjectChangeSet changeSetToWrite = (ObjectChangeSet)pendingEnum.next();
+            List<ObjectChangeSet> newChangeSets = new ArrayList(newObjectChangesList.values());
+            int size = newChangeSets.size();
+            for (int index = 0; index < size; index++) {
+                ObjectChangeSet changeSetToWrite = newChangeSets.get(index);
                 Object objectToWrite = changeSetToWrite.getUnitOfWorkClone();
                 if (!isProcessedCommit(objectToWrite)) {
                     // PERF: Get the descriptor query, to avoid extra query creation.

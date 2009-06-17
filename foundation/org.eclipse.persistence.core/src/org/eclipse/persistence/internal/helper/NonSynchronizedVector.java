@@ -98,7 +98,11 @@ public class NonSynchronizedVector extends Vector {
     public int capacity() {
         return elementData.length;
     }
-
+    
+    public Object clone() {
+        return new NonSynchronizedVector(this);
+    }
+    
     public int size() {
         return elementCount;
     }
@@ -362,23 +366,27 @@ public class NonSynchronizedVector extends Vector {
             return true;
         if (!(o instanceof List))
             return false;
-    
-        ListIterator e1 = listIterator();
-        ListIterator e2 = ((List) o).listIterator();
-        while(e1.hasNext() && e2.hasNext()) {
-            Object o1 = e1.next();
-            Object o2 = e2.next();
-            if (!(o1==null ? o2==null : o1.equals(o2)))
+
+        List list = (List) o;
+        int size = size();
+        if (list.size() != size) {
             return false;
         }
-        return !(e1.hasNext() || e2.hasNext());
+        for (int index = 0; index < size; index++) {
+            Object left = get(index);
+            Object right = list.get(index);
+            if ((left != right) && ((left == null) || (right == null) || (!left.equals(right)))) {
+                return false;
+            }            
+        }
+        return true;
     }
 
     public int hashCode() {
         int hashCode = 1;
-        Iterator i = iterator();
-            while (i.hasNext()) {
-            Object obj = i.next();
+        int size = size();
+        for (int index = 0; index < size; index++) {
+            Object obj = get(index);
             hashCode = 31*hashCode + (obj==null ? 0 : obj.hashCode());
         }
         return hashCode;
@@ -418,6 +426,7 @@ public class NonSynchronizedVector extends Vector {
     
     public List subList(int fromIndex, int toIndex) {
         return new NonSynchronizedSubVector(this, fromIndex, toIndex);
-    }    
+    }
+
 }
 

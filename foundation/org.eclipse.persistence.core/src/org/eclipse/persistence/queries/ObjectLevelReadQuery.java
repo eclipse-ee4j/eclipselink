@@ -1224,7 +1224,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * The order bys are lazy initialized to conserve space.
      */
     public boolean hasOrderByExpressions() {
-        return orderByExpressions != null;
+        return (orderByExpressions != null) && (!orderByExpressions.isEmpty());
     }
 
     /**

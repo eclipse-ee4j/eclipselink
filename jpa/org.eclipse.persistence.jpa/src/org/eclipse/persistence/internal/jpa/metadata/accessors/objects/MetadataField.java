@@ -34,8 +34,8 @@ public class MetadataField extends MetadataAnnotatedElement {
     /**
      * INTERNAL:
      */
-    public MetadataField(MetadataLogger logger) {
-        super(logger);
+    public MetadataField(MetadataFactory factory, MetadataLogger logger) {
+        super(factory, logger);
     }
         
     /**

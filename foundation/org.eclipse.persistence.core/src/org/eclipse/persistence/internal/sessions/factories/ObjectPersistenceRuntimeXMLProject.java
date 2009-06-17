@@ -1310,15 +1310,15 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         argumentsMapping.setAttributeAccessor(new AttributeAccessor() {
             public Object getAttributeValueFromObject(Object object) {
                 DatabaseQuery query = (DatabaseQuery)object;
-                Vector arguments = query.getArguments();
-                Vector types = query.getArgumentTypeNames();
-                Vector values = query.getArgumentValues();
+                List<String> arguments = query.getArguments();
+                List<String> types = query.getArgumentTypeNames();
+                List<Object> values = query.getArgumentValues();
                 Vector queryArguments = new Vector(arguments.size());
                 for (int index = 0; index < arguments.size(); index++) {
                     QueryArgument queryArgument = new QueryArgument();
                     queryArgument.setKey(arguments.get(index));
                     if (!types.isEmpty()) {
-                        queryArgument.setTypeName((String)types.get(index));
+                        queryArgument.setTypeName(types.get(index));
                     }
                     if (!values.isEmpty()) {
                         queryArgument.setValue(values.get(index));

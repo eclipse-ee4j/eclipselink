@@ -63,7 +63,7 @@ public class ProjectXMLQueryManagerQueryOrderTest extends AutoVerifyTestCase {
             }
             Vector argumentTypes = new Vector();
             for (int i = 0; i < argumentTypesSize; i++) {
-                argumentTypes.addElement(origQuery.getArgumentTypeNames().elementAt(i));
+                argumentTypes.addElement(origQuery.getArgumentTypeNames().get(i));
             }
 
             DatabaseQuery currentQuery = (DatabaseQuery)curr.next();

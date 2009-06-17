@@ -53,6 +53,13 @@ public class EnumeratedMetadata extends MetadataConverter {
     }
     
     /**
+     * Used for defaulting.
+     */
+    public EnumeratedMetadata(MetadataAccessibleObject accessibleObject) {
+        super(accessibleObject);
+    }
+    
+    /**
      * INTERNAL:
      */
     public EnumeratedMetadata(MetadataAnnotation enumerated, MetadataAccessibleObject accessibleObject) {

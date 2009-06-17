@@ -52,10 +52,6 @@ public class MetadataHelper {
                 return PrivilegedAccessHelper.getClassForName(classname, true, loader);
             }
         } catch (ClassNotFoundException exception) {
-            if (loader != org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataFactory.loader)
-            {
-                return getClassForName(classname, org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataFactory.loader);
-            } else {
             if (classname.indexOf('$') != -1) {
                 String outer = classname.substring(0, classname.indexOf('$'));
                 Class outerClass = getClassForName(outer, loader);
@@ -66,7 +62,6 @@ public class MetadataHelper {
                         return outerClass.getClasses()[index];
                     }
                 }
-            }
             }
             throw ValidationException.unableToLoadClass(classname, exception);
         }

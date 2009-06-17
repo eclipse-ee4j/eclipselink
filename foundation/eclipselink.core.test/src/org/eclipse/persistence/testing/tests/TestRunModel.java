@@ -109,8 +109,6 @@ public class TestRunModel extends TestModel {
             tests.addElement("org.eclipse.persistence.testing.tests.identitymaps.cacheinvalidation.EmployeeTimeToLiveTestModel");
             tests.addElement("org.eclipse.persistence.testing.tests.identitymaps.cacheinvalidation.EmployeeDailyExpiryTestModel");
             tests.addElement("org.eclipse.persistence.testing.tests.nondeferredwrites.NonDeferredWritesTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.weaving.ChangeTrackerWeavingTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.weaving.RelationshipWeavingTestModel");
             tests.addElement("org.eclipse.persistence.testing.tests.weaving.SimpleWeavingTestModel");
             tests.addElement("org.eclipse.persistence.testing.tests.multipletable.MultipleTableModel");
             tests.addElement("org.eclipse.persistence.testing.tests.distributedcache.DistributedCacheModel");

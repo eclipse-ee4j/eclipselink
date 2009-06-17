@@ -65,7 +65,6 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAcc
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataFactory;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataMethod;
 import org.eclipse.persistence.internal.jpa.metadata.columns.AssociationOverrideMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.AttributeOverrideMetadata;
@@ -522,7 +521,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
         
             return referenceClass;
         } else {
-            return MetadataFactory.getClassMetadata(void.class.getName());
+            return getMetadataFactory().getClassMetadata(void.class.getName());
         }
     }
     
@@ -1229,7 +1228,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
     protected void processEnumerated(EnumeratedMetadata enumerated, DatabaseMapping mapping, MetadataClass referenceClass, boolean isForMapKey) {
         if (enumerated == null) {
             // TODO: Log a defaulting message
-            enumerated = new EnumeratedMetadata();
+            enumerated = new EnumeratedMetadata(getAccessibleObject());
         }
         
         enumerated.process(mapping, this, referenceClass, isForMapKey);
@@ -1475,8 +1474,8 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * the Serializable interface then set a SerializedObjectConverter on 
      * the mapping.
      */
-    protected void processSerialized(DatabaseMapping mapping, MetadataClass referenceClass, boolean isForMapKey) {
-        new SerializedMetadata().process(mapping, this, referenceClass, isForMapKey);
+    protected void processSerialized(DatabaseMapping mapping, MetadataClass referenceClass, boolean isForMapKey) {        
+        new SerializedMetadata(getAccessibleObject()).process(mapping, this, referenceClass, isForMapKey);
     }
     
     /**
@@ -1486,7 +1485,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * the mapping.
      */
     protected void processSerialized(DatabaseMapping mapping, MetadataClass referenceClass, MetadataClass classification, boolean isForMapKey) {
-        new SerializedMetadata().process(mapping, this, referenceClass, classification, isForMapKey);
+        new SerializedMetadata(getAccessibleObject()).process(mapping, this, referenceClass, classification, isForMapKey);
     }
     
     /**

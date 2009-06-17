@@ -1344,23 +1344,19 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("not_an_entity", new Object[] { entity }));
             }
 
-            UnitOfWork uow = getActivePersistenceContext(checkForTransaction(true)); // throws
-            // TransactionRequiredException 
-            // if
-            // no
-            // active
-            // transaction
+            UnitOfWork uow = getActivePersistenceContext(checkForTransaction(true)); // Throws TransactionRequiredException if no active transaction.
 
             if (!contains(entity, uow)) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("cant_lock_not_managed_object", new Object[] { entity }));
             }
 
-            
             if (lockMode == null || lockMode.name().equals(ObjectLevelReadQuery.NONE)) {
                 // Nothing to do
                 return;
             }
-            if (lockMode.name().equals(ObjectLevelReadQuery.PESSIMISTIC_READ) || lockMode.name().equals(ObjectLevelReadQuery.PESSIMISTIC_WRITE) || lockMode.name().equals(ObjectLevelReadQuery.PESSIMISTIC_FORCE_INCREMENT)) {
+            // Must avoid using the new JPA 2.0 Enum values directly to allow JPA 1.0 jars to still work.
+            if (lockMode.name().equals(ObjectLevelReadQuery.PESSIMISTIC_READ) || lockMode.name().equals(ObjectLevelReadQuery.PESSIMISTIC_WRITE )
+                    || lockMode.name().equals(ObjectLevelReadQuery.PESSIMISTIC_FORCE_INCREMENT)) {
                 // Get the read object query and apply the properties to it.
                 ReadObjectQuery query = getReadObjectQuery(entity, properties);
 

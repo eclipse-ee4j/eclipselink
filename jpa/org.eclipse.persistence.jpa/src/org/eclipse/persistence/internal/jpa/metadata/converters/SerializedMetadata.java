@@ -41,6 +41,13 @@ public class SerializedMetadata extends MetadataConverter {
     public SerializedMetadata() {}
     
     /**
+     * Used for defaulting.
+     */
+    public SerializedMetadata(MetadataAccessibleObject accessibleObject) {
+        super(accessibleObject);
+    }
+    
+    /**
      * INTERNAL:
      */
     public SerializedMetadata(MetadataAnnotation converter, MetadataAccessibleObject accessibleObject) {

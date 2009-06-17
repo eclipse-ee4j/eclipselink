@@ -64,10 +64,10 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     protected Vector argumentValues;
 
     /** Needed to differentiate queries with the same name. */
-    protected Vector argumentTypes;
+    protected List<Class> argumentTypes;
 
     /** Used to build a list of argumentTypes by name pre-initialization     */
-    protected Vector argumentTypeNames;
+    protected List<String> argumentTypeNames;
 
     /** The descriptor cached on the prepare for object level queries. */
     protected transient ClassDescriptor descriptor;
@@ -274,8 +274,8 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * on the classpath for the Mapping Workbench.
      */
     public void addArgumentByTypeName(String argumentName, String typeAsString) {
-        getArguments().addElement(argumentName);
-        getArgumentTypeNames().addElement(typeAsString);
+        getArguments().add(argumentName);
+        getArgumentTypeNames().add(typeAsString);
     }
 
     /**
@@ -284,7 +284,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * Argument values must be added in the same order the arguments are defined.
      */
     public void addArgumentValue(Object argumentValue) {
-        getArgumentValues().addElement(argumentValue);
+        getArgumentValues().add(argumentValue);
     }
 
     /**
@@ -699,19 +699,20 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * INTERNAL:
      * Return the argumentTypes for use with the pre-defined query option
      */
-    public Vector getArgumentTypes() {
-        if ((argumentTypes == null) || argumentTypes.isEmpty()) {
-            argumentTypes = new Vector();
+    public List<Class> getArgumentTypes() {
+        if ((this.argumentTypes == null) || (this.argumentTypes.isEmpty()
+                && (this.argumentTypeNames != null) && !this.argumentTypeNames.isEmpty())) {
+            this.argumentTypes = new ArrayList<Class>();
             // Bug 3256198 - lazily initialize the argument types from their class names
-            if (argumentTypeNames != null) {
-                Iterator args = argumentTypeNames.iterator();
+            if (this.argumentTypeNames != null) {
+                Iterator args = this.argumentTypeNames.iterator();
                 while (args.hasNext()) {
                     String argumentTypeName = (String)args.next();
-                    argumentTypes.addElement(Helper.getObjectClass(ConversionManager.loadClass(argumentTypeName)));
+                    this.argumentTypes.add(Helper.getObjectClass(ConversionManager.loadClass(argumentTypeName)));
                 }
             }
         }
-        return argumentTypes;
+        return this.argumentTypes;
     }
 
     /**
@@ -719,7 +720,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * Return the argumentTypeNames for use with the pre-defined query option
      * These are used pre-initialization to construct the argumentTypes list.
      */
-    public Vector getArgumentTypeNames() {
+    public List<String> getArgumentTypeNames() {
         if (argumentTypeNames == null) {
             argumentTypeNames = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
         }
@@ -730,13 +731,13 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * INTERNAL:
      * Set the argumentTypes for use with the pre-defined query option
      */
-    public void setArgumentTypes(Vector argumentTypes) {
+    public void setArgumentTypes(List<Class> argumentTypes) {
         this.argumentTypes = argumentTypes;
         // bug 3256198 - ensure the list of type names matches the argument types.
         getArgumentTypeNames().clear();
         Iterator types = argumentTypes.iterator();
         while (types.hasNext()) {
-            argumentTypeNames.addElement(((Class)types.next()).getName());
+            argumentTypeNames.add(((Class)types.next()).getName());
         }
     }
 
@@ -744,7 +745,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * INTERNAL:
      * Set the argumentTypes for use with the pre-defined query option
      */
-    public void setArgumentTypeNames(Vector argumentTypeNames) {
+    public void setArgumentTypeNames(List<String> argumentTypeNames) {
         this.argumentTypeNames = argumentTypeNames;
     }
 

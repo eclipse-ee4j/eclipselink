@@ -86,6 +86,14 @@ public abstract class ORMetadata {
     }
     
     /**
+     * Used for defaulting.
+     */
+    public ORMetadata(MetadataAccessibleObject accessibleObject) {
+        m_location = accessibleObject;
+        m_accessibleObject = accessibleObject;
+    }
+    
+    /**
      * INTERNAL:
      * Used for Annotation loading.
      */
@@ -103,6 +111,13 @@ public abstract class ORMetadata {
         return m_accessibleObject;
     }
     
+    public MetadataFactory getMetadataFactory() {
+        if (getAccessibleObject() != null) {
+            return getAccessibleObject().getMetadataFactory();
+        }
+        return getEntityMappings().getMetadataFactory();
+    }
+    
     /**
      * Return the MetadataClass for the class.
      */
@@ -117,7 +132,7 @@ public abstract class ORMetadata {
      * Return the MetadataClass for the class name.
      */
     public MetadataClass getMetadataClass(String className) {
-        return MetadataFactory.getClassMetadata(className);
+        return getMetadataFactory().getClassMetadata(className);
     }
 
     /**
@@ -164,7 +179,7 @@ public abstract class ORMetadata {
         } else if (className.equals("java.lang.Character[]")) {
             return new Character[0].getClass();
         } else {
-            return MetadataHelper.getClassForName(className, getClass().getClassLoader());
+            return MetadataHelper.getClassForName(className, getMetadataFactory().getLoader());
         }
     }
     
@@ -228,7 +243,7 @@ public abstract class ORMetadata {
      * here is that an entity mappings object will be available. 
      */
     protected MetadataClass initXMLClassName(String className) {
-        return MetadataFactory.getClassMetadata(getEntityMappings().getFullClassName(className));
+        return getMetadataFactory().getClassMetadata(getEntityMappings().getFullClassName(className));
     }
     
     /**

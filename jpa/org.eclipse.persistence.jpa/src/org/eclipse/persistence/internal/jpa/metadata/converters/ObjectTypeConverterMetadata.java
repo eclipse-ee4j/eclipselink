@@ -33,7 +33,6 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingA
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataFactory;
 
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
@@ -166,7 +165,7 @@ public class ObjectTypeConverterMetadata extends TypeConverterMetadata {
             // The object values should be the names of the enum members so 
             // force the objectType to String to ensure the initObject calls 
             // below will work.
-            objectType = MetadataFactory.getClassMetadata(String.class.getName());
+            objectType = getMetadataFactory().getClassMetadata(String.class.getName());
         } else {
             // Create an ObjectTypeConverter.
             converter = new org.eclipse.persistence.mappings.converters.ObjectTypeConverter(mapping);

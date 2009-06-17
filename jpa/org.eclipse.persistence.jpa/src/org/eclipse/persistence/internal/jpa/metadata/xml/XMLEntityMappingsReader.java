@@ -58,6 +58,10 @@ public class XMLEntityMappingsReader {
     private static XMLContext m_orm1_0Project;
     private static XMLContext m_orm2_0Project;
     private static XMLContext m_eclipseLinkOrmProject;
+    
+    private static Schema m_orm1_0Schema;
+    private static Schema m_orm2_0Schema;
+    private static Schema m_eclipseLinkOrmSchema;
 
     /**
      * INTERNAL:
@@ -66,12 +70,6 @@ public class XMLEntityMappingsReader {
         // Get the schema validation flag if present in the persistence unit properties
         boolean validateORMSchema = isORMSchemaValidationPerformed(properties);
         
-        if (m_orm1_0Project == null) {
-            m_orm1_0Project = new XMLContext(new XMLEntityMappingsMappingProject(ORM_1_0_NAMESPACE, ORM_1_0_XSD));
-            m_orm2_0Project = new XMLContext(new XMLEntityMappingsMappingProject(ORM_2_0_NAMESPACE, ORM_2_0_XSD));
-            m_eclipseLinkOrmProject = new XMLContext(new XMLEntityMappingsMappingProject(ECLIPSELINK_ORM_NAMESPACE, ECLIPSELINK_ORM_XSD));
-        }
-        
         // Unmarshall JPA format.
         XMLEntityMappings xmlEntityMappings;
         
@@ -79,18 +77,18 @@ public class XMLEntityMappingsReader {
         // If the third attempt fails, it reports all three errors, as any may contain the real exception.
         // TODO: Ideally we would have a better way to determine what xsd to use.
         try {
-            XMLUnmarshaller unmarshaller = m_orm2_0Project.createUnmarshaller();
-            useLocalSchemaForUnmarshaller(unmarshaller, ORM_2_0_XSD, validateORMSchema);
+            XMLUnmarshaller unmarshaller = getOrm2Project().createUnmarshaller();
+            useLocalSchemaForUnmarshaller(unmarshaller, getOrm2_0Schema(), validateORMSchema);
             xmlEntityMappings = (XMLEntityMappings) unmarshaller.unmarshal(reader1);
         } catch (Exception orm2Error) {
             try {
-                XMLUnmarshaller unmarshaller = m_orm1_0Project.createUnmarshaller();
-                useLocalSchemaForUnmarshaller(unmarshaller, ORM_1_0_XSD, validateORMSchema);
+                XMLUnmarshaller unmarshaller = getOrm1Project().createUnmarshaller();
+                useLocalSchemaForUnmarshaller(unmarshaller, getOrm1_0Schema(), validateORMSchema);
                 xmlEntityMappings = (XMLEntityMappings) unmarshaller.unmarshal(reader2);
             } catch (Exception orm1Error) {
                 try {
-                    XMLUnmarshaller unmarshaller = m_eclipseLinkOrmProject.createUnmarshaller();
-                    useLocalSchemaForUnmarshaller(unmarshaller, ECLIPSELINK_ORM_XSD, validateORMSchema);
+                    XMLUnmarshaller unmarshaller = getEclipseLinkOrmProject().createUnmarshaller();
+                    useLocalSchemaForUnmarshaller(unmarshaller, getEclipseLinkOrmSchema(), validateORMSchema);
                     xmlEntityMappings = (XMLEntityMappings) unmarshaller.unmarshal(reader3);
                 } catch (Exception eclipselinkError) {
                     throw ValidationException.errorParsingMappingFile(mappingFileUrl, orm2Error, orm1Error, eclipselinkError);
@@ -171,20 +169,29 @@ public class XMLEntityMappingsReader {
      * @throws IOException
      * @throws SAXException
      */
-    private static void useLocalSchemaForUnmarshaller(XMLUnmarshaller unmarshaller, String schemaName, boolean validateORMSchema) throws IOException, SAXException {
-    	if (!validateORMSchema) {
-    		return;
-    	}
-        URL url = XMLEntityMappingsReader.class.getClassLoader().getResource(schemaName);
-        InputStream schemaStream = url.openStream();
-        StreamSource source = new StreamSource(url.openStream());
-        SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
-        Schema schema = schemaFactory.newSchema(source);
+    private static void useLocalSchemaForUnmarshaller(XMLUnmarshaller unmarshaller, Schema schema, boolean validateORMSchema) {
+        if (!validateORMSchema) {
+    	    return;
+        }
         try {
             unmarshaller.setSchema(schema);
         } catch (UnsupportedOperationException ex) {
             // Some parsers do not support setSchema.  In that case, setup validation another way.
             unmarshaller.setValidationMode(XMLUnmarshaller.SCHEMA_VALIDATION);
+        }
+    }
+    
+    /**
+     * Load the XML schema from the jar resource.
+     */
+    protected static Schema loadLocalSchema(String schemaName) throws IOException, SAXException {
+        URL url = XMLEntityMappingsReader.class.getClassLoader().getResource(schemaName);
+        InputStream schemaStream = url.openStream();
+        try {
+            StreamSource source = new StreamSource(url.openStream());
+            SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
+            Schema schema = schemaFactory.newSchema(source);
+            return schema;
         } finally {
             schemaStream.close();
         }
@@ -200,15 +207,57 @@ public class XMLEntityMappingsReader {
      */
     private static boolean isORMSchemaValidationPerformed(Properties properties) {
         // Get property from persistence.xml (we are not yet parsing sessions.xml)
-       String value = EntityManagerFactoryProvider.getConfigPropertyAsString(
+        String value = EntityManagerFactoryProvider.getConfigPropertyAsString(
                 PersistenceUnitProperties.ORM_SCHEMA_VALIDATION,
                 properties,
                 "false");
-       // A true validation property value will override the default of false or NONVALIDATING
-       if(null != value && value.equalsIgnoreCase("true")) {
+        // A true validation property value will override the default of false or NONVALIDATING
+        if (null != value && value.equalsIgnoreCase("true")) {
             return true;
         } else {
             return false;
-        }            
+        }
+    }
+
+    public static XMLContext getOrm1Project() {
+        if (m_orm1_0Project == null) {
+            m_orm1_0Project = new XMLContext(new XMLEntityMappingsMappingProject(ORM_1_0_NAMESPACE, ORM_1_0_XSD));
+        }
+        return m_orm1_0Project;
+    }
+
+    public static XMLContext getOrm2Project() {
+        if (m_orm2_0Project == null) {
+            m_orm2_0Project = new XMLContext(new XMLEntityMappingsMappingProject(ORM_2_0_NAMESPACE, ORM_2_0_XSD));
+        }
+        return m_orm2_0Project;
+    }
+
+    public static XMLContext getEclipseLinkOrmProject() {
+        if (m_eclipseLinkOrmProject == null) {
+            m_eclipseLinkOrmProject = new XMLContext(new XMLEntityMappingsMappingProject(ECLIPSELINK_ORM_NAMESPACE, ECLIPSELINK_ORM_XSD));
+        }
+        return m_eclipseLinkOrmProject;
+    }
+
+    public static Schema getOrm1_0Schema() throws IOException, SAXException {
+        if (m_orm1_0Schema == null) {
+            m_orm1_0Schema = loadLocalSchema(ORM_1_0_XSD);
+        }
+        return m_orm1_0Schema;
+    }
+
+    public static Schema getOrm2_0Schema() throws IOException, SAXException {
+        if (m_orm1_0Schema == null) {
+            m_orm1_0Schema = loadLocalSchema(ORM_2_0_XSD);
+        }
+        return m_orm2_0Schema;
+    }
+
+    public static Schema getEclipseLinkOrmSchema() throws IOException, SAXException {
+        if (m_orm1_0Schema == null) {
+            m_orm1_0Schema = loadLocalSchema(ECLIPSELINK_ORM_XSD);
+        }
+        return m_eclipseLinkOrmSchema;
     }
 }

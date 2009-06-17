@@ -157,14 +157,14 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
             if (query.getArguments() != null) {
                 argumentTypesSize = query.getArguments().size();
             }
-            Vector argumentTypes = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(argumentTypesSize);
+            List<String> argumentTypes = new ArrayList(argumentTypesSize);
             for (int i = 0; i < argumentTypesSize; i++) {
-                argumentTypes.addElement(query.getArgumentTypeNames().elementAt(i));
+                argumentTypes.add(query.getArgumentTypeNames().get(i));
             }
 
             // Search for a query with the same parameters and replace it if one is found
             for (int i = 0; i < queriesByName.size(); i++) {
-                DatabaseQuery currentQuery = (DatabaseQuery)queriesByName.elementAt(i);
+                DatabaseQuery currentQuery = (DatabaseQuery)queriesByName.get(i);
 
                 // Here we are checking equality instead of assignability.  If you look at getQuery()
                 // it is the other way around.
@@ -918,8 +918,9 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
             ObjectChangeSet changeSet = query.getObjectChangeSet();
             if ((changeSet != null) && (!changeSet.isNew())) {
                 List changeRecords = changeSet.getChanges();
-                for (Iterator iterator = changeRecords.iterator(); iterator.hasNext(); ) {
-                    ChangeRecord record = (ChangeRecord)iterator.next();                
+                int size = changeRecords.size();
+                for (int index = 0; index < size; index++) {
+                    ChangeRecord record = (ChangeRecord)changeRecords.get(index);
                     record.getMapping().postUpdate(query);
                 }
             } else {
@@ -1011,8 +1012,9 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
             ObjectChangeSet changeSet = query.getObjectChangeSet();
             if ((changeSet != null) && (!changeSet.isNew())) {
                 List changeRecords = changeSet.getChanges();
-                for (Iterator iterator = changeRecords.iterator(); iterator.hasNext(); ) {
-                    ChangeRecord record = (ChangeRecord)iterator.next();
+                int size = changeRecords.size();
+                for (int index = 0; index < size; index++) {
+                    ChangeRecord record = (ChangeRecord)changeRecords.get(index);
                     record.getMapping().preUpdate(query);
                 }
             } else {
@@ -1636,7 +1638,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
         Vector vectorToCache = updateCalls;
         if (!updateCalls.isEmpty()) {
             int updateCallsSize = updateCalls.size();
-            vectorToCache = new Vector(updateCallsSize);
+            vectorToCache = new NonSynchronizedVector(updateCallsSize);
             for (int i = 0; i < updateCallsSize; i++) {
                 DatasourceCall updateCall = (DatasourceCall)updateCalls.get(i);
                 // clone call and dereference query for DatasourceCall and EJBQLCall

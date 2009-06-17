@@ -115,7 +115,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
         this.dontUseExternalConnectionPooling();
         this.dontUseExternalTransactionController();
 
-        this.properties = new Properties();
+        this.properties = new NonSynchronizedProperties(4);
         this.properties.put("user", "");
         this.isEncryptedPasswordSet = false;
         this.securableObjectHolder = new SecurableObjectHolder();

@@ -73,8 +73,9 @@ import org.eclipse.persistence.platform.database.converters.StructConverter;
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
  */
-public class MetadataProcessor {    
+public class MetadataProcessor {
     protected ClassLoader m_loader;
+    protected MetadataFactory m_factory;
     protected MetadataProject m_project;
     protected AbstractSession m_session;
 
@@ -87,6 +88,10 @@ public class MetadataProcessor {
         m_loader = loader;
         m_session = session;
         m_project = new MetadataProject(puInfo, session, enableLazyForOneToOne, weaveEager);
+    }
+    
+    public MetadataFactory getMetadataFactory() {
+        return m_factory;
     }
     
     /**
@@ -197,11 +202,7 @@ public class MetadataProcessor {
      * NOTE: The order of processing should not be changed as the steps are
      * dependent on one another.
      */
-    protected void initPersistenceUnitClasses() {
-        MetadataFactory.logger = m_project.getLogger();
-        MetadataFactory.loader = m_loader;
-        MetadataFactory.clear();
-        
+    protected void initPersistenceUnitClasses() {        
         // 1 - Iterate through the classes that are defined in the <mapping>
         // files and add them to the map. This will merge the accessors where
         // necessary.
@@ -256,7 +257,7 @@ public class MetadataProcessor {
         // contents with an existing accessor and we only want that to happen 
         // in the XML case.
         for (String className : classNames) {
-            MetadataClass candidateClass = MetadataFactory.getClassMetadata(className);
+            MetadataClass candidateClass = m_factory.getClassMetadata(className);
             // Bug 227630: Do not process a null class whether it was from a 
             // NPE or a CNF, a warning or exception is thrown in loadClass() 
             if (candidateClass != null) {
@@ -416,6 +417,8 @@ public class MetadataProcessor {
      * Note: Do not change the order of invocation of various methods.
      */
     public void processEntityMappings() {
+        m_factory = new MetadataFactory(m_project.getLogger(), m_loader);
+        
         // 1 - Process persistence unit meta data/defaults defined in ORM XML 
         // instance documents in the persistence unit. If multiple conflicting 
         // persistence unit meta data is found, this call will throw an 
@@ -427,6 +430,7 @@ public class MetadataProcessor {
             // and must be done first!
             entityMappings.setLoader(m_loader);
             entityMappings.setProject(m_project);
+            entityMappings.setMetadataFactory(m_factory);
             
             // Process the persistence unit metadata if defined.
             entityMappings.processPersistenceUnitMetadata();

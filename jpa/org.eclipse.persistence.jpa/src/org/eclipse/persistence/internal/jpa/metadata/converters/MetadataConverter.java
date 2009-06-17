@@ -50,10 +50,17 @@ public abstract class MetadataConverter extends ORMetadata {
     }
     
     /**
-     * INTERNAL:
+     * Used for Annotation loading.
      */
     public MetadataConverter(MetadataAnnotation converter, MetadataAccessibleObject accessibleObject) {
         super(converter, accessibleObject);
+    }
+    
+    /**
+     * Used for defaulting.
+     */
+    public MetadataConverter(MetadataAccessibleObject accessibleObject) {
+        super(accessibleObject);
     }
     
     /**

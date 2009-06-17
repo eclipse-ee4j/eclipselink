@@ -25,13 +25,15 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
  * @since TopLink 10.1.3/EJB 3.0 Preview
  */
 public abstract class MetadataAccessibleObject {
-    private MetadataLogger m_logger;
+    protected MetadataFactory m_factory;
+    protected MetadataLogger m_logger;
     
     /**
      * INTERNAL:
      */
-    public MetadataAccessibleObject(MetadataLogger logger) {
+    public MetadataAccessibleObject(MetadataFactory factory, MetadataLogger logger) {
         m_logger = logger;
+        m_factory = factory;
     }
     
     /**
@@ -45,5 +47,13 @@ public abstract class MetadataAccessibleObject {
      */
     public MetadataLogger getLogger() {
         return m_logger;
+    }
+
+    public MetadataFactory getMetadataFactory() {
+        return m_factory;
+    }
+
+    public void setMetadataFactory(MetadataFactory factory) {
+        this.m_factory = factory;
     }
 }

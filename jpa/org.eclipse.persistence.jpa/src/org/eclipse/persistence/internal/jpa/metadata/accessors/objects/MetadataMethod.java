@@ -62,8 +62,8 @@ public class MetadataMethod extends MetadataAnnotatedElement {
     /**
      * Create the method from the class metadata.
      */
-    public MetadataMethod(MetadataClass metadataClass, MetadataLogger logger) {
-        super(logger);
+    public MetadataMethod(MetadataFactory factory, MetadataClass metadataClass, MetadataLogger logger) {
+        super(factory, logger);
         this.metadataClass = metadataClass;
     }
     
