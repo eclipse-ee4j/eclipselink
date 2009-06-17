@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.xml.bind.Binder;
@@ -27,11 +28,14 @@ import javax.xml.bind.Validator;
 import javax.xml.namespace.QName;
 import java.util.HashMap;
 
+import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.exceptions.JAXBException;
+import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.jaxb.JAXBSchemaOutputResolver;
+import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelGenerator;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -71,18 +75,20 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     private HashMap<QName, Class> qNameToGeneratedClasses;
     private HashMap<QName, Class> qNamesToDeclaredClasses;
     private HashMap<java.lang.reflect.Type, QName> typeToSchemaType;
+    private Type[] boundTypes;
     
     public JAXBContext(XMLContext context) {
         super();
         xmlContext = context;
     }
     
-    public JAXBContext(XMLContext context, Generator generator) {
+    public JAXBContext(XMLContext context, Generator generator, Type[] boundTypes) {
         super();
         this.xmlContext = context;
         this.generator = generator;
         this.qNameToGeneratedClasses = generator.getMappingsGenerator().getQNamesToGeneratedClasses();
         this.qNamesToDeclaredClasses = generator.getMappingsGenerator().getQNamesToDeclaredClasses();
+        this.boundTypes = boundTypes;
     }
     
     public XMLContext getXMLContext() {
@@ -195,6 +201,10 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
 	public void initTypeToSchemaType() {
 	    this.typeToSchemaType = new HashMap<Type, QName>();
 	    Iterator descriptors = xmlContext.getSession(0).getProject().getOrderedDescriptors().iterator();
+	    
+	    HashMap defaults = XMLConversionManager.getDefaultJavaTypes();
+	    
+	    //Add schema types generated for mapped domain classes
 	    while(descriptors.hasNext()) {
 	        XMLDescriptor next = (XMLDescriptor)descriptors.next();
 	        Class javaClass = next.getJavaClass();
@@ -218,7 +228,31 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
 	            type = javaClass;
 	        }
 	        this.typeToSchemaType.put(type, schemaType);
-	    }	        
+	    }
+	    
+	    //Add any types that we didn't generate descriptors for (built in types)
+	    if(boundTypes != null) {
+	        for(Type next:this.boundTypes) {
+	            if(this.typeToSchemaType.get(next) == null) {
+	                QName name = null;
+	                //Check for annotation overrides
+	                if(next instanceof Class) {
+	                    name = this.generator.getAnnotationsProcessor().getUserDefinedSchemaTypes().get(((Class)next).getName());
+	                }
+	                if(name == null) {
+	                    //Change default for byte[] to Base64 (JAXB 2.0 default)
+	                    if(next == ClassConstants.ABYTE || next == ClassConstants.APBYTE) {
+	                        name = XMLConstants.BASE_64_BINARY_QNAME;
+	                    } else {
+	                        name = (QName)defaults.get(next);
+	                    }
+	                }
+	                if(name != null) {
+	                    this.typeToSchemaType.put(next, name);
+	                }
+	            }
+	        }
+	    }
 	}
 
 	public HashMap<Type, QName> getTypeToSchemaType() {

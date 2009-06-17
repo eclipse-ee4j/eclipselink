@@ -72,7 +72,7 @@ public class JAXBContextFactory {
         JaxbClassLoader loader = new JaxbClassLoader(classLoader);
         try{
             Generator generator = new Generator(new JavaModelInputImpl(classesToBeBound, new JavaModelImpl(loader)));
-            return createContext(generator, properties, classLoader, loader);
+            return createContext(generator, properties, classLoader, loader, classesToBeBound);
         }catch(Exception ex){
        	    throw new JAXBException(ex.getMessage() ,ex);
        }
@@ -83,13 +83,13 @@ public class JAXBContextFactory {
         JavaModelInputImpl inputImpl = new JavaModelInputImpl(typesToBeBound, new JavaModelImpl(loader));
         try{
         	Generator generator = new Generator(inputImpl, inputImpl.getJavaClassToType());
-        	return createContext(generator, properties, classLoader, loader);
+        	return createContext(generator, properties, classLoader, loader, typesToBeBound);
         }catch(Exception ex){
         	throw new JAXBException(ex.getMessage() ,ex);
         }
     }
     
-    private static javax.xml.bind.JAXBContext createContext(Generator generator, java.util.Map properties, ClassLoader classLoader, JaxbClassLoader loader ) throws Exception {
+    private static javax.xml.bind.JAXBContext createContext(Generator generator, java.util.Map properties, ClassLoader classLoader, JaxbClassLoader loader, Type[] typesToBeBound ) throws Exception {
         javax.xml.bind.JAXBContext jaxbContext = null;
         XMLContext xmlContext = null;
                                    
@@ -116,7 +116,7 @@ public class JAXBContextFactory {
         eventListener.setShouldValidateInstantiationPolicy(false);
             
         xmlContext = new XMLContext(proj, loader, eventListener);
-        jaxbContext = new org.eclipse.persistence.jaxb.JAXBContext(xmlContext, generator);
+        jaxbContext = new org.eclipse.persistence.jaxb.JAXBContext(xmlContext, generator, typesToBeBound);
         
         return jaxbContext;
 

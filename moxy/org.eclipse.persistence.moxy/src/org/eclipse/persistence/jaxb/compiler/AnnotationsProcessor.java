@@ -162,7 +162,6 @@ public class AnnotationsProcessor {
         		processClass(javaClass, classesToProcess);
         	}       
         }
-                
         
         for(JavaClass javaClass:extraClasses) {
         	processClass(javaClass, classesToProcess);
@@ -1437,7 +1436,7 @@ public class AnnotationsProcessor {
         return typeInfoClasses;
     }
     
-    public HashMap getUserDefinedSchemaTypes() {
+    public HashMap<String, QName> getUserDefinedSchemaTypes() {
         return userDefinedSchemaTypes;
     }
     
