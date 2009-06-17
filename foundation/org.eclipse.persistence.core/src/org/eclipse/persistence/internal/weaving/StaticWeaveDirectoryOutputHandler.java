@@ -60,11 +60,17 @@ public class StaticWeaveDirectoryOutputHandler extends AbstractStaticWeaveOutput
      * @throws IOException
      */
     public void addEntry(JarEntry targetEntry,byte[] entryBytes)throws IOException{
-        File target  = new File(this.target.getPath()+targetEntry.getName()).getAbsoluteFile();
-        if(!target.exists()) {
-            target.createNewFile();
+        FileOutputStream fos = null;
+        try {
+	    	File target  = new File(this.target.getPath()+targetEntry.getName()).getAbsoluteFile();
+	        if(!target.exists()) {
+	            target.createNewFile();
+	        }
+	        fos = new FileOutputStream(target);
+	        fos.write(entryBytes);
+        } finally {
+        	Helper.close(fos);
         }
-        (new FileOutputStream(target)).write(entryBytes);
     }
     
     /**
@@ -78,14 +84,22 @@ public class StaticWeaveDirectoryOutputHandler extends AbstractStaticWeaveOutput
         if(!target.exists()) {
             target.createNewFile();
         }
-        if((new File(Helper.toURI(this.source))).isDirectory()){
-            File sourceEntry = new File(this.source.getPath()+entry.getName());
-            FileInputStream fis = new FileInputStream(sourceEntry);
-            byte[] classBytes = new byte[fis.available()];
-            fis.read(classBytes);
-            (new FileOutputStream(target)).write(classBytes);
-        }else{
-            readwriteStreams(jis,(new FileOutputStream(target)));
+        FileInputStream fis = null;
+        FileOutputStream fos = null;
+        try {
+            if((new File(Helper.toURI(this.source))).isDirectory()){
+                File sourceEntry = new File(this.source.getPath()+entry.getName());
+                fis = new FileInputStream(sourceEntry);
+                byte[] classBytes = new byte[fis.available()];
+                fis.read(classBytes);
+                fos = new FileOutputStream(target);
+                fos.write(classBytes);
+            }else{
+                readwriteStreams(jis,(new FileOutputStream(target)));
+            }
+        } finally {
+        	Helper.close(fis);
+        	Helper.close(fos);
         }
     }
 }

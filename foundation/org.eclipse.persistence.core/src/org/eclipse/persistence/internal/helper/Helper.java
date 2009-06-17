@@ -890,14 +890,16 @@ public class Helper implements Serializable {
      * Returns true if the file of this name does indeed exist
      */
     public static boolean doesFileExist(String fileName) {
-        try {
-            new FileReader(fileName);
+        FileReader reader = null;
+    	try {
+    		reader = new FileReader(fileName);
         } catch (FileNotFoundException fnfException) {
             return false;
+        } finally {
+        	Helper.close(reader);
         }
 
         return true;
-
     }
 
     /**
@@ -2155,6 +2157,18 @@ public class Helper implements Serializable {
             // characters in path
             return new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), null);
         }
+    }
+    
+    /**
+     * Close a closeable object, eating the exception
+     */
+    public static void close(Closeable c) {
+    	try {
+    		if (c != null) {
+    			c.close();
+    		}
+    	} catch (IOException exception) {
+    	}
     }
 
     /**

@@ -12,10 +12,21 @@
  ******************************************************************************/  
 package org.eclipse.persistence.tools.file;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Vector;
-import java.util.zip.*;
-import java.util.jar.*;
+import java.util.jar.JarEntry;
+import java.util.jar.JarOutputStream;
+import java.util.jar.Manifest;
+import java.util.zip.CRC32;
+import java.util.zip.ZipEntry;
+
+import org.eclipse.persistence.internal.helper.Helper;
 
 /**
  * INTERNAL:
@@ -103,39 +114,49 @@ public class FileUtil {
         if (!jar.exists()) {
             new File(jar.getParent()).mkdirs();
         }
-
-        JarOutputStream jarOut = new JarOutputStream(new FileOutputStream(jar), new Manifest());
-        Vector files = findFiles(jarDirectory, filtertedExtensions);
-
-        for (int i = 0; i < files.size(); i++) {
-            File file = (File)files.elementAt(i);
-
-            String relativePathToDirectory = file.getAbsolutePath().substring(directory.getAbsolutePath().length() + 1);
-            String entryName = relativePathToDirectory.replace('\\', '/');
-
-            FileInputStream inStream = new FileInputStream(file);
-            ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-
-            int length = 0;
-            byte[] buffer = new byte[1024];
-            while ((length = inStream.read(buffer)) > 0) {
-                byteStream.write(buffer, 0, length);
-            }
-            byte[] arr = byteStream.toByteArray();
-            byteStream.close();
-
-            JarEntry meta = new JarEntry(entryName);
-            jarOut.putNextEntry(meta);
-            meta.setSize(arr.length);
-            meta.setCompressedSize(arr.length);
-            CRC32 crc = new CRC32();
-            crc.update(arr);
-            meta.setCrc(crc.getValue());
-            meta.setMethod(ZipEntry.STORED);
-            jarOut.write(arr, 0, arr.length);
-            jarOut.closeEntry();
+        JarOutputStream jarOut = null;
+        try {
+	        jarOut = new JarOutputStream(new FileOutputStream(jar), new Manifest());
+	        Vector files = findFiles(jarDirectory, filtertedExtensions);
+	
+	        for (int i = 0; i < files.size(); i++) {
+	            File file = (File)files.elementAt(i);
+	
+	            String relativePathToDirectory = file.getAbsolutePath().substring(directory.getAbsolutePath().length() + 1);
+	            String entryName = relativePathToDirectory.replace('\\', '/');
+	
+	            FileInputStream inStream = null;
+	            ByteArrayOutputStream byteStream = null;
+	            
+	            try {
+		            inStream = new FileInputStream(file);
+		            byteStream = new ByteArrayOutputStream();
+		
+		            int length = 0;
+		            byte[] buffer = new byte[1024];
+		            while ((length = inStream.read(buffer)) > 0) {
+		                byteStream.write(buffer, 0, length);
+		            }
+		            byte[] arr = byteStream.toByteArray();
+		            
+		            JarEntry meta = new JarEntry(entryName);
+		            jarOut.putNextEntry(meta);
+		            meta.setSize(arr.length);
+		            meta.setCompressedSize(arr.length);
+		            CRC32 crc = new CRC32();
+		            crc.update(arr);
+		            meta.setCrc(crc.getValue());
+		            meta.setMethod(ZipEntry.STORED);
+		            jarOut.write(arr, 0, arr.length);
+		            jarOut.closeEntry();
+	            } finally {
+		        	Helper.close(byteStream);
+		        	Helper.close(inStream);
+		        }
+	        }
+        } finally {
+        	Helper.close(jarOut);
         }
-        jarOut.close();
     }
 
     /*

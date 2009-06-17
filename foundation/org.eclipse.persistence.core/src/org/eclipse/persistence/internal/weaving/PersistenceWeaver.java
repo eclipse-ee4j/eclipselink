@@ -129,6 +129,7 @@ public class PersistenceWeaver implements ClassTransformer {
                 directoryName.append(token + File.separator);
             }
         }
+        FileOutputStream fos = null;
         try{
             String usedOutputPath = outputPath;
             if (!outputPath.endsWith(File.separator)){
@@ -146,13 +147,15 @@ public class PersistenceWeaver implements ClassTransformer {
                     return;
                 }
             }
-            FileOutputStream fos = new FileOutputStream(file);
+            
+        	fos = new FileOutputStream(file);
             fos.write(classBytes);
-            fos.close();
         } catch (Exception e){
             ((AbstractSession)session).log(
                     SessionLog.WARNING, SessionLog.WEAVER, WEAVER_COULD_NOT_WRITE, className, e);
             ((AbstractSession)session).logThrowable(SessionLog.FINEST, SessionLog.WEAVER, e);
+        } finally {
+        	Helper.close(fos);
         }
     }
     

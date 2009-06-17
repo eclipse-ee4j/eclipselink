@@ -13,7 +13,6 @@
 package org.eclipse.persistence.tools.schemaframework;
 
 import java.io.Writer;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -24,6 +23,7 @@ import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sequencing.Sequencing;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
@@ -528,7 +528,8 @@ public class SchemaManager {
      * or to a file.
      */
     public void generateStoredProceduresAndAmendmentClass(String path, String fullyQualifiedClassName) throws EclipseLinkException {
-        try {
+    	java.io.FileWriter fileWriter = null;
+    	try {
             StoredProcedureGenerator storedProcedureGenerator = new StoredProcedureGenerator(this);
 
             if (!(path.endsWith("\\") || path.endsWith("/"))) {
@@ -538,12 +539,14 @@ public class SchemaManager {
             String className = fullyQualifiedClassName.substring(fullyQualifiedClassName.lastIndexOf('.') + 1);
             String packageName = fullyQualifiedClassName.substring(0, fullyQualifiedClassName.lastIndexOf('.'));
             String fileName = path + className + ".java";
-            java.io.FileWriter fileWriter = new java.io.FileWriter(fileName);
+            fileWriter = new java.io.FileWriter(fileName);
             storedProcedureGenerator.generateStoredProcedures();
             storedProcedureGenerator.generateAmendmentClass(fileWriter, packageName, className);
             fileWriter.close();
         } catch (java.io.IOException ioException) {
             throw ValidationException.fileError(ioException);
+        } finally {
+        	Helper.close(fileWriter);
         }
     }
 
