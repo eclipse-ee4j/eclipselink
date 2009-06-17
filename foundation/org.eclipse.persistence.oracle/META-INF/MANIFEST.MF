@@ -1,19 +1,25 @@
 Manifest-Version: 1.0
+Specification-Vendor: Eclipse.org - EclipseLink Project
+Specification-Version: 2.0.0
+Implementation-Vendor: Eclipse.org - EclipseLink Project
+Implementation-Version: 2.0.0.qualifier
 Bundle-ManifestVersion: 2
 Bundle-Name: EclipseLink Oracle Extensions
 Bundle-SymbolicName: org.eclipse.persistence.oracle
-Bundle-Version: 2.0.0
-Fragment-Host: org.eclipse.persistence.core;bundle-version="2.0.0"
-Export-Package: org.eclipse.persistence.eis.adapters.aq;version="2.0.0",
- org.eclipse.persistence.internal.eis.adapters.aq;version="2.0.0",
- org.eclipse.persistence.internal.platform.database.oracle;version="2.0.0",
- org.eclipse.persistence.internal.platform.database.oracle.xdb;version="2.0.0",
- org.eclipse.persistence.platform.database.oracle;version="2.0.0",
- org.eclipse.persistence.platform.database.oracle.converters;version="2.0.0",
- org.eclipse.persistence.platform.xml.xdk;version="2.0.0"
+Bundle-Vendor: Eclipse.org - EclipseLink Project
+Bundle-Version: 2.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Fragment-Host: org.eclipse.persistence.core;bundle-version="2.0.0.qualifier"
+Export-Package: org.eclipse.persistence.eis.adapters.aq;version="2.0.0.qualifier",
+ org.eclipse.persistence.internal.eis.adapters.aq;version="2.0.0.qualifier",
+ org.eclipse.persistence.internal.platform.database.oracle;version="2.0.0.qualifier",
+ org.eclipse.persistence.internal.platform.database.oracle.xdb;version="2.0.0.qualifier",
+ org.eclipse.persistence.platform.database.oracle;version="2.0.0.qualifier",
+ org.eclipse.persistence.platform.database.oracle.converters;version="2.0.0.qualifier",
+ org.eclipse.persistence.platform.xml.xdk;version="2.0.0.qualifier"
 Bundle-ClassPath: .
-Import-Package: javax.naming;resolution:=optional,
- javax.resource;version="1.5.0";resolution:=optional,
+Import-Package: javax.resource;version="1.5.0";resolution:=optional,
+ javax.naming;resolution:=optional,
  javax.resource.cci;version="1.5.0";resolution:=optional,
  javax.sql;resolution:=optional,
  javax.xml.parsers;resolution:=optional,
@@ -23,9 +29,9 @@ Import-Package: javax.naming;resolution:=optional,
  javax.xml.transform.stream;resolution:=optional,
  javax.xml.validation;resolution:=optional,
  oracle.AQ;resolution:=optional,
- oracle.jdbc,
- oracle.jdbc.internal,
- oracle.jdbc.pool,
+ oracle.jdbc;resolution:=optional,
+ oracle.jdbc.internal;resolution:=optional,
+ oracle.jdbc.pool;resolution:=optional,
  oracle.spatial.geometry;resolution:=optional,
  oracle.sql;resolution:=optional,
  oracle.xdb;resolution:=optional,
