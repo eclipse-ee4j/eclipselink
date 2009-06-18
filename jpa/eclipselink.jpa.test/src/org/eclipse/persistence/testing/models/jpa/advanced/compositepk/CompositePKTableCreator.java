@@ -40,6 +40,8 @@ public class CompositePKTableCreator extends TableCreator {
         addTableDefinition(buildLIEUTENANTGENERALTable());
         addTableDefinition(buildLIEUTENANTTable());
         addTableDefinition(buildSECONDLIEUTENANTTable());
+        addTableDefinition(buildLACKEYTable());
+        addTableDefinition(buildLACKEYCREWTable());
     }
     
     public static TableDefinition buildADMIN_CONTRACTTable(){
@@ -347,6 +349,80 @@ public class CompositePKTableCreator extends TableCreator {
         
         FieldDefinition fieldL_NAME = new FieldDefinition();
         fieldL_NAME.setName("L_NAME");
+        fieldL_NAME.setTypeName("VARCHAR");
+        fieldL_NAME.setSize(40);
+        fieldL_NAME.setShouldAllowNull(false);
+        fieldL_NAME.setIsPrimaryKey(true);
+        fieldL_NAME.setUnique(false);
+        fieldL_NAME.setIsIdentity(false);
+        table.addField(fieldL_NAME);
+        
+        return table;
+    }
+    
+    public static TableDefinition buildLACKEYTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_LACKEY");
+        
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("NAME");
+        fieldNAME.setTypeName("VARCHAR");
+        fieldNAME.setSize(40);
+        fieldNAME.setShouldAllowNull(true);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setIsIdentity(false);
+        table.addField(fieldNAME);
+        
+        FieldDefinition fieldF_NAME = new FieldDefinition();
+        fieldF_NAME.setName("FIRSTNAME");
+        fieldF_NAME.setTypeName("VARCHAR");
+        fieldF_NAME.setSize(40);
+        fieldF_NAME.setShouldAllowNull(false);
+        fieldF_NAME.setIsPrimaryKey(true);
+        fieldF_NAME.setUnique(false);
+        fieldF_NAME.setIsIdentity(false);
+        table.addField(fieldF_NAME);
+        
+        FieldDefinition fieldL_NAME = new FieldDefinition();
+        fieldL_NAME.setName("LASTNAME");
+        fieldL_NAME.setTypeName("VARCHAR");
+        fieldL_NAME.setSize(40);
+        fieldL_NAME.setShouldAllowNull(false);
+        fieldL_NAME.setIsPrimaryKey(true);
+        fieldL_NAME.setUnique(false);
+        fieldL_NAME.setIsIdentity(false);
+        table.addField(fieldL_NAME);
+        
+        return table;
+    }
+    
+    public static TableDefinition buildLACKEYCREWTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_LACKEYCREW");
+        
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("RANK");
+        fieldNAME.setTypeName("NUMERIC");
+        fieldNAME.setSize(15);
+        fieldNAME.setShouldAllowNull(false);
+        fieldNAME.setIsPrimaryKey(true);
+        fieldNAME.setUnique(false);
+        fieldNAME.setIsIdentity(false);
+        table.addField(fieldNAME);
+        
+        FieldDefinition fieldF_NAME = new FieldDefinition();
+        fieldF_NAME.setName("FIRSTNAME");
+        fieldF_NAME.setTypeName("VARCHAR");
+        fieldF_NAME.setSize(40);
+        fieldF_NAME.setShouldAllowNull(false);
+        fieldF_NAME.setIsPrimaryKey(true);
+        fieldF_NAME.setUnique(false);
+        fieldF_NAME.setIsIdentity(false);
+        table.addField(fieldF_NAME);
+        
+        FieldDefinition fieldL_NAME = new FieldDefinition();
+        fieldL_NAME.setName("LASTNAME");
         fieldL_NAME.setTypeName("VARCHAR");
         fieldL_NAME.setSize(40);
         fieldL_NAME.setShouldAllowNull(false);

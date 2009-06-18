@@ -39,6 +39,9 @@ import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.DepartmentA
 import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.DepartmentAdminRolePK;
 import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.Administrator;
 import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.General;
+import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.Lackey;
+import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.LackeyCrewMember;
+import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.LackeyCrewMemberId;
 import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.Lieutenant;
 import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.LieutenantGeneral;
 import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.LieutenantId;
@@ -84,6 +87,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedCompositePKJunitTest("testMappedByIdExample3"));
         suite.addTest(new AdvancedCompositePKJunitTest("testMappedByIdExample4"));
         suite.addTest(new AdvancedCompositePKJunitTest("testMappedByIdExample5"));
+        suite.addTest(new AdvancedCompositePKJunitTest("testMappedByIdExample5a"));
         suite.addTest(new AdvancedCompositePKJunitTest("testMappedByIdExample6"));
         
         return suite;
@@ -496,6 +500,55 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
 
         BrigadierGeneral refreshedBrigadierGeneral = em.find(BrigadierGeneral.class, brigadierGeneral.getId());
         assertTrue("The brigadier general read back did not match the original", getServerSession().compareObjects(brigadierGeneral, refreshedBrigadierGeneral));  
+    }
+    
+    public void testMappedByIdExample5a() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        Major major = new Major();
+        major.setFirstName("Mr.");
+        major.setLastName("Major");
+        MajorId majorId = major.getPK();
+        
+        Lackey lackey = new Lackey();
+        
+        LackeyCrewMember lcm = new LackeyCrewMember();
+        LackeyCrewMemberId lcmId = new LackeyCrewMemberId();
+        lcm.setLackey(lackey);
+        lcm.setRank(1);
+        lcmId.setRank(1);
+        lcmId.setMajorPK(majorId);
+        
+        try {    
+            em.persist(major);
+            lackey.setMajor(major);
+            lackey.setName("Little");
+            em.persist(lackey);
+            
+            em.persist(lcm);
+            
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            closeEntityManager(em);
+            throw e;
+        }
+        
+        clearCache();
+        em = createEntityManager();
+        
+        Major refreshedMajor = em.find(Major.class, majorId);       
+        assertTrue("The major read back did not match the original", getServerSession().compareObjects(major, refreshedMajor));
+
+        Lackey refreshedLackey = em.find(Lackey.class, majorId);
+        assertTrue("The Lackey read back did not match the original", getServerSession().compareObjects(lackey, refreshedLackey)); 
+        
+        LackeyCrewMember refreshedLCM = em.find(LackeyCrewMember.class, lcmId);
+        assertTrue("The LackeyCrewMember read back did not match the original", getServerSession().compareObjects(lcm, refreshedLCM));  
     }
     
     public void testMappedByIdExample6() {

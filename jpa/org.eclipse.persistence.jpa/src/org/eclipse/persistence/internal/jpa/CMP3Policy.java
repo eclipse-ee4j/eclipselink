@@ -37,6 +37,7 @@ import org.eclipse.persistence.internal.security.PrivilegedGetMethod;
 import org.eclipse.persistence.internal.security.PrivilegedGetValueFromField;
 import org.eclipse.persistence.internal.security.PrivilegedSetValueInField;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
+import org.eclipse.persistence.mappings.OneToOneMapping;
 
 /**
  * Defines primary key extraction code for use in JPA. A descriptor should have a CMP3Policy
@@ -200,7 +201,7 @@ public class CMP3Policy extends CMPPolicy {
             } else {
                 fieldValue = pkElementArray[index].getValue(key, session);
                 if ( (fieldValue !=null) && (pkClass != null) && (mapping.isOneToOneMapping()) ){
-                    org.eclipse.persistence.mappings.OneToOneMapping refmapping = (org.eclipse.persistence.mappings.OneToOneMapping)mapping;
+                    OneToOneMapping refmapping = (OneToOneMapping)mapping;
                     DatabaseField targetKey = refmapping.getSourceToTargetKeyFields().get(pkElementArray[index].getDatabaseField());
                     CMPPolicy refPolicy = refmapping.getReferenceDescriptor().getCMPPolicy();
                     if (refPolicy.isCMP3Policy()){
@@ -377,6 +378,22 @@ public class CMP3Policy extends CMPPolicy {
                         fieldToAccessorMap.put(field, pkAttributes[i]);
                         noSuchElementException = null;
                     } else {
+                        if (mapping.isOneToOneMapping()){
+                            ClassDescriptor refDescriptor = mapping.getReferenceDescriptor();
+                            // ensure the referenced descriptor was initialized
+                            refDescriptor.initialize(session);
+                            CMPPolicy refPolicy = refDescriptor.getCMPPolicy();
+                            if ((refPolicy!=null) && refPolicy.isCMP3Policy() && (refPolicy.getPKClass() == keyClass)){
+                                //Since the ref pk class is our pk class, get the accessor we need to pull the value out of the PK class for our field
+                                OneToOneMapping refmapping = (OneToOneMapping)mapping;
+                                DatabaseField targetKey = refmapping.getSourceToTargetKeyFields().get(field);
+                                pkAttributes[i] = ((CMP3Policy)refPolicy).fieldToAccessorMap.get(targetKey);
+                                //associate their accessor to our field so we can look it up when we need it
+                                this.fieldToAccessorMap.put(field, pkAttributes[i]);
+                                noSuchElementException = null;
+                                break;
+                            }
+                        }
                         try {
                             pkAttributes[i] = new FieldAccessor(getField(keyClass, fieldName), fieldName, field, mapping);
                             fieldToAccessorMap.put(field, pkAttributes[i]);
@@ -598,8 +615,8 @@ public class CMP3Policy extends CMPPolicy {
         } else {
             fieldValue = accessor.getValue(key, session);
             if (mapping.isOneToOneMapping()){
-                org.eclipse.persistence.mappings.OneToOneMapping refmapping = (org.eclipse.persistence.mappings.OneToOneMapping)mapping;
-                DatabaseField targetKey = refmapping.getSourceToTargetKeyFields().get(field);
+                OneToOneMapping refmapping = (OneToOneMapping)mapping;
+                DatabaseField targetKey = refmapping.getSourceToTargetKeyFields().get(accessor.getDatabaseField());
                 CMPPolicy refPolicy = refmapping.getReferenceDescriptor().getCMPPolicy();
                 if (refPolicy.isCMP3Policy()){
                     Class pkClass = refPolicy.getPKClass();
