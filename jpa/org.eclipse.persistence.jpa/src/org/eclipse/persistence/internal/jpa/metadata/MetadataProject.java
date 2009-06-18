@@ -27,6 +27,10 @@
  *       - 266912: JPA 2.0 Metamodel API (part of Criteria API)
  *     06/16/2009-2.0 Guy Pelletier 
  *       - 277039: JPA 2.0 Cache Usage Settings
+ *     06/17/2009-2.0 Michael O'Brien 
+ *       - 266912: change mappedSuperclassDescriptors Set to a Map
+ *          keyed on MetadataClass - avoiding the use of a hashCode/equals
+ *          override on RelationalDescriptor, but requiring a contains check prior to a put
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -1220,8 +1224,8 @@ public class MetadataProject {
         // when the descriptor is part of a set
         // The javaClass itself will be set on the descriptor later when we have the correct classLoader
         msDescriptor.setJavaClassName(metadataClass.getName());
-        // Add the mapped superclass to the native project
-        m_session.getProject().addMappedSuperclass(msDescriptor);
+        // Add the mapped superclass to the native project keyed by MetadataClass
+        m_session.getProject().addMappedSuperclass(metadataClass, msDescriptor);
     }    
 
     /**
@@ -1236,7 +1240,7 @@ public class MetadataProject {
         // we only handle classes, return null for Methods, Fields and URLs 
         if(null != metadataClass && metadataClass instanceof MetadataClass) {
             relationalDescriptor = m_session.getProject()
-                .getMappedSuperclass(((MetadataClass)metadataClass).getName());
+                .getMappedSuperclass(((MetadataClass)metadataClass));
         }
         return relationalDescriptor;
     }    

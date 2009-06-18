@@ -341,7 +341,7 @@ public class MappedSuperclassTypeImpl<X> implements MappedSuperclassType<X> {
         StringBuffer aBuffer = new StringBuffer();
         aBuffer.append(this.getClass().getSimpleName());
         aBuffer.append("@");
-        aBuffer.append(getClass().hashCode());
+        aBuffer.append(hashCode());
         aBuffer.append(" [descriptor: ");
         aBuffer.append(this.getDescriptor());
         if(null != this.getDescriptor()) {

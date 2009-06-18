@@ -140,10 +140,8 @@ public class MetamodelImpl implements Metamodel {
         // Get mapped superclass types from the project (not a regular descriptor)
         try {
             Project project = session.getProject();
-            //Map<Class, RelationalDescriptor> descriptors = project.getMappedSuperclasses();
-            Set<RelationalDescriptor> descriptors = project.getMappedSuperclassDescriptors();
-            //for(Iterator<RelationalDescriptor> anIterator = descriptors.values().iterator(); anIterator.hasNext();) {            
-            for(Iterator<RelationalDescriptor> anIterator = descriptors.iterator(); anIterator.hasNext();) {
+            Map<Object, RelationalDescriptor> descriptors = project.getMappedSuperclassDescriptors();
+            for(Iterator<RelationalDescriptor> anIterator = descriptors.values().iterator(); anIterator.hasNext();) {
                 //Class key = anIterator.next();
                 RelationalDescriptor descriptor = anIterator.next();//mappedSuperclassesSet.get(key);
                 //MappedSuperclassTypeImpl mappedSuperclassType = new MappedSuperclassTypeImpl(key, descriptor);

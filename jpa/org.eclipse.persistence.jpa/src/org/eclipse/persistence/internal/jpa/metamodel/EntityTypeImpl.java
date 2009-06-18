@@ -179,10 +179,10 @@ public class EntityTypeImpl<X> extends ManagedTypeImpl<X> implements EntityType<
                         return (CollectionAttribute<X,E>) member; 
                     }
                 } else {
-                    throw new IllegalArgumentException("The attributed named [" + name + "] is not of the java type [" + elementType + "].");                    
+                    throw new IllegalArgumentException("The attribute named [" + name + "] is not of the java type [" + elementType + "].");                    
                 }
         } else {            
-            throw new IllegalArgumentException("The attributed named [" + name + "] is not present in the managedType [" + this + "].");
+            throw new IllegalArgumentException("The attribute named [" + name + "] is not present in the managedType [" + this + "].");
         }
     }
     

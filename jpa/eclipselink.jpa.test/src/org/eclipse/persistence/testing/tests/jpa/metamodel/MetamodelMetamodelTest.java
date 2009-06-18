@@ -232,11 +232,11 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             // The managedType is the owner of the attribute
             //hardwareDesigners=CollectionAttribute[org.eclipse.persistence.mappings.OneToManyMapping[hardwareDesigners]], 
             //computers=CollectionAttribute[org.eclipse.persistence.mappings.OneToManyMapping[computers]], 
-            javax.persistence.metamodel.CollectionAttribute<? super Manufacturer, Computer> computersAttribute = 
-                entityManufacturer.getCollection("computers", Computer.class);
+            //javax.persistence.metamodel.CollectionAttribute<? super Manufacturer, Computer> computersAttribute = 
+            //    entityManufacturer.getCollection("computers", Computer.class);
             //javax.persistence.metamodel.Set<Manufacturer, Computer> computersAttribute2 = 
             //    entityManufacturer.getSet("computers", Computer.class);
-            System.out.println("_Manufacturer.computers: " + computersAttribute);
+            //System.out.println("_Manufacturer.computers: " + computersAttribute);
             
             //version=Attribute[org.eclipse.persistence.mappings.DirectToFieldMapping[version-->CMP3_MM_MANUF.MANUF_VERSION]], 
             //name=Attribute[org.eclipse.persistence.mappings.DirectToFieldMapping[name-->CMP3_MM_MANUF.NAME]], 

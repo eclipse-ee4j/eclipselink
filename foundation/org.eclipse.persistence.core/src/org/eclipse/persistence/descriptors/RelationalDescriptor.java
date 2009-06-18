@@ -10,10 +10,6 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     
- *     04/30/2009-2.0 Michael O'Brien 
- *       - 266912: JPA 2.0 Metamodel API (part of Criteria API)
- *         override equals and hashcode for use in a Set. 
- *
  ******************************************************************************/  
 package org.eclipse.persistence.descriptors;
 
@@ -122,32 +118,5 @@ public class RelationalDescriptor extends ClassDescriptor {
     public void setTableQualifier(String tableQualifier) {
         super.setTableQualifier(tableQualifier);
     }
-    
-    // 266912: This class is used in a Set - we therefore need to override equals() and hashCode() so we can maintain no-duplicates functionality
-    // See Item 8 p.37 of Effective Java - J.Bloch 
-    public boolean equals(Object o) {
-        // we defer to the superclass except during inequality
-        boolean equal = super.equals(o);        
-        if(equal) {
-            return true;
-        }
-        if(o == this) {
-            return true;
-        }
-        if(!(o instanceof RelationalDescriptor)) {
-            return false;
-        }
-        RelationalDescriptor descriptor = (RelationalDescriptor) o;
-        // TODO: for now if the implementing className is the same then we have equality
-        // TODO: we need a strategy to check classes that are different classLoaders but with the same name
-        return descriptor.getJavaClassName().equals(getJavaClassName());
-    }
-
-    public int hashCode() {
-        int result = 17;
-        result = 37 * result + this.getJavaClassName().hashCode();
-        return result;
-    }
-    
     
 }
