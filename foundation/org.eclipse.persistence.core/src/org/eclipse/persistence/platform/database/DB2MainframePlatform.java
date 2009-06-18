@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -24,6 +24,10 @@ import org.eclipse.persistence.expressions.ExpressionOperator;
  * @since TopLink 3.0.3
  */
 public class DB2MainframePlatform extends DB2Platform {
+    public DB2MainframePlatform() {
+        super();
+        this.pingSQL = "SELECT COUNT(*) from SYSIBM.SYSDUMMY1 WHERE 1 = 0";
+    }
 
     /**
      * Initialize any platform-specific operators
