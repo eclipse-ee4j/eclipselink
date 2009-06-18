@@ -186,12 +186,14 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
     AbstractNullPolicy nullPolicy;
     public boolean isCDATA;
     private boolean isWriteOnly;
-    
+    private boolean isWhitespacePreserved;
+
     public XMLDirectMapping() {
         super();
         // The default policy is NullPolicy
         nullPolicy = new NullPolicy();
         isCDATA = false;
+        isWhitespacePreserved = false;
     }
 
     /**
@@ -395,6 +397,13 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
         getAttributeAccessor().setIsReadOnly(this.isReadOnly());
         super.preInitialize(session);
     }
-    
-    
+
+    public boolean isWhitespacePreserved() {
+        return isWhitespacePreserved;
+    }
+
+    public void setWhitespacePreserved(boolean isWhitespacePreserved) {
+        this.isWhitespacePreserved = isWhitespacePreserved;
+    }
+
 }

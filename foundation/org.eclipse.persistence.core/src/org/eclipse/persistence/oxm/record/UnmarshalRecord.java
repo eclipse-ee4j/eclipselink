@@ -30,6 +30,7 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.oxm.ContainerValue;
+import org.eclipse.persistence.internal.oxm.MappingNodeValue;
 import org.eclipse.persistence.internal.oxm.NodeValue;
 import org.eclipse.persistence.internal.oxm.NullCapableValue;
 import org.eclipse.persistence.internal.oxm.Reference;
@@ -705,6 +706,16 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
                 xPathNode.getUnmarshalNodeValue().endElement(xPathFragment, this);
                 if (xPathNode.getParent() != null) {
                     xPathNode = xPathNode.getParent();
+                }
+            } else {
+                if (xPathNode.getNonAttributeChildrenMap() != null) {
+                    XPathNode textNode = (XPathNode) xPathNode.getNonAttributeChildrenMap().get(XPathFragment.TEXT_FRAGMENT);
+                    if (null != textNode && textNode.isWhitespaceAware() && stringBuffer.length() == 0) {
+                        if (textNode.getUnmarshalNodeValue().isMappingNodeValue()) {
+                            MappingNodeValue mappingNodeValue = (MappingNodeValue) textNode.getUnmarshalNodeValue();
+                            mappingNodeValue.endElement(xPathFragment, this);
+                        }
+                    }
                 }
             }
 

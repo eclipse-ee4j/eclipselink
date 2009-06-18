@@ -124,4 +124,8 @@ public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullC
         return xmlDirectMapping;
     }
 
+    public boolean isWhitespaceAware() {
+        return xmlDirectMapping.isWhitespacePreserved();
+    }
+
 }

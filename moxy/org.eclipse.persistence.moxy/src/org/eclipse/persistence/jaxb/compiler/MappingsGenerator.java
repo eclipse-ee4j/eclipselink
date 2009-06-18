@@ -44,6 +44,7 @@ import org.eclipse.persistence.oxm.mappings.*;
 import org.eclipse.persistence.oxm.mappings.converters.XMLListConverter;
 import org.eclipse.persistence.oxm.mappings.converters.XMLRootConverter;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.IsSetNullPolicy;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.internal.jaxb.XMLJavaTypeConverter;
@@ -551,6 +552,16 @@ public class MappingsGenerator {
             mapping.getNullPolicy().setNullRepresentedByXsiNil(true);
         }
         mapping.setField(getXPathForField(property, namespaceInfo, true));
+
+        mapping.setWhitespacePreserved(true);
+        if (!mapping.getXPath().equals("text()")) {
+            ((NullPolicy) mapping.getNullPolicy()).setSetPerformedForAbsentNode(false);
+        }
+
+        if (property.getType().getRawName().equals("java.lang.String")) {
+            mapping.setNullValue("");
+        }
+
         if(XMLConstants.QNAME_QNAME.equals(property.getSchemaType())){
             ((XMLField) mapping.getField()).setSchemaType(XMLConstants.QNAME_QNAME);
         }
@@ -1311,7 +1322,7 @@ public class MappingsGenerator {
                         mapping.setXPath("text()");
                         mapping.setSetMethodName("setWrappedValue");
                         mapping.setGetMethodName("getWrappedValue");
-                                            
+
                         if(helper.isBuiltInJavaType(nextElement.getJavaType())){                                    
                             Class attributeClassification = org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(attributeTypeName, getClass().getClassLoader());                      
                             mapping.setAttributeClassification(attributeClassification);
