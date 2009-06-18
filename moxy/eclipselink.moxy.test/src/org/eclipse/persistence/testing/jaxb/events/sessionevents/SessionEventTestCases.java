@@ -97,7 +97,7 @@ public class SessionEventTestCases extends TestCase {
             }
             
             xmlContext = new XMLContext(proj, loader, sel);
-            jaxbContext = new org.eclipse.persistence.jaxb.JAXBContext(xmlContext, generator);
+            jaxbContext = new org.eclipse.persistence.jaxb.JAXBContext(xmlContext, generator, classesToBeBound);
         } catch (Exception ex) {
             throw ex;
         }

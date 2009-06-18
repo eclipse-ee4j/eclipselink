@@ -106,7 +106,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
             }
         }
         setProject(proj);
-        jaxbContext = new org.eclipse.persistence.jaxb.JAXBContext(xmlContext, generator);
+        jaxbContext = new org.eclipse.persistence.jaxb.JAXBContext(xmlContext, generator, newClasses);
         jaxbMarshaller = jaxbContext.createMarshaller();
         jaxbUnmarshaller = jaxbContext.createUnmarshaller();
         
@@ -132,7 +132,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
             }
         }
         setProject(proj);
-        jaxbContext = new org.eclipse.persistence.jaxb.JAXBContext(xmlContext, generator);
+        jaxbContext = new org.eclipse.persistence.jaxb.JAXBContext(xmlContext, generator, newTypes);
         jaxbMarshaller = jaxbContext.createMarshaller();
         jaxbUnmarshaller = jaxbContext.createUnmarshaller();
         
