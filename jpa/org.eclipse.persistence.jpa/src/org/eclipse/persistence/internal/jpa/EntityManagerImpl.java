@@ -866,6 +866,21 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     }
 
     /**
+     * Create an instance of TypedQuery for executing a
+     * named query (in the Java Persistence query language
+     * or in native SQL).
+     * @param name the name of a query defined in metadata
+     * @param resultClass the type of the query result
+     * @return the new query instance
+     * @throws IllegalArgumentException if a query has not been
+     *      defined with the given name or if the query string is
+     *      found to be invalid
+     */
+    public <T> TypedQuery<T> createNamedQuery(String name, Class<T> resultClass){
+        throw new UnsupportedOperationException();
+    }
+
+    /**
      * Create an instance of Query for executing a native SQL query.
      * 
      * @param sqlString
@@ -1148,7 +1163,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * @see EntityManager#createQuery(javax.persistence.criteria.CriteriaQuery)
      * @since Java Persistence 2.0
      */
-    public Query createQuery(CriteriaQuery criteriaQuery) {
+    public <T> TypedQuery<T> createQuery(CriteriaQuery<T> criteriaQuery) {
         // TODO 
         throw new PersistenceException("Not Yet Implemented");
     }
@@ -1219,6 +1234,19 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             setRollbackOnly();
             throw e;
         }
+    }
+
+    /**
+     * Create an instance of TypedQuery for executing a
+     * Java Persistence query language statement.
+     * @param qlString a Java Persistence query string
+     * @param resultClass the type of the query result
+     * @return the new query instance
+     * @throws IllegalArgumentException if the query string is found
+     *         to be invalid
+     */
+    public <T> TypedQuery<T> createQuery(String qlString, Class<T> resultClass){
+        throw new UnsupportedOperationException();
     }
 
     /**

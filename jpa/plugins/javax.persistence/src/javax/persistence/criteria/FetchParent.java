@@ -52,7 +52,7 @@ public interface FetchParent<Z, X> {
      *            target of the join
      * @return the resulting fetch join
      */
-    <Y> Fetch<X, Y> fetch(SingularAttribute<? super X, Y> assoc);
+    <Y> Fetch<X, Y> fetch(SingularAttribute<? super X, Y> attribute);
 
     /**
      * Fetch join to the specified attribute using the given join type.
@@ -63,7 +63,7 @@ public interface FetchParent<Z, X> {
      *            join type
      * @return the resulting fetch join
      */
-    <Y> Fetch<X, Y> fetch(SingularAttribute<? super X, Y> assoc, JoinType jt);
+    <Y> Fetch<X, Y> fetch(SingularAttribute<? super X, Y> attribute, JoinType jt);
 
     /**
      * Fetch join to the specified collection using an inner join.
@@ -72,7 +72,7 @@ public interface FetchParent<Z, X> {
      *            target of the join
      * @return the resulting join
      */
-    <Y> Fetch<X, Y> fetch(PluralAttribute<? super X, ?, Y> assoc);
+    <Y> Fetch<X, Y> fetch(PluralAttribute<? super X, ?, Y> attribute);
 
     /**
      * Fetch join to the specified collection using the given join type.
@@ -83,7 +83,7 @@ public interface FetchParent<Z, X> {
      *            join type
      * @return the resulting join
      */
-    <Y> Fetch<X, Y> fetch(PluralAttribute<? super X, ?, Y> assoc, JoinType jt);
+    <Y> Fetch<X, Y> fetch(PluralAttribute<? super X, ?, Y> attribute, JoinType jt);
 
     // String-based:
     /**
@@ -94,7 +94,7 @@ public interface FetchParent<Z, X> {
      *            join
      * @return the resulting fetch join
      */
-    <Y> Fetch<X, Y> fetch(String assocName);
+    <Y> Fetch<X, Y> fetch(String attributeName);
 
     /**
      * Fetch join to the specified attribute or association using the given join
@@ -107,5 +107,5 @@ public interface FetchParent<Z, X> {
      *            join type
      * @return the resulting fetch join
      */
-    <Y> Fetch<X, Y> fetch(String assocName, JoinType jt);
+    <Y> Fetch<X, Y> fetch(String attributeName, JoinType jt);
 }

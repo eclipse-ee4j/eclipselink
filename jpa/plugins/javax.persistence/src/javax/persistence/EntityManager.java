@@ -507,16 +507,26 @@ public interface EntityManager {
      */
     public Query createQuery(String qlString);
 
-    /**
-     * Create an instance of Query for executing a criteria query.
-     * 
-     * @param criteriaQuery
-     *            a Criteria query object
-     * @return the new query instance
-     * @throws IllegalArgumentException
-     *             if the query definition is found to be invalid
-     */
-    public Query createQuery(CriteriaQuery criteriaQuery);
+	/**
+	 * Create an instance of TypedQuery for executing a
+	 * Java Persistence query language statement.
+	 * @param qlString a Java Persistence query string
+	 * @param resultClass the type of the query result
+	 * @return the new query instance
+	 * @throws IllegalArgumentException if the query string is found
+	 *         to be invalid
+	 */
+	public <T> TypedQuery<T> createQuery(String qlString, Class<T> resultClass);
+
+	/**
+	 * Create an instance of TypedQuery for executing a
+	 * criteria query.
+	 * @param criteriaQuery  a criteria query object
+	 * @return the new query instance
+	 * @throws IllegalArgumentException if the query definition is
+	 *       found to be invalid
+	 */
+	public <T> TypedQuery<T> createQuery(CriteriaQuery<T> criteriaQuery); 
 
     /**
      * Create an instance of Query for executing a named query (in the Java
@@ -530,6 +540,19 @@ public interface EntityManager {
      *             query string is found to be invalid
      */
     public Query createNamedQuery(String name);
+
+	/**
+	 * Create an instance of TypedQuery for executing a
+	 * named query (in the Java Persistence query language
+	 * or in native SQL).
+	 * @param name the name of a query defined in metadata
+	 * @param resultClass the type of the query result
+	 * @return the new query instance
+	 * @throws IllegalArgumentException if a query has not been
+	 * 		defined with the given name or if the query string is
+	 *		found to be invalid
+	 */
+	public <T> TypedQuery<T> createNamedQuery(String name, Class<T> resultClass);
 
     /**
      * Create an instance of Query for executing a native SQL statement, e.g.,

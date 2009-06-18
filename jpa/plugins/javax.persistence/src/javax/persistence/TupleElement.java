@@ -7,10 +7,10 @@
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
- * 
+ *
  * Contributors:
- *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
- *     		     Specification available from http://jcp.org/en/jsr/detail?id=317
+ *     gyorke - Java Persistence 2.0 - Post Proposed Final Draft (March 13, 2009) Updates
+ *               Specification available from http://jcp.org/en/jsr/detail?id=317
  *
  * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
  * This is an implementation of an early-draft specification developed under the 
@@ -25,27 +25,21 @@
 package javax.persistence;
 
 /**
- * Type for query parameters.
- * 
- * @param <T>
- *            the type of the parameter
- *            
- * @since Java Persistence 2.0
+ * The TupleElement interface defines an element that is returned in
+ * a query result tuple.
  */
-public interface Parameter<T> {
+public interface TupleElement <X> {
+    
     /**
-     * Return the parameter name, or null if the parameter is not a named
-     * parameter.
-     * 
-     * @return parameter name
+     * Return the Java type of the result element.
+     * @return the Java type of the result element
      */
-    String getName();
+    Class<X> getJavaType();
 
     /**
-     * Return the parameter position, or null if the parameter is not a
-     * positional parameter.
-     * 
-     * @return position of parameter
+     * Return the alias assigned to the element or null, if no alias
+     * has been assigned.
+     * @return alias
      */
-    Integer getPosition();
+    String getAlias();
 }

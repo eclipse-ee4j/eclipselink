@@ -35,12 +35,6 @@ import java.util.Collection;
 public interface Expression<T> extends Selection<T> {
 
     /**
-     * Return the Java type of the expression.
-     * @return the Java type of the expression
-     */
-    Class<T> getJavaType();
-
-    /**
      *  Apply a predicate to test whether the expression is null.
      * @return predicate testing whether the expression is null
      */

@@ -28,25 +28,30 @@ package javax.persistence.criteria;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.Parameter;
-
 /**
  * The interface CriteriaQuery defines functionality that is specific to
  * top-level queries.
  * 
  * A top-level query has an ordered list of selections.
  */
-public interface CriteriaQuery extends AbstractQuery {
+public interface CriteriaQuery<T> extends AbstractQuery<T> {
     /**
-     * Specify the items that are to be returned in the query result. Replaces
-     * the previously specified selections, if any.
-     * 
-     * @param selections
-     *            expressions specifying the items that are returned in the
-     *            query result
+     * Specify the item that is to be returned in the query result.
+     * Replaces the previously specified selection, if any.
+     * @param selection  selection specifying the item that
+     *        is to be returned in the query result
      * @return the modified query
      */
-    CriteriaQuery select(Selection<?>... selections);
+    CriteriaQuery<T> select(Selection<T> selection);
+
+    /**
+     * Specify the items that are to be returned in the query result,
+     * Replaces the previously specified selections, if any.
+     * @param selections  expressions specifying the items that
+     *        are returned in the query result
+     * @return the modified query
+     */
+    CriteriaQuery<T> multiselect(Selection<?>... selections);
 
     // override the return type only:
     /**
@@ -59,7 +64,7 @@ public interface CriteriaQuery extends AbstractQuery {
      *            a simple or compound boolean expression
      * @return the modified query
      */
-    CriteriaQuery where(Expression<Boolean> restriction);
+    CriteriaQuery<T> where(Expression<Boolean> restriction);
 
     /**
      * Modify the query to restrict the query result according to the
@@ -73,7 +78,7 @@ public interface CriteriaQuery extends AbstractQuery {
      *            zero or more restriction predicates
      * @return the modified query
      */
-    CriteriaQuery where(Predicate... restrictions);
+    CriteriaQuery<T> where(Predicate... restrictions);
 
     /**
      * Specify the expressions that are used to form groups over the query
@@ -86,7 +91,7 @@ public interface CriteriaQuery extends AbstractQuery {
      *            zero or more grouping expressions
      * @return the modified query
      */
-    CriteriaQuery groupBy(Expression<?>... grouping);
+    CriteriaQuery<T> groupBy(Expression<?>... grouping);
 
     /**
      * Specify a restriction over the groups of the query. Replaces the previous
@@ -97,7 +102,7 @@ public interface CriteriaQuery extends AbstractQuery {
      *            a simple or compound boolean expression
      * @return the modified query
      */
-    CriteriaQuery having(Expression<Boolean> restriction);
+    CriteriaQuery<T> having(Expression<Boolean> restriction);
 
     /**
      * Specify restrictions over the groups of the query according the
@@ -111,7 +116,7 @@ public interface CriteriaQuery extends AbstractQuery {
      *            zero or more restriction predicates
      * @return the modified query
      */
-    CriteriaQuery having(Predicate... restrictions);
+    CriteriaQuery<T> having(Predicate... restrictions);
 
     /**
      * Specify the ordering expressions that are used to order the query
@@ -125,7 +130,7 @@ public interface CriteriaQuery extends AbstractQuery {
      *            zero or more ordering expressions
      * @return the modified query.
      */
-    CriteriaQuery orderBy(Order... o);
+    CriteriaQuery<T> orderBy(Order... o);
 
     /**
      * Specify whether duplicate query results will be eliminated. A true value
@@ -140,15 +145,14 @@ public interface CriteriaQuery extends AbstractQuery {
      *            retained
      * @return the modified query.
      */
-    CriteriaQuery distinct(boolean distinct);
-
+    CriteriaQuery<T> distinct(boolean distinct);
+ 
     /**
-     * Return the selection list of the query
-     * 
-     * @return the list of items to be returned in the query result
+     * Return the selection items of the query as a list
+     * @return the selection items of the query as a list
      */
     List<Selection<?>> getSelectionList();
-
+    
     /**
      * Return the ordering expressions in order of precedence.
      * 
@@ -161,5 +165,5 @@ public interface CriteriaQuery extends AbstractQuery {
      * 
      * @return the query parameters
      */
-    Set<Parameter<?>> getParameters();
+    Set<ParameterExpression<?>> getParameters();
 }

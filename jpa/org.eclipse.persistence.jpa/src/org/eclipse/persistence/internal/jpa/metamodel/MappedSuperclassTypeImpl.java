@@ -91,7 +91,7 @@ public class MappedSuperclassTypeImpl<X> implements MappedSuperclassType<X> {
     }
 
     //@Override
-    public Attribute<? super X, ?> getAttribute(String name) {
+    public Attribute<X, ?> getAttribute(String name) {
         return null;
     }
     

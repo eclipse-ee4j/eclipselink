@@ -39,7 +39,7 @@ public interface Fetch<Z, X> extends FetchParent<Z, X> {
      * 
      * @return metamodel attribute type for the join
      */
-    Attribute<? extends Z, X> getAttribute();
+    Attribute<? super Z, ?> getAttribute();
 
     /**
      * Return the parent of the fetched item.

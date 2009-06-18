@@ -63,10 +63,9 @@ public interface ManagedType<X> extends Type<X> {
      *  @return declared single-valued attribute of the given 
      *          name and type
      *  @throws IllegalArgumentException if attribute of the given
-     *          name and type is not present in the managed type
+     *          name and type is not declared in the managed type
      */
-    <Y> SingularAttribute<X, Y> getDeclaredSingularAttribute(String name, 
-                                             Class<Y> type);
+    <Y> SingularAttribute<X, Y> getDeclaredSingularAttribute(String name, Class<Y> type);
 	
     /**
      *  Return the single-valued attributes of the managed type.
@@ -92,8 +91,7 @@ public interface ManagedType<X> extends Type<X> {
      *  @throws IllegalArgumentException if attribute of the given
      *          name and type is not present in the managed type
      */    
-    <E> CollectionAttribute<? super X, E> getCollection(String name, 
-                                               Class<E> elementType);
+    <E> CollectionAttribute<? super X, E> getCollection(String name, Class<E> elementType);
 
     /**
      *  Return the Set-valued attribute of the managed type that
@@ -145,10 +143,10 @@ public interface ManagedType<X> extends Type<X> {
      *  @return declared CollectionAttribute of the given name and 
      *          element type
      *  @throws IllegalArgumentException if attribute of the given
-     *          name and type is not present in the managed type
+     *          name and type is not declared in the managed type
      */
-    <E> CollectionAttribute<X, E> getDeclaredCollection(String name, 
-                                               Class<E> elementType);
+    <E> CollectionAttribute<X, E> getDeclaredCollection(String name, Class<E> elementType);
+
     /**
      *  Return the Set-valued attribute declared by the managed type 
      *  that corresponds to the specified name and Java element type.
@@ -158,7 +156,7 @@ public interface ManagedType<X> extends Type<X> {
      *  @return declared SetAttribute of the given name and 
      *          element type
      *  @throws IllegalArgumentException if attribute of the given
-     *          name and type is not present in the managed type
+     *          name and type is not declared in the managed type
      */
     <E> SetAttribute<X, E> getDeclaredSet(String name, Class<E> elementType);
 
@@ -172,7 +170,7 @@ public interface ManagedType<X> extends Type<X> {
      *  @return declared ListAttribute of the given name and 
      *          element type
      *  @throws IllegalArgumentException if attribute of the given
-     *          name and type is not present in the managed type
+     *          name and type is not declared in the managed type
      */
     <E> ListAttribute<X, E> getDeclaredList(String name, Class<E> elementType);
 
@@ -186,7 +184,7 @@ public interface ManagedType<X> extends Type<X> {
      *  @return declared MapAttribute of the given name and key 
      *          and value types
      *  @throws IllegalArgumentException if attribute of the given
-     *          name and type is not present in the managed type
+     *          name and type is not declared in the managed type
      */
     <K, V> MapAttribute<X, K, V> getDeclaredMap(String name, 
                                                 Class<K> keyType, 
@@ -208,6 +206,26 @@ public interface ManagedType<X> extends Type<X> {
 //String-based:
 
     /**
+     *  Return the attribute of the managed
+     *  type that corresponds to the specified name.
+     *  @param name  the name of the represented attribute
+     *  @return attribute with given name
+     *  @throws IllegalArgumentException if attribute of the given
+     *          name is not present in the managed type
+     */
+    Attribute<? super X, ?> getAttribute(String name); 
+
+    /**
+     *  Return the declared attribute of the managed
+     *  type that corresponds to the specified name.
+     *  @param name  the name of the represented attribute
+     *  @return attribute with given name
+     *  @throws IllegalArgumentException if attribute of the given
+     *          name is not declared in the managed type
+     */
+    Attribute<X, ?> getDeclaredAttribute(String name); 
+
+    /**
      *  Return the single-valued attribute of the managed type that
      *  corresponds to the specified name in the represented type.
      *  @param name  the name of the represented attribute
@@ -225,7 +243,7 @@ public interface ManagedType<X> extends Type<X> {
      *  @return declared single-valued attribute of the given 
      *          name
      *  @throws IllegalArgumentException if attribute of the given
-     *          name is not present in the managed type
+     *          name is not declared in the managed type
      */
     SingularAttribute<X, ?> getDeclaredSingularAttribute(String name);
 
@@ -275,7 +293,7 @@ public interface ManagedType<X> extends Type<X> {
      *  @param name  the name of the represented attribute
      *  @return declared CollectionAttribute of the given name
      *  @throws IllegalArgumentException if attribute of the given
-     *          name is not present in the managed type
+     *          name is not declared in the managed type
      */
     CollectionAttribute<X, ?> getDeclaredCollection(String name); 
 
@@ -285,7 +303,7 @@ public interface ManagedType<X> extends Type<X> {
      *  @param name  the name of the represented attribute
      *  @return declared SetAttribute of the given name
      *  @throws IllegalArgumentException if attribute of the given
-     *          name is not present in the managed type
+     *          name is not declared in the managed type
      */
     SetAttribute<X, ?> getDeclaredSet(String name);
 
@@ -295,7 +313,7 @@ public interface ManagedType<X> extends Type<X> {
      *  @param name  the name of the represented attribute
      *  @return declared ListAttribute of the given name
      *  @throws IllegalArgumentException if attribute of the given
-     *          name is not present in the managed type
+     *          name is not declared in the managed type
      */
     ListAttribute<X, ?> getDeclaredList(String name);
 
@@ -305,7 +323,7 @@ public interface ManagedType<X> extends Type<X> {
      *  @param name  the name of the represented attribute
      *  @return declared MapAttribute of the given name
      *  @throws IllegalArgumentException if attribute of the given
-     *          name is not present in the managed type
+     *          name is not declared in the managed type
      */
     MapAttribute<X, ?, ?> getDeclaredMap(String name);
 }

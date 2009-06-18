@@ -7,10 +7,10 @@
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
- * 
+ *
  * Contributors:
- *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
- *     		     Specification available from http://jcp.org/en/jsr/detail?id=317
+ *     gyorke - Java Persistence 2.0 - Post Proposed Final Draft (March 13, 2009) Updates
+ *               Specification available from http://jcp.org/en/jsr/detail?id=317
  *
  * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
  * This is an implementation of an early-draft specification developed under the 
@@ -25,16 +25,18 @@
 package javax.persistence;
 
 /**
- * The <code>javax.persistence.cachePutMode</code> property specifies the
+ * The <code>javax.persistence.cacheStoreMode</code> property specifies the
  * behavior when data is read from the database and when data is committed into
  * the database.
  * 
  *@since Java Persistence 2.0
  */
-public enum CachePutMode {
+public enum CacheStoreMode {
     /**
-     * Insert/update entity data into cache when read from database and when
-     * committed into database: this is the default behavior.
+     * Insert/update entity data into cache when read 
+     * from database and when committed into database: 
+     * this is the default behavior. Does not force refresh
+     * of already cached items when reading from database.
      */
     USE,
     
@@ -44,7 +46,9 @@ public enum CachePutMode {
     BYPASS,
     
     /**
-     * Force refresh of cache for items read from database.
+     * Insert/update entity data into cache when read 
+     * from database and when committed into database. 
+     * Forces refresh of cache for items read from database.
      */
     REFRESH
 }

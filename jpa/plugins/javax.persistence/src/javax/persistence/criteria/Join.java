@@ -38,12 +38,13 @@ import javax.persistence.metamodel.Attribute;
  * @since Java Persistence 2.0 
  */
 public interface Join<Z, X> extends From<Z, X> {
+    
     /**
      * Return the metamodel member corresponding to the join.
      * 
      * @return metamodel member type for the join
      */
-    Attribute<? super Z, X> getAttribute();
+    Attribute<? super Z, ?> getAttribute();
 
     /**
      * Return the parent of the join.

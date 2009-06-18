@@ -11,6 +11,7 @@
  * Contributors:
  *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
  *     		     Specification available from http://jcp.org/en/jsr/detail?id=317
+ *     gyorke  - Post PFD updates
  *
  * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
  * This is an implementation of an early-draft specification developed under the 
@@ -24,7 +25,7 @@
  ******************************************************************************/
 package javax.persistence.criteria;
 
-import javax.persistence.ResultItem;
+import javax.persistence.TupleElement;
 
 /**
  * The Selection interface defines an item that is returned by a query.
@@ -34,7 +35,7 @@ import javax.persistence.ResultItem;
  *            
  * @since Java Persistence 2.0
  */
-public interface Selection<X> extends ResultItem<X> {
+public interface Selection<X> extends TupleElement<X> {
     /**
      * Assign an alias to the selection.
      * 

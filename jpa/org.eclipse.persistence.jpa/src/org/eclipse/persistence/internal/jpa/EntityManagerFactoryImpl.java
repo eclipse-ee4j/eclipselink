@@ -21,6 +21,7 @@ import javax.persistence.metamodel.Metamodel;
 
 import org.eclipse.persistence.config.EntityManagerProperties;
 import org.eclipse.persistence.config.FlushClearCache;
+import org.eclipse.persistence.internal.jpa.querydef.QueryBuilderImpl;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.PropertiesHandler;
 import org.eclipse.persistence.sessions.factories.ReferenceMode;
@@ -394,8 +395,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory {
 	 * @since Java Persistence 2.0
 	 */
 	public QueryBuilder getQueryBuilder() {
-        // TODO:
-        throw new PersistenceException("Not Yet Implemented");        
+        return new QueryBuilderImpl(this.getMetamodel());
 	}
 
     /**

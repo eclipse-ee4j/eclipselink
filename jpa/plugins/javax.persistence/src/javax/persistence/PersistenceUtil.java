@@ -7,10 +7,10 @@
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
- * 
+ *
  * Contributors:
- *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
- *     		     Specification available from http://jcp.org/en/jsr/detail?id=317
+ *     gyorke - Java Persistence 2.0 - Post Proposed Final Draft (March 13, 2009) Updates
+ *               Specification available from http://jcp.org/en/jsr/detail?id=317
  *
  * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
  * This is an implementation of an early-draft specification developed under the 
@@ -25,20 +25,35 @@
 package javax.persistence;
 
 /**
- * The <code>javax.persistence.cacheGetMode</code> property specifies the
- * behavior when data is retrieved by the find methods and by the execution of
- * queries. The cacheGetMode property is ignored for the refresh method, which
- * always causes data to be retrieved from the database, not the cache.
- * 
- * @since Java Persistence 2.0
+ * Utility interface between the application and the persistence
+ * provider(s). 
  */
-public enum CacheGetMode {
+
+public interface PersistenceUtil {
     /**
-     * Read entity data from the cache: this is the default behavior.
+     * Determine the load state of a given persistent attribute
+     * regardless of the persistence provider that created the
+     * containing entity.
+     * @param attributeName name of attribute whose load state is
+     *    to be determined
+     * @return false if entity's state has not been loaded or
+     *  if the attribute state has not been loaded, otherwise true
      */
-    USE,
+    public boolean isLoaded(Object entity, String attributeName);
+
     /**
-     * Bypass the cache: get data directly from the database.
+     * Determine the load state of an entity regardless 
+     * of the persistence provider that created it.
+     * This method can be used to determine the load state 
+     * of an entity passed as a reference.  An entity is
+     * considered loaded if all attributes for which FetchType
+     * EAGER has been specified have been loaded.
+     * The isLoaded(Object, String) method should be used to 
+     * determine the load state of an attribute.
+     * Not doing so might lead to unintended loading of state.
+     *
+     * @return false if the entity has not be loaded, otherwise 
+     * true.
      */
-    BYPASS
+    public boolean isLoaded(Object entity);
 }

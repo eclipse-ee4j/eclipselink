@@ -33,7 +33,7 @@ public interface Order {
     /**
      * Switch the ordering.
      */
-    void reverse();
+    Order reverse();
 
     /**
      * Whether ascending ordering is in effect.

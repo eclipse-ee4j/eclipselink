@@ -36,49 +36,6 @@ import java.util.Set;
  * @since Java Persistence 2.0
  */
 public interface Query {
-    /**
-     * Execute a query and return the results as a typed List.
-     * 
-     * @return a list of the results
-     * @throws IllegalStateException
-     *             if called for a Java Persistence query language UPDATE or
-     *             DELETE statement
-     * @throws QueryTimeoutException
-     *             if the query execution exceeds the query timeout value set
-     * @throws TransactionRequiredException
-     *             if a lock mode has been set and there is no transaction
-     * @throws PessimisticLockException
-     *             if pessimistic locking fails and the transaction is rolled
-     *             back
-     * @throws LockTimeoutException
-     *             if pessimistic locking fails and only the statement is rolled
-     *             back
-     */
-    List<Result> getTypedResultList();
-
-    /**
-     * Execute a query that returns a single, typed result.
-     * 
-     * @return the result
-     * @throws NoResultException
-     *             if there is no result
-     * @throws NonUniqueResultException
-     *             if more than one result
-     * @throws IllegalStateException
-     *             if called for a Java Persistence query language UPDATE or
-     *             DELETE statement
-     * @throws QueryTimeoutException
-     *             if the query execution exceeds the query timeout value set
-     * @throws TransactionRequiredException
-     *             if a lock mode has been set and there is no transaction
-     * @throws PessimisticLockException
-     *             if pessimistic locking fails and the transaction is rolled
-     *             back
-     * @throws LockTimeoutException
-     *             if pessimistic locking fails and only the statement is rolled
-     *             back
-     */
-    Result getTypedSingleResult();
 
     /**
      * Execute a SELECT query and return the query results as an untyped List.
@@ -336,37 +293,6 @@ public interface Query {
      *             if the parameter has not been been bound
      */
     <T> T getParameterValue(Parameter<T> param);
-
-    /**
-     * Get the result item with the given alias and type. If the type of the
-     * specified item is not assignable to the specified type, the
-     * IllegalArgumentException is thrown.
-     * 
-     * @return result item
-     * @throws IllegalArgumentException
-     *             if the result item of the specified name does not exist or is
-     *             not assignable to the specified type
-     */
-    <T> ResultItem<T> getResultItem(String alias, Class<T> type);
-
-    /**
-     * Get the result item with the given position in the result list and type.
-     * The first position is 0. If the type of the specified item is not
-     * assignable to the specified type, the IllegalArgumentException is thrown.
-     * 
-     * @return result item object
-     * @throws IllegalArgumentException
-     *             if the result item with the specified position does not exist
-     *             or is not assignable to the specified type
-     */
-    <T> ResultItem<T> getResultItem(int position, Class<T> type);
-
-    /**
-     * Get the result items of the query.
-     * 
-     * @return result item list
-     */
-    List<ResultItem<?>> getResultItems();
 
     /**
      * Set the flush mode type to be used for the query execution. The flush

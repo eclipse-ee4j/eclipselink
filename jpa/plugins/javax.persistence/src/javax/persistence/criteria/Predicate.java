@@ -66,7 +66,7 @@ public interface Predicate extends Expression<Boolean> {
      * 
      * @return the resulting compound predicate
      */
-    Predicate add(Expression<Boolean> s);
+    Predicate add(Expression<Boolean> exp);
 
     /**
      * Apply negation to the predicate.

@@ -37,7 +37,7 @@ import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
  * Concrete JPA query class. The JPA query wraps a DatabaseQuery which is
  * executed.
  */
-public class EJBQueryImpl implements JpaQuery {
+public class EJBQueryImpl<X> implements JpaQuery<X> {
     protected DatabaseQuery databaseQuery = null;
     protected EntityManagerImpl entityManager = null;
     protected String queryName = null;
@@ -652,7 +652,7 @@ public class EJBQueryImpl implements JpaQuery {
      * @throws javax.persistence.NonUniqueResultException
      *             if more than one result
      */
-    public Object getSingleResult() {
+    public X getSingleResult() {
         boolean rollbackOnException = true;
         try {
             // bug51411440: need to throw IllegalStateException if query
@@ -676,13 +676,13 @@ public class EJBQueryImpl implements JpaQuery {
                     rollbackOnException = false;
                     throwNonUniqueResultException(ExceptionLocalization.buildMessage("too_many_results_for_get_single_result", (Object[]) null));
                 }
-                return results.get(0);
+                return (X)results.get(0);
             } else {
                 if (result == null) {
                     rollbackOnException = false;
                     throwNoResultException(ExceptionLocalization.buildMessage("no_entities_retrieved_for_get_single_result", (Object[]) null));
                 }
-                return result;
+                return (X)result;
             }
         } catch (LockTimeoutException e) {
             throw e;
@@ -740,7 +740,7 @@ public class EJBQueryImpl implements JpaQuery {
      *            position of the first result, numbered from 0
      * @return the same query instance
      */
-    public Query setFirstResult(int startPosition) {
+    public TypedQuery setFirstResult(int startPosition) {
         try {
             entityManager.verifyOpen();
             setFirstResultInternal(startPosition);
@@ -777,7 +777,7 @@ public class EJBQueryImpl implements JpaQuery {
      * 
      * @param flushMode
      */
-    public Query setFlushMode(FlushModeType flushMode) {
+    public TypedQuery setFlushMode(FlushModeType flushMode) {
         try {
             entityManager.verifyOpen();
             if (flushMode == null) {
@@ -841,7 +841,7 @@ public class EJBQueryImpl implements JpaQuery {
      * @throws IllegalArgumentException
      *             if the second argument is not valid for the implementation
      */
-    public Query setHint(String hintName, Object value) {
+    public TypedQuery setHint(String hintName, Object value) {
         try {
             entityManager.verifyOpen();
             setHintInternal(hintName, value);
@@ -875,7 +875,7 @@ public class EJBQueryImpl implements JpaQuery {
      * @throws IllegalStateException
      *             if not a Java Persistence query language SELECT query
      */
-    public Query setLockMode(LockModeType lockMode) {
+    public TypedQuery setLockMode(LockModeType lockMode) {
         try {
             entityManager.verifyOpen();
 
@@ -930,7 +930,7 @@ public class EJBQueryImpl implements JpaQuery {
      * @param maxResult
      * @return the same query instance
      */
-    public Query setMaxResults(int maxResult) {
+    public TypedQuery setMaxResults(int maxResult) {
         try {
             entityManager.verifyOpen();
             setMaxResultsInternal(maxResult);
@@ -1260,12 +1260,17 @@ public class EJBQueryImpl implements JpaQuery {
     }
 
     /**
-     * @see Query#setParameter(Parameter, Object)
-     * @since Java Persistence 2.0
+     * Set the value of a Parameter object.
+     * @param param  parameter to be set
+     * @param value  parameter value
+     * @return query instance
+     * @throws IllegalArgumentException if parameter
+     *         does not correspond to a parameter of the
+     *         query
      */
-    public <T> Query setParameter(Parameter<T> param, T value) {
-        // TODO Auto-generated method stub
-        return null;
+    public <T> TypedQuery setParameter(Parameter<T> param, T value){
+        //TODO
+        throw new UnsupportedOperationException();
     }
 
     /**

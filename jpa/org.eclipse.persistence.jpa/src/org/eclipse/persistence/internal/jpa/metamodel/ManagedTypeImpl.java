@@ -178,7 +178,18 @@ public class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedType<X> {
         return null;
     }
 
-    public Set<Attribute<? super X, ?>> getAttributes() {
+    /**
+     *  Return the attribute of the managed 
+     *  type that corresponds to the specified name.
+     *  @param name  the name of the represented attribute
+     *  @return attribute with given name
+     *  @throws IllegalArgumentException if attribute of the given
+     *          name is not present in the managed type      */
+      public Attribute<X, ?> getAttribute(String attributeName){
+          return null;
+      }
+
+      public Set<Attribute<? super X, ?>> getAttributes() {
         return new HashSet(this.members.values());
     }
 
@@ -195,6 +206,19 @@ public class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedType<X> {
 
     public Set<PluralAttribute<? super X, ?, ?>> getCollections() {
         // TODO Auto-generated method stub
+        return null;
+    }
+
+    /**
+     *  Return the declared attribute of the managed
+     *  type that corresponds to the specified name.
+     *  @param name  the name of the represented attribute
+     *  @return attribute with given name
+     *  @throws IllegalArgumentException if attribute of the given
+     *          name is not declared in the managed type
+     */
+    public Attribute<X, ?> getDeclaredAttribute(String name){
+        //TODO
         return null;
     }
 

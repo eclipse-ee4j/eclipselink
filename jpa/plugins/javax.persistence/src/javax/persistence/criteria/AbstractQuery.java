@@ -40,7 +40,7 @@ import javax.persistence.metamodel.EntityType;
  * All queries may have:
  *         a conjunction of restrictions
  */
-public interface AbstractQuery {
+public interface AbstractQuery<T> {
 
     /**
      * Add a query root corresponding to the given entity, forming a cartesian
@@ -77,7 +77,7 @@ public interface AbstractQuery {
      *            a simple or compound boolean expression
      * @return the modified query
      */
-    AbstractQuery where(Expression<Boolean> restriction);
+    AbstractQuery<T> where(Expression<Boolean> restriction);
 
     /**
      * Modify the query to restrict the query results according to the
@@ -89,7 +89,7 @@ public interface AbstractQuery {
      *            zero or more restriction predicates
      * @return the modified query
      */
-    AbstractQuery where(Predicate... restrictions);
+    AbstractQuery<T> where(Predicate... restrictions);
 
     /**
      * Specify the expressions that are used to form groups over the query
@@ -101,7 +101,7 @@ public interface AbstractQuery {
      *            zero or more grouping expressions
      * @return the modified query
      */
-    AbstractQuery groupBy(Expression<?>... grouping);
+    AbstractQuery<T> groupBy(Expression<?>... grouping);
 
     /**
      * Specify a restriction over the groups of the query. Replaces the previous
@@ -111,7 +111,7 @@ public interface AbstractQuery {
      *            a simple or compound boolean expression
      * @return the modified query
      */
-    AbstractQuery having(Expression<Boolean> restriction);
+    AbstractQuery<T> having(Expression<Boolean> restriction);
 
     /**
      * Specify restrictions over the groups of the query according the
@@ -123,7 +123,7 @@ public interface AbstractQuery {
      *            zero or more restriction predicates
      * @return the modified query
      */
-    AbstractQuery having(Predicate... restrictions);
+    AbstractQuery<T> having(Predicate... restrictions);
 
     /**
      * Specify whether duplicate query results will be eliminated. A true value
@@ -137,11 +137,16 @@ public interface AbstractQuery {
      *            retained
      * @return the modified query.
      */
-    AbstractQuery distinct(boolean distinct);
+    AbstractQuery<T> distinct(boolean distinct);
+
+    /**
+     * Return the selection of the query
+     * @return the item to be returned in the query result
+     */
+    Selection<T> getSelection();
 
     /**
      * Return a list of the grouping expressions
-     * 
      * @return the list of grouping expressions
      */
     List<Expression<?>> getGroupList();

@@ -23,7 +23,7 @@ import org.eclipse.persistence.queries.DatabaseQuery;
  * javax.persistence.Query and adds access to the underlying database query for EclipseLink specific
  * functionality.
  */
-public interface JpaQuery extends javax.persistence.Query {
+public interface JpaQuery<X> extends javax.persistence.TypedQuery<X> {
 
     /**
      * PUBLIC:

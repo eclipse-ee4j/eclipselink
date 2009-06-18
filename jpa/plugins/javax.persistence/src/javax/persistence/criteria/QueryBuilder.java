@@ -30,25 +30,38 @@ import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-
-import javax.persistence.Parameter;
+import javax.persistence.Tuple;
 
 /**
- * Factory for queries, select lists, restrictions, expressions, orderings. Note
- * that Predicate is used instead of Expression<Boolean> in this API in order to
- * work around the fact that Java generics are not compatible with varags.
+ * Factory object for queries, select lists, restrictions, 
+ * expressions, orderings
+ * The factory methods are all typesafe. 
+ * Note that Predicate is used instead of Expression<Boolean> 
+ * in this API in order to work around the fact that Java 
+ * generics are not compatible with varags.
  * 
  * @since Java Persistence 2.0
  */
 public interface QueryBuilder {
     /**
-     * Create a Criteria query object.
-     * 
-     * @return query object
+     *  Create a Criteria query object.
+     *  @return query object
      */
-    CriteriaQuery create();
+    CriteriaQuery<Object> createQuery();
 
-    // select new Foo(...) equivalent:
+    /**
+     *  Create a Criteria query object.
+     *  @return query object
+     */
+    <T> CriteriaQuery<T> createQuery(Class<T> resultClass);
+
+    /**
+     *  Create a Criteria query object that returns a tuple of 
+     *  objects as its result.
+     *  @return query object
+     */
+    CriteriaQuery<Tuple> createTupleQuery();
+
     /**
      * Define a select list item corresponding to a constructor.
      * 
@@ -60,7 +73,6 @@ public interface QueryBuilder {
      */
     <Y> Selection<Y> construct(Class<Y> result, Selection<?>... selections);
 
-    // ordering:
     /**
      * Create an ordering by the ascending value of the expression.
      * 
@@ -818,21 +830,21 @@ public interface QueryBuilder {
     /**
      * Create a parameter.
      * 
-     * @param paramClass
-     *            parameter class
-     * @return parameter
+     * Create a parameter expression.
+     * @param paramClass parameter class
+     * @return parameter expression
      */
-    <T> Parameter<T> parameter(Class<T> paramClass);
+    <T> ParameterExpression<T> parameter(Class<T> paramClass);
 
     /**
-     * Create a parameter with the given name.
+     * Create a parameter expression with the given name.
      * 
      * @param paramClass
      *            parameter class
      * @param name
      * @return parameter
      */
-    <T> Parameter<T> parameter(Class<T> paramClass, String name);
+    <T> ParameterExpression<T> parameter(Class<T> paramClass, String name);
 
     // collection operations:
     /**

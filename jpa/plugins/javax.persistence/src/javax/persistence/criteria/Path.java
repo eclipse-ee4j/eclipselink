@@ -25,9 +25,9 @@
  ******************************************************************************/
 package javax.persistence.criteria;
 
+import javax.persistence.metamodel.Bindable;
 import javax.persistence.metamodel.PluralAttribute;
 import javax.persistence.metamodel.SingularAttribute;
-import javax.persistence.metamodel.Bindable;
 import javax.persistence.metamodel.MapAttribute;
 
 /**
@@ -41,9 +41,9 @@ import javax.persistence.metamodel.MapAttribute;
  */
 public interface Path<X> extends Expression<X> {
     /**
-     * Return the bindable object that corresponds to the path expression.
+     * Return the Bindable object that corresponds to the path expression.
      * 
-     * @return bindable object corresponding to the path
+     * @return Bindable object corresponding to the path
      */
     Bindable<X> getModel();
 
@@ -62,7 +62,7 @@ public interface Path<X> extends Expression<X> {
      *            attribute
      * @return path corresponding to the referenced attribute
      */
-    <Y> Path<Y> get(SingularAttribute<? super X, Y> att);
+    <Y> Path<Y> get(SingularAttribute<? super X, Y> attribute);
 
     /**
      * Return the path corresponding to the referenced collection-valued
@@ -98,5 +98,5 @@ public interface Path<X> extends Expression<X> {
      *            name of the attribute
      * @return path corresponding to the referenced attribute
      */
-    <Y> Path<Y> get(String attName);
+    <Y> Path<Y> get(String attributeName);
 }

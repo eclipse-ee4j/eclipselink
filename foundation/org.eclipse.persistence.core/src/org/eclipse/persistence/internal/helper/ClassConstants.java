@@ -38,6 +38,8 @@ public class ClassConstants {
     public static final Class JavaSqlTimestamp_Class = java.sql.Timestamp.class;
     public static final Class List_Class = List.class;
     public static final Class Map_Class = Map.class;
+    public static final Class Map_Entry_Class = Map.Entry.class;
+    public static final Class Set_Class = Set.class;
     public static final Class Object_Class = Object.class;
     public static final Class SortedSet_Class = SortedSet.class;
     public static final Class Vector_class = Vector.class;
@@ -90,6 +92,7 @@ public class ClassConstants {
 
     // Moved from ConversionManager
     public static final Class ABYTE = Byte[].class;
+    public static final Class AOBJECT = Object[].class;
     public static final Class ACHAR = Character[].class;
     public static final Class APBYTE = byte[].class;
     public static final Class APCHAR = char[].class;

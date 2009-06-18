@@ -34,13 +34,13 @@ package javax.persistence.criteria;
  *            
  * @since Java Persistence 2.0
  */
-public interface Subquery<T> extends AbstractQuery, Expression<T> {
+public interface Subquery<T> extends AbstractQuery<T>, Expression<T> {
     /**
      * Return the query of which this is a subquery.
      * 
      * @return the enclosing query or subquery
      */
-    AbstractQuery getParent();
+    AbstractQuery<?> getParent();
 
     /**
      * Specify the item that is to be returned in the query result. Replaces the
