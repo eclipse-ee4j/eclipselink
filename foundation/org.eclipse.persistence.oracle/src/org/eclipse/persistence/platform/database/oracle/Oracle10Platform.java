@@ -12,9 +12,37 @@
  ******************************************************************************/  
 package org.eclipse.persistence.platform.database.oracle;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.logging.SessionLog;
+
 /**
  * <p><b>Purpose:</b>
  * Supports usage of certain Oracle JDBC specific APIs.
  */
 public class Oracle10Platform extends Oracle9Platform  {
+    
+    /**
+     * INTERNAL:
+     * Write LOB value - Oracle 10 deprecates some methods used in the superclass
+     */
+    @Override
+    public void writeLOB(DatabaseField field, Object value, ResultSet resultSet, AbstractSession session) throws SQLException {
+        if (isBlob(field.getType())) {
+            java.sql.Blob blob = (oracle.sql.BLOB)resultSet.getObject(field.getName());
+            blob.setBytes(1, (byte[])value);
+            //impose the locallization
+            session.log(SessionLog.FINEST, SessionLog.SQL, "write_BLOB", new Long(blob.length()), field.getName());
+        } else if (isClob(field.getType())) {
+            java.sql.Clob clob = (oracle.sql.CLOB)resultSet.getObject(field.getName());
+            clob.setString(1, (String)value);
+            //impose the locallization
+            session.log(SessionLog.FINEST, SessionLog.SQL, "write_CLOB", new Long(clob.length()), field.getName());
+        } else {
+            //do nothing for now, open to BFILE or NCLOB types
+        }
+    }
 }
