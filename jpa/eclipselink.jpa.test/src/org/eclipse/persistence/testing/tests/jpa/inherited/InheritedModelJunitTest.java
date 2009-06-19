@@ -34,11 +34,13 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.persistence.EntityManager;
 
 import junit.framework.*;
 
+import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.inherited.Accredidation;
@@ -114,6 +116,10 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         suite.addTest(new InheritedModelJunitTest("testRedStripeExpertConsumer"));
         // Element collection with generic map key type, with embeddable values.
         suite.addTest(new InheritedModelJunitTest("testRedStripeNoviceConsumer"));
+        // OrderColumn with OrderCorrectionType.EXCEPTION
+        suite.addTest(new InheritedModelJunitTest("testBreakOrder_CorrectionType_EXCEPTION"));
+        // OrderColumn with OrderCorrectionType.READ_WRITE
+        suite.addTest(new InheritedModelJunitTest("testBreakOrder_CorrectionType_READ_WRITE"));
         return suite;
     }
     
@@ -903,5 +909,196 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         assertFalse("The blue light detached was persisted even though the its owning beer comsumer was removed", em.contains(blueLightDetached));
 
         closeEntityManager(em);
+    }
+    
+    public void testBreakOrder_CorrectionType_EXCEPTION() {
+        // create BeerConsumer with designations
+        EntityManager em = createEntityManager();
+        beginTransaction(em);        
+        NoviceBeerConsumer beerConsumer = new NoviceBeerConsumer();
+        beerConsumer.setName("Broken order");        
+        beerConsumer.getDesignations().add("0");
+        beerConsumer.getDesignations().add("1");
+        beerConsumer.getDesignations().add("2");
+        try {
+            em.persist(beerConsumer);
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+            fail("failed to create beerConsumer");
+        }            
+        Integer id = beerConsumer.getId();
+        
+        try {
+        
+            // break the order of designations
+            beginTransaction(em); 
+            try {
+                em.createNativeQuery("UPDATE NOVICE_CONSUMER_DESIGNATIONS SET ORDER_COLUMN = null WHERE NOVICE_CONSUMER_ID = " + id +" AND ORDER_COLUMN = 0").executeUpdate();            
+                commitTransaction(em);
+            } catch (RuntimeException e) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+                fail("failed to break order of designations");
+            } finally {
+                closeEntityManager(em);
+            }
+            
+            // remove beerConsumer from the cache
+            clearCache();
+            
+            // read back the beer consumer, reading of the list of designations with the broken order should trigger exception
+            em = createEntityManager();
+            try {
+                beerConsumer = em.find(NoviceBeerConsumer.class, id);
+                // trigger indirection
+                beerConsumer.getDesignations().size();
+                fail("Exception was expected - but not thrown");
+            } catch (RuntimeException e) {
+                boolean isCorrectException = false;
+                if(e instanceof QueryException) {
+                    QueryException queryException = (QueryException)e;
+                    if(((QueryException) e).getErrorCode() == QueryException.LIST_ORDER_FIELD_WRONG_VALUE) {
+                        isCorrectException = true;
+                    }
+                }
+                if(!isCorrectException) {
+                    throw e;
+                }
+            } finally {
+                closeEntityManager(em);
+            }
+        } finally {        
+            // clean up
+            em = createEntityManager();
+            beginTransaction(em); 
+            try {
+                beerConsumer = em.find(NoviceBeerConsumer.class, id);
+                em.remove(beerConsumer);
+                commitTransaction(em);
+            } catch (RuntimeException e) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+            } finally {
+                closeEntityManager(em);
+            }
+        }
+    }
+
+    public void testBreakOrder_CorrectionType_READ_WRITE() {
+        // create BeerConsumer with committees
+        EntityManager em = createEntityManager();
+        beginTransaction(em);        
+        ExpertBeerConsumer beerConsumer = new ExpertBeerConsumer();
+        beerConsumer.setName("Beer order");        
+
+        Committee committee0 = new Committee();
+        committee0.setDescription("Broken Order 0");
+        beerConsumer.addCommittee(committee0);
+        
+        Committee committee1 = new Committee();
+        committee1.setDescription("Broken Order 1");
+        beerConsumer.addCommittee(committee1);
+        
+        Committee committee2 = new Committee();
+        committee2.setDescription("Broken Order 2");
+        beerConsumer.addCommittee(committee2);
+        try {
+            em.persist(beerConsumer);
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+            fail("failed to create beerConsumer");
+        }            
+        Integer id = beerConsumer.getId();
+        
+        try {
+        
+            // break the order of committees
+            beginTransaction(em); 
+            try {
+                em.createNativeQuery("UPDATE JPA_CONSUMER_COMMITTEE SET ORDER_COLUMN = null WHERE CONSUMER_ID = " + id +" AND ORDER_COLUMN = 0").executeUpdate();            
+                commitTransaction(em);
+            } catch (RuntimeException e) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+                fail("failed to break order of committees");
+            } finally {
+                closeEntityManager(em);
+            }
+            
+            // remove beerConsumer from the cache
+            clearCache();
+            
+            // read back the beer consumer, reading of the list of committees with the broken should fix the order "on the fly"
+            em = createEntityManager();
+            try {
+                beerConsumer = em.find(ExpertBeerConsumer.class, id);
+                // trigger indirection
+                beerConsumer.getCommittees().size();
+            } catch (RuntimeException e) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+                closeEntityManager(em);
+                throw e;
+            }
+            
+            // alter order of committees - that would cause the list order to be updated in the db (and become valid).
+            // the default correction performed on the list substitutes null in the first element back to 0.
+            beginTransaction(em); 
+            try {
+                // committees #1 and #2 switch their positions in the list.
+                Committee committee = beerConsumer.getCommittees().remove(2);
+                beerConsumer.getCommittees().add(1, committee);
+                commitTransaction(em);
+            } catch (RuntimeException e) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+                closeEntityManager(em);
+                fail("failed to change committees order");
+            }
+            
+            // now verify that the order in the db has been corrected
+            List<Number> results = em.createNativeQuery("SELECT ORDER_COLUMN FROM JPA_CONSUMER_COMMITTEE WHERE CONSUMER_ID = " +id+ " ORDER BY ORDER_COLUMN").getResultList();
+            int expectedSize = beerConsumer.getCommittees().size();
+            if(expectedSize != results.size()) {
+                closeEntityManager(em);
+                fail("read in "+ results.size() + " committees; expected " + expectedSize);
+            }
+            for(int i=0; i < expectedSize; i++) {
+                if(results.get(i) == null || results.get(i).intValue() != i) {
+                    closeEntityManager(em);
+                    fail("read in list in wrong order: " + results + "; expected: 0, 1, 2");
+                }
+            }
+            closeEntityManager(em);
+            
+        } finally {        
+            // clean up
+            em = createEntityManager();
+            beginTransaction(em); 
+            try {
+                beerConsumer = em.find(ExpertBeerConsumer.class, id);
+                em.remove(beerConsumer);
+                commitTransaction(em);
+            } catch (RuntimeException e) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+            } finally {
+                closeEntityManager(em);
+            }
+        }
     }
 }

@@ -1685,12 +1685,12 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getUpdatableAttributeMapping());
         descriptor.addMapping(getColumnDefinitionAttributeMapping());
         
-        XMLDirectMapping validationModeMapping = new XMLDirectMapping();
-        validationModeMapping.setAttributeName("m_validationMode");
-        validationModeMapping.setGetMethodName("getValidationMode");
-        validationModeMapping.setSetMethodName("setValidationMode");
-        validationModeMapping.setXPath("@validation-mode");
-        descriptor.addMapping(validationModeMapping);
+        XMLDirectMapping correctionTypeMapping = new XMLDirectMapping();
+        correctionTypeMapping.setAttributeName("m_correctionType");
+        correctionTypeMapping.setGetMethodName("getCorrectionType");
+        correctionTypeMapping.setSetMethodName("setCorrectionType");
+        correctionTypeMapping.setXPath("@correction-type");
+        descriptor.addMapping(correctionTypeMapping);
         
         return descriptor;
     }

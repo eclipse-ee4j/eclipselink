@@ -51,6 +51,9 @@ import static javax.persistence.CascadeType.ALL;
 
 import org.eclipse.persistence.annotations.BasicCollection;
 import org.eclipse.persistence.annotations.BasicMap;
+import org.eclipse.persistence.annotations.OrderCorrection;
+
+import static org.eclipse.persistence.annotations.OrderCorrectionType.EXCEPTION;
 
 @MappedSuperclass
 @Access(FIELD)
@@ -67,6 +70,7 @@ public abstract class RatedBeerConsumer<X, Y, Z> extends BeerConsumer<String> {
     @ElementCollection
     @Column(name="DESIGNATION")
     @OrderColumn(name="ORDER_COLUMN")
+    @OrderCorrection(EXCEPTION)
     // CollectionTable will default in this case, Entity name + "_" + attribute name
     // JoinColumns will default in this case which are different from BasicCollection collection table default
     private List<String> designations;
@@ -104,6 +108,7 @@ public abstract class RatedBeerConsumer<X, Y, Z> extends BeerConsumer<String> {
         joinColumns=@JoinColumn(name="CONSUMER_ID", referencedColumnName="ID"),
         inverseJoinColumns=@JoinColumn(name="COMMITTEE_ID", referencedColumnName="ID")
     )
+    @OrderColumn(name="ORDER_COLUMN")
     private List<Committee> committees;
     
     protected RatedBeerConsumer() {

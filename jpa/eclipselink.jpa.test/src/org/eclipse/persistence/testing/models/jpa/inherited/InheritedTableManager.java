@@ -995,6 +995,16 @@ public class InheritedTableManager extends TableCreator {
         fieldCOMMITTEEID.setForeignKeyFieldName("JPA_COMMITTEE.ID");
         table.addField(fieldCOMMITTEEID);
 
+        FieldDefinition fieldORDER_COLUMN = new FieldDefinition();
+        fieldORDER_COLUMN.setName("ORDER_COLUMN");
+        fieldORDER_COLUMN.setTypeName("NUMERIC");
+        fieldORDER_COLUMN.setSize(15);
+        fieldORDER_COLUMN.setShouldAllowNull(true);
+        fieldORDER_COLUMN.setIsPrimaryKey(false);
+        fieldORDER_COLUMN.setUnique(false);
+        fieldORDER_COLUMN.setIsIdentity(false);
+        table.addField(fieldORDER_COLUMN);
+        
         return table;
     }
     
@@ -1284,6 +1294,16 @@ public class InheritedTableManager extends TableCreator {
         fieldCOMMITTEEID.setForeignKeyFieldName("JPA_COMMITTEE.ID");
         table.addField(fieldCOMMITTEEID);
 
+        FieldDefinition fieldORDER_COLUMN = new FieldDefinition();
+        fieldORDER_COLUMN.setName("ORDER_COLUMN");
+        fieldORDER_COLUMN.setTypeName("NUMERIC");
+        fieldORDER_COLUMN.setSize(15);
+        fieldORDER_COLUMN.setShouldAllowNull(true);
+        fieldORDER_COLUMN.setIsPrimaryKey(false);
+        fieldORDER_COLUMN.setUnique(false);
+        fieldORDER_COLUMN.setIsIdentity(false);
+        table.addField(fieldORDER_COLUMN);
+        
         return table;
     }
     

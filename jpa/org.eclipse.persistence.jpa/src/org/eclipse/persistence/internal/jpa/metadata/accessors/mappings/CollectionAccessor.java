@@ -54,6 +54,7 @@ import javax.persistence.OrderBy;
 import javax.persistence.OrderColumn;
 
 import org.eclipse.persistence.annotations.MapKeyConvert;
+import org.eclipse.persistence.annotations.OrderCorrection;
 import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.helper.DatabaseTable;
@@ -191,7 +192,11 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
         
         // Set the order column if one is defined.
         if (isAnnotationPresent(OrderColumn.class)) {
-            m_orderColumn = new OrderColumnMetadata(getAnnotation(OrderColumn.class), accessibleObject);
+            String correctionType = null;
+            if (isAnnotationPresent(OrderCorrection.class)) {
+                correctionType = getAnnotation(OrderCorrection.class).getAttribute("value").toString();
+            }
+            m_orderColumn = new OrderColumnMetadata(getAnnotation(OrderColumn.class), accessibleObject, correctionType);
         }
         
         // Set the map key enumerated if one is defined.
