@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     
  ******************************************************************************/  
 package org.eclipse.persistence.tools.schemaframework;
 
@@ -443,7 +444,11 @@ public class TableDefinition extends DatabaseObjectDefinition {
                         // Still too long: remove vowels from the table name and field name and truncate the table name.
                         String shortenedFieldName = Helper.removeVowels(onlyAlphaNumericFieldName);
                         String shortenedTableName = Helper.removeVowels(onlyAlphaNumericTableName);
-                        foreignKeyName = Helper.truncate(shortenedTableName, maximumNameLength - shortenedFieldName.length()) + shortenedFieldName;
+                        if (shortenedFieldName.length() >= maximumNameLength) {
+                            foreignKeyName = Helper.truncate(shortenedFieldName, maximumNameLength);
+                        } else {
+                            foreignKeyName = Helper.truncate(shortenedTableName, maximumNameLength - shortenedFieldName.length()) + shortenedFieldName;
+                        }
                     }
                 }
             }
