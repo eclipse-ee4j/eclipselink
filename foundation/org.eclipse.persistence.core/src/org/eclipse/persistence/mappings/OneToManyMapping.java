@@ -733,12 +733,14 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         }
 
         AbstractRecord modifyRow = new DatabaseRecord();
-        size = targetForeignKeyFields.size();
-        for (int index = 0; index < size; index++) {
-            DatabaseField targetForeignKey = targetForeignKeyFields.get(index);
-            modifyRow.put(targetForeignKey, null);
-            Expression expression = builder.getField(targetForeignKey).equal(builder.getParameter(targetForeignKey));
-            whereClause = expression.and(whereClause);
+        if(shouldRemoveTargetQueryModifyTargetForeignKey()) {
+            size = targetForeignKeyFields.size();
+            for (int index = 0; index < size; index++) {
+                DatabaseField targetForeignKey = targetForeignKeyFields.get(index);
+                modifyRow.put(targetForeignKey, null);
+                Expression expression = builder.getField(targetForeignKey).equal(builder.getParameter(targetForeignKey));
+                whereClause = expression.and(whereClause);
+            }
         }
         if(listOrderField != null) {
             modifyRow.add(listOrderField, null);
@@ -791,7 +793,9 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         int size = targetForeignKeyFields.size();
         for (int index = 0; index < size; index++) {
             DatabaseField targetForeignKey = targetForeignKeyFields.get(index);
-            modifyRow.put(targetForeignKey, null);
+            if(shouldRemoveTargetQueryModifyTargetForeignKey()) {
+                modifyRow.put(targetForeignKey, null);
+            }
             Expression expression = builder.getField(targetForeignKey).equal(builder.getParameter(targetForeignKey));
             whereClause = expression.and(whereClause);
         }
@@ -1023,6 +1027,9 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      */
     public void preDelete(DeleteObjectQuery query) throws DatabaseException, OptimisticLockException {
         if (!shouldObjectModifyCascadeToParts(query)) {
+            if(this.listOrderField != null) {
+                updateTargetRowPreDeleteSource(query);
+            }
             return;
         }
 
@@ -1265,6 +1272,14 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
 
         return query.shouldCascadeAllParts();
     }    
+    
+    /**
+     * INTERNAL
+     * If it's not a map then target foreign key has been already modified (set to null).
+     */
+    protected boolean shouldRemoveTargetQueryModifyTargetForeignKey() {
+        return containerPolicy.isMapPolicy();
+    }
     
     /**
      * INTERNAL

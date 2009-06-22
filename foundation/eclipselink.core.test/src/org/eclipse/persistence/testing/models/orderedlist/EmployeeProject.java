@@ -269,7 +269,6 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
             }
             childrenMapping.dontUseIndirection();
         }
-        childrenMapping.privateOwnedRelationship();
         if(useSecondaryTable) {
             childrenMapping.addTargetForeignKeyFieldName("OL_ALLOWANCE.PARENT_ID", "EMP_ID");
         } else {

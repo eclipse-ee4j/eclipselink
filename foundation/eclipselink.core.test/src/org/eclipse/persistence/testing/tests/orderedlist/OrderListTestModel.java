@@ -29,6 +29,7 @@ import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.indirection.IndirectList;
 import org.eclipse.persistence.internal.queries.OrderedListContainerPolicy;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
@@ -41,7 +42,6 @@ import org.eclipse.persistence.testing.framework.TestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.framework.TestModel;
 import org.eclipse.persistence.testing.models.orderedlist.*;
-import org.eclipse.persistence.testing.models.orderedlist.EmployeeSystem;
 import org.eclipse.persistence.testing.models.orderedlist.EmployeeSystem.ChangeTracking;
 import org.eclipse.persistence.testing.models.orderedlist.EmployeeSystem.JoinFetchOrBatchRead;
 
@@ -254,6 +254,12 @@ public class OrderListTestModel extends TestModel {
             if(joinFetchOrBatchRead != JoinFetchOrBatchRead.INNER_JOIN && joinFetchOrBatchRead != JoinFetchOrBatchRead.OUTER_JOIN) {
                 addTest(new SimpleAddRemoveTest2());
             }
+            // can't run with inner joins because the test sets useResponsibilities and usePhones to false and these lists are empty.
+            if(joinFetchOrBatchRead != JoinFetchOrBatchRead.INNER_JOIN) {
+                addTest(new AddRemoveUpdateTest());
+            }
+            addTest(new VerifyForeignKeyOfRemovedObject(false));
+            addTest(new VerifyForeignKeyOfRemovedObject(true));
             addTest(new SimpleSetTest());
             addTest(new SimpleSetListTest());
             addTest(new SimpleSetListTest(false));
@@ -484,10 +490,11 @@ public class OrderListTestModel extends TestModel {
 
         /*
          * Creates a list of objects that could be added to manager: Employee, Child, Project, Responsibility (String), PhoneNumber.
+         * Note that indexForName here is used as part of a state of the object being created - not as its position in any list.
          */
-        List create(String prefix, int index) {
+        List create(String prefix, int indexForName) {
             List list = new ArrayList();
-            String iString = Integer.toString(index);
+            String iString = Integer.toString(indexForName);
             String str = prefix + iString;
             if(useManagedEmployees) {
                 list.add(new Employee(iString, prefix));
@@ -496,7 +503,7 @@ public class OrderListTestModel extends TestModel {
                 list.add(new Child(iString, prefix));
             }
             if(useProjects) {
-                if(index % 2 == 0) {
+                if(indexForName % 2 == 0) {
                     list.add(new SmallProject(str));
                 } else {
                     list.add(new LargeProject(str));
@@ -776,6 +783,66 @@ public class OrderListTestModel extends TestModel {
         }
         
         /*
+         * Updates a list of objects that could be added to manager: Employee, Child, Project, Responsibility (String), PhoneNumber.
+         * Note that indexForName here is used as part of a state of the object being updated - not as its position in any list.
+         */
+        void update( List list, String prefix, int indexForName) {
+            String iString = Integer.toString(indexForName);
+            String str = prefix + iString;
+            int i = 0;
+            if(useManagedEmployees) {
+                Employee emp = (Employee)list.get(i++);
+                emp.setFirstName(iString);
+                emp.setLastName(prefix);
+            }
+            if(useChildren) {
+                Child child = (Child)list.get(i++);
+                child.setFirstName(iString);
+                child.setLastName(prefix);
+            }
+            if(useProjects) {
+                Project project = (Project)list.get(i++);
+                project.setName(iString);
+            }
+            if(useResponsibilities) {
+                throw new TestProblemException("Can't update a String. Set useResponsibilities to false");
+            }
+            if(usePhones) {
+                if(prefix.length() > 3) {
+                    prefix = prefix.substring(0, 3);
+                }
+                PhoneNumber phone = (PhoneNumber)list.get(i++);
+                phone.setAreaCode(prefix);
+                phone.setNumber(iString);
+            }
+        }
+        
+        /*
+         * Registers in uow a list of objects that could be added to manager: Employee, Child, Project, Responsibility (String), PhoneNumber.
+         * Returns a list that contains clones that could be updated.
+         */
+        List register(List list, UnitOfWork uow) {
+            ArrayList listClone = new ArrayList(list.size());
+            int i = 0;
+            if(useManagedEmployees) {
+                listClone.add(uow.registerObject(list.get(i++)));
+            }
+            if(useChildren) {
+                listClone.add(uow.registerObject(list.get(i++)));
+            }
+            if(useProjects) {
+                listClone.add(uow.registerObject(list.get(i++)));
+            }
+            if(useResponsibilities) {
+                throw new TestProblemException("Can't register a String in uow. Set useResponsibilities to false");
+            }
+            if(usePhones) {
+                throw new TestProblemException("Can't register aggragate in uow. Set usePhones to false");
+            }
+            return listClone;
+        }
+        
+        /*
          * Creates a list of Lists  that could be set to manager: List<Employee>, Vector, List<Project>, List<String>, List<PhoneNumber>.
          */
         List<List> createList() {
@@ -826,35 +893,23 @@ public class OrderListTestModel extends TestModel {
         /*
          * Breaks order in the db by assigning wrong values to order fields 
          */
+        String getManagegedEmployeesOrderTable() {
+            return useSecondaryTable ? "OL_SALARY" : "OL_EMPLOYEE";
+        }
+        String getManagegedEmployeesOrderField() {
+            return useVarcharOrder ? "MANAGED_ORDER_VARCHAR" : "MANAGED_ORDER";
+        }
         void breakManagedEmployeesOrder() {
-            String tableName;
-            String fieldName;
-            if(useSecondaryTable) {
-                tableName = "OL_SALARY";
-            } else {
-                tableName = "OL_EMPLOYEE";
-            }
-            if(useVarcharOrder) {
-                fieldName = "MANAGED_ORDER_VARCHAR";
-            } else {
-                fieldName = "MANAGED_ORDER";
-            }
-            executeBreak(tableName, fieldName, "1", "NULL");
+            executeBreak(getManagegedEmployeesOrderTable(), getManagegedEmployeesOrderField(), "1", "NULL");
+        }
+        String getChildrenOrderTable() {
+            return useSecondaryTable ? "OL_ALLOWANCE" : "OL_CHILD";
+        }
+        String getChildrenOrderField() {
+            return useVarcharOrder ? "CHILDREN_ORDER_VARCHAR" : "CHILDREN_ORDER";
         }
         void breakChildrenOrder() {
-            String tableName;
-            String fieldName;
-            if(useSecondaryTable) {
-                tableName = "OL_ALLOWANCE";
-            } else {
-                tableName = "OL_CHILD";
-            }
-            if(useVarcharOrder) {
-                fieldName = "CHILDREN_ORDER_VARCHAR";
-            } else {
-                fieldName = "CHILDREN_ORDER";
-            }
-            executeBreak(tableName, fieldName, "0", "NULL");
+            executeBreak(getChildrenOrderTable(), getChildrenOrderField(), "0", "NULL");
         }
         void breakProjectsOrder() {
             String tableName = "OL_PROJ_EMP";
@@ -1117,6 +1172,36 @@ public class OrderListTestModel extends TestModel {
             }
         }
 
+        // assumes that listToVerify is in cache and contains mapped object only (can't contain, say String).
+        protected void verifyList(List listToVerify, List listToCompareTo) {
+            if(listToVerify == null) {
+                throw new TestErrorException("listToVerify is null. Nothing to verify");
+            }
+            int size = listToVerify.size();
+            String textNameExt;
+            Object objectToCompare;
+            for(int k=0; k<2; k++) {
+                if(k == 0) {
+                    textNameExt = "Cache";
+                } else {
+                    textNameExt = "DB";
+
+                    // Read back the objects from db
+                    getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
+                    for(int i=0; i < size; i++) {
+                        listToVerify.set(i, getSession().readObject(listToVerify.get(i)));
+                    }
+                }
+                for(int i=0; i < size; i++) {
+                    Object toVerify = listToVerify.get(i);
+                    Object toCompareTo = listToCompareTo.get(i);
+                    if(!getAbstractSession().compareObjects(toCompareTo, toVerify)) {
+                        errorMsg += textNameExt + ": " + "objects not equal\n";
+                    }
+                }
+            }
+        }
+
         public void reset() {
             super.reset();
             manager = null;
@@ -1286,6 +1371,59 @@ public class OrderListTestModel extends TestModel {
             removeFrom(managerClone, 0);
             
             uow.commit();
+        }
+    }
+    
+    /*
+     * For each mapping: add one new object, remove one existing object
+     */
+    class AddRemoveUpdateTest extends ChangeTest {
+        List removedList;
+        List removedListClone;
+        AddRemoveUpdateTest() {
+            super();
+        }
+        
+        public void setup() {
+            // Strings are immutable - can't update.
+            useResponsibilities = false;
+            // Can't directly register an aggregate in uow.
+            usePhones = false;
+            super.setup();
+        }
+
+        public void test() {
+            // create a list of objects to be added
+            List newList = this.create("new", 0);
+            UnitOfWork uow = getSession().acquireUnitOfWork();
+            List newListClone = this.register(newList, uow);
+            uow.commit();
+            
+            // save list to be removed
+            removedList = this.getFrom(manager, 0);
+            
+            uow = getSession().acquireUnitOfWork();
+            managerClone = (Employee)uow.registerObject(manager);
+            // update new list clone
+            newListClone = this.register(newList, uow);
+            update(newListClone, "updated", 0);
+            // add updated objects to managerClone
+            addTo(managerClone, newListClone);
+            
+            // remove from managerClone
+            removedListClone = removeFrom(managerClone, 0);
+            // update removed objects
+            update(removedListClone, "updated", 0);
+            
+            uow.commit();
+        }
+        
+        public void verify() {
+            super.verify();
+            verifyList(removedList, removedListClone);
+            if(errorMsg.length() > 0) {
+                throw new TestErrorException('\n' + errorMsg);
+            }
         }
     }
     
@@ -1867,6 +2005,10 @@ public class OrderListTestModel extends TestModel {
         }
     }
     
+    /*
+     * Verify that for each mapping both its container policy and its select query's container policy
+     * are of the expected type.
+     */
     class VerifyContainerPolicyClassTest extends TestCase {
         Class expectedClass;
         VerifyContainerPolicyClassTest() {
@@ -1898,6 +2040,67 @@ public class OrderListTestModel extends TestModel {
             }
             if(errorMsg.length() > 0) {
                 throw new TestErrorException(errorMsg);
+            }
+        }
+    }
+    
+    /*
+     * Test for OneToMany and UnideirectionalOneToMany mappings only:
+     * verify that the row in the db corresponding to the removed object
+     * has its order field value set to null.
+     */
+    class VerifyForeignKeyOfRemovedObject extends ChangeTest {
+        boolean deleteSourceObject;
+        VerifyForeignKeyOfRemovedObject(boolean deleteSourceObject) {
+            super();
+            this.deleteSourceObject = deleteSourceObject;
+            setName(getShortClassName() + (deleteSourceObject ? "_deleteSource" : "_removeTarget"));
+        }
+        // Only tests OneToMany and UnideirectionalOneToMany
+        public void setup() {
+            this.usePhones = false;
+            this.useProjects = false;
+            this.useResponsibilities = false;
+            super.setup();
+        }
+        public void test() {
+            UnitOfWork uow = getSession().acquireUnitOfWork();
+            managerClone = (Employee)uow.registerObject(manager);
+            if(deleteSourceObject) {
+                for(int i=0; i < nSize; i++) {
+                    if(useManagedEmployees) {
+                        managerClone.getManagedEmployees().get(i).setManager(null);
+                    }
+                }
+                uow.deleteObject(managerClone);
+            } else {
+                for(int i=nSize-1; 0 <= i; i--) {
+                    if(useManagedEmployees) {
+                        managerClone.removeManagedEmployee(i);
+                    }
+                    if(useChildren) {
+                        managerClone.getChildren().remove(i);
+                    }
+                }
+            }
+            uow.commit();
+        }
+        public void verify() {
+            // assume (as usual) that there were no objects in the db when the test started,
+            // then all the objects left should have their order set to null (including manager if not deleted).
+            if(useManagedEmployees) {
+                String sqlString = "SELECT COUNT(*) FROM "+this.getManagegedEmployeesOrderTable()+" WHERE "+this.getManagegedEmployeesOrderField()+" <> null";
+                int nonNulls = ((Number)((AbstractRecord)getSession().executeSQL(sqlString).get(0)).getValues().get(0)).intValue();
+                if(nonNulls != 0) {
+                    errorMsg += "useManagedEmployees has "+nonNulls+" non nulls; ";
+                }
+            }
+            if(useChildren) {
+                String sqlString = "SELECT COUNT(*) FROM "+this.getChildrenOrderTable()+" WHERE "+this.getChildrenOrderField()+" <> null";
+                int nonNulls = ((Number)((AbstractRecord)getSession().executeSQL(sqlString).get(0)).getValues().get(0)).intValue();
+                if(nonNulls != 0) {
+                    errorMsg += "useManagedEmployees has "+nonNulls+" non nulls; ";
+                }
             }
         }
     }

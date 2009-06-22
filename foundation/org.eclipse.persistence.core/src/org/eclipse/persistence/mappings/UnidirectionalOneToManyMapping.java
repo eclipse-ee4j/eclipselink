@@ -395,5 +395,11 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
         return shouldIncrementTargetLockValueOnDeleteSource;
     }
     
-
+    /**
+     * INTERNAL
+     * Target foreign key of the removed object should be modified (set to null).
+     */
+    protected boolean shouldRemoveTargetQueryModifyTargetForeignKey() {
+        return true;
+    }    
 }

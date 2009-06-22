@@ -272,6 +272,8 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
                 targetRows = new ArrayList(size);
             }
             Converter valueConverter = getValueConverter();
+            // indicates if collection contains null
+            boolean containsNull = false;
             // For each rows, extract the target row and build the target object and add to the collection.
             for (int index = 0; index < size; index++) {
                 AbstractRecord sourceRow = (AbstractRecord)rows.get(index);
@@ -283,9 +285,13 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
                 // Partial object queries must select the primary key of the source and related objects.
                 // If the target joined rows in null (outerjoin) means an empty collection.
                 Object directValue = targetRow.get(getDirectField());
-                if (directValue == null && size==1) {
-                    // A null direct value means an empty collection returned as nulls from an outerjoin.
-                    return getIndirectionPolicy().valueFromRow(value);
+                if (directValue == null) {
+                    if(size==1) {
+                        // A null direct value means an empty collection returned as nulls from an outerjoin.
+                        return getIndirectionPolicy().valueFromRow(value);
+                    } else {
+                        containsNull = true;
+                    }
                 }                        
                 // Only build/add the target object once, skip duplicates from multiple 1-m joins.
                 if (!directValues.contains(directValue)) {
@@ -303,7 +309,15 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
                 }
             }
             if(shouldAddAll) {
-                policy.addAll(directValuesList, value, executionSession, targetRows, sourceQuery);
+                // if collection contains a single element which is null then return an empty collection
+                if(!(containsNull && targetRows.size()==1)) {
+                    policy.addAll(directValuesList, value, executionSession, targetRows, sourceQuery);
+                }
+            } else {
+                // if collection contains a single element which is null then return an empty collection
+                if(containsNull && policy.sizeFor(value)==1) {
+                    policy.clear(value);
+                }
             }
         }
         return getIndirectionPolicy().valueFromRow(value);
