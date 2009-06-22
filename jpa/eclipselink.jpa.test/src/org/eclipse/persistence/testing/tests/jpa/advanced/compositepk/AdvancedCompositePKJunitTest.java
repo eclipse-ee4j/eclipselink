@@ -507,7 +507,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
         beginTransaction(em);
         
         Major major = new Major();
-        major.setFirstName("Mr.");
+        major.setFirstName("Another");
         major.setLastName("Major");
         MajorId majorId = major.getPK();
         
