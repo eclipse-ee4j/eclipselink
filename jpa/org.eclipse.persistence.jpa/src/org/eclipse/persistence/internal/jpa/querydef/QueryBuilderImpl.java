@@ -37,7 +37,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      *  @return query object
      */
     public CriteriaQuery<Object> createQuery(){
-        return new CriteriaQueryImpl(this.metamodel, ResultType.OBJECT_ARRAY);
+        return new CriteriaQueryImpl(this.metamodel, ResultType.OBJECT_ARRAY, new SelectionImpl(ClassConstants.AOBJECT, null));
     }
 
     /**
@@ -46,15 +46,15 @@ public class QueryBuilderImpl implements QueryBuilder {
      */
     public <T> CriteriaQuery<T> createQuery(Class<T> resultClass){
         if (resultClass.equals(Tuple.class)){
-            return new CriteriaQueryImpl(this.metamodel, ResultType.TUPLE);
+            return new CriteriaQueryImpl(this.metamodel, ResultType.TUPLE, new SelectionImpl(resultClass, null));
         }else if(resultClass.equals(ClassConstants.AOBJECT)){
-            return new CriteriaQueryImpl<T>(this.metamodel, ResultType.OBJECT_ARRAY);
+            return new CriteriaQueryImpl<T>(this.metamodel, ResultType.OBJECT_ARRAY, new SelectionImpl(resultClass, null));
         }else{
             ManagedType type = this.metamodel.type(resultClass);
             if (type != null && type.getPersistenceType().equals(PersistenceType.ENTITY)){
-                return new CriteriaQueryImpl(this.metamodel, ResultType.ENTITY);
+                return new CriteriaQueryImpl(this.metamodel, ResultType.ENTITY, new SelectionImpl(resultClass, null));
             }else {
-                return new CriteriaQueryImpl(this.metamodel, ResultType.CONSTRUCTOR);
+                return new CriteriaQueryImpl(this.metamodel, ResultType.CONSTRUCTOR, new SelectionImpl(resultClass, null));
             }
         }
     }
@@ -65,7 +65,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      *  @return query object
      */
     public CriteriaQuery<Tuple> createTupleQuery(){
-        return new CriteriaQueryImpl(this.metamodel, ResultType.TUPLE);
+        return new CriteriaQueryImpl(this.metamodel, ResultType.TUPLE, new SelectionImpl(Tuple.class, null));
     }
 
     /**

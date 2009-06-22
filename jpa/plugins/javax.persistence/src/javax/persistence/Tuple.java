@@ -62,7 +62,7 @@ public interface Tuple {
      *         does not correspond to an element in the
      *         query result tuple
      */
-    <X> X get(String alias); 
+    Object get(String alias); 
 
     /**
      * Get the value of the element at the specified

@@ -1,3 +1,17 @@
+/*******************************************************************************
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * Contributors:
+ *     Gordon Yorke - Initial development
+ *
+ ******************************************************************************/
+
 package org.eclipse.persistence.internal.jpa.querydef;
 
 import java.util.ArrayList;
@@ -9,17 +23,42 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
+import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.Metamodel;
 
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.queries.ReportQuery;
+
+/**
+ * <p>
+ * <b>Purpose</b>: Contains the implementation of the CriteriaQuery interface of the JPA
+ * criteria API.
+ * <p>
+ * <b>Description</b>: This is the container class for the components that define a query.
+ * <p>
+ * 
+ * @see javax.persistence.criteria CriteriaQuery
+ * 
+ * @author gyorke
+ * @since EclipseLink 2.0
+ */
 public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements CriteriaQuery<T> {
     
     protected List<Selection<?>> selections;
-    private boolean distinct;
+    protected Selection<T> selection;
+    protected Class<T> queryType;
+    
+    protected boolean distinct;
 
-    public CriteriaQueryImpl(Metamodel metamodel, ResultType queryResult){
+    public CriteriaQueryImpl(Metamodel metamodel, ResultType queryResult, Selection<T> initSelection){
         super(metamodel, queryResult);
         this.selections = new ArrayList<Selection<?>>();
+        this.selection = initSelection;
     }
 
     /**
@@ -30,8 +69,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      * @return the modified query
      */
     public CriteriaQuery<T> select(Selection<T> selection){
-        this.selections.clear();
-        this.selections.add(selection);
+        this.selection = selection;
         return this;
     }
 
@@ -159,6 +197,35 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
         return this;
     }
 
+    /**
+     * Add a query root corresponding to the given entity, forming a cartesian
+     * product with any existing roots.
+     * 
+     * @param entity
+     *            metamodel entity representing the entity of type X
+     * @return query root corresponding to the given entity
+     */
+    public <X> Root<X> from(EntityType<X> entity){
+        Root root = new RootImpl<X>(entity, this.metamodel, entity.getBindableJavaType(), new ExpressionBuilder(entity.getBindableJavaType()), entity);
+        this.roots.add(root);
+        return root;
+    }
+
+    /**
+     * Add a query root corresponding to the given entity, forming a cartesian
+     * product with any existing roots.
+     * 
+     * @param entityClass
+     *            the entity class
+     * @return query root corresponding to the given entity
+     */
+    public <X> Root<X> from(Class<X> entityClass) {
+        EntityType<X> entity = this.metamodel.entity(entityClass);
+        Root root = new RootImpl<X>(entity, this.metamodel, entity.getBindableJavaType(), new ExpressionBuilder(entity.getBindableJavaType()), entity);
+        this.roots.add(root);
+        return root;
+    }
+
     
     /**
      * Return the ordering expressions in order of precedence.
@@ -178,11 +245,61 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
         throw new UnsupportedOperationException();
     }
     /**
+     * Return the selection item of the query.  This will correspond to the query type.
+     * @return the selection item of the query
+     */
+    public Selection<T> getSelection(){
+        return this.selection;
+    }
+
+    /**
      * Return the selection items of the query as a list
      * @return the selection items of the query as a list
      */
     public List<Selection<?>> getSelectionList(){
         return this.selections;
+    }
+    
+    /**
+     * Translates from the criteria query to a EclipseLink
+     * Database Query.
+     */
+    public DatabaseQuery translate(){
+        ObjectLevelReadQuery query = null;
+        if (this.queryResult.equals(ResultType.CONSTRUCTOR)){
+            ReportQuery rq = new ReportQuery();
+            rq.addConstructorReportItem(((ConstructorSelectionImpl)this.selection).translate());
+            rq.setShouldReturnSingleAttribute(true);
+            query = rq;
+        }else if (this.queryResult.equals(ResultType.ENTITY)){
+            query = new ReadAllQuery(this.getSelection().getJavaType());
+        }else if (this.queryResult.equals(ResultType.PARTIAL)){
+            ReadAllQuery raq = new ReadAllQuery(this.getSelection().getJavaType());
+            for (Selection selection: getSelectionList()){
+                raq.addPartialAttribute(((SelectionImpl)selection).currentNode);
+            }
+            query = raq;
+        }else{
+            ReportQuery reportQuery = null;
+            if (this.queryResult.equals(ResultType.TUPLE)){
+                reportQuery = new TupleQuery(this.getSelectionList());
+            }else{
+                reportQuery = new ReportQuery();
+                reportQuery.setShouldReturnWithoutReportQueryResult(true);
+            }
+            for (Selection selection: getSelectionList()){
+                if (((SelectionImpl)selection).isConstructor()){
+                    reportQuery.addConstructorReportItem(((ConstructorSelectionImpl)selection).translate());
+                }else{
+                    reportQuery.addItem(selection.getAlias(), ((SelectionImpl)selection).getCurrentNode());
+                }
+            }
+            query = reportQuery;
+        }
+        query.setExpressionBuilder(((ExpressionImpl)this.where).getCurrentNode().getBuilder());
+        query.setSelectionCriteria(((ExpressionImpl)this.where).getCurrentNode().getBuilder());
+        if (this.distinct) query.setDistinctState(ObjectLevelReadQuery.USE_DISTINCT);
+        return query;
     }
 
 }

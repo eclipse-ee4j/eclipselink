@@ -61,5 +61,9 @@ public class SelectionImpl<X> implements Selection<X> {
     public Class<X> getJavaType() {
         return this.javaType;
     }
+    
+    public boolean isConstructor(){
+        return false;
+    }
 
 }

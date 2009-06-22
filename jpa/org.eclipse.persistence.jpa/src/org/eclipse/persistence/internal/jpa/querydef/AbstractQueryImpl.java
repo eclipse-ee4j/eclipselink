@@ -1,3 +1,16 @@
+/*******************************************************************************
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * Contributors:
+ *     Gordon Yorke - Initial development
+ *
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.querydef;
 
 import java.util.HashSet;
@@ -16,6 +29,21 @@ import javax.persistence.metamodel.Metamodel;
 
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 
+/**
+ * <p>
+ * <b>Purpose</b>: Contains the implementation of the AbstractQuery interface of
+ * the JPA criteria API.
+ * <p>
+ * <b>Description</b>: This is the container class for the components that
+ * define a query. This is the superclass of both the CriteriaQuery and the
+ * SubQuery.
+ * <p>
+ * 
+ * @see javax.persistence.criteria CriteriaQuery
+ * 
+ * @author gyorke
+ * @since EclipseLink 2.0
+ */
 public class AbstractQueryImpl<T> implements AbstractQuery<T> {
     
     

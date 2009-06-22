@@ -148,7 +148,13 @@ public interface CriteriaQuery<T> extends AbstractQuery<T> {
     CriteriaQuery<T> distinct(boolean distinct);
  
     /**
-     * Return the selection items of the query as a list
+     * Return the selection item of the query.  This will correspond to the query type.
+     * @return the selection item of the query
+     */
+    Selection<T> getSelection();
+
+    /**
+     * Return the multiselection items of the query as a list
      * @return the selection items of the query as a list
      */
     List<Selection<?>> getSelectionList();

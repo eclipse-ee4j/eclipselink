@@ -37,7 +37,9 @@ import org.eclipse.persistence.descriptors.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
+import org.eclipse.persistence.internal.jpa.querydef.CriteriaQueryImpl;
 import org.eclipse.persistence.internal.jpa.transaction.*;
+import org.eclipse.persistence.internal.localization.EclipseLinkLocalization;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.logging.SessionLog;
@@ -1164,8 +1166,14 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * @since Java Persistence 2.0
      */
     public <T> TypedQuery<T> createQuery(CriteriaQuery<T> criteriaQuery) {
-        // TODO 
-        throw new PersistenceException("Not Yet Implemented");
+        try{
+            verifyOpen();
+            if (criteriaQuery.getSelection() == null) throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NO_SELECTION_FOR_CRITERIA_TODO"));
+            return new EJBQueryImpl<T>(((CriteriaQueryImpl<T>)criteriaQuery).translate(), this);
+        }catch (RuntimeException e){
+            setRollbackOnly();
+            throw e;
+        }
     }
 
     /**
@@ -1246,7 +1254,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      *         to be invalid
      */
     public <T> TypedQuery<T> createQuery(String qlString, Class<T> resultClass){
-        throw new UnsupportedOperationException();
+        return (TypedQuery<T>) this.createQuery(qlString);
     }
 
     /**
