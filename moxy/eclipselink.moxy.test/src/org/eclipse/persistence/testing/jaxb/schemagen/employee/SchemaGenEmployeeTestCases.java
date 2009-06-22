@@ -89,7 +89,8 @@ public class SchemaGenEmployeeTestCases extends TestCase {
         JAXBXMLComparer xmlComparer = new JAXBXMLComparer();
         
         assertTrue("schema0.xsd did not match control document", xmlComparer.isSchemaEqual(control, test));
-        	
+
+        
     }
     
     /**

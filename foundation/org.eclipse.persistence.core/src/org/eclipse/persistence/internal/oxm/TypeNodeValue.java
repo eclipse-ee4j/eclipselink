@@ -39,12 +39,30 @@ public class TypeNodeValue extends NodeValue {
         }
         XMLField xmlField = (XMLField) directMapping.getField();
         QName schemaType = getSchemaType(xmlField, fieldValue, session);
-        if (null == schemaType || schemaType == XMLConstants.STRING_QNAME) {
+        if (null == schemaType) {
             return false;
         }
+        if(xmlField.getSchemaType() == null){
+    		if(schemaType.equals(XMLConstants.STRING_QNAME)){
+    			return false;
+    		}
+        }else{
+        	if(xmlField.isSchemaType(schemaType)){
+        		return false;
+        	}
+        }           
+                       
         XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
         String typeQName = namespaceResolver.resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL) + ":type";
         String schemaTypePrefix = namespaceResolver.resolveNamespaceURI(schemaType.getNamespaceURI());
+        if(schemaTypePrefix == null){
+            if(XMLConstants.SCHEMA_URL.equals(schemaType.getNamespaceURI())){
+                schemaTypePrefix = namespaceResolver.generatePrefix(XMLConstants.SCHEMA_PREFIX);	
+            }else{
+                schemaTypePrefix = namespaceResolver.generatePrefix();
+            }
+            marshalRecord.attribute(XMLConstants.XMLNS_URL, XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + schemaTypePrefix, schemaType.getNamespaceURI());        	
+        }
         marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, schemaType.getLocalPart(), typeQName, schemaTypePrefix + ':' + schemaType.getLocalPart());
         marshalRecord.closeStartGroupingElements(groupingFragment);
         return true;

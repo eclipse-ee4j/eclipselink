@@ -105,11 +105,32 @@ public abstract class MappingNodeValue extends NodeValue {
 
     }
     
-    protected void updateNamespaces(QName qname, MarshalRecord marshalRecord){
-        if (qname != null && !qname.equals(XMLConstants.STRING_QNAME)) {
+    protected void updateNamespaces(QName qname, MarshalRecord marshalRecord, XMLField xmlField){
+        if (qname != null){        
+            if(xmlField != null){
+                if(xmlField.isTypedTextField()){           
+                    if(xmlField.getSchemaType() == null){
+                        if(qname.equals(XMLConstants.STRING_QNAME)){
+                            return;
+                        }
+                    }else{
+                    	if(xmlField.isSchemaType(qname)){
+                    		return;
+                    	}
+                    }
+                }else{
+                    return;
+                }
+            }
+               
             String prefix = marshalRecord.getNamespaceResolver().resolveNamespaceURI(qname.getNamespaceURI());
             if ((prefix == null) || prefix.equals("")) {
-                prefix = marshalRecord.getNamespaceResolver().generatePrefix();
+            	
+            	if(XMLConstants.SCHEMA_URL.equals(qname.getNamespaceURI())){
+                    prefix = marshalRecord.getNamespaceResolver().generatePrefix(XMLConstants.SCHEMA_PREFIX);	
+                }else{            	
+                    prefix = marshalRecord.getNamespaceResolver().generatePrefix();
+                }
                 marshalRecord.attribute(XMLConstants.XMLNS_URL, XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + prefix, qname.getNamespaceURI());
             }
             String typeValue = prefix + ":" + qname.getLocalPart();

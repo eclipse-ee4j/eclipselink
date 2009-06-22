@@ -494,6 +494,8 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
                     }
                 }
                 
+                //try simple case
+                toReturn = convertToSimpleTypeIfPresent(toReturn,  nestedRow, executionSession);
                 return toReturn;
             } else {   
                 NodeList children =((Element) nestedRow.getDOM()).getChildNodes();
@@ -506,24 +508,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
                 }
                 
                 //simple case           
-                Node textchild = ((Element) nestedRow.getDOM()).getFirstChild();
-                
-                if ((textchild != null) && (textchild.getNodeType() == Node.TEXT_NODE)) {
-                    toReturn = ((Text) textchild).getNodeValue();
-                }
-                if ((toReturn != null) && !toReturn.equals("")) {
-                     String type = ((Element) nestedRow.getDOM()).getAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
-                     if ((null != type) && !type.equals(EMPTY_STRING)) {
-                        XPathFragment typeFragment = new XPathFragment(type);
-                        String namespaceURI = nestedRow.resolveNamespacePrefix(typeFragment.getPrefix());
-                         
-                        QName schemaTypeQName = new QName(namespaceURI, typeFragment.getLocalName());                       
-                        Class theClass = (Class) XMLConversionManager.getDefaultXMLTypes().get(schemaTypeQName);
-                        if (theClass != null) {
-                           toReturn = ((XMLConversionManager) executionSession.getDatasourcePlatform().getConversionManager()).convertObject(toReturn, theClass, schemaTypeQName);
-                        }                           
-                     }
-                }
+                toReturn = convertToSimpleTypeIfPresent(toReturn, nestedRow, executionSession);
             }
         } else {
             if (aDescriptor.hasInheritance()) {
@@ -564,7 +549,35 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
         }
         return toReturn;
     }
-
+    
+    private Object convertToSimpleTypeIfPresent(Object toReturn, XMLRecord nestedRow, AbstractSession executionSession){
+        Node textchild = ((Element) nestedRow.getDOM()).getFirstChild(); 	
+        String stringValue = null;
+        if ((textchild != null) && (textchild.getNodeType() == Node.TEXT_NODE)) {
+            stringValue = ((Text) textchild).getNodeValue();
+            if(stringValue != null && getKeepAsElementPolicy() != UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT && getKeepAsElementPolicy()!=UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT){
+                toReturn = stringValue; 
+            }
+    	 }
+        if ((stringValue == null) || stringValue.equals("")) {
+            return toReturn;
+    	}
+    	 
+        String type = ((Element) nestedRow.getDOM()).getAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
+    
+        if ((null != type) && !type.equals(EMPTY_STRING)) {
+            XPathFragment typeFragment = new XPathFragment(type);
+            String namespaceURI = nestedRow.resolveNamespacePrefix(typeFragment.getPrefix());
+            
+            QName schemaTypeQName = new QName(namespaceURI, typeFragment.getLocalName());                       
+            Class theClass = (Class) XMLConversionManager.getDefaultXMLTypes().get(schemaTypeQName);
+            if (theClass != null) {            	  
+                toReturn = ((XMLConversionManager) executionSession.getDatasourcePlatform().getConversionManager()).convertObject(stringValue, theClass, schemaTypeQName);
+            }                                    
+        }
+        return toReturn;        
+    }
+  
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
         Object fieldValue = row.get(this.getField());
         // BUG#2667762 there could be whitespace in the row instead of null

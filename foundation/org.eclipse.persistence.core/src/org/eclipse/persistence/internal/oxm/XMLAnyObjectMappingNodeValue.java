@@ -282,7 +282,7 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
             if (generatedNamespace != null) {
                 marshalRecord.attribute(XMLConstants.XMLNS_URL, XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + generatedNamespace.getPrefix(), generatedNamespace.getNamespaceURI());
             }
-            updateNamespaces(qname, marshalRecord);
+            updateNamespaces(qname, marshalRecord, null);
         }
 
         if (value instanceof String) {

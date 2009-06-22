@@ -775,4 +775,13 @@ public class XMLField extends DatabaseField {
     public boolean isCDATA() {
         return isCDATA;
     }    
+    /**
+     * INTERNAL
+     */
+    public boolean isSchemaType(QName schemaType){
+        if(getSchemaType() == null){
+            return false;
+        }
+        return getSchemaType().equals(schemaType);    	
+    }
 }

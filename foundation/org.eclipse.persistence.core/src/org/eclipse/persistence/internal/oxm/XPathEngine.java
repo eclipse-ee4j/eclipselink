@@ -550,7 +550,11 @@ public class XPathEngine {
                         String prefix = this.resolveNamespacePrefixForURI(qname.getNamespaceURI(), namespaceResolver);
                         if ((prefix == null) || (prefix.equals(""))) {
                             type = qname.getLocalPart();
-                            prefix = namespaceResolver.generatePrefix();
+                            if(qname.getNamespaceURI().equals(XMLConstants.SCHEMA_URL)){
+                            	prefix = namespaceResolver.generatePrefix(XMLConstants.SCHEMA_PREFIX);
+                            }else{
+                            	prefix = namespaceResolver.generatePrefix();
+                            }
                             ((Element)next).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + prefix, qname.getNamespaceURI());
                         }
                         type = prefix + ":" + qname.getLocalPart();

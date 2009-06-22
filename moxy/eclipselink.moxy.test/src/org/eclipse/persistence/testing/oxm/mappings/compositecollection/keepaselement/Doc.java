@@ -84,8 +84,10 @@ public class Doc {
 	                if (!(elem1.getLocalName().equals(elem2.getLocalName()))) {
 	                    return false;
 	                }
-	            } else {
-	                return false;
+	            } else if(firstObject.getClass().equals(secondObject.getClass())) {
+	                return firstObject.equals(secondObject);
+	            } else{
+	            	return false;
 	            }
             }
                     

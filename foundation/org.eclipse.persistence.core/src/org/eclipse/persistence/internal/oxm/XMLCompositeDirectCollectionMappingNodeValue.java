@@ -244,7 +244,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
                 marshalRecord.closeStartElement();
             } else {
                 if (xmlField.isTypedTextField()) {
-                    updateNamespaces(schemaType, marshalRecord);
+                    updateNamespaces(schemaType, marshalRecord, xmlField);
                 }
                 marshalRecord.closeStartElement();
                 if (xmlCompositeDirectCollectionMapping.isCDATA()) {

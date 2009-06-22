@@ -450,7 +450,9 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
                         } else {
                             objectToAdd = getConverter().convertDataValueToObjectValue(objectToAdd, executionSession);
                         }
-                    }                   
+                    }
+                    //simple case
+                    objectToAdd = convertToSimpleTypeIfPresent(objectToAdd, nestedRow,executionSession);
                 } else {
                     NodeList children =((Element) ((DOMRecord)nestedRow).getDOM()).getChildNodes();
                     for(int i=0; i< children.getLength(); i++){
@@ -460,26 +462,8 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
                             throw XMLMarshalException.noDescriptorFound(this);                              
                         }
                     }
-                     //simple case      
-                     Element theElement = ((Element) ((DOMRecord)nestedRow).getDOM());
-                     Node textchild = theElement.getFirstChild();
-                     if ((textchild != null) && (textchild.getNodeType() == Node.TEXT_NODE)) {
-                         objectToAdd = ((Text) textchild).getNodeValue();
-                     }
-                     if ((objectToAdd != null) && !objectToAdd.equals("")) {                         
-                         String type = theElement.getAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
-                         
-                         if ((null != type) && !type.equals("")) {
-                             XPathFragment typeFragment = new XPathFragment(type);
-                             String namespaceURI = ((DOMRecord)nestedRow).resolveNamespacePrefix(typeFragment.getPrefix());
-                             typeFragment.setNamespaceURI(namespaceURI);                         
-                             QName schemaTypeQName = new QName(namespaceURI, typeFragment.getLocalName());
-                             Class theClass = (Class) XMLConversionManager.getDefaultXMLTypes().get(schemaTypeQName);
-                             if (theClass != null) {
-                                 objectToAdd = ((XMLConversionManager) executionSession.getDatasourcePlatform().getConversionManager()).convertObject(objectToAdd, theClass, schemaTypeQName);
-                             }
-                         }                                                                                                    
-                     }
+                     //simple case
+                     objectToAdd = convertToSimpleTypeIfPresent(objectToAdd, nestedRow,executionSession);       
                 }
             }
             else{
@@ -528,6 +512,36 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
         return result;
     }
 
+    private Object convertToSimpleTypeIfPresent(Object objectToAdd, AbstractRecord nestedRow, AbstractSession executionSession){
+        String stringValue = null;
+    	
+        Element theElement = ((Element) ((DOMRecord)nestedRow).getDOM());
+        Node textchild = theElement.getFirstChild();
+        
+        if ((textchild != null) && (textchild.getNodeType() == Node.TEXT_NODE)) {
+            stringValue = ((Text) textchild).getNodeValue();
+            if(stringValue != null && getKeepAsElementPolicy() != UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT && getKeepAsElementPolicy()!=UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT){
+                objectToAdd = stringValue; 
+            }
+        }
+        if ((stringValue == null) || stringValue.equals("")) {
+            return objectToAdd;
+        }
+        
+        String type = theElement.getAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
+        if ((null != type) && !type.equals("")) {
+            XPathFragment typeFragment = new XPathFragment(type);
+            String namespaceURI = ((DOMRecord)nestedRow).resolveNamespacePrefix(typeFragment.getPrefix());
+            typeFragment.setNamespaceURI(namespaceURI);                         
+            QName schemaTypeQName = new QName(namespaceURI, typeFragment.getLocalName());
+            Class theClass = (Class) XMLConversionManager.getDefaultXMLTypes().get(schemaTypeQName);
+            if (theClass != null) {
+                objectToAdd = ((XMLConversionManager) executionSession.getDatasourcePlatform().getConversionManager()).convertObject(stringValue, theClass, schemaTypeQName);
+            }
+        }           
+        return objectToAdd;
+    }
+    
     public ClassDescriptor getReferenceDescriptor(DOMRecord xmlRecord) {
         ClassDescriptor returnDescriptor = referenceDescriptor;
 

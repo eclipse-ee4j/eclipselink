@@ -111,8 +111,16 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
                     
                 UnmarshalKeepAsElementPolicy policy = xmlCompositeCollectionMapping.getKeepAsElementPolicy();
                 if (((xmlDescriptor == null) && (policy == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT)) || (policy == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)) {
-                    setupHandlerForKeepAsElementPolicy(unmarshalRecord, xPathFragment, atts);
-                    return true;
+                    if(unmarshalRecord.getTypeQName() != null){
+                        Class theClass = (Class)((XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager()).getDefaultXMLTypes().get(unmarshalRecord.getTypeQName());
+                        if(theClass == null){
+                            setupHandlerForKeepAsElementPolicy(unmarshalRecord, xPathFragment, atts);
+                            return true;
+                        }
+                    }else{
+                        setupHandlerForKeepAsElementPolicy(unmarshalRecord, xPathFragment, atts);
+                        return true;
+                    }
                 }          
             }
 
@@ -142,6 +150,15 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
                UnmarshalKeepAsElementPolicy keepAsElementPolicy = xmlCompositeCollectionMapping.getKeepAsElementPolicy();        
                               
                if ((((keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) || (keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT))) && (builder.getNodes().size() != 0)) {
+                   if(unmarshalRecord.getTypeQName() != null){
+                       Class theClass = (Class)((XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager()).getDefaultXMLTypes().get(unmarshalRecord.getTypeQName());
+                       if(theClass != null){
+                           //handle simple text
+                           endElementProcessText(unmarshalRecord, xmlCompositeCollectionMapping.getConverter(), xPathFragment, collection);
+                           return;
+                       }
+                   }
+            	   
                    if (builder.getDocument() != null) {
                        setOrAddAttributeValueForKeepAsElement(builder, (XMLMapping) xmlCompositeCollectionMapping, (XMLConverter) xmlCompositeCollectionMapping.getConverter(), unmarshalRecord, true, collection);
                        return;
@@ -243,22 +260,16 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
         }else{
             getXPathNode().startElement(marshalRecord, xPathFragment, object, session, namespaceResolver, null, value);
             
-            String stringValue = null;
-            if(value instanceof String){
-                stringValue =(String)value;                             
-            }else{            
-                QName schemaType = getSchemaType((XMLField) xmlCompositeCollectionMapping.getField(), value, session);
-                stringValue = getValueToWrite(schemaType, value, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager(), namespaceResolver);
-                updateNamespaces(schemaType, marshalRecord);                
-            }
-            
+            QName schemaType = getSchemaType((XMLField) xmlCompositeCollectionMapping.getField(), value, session);
+            String stringValue = getValueToWrite(schemaType, value, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager(), namespaceResolver);
+            updateNamespaces(schemaType, marshalRecord,((XMLField)xmlCompositeCollectionMapping.getField()));                
+
             marshalRecord.characters(stringValue);
             marshalRecord.endElement(xPathFragment, namespaceResolver);
         }
         if ((marshaller != null) && (marshaller.getMarshalListener() != null)) {
             marshaller.getMarshalListener().afterMarshal(value);
-        }
-            
+        }            
     }
 
     public XMLCompositeCollectionMapping getMapping() {

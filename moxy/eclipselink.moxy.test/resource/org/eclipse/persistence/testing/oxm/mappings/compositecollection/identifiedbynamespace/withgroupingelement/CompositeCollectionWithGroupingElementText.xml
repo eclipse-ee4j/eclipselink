@@ -14,6 +14,6 @@
 			<mailing:province>Quebec</mailing:province>
 			<mailing:postal-code>X1Y 2Z3</mailing:postal-code>
 		</mailing:address>
-        <mailing:address xmlns:ns0="http://www.w3.org/2001/XMLSchema" xsi:type="ns0:int">5</mailing:address>
+        <mailing:address xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="xsd:int">5</mailing:address>
 	</mailing:addresses>
 </employee>

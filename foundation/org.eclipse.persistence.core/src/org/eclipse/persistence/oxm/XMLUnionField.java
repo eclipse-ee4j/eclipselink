@@ -192,4 +192,13 @@ public class XMLUnionField extends XMLField {
         Class javaClass = (Class) XMLConversionManager.getDefaultXMLTypes().get(qname);
         return XMLConversionManager.getObjectClass(javaClass);
     }
+    /**
+     * INTERNAL
+     */
+    public boolean isSchemaType(QName schemaType){
+        if(getSchemaTypes() == null || getSchemaTypes().size() ==0){
+            return false;
+        }
+        return contains(getSchemaTypes(), schemaType);
+    }
 }

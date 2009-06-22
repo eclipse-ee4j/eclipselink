@@ -17,6 +17,7 @@ import java.util.ArrayList;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy;
 import org.eclipse.persistence.oxm.mappings.XMLAnyObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
@@ -48,6 +49,7 @@ public class CompositeCollectionKeepUnknownAsElementProject extends Project {
         elem1Mapping.setGetMethodName("getElem1");
         elem1Mapping.setSetMethodName("setElem1");
         elem1Mapping.setXPath("elem1");        
+        ((XMLField)elem1Mapping.getField()).setIsTypedTextField(true);
         elem1Mapping.setReferenceClass(null);
         elem1Mapping.setReferenceClassName(null); 
         elem1Mapping.useCollectionClass(ArrayList.class);

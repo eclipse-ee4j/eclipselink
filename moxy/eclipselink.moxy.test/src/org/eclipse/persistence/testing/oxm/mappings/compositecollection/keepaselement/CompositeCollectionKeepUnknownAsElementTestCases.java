@@ -72,7 +72,9 @@ public class CompositeCollectionKeepUnknownAsElementTestCases extends XMLMapping
             Element docElem2 = d.createElementNS(null, "elem1");
             docElems.add(docElem1);
             docElems.add(docElem2);
+            docElems.add(Boolean.FALSE);
             myDoc.setElem1(docElems);
+            
         } catch(Exception ex) {
             fail(ex.getMessage());
         }

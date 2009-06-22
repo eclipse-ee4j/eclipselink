@@ -330,7 +330,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
             if (generatedNamespace != null) {
                 marshalRecord.attribute(XMLConstants.XMLNS_URL, XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + generatedNamespace.getPrefix(), generatedNamespace.getNamespaceURI());
             }
-            updateNamespaces(qname, marshalRecord);                        
+            updateNamespaces(qname, marshalRecord, null);                        
         }
 
         marshalRecord.characters((String) value);

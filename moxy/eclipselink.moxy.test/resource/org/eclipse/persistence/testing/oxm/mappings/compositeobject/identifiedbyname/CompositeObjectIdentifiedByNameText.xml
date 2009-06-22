@@ -4,5 +4,5 @@
     <info>
       <email-address>jane.doe@example.com</email-address>    
     </info>
-    <salary xmlns:ns0="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns0:integer">5000</salary>
+    <salary xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:integer">5000</salary>
 </employee>
