@@ -102,6 +102,10 @@
             </classpath>
             <jvmarg value="-Xms512m"/>
             <jvmarg value="-Xmx960m"/>
+            <!-- Using the following instead of above "jvmarg" setting when using SUN jdk because jrockit doesn't support PermSize
+            <jvmarg value="-XX:PermSize=128m"/>
+            <jvmarg value="-XX:MaxPermSize=256m"/>
+            -->
             <!--jvmarg value="-Xdebug"/-->
             <!--jvmarg value="-Xnoagent"/-->
             <!--jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=4000"/-->
