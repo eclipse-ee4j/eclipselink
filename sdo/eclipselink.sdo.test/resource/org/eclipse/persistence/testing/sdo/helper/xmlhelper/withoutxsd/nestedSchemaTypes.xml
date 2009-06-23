@@ -21,6 +21,6 @@
       <zip>TestZIP</zip>
    </someOtherAddress>
    <someUnknownThing>
-      <someOtherUnknownThing  xmlns:ns1="http://www.w3.org/2001/XMLSchema" xsi:type="ns1:int">10</someOtherUnknownThing>
+      <someOtherUnknownThing  xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="xsd:int">10</someOtherUnknownThing>
    </someUnknownThing>
 </ns0:blah>
