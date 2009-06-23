@@ -558,7 +558,7 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * PUBLIC:
      * Function Convert values returned by the query to values
-     * given in the caseItems hashtable.  The equivalent of
+     * given in the caseItems Map.  The equivalent of
      * the Oracle CASE function
      * <p>Example:
      * <blockquote><pre>
@@ -579,7 +579,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * @param defaultItem java.lang.String  the default value that will be used if none of the keys in the
      * hashtable match
      */
-    public Expression caseStatement(Map caseItems, String defaultItem) {
+    public Expression caseStatement(Map caseItems, Object defaultItem) {
 
         /**
          * case (like decode) works differently than most of the functionality in the expression
@@ -596,7 +596,7 @@ public abstract class Expression implements Serializable, Cloneable {
         anOperator.setType(ExpressionOperator.FunctionOperator);
         anOperator.bePrefix();
 
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(caseItems.size() + 1);
+        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(caseItems.size()*2 + 3);
         v.addElement("CASE ");
 
         FunctionExpression expression = new FunctionExpression();
@@ -613,6 +613,147 @@ public abstract class Expression implements Serializable, Cloneable {
         v.addElement(" ELSE ");
         expression.addChild(Expression.from(defaultItem, this));
         v.addElement(" END");
+        anOperator.printsAs(v);
+        expression.setOperator(anOperator);
+        return expression;
+    }
+
+    /**
+     * PUBLIC:
+     * Function Convert values returned by the query to values
+     * given in the caseConditions Map.  The equivalent of
+     * the SQL CASE function
+     * <p>Example:
+     * <blockquote><pre>
+     * Map caseTable = new HashMap();
+     * caseTable.put(employee.get("name").equals("Robert"), "Bob");
+     * caseTable.put(employee.get("name").equals("Susan"), "Sue");
+     *
+     * TopLink: expressionBuilder.caseConditionStatement(caseTable, "No-Nickname")
+     * Java: NA
+     * SQL: CASE WHEN name = "Robert" THEN "Bob"
+     *     WHEN name = "Susan" THEN "Sue"
+     *  ELSE "No-Nickname" 
+     * </blockquote></pre>
+     * @param caseItems java.util.Map
+     * A Map containing the items to be processed.
+     * Keys represent the items to match coming from the query.
+     * Values represent what a key will be changed to.
+     * @param defaultItem java.lang.Object  the default value that will be used if none of the keys in the
+     * Map match
+     */
+    public Expression caseConditionStatement(Map<Expression, Object> caseConditions, Object defaultItem) {
+
+        /**
+         * case (like decode) works differently than most of the functionality in the expression
+         * framework. It takes a variable number of arguments and as a result, the printed strings
+         * for a case call have to be built when the number of arguments are known.
+         * As a result, we do not look up case in the ExpressionOperator.  Instead we build
+         * the whole operator here.  The side effect of this is that case will not throw
+         * an invalid operator exception for any platform.  (Even the ones that do not support
+         * case)
+         */
+        ExpressionOperator anOperator = new ExpressionOperator();
+        anOperator.setSelector(ExpressionOperator.Case);
+        anOperator.setNodeClass(FunctionExpression.class);
+        anOperator.setType(ExpressionOperator.FunctionOperator);
+        anOperator.bePrefix();
+
+        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(caseConditions.size()*2 + 2);
+        FunctionExpression expression = new FunctionExpression();
+        expression.setBaseExpression(this);
+        Iterator<Expression> iterator = caseConditions.keySet().iterator();
+        if (iterator.hasNext()){
+            v.addElement("CASE WHEN ");
+            Expression key = iterator.next();
+            expression.addChild(key);
+            v.addElement(" THEN ");
+            expression.addChild(Expression.from(caseConditions.get(key), this));
+            
+            while (iterator.hasNext()) {
+                v.addElement(" WHEN ");
+                key = iterator.next();
+                expression.addChild(key);
+                v.addElement(" THEN ");
+                expression.addChild(Expression.from(caseConditions.get(key), this));
+            }
+        }
+        v.addElement(" ELSE ");
+        expression.addChild(Expression.from(defaultItem, this));
+        v.addElement(" END");
+        anOperator.printsAs(v);
+        expression.setOperator(anOperator);
+        return expression;
+    }
+    
+    /**
+     * PUBLIC:
+     * Function Test if arguments are equal, returning null if they are and the value of the
+     * first expression otherwise.
+     * <p>Example:
+     * <blockquote><pre>
+     * TopLink: builder.get("name").nullIf( "Bobby")
+     * Java: NA
+     * SQL: NULLIF(name, "Bobby") 
+     * </blockquote></pre>
+     * @param defaultItem java.lang.Object  the value/expression that will be compared to the base expression
+     */
+    public Expression nullIf(Object object) {
+            ExpressionOperator anOperator = getOperator(ExpressionOperator.NullIf);
+            Vector args = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
+            args.addElement(Expression.from(object, this));
+            return anOperator.expressionForArguments(this, args);
+    }
+    
+    /**
+     * PUBLIC:
+     * Function Return null if all arguments are null and the first non-null argument otherwise 
+     * The equivalent of the COALESCE SQL function
+     * <p>Example:
+     * <blockquote><pre>
+     * Vector list = new Vector(3);
+     * list.add(builder.get("firstName"));
+     * list.add(builder.get("lastName"));
+     * list.add(builder.get("nickname"));
+     *
+     * TopLink: expressionBuilder.coalesce(caseTable)
+     * Java: NA
+     * SQL: COALESCE(firstname, lastname, nickname)
+     * </blockquote></pre>
+     * @param caseItems java.util.Collection
+     * A Collection containing the items to check if null
+     */
+    public Expression coalesce(Collection expressions) {
+
+        /**
+         * case (like decode) works differently than most of the functionality in the expression
+         * framework. It takes a variable number of arguments and as a result, the printed strings
+         * for a case call have to be built when the number of arguments are known.
+         * As a result, we do not look up case in the ExpressionOperator.  Instead we build
+         * the whole operator here.  The side effect of this is that case will not throw
+         * an invalid operator exception for any platform.  (Even the ones that do not support
+         * case)
+         */
+        ExpressionOperator anOperator = new ExpressionOperator();
+        anOperator.setSelector(ExpressionOperator.Coalesce);
+        anOperator.setNodeClass(FunctionExpression.class);
+        anOperator.setType(ExpressionOperator.FunctionOperator);
+        anOperator.bePrefix();
+
+        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(expressions.size() + 1);
+        v.addElement("COALESCE(");
+
+        FunctionExpression expression = new FunctionExpression();
+        expression.setBaseExpression(this);
+        Iterator iterator = expressions.iterator();
+        if (iterator.hasNext()){
+            expression.addChild(Expression.from(iterator.next(), this));
+            while (iterator.hasNext()) {
+                v.addElement(", ");
+                expression.addChild(Expression.from(iterator.next(), this));
+            }
+        }
+        v.addElement(" )");
         anOperator.printsAs(v);
         expression.setOperator(anOperator);
         return expression;

@@ -304,6 +304,7 @@ public class DatasourcePlatform implements Platform {
         addOperator(ExpressionOperator.length());
         addOperator(ExpressionOperator.locate());
         addOperator(ExpressionOperator.locate2());
+        addOperator(ExpressionOperator.nullIf());
 
         // Date
         addOperator(ExpressionOperator.addMonths());

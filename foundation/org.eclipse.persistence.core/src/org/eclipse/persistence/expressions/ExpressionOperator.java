@@ -81,6 +81,8 @@ public class ExpressionOperator implements Serializable {
     public static final int LikeEscape = 89;
     public static final int Decode = 105;
     public static final int Case = 117;
+    public static final int NullIf = 131;
+    public static final int Coalesce = 132;
 
     /** Aggregate operators */
     public static final int Count = 19;
@@ -1299,6 +1301,7 @@ public class ExpressionOperator implements Serializable {
         platformOperatorNames.put(new Integer(SDO_RELATE), "MDSYS.SDO_RELATE");
         platformOperatorNames.put(new Integer(SDO_FILTER), "MDSYS.SDO_FILTER");
         platformOperatorNames.put(new Integer(SDO_NN), "MDSYS.SDO_NN");
+        platformOperatorNames.put(new Integer(NullIf), "NullIf");
         return platformOperatorNames;
     }
 
@@ -1735,6 +1738,14 @@ public class ExpressionOperator implements Serializable {
         result.printsJavaAs(".not()");
         result.setNodeClass(ClassConstants.FunctionExpression_Class);
         return result;
+    }
+    
+    /**
+     * INTERNAL:
+     * Build operator.
+     */
+    public static ExpressionOperator nullIf() {
+        return simpleTwoArgumentFunction(NullIf, "NULLIF");
     }
 
     /**
