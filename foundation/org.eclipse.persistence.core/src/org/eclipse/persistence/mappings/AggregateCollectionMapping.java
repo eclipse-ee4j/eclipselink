@@ -1057,7 +1057,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         ReadAllQuery aggregateBatchQuery = (ReadAllQuery)batchQuery;
         aggregateBatchQuery.setShouldIncludeData(true);
         for (Enumeration relationFieldsEnum = getTargetForeignKeyFields().elements(); relationFieldsEnum.hasMoreElements();) {
-            aggregateBatchQuery.getAdditionalFields().addElement(relationFieldsEnum.nextElement());
+            aggregateBatchQuery.getAdditionalFields().add(relationFieldsEnum.nextElement());
         }
     }
 

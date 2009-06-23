@@ -22,6 +22,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Vector;
+import java.util.List;
 import org.w3c.dom.Element;
 
 // Java extension imports
@@ -311,7 +312,7 @@ public class QueryOperation extends Operation {
     public Object invoke(XRServiceAdapter xrService, Invocation invocation) {
 
         DatabaseQuery query = queryHandler.getDatabaseQuery();
-        Vector queryArguments = query.getArguments();
+        List queryArguments = query.getArguments();
         int queryArgumentsSize = queryArguments.size();
         Vector executeArguments = new NonSynchronizedVector();
         for (int i = 0; i < queryArgumentsSize; i++) {

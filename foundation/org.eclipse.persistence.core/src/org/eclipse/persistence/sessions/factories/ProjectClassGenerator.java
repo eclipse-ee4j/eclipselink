@@ -506,9 +506,9 @@ public class ProjectClassGenerator {
             }
 
             // Ordering.
-            Enumeration queryKeyExpressions = collectionMapping.getOrderByQueryKeyExpressions().elements();
-            while (queryKeyExpressions.hasMoreElements()) {
-                FunctionExpression expression = (FunctionExpression) queryKeyExpressions.nextElement();
+            Iterator queryKeyExpressions = collectionMapping.getOrderByQueryKeyExpressions().iterator();
+            while (queryKeyExpressions.hasNext()) {
+                FunctionExpression expression = (FunctionExpression) queryKeyExpressions.next();
                 String queryKeyName = expression.getBaseExpression().getName();
                 
                 if (expression.getOperator().getSelector() == ExpressionOperator.Descending) {
@@ -1127,10 +1127,9 @@ public class ProjectClassGenerator {
         if (query.isReadAllQuery()) {
             ReadAllQuery readAllQuery = (ReadAllQuery)query;
             //orderBy
-            for (Enumeration orderByEnum = readAllQuery.getOrderByExpressions().elements(); orderByEnum.hasMoreElements();) {
-                Expression orderbyExp = (Expression)orderByEnum.nextElement();
+            for (Expression orderbyExpression : readAllQuery.getOrderByExpressions()) {
                 builderString = buildBuilderString(builderString, method, iteration, queryIdentifier);
-                buildExpressionString(builderString, method, queryIdentifier, orderbyExp, ".addOrdering(");
+                buildExpressionString(builderString, method, queryIdentifier, orderbyExpression, ".addOrdering(");
             }
             //batchReadAttribute
             for (Enumeration batchReadEnum = readAllQuery.getBatchReadAttributeExpressions().elements(); batchReadEnum.hasMoreElements();) {
@@ -1228,10 +1227,10 @@ public class ProjectClassGenerator {
         }
         
         // Query arguments.
-        Iterator argumentTypes = query.getArgumentTypeNames().iterator();
+        Iterator<String> argumentTypes = query.getArgumentTypeNames().iterator();
         for (Iterator arguments = query.getArguments().iterator(); arguments.hasNext();) {
             String argument = (String)arguments.next();
-            String argumentTypeName = (String)argumentTypes.next();
+            String argumentTypeName = argumentTypes.next();
             method.addLine(queryIdentifier + ".addArgument(\"" + argument + "\", " + argumentTypeName + ".class);");
         }
 

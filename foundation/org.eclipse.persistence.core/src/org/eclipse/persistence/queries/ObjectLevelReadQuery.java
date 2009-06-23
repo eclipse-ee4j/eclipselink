@@ -82,8 +82,11 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     public static final int CheckCacheOnly = 4;
     public static final int ConformResultsInUnitOfWork = 5;
 
-    /** Allow for additional fields to be selected, used for m-m batch reading. */
-    protected Vector additionalFields;
+    /**
+     * Allow for additional fields to be selected, used for m-m batch reading.
+     * Can contain DatabaseField or Expression.
+     */
+    protected List<Object> additionalFields;
 
     /** Allow for a complex result to be return including the rows and objects, used for m-m batch reading. */
     protected boolean shouldIncludeData;
@@ -121,10 +124,10 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Stores the non fetchjoin attributes, these are joins that will be
      * represented in the where clause but not in the select.
      */
-    protected Vector nonFetchJoinAttributeExpressions;
+    protected List<Expression> nonFetchJoinAttributeExpressions;
 
     /**  Stores the partial attributes that have been added to this query */
-    protected Vector partialAttributeExpressions;
+    protected List<Expression> partialAttributeExpressions;
     
     /** Stores the helper object for dealing with joined attributes */
     protected JoinedAttributeManager joinedAttributeManager;
@@ -156,7 +159,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     protected Integer waitTimeout;
     
     /** Used for ordering support. */
-    protected Vector orderByExpressions;
+    protected List<Expression> orderByExpressions;
 
     /**
      * INTERNAL:
@@ -184,7 +187,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Example: readAllQuery.addOrdering(expBuilder.get("address").get("city").toUpperCase().descending())
      */
     public void addOrdering(Expression orderingExpression) {
-        getOrderByExpressions().addElement(orderingExpression);
+        getOrderByExpressions().add(orderingExpression);
         //Bug2804042 Must un-prepare if prepared as the SQL may change.
         setIsPrepared(false);
         setShouldOuterJoinSubclasses(true);
@@ -352,11 +355,11 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             cloneQuery.joinedAttributeManager.setBaseQuery(cloneQuery);
         }
         if (hasNonFetchJoinedAttributeExpressions()){
-            cloneQuery.setNonFetchJoinAttributeExpressions((Vector)this.nonFetchJoinAttributeExpressions.clone());
+            cloneQuery.setNonFetchJoinAttributeExpressions(new ArrayList<Expression>(this.nonFetchJoinAttributeExpressions));
         }
         // Don't use setters as that will trigger unprepare
         if (hasOrderByExpressions()) {
-            cloneQuery.orderByExpressions = (Vector)getOrderByExpressions().clone();
+            cloneQuery.orderByExpressions = new ArrayList<Expression>(getOrderByExpressions());
         }
         return cloneQuery;
     }
@@ -614,7 +617,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * <p><b>Example</b>: query.addPartialAttribute(query.getExpressionBuilder().get("address").get("city"))
      */
     public void addPartialAttribute(Expression attributeExpression) {
-        getPartialAttributeExpressions().addElement(attributeExpression);
+        getPartialAttributeExpressions().add(attributeExpression);
         //Bug2804042 Must un-prepare if prepared as the SQL may change.
         setIsPrepared(false);
     }
@@ -804,7 +807,8 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         if (unitOfWork.isObjectDeleted(clone) ) {
             return null;
         }
-        if (!isExpressionQuery() || (selectionCriteriaClone == null)) {
+        // No need to conform if no expression, or primary key query.
+        if (!isExpressionQuery() || (selectionCriteriaClone == null) || isPrimaryKeyQuery()) {
             if (alreadyReturned != null) {
                 alreadyReturned.remove(clone);
             }
@@ -1046,11 +1050,11 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
 
     /**
      * INTERNAL:
-     * Additional fields can be added to a query.  This is used in m-m bacth reading to bring back the key from the join table.
+     * Additional fields can be added to a query.  This is used in m-m batch reading to bring back the key from the join table.
      */
-    public Vector getAdditionalFields() {
+    public List<Object> getAdditionalFields() {
         if (this.additionalFields == null) {
-            this.additionalFields = NonSynchronizedVector.newInstance();
+            this.additionalFields = new ArrayList<Object>();
         }
         return this.additionalFields;
     }
@@ -1204,9 +1208,9 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * INTERNAL:
      * Return the order expressions for the query.
      */
-    public Vector getOrderByExpressions() {
+    public List<Expression> getOrderByExpressions() {
         if (orderByExpressions == null) {
-            orderByExpressions = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+            orderByExpressions = new ArrayList<Expression>();
         }
         return orderByExpressions;
     }
@@ -1215,7 +1219,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * INTERNAL:
      * Set the order expressions for the query.
      */
-    public void setOrderByExpressions(Vector orderByExpressions) {
+    public void setOrderByExpressions(List<Expression> orderByExpressions) {
         this.orderByExpressions = orderByExpressions;
     }
 
@@ -1365,9 +1369,9 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Return the attributes that must be joined, but not fetched, that is,
      * do not trigger the value holder.
      */
-    public Vector getNonFetchJoinAttributeExpressions() {
+    public List<Expression> getNonFetchJoinAttributeExpressions() {
         if (this.nonFetchJoinAttributeExpressions == null){
-            this.nonFetchJoinAttributeExpressions = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+            this.nonFetchJoinAttributeExpressions = new ArrayList<Expression>();
         }
         return nonFetchJoinAttributeExpressions;
     }
@@ -1376,9 +1380,9 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * INTERNAL:
      * Return the partial attributes to select.
      */
-    public Vector getPartialAttributeExpressions() {
+    public List<Expression> getPartialAttributeExpressions() {
         if (this.partialAttributeExpressions == null) {
-            this.partialAttributeExpressions = NonSynchronizedVector.newInstance();
+            this.partialAttributeExpressions = new ArrayList<Expression>();
         }
         return this.partialAttributeExpressions;
     }
@@ -1678,7 +1682,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         if (!hasPartialAttributeExpressions()) {
             return false;
         }
-        Vector partialAttributeExpressions = getPartialAttributeExpressions();
+        List<Expression> partialAttributeExpressions = getPartialAttributeExpressions();
         int size = partialAttributeExpressions.size();
         for (int index = 0; index < size; index++) {
             QueryKeyExpression expression = (QueryKeyExpression)partialAttributeExpressions.get(index);
@@ -1953,7 +1957,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         // Validate and prepare partial attribute expressions.
         if (hasPartialAttributeExpressions()) {
             for (int index = 0; index < getPartialAttributeExpressions().size(); index++) {
-                Expression expression = (Expression)getPartialAttributeExpressions().get(index);
+                Expression expression = getPartialAttributeExpressions().get(index);
 
                 // Search if any of the expression traverse a 1-m.
                 while (expression.isQueryKeyExpression() && (!expression.isExpressionBuilder())) {
@@ -2040,9 +2044,9 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
 
     /**
      * INTERNAL:
-     * Additional fields can be added to a query.  This is used in m-m bacth reading to bring back the key from the join table.
+     * Additional fields can be added to a query.  This is used in m-m batch reading to bring back the key from the join table.
      */
-    public void setAdditionalFields(Vector additionalFields) {
+    public void setAdditionalFields(List<Object> additionalFields) {
         this.additionalFields = additionalFields;
     }
 
@@ -2231,7 +2235,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Return the attributes that must be joined, but not fetched, that is,
      * do not trigger the value holder.
      */
-    protected void setNonFetchJoinAttributeExpressions(Vector nonFetchJoinExpressions) {
+    protected void setNonFetchJoinAttributeExpressions(List<Expression> nonFetchJoinExpressions) {
         this.nonFetchJoinAttributeExpressions = nonFetchJoinExpressions;
     }
 
@@ -2256,7 +2260,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * INTERNAL:
      * Set the partial attributes to select.
      */
-    public void setPartialAttributeExpressions(Vector partialAttributeExpressions) {
+    public void setPartialAttributeExpressions(List<Expression> partialAttributeExpressions) {
         this.partialAttributeExpressions = partialAttributeExpressions;
     }
 
@@ -2737,5 +2741,14 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             concreteSubclassCalls = new ConcurrentHashMap(8);
         }
         return concreteSubclassCalls;
+    }
+
+
+    /**
+     * INTERNAL:
+     * Return if the query is known to be by primary key.
+     */
+    public boolean isPrimaryKeyQuery() {
+        return false;
     }
 }

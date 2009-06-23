@@ -165,7 +165,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         //For bug 5900782, the clone of the OrderBy expressions needs to be used to ensure they are normalized
         //every time when select SQL statement gets re-prepared, which will further guarantee the calculation 
         //of table alias always be correct
-        selectStatement.setOrderByExpressions(cloneExpressions(query.getOrderByExpressions(),clonedExpressions));
+        selectStatement.setOrderByExpressions(cloneExpressions(query.getOrderByExpressions(), clonedExpressions));
         if (getQuery().isReadAllQuery() && ((ReadAllQuery)getQuery()).hasHierarchicalExpressions()) {
             ReadAllQuery readAllquery = (ReadAllQuery)query;
             selectStatement.setHierarchicalQueryExpressions(readAllquery.getStartWithExpression(), readAllquery.getConnectByExpression(), readAllquery.getOrderSiblingsByExpressions());
@@ -1430,20 +1430,14 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
     
     /**
      * This method return the clones of the list of expressions.
-     * 
-     * @param originalExpressions
-     * @param clonedExpressions
-     * @return Vector
      */
-    private Vector cloneExpressions(Vector originalExpressions,Map clonedExpressions){
-        if(originalExpressions==null || originalExpressions.size()==0){
+    private List<Expression> cloneExpressions(List<Expression> originalExpressions, Map<Expression, Expression> clonedExpressions){
+        if ((originalExpressions == null) || (originalExpressions.size() == 0)) {
             return originalExpressions;
         }
-        Vector newExpressions = new Vector(originalExpressions.size());
-        Iterator i = originalExpressions.iterator();
-        while (i.hasNext()){
-            Expression e = (Expression)i.next();
-            newExpressions.add(e.copiedVersionFrom(clonedExpressions));
+        List<Expression> newExpressions = new ArrayList<Expression>(originalExpressions.size());
+        for (Expression expression : originalExpressions) {
+            newExpressions.add(expression.copiedVersionFrom(clonedExpressions));
         }
         return newExpressions;
     }

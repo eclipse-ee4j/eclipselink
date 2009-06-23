@@ -1168,8 +1168,12 @@ public class ClassDescriptor implements Cloneable, Serializable {
         clonedDescriptor.setIsIsolated(isIsolated());
 
         // Bug 3037701 - clone several more elements
-        clonedDescriptor.setInstantiationPolicy((InstantiationPolicy)getInstantiationPolicy().clone());
-        clonedDescriptor.setCopyPolicy((CopyPolicy)getCopyPolicy().clone());
+        if (this.instantiationPolicy != null) {
+            clonedDescriptor.setInstantiationPolicy((InstantiationPolicy)getInstantiationPolicy().clone());
+        }
+        if (this.copyPolicy != null) {
+            clonedDescriptor.setCopyPolicy((CopyPolicy)getCopyPolicy().clone());
+        }
         if (getOptimisticLockingPolicy() != null) {
             clonedDescriptor.setOptimisticLockingPolicy((OptimisticLockingPolicy)getOptimisticLockingPolicy().clone());
         }

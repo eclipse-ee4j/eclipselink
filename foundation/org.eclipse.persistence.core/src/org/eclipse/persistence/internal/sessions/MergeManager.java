@@ -404,21 +404,22 @@ public class MergeManager {
             return original;
         }
         
-        if ((!changeSet.isNew()) && descriptor.usesOptimisticLocking()) {
+        // If version locking was used, check if the cache version is the correct version, otherwise invalidate,
+        // Don't know for no locking, or field locking, so always merge.
+        if ((!changeSet.isNew()) && descriptor.usesVersionLocking()) {
             if ((session.getCommandManager() != null) && (session.getCommandManager().getCommandConverter() != null)) {
                 // Rebuild the version value from user format i.e the change set was converted to XML
                 changeSet.rebuildWriteLockValueFromUserFormat(descriptor, session);
             }
-            int difference = descriptor.getOptimisticLockingPolicy().getVersionDifference(changeSet.getWriteLockValue(), original, changeSet.getPrimaryKeys(), session);
-
-            // Should be = 1 if was a good update, otherwise was already refreshed, or a version change was lost,
-            // must also allow 0, as some changes such as add/removes to collections do not increment the version.
+            int difference = descriptor.getOptimisticLockingPolicy().getVersionDifference(changeSet.getInitialWriteLockValue(), original, changeSet.getPrimaryKeys(), session);
+            
+            // Should be = 0 if was a good update, otherwise was already refreshed, or a version change was lost.
             if (difference < 0) {
-                // The current version is newer than the one on the remote system
+                // The current version is newer than the one on the remote system, was refreshed already, ignore change.
                 session.log(SessionLog.FINEST, SessionLog.PROPAGATION, "change_from_remote_server_older_than_current_version", changeSet.getClassName(), changeSet.getPrimaryKeys());
                 return original;
-            } else if (difference > 1) {
-                // If the current version is much older than the remote system, then refresh the object
+            } else if (difference > 0) {
+                // If the current version is much older than the remote system, so invalidate the object as a change was missed.
                 session.log(SessionLog.FINEST, SessionLog.PROPAGATION, "current_version_much_older_than_change_from_remote_server", changeSet.getClassName(), changeSet.getPrimaryKeys());
                 session.getIdentityMapAccessorInstance().invalidateObject(changeSet.getPrimaryKeys(), localClassType);
                 return original;

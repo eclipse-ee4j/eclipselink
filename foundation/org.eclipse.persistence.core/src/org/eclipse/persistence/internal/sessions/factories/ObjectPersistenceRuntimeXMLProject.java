@@ -1330,13 +1330,13 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
 
             public void setAttributeValueInObject(Object object, Object value) {
                 DatabaseQuery query = (DatabaseQuery)object;
-                Vector queryArguments = (Vector)value;
-                Vector arguments = NonSynchronizedVector.newInstance(queryArguments.size());
-                Vector types = NonSynchronizedVector.newInstance(queryArguments.size());
-                Vector values = NonSynchronizedVector.newInstance(queryArguments.size());
+                List queryArguments = (List)value;
+                List<String> arguments = new ArrayList<String>(queryArguments.size());
+                List<Class> types = new ArrayList<Class>(queryArguments.size());
+                List<Object> values = new ArrayList<Object>(queryArguments.size());
                 for (int index = 0; index < queryArguments.size(); index++) {
                     QueryArgument queryArgument = (QueryArgument)queryArguments.get(index);
-                    arguments.add(queryArgument.getKey());
+                    arguments.add((String)queryArgument.getKey());
                     if (queryArgument.getValue() != null) {
                         values.add(queryArgument.getValue());
                     }

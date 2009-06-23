@@ -559,6 +559,14 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
     }
 
     /**
+     * INTERNAL:
+     * Return if the query is by primary key.
+     */
+    public boolean isPrimaryKeyQuery() {
+        return (this.selectionKey != null) || (this.selectionObject != null);
+    }
+
+    /**
      * PUBLIC:
      * Allow for the selection object of the query to be refreshed or put into the EclipseLink cache.
      * By default on a read or refresh the object in the cache is refreshed and returned or a new object is built from the database,

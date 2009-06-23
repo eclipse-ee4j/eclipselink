@@ -41,7 +41,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
     protected DatabaseQuery databaseQuery = null;
     protected EntityManagerImpl entityManager = null;
     protected String queryName = null;
-    protected Map parameters = null;
+    protected Map<String, Object> parameters = null;
     protected int firstResultIndex = -1; // -1 indicates undefined
     protected int maxResults = -1; // -1 indicates undefined
 
@@ -57,7 +57,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      * Base constructor for EJBQueryImpl. Initializes basic variables.
      */
     protected EJBQueryImpl(EntityManagerImpl entityManager) {
-        this.parameters = new HashMap();
+        this.parameters = new HashMap<String, Object>();
         this.entityManager = entityManager;
         this.isShared = true;
     }
@@ -699,7 +699,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      * execution. Returns a list of parameter values in the order the parameters
      * are defined for the databaseQuery.
      */
-    protected List processParameters() {
+    protected List<Object> processParameters() {
         DatabaseQuery query = getDatabaseQuery();
         List arguments = query.getArguments();
         if (arguments.isEmpty()) {
@@ -707,12 +707,12 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
             // arguments.
             // This may have issues, it is better if the query set its arguments
             // when parsing the SQL.
-            arguments = new NonSynchronizedVector(this.parameters.keySet());
-            query.setArguments((Vector) arguments);
+            arguments = new ArrayList<String>(this.parameters.keySet());
+            query.setArguments(arguments);
         }
         // now create parameterValues in the same order as the argument list
         int size = arguments.size();
-        List parameterValues = new NonSynchronizedVector(size);
+        List<Object> parameterValues = new ArrayList<Object>(size);
         for (int index = 0; index < size; index++) {
             String name = (String) arguments.get(index);
             Object parameter = this.parameters.get(name);

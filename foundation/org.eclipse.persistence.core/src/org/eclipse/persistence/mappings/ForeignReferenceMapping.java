@@ -481,7 +481,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         ReadQuery mappingQuery = this.getSelectionQuery();
         if (mappingQuery.isReadAllQuery()) {
             // CR#3238 clone these vectors so they will not grow with each call to the query. -TW
-            batchQuery.setOrderByExpressions(((Vector)((ReadAllQuery)mappingQuery).getOrderByExpressions().clone()));
+            batchQuery.setOrderByExpressions(new ArrayList<Expression>(((ReadAllQuery)mappingQuery).getOrderByExpressions()));
             for (Enumeration enumtr = ((ReadAllQuery)mappingQuery).getBatchReadAttributeExpressions().elements(); enumtr.hasMoreElements();) {
                 Expression expression = ((Expression)enumtr.nextElement()).rebuildOn(batchQuery.getExpressionBuilder());
                 batchQuery.addBatchReadAttribute(expression);

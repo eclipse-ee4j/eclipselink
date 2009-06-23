@@ -47,7 +47,7 @@ public class SQLSelectStatement extends SQLStatement {
     protected Vector fields;
     
     /** Fields not being selected (can include expressions). */
-    protected Vector nonSelectFields;
+    protected List<Object> nonSelectFields;
 
     /** Tables being selected from. */
     protected Vector tables;
@@ -56,7 +56,7 @@ public class SQLSelectStatement extends SQLStatement {
     protected short distinctState;
 
     /** Order by clause for read all queries. */
-    protected Vector orderByExpressions;
+    protected List<Expression> orderByExpressions;
 
     /** Group by clause for report queries. */
     protected Vector groupByExpressions;
@@ -125,9 +125,7 @@ public class SQLSelectStatement extends SQLStatement {
      * When distinct is used with order by the ordered fields must be in the select clause.
      */
     protected void addOrderByExpressionToSelectForDistinct() {
-        for (Enumeration orderExpressionsEnum = getOrderByExpressions().elements();
-                 orderExpressionsEnum.hasMoreElements();) {
-            Expression orderExpression = (Expression)orderExpressionsEnum.nextElement();
+        for (Expression orderExpression : getOrderByExpressions()) {
             Expression fieldExpression = null;
 
             if (orderExpression.isFunctionExpression() && (orderExpression.getOperator().isOrderOperator())) {
@@ -158,13 +156,12 @@ public class SQLSelectStatement extends SQLStatement {
      * ADVANCED:
      * If a platform is Informix, then the outer join must be in the FROM clause.
      * This is used internally by EclipseLink for building Informix outer join syntax which differs from
-     * other platforms(Oracle,Sybase) that print the outer join in the WHERE clause and from DB2 which prints
-     * the.
-     * OuterJoinedAliases passed in to keep track of tables used for outer join so no normal join is given
+     * other platforms (Oracle,Sybase) that print the outer join in the WHERE clause and from DB2 which prints
+     * the OuterJoinedAliases passed in to keep track of tables used for outer join so no normal join is given.
+     * This syntax is old for Informix, so should probably be removed.
      */
     public void appendFromClauseForInformixOuterJoin(ExpressionSQLPrinter printer, Vector outerJoinedAliases) throws IOException {
         Writer writer = printer.getWriter();
-        AbstractSession session = printer.getSession();
 
         // Print outer joins
         boolean firstTable = true;
@@ -224,7 +221,6 @@ public class SQLSelectStatement extends SQLStatement {
                     for (Enumeration target = outerExpression.getMapping().getReferenceDescriptor().getTables().elements();
                              target.hasMoreElements();) {
                         DatabaseTable newTarget = (DatabaseTable)target.nextElement();
-                        Expression onExpression = outerExpression;
                         DatabaseTable newAlias = outerExpression.aliasForTable(newTarget);
                         writer.write(", OUTER ");
                         writer.write(newTarget.getQualifiedName());
@@ -671,12 +667,11 @@ public class SQLSelectStatement extends SQLStatement {
 
         printer.getWriter().write(" ORDER BY ");
 
-        for (Enumeration expressionsEnum = getOrderByExpressions().elements();
-                 expressionsEnum.hasMoreElements();) {
-            Expression expression = (Expression)expressionsEnum.nextElement();
+        for (Iterator expressionsEnum = getOrderByExpressions().iterator(); expressionsEnum.hasNext();) {
+            Expression expression = (Expression)expressionsEnum.next();
             expression.printSQL(printer);
 
-            if (expressionsEnum.hasMoreElements()) {
+            if (expressionsEnum.hasNext()) {
                 printer.getWriter().write(", ");
             }
         }
@@ -977,7 +972,7 @@ public class SQLSelectStatement extends SQLStatement {
     /**
      * Return the fields we don't want to select but want to join on.
      */
-    public Vector getNonSelectFields() {
+    public List<Object> getNonSelectFields() {
         return nonSelectFields;
     }
     
@@ -985,7 +980,7 @@ public class SQLSelectStatement extends SQLStatement {
      * INTERNAL:
      * Return the order expressions for the query.
      */
-    public Vector getOrderByExpressions() {
+    public List<Expression> getOrderByExpressions() {
         if (orderByExpressions == null) {
             orderByExpressions = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(3);
         }
@@ -1445,9 +1440,9 @@ public class SQLSelectStatement extends SQLStatement {
     /**
      * Rebuild the expressions with the correct expression builder if using a different one.
      */
-    public void rebuildAndAddExpressions(Vector expressions, Vector allExpressions, ExpressionBuilder primaryBuilder, Map clonedExpressions) {
+    public void rebuildAndAddExpressions(List expressions, List allExpressions, ExpressionBuilder primaryBuilder, Map clonedExpressions) {
         for (int index = 0; index < expressions.size(); index++) {
-            Object fieldOrExpression = expressions.elementAt(index);
+            Object fieldOrExpression = expressions.get(index);
 
             if (fieldOrExpression instanceof Expression) {
                 Expression expression = (Expression)fieldOrExpression;
@@ -1464,10 +1459,10 @@ public class SQLSelectStatement extends SQLStatement {
                         // Possibly the expression was built with the wrong builder.
                         expression = expression.rebuildOn(primaryBuilder);
                     }
-                    expressions.setElementAt(expression, index);
+                    expressions.set(index, expression);
                 }
 
-                allExpressions.addElement(expression);
+                allExpressions.add(expression);
             }
         }
     }
@@ -1565,7 +1560,7 @@ public class SQLSelectStatement extends SQLStatement {
     /**
      * Set the non select fields. The fields are used only on joining.
      */
-    public void setNonSelectFields(Vector nonSelectFields) {
+    public void setNonSelectFields(List nonSelectFields) {
         this.nonSelectFields = nonSelectFields;
     }
 
@@ -1639,7 +1634,7 @@ public class SQLSelectStatement extends SQLStatement {
         this.forUpdateClause = lockingClause;
     }
 
-    public void setOrderByExpressions(Vector orderByExpressions) {
+    public void setOrderByExpressions(List<Expression> orderByExpressions) {
         this.orderByExpressions = orderByExpressions;
     }
 

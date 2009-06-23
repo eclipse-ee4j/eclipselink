@@ -288,9 +288,9 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
         Number writeLockFieldValue;
         Number newWriteLockFieldValue = (Number)currentValue;
 
-        // 2.5.1.6 if the write lock value is null, then what ever we have is treated as newer.
+        // If null, was an insert, use 0.
         if (newWriteLockFieldValue == null) {
-            return 0;//merge it as either the object is new or being forced merged.
+            newWriteLockFieldValue = new Long(0);
         }
 
         if (isStoredInCache()) {
@@ -403,25 +403,6 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      */
     public boolean isCascaded() {
         return isCascaded;
-    }
-
-    /**
-     * INTERNAL:
-     * Update the parent write lock value if the unit of works has been incremented.
-     */
-    public boolean isChildWriteLockValueGreater(AbstractSession session, java.util.Vector primaryKey, Class original, ObjectChangeSet changeSet) {
-        if (isStoredInCache()) {
-            // If this uow changed the object the version must be updated,
-            // we can check this by ensuring our value is greater than our parent's.
-            Number writeLockValue = (Number)changeSet.getWriteLockValue();
-            Number parentValue = (Number)session.getIdentityMapAccessorInstance().getWriteLockValue(primaryKey, original, getDescriptor());
-            if (writeLockValue != null) {// This occurs if the object was deleted
-                if ((parentValue == null) || (parentValue.longValue() < writeLockValue.longValue()) ) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     /**

@@ -226,7 +226,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
         ReadAllQuery mappingBatchQuery = (ReadAllQuery)batchQuery;
         mappingBatchQuery.setShouldIncludeData(true);
         for (Enumeration relationFieldsEnum = getSourceRelationKeyFields().elements(); relationFieldsEnum.hasMoreElements();) {
-            mappingBatchQuery.getAdditionalFields().addElement(mappingBatchQuery.getExpressionBuilder().getTable(getRelationTable()).getField((DatabaseField)relationFieldsEnum.nextElement()));
+            mappingBatchQuery.getAdditionalFields().add(mappingBatchQuery.getExpressionBuilder().getTable(getRelationTable()).getField((DatabaseField)relationFieldsEnum.nextElement()));
         }        
         if (getHistoryPolicy() != null) {
             ExpressionBuilder builder = mappingBatchQuery.getExpressionBuilder();

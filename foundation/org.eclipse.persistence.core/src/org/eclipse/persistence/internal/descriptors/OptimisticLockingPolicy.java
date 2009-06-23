@@ -176,12 +176,6 @@ public interface OptimisticLockingPolicy extends Cloneable, Serializable {
      * Specify if the policy cascade locks.
      */
     public boolean isCascaded();
-    
-    /**
-     * INTERNAL:
-     * Update the parent write lock value if the changeSet's is newer
-     */
-    public boolean isChildWriteLockValueGreater(AbstractSession session, Vector primaryKey, Class original, ObjectChangeSet changeSet);
 
     /**
      * INTERNAL:

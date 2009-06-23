@@ -623,6 +623,7 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
         this.cacheKey = (CacheKey)stream.readObject();
         this.className = (String)stream.readObject();
         this.writeLockValue = stream.readObject();
+        this.initialWriteLockValue = stream.readObject();
     }
 
     /**
@@ -881,6 +882,7 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
         stream.writeObject(this.cacheKey);
         stream.writeObject(this.className);
         stream.writeObject(this.writeLockValue);
+        stream.writeObject(this.initialWriteLockValue);
     }
 
     /**
@@ -961,8 +963,10 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
     protected void rebuildWriteLockValueFromUserFormat(ClassDescriptor descriptor, AbstractSession session) {
         if (descriptor.getOptimisticLockingPolicy() instanceof TimestampLockingPolicy) {
             this.writeLockValue = session.getPlatform(descriptor.getJavaClass()).getConversionManager().convertObject(this.writeLockValue, ClassConstants.JavaSqlTimestamp_Class);
+            this.initialWriteLockValue = session.getPlatform(descriptor.getJavaClass()).getConversionManager().convertObject(this.initialWriteLockValue, ClassConstants.JavaSqlTimestamp_Class);
         } else if (descriptor.getOptimisticLockingPolicy() instanceof VersionLockingPolicy) {
             this.writeLockValue = session.getPlatform(descriptor.getJavaClass()).getConversionManager().convertObject(this.writeLockValue, ClassConstants.BIGDECIMAL);
+            this.initialWriteLockValue = session.getPlatform(descriptor.getJavaClass()).getConversionManager().convertObject(this.initialWriteLockValue, ClassConstants.BIGDECIMAL);
         }
     }
 

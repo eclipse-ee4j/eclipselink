@@ -700,29 +700,29 @@ public class ReportQuery extends ReadAllQuery {
      * already cloned.
      */
     public void copyReportItems(Map alreadyDone) {
-        items = (Vector)items.clone();
-        for (int i = items.size() - 1; i >= 0; i--) {
-            ReportItem item = (ReportItem)items.elementAt(i);
+        this.items = (Vector)this.items.clone();
+        for (int i = this.items.size() - 1; i >= 0; i--) {
+            ReportItem item = (ReportItem)this.items.elementAt(i);
             Expression expression = item.getAttributeExpression();
             if ((expression != null) && (alreadyDone.get(expression.getBuilder()) != null)) {
                 expression = expression.copiedVersionFrom(alreadyDone);
             }
-            items.set(i, new ReportItem(item.getName(), expression));
+            this.items.set(i, new ReportItem(item.getName(), expression));
         }
-        if (groupByExpressions != null) {
-            groupByExpressions = (Vector)groupByExpressions.clone();
-            for (int i = groupByExpressions.size() - 1; i >= 0; i--) {
-                Expression item = (Expression)groupByExpressions.elementAt(i);
+        if (this.groupByExpressions != null) {
+            this.groupByExpressions = (Vector)this.groupByExpressions.clone();
+            for (int i = this.groupByExpressions.size() - 1; i >= 0; i--) {
+                Expression item = (Expression)this.groupByExpressions.elementAt(i);
                 if (alreadyDone.get(item.getBuilder()) != null) {
-                    groupByExpressions.set(i, item.copiedVersionFrom(alreadyDone));
+                    this.groupByExpressions.set(i, item.copiedVersionFrom(alreadyDone));
                 }
             }
         }
-        if (orderByExpressions != null) {
-            for (int i = orderByExpressions.size() - 1; i >= 0; i--) {
-                Expression item = (Expression)orderByExpressions.elementAt(i);
+        if (this.orderByExpressions != null) {
+            for (int i = this.orderByExpressions.size() - 1; i >= 0; i--) {
+                Expression item = this.orderByExpressions.get(i);
                 if (alreadyDone.get(item.getBuilder()) != null) {
-                    orderByExpressions.set(i, item.copiedVersionFrom(alreadyDone));
+                    this.orderByExpressions.set(i, item.copiedVersionFrom(alreadyDone));
                 }
             }
         }

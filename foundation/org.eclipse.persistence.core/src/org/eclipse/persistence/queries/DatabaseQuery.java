@@ -55,13 +55,13 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     protected String name;
 
     /** Arguments can be given and specified to predefined queries to allow reuse. */
-    protected Vector arguments;
+    protected List<String> arguments;
     
     /** PERF: Argument fields are cached in prepare to avoid rebuilding on each execution. */
     protected List<DatabaseField> argumentFields;
 
     /** Arguments values can be given and specified to predefined queries to allow reuse. */
-    protected Vector argumentValues;
+    protected List<Object> argumentValues;
 
     /** Needed to differentiate queries with the same name. */
     protected List<Class> argumentTypes;
@@ -90,7 +90,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     protected boolean shouldMaintainCache;
 
     /** Internally used by the mappings as a temporary store. */
-    protected Hashtable properties;
+    protected Map<Object, Object> properties;
 
     /** Only used after the query is cloned for execution to store the session under which the query was executed. */
     protected transient AbstractSession session;
@@ -482,7 +482,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
                 if (cloneQuery.properties.isEmpty()) {
                     cloneQuery.setProperties(null);
                 } else {
-                    cloneQuery.setProperties((Hashtable)getProperties().clone());
+                    cloneQuery.setProperties(new HashMap(getProperties()));
                 }
             }
 
@@ -688,9 +688,9 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * INTERNAL:
      * Return the arguments for use with the pre-defined query option
      */
-    public Vector getArguments() {
+    public List<String> getArguments() {
         if (arguments == null) {
-            arguments = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+            arguments = new ArrayList<String>();
         }
         return arguments;
     }
@@ -735,9 +735,8 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         this.argumentTypes = argumentTypes;
         // bug 3256198 - ensure the list of type names matches the argument types.
         getArgumentTypeNames().clear();
-        Iterator types = argumentTypes.iterator();
-        while (types.hasNext()) {
-            argumentTypeNames.add(((Class)types.next()).getName());
+        for (Class type : argumentTypes) {
+            this.argumentTypeNames.add(type.getName());
         }
     }
 
@@ -754,15 +753,15 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * Set the arguments for use with the pre-defined query option.
      * Maintain the argumentTypes as well.
      */
-    public void setArguments(Vector arguments) {
-        Vector types = new Vector(arguments.size());
-        Vector typeNames = new Vector(arguments.size());
-        Vector typeFields = new Vector(arguments.size());
+    public void setArguments(List<String> arguments) {
+        List<Class> types = new ArrayList<Class>(arguments.size());
+        List<String> typeNames = new ArrayList<String>(arguments.size());
+        List<DatabaseField> typeFields = new ArrayList<DatabaseField>(arguments.size());
         int size = arguments.size();
         for (int index = 0; index < size; index++) {
             types.add(Object.class);
             typeNames.add("java.lang.Object");
-            DatabaseField field = new DatabaseField((String)arguments.get(index));
+            DatabaseField field = new DatabaseField(arguments.get(index));
             typeFields.add(field);
         }
         this.arguments = arguments;
@@ -775,9 +774,9 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * INTERNAL:
      * Return the argumentValues for use with argumented queries.
      */
-    public Vector getArgumentValues() {
+    public List<Object> getArgumentValues() {
         if (argumentValues == null) {
-            argumentValues = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+            argumentValues = new ArrayList<Object>();
         }
         return argumentValues;
     }
@@ -786,7 +785,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * INTERNAL:
      * Set the argumentValues for use with argumented queries.
      */
-    public void setArgumentValues(Vector theArgumentValues) {
+    public void setArgumentValues(List<Object> theArgumentValues) {
         argumentValues = theArgumentValues;
     }
 
@@ -880,22 +879,23 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * INTERNAL:
      * Property support for use by mappings.
      */
-    public Hashtable getProperties() {
-        if (properties == null) {//Lazy initialize to conserve space and allocation time.
-            properties = new Hashtable(5);
+    public Map<Object, Object> getProperties() {
+        if (this.properties == null) {
+            //Lazy initialize to conserve space and allocation time.
+            this.properties = new HashMap();
         }
-        return properties;
+        return this.properties;
     }
 
     /**
      * INTERNAL:
-     * Property support used by mappings to stach temporary stuff in the query.
+     * Property support used by mappings to store temporary stuff in the query.
      */
     public synchronized Object getProperty(Object property) {
-        if (properties == null) {
+        if (this.properties == null) {
             return null;
         }
-        return getProperties().get(property);
+        return this.properties.get(property);
     }
 
     /**
@@ -904,10 +904,10 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      */
     public DatabaseQueryMechanism getQueryMechanism() {
         // Bug 3524620 - lazy init
-        if (queryMechanism == null) {
-            queryMechanism = new ExpressionQueryMechanism(this);
+        if (this.queryMechanism == null) {
+            this.queryMechanism = new ExpressionQueryMechanism(this);
         }
-        return queryMechanism;
+        return this.queryMechanism;
     }
 
     /**
@@ -915,7 +915,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * Check if the mechanism has been set yet, used for lazy init.
      */
     public boolean hasQueryMechanism() {
-        return (queryMechanism != null);
+        return (this.queryMechanism != null);
     }
 
     /**
@@ -934,7 +934,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * See ClassDescriptor for their types.
      */
     protected QueryRedirector getDefaultRedirector(){
-        return descriptor.getDefaultQueryRedirector();
+        return this.descriptor.getDefaultQueryRedirector();
     }
     
     /**
@@ -971,7 +971,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     /**
      * INTERNAL:
      * return the name of the reference class.  Added for Mapping Workbench removal
-     * of classpath dependancy.  Overridden by subclasses.
+     * of classpath dependency.  Overridden by subclasses.
      */
     public String getReferenceClassName() {
         return null;
@@ -1727,7 +1727,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     /**
      * PUBLIC:
      * Set the JPQL string of the query.
-     * If arguments are required in the string they will be preceeded by ":" then the argument name.
+     * If arguments are required in the string they will be preceded by ":" then the argument name.
      * The JPQL arguments must also be added as argument to the query.
      */
     public void setJPQLString(String jpqlString) {
@@ -1737,7 +1737,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     /**
      * PUBLIC:
      * Set the EJBQL string of the query.
-     * If arguments are required in the string they will be preceeded by "?" then the argument number.
+     * If arguments are required in the string they will be preceded by "?" then the argument number.
      */
     public void setEJBQLString(String ejbqlString) {
         //Added the check for when we are building the query from the deployment XML
@@ -1811,7 +1811,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     
     /**
      * INTERNAL:
-     * If the query mechanisn is a call query mechanism and there are no
+     * If the query mechanism is a call query mechanism and there are no
      * arguments on the query then it must be a foreign reference custom 
      * selection query.
      */
@@ -1853,13 +1853,13 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * INTERNAL:
      * Property support used by mappings.
      */
-    public void setProperties(Hashtable properties) {
+    public void setProperties(Map<Object, Object> properties) {
         this.properties = properties;
     }
 
     /**
      * INTERNAL:
-     * Property support used by mappings to stash temporary stuff.
+     * Property support used by mappings to store temporary stuff.
      */
     public synchronized void setProperty(Object property, Object value) {
         getProperties().put(property, value);
@@ -1982,7 +1982,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * Set if the query should be prepared.
      * EclipseLink automatically prepares queries to generate their SQL only once,
      * one each execution of the query the SQL does not need to be generated again only the arguments need to be translated.
-     * This option is provide to disable this optimization as in can cause problems with certain types of queries that require dynamic SQL basd on their arguments.
+     * This option is provide to disable this optimization as in can cause problems with certain types of queries that require dynamic SQL based on their arguments.
      * <p>These queries include:
      * <ul>
      * <li> Expressions that make use of 'equal' where the argument value has the potential to be null, this can cause problems on databases that require IS NULL, instead of = NULL.
@@ -2022,9 +2022,9 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * PUBLIC:
      * To any user of this object. Set the SQL string of the query.
      * This method should only be used when dealing with user defined SQL strings.
-     * If arguments are required in the string they will be preceeded by "#" then the argument name.
+     * If arguments are required in the string they will be preceded by "#" then the argument name.
      * Warning: Allowing an unverified SQL string to be passed into this 
-	 * method makes your application vulnerable to SQL injection attacks. 
+     * method makes your application vulnerable to SQL injection attacks. 
      */
     public void setSQLString(String sqlString) {
         //Added the check for when we are building the query from the deployment XML

@@ -12,12 +12,12 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.workbenchintegration;
 
-import java.util.Vector;
+import java.util.List;
 
 import org.eclipse.persistence.internal.expressions.FunctionExpression;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
+import org.eclipse.persistence.testing.framework.TestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
 import org.eclipse.persistence.testing.models.employee.relational.EmployeeProject;
@@ -33,22 +33,14 @@ import org.eclipse.persistence.sessions.factories.XMLProjectWriter;
  * @version 1.0 
  * @date March 11, 2005
  */
-public class ProjectXMLOrderByQueryKeysTest extends AutoVerifyTestCase {
-    private ClassLoader m_loader;
-    private Vector m_queryKeyExpressionsAfterWrite;
-    private Vector m_queryKeyExpressionsBeforeWrite;
+public class ProjectXMLOrderByQueryKeysTest extends TestCase {
+    private List m_queryKeyExpressionsAfterWrite;
+    private List m_queryKeyExpressionsBeforeWrite;
     private static final String TEMP_FILE = "TempTestProjectSafeToDelete.xml";
     private static final String ATTRIBUTE_NAME = "phoneNumbers";
 
     public ProjectXMLOrderByQueryKeysTest() {
         setDescription("Tests the order by query keys on a collection mapping.");
-    }
-
-    public void reset() {
-    }
-
-    protected void setup() throws Exception {
-        m_loader = getClass().getClassLoader();
     }
 
     public void test() {
@@ -84,9 +76,9 @@ public class ProjectXMLOrderByQueryKeysTest extends AutoVerifyTestCase {
         // check that each is in the same order as they were set.
         for (int i = 0; i < m_queryKeyExpressionsBeforeWrite.size(); i++) {
             String key1 = 
-                ((FunctionExpression)m_queryKeyExpressionsBeforeWrite.elementAt(i)).getBaseExpression().getName();
+                ((FunctionExpression)m_queryKeyExpressionsBeforeWrite.get(i)).getBaseExpression().getName();
             String key2 = 
-                ((FunctionExpression)m_queryKeyExpressionsAfterWrite.elementAt(i)).getBaseExpression().getName();
+                ((FunctionExpression)m_queryKeyExpressionsAfterWrite.get(i)).getBaseExpression().getName();
 
             if (!key1.equals(key2)) {
                 throw new TestErrorException("Ordering query keys not written (or read) in the same order as they were set.");

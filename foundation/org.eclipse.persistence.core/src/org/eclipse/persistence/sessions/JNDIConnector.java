@@ -100,13 +100,6 @@ public class JNDIConnector implements Connector {
      */
     public Connection connect(Properties properties) throws DatabaseException, ValidationException {
         String user = properties.getProperty("user");
-        Object passwordObject = properties.get("password");
-        String password = null;
-        if (passwordObject instanceof char[]) {
-            password = new String((char[])passwordObject);
-        } else if (passwordObject instanceof String) {
-            password = (String) passwordObject;
-        }
         DataSource dataSource = getDataSource();
         if (dataSource == null) {
             try {
@@ -129,9 +122,16 @@ public class JNDIConnector implements Connector {
             // JDBCLogin usually initializes these values with an empty string.
             // WebLogic data source does not support the getConnection() call with arguments
             // it only supports the zero argument call. DM 26/07/2000
-            if ((user == null) || (user.equalsIgnoreCase(""))) {
+            if ((user == null) || (user.length() == 0)) {
                 return dataSource.getConnection();
             } else {
+                Object passwordObject = properties.get("password");
+                String password = null;
+                if (passwordObject instanceof char[]) {
+                    password = new String((char[])passwordObject);
+                } else if (passwordObject instanceof String) {
+                    password = (String) passwordObject;
+                }
                 return dataSource.getConnection(user, password);
             }
         } catch (SQLException exception) {

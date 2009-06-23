@@ -34,8 +34,8 @@ public class NonSynchronizedProperties extends Properties {
 
     @Override
     public Object clone() {
-        NonSynchronizedProperties properties = (NonSynchronizedProperties)super.clone();
-        properties.values = new HashMap(this.values);
+        NonSynchronizedProperties properties = new NonSynchronizedProperties(size());
+        properties.putAll(this);
         return properties;
         
     }
@@ -140,11 +140,6 @@ public class NonSynchronizedProperties extends Properties {
         Object oval = get(key);
         String sval = (oval instanceof String) ? (String)oval : null;
         return ((sval == null) && (defaults != null)) ? defaults.getProperty(key) : sval;
-    }
-
-    @Override
-    public Enumeration<?> propertyNames() {
-        return super.propertyNames();
     }
 }
 

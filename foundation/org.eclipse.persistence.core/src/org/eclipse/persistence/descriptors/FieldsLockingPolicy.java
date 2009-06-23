@@ -265,9 +265,9 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
      * Return the number of version difference between the two states of the object.
      */
     public int getVersionDifference(Object currentValue, Object domainObject, Vector primaryKeys, AbstractSession session) {
-        //There is no way of knowing what the difference is so return 1
-        // This will merge the object.
-        return 1;
+        // There is no way of knowing what the difference is so return 0
+        // This should never be called for field locking.
+        return 0;
     }
 
     /**
@@ -311,13 +311,6 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
      public boolean isCascaded() {
          return false;
      }
-     
-    /**
-     * INTERNAL:
-     */
-    public boolean isChildWriteLockValueGreater(AbstractSession session, java.util.Vector primaryKey, Class original, ObjectChangeSet changeSet) {
-        return false;
-    }
 
     /**
      * INTERNAL:

@@ -658,7 +658,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * Used for cache isolation.
      */
     public boolean shouldAllowConcurrentReadWrite() {
-        return getCacheTransactionIsolation() == CONCURRENT_READ_WRITE;
+        return this.cacheTransactionIsolation == CONCURRENT_READ_WRITE;
     }
 
     /**
@@ -666,7 +666,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * Used for cache isolation.
      */
     public boolean shouldSynchronizedReadOnWrite() {
-        return getCacheTransactionIsolation() == SYNCHRONIZED_READ_ON_WRITE;
+        return this.cacheTransactionIsolation == SYNCHRONIZED_READ_ON_WRITE;
     }
 
     /**
@@ -675,7 +675,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * cache updates.
      */
     public boolean shouldSynchronizeWrites() {
-        return getCacheTransactionIsolation() == SYNCHRONIZED_WRITE;
+        return this.cacheTransactionIsolation == SYNCHRONIZED_WRITE;
     }
     
     /**
@@ -684,7 +684,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * cache updates and cache access.
      */
     public boolean shouldSynchronizeObjectLevelReadWrite(){
-        return getCacheTransactionIsolation() == SYNCRONIZED_OBJECT_LEVEL_READ_WRITE;
+        return this.cacheTransactionIsolation == SYNCRONIZED_OBJECT_LEVEL_READ_WRITE;
     }
     
     /**
@@ -693,7 +693,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * cache updates and cache access, based on database transaction.
      */
     public boolean shouldSynchronizeObjectLevelReadWriteDatabase(){
-        return getCacheTransactionIsolation() == SYNCRONIZED_OBJECT_LEVEL_READ_WRITE_DATABASE;
+        return this.cacheTransactionIsolation == SYNCRONIZED_OBJECT_LEVEL_READ_WRITE_DATABASE;
     }
     
     /**

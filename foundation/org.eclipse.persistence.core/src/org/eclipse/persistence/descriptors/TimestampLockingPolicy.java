@@ -204,26 +204,6 @@ public class TimestampLockingPolicy extends VersionLockingPolicy {
 
     /**
      * INTERNAL:
-     * Update the parent write lock value if the objectChangeSet's is greater.
-     */
-    public boolean isChildWriteLockValueGreater(AbstractSession session, java.util.Vector primaryKey, Class original, ObjectChangeSet changeSet) {
-        if (isStoredInCache()) {
-            // If this uow changed the object the version must be updated,
-            // we can check this by ensuring our value is greater than our parent's.
-            java.sql.Timestamp writeLockValue = (java.sql.Timestamp)changeSet.getWriteLockValue();
-            java.sql.Timestamp parentValue = (java.sql.Timestamp)session.getIdentityMapAccessorInstance().getWriteLockValue(primaryKey, original, getDescriptor());
-            if (writeLockValue != null) {// This occurs if the object was deleted
-                if ((parentValue == null) || parentValue.before(writeLockValue)) {// Check parent value is less than child
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * INTERNAL:
      * Compares the value with the value from the object (or cache).
      * Will return true if the currentValue is newer than the domainObject.
      */

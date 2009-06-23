@@ -954,15 +954,11 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * Return the ordering query keys.
      * Used for Workbench integration.
      */
-    public Vector getOrderByQueryKeyExpressions() {
-        Vector expressions = new Vector();
+    public List<Expression> getOrderByQueryKeyExpressions() {
+        List<Expression>  expressions = new ArrayList<Expression> ();
 
         if ((getSelectionQuery() != null) && getSelectionQuery().isReadAllQuery()) {
-            Enumeration orderExpressions = ((ReadAllQuery)getSelectionQuery()).getOrderByExpressions().elements();
-
-            while (orderExpressions.hasMoreElements()) {
-                Expression orderExpression = (Expression)orderExpressions.nextElement();
-
+            for (Expression orderExpression : ((ReadAllQuery)getSelectionQuery()).getOrderByExpressions()) {
                 if (orderExpression.isFunctionExpression() && ((FunctionExpression)orderExpression).getBaseExpression().isQueryKeyExpression()) {
                     expressions.add(orderExpression);
                 }
