@@ -89,17 +89,17 @@ public class InlineBinaryTestSuite extends DBWSTestSuite {
             "<inlinebinaryType xmlns=\"urn:inlinebinary\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
                 "<id>1</id>" +
                 "<name>one</name>" +
-                "<b xsi:type=\"xsd:base64Binary\">rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAPAQEBAQEBAQEBAQEBAQEB</b>" +
+                "<b>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAPAQEBAQEBAQEBAQEBAQEB</b>" +
             "</inlinebinaryType>" +
             "<inlinebinaryType xmlns=\"urn:inlinebinary\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
                 "<id>2</id>" +
                 "<name>two</name>" +
-                "<b xsi:type=\"xsd:base64Binary\">rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAPAgICAgICAgICAgICAgIC</b>" +
+                "<b>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAPAgICAgICAgICAgICAgIC</b>" +
             "</inlinebinaryType>" +
             "<inlinebinaryType xmlns=\"urn:inlinebinary\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
                 "<id>3</id>" +
                 "<name>three</name>" +
-                "<b xsi:type=\"xsd:base64Binary\">rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAPAwMDAwMDAwMDAwMDAwMD</b>" +
+                "<b>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAPAwMDAwMDAwMDAwMDAwMD</b>" +
             "</inlinebinaryType>" +
         "</inlinebinary-collection>";
 }
