@@ -45,6 +45,7 @@ import org.eclipse.persistence.queries.ReadObjectQuery;
 
 import org.eclipse.persistence.queries.ReportQuery;
 
+import org.eclipse.persistence.testing.models.jpa.advanced.Buyer;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
 import org.eclipse.persistence.testing.models.jpa.advanced.Man;
@@ -109,7 +110,6 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         TestSuite suite = new TestSuite();
         suite.setName("JUnitJPQLComplexTestSuite");
         suite.addTest(new JUnitJPQLComplexTestSuite("testSetup"));
-
         
         suite.addTest(new JUnitJPQLComplexTestSuite("complexTypeInParamTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexTypeInTest"));
@@ -145,12 +145,18 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         suite.addTest(new JUnitJPQLComplexTestSuite("complexConstructorRelationshipTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexConstructorAggregatesTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexConstructorCountOnJoinedVariableTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("complexConstructorConstantTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("complexConstructorMapTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexResultPropertiesTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexInSubqueryTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexExistsTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexNotExistsTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("complexInSubqueryJoinTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("complexInSubqueryJoinInTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexMemberOfTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexNotMemberOfTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("complexNotMemberOfPathTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("complexMemberOfElementCollectionTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexNavigatingEmbedded"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexNavigatingTwoLevelOfEmbeddeds"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexNamedQueryResultPropertiesTest"));
@@ -170,6 +176,9 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         suite.addTest(new JUnitJPQLComplexTestSuite("mappedKeyMapContainerPolicyMapEntryInSelectTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("mappedKeyMapContainerPolicyEmbeddableMapKeyInSelectionCriteriaTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("mappedKeyMapContainerPolicyElementCollectionSelectionCriteriaTest"));
+        
+        suite.addTest(new JUnitJPQLComplexTestSuite("complexThreeLevelJoinOneTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("complexThreeLevelJoinManyTest"));
         
         return suite;
     }
@@ -1094,6 +1103,56 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
                           comparer.compareObjects(result, expectedResult));
     }
     
+    public void complexConstructorConstantTest()
+    {
+        if (isOnServer()) {
+            // Not work on the server.
+            return;
+        }
+        JpaEntityManager em = (JpaEntityManager) createEntityManager(); 
+        
+        Employee emp = (Employee)em.getActiveSession().readAllObjects(Employee.class).firstElement();
+
+        // constructor query using a constant as an argument
+        String jpqlString = "SELECT NEW org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLComplexTestSuite.EmployeeDetail(emp.firstName, 'Ott') FROM Employee emp WHERE emp.id = :id";
+        Query query = em.createQuery(jpqlString);
+        query.setParameter("id", emp.getId());
+        EmployeeDetail result = (EmployeeDetail)query.getSingleResult();
+        EmployeeDetail expectedResult = new EmployeeDetail(emp.getFirstName(), "Ott");
+
+        Assert.assertTrue("Constructor with variable argument Test Case Failed", result.equals(expectedResult));
+    }
+    
+    public void complexConstructorMapTest()
+    {
+        if (isOnServer()) {
+            // Not work on the server.
+            return;
+        }
+        JpaEntityManager em = (JpaEntityManager) createEntityManager(); 
+        
+        em.getTransaction().begin();
+        BeerConsumer consumer = new BeerConsumer();
+        consumer.setName("Marvin Monroe");
+        em.persist(consumer);
+        Blue blue = new Blue();
+        blue.setAlcoholContent(5.0f);
+        blue.setUniqueKey(BigInteger.ONE);
+        consumer.addBlueBeerToConsume(blue);
+        em.persist(blue);
+        em.flush();
+
+        
+        // constructor query using a map key
+        String jpqlString = "SELECT NEW org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLComplexTestSuite.EmployeeDetail('Mel', 'Ott', Key(b)) FROM BeerConsumer bc join bc.blueBeersToConsume b";
+        Query query = em.createQuery(jpqlString);
+        EmployeeDetail result = (EmployeeDetail)query.getSingleResult();
+        EmployeeDetail expectedResult = new EmployeeDetail("Mel", "Ott", BigInteger.ONE);
+
+        em.getTransaction().rollback();
+        Assert.assertTrue("Constructor with variable argument Test Case Failed", result.equals(expectedResult));
+    }
+    
     public void complexResultPropertiesTest() 
     {
         EntityManager em = createEntityManager();
@@ -1259,6 +1318,34 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         
     }
 
+    public void complexInSubqueryJoinTest() 
+    {
+        EntityManager em = createEntityManager();
+
+        ExpressionBuilder builder = new ExpressionBuilder();
+        Expression exp = builder.get("manager").isNull().not();
+        ReadAllQuery query = new ReadAllQuery(Employee.class, exp);
+        Vector expectedResult = (Vector)getServerSession().executeQuery(query);
+     
+        String ejbqlString = "SELECT e FROM Employee e WHERE e.firstName IN (SELECT emps.firstName FROM Employee emp join emp.managedEmployees emps)";
+        List result = em.createQuery(ejbqlString).getResultList();
+        Assert.assertTrue("Complex IN Subquery with join Test Case Failed", comparer.compareObjects(result, expectedResult));
+    }
+    
+    public void complexInSubqueryJoinInTest() 
+    {
+        EntityManager em = createEntityManager();
+
+        ExpressionBuilder builder = new ExpressionBuilder();
+        Expression exp = builder.get("manager").isNull().not();
+        ReadAllQuery query = new ReadAllQuery(Employee.class, exp);
+        Vector expectedResult = (Vector)getServerSession().executeQuery(query);
+     
+        String ejbqlString = "SELECT e FROM Employee e WHERE e.firstName IN (SELECT emps.firstName FROM Employee emp, in(emp.managedEmployees) emps)";
+        List result = em.createQuery(ejbqlString).getResultList();
+        Assert.assertTrue("Complex IN Subquery with join Test Case Failed", comparer.compareObjects(result, expectedResult));
+    }
+    
     public void complexMemberOfTest() 
     {
         EntityManager em = createEntityManager();
@@ -1298,6 +1385,40 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         String ejbqlString = "SELECT e FROM Employee e WHERE e NOT MEMBER OF e.managedEmployees";
         List result = em.createQuery(ejbqlString).getResultList();
         Assert.assertTrue("Complex MEMBER OF test failed", comparer.compareObjects(result, allEmps)); 
+    }
+    
+    public void complexNotMemberOfPathTest() 
+    {
+        EntityManager em = createEntityManager();
+        
+        Collection allEmps = getServerSession().readAllObjects(Employee.class);
+        List expectedResult = new ArrayList();
+        String ejbqlString = "SELECT e FROM Employee e  WHERE e.manager NOT MEMBER OF e.managedEmployees";
+        List result = em.createQuery(ejbqlString).getResultList();
+        Assert.assertTrue("Complex MEMBER OF test failed", comparer.compareObjects(result, allEmps)); 
+    }
+    
+    public void complexMemberOfElementCollectionTest() 
+    {
+        EntityManager em = createEntityManager();
+
+        em.getTransaction().begin();
+        
+        Buyer buyer = new Buyer();
+        buyer.setName("RBCL buyer");
+        buyer.setDescription("RBCL buyer");
+        buyer.addRoyalBankCreditLine(10);
+        em.persist(buyer);
+        em.flush();
+        
+        List expectedResult = new ArrayList();
+        expectedResult.add(buyer);
+        
+        String ejbqlString = "SELECT b FROM Buyer b  WHERE 10 MEMBER OF b.creditLines";
+        List result = em.createQuery(ejbqlString).getResultList();
+        
+        em.getTransaction().rollback();
+        Assert.assertTrue("Complex MEMBER OF test failed", comparer.compareObjects(result, expectedResult)); 
     }
     
     public void complexInheritanceTest()
@@ -1480,6 +1601,8 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         public String lastName;
         public Employee manager;
         public Long count;
+        public BigInteger code;
+        
         public EmployeeDetail(String firstName, String lastName) {
             this.firstName = firstName;
             this.lastName = lastName;
@@ -1499,12 +1622,18 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
             this.lastName = lastName;
             this.count = count;
         }
+        public EmployeeDetail(String firstName, String lastName, BigInteger code) {
+            this.firstName = firstName;
+            this.lastName = lastName;
+            this.code = code;
+        }
         public int hashCode() {
             int result = 0;
             result += (firstName != null) ? firstName.hashCode() : 0;
             result += (lastName != null) ? lastName.hashCode() : 0;
             result += (manager != null) ? manager.hashCode() : 0;
             result += (count != null) ? count.hashCode() : 0;
+            result += (code != null) ? code.hashCode() : 0;
             return result;
         }
         public boolean equals(Object o) {
@@ -1515,11 +1644,12 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
             return JUnitJPQLComplexTestSuite.equals(this.firstName, other.firstName) &&
                 JUnitJPQLComplexTestSuite.equals(this.lastName, other.lastName) &&
                 JUnitJPQLComplexTestSuite.equals(this.manager, other.manager) &&
-                JUnitJPQLComplexTestSuite.equals(this.count, other.count);
+                JUnitJPQLComplexTestSuite.equals(this.count, other.count) &&
+                JUnitJPQLComplexTestSuite.equals(this.code, other.code);
         }
         public String toString() {
             return "EmployeeDetail(" + firstName + ", " + lastName + 
-                                   ", " + manager + ", " + count + ")";
+                                   ", " + manager + ", " + count + ", " + code + ")";
         }
     }
     
@@ -1916,6 +2046,36 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         List result = em.createQuery(ejbqlString).setParameter("param", params).getResultList();
    
         Assert.assertTrue("complexTypeParameterTest failed", comparer.compareObjects(result, expectedResult));
+        rollbackTransaction(em);
+        closeEntityManager(em);
+    }
+    
+    public void complexThreeLevelJoinOneTest(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        Expression exp = (new ExpressionBuilder()).get("manager").get("address").get("city").equal("Ottawa");
+        List expectedResult = getServerSession().readAllObjects(Employee.class, exp);
+        clearCache();
+        String ejbqlString = "select e from Employee e join e.manager.address a where a.city = 'Ottawa'";
+        
+        List result = em.createQuery(ejbqlString).getResultList();
+   
+        Assert.assertTrue("complexThreeLevelJoinOneTest failed", comparer.compareObjects(result, expectedResult));
+        rollbackTransaction(em);
+        closeEntityManager(em);
+    }
+    
+    public void complexThreeLevelJoinManyTest(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        Expression exp = (new ExpressionBuilder()).get("manager").anyOf("phoneNumbers").get("areaCode").equal("613");
+        List expectedResult = getServerSession().readAllObjects(Employee.class, exp);
+         clearCache();
+        String ejbqlString = "select distinct e from Employee e join e.manager.phoneNumbers p where p.areaCode = '613'";
+        
+        List result = em.createQuery(ejbqlString).getResultList();
+   
+        Assert.assertTrue("complexThreeLevelJoinOneTest failed", comparer.compareObjects(result, expectedResult));
         rollbackTransaction(em);
         closeEntityManager(em);
     }

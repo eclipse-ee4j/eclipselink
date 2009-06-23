@@ -71,7 +71,7 @@ public class JoinDeclNode extends IdentificationVariableDeclNode {
             // join of embedded attribute is not supported.
             if (path.isDotNode()) {
                 TypeHelper typeHelper = context.getTypeHelper();
-                VariableNode left = (VariableNode)path.getLeft();
+                Node left = path.getLeft();
                 AttributeNode right = (AttributeNode)path.getRight(); 
                 if ((left != null) && (right != null)) {
                     if (typeHelper.isEmbeddedAttribute(left.getType(), right.getAttributeName()))

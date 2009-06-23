@@ -165,6 +165,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         suite.addTest(new JUnitJPQLSimpleTestSuite("selectNativeQueryWithPositionalParameterTest"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("testOneEqualsOne"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("simpleTypeTest"));
+        suite.addTest(new JUnitJPQLSimpleTestSuite("simpleAsOrderByTest"));
         
         return suite;
     }
@@ -2123,4 +2124,26 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         Assert.assertTrue("SimpleTypeTest", comparer.compareObjects(result, expectedResult));
 
     }
+    
+    public void simpleAsOrderByTest(){
+        EntityManager em = createEntityManager();
+
+        ReportQuery query = new ReportQuery();
+        query.setReferenceClass(Employee.class);
+        query.addItem("firstName", query.getExpressionBuilder().get("firstName"));
+        query.returnSingleAttribute();
+        query.dontRetrievePrimaryKeys();
+        query.addOrdering(query.getExpressionBuilder().get("firstName").ascending());
+        
+        Vector expectedResult = (Vector)getServerSession().executeQuery(query);
+        
+        clearCache();
+
+        String ejbqlString = "SELECT e.firstName as firstName FROM Employee e ORDER BY firstName";
+
+        List result = em.createQuery(ejbqlString).getResultList();
+
+        Assert.assertTrue("SimpleTypeTest", comparer.compareObjects(result, expectedResult));
+    }
 }
+

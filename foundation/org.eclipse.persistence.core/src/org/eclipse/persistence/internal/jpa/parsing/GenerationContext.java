@@ -53,10 +53,9 @@ public class GenerationContext {
     }
 
     public GenerationContext(ParseTreeContext newContext, AbstractSession newSession, ParseTree newParseTree) {
-        super();
+        this();
         parseTreeContext = newContext;
         session = newSession;
-        expressions = new Hashtable();
         parseTree = newParseTree;
     }
 

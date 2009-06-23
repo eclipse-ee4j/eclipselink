@@ -100,25 +100,29 @@ public class NodeFactoryImpl implements NodeFactory {
     // ------------------------------------------
     // Major nodes
     // ------------------------------------------
-
-    /** */
+    
     public Object newSelectClause(int line, int column, 
-                                  boolean distinct, List selectExprs) {
+                                    boolean distinct, List selectExprs) {
+        return newSelectClause(line, column, distinct, selectExprs, null);
+    }
+    
+    public Object newSelectClause(int line, int column, boolean distinct, List selectExprs, List identifiers) {
         SelectNode node = new SelectNode();
         node.setContext(context);
         node.setSelectExpressions(selectExprs);
+        node.setIdentifiers(identifiers);
+        if (identifiers != null){
+            for (int i=0;i<identifiers.size();i++){
+                if (identifiers.get(i) != null){
+                    context.registerJoinVariable((String)identifiers.get(i), (Node)selectExprs.get(i), line, column);
+                }
+            }
+        }
         node.setDistinct(distinct);
         setPosition(node, line, column);
         return node;
     }
     
-    public Object newSelectClause(int line, int column, 
-                                    boolean distinct, List selectExprs, List idents) {
-        SelectNode node = (SelectNode)newSelectClause(line, column, distinct, selectExprs);
-        // TODO: Make use of idents
-        return node;
-    }
-
     /** */
     public Object newFromClause(int line, int column, List decls) {
         FromNode node = new FromNode();
@@ -870,7 +874,7 @@ public class NodeFactoryImpl implements NodeFactory {
         SortDirectionNode sortDirection = new SortDirectionNode();
         sortDirection.useAscending();
         node.setDirection(sortDirection);
-        node.setOrderByItem((Node)arg);
+        node.setOrderByItem(arg);
         setPosition(node, line, column);
         return node;
     }
@@ -881,7 +885,7 @@ public class NodeFactoryImpl implements NodeFactory {
         SortDirectionNode sortDirection = new SortDirectionNode();
         sortDirection.useDescending();
         node.setDirection(sortDirection);
-        node.setOrderByItem((Node)arg);
+        node.setOrderByItem(arg);
         setPosition(node, line, column);
         return node;
     }
@@ -960,7 +964,6 @@ public class NodeFactoryImpl implements NodeFactory {
         setPosition(node, line, column);
         return node;
     }
-    
     
     public Object newCaseClause(int line, int column, List whenClauses, Object elseClause){
         // TODO: Add implementation

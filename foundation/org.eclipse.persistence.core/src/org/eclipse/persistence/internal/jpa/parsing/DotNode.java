@@ -32,6 +32,7 @@ import org.eclipse.persistence.queries.ReportQuery;
 public class DotNode extends LogicalOperatorNode {
 
     private Object enumConstant;
+    private String alias;
 
     /**
      * INTERNAL
@@ -166,6 +167,9 @@ public class DotNode extends LogicalOperatorNode {
             // Or it with whatever the right expression is
             whereClause = right.addToExpression(whereClause, context);
             
+            if (alias != null){
+                context.addExpression(whereClause, alias);
+            }
             // and return the expression...
             return whereClause;
         }
@@ -285,5 +289,14 @@ public class DotNode extends LogicalOperatorNode {
             }
         }
         return type;
+    }
+    
+
+    public String getAlias() {
+        return alias;
+    }
+
+    public void setAlias(String alias) {
+        this.alias = alias;
     }
 }

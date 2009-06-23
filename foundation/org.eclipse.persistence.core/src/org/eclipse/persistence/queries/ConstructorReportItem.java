@@ -14,16 +14,20 @@ package org.eclipse.persistence.queries;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.lang.reflect.Constructor;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.internal.expressions.ConstantExpression;
+import org.eclipse.persistence.internal.expressions.MapEntryExpression;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
+import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 
 
@@ -145,11 +149,22 @@ public class ConstructorReportItem extends ReportItem  {
             if (constructorArgTypes[index] == null) {
                 ReportItem argumentItem = (ReportItem)getReportItems().get(index);
                 if (mappings.get(index) != null) {
-                    constructorArgTypes[index] = ((DatabaseMapping)constructorMappings.get(index)).getAttributeClassification();
+                    DatabaseMapping mapping = (DatabaseMapping)constructorMappings.get(index);
+                    if (argumentItem.getAttributeExpression() != null && argumentItem.getAttributeExpression().isMapEntryExpression()){
+                        if (((MapEntryExpression)argumentItem.getAttributeExpression()).shouldReturnMapEntry()){
+                            constructorArgTypes[index] = Map.Entry.class;
+                        } else {
+                            constructorArgTypes[index] = (Class)((CollectionMapping)mapping).getContainerPolicy().getKeyType();
+                        }
+                    } else {
+                        constructorArgTypes[index] = mapping.getAttributeClassification();
+                    }
                 } else if (argumentItem.getResultType() != null) {
                     constructorArgTypes[index] = argumentItem.getResultType();
                 } else if (argumentItem.getDescriptor() != null) {
                     constructorArgTypes[index] = argumentItem.getDescriptor().getJavaClass();
+                } else if (argumentItem.getAttributeExpression() != null && argumentItem.getAttributeExpression().isConstantExpression()){
+                    constructorArgTypes[index] = ((ConstantExpression)argumentItem.getAttributeExpression()).getValue().getClass();
                 } else {
                     // Use Object.class by default.
                     constructorArgTypes[index] = ClassConstants.OBJECT;

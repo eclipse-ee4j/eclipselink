@@ -357,6 +357,7 @@ selectItem returns [Object expr, Object ident]
         }
     ;
 
+
 selectExpression returns [Object node]
 @init { node = null; }
     : n = aggregateExpression {$node = $n.node;}
@@ -543,8 +544,10 @@ joinAssociationPathExpression returns [Object node]
 @init {
     node = null; 
 }
-    : left = variableAccessOrTypeConstant d=DOT right = attribute
-        { $node = factory.newDot($d.getLine(), $d.getCharPositionInLine(), $left.node, $right.node); }
+    	: n = qualifiedIdentificationVariable {$node = $n.node;}
+        (d=DOT right = attribute
+            { $node = factory.newDot($d.getLine(), $d.getCharPositionInLine(), $node, $right.node); }
+        )+ 
     ;
 
 singleValuedPathExpression returns [Object node]

@@ -50,6 +50,8 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 public class SelectNode extends QueryNode {
 
     private List selectExpressions = new ArrayList();
+    private List identifiers = new ArrayList();
+
     private boolean distinct = false;
     
     public SelectNode() {
@@ -61,6 +63,14 @@ public class SelectNode extends QueryNode {
 
     public void setSelectExpressions(List exprs) {
         selectExpressions = exprs;
+    }
+    
+    public List getIdentifiers() {
+        return identifiers;
+    }
+
+    public void setIdentifiers(List identifiers) {
+        this.identifiers = identifiers;
     }
 
     public boolean usesDistinct() {
@@ -150,10 +160,16 @@ public class SelectNode extends QueryNode {
             }
         }
         SelectGenerationContext selectContext = (SelectGenerationContext)context;
-        for (Iterator i = selectExpressions.iterator(); i.hasNext();) {
-            Node node = (Node)i.next();
+        for (int i=0;i<selectExpressions.size();i++){
+            Node node = (Node)selectExpressions.get(i);
             if (selectingRelationshipField(node, context)) {
                 selectContext.useOuterJoins();
+            }
+            if (node.isDotNode() && identifiers != null){
+                String alias = (String)identifiers.get(i);
+                if (alias != null){
+                    ((DotNode)node).setAlias(alias);
+                }
             }
             node.applyToQuery(readQuery, context); 
             selectContext.dontUseOuterJoins();

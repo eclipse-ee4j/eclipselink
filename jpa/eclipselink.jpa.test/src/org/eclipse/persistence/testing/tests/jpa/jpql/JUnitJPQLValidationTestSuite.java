@@ -113,6 +113,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         suite.addTest(new JUnitJPQLValidationTestSuite("testModArgumentValidation"));
         suite.addTest(new JUnitJPQLValidationTestSuite("testInExpressionValidation"));
         suite.addTest(new JUnitJPQLValidationTestSuite("testOrderableTypeInOrderByItem"));
+        suite.addTest(new JUnitJPQLValidationTestSuite("testNonExistentOrderByAlias"));
         suite.addTest(new JUnitJPQLValidationTestSuite("testInvalidNavigation"));
         suite.addTest(new JUnitJPQLValidationTestSuite("testInvalidCollectionNavigation"));
         suite.addTest(new JUnitJPQLValidationTestSuite("testUnknownAttribute"));
@@ -701,6 +702,18 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         } catch (IllegalArgumentException ex) {
             JPQLException cause = (JPQLException)ex.getCause();
             Assert.assertEquals(cause.getErrorCode(), JPQLException.expectedOrderableOrderByItem);
+        }
+    }
+    
+    public void testNonExistentOrderByAlias() {
+        EntityManager em = this.createEntityManager();
+        try {
+            Query query = em.createQuery("SELECT e FROM Employee e ORDER BY firstName");
+            query.getResultList();
+            fail("Failed to throw expected IllegalArgumentException for a query having an ORDER BY item with a non-existent alias");
+        } catch (IllegalArgumentException ex) {
+            JPQLException cause = (JPQLException)ex.getCause();
+            Assert.assertEquals(cause.getErrorCode(), JPQLException.nonExistantOrderByAlias);
         }
     }
 

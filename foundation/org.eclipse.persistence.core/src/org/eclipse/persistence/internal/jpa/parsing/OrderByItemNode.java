@@ -27,7 +27,8 @@ import org.eclipse.persistence.expressions.Expression;
 
 public class OrderByItemNode extends Node {
     private SortDirectionNode direction = null;
-    private Node orderByItem = null;
+    private Object orderByItem = null;
+    private Node orderNode = null;
 
     /**
      * INTERNAL
@@ -35,14 +36,26 @@ public class OrderByItemNode extends Node {
      */
     public void validate(ParseTreeContext context) {
         TypeHelper typeHelper = context.getTypeHelper();
-        if (orderByItem != null) {
-            orderByItem.validate(context);
-            Object type = orderByItem.getType();
+        if (orderNode == null){
+            if (orderByItem instanceof Node){
+                orderNode = (Node)orderByItem;
+            } else {
+                orderNode = context.pathForVariable((String)orderByItem);
+                if (orderNode == null){
+                    throw JPQLException.nonExistantOrderByAlias(
+                            context.getQueryInfo(), getLine(), getColumn(), 
+                            (String)orderByItem);
+                }
+            }
+        }
+        if (orderNode != null) {
+            orderNode.validate(context);
+            Object type = orderNode.getType();
             setType(type);
             if (!typeHelper.isOrderableType(type)) {
                 throw JPQLException.expectedOrderableOrderByItem(
-                    context.getQueryInfo(), orderByItem.getLine(), orderByItem.getColumn(), 
-                    orderByItem.getAsString(), typeHelper.getTypeName(type));
+                    context.getQueryInfo(), orderNode.getLine(), orderNode.getColumn(), 
+                    orderNode.getAsString(), typeHelper.getTypeName(type));
             }
         }
     }
@@ -55,7 +68,16 @@ public class OrderByItemNode extends Node {
         //instead (with an empty constructor).
         boolean oldCheckState = context.shouldCheckSelectNodeBeforeResolving();
         ((SelectGenerationContext)context).checkSelectNodeBeforeResolving(true);
-        Expression orderByExpression = getOrderByItem().generateExpression(context);
+        Expression orderByExpression = null;
+        if (orderByItem instanceof Node){
+            orderNode = (Node)orderByItem;
+            orderByExpression = orderNode.generateExpression(context);
+        } else {
+            orderByExpression = context.expressionFor((String)orderByItem);
+            if (orderByExpression == null){
+                return null;
+            }
+        }
         orderByExpression = getDirection().addToExpression(orderByExpression, context);
         ((SelectGenerationContext)context).checkSelectNodeBeforeResolving(oldCheckState);
         return orderByExpression;
@@ -68,7 +90,7 @@ public class OrderByItemNode extends Node {
         return direction;
     }
 
-    public Node getOrderByItem() {
+    public Object getOrderByItem() {
         return orderByItem;
     }
 
@@ -76,7 +98,7 @@ public class OrderByItemNode extends Node {
         this.direction = direction;
     }
 
-    public void setOrderByItem(Node orderByItem) {
+    public void setOrderByItem(Object orderByItem) {
         this.orderByItem = orderByItem;
     }
 }

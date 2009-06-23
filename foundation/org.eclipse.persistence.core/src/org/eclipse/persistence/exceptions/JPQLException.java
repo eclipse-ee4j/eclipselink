@@ -61,8 +61,10 @@ public class JPQLException extends EclipseLinkException {
     public static final int entityTypeNotFound2 = 8037;
     public static final int resolutionClassNotFoundException2 = 8038;
     public static final int variableCannotHaveMapKey = 8039;
-    public Collection internalExceptions = null;
+    public static final int nonExistantOrderByAlias = 8040;
 
+    public Collection internalExceptions = null;
+    
     /**
     * INTERNAL
     * Only TopLink can throw and create these excpetions
@@ -501,6 +503,16 @@ public class JPQLException extends EclipseLinkException {
         return exception;
     }
 
+    public static JPQLException nonExistantOrderByAlias(String query, int line, int column, String alias) {
+        Object[] args = { query, line, column, alias };
+
+        String message = ExceptionMessageGenerator.buildMessage(
+            JPQLException.class, nonExistantOrderByAlias, args);
+        JPQLException exception = new JPQLException(message);
+        exception.setErrorCode(nonExistantOrderByAlias);
+        return exception;
+    }
+    
     /**
      * INTERNAL
      * Add an internal Exception to the collection of
