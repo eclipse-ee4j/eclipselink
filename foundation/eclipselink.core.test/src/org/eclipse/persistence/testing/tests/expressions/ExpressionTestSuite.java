@@ -1001,6 +1001,93 @@ public class ExpressionTestSuite extends TestSuite {
         test.addUnsupportedPlatform(TimesTenPlatform.class);
         addTest(test);
     }
+    
+    /**
+     * Ensure certain operators work on multiple platforms should be tested on SQLServer and
+     * Oracle in particular.  This tests "CASE field WHERE value THEN value1 ELSE value2" statements  
+     * Added for JPA 2.0 support (bug 252491)
+     */
+    private void addMultiPlatfromTest2() {
+        ExpressionBuilder builder = new ExpressionBuilder();
+
+        Hashtable caseTable = new Hashtable(3);
+        caseTable.put("Bob", "Bobby");
+        caseTable.put("Susan", "Susie");
+        caseTable.put("Eldrick", "Tiger");
+
+        Expression expression = builder.get("firstName").caseStatement(caseTable, "NoNickname").equal("Bobby");
+
+        ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 1);
+        test.setExpression(expression);
+        test.setName("MultiPlatformTest2");
+        test.setDescription("test simple Case function on multiple platforms");
+        /*TODO: add in any unsupported platform checks*/
+        addTest(test);
+    }
+    
+    /**
+     * Ensure certain operators work on multiple platforms.  This tests more complex 
+     * "CASE WHERE expression THEN value1 ELSE value2" statements  
+     * Added for JPA 2.0 support (bug 252491)
+     */
+    private void addMultiPlatfromTest3() {
+        ExpressionBuilder builder = new ExpressionBuilder();
+
+        Hashtable caseTable = new Hashtable(3);//get("firstName").
+        caseTable.put(builder.get("firstName").equal("Bob"), "Bobby");
+        caseTable.put(builder.get("firstName").equal("Susan"), "Susie");
+        caseTable.put(builder.get("firstName").equal("Eldrick"), "Tiger");
+
+        Expression expression = builder.caseConditionStatement(caseTable, "No-Nickname").equal("Bobby");
+        expression = expression.and((ExpressionMath.mod(builder.get("salary"), new Integer(10)).equal(0)));
+        expression = expression.and((ExpressionMath.ceil(builder.get("salary")).equal(35000)));
+        expression = expression.and(builder.get("firstName").length().equal(3));
+
+        ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 1);
+        test.setExpression(expression);
+        test.setName("MultiPlatformTest3");
+        test.setDescription("test Case function with more complex expressions on multiple platforms");
+        /*TODO: add in any unsupported platform checks*/
+        addTest(test);
+    }
+    
+    /**
+     * Ensure certain operators work on multiple platforms.  This tests the NULLIF SQL statement 
+     * Added for JPA 2.0 CASE support (bug 252491)
+     */
+    private void addMultiPlatfromTest4() {
+        ExpressionBuilder builder = new ExpressionBuilder();
+        Expression expression = builder.get("firstName").nullIf( "Bobby").equal("Bob");
+
+        ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 1);
+        test.setExpression(expression);
+        test.setName("MultiPlatformTest4");
+        test.setDescription("test Case and NullIf function on multiple platforms");
+        /*TODO: add in any unsupported platform checks*/
+        addTest(test);
+    }
+    
+    /**
+     * Ensure certain operators work on multiple platforms.  This tests the COALESCE SQL statement 
+     * Added for JPA 2.0 CASE support (bug 252491)
+     */
+    private void addMultiPlatfromTest5() {
+        ExpressionBuilder builder = new ExpressionBuilder();
+
+        Vector caseTable = new Vector(3);
+        caseTable.add(builder.get("firstName"));
+        caseTable.add(builder.get("lastName"));
+        caseTable.add("NoName");
+
+        Expression expression = builder.coalesce(caseTable).equal("Bob");
+
+        ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 1);
+        test.setExpression(expression);
+        test.setName("MultiPlatformTest5");
+        test.setDescription("test Coalesce function on multiple platforms");
+        /*TODO: add in any unsupported platform checks*/
+        addTest(test);
+    }
 
     private void addMultipleAndsTest() {
         ExpressionBuilder builder = new ExpressionBuilder();
@@ -1737,6 +1824,10 @@ public class ExpressionTestSuite extends TestSuite {
 
         addValueEqualValueTest();
         addMultiPlatfromTest();
+        addMultiPlatfromTest2();
+        addMultiPlatfromTest3();
+        addMultiPlatfromTest4();
+        addMultiPlatfromTest5();
         
         addInheritanceTypeTest1();
         addInheritanceTypeTest2();
