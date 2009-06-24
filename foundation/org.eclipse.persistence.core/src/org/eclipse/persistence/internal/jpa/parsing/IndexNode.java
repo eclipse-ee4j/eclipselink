@@ -8,36 +8,28 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
+ *     tware - initial implemenation as part of JPA 2.0 RI
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.parsing;
 
+import org.eclipse.persistence.exceptions.JPQLException;
 import org.eclipse.persistence.expressions.Expression;
-import org.eclipse.persistence.internal.expressions.MapEntryExpression;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 
 /**
  * INTERNAL
- * <p><b>Purpose</b>: Represent an KEY in EJBQL
+ * <p><b>Purpose</b>: Represent an INDEX in EJBQL
  * <p><b>Responsibilities</b>:<ul>
- * <li> Generate the correct expression for an KEY in EJBQL
+ * <li> Generate the correct expression for an INDEX in EJBQL
  * </ul>
  *    @author tware
  *    @since EclipseLink 2.0
  */
-public class MapKeyNode extends Node {
+public class IndexNode extends Node {
 
-    public MapKeyNode(){
+    public IndexNode(){
         super();
-    }
-    
-    /**
-     * INTERNAL
-     * Is this node a MapKey node
-     */
-    public boolean isMapKeyNode() {
-        return true;
     }
     
     /**
@@ -49,7 +41,7 @@ public class MapKeyNode extends Node {
         if (theQuery instanceof ReportQuery) {
             ReportQuery reportQuery = (ReportQuery)theQuery;
             Expression expression = generateExpression(generationContext);
-            reportQuery.addItem(left.resolveAttribute() + "MapKey", expression);
+            reportQuery.addItem(left.resolveAttribute() + "Index", expression);
         }
     }
     
@@ -59,28 +51,16 @@ public class MapKeyNode extends Node {
      */
     public Expression generateExpression(GenerationContext context) {
         Expression owningExpression = getLeft().generateExpression(context);
-        MapEntryExpression whereClause = new MapEntryExpression(owningExpression);
+        Expression whereClause = owningExpression.index();
         return whereClause;
-    }
-    
-    /**
-     * INTERNAL
-     * Return the left most node of a dot expr, so return 'a' for 'a.b.c'.
-     */
-    public Node getLeftMostNode() {
-        if (left.isDotNode()){
-            return ((DotNode)left).getLeftMostNode();
-        }
-        return left;
     }
     
     public void validate(ParseTreeContext context) {
         TypeHelper typeHelper = context.getTypeHelper();
         left.validate(context);
-        if (left.isVariableNode()){
-            setType(((VariableNode)left).getTypeForMapKey(context));
-        } else if (left.isDotNode()){
-            setType(((DotNode)left).getTypeForMapKey(context));
+        if (!left.isVariableNode()){
+            throw JPQLException.indexOnlyAllowedOnVariable(context.getQueryInfo(), getLine(), getColumn(), left.getAsString());
         }
+        setType(Integer.class);
     }
 }

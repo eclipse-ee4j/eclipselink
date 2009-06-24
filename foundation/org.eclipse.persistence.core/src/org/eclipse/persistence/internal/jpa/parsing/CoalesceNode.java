@@ -8,36 +8,33 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
+ *     tware - initial implemenation as part of JPA 2.0 RI
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.parsing;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import org.eclipse.persistence.expressions.Expression;
-import org.eclipse.persistence.internal.expressions.MapEntryExpression;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 
 /**
  * INTERNAL
- * <p><b>Purpose</b>: Represent an KEY in EJBQL
+ * <p><b>Purpose</b>: Represent an COALESCE in EJBQL
  * <p><b>Responsibilities</b>:<ul>
- * <li> Generate the correct expression for an KEY in EJBQL
+ * <li> Generate the correct expression for an COALESCE in EJBQL
  * </ul>
  *    @author tware
  *    @since EclipseLink 2.0
  */
-public class MapKeyNode extends Node {
+public class CoalesceNode extends Node {
 
-    public MapKeyNode(){
+    private List clauses = null;
+
+    public CoalesceNode(){
         super();
-    }
-    
-    /**
-     * INTERNAL
-     * Is this node a MapKey node
-     */
-    public boolean isMapKeyNode() {
-        return true;
     }
     
     /**
@@ -49,38 +46,41 @@ public class MapKeyNode extends Node {
         if (theQuery instanceof ReportQuery) {
             ReportQuery reportQuery = (ReportQuery)theQuery;
             Expression expression = generateExpression(generationContext);
-            reportQuery.addItem(left.resolveAttribute() + "MapKey", expression);
+            reportQuery.addItem("Coalesce", expression);
         }
     }
     
     /**
      * INTERNAL
-     * Generate the a new EclipseLink TableEntryExpression for this node.
+     * Generate the a new EclipseLink Coalesce expression for this node.
      */
     public Expression generateExpression(GenerationContext context) {
-        Expression owningExpression = getLeft().generateExpression(context);
-        MapEntryExpression whereClause = new MapEntryExpression(owningExpression);
-        return whereClause;
-    }
-    
-    /**
-     * INTERNAL
-     * Return the left most node of a dot expr, so return 'a' for 'a.b.c'.
-     */
-    public Node getLeftMostNode() {
-        if (left.isDotNode()){
-            return ((DotNode)left).getLeftMostNode();
+        List expressions = new ArrayList();
+        Iterator i = clauses.iterator();
+        while (i.hasNext()){
+            expressions.add(((Node)i.next()).generateExpression(context));
         }
-        return left;
+        
+        Expression whereClause = context.getBaseExpression().coalesce(expressions);
+        return whereClause;
     }
     
     public void validate(ParseTreeContext context) {
         TypeHelper typeHelper = context.getTypeHelper();
-        left.validate(context);
-        if (left.isVariableNode()){
-            setType(((VariableNode)left).getTypeForMapKey(context));
-        } else if (left.isDotNode()){
-            setType(((DotNode)left).getTypeForMapKey(context));
+        Iterator i = clauses.iterator();
+        while (i.hasNext()){
+            Node node = ((Node)i.next());
+            node.validate(context);
         }
+        setType(((Node)clauses.get(0)).getType());
+    }
+    
+    
+    public List getClauses() {
+        return clauses;
+    }
+
+    public void setClauses(List clauses) {
+        this.clauses = clauses;
     }
 }

@@ -667,6 +667,7 @@ public abstract class Expression implements Serializable, Cloneable {
             v.addElement("CASE WHEN ");
             Expression key = iterator.next();
             expression.addChild(key);
+            expression.setBaseExpression(key);//base needs to be the same as the first child for reportQuery items. 
             v.addElement(" THEN ");
             expression.addChild(Expression.from(caseConditions.get(key), this));
             
@@ -747,7 +748,9 @@ public abstract class Expression implements Serializable, Cloneable {
         expression.setBaseExpression(this);
         Iterator iterator = expressions.iterator();
         if (iterator.hasNext()){
-            expression.addChild(Expression.from(iterator.next(), this));
+            Expression base = Expression.from(iterator.next(), this);
+            expression.addChild(base);
+            expression.setBaseExpression(base);//base needs to be the same as the first child for reportQuery items. 
             while (iterator.hasNext()) {
                 v.addElement(", ");
                 expression.addChild(Expression.from(iterator.next(), this));
@@ -2028,7 +2031,7 @@ public abstract class Expression implements Serializable, Cloneable {
 
     /**
      * PUBLIC:
-     * Function  return the a specific value if item returned from the
+     * Function  return a specific value if item returned from the
      * query is null.  Equivalent of the oracle NVL function
      * <p>Example:
      * <pre><blockquote>

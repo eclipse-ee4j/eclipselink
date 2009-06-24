@@ -8,36 +8,27 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
+ *     tware - initial implemenation as part of JPA 2.0 RI
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.parsing;
 
 import org.eclipse.persistence.expressions.Expression;
-import org.eclipse.persistence.internal.expressions.MapEntryExpression;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 
 /**
  * INTERNAL
- * <p><b>Purpose</b>: Represent an KEY in EJBQL
+ * <p><b>Purpose</b>: Represent an NULLIF in EJBQL
  * <p><b>Responsibilities</b>:<ul>
- * <li> Generate the correct expression for an KEY in EJBQL
+ * <li> Generate the correct expression for an NULLIF in EJBQL
  * </ul>
  *    @author tware
  *    @since EclipseLink 2.0
  */
-public class MapKeyNode extends Node {
+public class NullIfNode extends Node {
 
-    public MapKeyNode(){
+    public NullIfNode(){
         super();
-    }
-    
-    /**
-     * INTERNAL
-     * Is this node a MapKey node
-     */
-    public boolean isMapKeyNode() {
-        return true;
     }
     
     /**
@@ -49,38 +40,23 @@ public class MapKeyNode extends Node {
         if (theQuery instanceof ReportQuery) {
             ReportQuery reportQuery = (ReportQuery)theQuery;
             Expression expression = generateExpression(generationContext);
-            reportQuery.addItem(left.resolveAttribute() + "MapKey", expression);
+            reportQuery.addItem("NullIf(" + getLeft().getAsString() + "," + getRight().getAsString() + ")", expression);
         }
     }
     
     /**
      * INTERNAL
-     * Generate the a new EclipseLink TableEntryExpression for this node.
+     * Generate the a new EclipseLink NullIf expression for this node.
      */
     public Expression generateExpression(GenerationContext context) {
-        Expression owningExpression = getLeft().generateExpression(context);
-        MapEntryExpression whereClause = new MapEntryExpression(owningExpression);
+        Expression whereClause = getLeft().generateExpression(context).nullIf(getRight().generateExpression(context));
         return whereClause;
-    }
-    
-    /**
-     * INTERNAL
-     * Return the left most node of a dot expr, so return 'a' for 'a.b.c'.
-     */
-    public Node getLeftMostNode() {
-        if (left.isDotNode()){
-            return ((DotNode)left).getLeftMostNode();
-        }
-        return left;
     }
     
     public void validate(ParseTreeContext context) {
         TypeHelper typeHelper = context.getTypeHelper();
         left.validate(context);
-        if (left.isVariableNode()){
-            setType(((VariableNode)left).getTypeForMapKey(context));
-        } else if (left.isDotNode()){
-            setType(((DotNode)left).getTypeForMapKey(context));
-        }
+        right.validate(context);
+        setType(left.getType());
     }
 }

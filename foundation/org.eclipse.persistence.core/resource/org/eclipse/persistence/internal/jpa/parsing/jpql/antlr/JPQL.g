@@ -918,7 +918,7 @@ scope{
     node = null;
     $generalCaseExpression::whens = new ArrayList();
 }
-   : a = CASE w = whenClause {$generalCaseExpression::whens.add($w.node);} (whenClause {$generalCaseExpression::whens.add($w.node);})* ELSE e = scalarExpression END
+   : a = CASE w = whenClause {$generalCaseExpression::whens.add($w.node);} (w = whenClause {$generalCaseExpression::whens.add($w.node);})* ELSE e = scalarExpression END
            {
                $node = factory.newCaseClause($a.getLine(), $a.getCharPositionInLine(), 
                     $generalCaseExpression::whens, $e.node); 
@@ -933,7 +933,7 @@ scope{
     node = null;
     $coalesceExpression::primaries = new ArrayList();
 }
-   : c = COALESCE RIGHT_ROUND_BRACKET p = scalarExpression {$coalesceExpression::primaries.add($p.node);} (COMMA scalarExpression {$coalesceExpression::primaries.add($p.node);})+ LEFT_ROUND_BRACKET
+   : c = COALESCE LEFT_ROUND_BRACKET p = scalarExpression {$coalesceExpression::primaries.add($p.node);} (COMMA s = scalarExpression {$coalesceExpression::primaries.add($s.node);})+ RIGHT_ROUND_BRACKET
            {
                $node = factory.newCoalesceClause($c.getLine(), $c.getCharPositionInLine(), 
                     $coalesceExpression::primaries); 
@@ -942,7 +942,7 @@ scope{
 
 nullIfExpression returns [Object node]
 @init {node = null;}
-   : n = NULLIF RIGHT_ROUND_BRACKET l = scalarExpression COMMA r = scalarExpression LEFT_ROUND_BRACKET
+   : n = NULLIF LEFT_ROUND_BRACKET l = scalarExpression COMMA r = scalarExpression RIGHT_ROUND_BRACKET
            {
                $node = factory.newNullIfClause($n.getLine(), $n.getCharPositionInLine(), 
                     $l.node, $r.node); 

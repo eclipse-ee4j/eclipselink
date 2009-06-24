@@ -17,6 +17,15 @@ import org.eclipse.persistence.internal.expressions.MapEntryExpression;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 
+/**
+ * INTERNAL
+ * <p><b>Purpose</b>: Represent an ENTRY in EJBQL
+ * <p><b>Responsibilities</b>:<ul>
+ * <li> Generate the correct expression for an ENTRY in EJBQL
+ * </ul>
+ *    @author tware
+ *    @since EclipseLink 2.0
+ */
 public class MapEntryNode extends Node {
     
     public MapEntryNode(){

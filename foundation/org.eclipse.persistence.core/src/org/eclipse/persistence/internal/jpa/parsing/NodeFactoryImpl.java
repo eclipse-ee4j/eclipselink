@@ -971,23 +971,30 @@ public class NodeFactoryImpl implements NodeFactory {
     }
     
     public Object newCoalesceClause(int line, int column, List clauses){
-        // TODO: Add implementation
-        throw new RuntimeException("NOT IMPLEMENTED YET");
+        CoalesceNode node = new CoalesceNode();
+        node.setClauses(clauses);
+        setPosition(node, line, column);
+        return node;
     }
     
     public Object newNullIfClause(int line, int column, Object left, Object right){
-        // TODO: Add implementation
-        throw new RuntimeException("NOT IMPLEMENTED YET");
+        NullIfNode node = new NullIfNode();
+        node.setLeft((Node)left);
+        node.setRight((Node)right);
+        setPosition(node, line, column);
+        return node;
     }
     
-    public Object newWhenClause(int line, int column, Object conditionClause, Object theClause){
+    public Object newWhenClause(int line, int column, Object conditionClause, Object thenClause){
         // TODO: Add implementation
         throw new RuntimeException("NOT IMPLEMENTED YET");
     }
     
     public Object newIndex(int line, int column, Object object){
-        // TODO: Add implementation
-        throw new RuntimeException("NOT IMPLEMENTED YET");
+        IndexNode node = new IndexNode();
+        node.setLeft((Node)object);
+        setPosition(node, line, column);
+        return node;
     }
 }
 

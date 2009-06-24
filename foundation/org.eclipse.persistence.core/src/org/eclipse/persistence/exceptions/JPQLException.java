@@ -62,6 +62,7 @@ public class JPQLException extends EclipseLinkException {
     public static final int resolutionClassNotFoundException2 = 8038;
     public static final int variableCannotHaveMapKey = 8039;
     public static final int nonExistantOrderByAlias = 8040;
+    public static final int indexOnlyAllowedOnVariable = 8041;
 
     public Collection internalExceptions = null;
     
@@ -510,6 +511,16 @@ public class JPQLException extends EclipseLinkException {
             JPQLException.class, nonExistantOrderByAlias, args);
         JPQLException exception = new JPQLException(message);
         exception.setErrorCode(nonExistantOrderByAlias);
+        return exception;
+    }
+    
+    public static JPQLException indexOnlyAllowedOnVariable(String query, int line, int column, String node) {
+        Object[] args = { query, line, column, node };
+
+        String message = ExceptionMessageGenerator.buildMessage(
+            JPQLException.class, indexOnlyAllowedOnVariable, args);
+        JPQLException exception = new JPQLException(message);
+        exception.setErrorCode(indexOnlyAllowedOnVariable);
         return exception;
     }
     

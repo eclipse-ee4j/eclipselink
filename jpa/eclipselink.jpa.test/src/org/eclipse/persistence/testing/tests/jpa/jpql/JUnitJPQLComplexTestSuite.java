@@ -176,9 +176,14 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         suite.addTest(new JUnitJPQLComplexTestSuite("mappedKeyMapContainerPolicyMapEntryInSelectTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("mappedKeyMapContainerPolicyEmbeddableMapKeyInSelectionCriteriaTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("mappedKeyMapContainerPolicyElementCollectionSelectionCriteriaTest"));
-        
         suite.addTest(new JUnitJPQLComplexTestSuite("complexThreeLevelJoinOneTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexThreeLevelJoinManyTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("complexIndexOfInSelectClauseTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("complexIndexOfInWhereClauseTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("complexCoalesceInWhereTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("complexCoalesceInSelectTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("complexNullIfInWhereTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("complexNullIfInSelectTest"));
         
         return suite;
     }
@@ -202,7 +207,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         comparer = new JUnitDomainObjectComparer();
         
         //set the session for the comparer to use
-        comparer.setSession((AbstractSession)session.getActiveSession());              
+        comparer.setSession((AbstractSession)session.getActiveSession());
         
         //Populate the tables
         employeePopulator.buildExamples();
@@ -2080,5 +2085,103 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         closeEntityManager(em);
     }
     
+    public void complexIndexOfInSelectClauseTest(){
+        EntityManager em = createEntityManager();
+        em.getTransaction().begin();
+        ExpertBeerConsumer consumer = new ExpertBeerConsumer();
+        consumer.getDesignations().add("guru");
+        consumer.getDesignations().add("beer-meister");
+        em.persist(consumer);
+        em.flush();
+        List expectedResult = new ArrayList();
+        expectedResult.add(new Integer(0));
+        expectedResult.add(new Integer(1));
+        clearCache();
+        String ejbqlString = "select index(d) from EXPERT_CONSUMER e join e.designations d";
+        
+        List result = em.createQuery(ejbqlString).getResultList();
+   
+        em.getTransaction().rollback();
+        Assert.assertTrue("complexIndexOfInSelectClauseTest failed", comparer.compareObjects(result, expectedResult));
+    }
+    
+    public void complexIndexOfInWhereClauseTest(){
+        EntityManager em = createEntityManager();
+        em.getTransaction().begin();
+        ExpertBeerConsumer consumer = new ExpertBeerConsumer();
+        consumer.getDesignations().add("guru");
+        consumer.getDesignations().add("beer-meister");
+        em.persist(consumer);
+        em.flush();
+        String expectedResult = "guru";
+        clearCache();
+        String ejbqlString = "select d from EXPERT_CONSUMER e join e.designations d where index(d) = 0";
+        
+        String result = (String)em.createQuery(ejbqlString).getSingleResult();
+        
+        em.getTransaction().rollback();
+        Assert.assertTrue("complexIndexOfInWhereClauseTest failed", result.equals(expectedResult));
+    }
+    
+    public void complexCoalesceInWhereTest(){
+        EntityManager em = createEntityManager();
+
+        Expression exp = (new ExpressionBuilder()).get("firstName").equal("Bob");
+        Vector expectedResult = (Vector)getServerSession().readAllObjects(Employee.class, exp);
+        
+        clearCache();
+        String ejbqlString = "select e from Employee e where coalesce(e.firstName, e.lastName, e.id) = 'Bob'";
+        
+        List result = (List)em.createQuery(ejbqlString).getResultList();
+        
+        Assert.assertTrue("complexIndexOfInWhereClauseTest failed", comparer.compareObjects(result, expectedResult));
+    }
+    
+    public void complexCoalesceInSelectTest(){
+        EntityManager em = createEntityManager();
+
+        ReportQuery reportQuery = new ReportQuery();
+        reportQuery.dontMaintainCache();
+        reportQuery.setShouldReturnWithoutReportQueryResult(true);
+        reportQuery.setReferenceClass(Employee.class);
+        ExpressionBuilder builder = reportQuery.getExpressionBuilder();
+        reportQuery.addItem("firstName", builder.get("firstName"));
+        Vector expectedResult = (Vector)getServerSession().executeQuery(reportQuery);
+        
+        clearCache();
+        String ejbqlString = "select coalesce(e.firstName, e.lastName, e.id) from Employee e";
+        
+        List result = (List)em.createQuery(ejbqlString).getResultList();
+        
+        Assert.assertTrue("complexIndexOfInWhereClauseTest failed", comparer.compareObjects(result, expectedResult));
+    }
+    
+    public void complexNullIfInWhereTest(){
+        EntityManager em = createEntityManager();
+
+        Expression exp = (new ExpressionBuilder()).get("firstName").equal("Bob");
+        Vector expectedResult = (Vector)getServerSession().readAllObjects(Employee.class, exp);
+        
+        clearCache();
+        String ejbqlString = "select e from Employee e where nullIf(e.firstName, 'Bob') is null";
+        
+        List result = (List)em.createQuery(ejbqlString).getResultList();
+        
+        Assert.assertTrue("complexIndexOfInWhereClauseTest failed", comparer.compareObjects(result, expectedResult));
+    }
+    
+    public void complexNullIfInSelectTest(){
+        EntityManager em = createEntityManager();
+
+        Vector expectedResult = new Vector();
+        expectedResult.add(null);
+        
+        clearCache();
+        String ejbqlString = "select nullIf(e.firstName, 'Bob') from Employee e where e.firstName = 'Bob'";
+        
+        List result = (List)em.createQuery(ejbqlString).getResultList();
+        
+        Assert.assertTrue("complexIndexOfInWhereClauseTest failed", comparer.compareObjects(result, expectedResult));
+    }
 }
 
