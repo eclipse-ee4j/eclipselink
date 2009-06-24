@@ -34,7 +34,9 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
+import java.lang.reflect.Method;
 import java.net.URL;
+import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -46,6 +48,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.CachingType;
 import javax.persistence.Embeddable;
 import javax.persistence.GenerationType;
 import javax.persistence.spi.PersistenceUnitInfo;
@@ -85,6 +88,9 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLPersistenceUnitDefaults;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLPersistenceUnitMetadata;
 
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredMethod;
+import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 import org.eclipse.persistence.sequencing.Sequence;
@@ -547,6 +553,36 @@ public class MetadataProject {
     
     /**
      * INTERNAL:
+     * This method will return the name of the CachingType if specified in the 
+     * persistence.xml file. Note, this is a JPA 2.0 feature, therefore, this 
+     * method needs to catch any exception as a result of trying to access this 
+     * information from a JPA 1.0 container.   
+     */
+    protected String getCaching() {
+        try {
+            Method method = null;
+            Object cachingType = null;
+            
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                method = (Method) AccessController.doPrivileged(new PrivilegedGetDeclaredMethod(PersistenceUnitInfo.class, "getCaching", null));
+                cachingType = AccessController.doPrivileged(new PrivilegedMethodInvoker(method, m_persistenceUnitInfo));
+            } else {
+                method = PrivilegedAccessHelper.getDeclaredMethod(PersistenceUnitInfo.class, "getCaching", null);
+                cachingType = PrivilegedAccessHelper.invokeMethod(method, m_persistenceUnitInfo, null);
+            }
+         
+            if (cachingType != null) {
+                return ((CachingType) cachingType).name();
+            }
+        } catch (Exception exception) {
+            // Catch and swallow any exceptions and return null.
+        }
+        
+        return null;
+    }
+    
+    /**
+     * INTERNAL:
      */
     public AbstractConverterMetadata getConverter(String name) {
         return m_converters.get(name);
@@ -752,7 +788,7 @@ public class MetadataProject {
      * persistence.xml.
      */
     public boolean isCacheAll() {
-        return m_persistenceUnitInfo.getCaching() != null && m_persistenceUnitInfo.getCaching().name().equals("ALL");
+        return getCaching() != null && getCaching().equals("ALL");
     }
     
     /**
@@ -762,7 +798,7 @@ public class MetadataProject {
      * also return true if no caching setting was set.
      */
     public boolean isCacheDisableSelective() {
-        return m_persistenceUnitInfo.getCaching() == null || m_persistenceUnitInfo.getCaching().name().equals("DISABLE_SELECTIVE");
+        return getCaching() == null || getCaching().equals("DISABLE_SELECTIVE");
     }
     
     /**
@@ -771,7 +807,7 @@ public class MetadataProject {
      * persistence.xml. 
      */
     public boolean isCacheEnableSelective() {
-        return m_persistenceUnitInfo.getCaching() != null && m_persistenceUnitInfo.getCaching().name().equals("ENABLE_SELECTIVE");
+        return getCaching() != null && getCaching().equals("ENABLE_SELECTIVE");
     }
     
     /**
@@ -780,7 +816,7 @@ public class MetadataProject {
      * persistence.xml.  
      */
     public boolean isCacheNone() {
-        return m_persistenceUnitInfo.getCaching() != null && m_persistenceUnitInfo.getCaching().name().equals("NONE");
+        return getCaching() != null && getCaching().equals("NONE");
     }
     
     /**
