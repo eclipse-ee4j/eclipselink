@@ -460,6 +460,7 @@ public class ExpressionInMemoryTestSuite extends ExpressionUnitTestSuite {
     public boolean shouldTestPassInMemory(ReadAllExpressionTest test) {
         String name = test.getName();
         if (// Exclude batching tests
+            (name.indexOf("MultiPlatformTest") > -1) ||// MultiPlatformTestx use functions that are not supported in memory yet
             (name.indexOf("Batch") > -1) ||// Exclude float tests because of Java floating point conversion issues.
             (name.indexOf("$float") > -1) ||// Exclude char tests because they use field values, with incorrect types.
             (name.indexOf("$char") > -1) ||// Excluded due to bug 3246889, inner/outerjoin symantics need to be supported.

@@ -980,7 +980,7 @@ public class ExpressionTestSuite extends TestSuite {
      * Oracle in particular
      * Added for bug 3497618 and 3539971
      */
-    private void addMultiPlatfromTest() {
+    private void addMultiPlatformTest() {
         ExpressionBuilder builder = new ExpressionBuilder();
 
         Hashtable caseTable = new Hashtable(3);
@@ -1007,7 +1007,7 @@ public class ExpressionTestSuite extends TestSuite {
      * Oracle in particular.  This tests "CASE field WHERE value THEN value1 ELSE value2" statements  
      * Added for JPA 2.0 support (bug 252491)
      */
-    private void addMultiPlatfromTest2() {
+    private void addMultiPlatformTest2() {
         ExpressionBuilder builder = new ExpressionBuilder();
 
         Hashtable caseTable = new Hashtable(3);
@@ -1030,10 +1030,10 @@ public class ExpressionTestSuite extends TestSuite {
      * "CASE WHERE expression THEN value1 ELSE value2" statements  
      * Added for JPA 2.0 support (bug 252491)
      */
-    private void addMultiPlatfromTest3() {
+    private void addMultiPlatformTest3() {
         ExpressionBuilder builder = new ExpressionBuilder();
 
-        Hashtable caseTable = new Hashtable(3);//get("firstName").
+        Hashtable caseTable = new Hashtable(3);
         caseTable.put(builder.get("firstName").equal("Bob"), "Bobby");
         caseTable.put(builder.get("firstName").equal("Susan"), "Susie");
         caseTable.put(builder.get("firstName").equal("Eldrick"), "Tiger");
@@ -1055,7 +1055,7 @@ public class ExpressionTestSuite extends TestSuite {
      * Ensure certain operators work on multiple platforms.  This tests the NULLIF SQL statement 
      * Added for JPA 2.0 CASE support (bug 252491)
      */
-    private void addMultiPlatfromTest4() {
+    private void addMultiPlatformTest4() {
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression expression = builder.get("firstName").nullIf( "Bobby").equal("Bob");
 
@@ -1071,7 +1071,7 @@ public class ExpressionTestSuite extends TestSuite {
      * Ensure certain operators work on multiple platforms.  This tests the COALESCE SQL statement 
      * Added for JPA 2.0 CASE support (bug 252491)
      */
-    private void addMultiPlatfromTest5() {
+    private void addMultiPlatformTest5() {
         ExpressionBuilder builder = new ExpressionBuilder();
 
         Vector caseTable = new Vector(3);
@@ -1823,11 +1823,11 @@ public class ExpressionTestSuite extends TestSuite {
         addParameterIsNullTest();
 
         addValueEqualValueTest();
-        addMultiPlatfromTest();
-        addMultiPlatfromTest2();
-        addMultiPlatfromTest3();
-        addMultiPlatfromTest4();
-        addMultiPlatfromTest5();
+        addMultiPlatformTest();
+        addMultiPlatformTest2();
+        addMultiPlatformTest3();
+        addMultiPlatformTest4();
+        addMultiPlatformTest5();
         
         addInheritanceTypeTest1();
         addInheritanceTypeTest2();
