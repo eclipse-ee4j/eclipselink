@@ -149,6 +149,9 @@
     <!-- Compiles all components except tests, builds eclipselink.jar. -->
     <target name="build-eclipselink-jar" depends="build-core, package-eclipselink-jar" description="build all EclipseLink distribution files except docs and tests"/>
 
+    <!-- compiles and builds all components, packages eclipselink.jar and src zip. -->
+    <target name="build-src" depends="build-eclipselink-jar, package-src-jar" description="build EclipseLink jar and source zip"/>
+
     <!-- Default ant target, compiles all components and tests, builds eclipselink.jar. -->
     <target name="build" depends="build-eclipselink-jar, build-core-test" description="build all EclipseLink distribution files except docs"/>
 
@@ -156,7 +159,7 @@
     <target name="build-all-but-ext" depends="build, build-util, build-util-test"/>
 
     <!-- Compiles core components, tests and extensions (excluding utilities). -->
-    <target name="build-extensions" depends="build-core, build-core-test, build-oracle-extension"/>
+    <target name="build-extensions" depends="build-core, build-core-test, build-oracle-extension, build-oracle-extension-test"/>
 
     <!-- Builds and packages all jars, javadoc, and builds installer. -->
     <target name="build-distribution" depends="build-all-but-ext, package-all"/>
@@ -226,6 +229,8 @@
     <!-- Compiles Oracle extensions and tests. -->
     <target name="build-oracle-extension">
         <ant antfile="build.xml" dir="${eclipselink.extension.oracle}"      target="build"/>
+    </target>
+    <target name="build-oracle-extension-test">
         <ant antfile="build.xml" dir="${eclipselink.extension.oracle.test}" target="build"/>
     </target>
 
