@@ -260,7 +260,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
                     if (!"".equals(typeXPath)) {
                         typeXPath += "/";
                     }
-                    typeField.setXPath(typeXPath + "@" + xmlDescriptor.getNamespaceResolver().resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL) + ":type");
+                    typeField.setXPath(typeXPath + "@" + xmlDescriptor.getNonNullNamespaceResolver().resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL) + ":type");
                     typeNodeValue = new TypeNodeValue();
                     typeNodeValue.setDirectMapping((AbstractDirectMapping)xmlMapping);
                     addChild(typeField.getXPathFragment(), typeNodeValue, xmlDescriptor.getNamespaceResolver());

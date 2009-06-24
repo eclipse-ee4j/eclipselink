@@ -22,8 +22,7 @@ public class JAXBListOfObjectsSuite extends TestCase {
 	}
 
 	public static void main(String[] args) {
-		junit.textui.TestRunner
-				.main(new String[] { "-c",
+		junit.textui.TestRunner.main(new String[] { "-c",
 						"org.eclipse.persistence.testing.jaxb.listofobjects.JAXBListOfObjectsSuite" });
 	}
 
@@ -39,7 +38,10 @@ public class JAXBListOfObjectsSuite extends TestCase {
 		suite.addTestSuite(JAXBListNameCollisionEmployeeTestCases.class);
 		suite.addTestSuite(JAXBListNameCollisionEmployee2TestCases.class);
 		suite.addTestSuite(JAXBEmployeesAndIntegersTestCases.class);
-		//suite.addTestSuite(JAXBListOfObjectsNonRootTestCases.class);
+		suite.addTestSuite(JAXBStringIntegerHashMapTestCases.class);
+		suite.addTestSuite(JAXBStringEmployeeMapTestCases.class);
+		suite.addTestSuite(JAXBListOfObjectsNonRootTestCases.class);
+		suite.addTestSuite(JAXBObjectCollectionsTestCases.class);
 		return suite;
 	}
 }

@@ -26,6 +26,11 @@ public class JAXBTypeElement extends JAXBElement {
 		this.type = type;
 	}	
 
+	public JAXBTypeElement(QName name, Object value, Class type) {
+		super(name, type, value);
+		this.type = type;
+	}
+	
 	public Type getType() {
 		return type;
 	}

@@ -13,10 +13,14 @@
 package org.eclipse.persistence.testing.jaxb.listofobjects;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+
+import javax.xml.bind.annotation.XmlTransient;
 
 public class ListofObjects {
 	public List<Employee> empList;
@@ -26,6 +30,9 @@ public class ListofObjects {
 	public Employee[] empArray;
 	public Integer[] integerArray;
 	public boolean[] booleanArray;
+	public HashMap<String, Integer> stringIntegerHashMap;
+	@XmlTransient
+	public Map<String, Employee> stringEmployeeMap;	
 
 	public ListofObjects() {
 		empList = new ArrayList<Employee>();
@@ -125,6 +132,14 @@ public class ListofObjects {
 			return false;
 		}
 
+		if(stringIntegerHashMap.size() == compareListofObjects.stringIntegerHashMap.size()){
+			if(!stringIntegerHashMap.entrySet().containsAll(compareListofObjects.stringIntegerHashMap.entrySet())){
+				return false;
+			}		
+		}else{
+			return false;
+		}
+		
 		return true;
 	}
 
@@ -134,5 +149,14 @@ public class ListofObjects {
 
 	public void setEmpTreeSet(TreeSet<Employee> empSet) {
 		this.empTreeSet = empSet;
+	}
+
+	public HashMap<String, Integer> getStringIntegerHashMap() {
+		return stringIntegerHashMap;
+	}
+
+	public void setStringIntegerHashMap(
+			HashMap<String, Integer> stringIntegerHashMap) {
+		this.stringIntegerHashMap = stringIntegerHashMap;
 	}
 }

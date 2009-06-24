@@ -41,6 +41,9 @@ public abstract class ObjectArrayValue<T> extends ManyValue<T> {
 	}
 	
 	@XmlTransient
+	public abstract Class getComponentClass();
+	
+	@XmlTransient
 	public boolean isArray(){
 		return true;
 	}		

@@ -12,23 +12,11 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jaxb.many;
 
-import javax.xml.bind.annotation.XmlTransient;
-
-/**
- * 
- * This abstract class is used to support JAXBContext creation with an array or Collection class.
- *
- * Subclasses are CollectionValue, ObjectArrayValue and PrimitiveArrayValue
- */
-@XmlTransient
-public abstract class ManyValue<T> {
-		
-	@XmlTransient
-	public abstract boolean isArray();
+public interface MapEntry <K, V>{	
+	public K getKey();
+	public V getValue();
 	
-	@XmlTransient
-	public abstract T getItem();
-	
-	@XmlTransient
-	public abstract void setItem(T object);	
+	public void setKey(K key);
+	public void setValue(V value);
 }
+

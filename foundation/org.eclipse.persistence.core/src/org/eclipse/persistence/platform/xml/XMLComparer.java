@@ -29,8 +29,12 @@ import org.w3c.dom.Text;
  * This class is used to compare if two DOM nodes are equal.
  */
 public class XMLComparer {
+	
+    private boolean ignoreOrder;
+	
     public XMLComparer() {
         super();
+        ignoreOrder = false;
     }
 
     /**
@@ -198,14 +202,38 @@ public class XMLComparer {
         if (numberOfControlNodes != test.getLength()) {
             return false;
         }
-        for (int x = 0; x < numberOfControlNodes; x++) {
-            if (!isNodeEqual(control.item(x), test.item(x))) {
-                return false;
+        if(ignoreOrder){
+            for (int x = 0; x < numberOfControlNodes; x++) {
+                if(!isNodeInNodeList(control.item(x), test)){
+                    return false;
+                }
+            }
+            for (int x = 0; x < numberOfControlNodes; x++) {
+                if(!isNodeInNodeList(test.item(x), control)){
+                    return false;
+                }
+            }
+        }else{
+            for (int x = 0; x < numberOfControlNodes; x++) {
+                if (!isNodeEqual(control.item(x), test.item(x))) {
+                    return false;
+                }
             }
         }
         return true;
     }
 
+    private boolean isNodeInNodeList(Node node, NodeList nodeList){
+        int length = nodeList.getLength();    
+        for (int x = 0; x < length; x++) {
+            Node nextNode = nodeList.item(x);
+            if(isNodeEqual(node, nextNode)){
+                return true;
+            }
+        }
+        return false;
+    }
+    
     private boolean isStringEqual(String control, String test) {
         if (control == test) {
             return true;
@@ -214,5 +242,13 @@ public class XMLComparer {
         } else {
             return control.equals(test);
         }
+    }
+
+    public boolean isIgnoreOrder() {
+        return ignoreOrder;
+    }
+
+    public void setIgnoreOrder(boolean ignoreOrder) {
+        this.ignoreOrder = ignoreOrder;
     }
 }

@@ -61,13 +61,13 @@ public class JavaModelInputImpl implements JavaModelInput {
              Type type = types[i];
              // type should be a Class or ParameterizedType
              if (type instanceof Class) {
-                 jClasses[i] = new JavaClassImpl((Class) type);
+                 jClasses[i] = new JavaClassImpl((Class) type);                 
              } else {
                  // assume parameterized type
                  ParameterizedType pType = (ParameterizedType) type;
-                 jClasses[i] = new JavaClassImpl(pType, (Class) pType.getRawType());
-                 javaClassToType.put(jClasses[i], type);
+                 jClasses[i] = new JavaClassImpl(pType, (Class) pType.getRawType());                 
              }             
+             javaClassToType.put(jClasses[i], type);
          }
          jModel = javaModel;
 

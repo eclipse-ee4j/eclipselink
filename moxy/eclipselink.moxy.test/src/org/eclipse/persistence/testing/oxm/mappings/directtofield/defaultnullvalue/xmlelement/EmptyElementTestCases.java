@@ -37,7 +37,7 @@ public class EmptyElementTestCases extends XMLMappingTestCases {
 	public EmptyElementTestCases(String name) throws Exception {
 		super(name);
 		setControlDocument(XML_RESOURCE);
-		setWriteControlDocument(XML_WRITE_RESOURCE);
+		//setWriteControlDocument(XML_WRITE_RESOURCE);
 		Project aProject = new DefaultNullValueElementProject();
 		setProject(aProject);
 		// Force empty element marshalling

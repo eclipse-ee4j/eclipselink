@@ -35,6 +35,7 @@ import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 
 import org.eclipse.persistence.internal.descriptors.Namespace;
+import org.eclipse.persistence.internal.jaxb.many.MapValue;
 import org.eclipse.persistence.internal.oxm.schema.model.*;
 import org.eclipse.persistence.oxm.XMLConstants;
 
@@ -343,7 +344,7 @@ public class SchemaGenerator {
         }
     }
     
-    public void addToSchemaType(java.util.List<Property> properties, TypeDefParticle compositor, ComplexType type, Schema schema) {
+    public void addToSchemaType(TypeInfo ownerTypeInfo, java.util.List<Property> properties, TypeDefParticle compositor, ComplexType type, Schema schema) {
         for (Property next : properties) {
             // TODO:  we seem to get a null property on occasion
             // need to look into this...
@@ -503,7 +504,7 @@ public class SchemaGenerator {
                 } else if(next.isChoice()) {
                     Choice choice = new Choice();
                     ArrayList<Property> choiceProperties = (ArrayList<Property>)((ChoiceProperty)next).getChoiceProperties();
-                    addToSchemaType(choiceProperties, choice, parentType, schema);
+                    addToSchemaType(ownerTypeInfo, choiceProperties, choice, parentType, schema);
                     if(isCollectionType(next)) {
                         choice.setMaxOccurs(Occurs.UNBOUNDED);
                     }
@@ -681,18 +682,12 @@ public class SchemaGenerator {
                             element.setMaxOccurs(Occurs.UNBOUNDED);
                             element.setType(typeName);
                         }
-                    }else if(isMapType){ 
-                    	ComplexType mapComplexType = new ComplexType();
-                    	Sequence mapSequence = new Sequence();
+                    }else if(isMapType){                    	
                     	
-                    	Element entryElement = new Element();
-                    	entryElement.setName("entry");
-                    	entryElement.setMinOccurs(Occurs.ZERO);
-                    	entryElement.setMaxOccurs(Occurs.UNBOUNDED);
                     	
                     	ComplexType entryComplexType = new ComplexType();
                     	Sequence entrySequence = new Sequence();
-                    	
+                    	                    
                     	Element keyElement = new Element();
                     	keyElement.setName("key");
                     	keyElement.setMinOccurs(Occurs.ZERO);   
@@ -724,14 +719,28 @@ public class SchemaGenerator {
                         }
                     	                    	               	
                     	entrySequence.addElement(valueElement);
-                    	
                     	entryComplexType.setSequence(entrySequence);
-                    	entryElement.setComplexType(entryComplexType);
                     	
-                    	mapSequence.addElement(entryElement);
-                    	mapComplexType.setSequence(mapSequence);
-                        element.setComplexType(mapComplexType);                       
+                    	JavaClass descriptorClass = helper.getJavaClass(ownerTypeInfo.getDescriptor().getJavaClassName());
+                        JavaClass mapValueClass = helper.getJavaClass(MapValue.class);
                         
+                        if(mapValueClass.isAssignableFrom(descriptorClass)){
+                    	    element.setComplexType(entryComplexType);
+                        	element.setMaxOccurs(Occurs.UNBOUNDED);
+                    	}else{
+	                    	ComplexType complexType = new ComplexType();
+	                    	Sequence sequence = new Sequence();                    	
+	                    	complexType.setSequence(sequence);
+	                    	
+	                    	Element entryElement = new Element();
+	                    	entryElement.setName("entry");
+	                    	entryElement.setMinOccurs(Occurs.ZERO);
+	                    	entryElement.setMaxOccurs(Occurs.UNBOUNDED);
+	                    	sequence.addElement(entryElement);
+	                    	entryElement.setComplexType(entryComplexType);
+	                    	
+	                    	element.setComplexType(complexType);
+                    	}                                            
                     } else {
                         element.setType(typeName);
                     }
@@ -804,8 +813,8 @@ public class SchemaGenerator {
             String javaClassName = classNames.next();
             TypeInfo info = (TypeInfo)typeInfo.get(javaClassName);
             if (info.isComplexType()) {
-            	if(info.getSchema() != null){	                     
-	                addToSchemaType(info.getNonTransientPropertiesInPropOrder(), info.getCompositor(), info.getComplexType(), info.getSchema());
+            	if(info.getSchema() != null){	     
+	                addToSchemaType(info, info.getNonTransientPropertiesInPropOrder(), info.getCompositor(), info.getComplexType(), info.getSchema());
             	}
             }
         }

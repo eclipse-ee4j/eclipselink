@@ -21,6 +21,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -50,6 +51,7 @@ import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 import org.eclipse.persistence.jaxb.*;
 import org.eclipse.persistence.internal.jaxb.*;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
@@ -279,6 +281,22 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         		}
         	}else{
         		fail("Expected an array value but was an " + testValue.getClass().getName());
+        	}
+        }
+        else if (controlValue instanceof Collection){
+        	Collection controlCollection = (Collection)controlValue;
+        	Collection testCollection = (Collection)testValue;
+        	Iterator<Object> controlIter = controlCollection.iterator();
+        	Iterator<Object> testIter = testCollection.iterator();
+        	assertEquals(controlCollection.size(), testCollection.size());
+        	while(controlIter.hasNext()){
+        		Object nextControl = controlIter.next();
+        		Object nextTest = testIter.next();
+        		if(nextControl instanceof Node){        			
+        			assertTrue("Nodes are not equal", getXMLComparer().isNodeEqual((Node)nextControl, (Node)nextTest));
+        		}else{
+        			assertEquals(nextControl, nextTest);
+        		}
         	}
         }else{        
         	assertEquals(controlValue, testValue);

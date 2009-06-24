@@ -16,7 +16,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.Reader;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URL;
 import java.util.HashMap;
@@ -240,12 +239,12 @@ public class JAXBUnmarshaller implements Unmarshaller {
     	}    	    	    
     }
     
-    public JAXBElement unmarshal(Source source, Type type) throws JAXBException {    	
-    	if(type instanceof Class){
-    		return  unmarshal(source, (Class)type);
-    	}else if(type instanceof ParameterizedType){
-    		Class unmarshalClass = jaxbContext.getCollectionClassesToGeneratedClasses().get(type);
+    public JAXBElement unmarshal(Source source, Type type) throws JAXBException {   
+    	Class unmarshalClass = jaxbContext.getCollectionClassesToGeneratedClasses().get(type);
+    	if(unmarshalClass != null){
     		return  unmarshal(source, unmarshalClass);
+    	}else if(type instanceof Class){
+    		return  unmarshal(source, (Class)type);
     	}
     	return null;    	    	
     }

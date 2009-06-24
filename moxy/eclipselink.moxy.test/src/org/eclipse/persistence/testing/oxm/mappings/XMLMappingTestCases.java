@@ -124,6 +124,9 @@ public abstract class XMLMappingTestCases extends OXTestCase {
      * @throws Exception
      */
     protected Document getWriteControlDocument() throws Exception {
+    	if(writeControlDocument != null){
+    		return writeControlDocument;
+    	}
         return getControlDocument();
     }
 

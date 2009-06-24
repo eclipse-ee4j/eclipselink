@@ -75,29 +75,21 @@ public abstract class JAXBListOfObjectsTestCases extends JAXBTestCases {
 
 	public void testXMLToObjectFromXMLStreamReader() throws Exception {
 		if (System.getProperty("java.version").contains("1.6")) {
-			InputStream instream = ClassLoader
-					.getSystemResourceAsStream(getNoXsiTypeControlResourceName());
-			javax.xml.stream.XMLInputFactory factory = javax.xml.stream.XMLInputFactory
-					.newInstance();
-			javax.xml.stream.XMLStreamReader reader = factory
-					.createXMLStreamReader(instream);
+			InputStream instream = ClassLoader.getSystemResourceAsStream(getNoXsiTypeControlResourceName());
+			javax.xml.stream.XMLInputFactory factory = javax.xml.stream.XMLInputFactory.newInstance();
+			javax.xml.stream.XMLStreamReader reader = factory.createXMLStreamReader(instream);
 
-			Object obj = ((JAXBUnmarshaller) getJAXBUnmarshaller()).unmarshal(
-					reader, getTypeToUnmarshalTo());
+			Object obj = ((JAXBUnmarshaller) getJAXBUnmarshaller()).unmarshal(reader, getTypeToUnmarshalTo());
 			this.xmlToObjectTest(obj);
 		}
 	}
 
 	public void testXMLToObjectFromXMLEventReader() throws Exception {
 		if (System.getProperty("java.version").contains("1.6")) {
-			InputStream instream = ClassLoader
-					.getSystemResourceAsStream(getNoXsiTypeControlResourceName());
-			javax.xml.stream.XMLInputFactory factory = javax.xml.stream.XMLInputFactory
-					.newInstance();
-			javax.xml.stream.XMLEventReader reader = factory
-					.createXMLEventReader(instream);
-			Object obj = ((JAXBUnmarshaller) getJAXBUnmarshaller()).unmarshal(
-					reader, getTypeToUnmarshalTo());
+			InputStream instream = ClassLoader.getSystemResourceAsStream(getNoXsiTypeControlResourceName());
+			javax.xml.stream.XMLInputFactory factory = javax.xml.stream.XMLInputFactory.newInstance();
+			javax.xml.stream.XMLEventReader reader = factory.createXMLEventReader(instream);
+			Object obj = ((JAXBUnmarshaller) getJAXBUnmarshaller()).unmarshal(reader, getTypeToUnmarshalTo());
 			this.xmlToObjectTest(obj);
 		}
 	}
@@ -200,46 +192,24 @@ public abstract class JAXBListOfObjectsTestCases extends JAXBTestCases {
 			assertTrue("generated schema did not match control schema", xmlComparer.isSchemaEqual(control, test));
 
 		}
-		
-		/*
-		
-		DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-	    builderFactory.setIgnoringElementContentWhitespace(true);
-	    builderFactory.setNamespaceAware(true);
-	    DocumentBuilder parser = builderFactory.newDocumentBuilder();
-	            
-	    InputStream stream = new FileInputStream(new File("org/eclipse/persistence/testing/jaxb/schemagen/employee/schema0.xsd"));
-	    Document control = parser.parse(stream);
-	            
-	    stream = new FileInputStream(new File(tmpdir + "/schema0.xsd"));
-	    Document test = parser.parse(stream);
-	            
-	    JAXBXMLComparer xmlComparer = new JAXBXMLComparer();	        
-	    assertTrue("generated schema did not match control schema", xmlComparer.isSchemaEqual(control, test));
-*/
-		
 	}
 	
 	public Object getWriteControlObject(){
 		JAXBElement jaxbElement = (JAXBElement)getControlObject();
-		//TypedJAXBElement typed = new TypedJAXBElement(jaxbElement.getName(), jaxbElement.getDeclaredType(), jaxbElement.getValue());
-//		TypedJAXBElement typed = new TypedJAXBElement(jaxbElement.getName(), jaxbElement.getValue(), jaxbElement.getType());
+
 		try{
-			//typed.setType(getTypeToUnmarshalTo());
 			Type typeToUse = getTypeToUnmarshalTo();
 			if(typeToUse instanceof ParameterizedType){
-				JAXBTypeElement typed = new JAXBTypeElement(jaxbElement.getName(), jaxbElement.getValue(), (ParameterizedType)getTypeToUnmarshalTo());
+				JAXBTypeElement typed = new JAXBTypeElement(jaxbElement.getName(), jaxbElement.getValue(), (ParameterizedType)typeToUse);
 				return typed;
-			}else{
-				//TypedJAXBElement typed = new TypedJAXBElement(jaxbElement.getName(), jaxbElement.getValue(), (Class)getTypeToUnmarshalTo());				
-				return jaxbElement;
+			}else if(typeToUse instanceof Class){
+				JAXBTypeElement typed = new JAXBTypeElement(jaxbElement.getName(), jaxbElement.getValue(), (Class)typeToUse);
+				return typed;
 			}
 		}catch(Exception e){
 			fail(e.getMessage());
 		}
-		//fail(e.getMessage());
 		return null;
-		//return typed;
 	}
 
 	protected abstract Type getTypeToUnmarshalTo() throws Exception;

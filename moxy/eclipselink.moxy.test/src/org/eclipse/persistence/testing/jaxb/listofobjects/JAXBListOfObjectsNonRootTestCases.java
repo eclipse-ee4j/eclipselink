@@ -17,6 +17,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
@@ -38,7 +39,17 @@ public class JAXBListOfObjectsNonRootTestCases extends
 
 	public JAXBListOfObjectsNonRootTestCases(String name) throws Exception {
 		super(name);
-		init();
+		init();		
+	}
+	
+	public void setUp() throws Exception{
+		super.setUp();
+		getXMLComparer().setIgnoreOrder(true);
+	}
+	
+	public void tearDown(){
+		super.tearDown();
+		getXMLComparer().setIgnoreOrder(false);
 	}
 
 	public void init() throws Exception {
@@ -52,7 +63,7 @@ public class JAXBListOfObjectsNonRootTestCases extends
 	
 	public  List<InputStream> getControlSchemaFiles(){
 		
-		InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/nonRoot.xsd");
+		InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/listofobjects.xsd");
 		
 		List<InputStream> controlSchema = new ArrayList<InputStream>();
 		controlSchema.add(instream);
@@ -94,15 +105,21 @@ public class JAXBListOfObjectsNonRootTestCases extends
 		booleans[3] = Boolean.FALSE.booleanValue();
 		listofObjects.setBooleanArray(booleans);
 
+		HashMap<String, Integer> stringIntegerMap = new HashMap<String, Integer>();	
+		stringIntegerMap.put("string1", new Integer(10));
+		stringIntegerMap.put("string2", new Integer(20));
+		stringIntegerMap.put("string3", new Integer(30));
+		listofObjects.setStringIntegerHashMap(stringIntegerMap);
+				
 		QName qname = new QName("listOfObjectsNamespace", "root");
 		JAXBElement jaxbElement = new JAXBElement(qname, listofObjects.getClass(), null);
 		jaxbElement.setValue(listofObjects);
 
 		return jaxbElement;
 	}
-
+		
 	protected Type getTypeToUnmarshalTo() {
-		return null;
+		return ListofObjects.class;
 	}
 
 	private Employee getEmployee1() {
@@ -122,8 +139,9 @@ public class JAXBListOfObjectsNonRootTestCases extends
 		employee.id = CONTROL_ID;
 
 		employee.responsibilities = responsibilities;
-
+		
 		employee.setBlah("Some String");
+		
 		return employee;
 	}
 
