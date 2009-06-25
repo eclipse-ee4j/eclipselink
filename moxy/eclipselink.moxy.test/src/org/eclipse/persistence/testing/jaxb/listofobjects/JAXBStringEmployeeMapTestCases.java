@@ -119,4 +119,7 @@ protected String getNoXsiTypeControlResourceName() {
 	return XML_RESOURCE_NO_XSI_TYPE;
 }
 
+public void testSchemaGen() throws Exception {
+}
+
 }
