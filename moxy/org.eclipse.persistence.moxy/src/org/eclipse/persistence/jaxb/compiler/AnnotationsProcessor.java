@@ -1911,33 +1911,38 @@ public class AnnotationsProcessor {
     
  
     private Class generateWrapperForMapClass(JavaClass mapClass, JavaClass keyClass, JavaClass valueClass){
-    	 
-    	NamespaceInfo keyNamespaceInfo = getNamespaceInfoForPackage(keyClass);
-		String keyPackageName = keyClass.getPackageName();
-		
-		NamespaceInfo valueNamespaceInfo = getNamespaceInfoForPackage(valueClass);
-		String valuePackageName = valueClass.getPackageName();		
-		
-		NamespaceInfo combinedNamespaceInfo = new NamespaceInfo();
-		combinedNamespaceInfo.setNamespace(keyNamespaceInfo.getNamespace());
+    	
+    	NamespaceInfo combinedNamespaceInfo = new NamespaceInfo();
 		NamespaceResolver combinedNamespaceResolver = new NamespaceResolver();
+		String combinedNamespaceInfoNamespace = "";
 		
-		java.util.Vector<Namespace> namespaces= keyNamespaceInfo.getNamespaceResolver().getNamespaces();
-		for(Namespace n:namespaces){
-			combinedNamespaceResolver.put(n.getPrefix(), n.getNamespaceURI());	
-		}
-		
-		namespaces= valueNamespaceInfo.getNamespaceResolver().getNamespaces();
-		for(Namespace n:namespaces){
-			combinedNamespaceResolver.put(n.getPrefix(), n.getNamespaceURI());	
-		}		
+		String packageName = "jaxb.dev.java.net";
+    	if(!helper.isBuiltInJavaType(keyClass)){
+    		NamespaceInfo keyNamespaceInfo = getNamespaceInfoForPackage(keyClass);
+    		String keyPackageName = keyClass.getPackageName();
+    		packageName = packageName + "." + keyPackageName;
+    		combinedNamespaceInfoNamespace = keyNamespaceInfo.getNamespace();
+    		java.util.Vector<Namespace> namespaces= keyNamespaceInfo.getNamespaceResolver().getNamespaces();
+    		for(Namespace n:namespaces){
+    			combinedNamespaceResolver.put(n.getPrefix(), n.getNamespaceURI());	
+    		}    		
+    	}
+    	
+    	if(!helper.isBuiltInJavaType(valueClass)){
+			NamespaceInfo valueNamespaceInfo = getNamespaceInfoForPackage(valueClass);
+			String valuePackageName = valueClass.getPackageName();		
+			packageName = packageName + "." + valuePackageName;			
+			java.util.Vector<Namespace> namespaces= valueNamespaceInfo.getNamespaceResolver().getNamespaces();		
+			for(Namespace n:namespaces){
+			    combinedNamespaceResolver.put(n.getPrefix(), n.getNamespaceURI());	
+			}			
+    	}
+		combinedNamespaceInfo.setNamespace(combinedNamespaceInfoNamespace);
+	
 		combinedNamespaceInfo.setNamespaceResolver(combinedNamespaceResolver);
-		
-		String packageName = "jaxb.dev.java.net." + keyPackageName +"."+ valuePackageName;
-		if(valueNamespaceInfo != null){
-			getPackageToNamespaceMappings().put(packageName, combinedNamespaceInfo);
-		}
-					
+				
+		getPackageToNamespaceMappings().put(packageName, combinedNamespaceInfo);
+							
    		int beginIndex = keyClass.getName().lastIndexOf(".")+1;
    		String keyName = keyClass.getName().substring(beginIndex);
    		beginIndex = valueClass.getName().lastIndexOf(".")+1;

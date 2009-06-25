@@ -31,6 +31,9 @@ import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Result;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
@@ -193,9 +196,28 @@ public abstract class JAXBListOfObjectsTestCases extends JAXBTestCases {
 			Document test = parser.parse(nextGeneratedValue);
 			
 			JAXBXMLComparer xmlComparer = new JAXBXMLComparer();	        
-			assertTrue("generated schema did not match control schema", xmlComparer.isSchemaEqual(control, test));
+			boolean isEqual = xmlComparer.isSchemaEqual(control, test);
+			if(!isEqual){
+				
+				logDocument(control);
+				logDocument(test);
+			}
+			assertTrue("generated schema did not match control schema", isEqual);
 		}
 	}
+	
+	 protected void logDocument(Document document){
+  	   try {
+             TransformerFactory transformerFactory = TransformerFactory.newInstance();
+             Transformer transformer = transformerFactory.newTransformer();
+             DOMSource source = new DOMSource(document);
+             StreamResult result = new StreamResult(System.out);
+             transformer.transform(source, result);
+         } catch (Exception e) {
+             e.printStackTrace();
+         }
+  }
+
 	
 	public Object getWriteControlObject(){
 		JAXBElement jaxbElement = (JAXBElement)getControlObject();

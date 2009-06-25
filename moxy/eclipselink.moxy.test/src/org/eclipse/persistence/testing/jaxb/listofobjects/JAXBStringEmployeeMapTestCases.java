@@ -58,9 +58,9 @@ public class JAXBStringEmployeeMapTestCases extends JAXBListOfObjectsTestCases {
 	}
 	
    public  Map<String, InputStream> getControlSchemaFiles(){
-		
-		InputStream instream2 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/stringEmployeeMap2.xsd");
+				
 		InputStream instream1 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/stringEmployeeMap.xsd");
+		InputStream instream2 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/stringEmployeeMap2.xsd");
 		
 		Map<String,InputStream> controlSchema = new HashMap<String,InputStream>();
 		controlSchema.put("listOfObjectsNamespace",instream1);
@@ -117,9 +117,6 @@ protected Type getTypeToUnmarshalTo() throws Exception {
 
 protected String getNoXsiTypeControlResourceName() {
 	return XML_RESOURCE_NO_XSI_TYPE;
-}
-
-public void testSchemaGen() throws Exception {
 }
 
 }

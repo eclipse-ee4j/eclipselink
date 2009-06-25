@@ -703,8 +703,27 @@ public class SchemaGenerator {
                         }
                         QName keySchemaType = getSchemaTypeFor(keyType);                                            
                         if (keySchemaType != null) {
-                        	typeName = XMLConstants.SCHEMA_PREFIX + ":" + keySchemaType.getLocalPart();
+                        	
+                        	String prefix;
+                        	if(keySchemaType.getNamespaceURI().equals(XMLConstants.SCHEMA_URL)) {
+                                prefix = XMLConstants.SCHEMA_PREFIX;
+                            } else {
+                            	prefix = getPrefixForNamespace(keySchemaType.getNamespaceURI(), schema.getNamespaceResolver());
+                            }                        	                        	
+                        	if(prefix != null && !prefix.equals("")){
+                        		typeName = prefix + ":" + keySchemaType.getLocalPart();
+                        	}else{
+                        		typeName = keySchemaType.getLocalPart();
+                        	}
                         	keyElement.setType(typeName);
+                        	                        
+                        	
+                        	TypeInfo targetInfo = this.typeInfo.get(keyType.getQualifiedName());
+                            if(targetInfo != null) {
+	                        	Schema keyElementSchema = this.getSchemaForNamespace(keySchemaType.getNamespaceURI());
+	                        	//add an import here
+	                            addImportIfRequired(schema, keyElementSchema, keySchemaType.getNamespaceURI());
+                            }
                         }
                                             	
                     	entrySequence.addElement(keyElement);                    	
@@ -714,8 +733,27 @@ public class SchemaGenerator {
                     	valueElement.setMinOccurs(Occurs.ZERO);
                     	QName valueSchemaType = getSchemaTypeFor(valueType);                                            
                         if (valueSchemaType != null) {
-                        	typeName = XMLConstants.SCHEMA_PREFIX + ":" + valueSchemaType.getLocalPart();
-                        	valueElement.setType(typeName);     
+                        	String prefix;
+                        	if(valueSchemaType.getNamespaceURI().equals(XMLConstants.SCHEMA_URL)) {
+                                prefix = XMLConstants.SCHEMA_PREFIX;
+                            } else {
+                            	prefix = getPrefixForNamespace(valueSchemaType.getNamespaceURI(), schema.getNamespaceResolver());
+                            }
+                        	if(prefix != null && !prefix.equals("")){
+                        		typeName = prefix + ":" + valueSchemaType.getLocalPart();
+                        	}else{
+                        		typeName = valueSchemaType.getLocalPart();
+                        	}
+                        	
+                        	valueElement.setType(typeName);
+                        	
+                        	TypeInfo targetInfo = this.typeInfo.get(valueType.getQualifiedName());
+                            if(targetInfo != null) {
+                            	Schema valueElementSchema = this.getSchemaForNamespace(valueSchemaType.getNamespaceURI());
+                            	//add an import here
+                                addImportIfRequired(schema, valueElementSchema, valueSchemaType.getNamespaceURI());	
+                            }
+                        	
                         }
                     	                    	               	
                     	entrySequence.addElement(valueElement);
@@ -866,9 +904,10 @@ public class SchemaGenerator {
             schemaForNamespace = new HashMap<String, Schema>();
         }
         Schema schema = schemaForNamespace.get(namespace);
-        if (schema == null) {
+        if (schema == null) {        	        	
+        	       
             NamespaceInfo namespaceInfo = getNamespaceInfoForNamespace(namespace);
-                       
+                                   
             schema = new Schema();
             schema.setName("schema" + schemaCount + ".xsd");
             
