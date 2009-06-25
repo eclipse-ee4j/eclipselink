@@ -76,6 +76,7 @@ public class LobJUnitTestCase extends JUnitTestCase {
             closeEntityManager(em);
             throw e;
         }
+        closeEntityManager(em);
     }
 
     public void testDelete() {
@@ -92,25 +93,38 @@ public class LobJUnitTestCase extends JUnitTestCase {
             throw e;
         }
         assertTrue("Error deleting Image", em.find(Image.class, imageId) == null);
+        closeEntityManager(em);
     }
 
     public void testRead() throws Exception {
         clearCache();
         EntityManager em = createEntityManager();
+        beginTransaction(em);
         Image image = em.find(Image.class, imageId);
-        assertTrue(image.getId() == imageId);
-        // Check lazy loading of lob, if agent was used.
-        if (image instanceof PersistenceWeaved) {
-            Field field = image.getClass().getDeclaredField("audio");
-            field.setAccessible(true);
-            if (field.get(image) != null) {
-                fail("Lazy basic should not be fetched.");
+        try {
+             assertTrue(image.getId() == imageId);
+             // Check lazy loading of lob, if agent was used.
+             if (image instanceof PersistenceWeaved) {
+                 Field field = image.getClass().getDeclaredField("audio");
+                 field.setAccessible(true);
+                 if (field.get(image) != null) {
+                     fail("Lazy basic should not be fetched.");
+                 }
             }
+             commitTransaction(em);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+            throw e;
         }
+
         assertTrue("byte-arrays do not match", Helper.compareByteArrays(image.getAudio(), originalImage.getAudio()));
         assertTrue("char-arrays do not match", Helper.compareCharArrays(image.getCommentary(), originalImage.getCommentary()));
         assertTrue("Byte-arrays do not match", Helper.compareArrays(image.getPicture(), originalImage.getPicture()));
         assertTrue(image.getScript().equals(originalImage.getScript()));
+        closeEntityManager(em);
     }
 
     public void testUpdate() {
@@ -136,6 +150,7 @@ public class LobJUnitTestCase extends JUnitTestCase {
         assertNull(image.getCommentary());
         assertNull(image.getPicture());
         assertNull(image.getScript());
+        closeEntityManager(em);
     }
 
     public static void main(String[] args) {
