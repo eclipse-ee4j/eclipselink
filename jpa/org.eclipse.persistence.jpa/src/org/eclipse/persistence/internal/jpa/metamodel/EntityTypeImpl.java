@@ -12,19 +12,13 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
-import java.lang.reflect.Field;
-import java.util.Iterator;
 import java.util.Set;
 
 import javax.persistence.metamodel.*;
-import javax.persistence.metamodel.Type.PersistenceType;
 
 import org.eclipse.persistence.descriptors.CMPPolicy;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
-import org.eclipse.persistence.internal.descriptors.InstanceVariableAttributeAccessor;
 import org.eclipse.persistence.internal.jpa.CMP3Policy;
-import org.eclipse.persistence.mappings.AttributeAccessor;
-import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 
 /**
@@ -278,7 +272,8 @@ public class EntityTypeImpl<X> extends ManagedTypeImpl<X> implements EntityType<
             java.util.List<DatabaseMapping> pkMappings = getDescriptor().getObjectBuilder().getPrimaryKeyMappings();
             
             if (pkMappings.size() == 1) {
-                Class aClass = pkMappings.get(0).getAttributeClassification();
+                @SuppressWarnings("unused")
+				Class aClass = pkMappings.get(0).getAttributeClassification();
                 // Basic Type?
                 return null;//new BasicImpl(aClass);
             }
@@ -286,7 +281,8 @@ public class EntityTypeImpl<X> extends ManagedTypeImpl<X> implements EntityType<
         
         if (cmpPolicy instanceof CMP3Policy) {
             // EntityType or IdentifiableType?
-            Class aClass = ((CMP3Policy) cmpPolicy).getPKClass();
+            @SuppressWarnings("unused")
+			Class aClass = ((CMP3Policy) cmpPolicy).getPKClass();
             return this.getSupertype();
         }
         
