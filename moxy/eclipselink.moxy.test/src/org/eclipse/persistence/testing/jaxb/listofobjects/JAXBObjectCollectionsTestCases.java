@@ -16,7 +16,9 @@ import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
@@ -54,16 +56,18 @@ public class JAXBObjectCollectionsTestCases extends JAXBListOfObjectsTestCases {
 	}
 
 	
-   public  List<InputStream> getControlSchemaFiles(){
-		
-		InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/objectCollections.xsd");
-		InputStream instream2 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/objectCollections2.xsd");
-		List<InputStream> controlSchema = new ArrayList<InputStream>();
-		controlSchema.add(instream2);
-		controlSchema.add(instream);
-		return controlSchema;
-	}
+	   public  Map<String, InputStream> getControlSchemaFiles(){
+			
+		   InputStream instream1 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/objectCollections.xsd");
+			InputStream instream2 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/objectCollections2.xsd");
+			
+			Map<String,InputStream> controlSchema = new HashMap<String,InputStream>();
+			controlSchema.put("http://jaxb.dev.java.net/array",instream1);
+			controlSchema.put("",instream2);
+			return controlSchema;
+		}
 
+	
 	protected Object getControlObject() {
 		
 		List<Object> myObjectList = new ArrayList<Object>();

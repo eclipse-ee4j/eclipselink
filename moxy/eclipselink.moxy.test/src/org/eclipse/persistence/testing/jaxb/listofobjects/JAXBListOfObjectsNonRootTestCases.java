@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.xml.bind.JAXBElement;
@@ -59,16 +60,15 @@ public class JAXBListOfObjectsNonRootTestCases extends
 		classes[1] = Employee.class;
 		setClasses(classes);
 	}
-
-	
-	public  List<InputStream> getControlSchemaFiles(){
 		
-		InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/listofobjects.xsd");
-		
-		List<InputStream> controlSchema = new ArrayList<InputStream>();
-		controlSchema.add(instream);
-		return controlSchema;
-	}
+	   public  Map<String, InputStream> getControlSchemaFiles(){
+			
+		   InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/listofobjects.xsd");
+			
+		   Map<String,InputStream> controlSchema = new HashMap<String, InputStream>();
+				controlSchema.put("listOfObjectsNamespace",instream);				
+				return controlSchema;
+		}
 
 	protected Object getControlObject() {
 		ListofObjects listofObjects = new ListofObjects();

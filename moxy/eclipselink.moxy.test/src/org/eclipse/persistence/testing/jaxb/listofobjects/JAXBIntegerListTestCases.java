@@ -16,7 +16,9 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.xml.bind.JAXBElement;
@@ -38,15 +40,6 @@ public class JAXBIntegerListTestCases extends JAXBIntegerArrayTestCases {
 		setTypes(types);
 	}
 
-public  List<InputStream> getControlSchemaFiles(){
-		
-		InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/listInteger.xsd");
-		
-		List<InputStream> controlSchema = new ArrayList<InputStream>();
-		controlSchema.add(instream);
-		return controlSchema;
-	}
-	
 	protected Type getTypeToUnmarshalTo() throws Exception {
 		Field fld = ListofObjects.class.getField("integerList");
 		return fld.getGenericType();
@@ -66,6 +59,16 @@ public  List<InputStream> getControlSchemaFiles(){
 
 		return jaxbElement;
 	}
+	
+	public  Map<String, InputStream> getControlSchemaFiles(){
+		
+		InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/listInteger.xsd");
+			
+			Map<String,InputStream> controlSchema = new HashMap<String, InputStream>();
+			controlSchema.put("",instream);
+			return controlSchema;
+		}
+		
 
 	protected String getNoXsiTypeControlResourceName() {
 		return XML_RESOURCE_NO_XSI_TYPE;

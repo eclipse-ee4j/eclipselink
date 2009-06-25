@@ -18,6 +18,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
@@ -68,15 +69,16 @@ public class JAXBStringIntegerHashMapTestCases extends JAXBListOfObjectsTestCase
 		return jaxbElement;
 	}
 
-	public  List<InputStream> getControlSchemaFiles(){
-		
-		InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/stringIntegerHashMap.xsd");
-		
-		List<InputStream> controlSchema = new ArrayList<InputStream>();
-		controlSchema.add(instream);
-		return controlSchema;
-	}
 	
+	   public  Map<String, InputStream> getControlSchemaFiles(){
+			
+		   InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/stringIntegerHashMap.xsd");
+			
+			Map<String,InputStream> controlSchema = new HashMap<String,InputStream>();
+			controlSchema.put("",instream);			
+			return controlSchema;
+		}
+
 	protected String getNoXsiTypeControlResourceName() {
 		return XML_RESOURCE_NO_XSI_TYPE;
 	}

@@ -17,7 +17,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
@@ -101,18 +103,17 @@ public class JAXBListNameCollisionEmployee2TestCases extends
 
 		return jaxbElement;
 	}
+	   public  Map<String, InputStream> getControlSchemaFiles(){
+			
+		   InputStream instream2 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/employeeCollision2.xsd");
+		   InputStream instream1 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/employeeCollision1.xsd");
+			
+		   Map<String,InputStream> controlSchema = new HashMap<String, InputStream>();
+				controlSchema.put("listOfObjectsNamespace",instream1);
+				controlSchema.put("examplenamespace",instream2);
+				return controlSchema;
+		}
 
-public  List<InputStream> getControlSchemaFiles(){
-		
-		InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/employeeCollision2.xsd");
-		
-		List<InputStream> controlSchema = new ArrayList<InputStream>();
-		controlSchema.add(instream);
-				
-		instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/employeeCollision1.xsd");
-		controlSchema.add(instream);
-		return controlSchema;
-	}
 	
 	protected Type getTypeToUnmarshalTo() {
 		return org.eclipse.persistence.testing.jaxb.employee.Employee[].class;

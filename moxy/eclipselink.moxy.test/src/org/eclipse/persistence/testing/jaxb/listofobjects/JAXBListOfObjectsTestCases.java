@@ -21,7 +21,10 @@ import java.io.StringWriter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.SchemaOutputResolver;
@@ -169,28 +172,28 @@ public abstract class JAXBListOfObjectsTestCases extends JAXBTestCases {
 		this.xmlToObjectTest(obj);
 	}
 
-	public abstract List<InputStream> getControlSchemaFiles();
+	public abstract Map<String, InputStream> getControlSchemaFiles();
 	
 	public void testSchemaGen() throws Exception {
 		MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
 		getJAXBContext().generateSchema(outputResolver);
 		
-		List<File> generatedSchemas = outputResolver.getSchemaFiles();
-		List<InputStream> controlSchemas = getControlSchemaFiles();
+		Map<String, File> generatedSchemas = outputResolver.getSchemaFiles();		
+		Map<String,InputStream> controlSchemas = getControlSchemaFiles();
 		
 		assertEquals(controlSchemas.size(), generatedSchemas.size());
 		
-		for(int i=0; i<controlSchemas.size(); i++){
-			File generatedSchema = generatedSchemas.get(i);
-			InputStream controlstream = controlSchemas.get(i);
-			Document control = parser.parse(controlstream);
-			
-			FileInputStream teststream = new FileInputStream(generatedSchema);
-			Document test = parser.parse(teststream);
+		Iterator<String> keyIter = controlSchemas.keySet().iterator();
+		while(keyIter.hasNext()){
+			String nextKey = keyIter.next();
+			InputStream nextControlValue = controlSchemas.get(nextKey);
+			File nextGeneratedValue =generatedSchemas.get(nextKey);
+			assertNotNull("Generated Schema for namespace not found:" + nextKey, nextGeneratedValue);
+			Document control = parser.parse(nextControlValue);
+			Document test = parser.parse(nextGeneratedValue);
 			
 			JAXBXMLComparer xmlComparer = new JAXBXMLComparer();	        
 			assertTrue("generated schema did not match control schema", xmlComparer.isSchemaEqual(control, test));
-
 		}
 	}
 	
@@ -215,26 +218,30 @@ public abstract class JAXBListOfObjectsTestCases extends JAXBTestCases {
 	protected abstract Type getTypeToUnmarshalTo() throws Exception;
 
 	protected abstract String getNoXsiTypeControlResourceName();
-
+	
 	class MySchemaOutputResolver extends SchemaOutputResolver {
 		// keep a list of processed schemas for the validation phase of the
 		// test(s)
-		public List<File> schemaFiles;
+		public Map<String, File> schemaFiles;
 
 		public MySchemaOutputResolver() {
-			schemaFiles = new ArrayList<File>();
+			schemaFiles = new java.util.HashMap<String, File>();
 		}
 
 		public Result createOutput(String namespaceURI, String suggestedFileName)
 				throws IOException {
 			File schemaFile = new File(suggestedFileName);
-			schemaFiles.add(schemaFile);
+			if(namespaceURI == null){
+				namespaceURI ="";
+			}
+			schemaFiles.put(namespaceURI, schemaFile);
 			return new StreamResult(schemaFile);
 		}
 
-		public List<File> getSchemaFiles() {
+		public Map<String,File> getSchemaFiles() {
 			return schemaFiles;
 		}
 	}
+	
 
 }

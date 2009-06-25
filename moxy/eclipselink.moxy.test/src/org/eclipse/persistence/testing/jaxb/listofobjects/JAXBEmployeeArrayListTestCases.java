@@ -16,7 +16,9 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class JAXBEmployeeArrayListTestCases extends JAXBEmployeeListTestCases {
 	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/employeeArrayList.xml";
@@ -26,14 +28,14 @@ public class JAXBEmployeeArrayListTestCases extends JAXBEmployeeListTestCases {
 		super(name);
 	}
 
-public  List<InputStream> getControlSchemaFiles(){
+	public  Map<String, InputStream> getControlSchemaFiles(){
 		
 		InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/arrayListEmployee.xsd");
-		
-		List<InputStream> controlSchema = new ArrayList<InputStream>();
-		controlSchema.add(instream);
-		return controlSchema;
-	}
+			
+		Map<String,InputStream> controlSchema = new HashMap<String, InputStream>();
+			controlSchema.put("listOfObjectsNamespace",instream);
+			return controlSchema;
+		}
 	
 	public void init() throws Exception {
 		setControlDocument(XML_RESOURCE);

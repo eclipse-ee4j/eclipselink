@@ -16,7 +16,9 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.xml.bind.JAXBElement;
@@ -61,17 +63,20 @@ public class JAXBEmployeesAndIntegersTestCases extends
 		return null;
 	}
 
-public List<InputStream> getControlSchemaFiles(){
-		
-		InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/employeesAndIntegers2.xsd");		
-		List<InputStream> controlSchema = new ArrayList<InputStream>();
-		controlSchema.add(instream);
-		instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/employeesAndIntegers3.xsd");
-		controlSchema.add(instream);
-		instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/employeesAndIntegers1.xsd");
-		controlSchema.add(instream);
-		return controlSchema;
-	}
+	 public  Map<String, InputStream> getControlSchemaFiles(){
+			
+		  InputStream instream2 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/employeesAndIntegers2.xsd");					
+			
+			InputStream instream3 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/employeesAndIntegers3.xsd");
+			
+			InputStream instream1 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/employeesAndIntegers1.xsd");
+			
+			Map<String,InputStream> controlSchema = new HashMap<String,InputStream>();
+			controlSchema.put("",instream2);
+			controlSchema.put("http://jaxb.dev.java.net/array",instream3);
+			controlSchema.put("listOfObjectsNamespace",instream1);
+			return controlSchema;
+		}
 	
 	protected Object getControlObject() {
 		Vector<Integer> integers = new Vector<Integer>();

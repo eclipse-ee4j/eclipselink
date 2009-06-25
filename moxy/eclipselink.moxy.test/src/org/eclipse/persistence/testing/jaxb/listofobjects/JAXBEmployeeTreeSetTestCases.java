@@ -40,7 +40,7 @@ public class JAXBEmployeeTreeSetTestCases extends JAXBEmployeeListTestCases {
 		types[0] = fld.getGenericType();
 		setTypes(types);
 	}
-
+/*
 public  List<InputStream> getControlSchemaFiles(){
 		
 		InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/treeSetEmployee.xsd");
@@ -49,9 +49,8 @@ public  List<InputStream> getControlSchemaFiles(){
 		controlSchema.add(instream);
 		return controlSchema;
 	}
-	
+	*/
 	protected Type getTypeToUnmarshalTo() throws Exception {
-		//return TreeSet.class;
 		
 		Field fld = ListofObjects.class.getField("empTreeSet");		
 		return fld.getGenericType();

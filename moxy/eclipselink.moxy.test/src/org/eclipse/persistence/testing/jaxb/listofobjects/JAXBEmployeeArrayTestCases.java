@@ -21,7 +21,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.SchemaOutputResolver;
@@ -56,16 +58,15 @@ public class JAXBEmployeeArrayTestCases extends JAXBListOfObjectsTestCases {
 		setClasses(classes);
 	}
 
+	   public  Map<String, InputStream> getControlSchemaFiles(){
+			
+		   InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/employeeArray.xsd");
+				
+				Map<String,InputStream> controlSchema = new HashMap<String, InputStream>();
+				controlSchema.put("listOfObjectsNamespace",instream);
+				return controlSchema;
+			}
 	
-public  List<InputStream> getControlSchemaFiles(){
-		
-		InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/employeeArray.xsd");
-		
-		List<InputStream> controlSchema = new ArrayList<InputStream>();
-		controlSchema.add(instream);
-		return controlSchema;
-	}
-
 	protected Object getControlObject() {
 		ArrayList responsibilities = new ArrayList();
 		responsibilities.add(CONTROL_RESPONSIBILITY1);

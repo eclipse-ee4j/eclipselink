@@ -19,7 +19,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.SchemaOutputResolver;
@@ -49,25 +51,13 @@ public class JAXBEmployeeListTestCases extends JAXBEmployeeArrayTestCases {
 		Field fld = ListofObjects.class.getField("empList");
 		return fld.getGenericType();
 	}
-/*
-	public Object getWriteControlObject(){
-		JAXBElement jaxbElement = (JAXBElement)getControlObject();
-		TypedJAXBElement typed = new TypedJAXBElement(jaxbElement.getName(), jaxbElement.getScope(), jaxbElement.getValue());
-		try{
-			typed.setType(getTypeToUnmarshalTo());
-		}catch(Exception e){
-			fail(e.getMessage());
-		}
-		return typed;
-	}*/
 	
-	
-public  List<InputStream> getControlSchemaFiles(){
+    public  Map<String, InputStream> getControlSchemaFiles(){
 		
-		InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/listEmployee.xsd");
-		
-		List<InputStream> controlSchema = new ArrayList<InputStream>();
-		controlSchema.add(instream);
+	InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/listEmployee.xsd");
+			
+	Map<String,InputStream> controlSchema = new HashMap<String, InputStream>();
+		controlSchema.put("listOfObjectsNamespace",instream);
 		return controlSchema;
 	}
 
