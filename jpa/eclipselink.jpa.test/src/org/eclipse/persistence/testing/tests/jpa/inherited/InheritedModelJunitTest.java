@@ -1039,24 +1039,13 @@ public class InheritedModelJunitTest extends JUnitTestCase {
             // remove beerConsumer from the cache
             clearCache();
             
-            // read back the beer consumer, reading of the list of committees with the broken should fix the order "on the fly"
+            // read back the beer consumer, reading of the list of committees with the broken should fix the order "on the fly":
+            // the default correction performed on the list substitutes null in the first element back to 0;
+            // then alter order of committees - that would cause the list order to be updated in the db (and become valid).
             em = createEntityManager();
-            try {
-                beerConsumer = em.find(ExpertBeerConsumer.class, id);
-                // trigger indirection
-                beerConsumer.getCommittees().size();
-            } catch (RuntimeException e) {
-                if (isTransactionActive(em)) {
-                    rollbackTransaction(em);
-                }
-                closeEntityManager(em);
-                throw e;
-            }
-            
-            // alter order of committees - that would cause the list order to be updated in the db (and become valid).
-            // the default correction performed on the list substitutes null in the first element back to 0.
             beginTransaction(em); 
             try {
+                beerConsumer = em.find(ExpertBeerConsumer.class, id);
                 // committees #1 and #2 switch their positions in the list.
                 Committee committee = beerConsumer.getCommittees().remove(2);
                 beerConsumer.getCommittees().add(1, committee);
