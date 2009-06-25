@@ -1136,7 +1136,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         }
         JpaEntityManager em = (JpaEntityManager) createEntityManager(); 
         
-        em.getTransaction().begin();
+        beginTransaction(em);
         BeerConsumer consumer = new BeerConsumer();
         consumer.setName("Marvin Monroe");
         em.persist(consumer);
@@ -1154,7 +1154,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         EmployeeDetail result = (EmployeeDetail)query.getSingleResult();
         EmployeeDetail expectedResult = new EmployeeDetail("Mel", "Ott", BigInteger.ONE);
 
-        em.getTransaction().rollback();
+        rollbackTransaction(em);
         Assert.assertTrue("Constructor with variable argument Test Case Failed", result.equals(expectedResult));
     }
     
@@ -1407,7 +1407,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     {
         EntityManager em = createEntityManager();
 
-        em.getTransaction().begin();
+        beginTransaction(em);
         
         Buyer buyer = new Buyer();
         buyer.setName("RBCL buyer");
@@ -1422,7 +1422,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         String ejbqlString = "SELECT b FROM Buyer b  WHERE 10 MEMBER OF b.creditLines";
         List result = em.createQuery(ejbqlString).getResultList();
         
-        em.getTransaction().rollback();
+        rollbackTransaction(em);
         Assert.assertTrue("Complex MEMBER OF test failed", comparer.compareObjects(result, expectedResult)); 
     }
     
@@ -2087,7 +2087,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     
     public void complexIndexOfInSelectClauseTest(){
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         ExpertBeerConsumer consumer = new ExpertBeerConsumer();
         consumer.getDesignations().add("guru");
         consumer.getDesignations().add("beer-meister");
@@ -2101,13 +2101,13 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         
         List result = em.createQuery(ejbqlString).getResultList();
    
-        em.getTransaction().rollback();
+        rollbackTransaction(em);
         Assert.assertTrue("complexIndexOfInSelectClauseTest failed", comparer.compareObjects(result, expectedResult));
     }
     
     public void complexIndexOfInWhereClauseTest(){
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         ExpertBeerConsumer consumer = new ExpertBeerConsumer();
         consumer.getDesignations().add("guru");
         consumer.getDesignations().add("beer-meister");
@@ -2119,7 +2119,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         
         String result = (String)em.createQuery(ejbqlString).getSingleResult();
         
-        em.getTransaction().rollback();
+        rollbackTransaction(em);
         Assert.assertTrue("complexIndexOfInWhereClauseTest failed", result.equals(expectedResult));
     }
     
@@ -2130,7 +2130,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         Vector expectedResult = (Vector)getServerSession().readAllObjects(Employee.class, exp);
         
         clearCache();
-        String ejbqlString = "select e from Employee e where coalesce(e.firstName, e.lastName, e.id) = 'Bob'";
+        String ejbqlString = "select e from Employee e where coalesce(e.firstName, e.lastName) = 'Bob'";
         
         List result = (List)em.createQuery(ejbqlString).getResultList();
         
@@ -2149,7 +2149,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         Vector expectedResult = (Vector)getServerSession().executeQuery(reportQuery);
         
         clearCache();
-        String ejbqlString = "select coalesce(e.firstName, e.lastName, e.id) from Employee e";
+        String ejbqlString = "select coalesce(e.firstName, e.lastName) from Employee e";
         
         List result = (List)em.createQuery(ejbqlString).getResultList();
         

@@ -1739,7 +1739,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     
                     HashMap properties = new HashMap();
                     properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 5);
-                    Employee employee2 = em2.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC_READ, properties);
+                    Employee employee2 = (Employee)em2.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC_READ, properties);
                     employee2.setFirstName("Invalid Lock Employee");
                     commitTransaction(em2);
                 } catch (PersistenceException ex) {
@@ -1789,7 +1789,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     
                     HashMap properties = new HashMap();
                     properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 5);
-                    Employee employee2 = em2.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC_WRITE, properties);
+                    Employee employee2 = (Employee)em2.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC_WRITE, properties);
                     employee2.setFirstName("Invalid Lock Employee");
                     commitTransaction(em2);
                 } catch (PersistenceException ex) {
@@ -2259,7 +2259,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
               Employee e1=em.find(Employee.class,empId);
               e1.setFirstName("testfind");
               queryhints.put(QueryHints.REFRESH, "TRUE");
-              Employee e2=em.find(Employee.class,empId ,queryhints);
+              Employee e2= (Employee)em.find(Employee.class,empId ,queryhints);
               assertFalse(e2.getFirstName().equals("testfind"));
               commitTransaction(em);
             } catch (IllegalArgumentException iae) {
