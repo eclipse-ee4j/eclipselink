@@ -216,7 +216,7 @@ public class ConversionManager implements Serializable, Cloneable {
             } else if (sourceObject instanceof BigDecimal) {
                 bigInteger = ((BigDecimal)sourceObject).toBigInteger();
             } else if (sourceObject instanceof Number) {
-                bigInteger = new BigInteger(new Long(((Number)sourceObject).longValue()).toString());
+                bigInteger = new BigInteger(String.valueOf(((Number)sourceObject).longValue()));
             } else if (sourceObject instanceof Byte[]) {
                 Byte[] objectBytes = (Byte[])sourceObject;
                 byte[] bytes = new byte[objectBytes.length];
