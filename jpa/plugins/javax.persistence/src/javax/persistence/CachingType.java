@@ -36,5 +36,5 @@ import javax.persistence.spi.PersistenceUnitInfo;
  * @since Java Persistence 2.0
  */
 public enum CachingType {
-    ALL, NONE, ENABLE_SELECTIVE, DISABLE_SELECTIVE
+    ALL, NONE, ENABLE_SELECTIVE, DISABLE_SELECTIVE, UNSPECIFIED
 }
