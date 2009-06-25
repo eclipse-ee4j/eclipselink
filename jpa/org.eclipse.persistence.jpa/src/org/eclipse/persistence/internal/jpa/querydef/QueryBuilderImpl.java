@@ -28,7 +28,7 @@ public class QueryBuilderImpl implements QueryBuilder {
     
     protected Metamodel metamodel;
     
-    public QueryBuilderImpl(Metamodel metamode){
+    public QueryBuilderImpl(Metamodel metamodel){
         this.metamodel = metamodel;
     }
 
