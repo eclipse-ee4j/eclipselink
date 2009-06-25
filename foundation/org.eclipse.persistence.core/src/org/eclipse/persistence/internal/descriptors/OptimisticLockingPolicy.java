@@ -17,7 +17,6 @@ import java.util.Vector;
 
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
