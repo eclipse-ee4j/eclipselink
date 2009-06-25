@@ -277,7 +277,7 @@
 		<xsd:annotation>
 			<xsd:documentation>
 				public enum CachingType { ALL, NONE, ENABLE_SELECTIVE,
-				DISABLE_SELECTIVE};
+				DISABLE_SELECTIVE, UNSPECIFIED};
 			</xsd:documentation>
 		</xsd:annotation>
 		<xsd:restriction base="xsd:token">
@@ -285,6 +285,7 @@
 			<xsd:enumeration value="NONE" />
 			<xsd:enumeration value="ENABLE_SELECTIVE" />
 			<xsd:enumeration value="DISABLE_SELECTIVE" />
+			<xsd:enumeration value="UNSPECIFIED" />
 		</xsd:restriction>
 	</xsd:simpleType>
 	
