@@ -93,6 +93,7 @@
         <java classname="org.jboss.Main" 
             fork="true"
             failonerror="false" >
+            <jvmarg value="-XX:MaxPermSize=256m"/>
             <jvmarg value="-Xms512m"/>
             <jvmarg value="-Xmx960m"/>
             <sysproperty key="http.proxyHost" value="www-proxy.us.oracle.com"/>
