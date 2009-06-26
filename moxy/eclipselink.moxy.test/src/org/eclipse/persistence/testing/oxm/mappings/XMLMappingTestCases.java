@@ -15,13 +15,15 @@ package org.eclipse.persistence.testing.oxm.mappings;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.lang.reflect.Constructor;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
-import javax.xml.transform.stax.StAXResult;
+import javax.xml.transform.Result;
 
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.oxm.NamespaceResolver;
@@ -52,6 +54,9 @@ public abstract class XMLMappingTestCases extends OXTestCase {
     protected String writeControlDocumentLocation;
 
     protected static XMLOutputFactory XML_OUTPUT_FACTORY;
+    protected static Class staxResultClass;
+    protected static String staxResultClassName = "javax.xml.transform.stax.StAXResult";
+    protected static Constructor staxResultConstructor;
 
     static {
         try {
@@ -59,7 +64,14 @@ public abstract class XMLMappingTestCases extends OXTestCase {
         } catch(Exception ex) {
             XML_OUTPUT_FACTORY = null;
         }
+        try {
+            staxResultClass = PrivilegedAccessHelper.getClassForName(staxResultClassName);
+            staxResultConstructor = PrivilegedAccessHelper.getConstructorFor(staxResultClass, new Class[]{XMLStreamWriter.class}, true);
+        } catch(Exception ex) {
+            staxResultClass = null;
+        }
     }
+
     public XMLMappingTestCases(String name) throws Exception {
         super(name);
         setupParser();
@@ -261,7 +273,7 @@ public abstract class XMLMappingTestCases extends OXTestCase {
     }
 
     public void testObjectToXMLStreamWriter() throws Exception {
-        if(XML_OUTPUT_FACTORY != null) {
+        if(XML_OUTPUT_FACTORY != null && staxResultClass != null) {
             StringWriter writer = new StringWriter();
             XMLOutputFactory factory = XMLOutputFactory.newInstance();
             factory.setProperty(factory.IS_REPAIRING_NAMESPACES, new Boolean(false));
@@ -276,15 +288,12 @@ public abstract class XMLMappingTestCases extends OXTestCase {
             }
 
             int sizeBefore = getNamespaceResolverSize(desc);
-            //MarshalRecord record = new XMLStreamWriterRecord(streamWriter);
-            //record.setMarshaller(xmlMarshaller);
 
-            StAXResult result = new StAXResult(streamWriter);
+            Result result = (Result)PrivilegedAccessHelper.invokeConstructor(staxResultConstructor, new Object[]{streamWriter});
             xmlMarshaller.marshal(objectToWrite, result);
 
             streamWriter.flush();
             int sizeAfter = getNamespaceResolverSize(desc);
-            //System.out.println(writer);
             assertEquals(sizeBefore, sizeAfter);
             StringReader reader = new StringReader(writer.toString());
             InputSource inputSource = new InputSource(reader);
