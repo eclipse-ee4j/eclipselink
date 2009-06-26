@@ -23,6 +23,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
 
+import org.eclipse.persistence.internal.oxm.record.namespaces.StackUnmarshalNamespaceResolver;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
 
@@ -43,10 +44,13 @@ import org.eclipse.persistence.oxm.mappings.XMLMapping;
 public class XMLReader implements org.xml.sax.XMLReader {
 
     private org.xml.sax.XMLReader reader;
+
     public XMLReader(org.xml.sax.XMLReader internalReader) {
         this.reader = internalReader;
     }
+
     public XMLReader() {}
+
     public boolean getFeature (String name) throws SAXNotRecognizedException, SAXNotSupportedException {
         return reader.getFeature(name);
     }
@@ -95,7 +99,12 @@ public class XMLReader implements org.xml.sax.XMLReader {
         return reader.getErrorHandler();
     }
 
-    public void parse (InputSource input) throws IOException, SAXException {
+    public void parse(InputSource input) throws IOException, SAXException {
+        reader.parse(input);
+    }
+
+    public void parse(InputSource input, SAXUnmarshallerHandler saxUnmarshallerHandler) throws IOException, SAXException {
+        saxUnmarshallerHandler.setUnmarshalNamespaceResolver(new StackUnmarshalNamespaceResolver());
         reader.parse(input);
     }
 
@@ -106,8 +115,9 @@ public class XMLReader implements org.xml.sax.XMLReader {
     public void newObjectEvent(Object object, Object parent, XMLMapping selfRecordMapping) {
         //no op in this class.
     }
+
     public Object getCurrentObject(AbstractSession session, XMLMapping selfRecordMapping) {
         return null;
     }
-    
+
 }

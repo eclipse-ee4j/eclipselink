@@ -21,10 +21,11 @@ import org.w3c.dom.Node;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
 import javax.xml.validation.Schema;
 
-
 public interface PlatformUnmarshaller {
+
     public abstract EntityResolver getEntityResolver();
 
     public abstract void setEntityResolver(EntityResolver entityResolver);
@@ -72,8 +73,13 @@ public interface PlatformUnmarshaller {
     public abstract Object unmarshal(URL url);
 
     public abstract Object unmarshal(URL url, Class clazz);
-    
+
+    public abstract Object unmarshal(XMLReader xmlReader, InputSource inputSource);
+
+    public abstract Object unmarshal(XMLReader xmlReader, InputSource inputSource, Class clazz);
+
     public abstract void setResultAlwaysXMLRoot(boolean alwaysReturnRoot);
-    
+
     public abstract boolean isResultAlwaysXMLRoot();
+
 }

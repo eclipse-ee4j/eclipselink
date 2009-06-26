@@ -33,6 +33,10 @@ public class XMLRootMultipleMarshalTestCases extends XMLMappingTestCases {
         setProject(new EmployeeProject());
     }
 
+    public boolean isUnmarshalTest() {
+        return false;
+    }
+
     protected Object getControlObject() {
         Employee employee = new Employee();
         Address address= new Address();
@@ -46,19 +50,6 @@ public class XMLRootMultipleMarshalTestCases extends XMLMappingTestCases {
 
     }
 
-
-    public void testXMLToObjectFromInputStream() throws Exception {
-        //Marshal only test case
-    }
-    
-    public void testXMLToObjectFromURL() throws Exception {
-        //Marshal only test case
-    }    
-
-    // DOES NOT APPLY
-    public void testUnmarshallerHandler() throws Exception {
-    }
-
     public String getXMLResource() {
         return XML_RESOURCE;
     }
@@ -69,7 +60,6 @@ public class XMLRootMultipleMarshalTestCases extends XMLMappingTestCases {
         
         super.testObjectToXMLDocument();
     }
-    
 
     public void testObjectToXMLStringWriter() throws Exception {
         StringWriter dummyWriter = new StringWriter();
@@ -77,16 +67,17 @@ public class XMLRootMultipleMarshalTestCases extends XMLMappingTestCases {
         
         super.testObjectToXMLStringWriter();
     }
+
     public void testObjectToContentHandler() throws Exception {
         StringWriter dummyWriter = new StringWriter();
         xmlMarshaller.marshal(getWriteControlObject(), dummyWriter);
-        
+
         super.testObjectToContentHandler();
     }
-    
+
     public static void main(String[] args) {
         String[] arguments = { "-c", "oracle.toplink.testing.ox.xmlroot.complex.XMLRootNullSchemaReferenceTestCases" };
         junit.textui.TestRunner.main(arguments);
     }
-}
 
+}

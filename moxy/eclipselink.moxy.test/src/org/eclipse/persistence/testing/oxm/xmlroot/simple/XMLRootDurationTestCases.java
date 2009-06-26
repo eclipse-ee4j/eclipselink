@@ -17,10 +17,15 @@ import java.io.InputStream;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
+import javax.xml.stream.XMLStreamReader;
 
 import junit.textui.TestRunner;
+
+import org.eclipse.persistence.internal.oxm.record.XMLStreamReaderInputSource;
+import org.eclipse.persistence.internal.oxm.record.XMLStreamReaderReader;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.xmlroot.Person;
 import org.w3c.dom.Document;
 
 public class XMLRootDurationTestCases extends XMLMappingTestCases {
@@ -75,6 +80,21 @@ public class XMLRootDurationTestCases extends XMLMappingTestCases {
         xmlToObjectTest(testObject);
     }
 
+    public void testXMLToObjectFromXMLStreamReader() throws Exception {
+        if(null != XML_INPUT_FACTORY) {
+                InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
+                XMLStreamReader xmlStreamReader = XML_INPUT_FACTORY.createXMLStreamReader(instream);
+
+                XMLStreamReaderReader staxReader = new XMLStreamReaderReader();
+                staxReader.setErrorHandler(xmlUnmarshaller.getErrorHandler());
+                XMLStreamReaderInputSource inputSource = new XMLStreamReaderInputSource(xmlStreamReader);
+                Object testObject = xmlUnmarshaller.unmarshal(staxReader, inputSource, Duration.class);
+
+                instream.close();
+                xmlToObjectTest(testObject);
+        }
+    }
+
     public void xmlToObjectTest(Object testObject) throws Exception {
         log("\n**testXMLDocumentToObject**");
         log("Expected:");
@@ -85,7 +105,7 @@ public class XMLRootDurationTestCases extends XMLMappingTestCases {
         XMLRoot controlObj = (XMLRoot)getReadControlObject();
         XMLRoot testObj = (XMLRoot)testObject;
 
-        this.assertEquals(controlObj.getLocalName(), testObj.getLocalName());        
+        this.assertEquals(controlObj.getLocalName(), testObj.getLocalName());
         this.assertEquals(controlObj.getNamespaceURI(), testObj.getNamespaceURI());
         this.assertEquals(controlObj.getObject(), testObj.getObject());
     }
@@ -93,4 +113,5 @@ public class XMLRootDurationTestCases extends XMLMappingTestCases {
     // DOES NOT APPLY
     public void testUnmarshallerHandler() throws Exception {
     }
+
 }

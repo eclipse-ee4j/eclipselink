@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Stack;
 
+import org.eclipse.persistence.internal.oxm.record.namespaces.StackUnmarshalNamespaceResolver;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.XMLConstants;
@@ -102,7 +103,23 @@ public class DOMReader extends XMLReader {
         return null;
     }
 
-    public void parse(InputSource input) {}
+    @Override
+    public void parse(InputSource input) throws SAXException {
+        if(input instanceof DOMInputSource) {
+            Node node = ((DOMInputSource) input).getNode();
+            parse(node);
+        }
+    }
+
+    @Override
+    public void parse(InputSource input, SAXUnmarshallerHandler saxUnmarshallerHandler) throws SAXException {
+        if(input instanceof DOMInputSource) {
+            Node node = ((DOMInputSource) input).getNode();
+            saxUnmarshallerHandler.setUnmarshalNamespaceResolver(new StackUnmarshalNamespaceResolver());
+            parse(node);
+        }
+    }
+
     public void parse(String systemId) {}
  
     public void parse (Node node) throws SAXException {

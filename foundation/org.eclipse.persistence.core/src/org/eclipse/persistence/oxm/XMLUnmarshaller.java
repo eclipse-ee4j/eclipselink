@@ -37,6 +37,7 @@ import org.w3c.dom.Node;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
 import org.eclipse.persistence.oxm.attachment.*;
 
 /**
@@ -69,17 +70,18 @@ public class XMLUnmarshaller {
     public static final int NONVALIDATING = XMLParser.NONVALIDATING;
     public static final int SCHEMA_VALIDATION = XMLParser.SCHEMA_VALIDATION;
     public static final int DTD_VALIDATION = XMLParser.DTD_VALIDATION;
-    
-    private static String STAX_SOURCE_CLASS_NAME = "javax.xml.transform.stax.StAXSource";
-    private static String XML_STREAM_SOURCE_WRAPPER_CLASS_NAME = "org.eclipse.persistence.internal.oxm.stax.XMLStreamSourceWrapper";
-    private static String GET_XML_STREAM_READER_METHOD_NAME = "getXMLStreamReader";
-    
+
+    private static final String STAX_SOURCE_CLASS_NAME = "javax.xml.transform.stax.StAXSource";
+    private static final String XML_STREAM_READER_CLASS_NAME = "javax.xml.stream.XMLStreamReader";
+    private static final String GET_XML_STREAM_READER_METHOD_NAME = "getXMLStreamReader";
+    private static final String XML_STREAM_READER_READER_CLASS_NAME = "org.eclipse.persistence.internal.oxm.record.XMLStreamReaderReader";
+    private static final String XML_STREAM_READER_INPUT_SOURCE_CLASS_NAME = "org.eclipse.persistence.internal.oxm.record.XMLStreamReaderInputSource";
 
     private static Class staxSourceClass;
-    private static Class xmlStreamSourceClass;
-    private static Constructor xmlStreamSourceConstructor;
-    private static Method staxSourceGetStreamReaderMethod;    
-    
+    private static Method staxSourceGetStreamReaderMethod;
+    private static Constructor xmlStreamReaderReaderConstructor;
+    private static Constructor xmlStreamReaderInputSourceConstructor;
+
     private XMLContext xmlContext;
     private XMLUnmarshallerHandler xmlUnmarshallerHandler;
     private PlatformUnmarshaller platformUnmarshaller;
@@ -94,14 +96,17 @@ public class XMLUnmarshaller {
         try {
             staxSourceClass = PrivilegedAccessHelper.getClassForName(STAX_SOURCE_CLASS_NAME);
             if(staxSourceClass != null) {
-                xmlStreamSourceClass = PrivilegedAccessHelper.getClassForName(XML_STREAM_SOURCE_WRAPPER_CLASS_NAME);
                 staxSourceGetStreamReaderMethod = PrivilegedAccessHelper.getDeclaredMethod(staxSourceClass, GET_XML_STREAM_READER_METHOD_NAME, new Class[]{});
-                xmlStreamSourceConstructor = PrivilegedAccessHelper.getConstructorFor(xmlStreamSourceClass, new Class[]{staxSourceClass}, true);
+                Class xmlStreamReaderInputSourceClass = PrivilegedAccessHelper.getClassForName(XML_STREAM_READER_INPUT_SOURCE_CLASS_NAME);
+                Class xmlStreamReaderClass = PrivilegedAccessHelper.getClassForName(XML_STREAM_READER_CLASS_NAME);
+                xmlStreamReaderInputSourceConstructor = PrivilegedAccessHelper.getConstructorFor(xmlStreamReaderInputSourceClass, new Class[]{xmlStreamReaderClass}, true);
+                Class xmlStreamReaderReaderClass = PrivilegedAccessHelper.getClassForName(XML_STREAM_READER_READER_CLASS_NAME);
+                xmlStreamReaderReaderConstructor = PrivilegedAccessHelper.getConstructorFor(xmlStreamReaderReaderClass, new Class[0], true);
             }
         } catch(Exception ex) {
         }
     }
-    	
+
     protected XMLUnmarshaller(XMLContext xmlContext) {
         setXMLContext(xmlContext);
         initialize();      
@@ -473,14 +478,18 @@ public class XMLUnmarshaller {
         if (source == null) {
             throw XMLMarshalException.nullArgumentException();
         }
-    	if (source.getClass() == this.staxSourceClass) {
-        	try {
-        		Object xmlStreamReader = PrivilegedAccessHelper.invokeMethod(this.staxSourceGetStreamReaderMethod, source);
-        		if(xmlStreamReader != null) {
-        			source = (Source)PrivilegedAccessHelper.invokeConstructor(this.xmlStreamSourceConstructor, new Object[]{source});
-        		}
-        	} catch(Exception ex) {}
-    	}     
+        if (source.getClass() == this.staxSourceClass) {
+            try {
+                Object xmlStreamReader = PrivilegedAccessHelper.invokeMethod(this.staxSourceGetStreamReaderMethod, source);
+                if(xmlStreamReader != null) {
+                    InputSource inputSource = (InputSource) PrivilegedAccessHelper.invokeConstructor(xmlStreamReaderInputSourceConstructor, new Object[]{xmlStreamReader});
+                    XMLReader xmlReader = (XMLReader) PrivilegedAccessHelper.invokeConstructor(xmlStreamReaderReaderConstructor, new Object[0]);
+                    return platformUnmarshaller.unmarshal(xmlReader, inputSource);
+                }
+            } catch(Exception e) {
+                throw XMLMarshalException.unmarshalException(e);
+            }
+        }
         return platformUnmarshaller.unmarshal(source);
     }
 
@@ -518,15 +527,27 @@ public class XMLUnmarshaller {
         if ((null == source) || (null == clazz)) {
             throw XMLMarshalException.nullArgumentException();
         }
-    	if (source.getClass() == this.staxSourceClass) {
-        	try {
-        		Object xmlStreamReader = PrivilegedAccessHelper.invokeMethod(this.staxSourceGetStreamReaderMethod, source);
-        		if(xmlStreamReader != null) {
-        			source = (Source)PrivilegedAccessHelper.invokeConstructor(this.xmlStreamSourceConstructor, new Object[]{source});
-        		}
-        	} catch(Exception ex) {}
-    	}        
+        if (source.getClass() == this.staxSourceClass) {
+            try {
+                Object xmlStreamReader = PrivilegedAccessHelper.invokeMethod(this.staxSourceGetStreamReaderMethod, source);
+                if(xmlStreamReader != null) {
+                    InputSource inputSource = (InputSource) PrivilegedAccessHelper.invokeConstructor(xmlStreamReaderInputSourceConstructor, new Object[]{xmlStreamReader});
+                    XMLReader xmlReader = (XMLReader) PrivilegedAccessHelper.invokeConstructor(xmlStreamReaderReaderConstructor, new Object[]{xmlStreamReader});
+                    return platformUnmarshaller.unmarshal(xmlReader, inputSource, clazz);
+                }
+            } catch(Exception e) {
+                throw XMLMarshalException.unmarshalException(e);
+            }
+        }
         return platformUnmarshaller.unmarshal(source, clazz);
+    }
+
+    public Object unmarshal(XMLReader xmlReader, InputSource inputSource) {
+        return this.platformUnmarshaller.unmarshal(xmlReader, inputSource);
+    }
+
+    public Object unmarshal(XMLReader xmlReader, InputSource inputSource, Class clazz) {
+        return this.platformUnmarshaller.unmarshal(xmlReader, inputSource, clazz);
     }
 
     public XMLUnmarshallerHandler getUnmarshallerHandler() {
@@ -559,4 +580,5 @@ public class XMLUnmarshaller {
     public Schema getSchema() {
         return this.platformUnmarshaller.getSchema();
     }
+
 }

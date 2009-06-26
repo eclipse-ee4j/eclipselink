@@ -15,7 +15,12 @@ package org.eclipse.persistence.testing.oxm.mappings.directcollection.union;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.math.BigInteger;
+
+import javax.xml.stream.XMLStreamReader;
+
 import org.eclipse.persistence.exceptions.ConversionException;
+import org.eclipse.persistence.internal.oxm.record.XMLStreamReaderInputSource;
+import org.eclipse.persistence.internal.oxm.record.XMLStreamReaderReader;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 import org.w3c.dom.Document;
 
@@ -59,6 +64,26 @@ public class SimpleUnionNoConversionTestCases extends XMLMappingTestCases {
         fail("no error occurred...expected XMLConversionException");
     }
 
+    public void testXMLToObjectFromXMLStreamReader() throws Exception {
+        if(null != XML_INPUT_FACTORY) {
+            try {
+                InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
+                XMLStreamReader xmlStreamReader = XML_INPUT_FACTORY.createXMLStreamReader(instream);
+
+                XMLStreamReaderReader staxReader = new XMLStreamReaderReader();
+                staxReader.setErrorHandler(xmlUnmarshaller.getErrorHandler());
+                XMLStreamReaderInputSource inputSource = new XMLStreamReaderInputSource(xmlStreamReader);
+                xmlUnmarshaller.unmarshal(staxReader, inputSource);
+
+                instream.close();
+            } catch (Exception e) {
+                handleException(e);
+                return;
+            }
+            fail("no error occurred...expected XMLConversionException");
+        }
+    }
+
     /*
         public void testXMLToObjectFromDocument() throws Exception {
             try {
@@ -92,4 +117,5 @@ public class SimpleUnionNoConversionTestCases extends XMLMappingTestCases {
             fail("an invalid Exception occurred, expected XMLConversionException");
         }
     }
+
 }

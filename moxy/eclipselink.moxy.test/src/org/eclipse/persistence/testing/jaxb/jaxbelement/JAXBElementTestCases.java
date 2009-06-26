@@ -18,6 +18,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 
 import javax.xml.bind.JAXBElement;
+import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
@@ -78,10 +79,16 @@ public class JAXBElementTestCases extends JAXBTestCases {
         xmlToObjectTest(testObject);
     }
 
-    // TODO:  add support for StAX
-    public void testXMLToObjectFromStreamReader() throws Exception {}
-    public void testXMLToObjectFromEventReader() throws Exception {}
-    
+    public void testXMLToObjectFromXMLStreamReader() throws Exception {
+        if(null != XML_INPUT_FACTORY) {
+            InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
+            XMLStreamReader xmlStreamReader = XML_INPUT_FACTORY.createXMLStreamReader(instream);
+            Object testObject = jaxbUnmarshaller.unmarshal(xmlStreamReader, target);
+            instream.close();
+            xmlToObjectTest(testObject);
+        }
+    }
+
     public void xmlToObjectTest(Object testObject) throws Exception {
     	JAXBElement testObj = (JAXBElement ) testObject;
         JAXBElement controlObj = (JAXBElement) getReadControlObject();

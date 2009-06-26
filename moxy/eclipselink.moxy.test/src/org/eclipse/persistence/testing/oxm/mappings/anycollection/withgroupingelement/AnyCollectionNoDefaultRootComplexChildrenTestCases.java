@@ -33,6 +33,10 @@ public class AnyCollectionNoDefaultRootComplexChildrenTestCases extends XMLMappi
         setControlDocument("org/eclipse/persistence/testing/oxm/mappings/anycollection/withgroupingelement/no_default_root_element_children.xml");
     }
 
+    public boolean isUnmarshalTest() {
+        return false;
+    }
+
     public Object getControlObject() {
         Root root = new Root();
         Vector any = new Vector();
@@ -47,20 +51,9 @@ public class AnyCollectionNoDefaultRootComplexChildrenTestCases extends XMLMappi
         return root;
     }
 
-    // override superclass testcase since it is invalid here
-    public void testXMLToObjectFromInputStream() throws Exception {
-    }
-
-    // override superclass testcase since it is invalid here
-    public void testXMLToObjectFromURL() throws Exception {
-    }
-
-    // override superclass testcase since it is invalid here
-    public void testUnmarshallerHandler() throws Exception {
-    }
-
     public static void main(String[] args) {
         String[] arguments = { "-c", "org.eclipse.persistence.testing.oxm.mappings.anycollection.withgroupingelement.AnyCollectionNoDefaultRootComplexChildrenTestCases" };
         TestRunner.main(arguments);
     }
+
 }

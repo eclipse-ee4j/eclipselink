@@ -30,6 +30,7 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Result;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -79,26 +80,24 @@ public abstract class JAXBListOfObjectsTestCases extends JAXBTestCases {
 		return null;
 	}
 
-	public void testXMLToObjectFromXMLStreamReader() throws Exception {
-		if (System.getProperty("java.version").contains("1.6")) {
-			InputStream instream = ClassLoader.getSystemResourceAsStream(getNoXsiTypeControlResourceName());
-			javax.xml.stream.XMLInputFactory factory = javax.xml.stream.XMLInputFactory.newInstance();
-			javax.xml.stream.XMLStreamReader reader = factory.createXMLStreamReader(instream);
-
-			Object obj = ((JAXBUnmarshaller) getJAXBUnmarshaller()).unmarshal(reader, getTypeToUnmarshalTo());
-			this.xmlToObjectTest(obj);
-		}
-	}
-
-	public void testXMLToObjectFromXMLEventReader() throws Exception {
-		if (System.getProperty("java.version").contains("1.6")) {
-			InputStream instream = ClassLoader.getSystemResourceAsStream(getNoXsiTypeControlResourceName());
-			javax.xml.stream.XMLInputFactory factory = javax.xml.stream.XMLInputFactory.newInstance();
-			javax.xml.stream.XMLEventReader reader = factory.createXMLEventReader(instream);
-			Object obj = ((JAXBUnmarshaller) getJAXBUnmarshaller()).unmarshal(reader, getTypeToUnmarshalTo());
-			this.xmlToObjectTest(obj);
-		}
-	}
+    public void testXMLToObjectFromXMLStreamReader() throws Exception { 
+         if(null != XML_INPUT_FACTORY) {
+             InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
+             XMLStreamReader xmlStreamReader = XML_INPUT_FACTORY.createXMLStreamReader(instream);
+             Object testObject = jaxbUnmarshaller.unmarshal(xmlStreamReader);
+             instream.close();
+             xmlToObjectTest(testObject);
+         } 
+     } 
+  
+    public void testXMLToObjectFromXMLEventReader() throws Exception {
+        if(null != XML_INPUT_FACTORY) {
+            InputStream instream = ClassLoader.getSystemResourceAsStream(getNoXsiTypeControlResourceName());
+            javax.xml.stream.XMLEventReader reader = XML_INPUT_FACTORY.createXMLEventReader(instream);
+            Object obj = ((JAXBUnmarshaller) getJAXBUnmarshaller()).unmarshal(reader, getTypeToUnmarshalTo());
+            this.xmlToObjectTest(obj);
+        }
+    }
 
 	public void testObjectToXMLStreamWriter() throws Exception {
 		if (System.getProperty("java.version").contains("1.6")) {

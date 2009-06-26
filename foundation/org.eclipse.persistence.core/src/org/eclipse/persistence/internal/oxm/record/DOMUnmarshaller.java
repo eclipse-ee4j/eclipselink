@@ -13,6 +13,7 @@
 package org.eclipse.persistence.internal.oxm.record;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.lang.reflect.Method;
@@ -34,6 +35,7 @@ import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.record.DOMRecord;
+import org.eclipse.persistence.platform.xml.SAXDocumentBuilder;
 import org.eclipse.persistence.platform.xml.XMLParser;
 import org.eclipse.persistence.platform.xml.XMLPlatformException;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
@@ -45,6 +47,8 @@ import org.w3c.dom.Text;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
 
 /**
  * INTERNAL:
@@ -265,6 +269,32 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
             document = parser.parse(url);
             return xmlToObject(new DOMRecord(document), clazz);
         } catch (XMLPlatformException e) {
+            throw XMLMarshalException.unmarshalException(e);
+        }
+    }
+
+    public Object unmarshal(XMLReader xmlReader, InputSource inputSource) {
+        try {
+            SAXDocumentBuilder saxDocumentBuilder = new SAXDocumentBuilder();
+            xmlReader.setContentHandler(saxDocumentBuilder);
+            xmlReader.parse(inputSource);
+            return xmlToObject(new DOMRecord(saxDocumentBuilder.getDocument()));
+        } catch(IOException e) {
+            throw XMLMarshalException.unmarshalException(e);
+        } catch(SAXException e) {
+            throw XMLMarshalException.unmarshalException(e);
+        }
+    }
+
+    public Object unmarshal(XMLReader xmlReader, InputSource inputSource, Class clazz) {
+        try {
+            SAXDocumentBuilder saxDocumentBuilder = new SAXDocumentBuilder();
+            xmlReader.setContentHandler(saxDocumentBuilder);
+            xmlReader.parse(inputSource);
+            return xmlToObject(new DOMRecord(saxDocumentBuilder.getDocument()), clazz);
+        } catch(IOException e) {
+            throw XMLMarshalException.unmarshalException(e);
+        } catch(SAXException e) {
             throw XMLMarshalException.unmarshalException(e);
         }
     }

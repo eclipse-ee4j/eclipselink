@@ -13,9 +13,7 @@
 package org.eclipse.persistence.internal.oxm.record;
 
 import java.lang.reflect.Modifier;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Stack;
+
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
@@ -38,6 +36,8 @@ import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.ext.Locator2;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
+import org.eclipse.persistence.internal.oxm.record.namespaces.StackUnmarshalNamespaceResolver;
+import org.eclipse.persistence.internal.oxm.record.namespaces.UnmarshalNamespaceResolver;
 
 /**
  * INTERNAL:
@@ -58,15 +58,15 @@ public class SAXUnmarshallerHandler implements ContentHandler {
     private XMLReader xmlReader;
     private XMLContext xmlContext;
     private Object object;
-    private Map namespaceMap;
     private XMLUnmarshaller unmarshaller;
-    private Map uriToPrefixMap;
     private AbstractSession session;
     private Locator2 locator;
+    private UnmarshalNamespaceResolver unmarshalNamespaceResolver;
 
     public SAXUnmarshallerHandler(XMLContext xmlContext) {
         super();
         this.xmlContext = xmlContext;
+        unmarshalNamespaceResolver = new StackUnmarshalNamespaceResolver();
     }
 
     public XMLReader getXMLReader() {
@@ -91,6 +91,14 @@ public class SAXUnmarshallerHandler implements ContentHandler {
         }
     }
 
+    public UnmarshalNamespaceResolver getUnmarshalNamespaceResolver() {
+        return this.unmarshalNamespaceResolver;
+    }
+
+    public void setUnmarshalNamespaceResolver(UnmarshalNamespaceResolver unmarshalNamespaceResolver) {
+        this.unmarshalNamespaceResolver = unmarshalNamespaceResolver;
+    }
+
     public void startDocument() throws SAXException {
     }
 
@@ -98,41 +106,11 @@ public class SAXUnmarshallerHandler implements ContentHandler {
     }
 
     public void startPrefixMapping(String prefix, String uri) throws SAXException {
-        if (null == namespaceMap) {
-            namespaceMap = new HashMap();
-        }
-        if (uriToPrefixMap == null) {
-            uriToPrefixMap = new HashMap();
-        }
-        Stack uriStack = (Stack)namespaceMap.get(prefix);
-        if(uriStack == null) {
-            uriStack = new Stack();
-            namespaceMap.put(prefix, uriStack);
-        }
-        uriStack.push(uri);
-        Stack prefixStack = (Stack)uriToPrefixMap.get(uri);
-        if(prefixStack == null) {
-            prefixStack = new Stack();
-            uriToPrefixMap.put(uri, prefixStack);
-        }            
-        prefixStack.push(prefix);
+        unmarshalNamespaceResolver.push(prefix, uri);
     }
 
     public void endPrefixMapping(String prefix) throws SAXException {
-        if (null == namespaceMap) {
-            return;
-        }
-        Stack uriStack = (Stack)namespaceMap.get(prefix);
-        String uri = null;
-        if(uriStack.size() > 0) {
-            uri = (String)uriStack.pop();
-        }
-        if(uri != null && uriToPrefixMap != null) {
-            Stack prefixStack = (Stack)uriToPrefixMap.get(uri);
-            if(prefixStack != null && prefixStack.size() > 0) {
-                prefixStack.pop();
-            }
-        }
+        unmarshalNamespaceResolver.pop(prefix);
     }
 
     /**
@@ -166,17 +144,8 @@ public class SAXUnmarshallerHandler implements ContentHandler {
                     XPathFragment typeFragment = new XPathFragment(type);
 
                     // set the prefix using a reverse key lookup by uri value on namespaceMap 
-                    if (null != namespaceMap) {
-                        Stack namespaceStack = null;
-                        if (null == typeFragment.getPrefix()) {
-                            // an empty_string key references the default namespace
-                            namespaceStack = (Stack)namespaceMap.get(EMPTY_STRING);
-                        } else {
-                            namespaceStack = (Stack)namespaceMap.get(typeFragment.getPrefix());
-                        }
-                        if(namespaceStack != null && namespaceStack.size() > 0) {
-                            typeFragment.setNamespaceURI((String)namespaceStack.peek());
-                        }
+                    if (null != unmarshalNamespaceResolver) {
+                        typeFragment.setNamespaceURI(unmarshalNamespaceResolver.getNamespaceURI(typeFragment.getPrefix()));
                     }
                     xmlDescriptor = xmlContext.getDescriptorByGlobalType(typeFragment);
                 }
@@ -228,8 +197,7 @@ public class SAXUnmarshallerHandler implements ContentHandler {
             UnmarshalRecord unmarshalRecord;
             if (xmlDescriptor.hasInheritance()) {
                 unmarshalRecord = new UnmarshalRecord(null);
-                unmarshalRecord.setNamespaceMap(namespaceMap);
-                unmarshalRecord.setUriToPrefixMap(uriToPrefixMap);
+                unmarshalRecord.setUnmarshalNamespaceResolver(unmarshalNamespaceResolver);
                 unmarshalRecord.setAttributes(atts);
                 Class classValue = xmlDescriptor.getInheritancePolicy().classFromRow(unmarshalRecord, session);
                 if (classValue == null) {
@@ -268,8 +236,7 @@ public class SAXUnmarshallerHandler implements ContentHandler {
             unmarshalRecord.setXMLReader(this.getXMLReader());
             unmarshalRecord.setAttributes(atts);
             unmarshalRecord.startDocument();
-            unmarshalRecord.setNamespaceMap(namespaceMap);
-            unmarshalRecord.setUriToPrefixMap(uriToPrefixMap);
+            unmarshalRecord.setUnmarshalNamespaceResolver(unmarshalNamespaceResolver);
             unmarshalRecord.startElement(namespaceURI, localName, qName, atts);
             xmlReader.setContentHandler(unmarshalRecord);
             try {
@@ -315,15 +282,4 @@ public class SAXUnmarshallerHandler implements ContentHandler {
         return this.unmarshaller;
     }
 
-    public Map getUriToPrefixMap() {
-        return this.uriToPrefixMap;
-    }
-
-    public void setUriToPrefixMap(Map uriToPrefixMap) {
-        this.uriToPrefixMap = uriToPrefixMap;
-    }
-    
-    public Map getNamespaceMap() {
-        return this.namespaceMap;
-    }
 }

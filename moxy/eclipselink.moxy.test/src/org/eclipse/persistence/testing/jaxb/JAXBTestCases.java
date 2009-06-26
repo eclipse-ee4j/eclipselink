@@ -33,6 +33,7 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
@@ -262,6 +263,16 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         java.net.URL url = ClassLoader.getSystemResource(resourceName);
         Object testObject = jaxbUnmarshaller.unmarshal(url);
         xmlToObjectTest(testObject);
+    }
+
+    public void testXMLToObjectFromXMLStreamReader() throws Exception {
+        if(null != XML_INPUT_FACTORY) {
+            InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
+            XMLStreamReader xmlStreamReader = XML_INPUT_FACTORY.createXMLStreamReader(instream);
+            Object testObject = jaxbUnmarshaller.unmarshal(xmlStreamReader);
+            instream.close();
+            xmlToObjectTest(testObject);
+        }
     }
 
     public void testObjectToXMLDocument() throws Exception {

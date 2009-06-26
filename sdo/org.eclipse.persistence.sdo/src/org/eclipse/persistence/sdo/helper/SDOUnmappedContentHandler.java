@@ -18,8 +18,6 @@ import commonj.sdo.Type;
 import commonj.sdo.helper.DataFactory;
 import commonj.sdo.helper.HelperContext;
 import java.lang.reflect.Modifier;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Stack;
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.sdo.SDOConstants;
@@ -31,6 +29,7 @@ import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.StrBuffer;
 import org.eclipse.persistence.internal.oxm.TreeObjectBuilder;
+import org.eclipse.persistence.internal.oxm.record.namespaces.UnmarshalNamespaceResolver;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
@@ -61,8 +60,7 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
     private int lastEvent = -1;
     private static final int START_ELEMENT = 0;
     private static final int END_ELEMENT = 1;
-    private Map uriToPrefixMap;
-    protected Map namespaceMap;
+    private UnmarshalNamespaceResolver unmarshalNamespaceResolver;
     private static final String NO_NAMESPACE = null;
     private int depth = 0;
     
@@ -83,41 +81,11 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
     }
 
     public void startPrefixMapping(String prefix, String uri) throws SAXException {
-        if (null == namespaceMap) {
-            namespaceMap = new HashMap();
-        }
-        if (uriToPrefixMap == null) {
-            uriToPrefixMap = new HashMap();
-        }
-        Stack uriStack = (Stack)namespaceMap.get(prefix);
-        if(uriStack == null) {
-            uriStack = new Stack();
-            namespaceMap.put(prefix, uriStack);
-        }
-        uriStack.push(uri);
-        Stack prefixStack = (Stack)uriToPrefixMap.get(uri);
-        if(prefixStack == null) {
-            prefixStack = new Stack();
-            uriToPrefixMap.put(uri, prefixStack);
-        }            
-        prefixStack.push(prefix);
+        unmarshalNamespaceResolver.push(prefix, uri);
     }
 
     public void endPrefixMapping(String prefix) throws SAXException {
-        if (null == namespaceMap) {
-            return;
-        }
-        Stack uriStack = (Stack)namespaceMap.get(prefix);
-        String uri = null;
-        if(uriStack != null && uriStack.size() > 0) {
-            uri = (String)uriStack.pop();
-        }
-        if(uri != null && uriToPrefixMap != null) {
-            Stack prefixStack = (Stack)uriToPrefixMap.get(uri);
-            if(prefixStack != null && prefixStack.size() > 0) {
-                prefixStack.pop();
-            }
-        }
+        unmarshalNamespaceResolver.pop(prefix);
     }
 
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
@@ -148,12 +116,7 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
             if (XMLConstants.SCHEMA_INSTANCE_URL.equals(uri) && XMLConstants.SCHEMA_TYPE_ATTRIBUTE.equals(attrName)) {
                 int colonIndex = stringValue.indexOf(':');
                 String localPrefix = stringValue.substring(0, colonIndex);
-                String localURI = null;
-                Stack uriStack = (Stack)getNamespaceMap().get(localPrefix);
-                if(uriStack != null && uriStack.size() > 0) {
-                    localURI = (String)uriStack.peek();
-                }
-
+                String localURI = unmarshalNamespaceResolver.getNamespaceURI(localPrefix);
                 if (localURI != null) {
                     String localName = stringValue.substring(colonIndex + 1, stringValue.length());
                     QName theQName = new QName(localURI, localName);
@@ -387,10 +350,7 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
                 if (prefix == null) {
                     typeUri = null;
                 } else {
-                    Stack uriStack = (Stack)getNamespaceMap().get(prefix);
-                    if(uriStack != null && uriStack.size() > 0) {
-                        typeUri = (String)uriStack.peek();
-                    }
+                    typeUri = unmarshalNamespaceResolver.getNamespaceURI(prefix);
                 }
             rootObjectType = typeHelper.getType(typeUri, typeName);
             }            
@@ -451,8 +411,7 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
         UnmarshalRecord unmarshalRecord;
         if (xmlDescriptor.hasInheritance()) {
             unmarshalRecord = new UnmarshalRecord((TreeObjectBuilder)xmlDescriptor.getObjectBuilder());
-            unmarshalRecord.setNamespaceMap(namespaceMap);
-            unmarshalRecord.setUriToPrefixMap(uriToPrefixMap);
+            unmarshalRecord.setUnmarshalNamespaceResolver(unmarshalNamespaceResolver);
             unmarshalRecord.setAttributes(atts);
             Class classValue = xmlDescriptor.getInheritancePolicy().classFromRow(unmarshalRecord, session);
             if (classValue == null) {
@@ -488,8 +447,7 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
         unmarshalRecord.setUnmarshaller(parentRecord.getUnmarshaller());
         unmarshalRecord.setXMLReader(parentRecord.getXMLReader());
         unmarshalRecord.startDocument();
-        unmarshalRecord.setNamespaceMap(namespaceMap);
-        unmarshalRecord.setUriToPrefixMap(uriToPrefixMap);
+        unmarshalRecord.setUnmarshalNamespaceResolver(unmarshalNamespaceResolver);
         unmarshalRecord.startElement(namespaceURI, localName, qName, atts);
 
         parentRecord.getXMLReader().setContentHandler(unmarshalRecord);
@@ -525,15 +483,7 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
                 depth++;
             }
         }
-        namespaceMap = parentRecord.getNamespaceMap();
-        uriToPrefixMap = parentRecord.getUriToPrefixMap();
-    }
-
-    public Map getNamespaceMap() {
-        if (namespaceMap == null) {
-            namespaceMap = new HashMap();
-        }
-        return namespaceMap;
+        unmarshalNamespaceResolver = parentRecord.getUnmarshalNamespaceResolver();
     }
 
     private boolean equalStrings(String string1, String string2) {

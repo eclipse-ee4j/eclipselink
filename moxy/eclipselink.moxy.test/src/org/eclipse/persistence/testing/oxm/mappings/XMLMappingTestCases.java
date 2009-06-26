@@ -1,30 +1,33 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2008 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
+ * This program and the accompanying materials are made available under the 
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
+ * which accompanies this distribution. 
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/
+ ******************************************************************************/  
 package org.eclipse.persistence.testing.oxm.mappings;
 
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.lang.reflect.Constructor;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.Result;
 
+import org.eclipse.persistence.internal.oxm.record.XMLStreamReaderInputSource;
+import org.eclipse.persistence.internal.oxm.record.XMLStreamReaderReader;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLContext;
@@ -42,6 +45,29 @@ import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
 public abstract class XMLMappingTestCases extends OXTestCase {
+
+    protected static XMLInputFactory XML_INPUT_FACTORY;
+    protected static XMLOutputFactory XML_OUTPUT_FACTORY;
+    protected static Class staxResultClass;
+    protected static String staxResultClassName = "javax.xml.transform.stax.StAXResult";
+    protected static Constructor staxResultConstructor;
+
+    static {
+        try {
+            XML_INPUT_FACTORY = XMLInputFactory.newInstance();
+            XML_OUTPUT_FACTORY = XMLOutputFactory.newInstance();
+        } catch(Exception e) {
+            XML_INPUT_FACTORY = null;
+            XML_OUTPUT_FACTORY = null;
+        }
+        try {
+            staxResultClass = PrivilegedAccessHelper.getClassForName(staxResultClassName);
+            staxResultConstructor = PrivilegedAccessHelper.getConstructorFor(staxResultClass, new Class[]{XMLStreamWriter.class}, true);
+        } catch(Exception ex) {
+            staxResultClass = null;
+        }
+    }
+
     protected Document controlDocument;
     protected Document writeControlDocument;
     protected XMLMarshaller xmlMarshaller;
@@ -53,28 +79,13 @@ public abstract class XMLMappingTestCases extends OXTestCase {
     protected String controlDocumentLocation;
     protected String writeControlDocumentLocation;
 
-    protected static XMLOutputFactory XML_OUTPUT_FACTORY;
-    protected static Class staxResultClass;
-    protected static String staxResultClassName = "javax.xml.transform.stax.StAXResult";
-    protected static Constructor staxResultConstructor;
-
-    static {
-        try {
-            XML_OUTPUT_FACTORY = XMLOutputFactory.newInstance();
-        } catch(Exception ex) {
-            XML_OUTPUT_FACTORY = null;
-        }
-        try {
-            staxResultClass = PrivilegedAccessHelper.getClassForName(staxResultClassName);
-            staxResultConstructor = PrivilegedAccessHelper.getConstructorFor(staxResultClass, new Class[]{XMLStreamWriter.class}, true);
-        } catch(Exception ex) {
-            staxResultClass = null;
-        }
-    }
-
     public XMLMappingTestCases(String name) throws Exception {
         super(name);
         setupParser();
+    }
+
+    public boolean isUnmarshalTest() {
+        return true;
     }
 
     public void setupControlDocs() throws Exception{
@@ -115,8 +126,6 @@ public abstract class XMLMappingTestCases extends OXTestCase {
         controlDocument = null;
         controlDocumentLocation = null;
     }
-
-
 
     protected void setupParser() {
         try {
@@ -192,10 +201,26 @@ public abstract class XMLMappingTestCases extends OXTestCase {
 
 
     public void testXMLToObjectFromInputStream() throws Exception {
-        InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
-        Object testObject = xmlUnmarshaller.unmarshal(instream);
-        instream.close();
-        xmlToObjectTest(testObject);
+        if(isUnmarshalTest()) {
+            InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
+            Object testObject = xmlUnmarshaller.unmarshal(instream);
+            instream.close();
+            xmlToObjectTest(testObject);
+        }
+    }
+
+    public void testXMLToObjectFromXMLStreamReader() throws Exception {
+        if(isUnmarshalTest()  && null != XML_INPUT_FACTORY) {
+            InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
+            XMLStreamReader xmlStreamReader = XML_INPUT_FACTORY.createXMLStreamReader(instream);
+            XMLStreamReaderReader staxReader = new XMLStreamReaderReader();
+            staxReader.setErrorHandler(xmlUnmarshaller.getErrorHandler());
+            XMLStreamReaderInputSource inputSource = new XMLStreamReaderInputSource(xmlStreamReader);
+            Object testObject = xmlUnmarshaller.unmarshal(staxReader, inputSource);
+            
+            instream.close();
+            xmlToObjectTest(testObject);
+        }
     }
 
     public void xmlToObjectTest(Object testObject) throws Exception {
@@ -303,7 +328,6 @@ public abstract class XMLMappingTestCases extends OXTestCase {
             objectToXMLDocumentTest(testDocument);
         }
     }
-
     protected int getNamespaceResolverSize(XMLDescriptor desc){
        int size = -1;
         if (desc != null) {
@@ -349,24 +373,29 @@ public abstract class XMLMappingTestCases extends OXTestCase {
     }
 
     public void testXMLToObjectFromURL() throws Exception {
-        java.net.URL url = ClassLoader.getSystemResource(resourceName);
-        Object testObject = xmlUnmarshaller.unmarshal(url);
-        xmlToObjectTest(testObject);
+        if(isUnmarshalTest()) {
+            java.net.URL url = ClassLoader.getSystemResource(resourceName);
+            Object testObject = xmlUnmarshaller.unmarshal(url);
+            xmlToObjectTest(testObject);
+        }
     }
 
     public void testUnmarshallerHandler() throws Exception {
-        SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
-        saxParserFactory.setNamespaceAware(true);
-        SAXParser saxParser = saxParserFactory.newSAXParser();
-        XMLReader xmlReader = saxParser.getXMLReader();
+        if(isUnmarshalTest()) {
+            SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
+            saxParserFactory.setNamespaceAware(true);
+            SAXParser saxParser = saxParserFactory.newSAXParser();
+            XMLReader xmlReader = saxParser.getXMLReader();
 
-        XMLUnmarshallerHandler xmlUnmarshallerHandler = xmlUnmarshaller.getUnmarshallerHandler();
-        xmlReader.setContentHandler(xmlUnmarshallerHandler);
+            XMLUnmarshallerHandler xmlUnmarshallerHandler = xmlUnmarshaller.getUnmarshallerHandler();
+            xmlReader.setContentHandler(xmlUnmarshallerHandler);
 
-        InputStream inputStream = ClassLoader.getSystemResourceAsStream(resourceName);
-        InputSource inputSource = new InputSource(inputStream);
-        xmlReader.parse(inputSource);
+            InputStream inputStream = ClassLoader.getSystemResourceAsStream(resourceName);
+            InputSource inputSource = new InputSource(inputStream);
+            xmlReader.parse(inputSource);
 
-        xmlToObjectTest(xmlUnmarshallerHandler.getResult());
+            xmlToObjectTest(xmlUnmarshallerHandler.getResult());
+        }
     }
+
 }

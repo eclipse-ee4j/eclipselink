@@ -12,8 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.oxm.record;
 
-import java.util.Stack;
-
+import org.eclipse.persistence.internal.oxm.record.namespaces.UnmarshalNamespaceResolver;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
@@ -31,7 +30,7 @@ public class XMLTransformationRecord extends DOMRecord {
         owningRecord = owner;
         initializeNamespaceMaps();
     }
-    
+
     public XMLTransformationRecord(String rootName, UnmarshalRecord owner) {
         super(rootName);
         owningRecord = owner;
@@ -41,31 +40,15 @@ public class XMLTransformationRecord extends DOMRecord {
     }
     public String resolveNamespacePrefix(String prefix) {
         return resolver.resolveNamespacePrefix(prefix);
-    }    
+    }
     
     public void initializeNamespaceMaps() {
         //When the transformation record is created, initialize the namespace resolver 
         //to contain the namespaces from the current state of the owning record.
         //Start at the root and work down.
-        Stack records = new Stack();
-        UnmarshalRecord next = owningRecord;
-        while(next != null) {
-            records.push(next);
-            next = next.getParentRecord();
+        UnmarshalNamespaceResolver unmarshalNamespaceResolver = owningRecord.getUnmarshalNamespaceResolver();
+        for(String prefix : unmarshalNamespaceResolver.getPrefixes()) {
+            resolver.put(prefix, unmarshalNamespaceResolver.getNamespaceURI(prefix));
         }
-        for(int i = 0; i < records.size(); i++) {
-            next = (UnmarshalRecord)records.pop();
-            if(next.getNamespaceMap() != null) {
-                java.util.Iterator prefixes = next.getNamespaceMap().keySet().iterator();
-                while(prefixes.hasNext()) {
-                    String prefix = (String)prefixes.next();
-                    Stack uriStack = (Stack)next.getNamespaceMap().get(prefix);
-                    if(uriStack.size() > 0) {
-                        this.resolver.put(prefix, (String)uriStack.peek());
-                    }
-                }
-            }
-        }
-        
     }
 }

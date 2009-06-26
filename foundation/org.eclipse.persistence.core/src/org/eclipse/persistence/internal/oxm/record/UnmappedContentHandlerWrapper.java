@@ -33,8 +33,7 @@ public class UnmappedContentHandlerWrapper extends UnmarshalRecord {
         setParentRecord(parentRecord);
         setUnmarshaller(parentRecord.getUnmarshaller());
         setXMLReader(parentRecord.getXMLReader());
-        setUriToPrefixMap(parentRecord.getUriToPrefixMap());
-        setNamespaceMap(parentRecord.getNamespaceMap());
+        setUnmarshalNamespaceResolver(parentRecord.getUnmarshalNamespaceResolver());
         unmappedContentHandler.setUnmarshalRecord(this);
     }
 
@@ -44,8 +43,7 @@ public class UnmappedContentHandlerWrapper extends UnmarshalRecord {
         this.unmappedContentHandler = unmappedContentHandler;
         setUnmarshaller(saxUnmarshallerHandler.getUnmarshaller());
         setXMLReader(saxUnmarshallerHandler.getXMLReader());
-        setUriToPrefixMap(saxUnmarshallerHandler.getUriToPrefixMap());
-        setNamespaceMap(saxUnmarshallerHandler.getNamespaceMap());
+        setUnmarshalNamespaceResolver(saxUnmarshallerHandler.getUnmarshalNamespaceResolver());
         unmappedContentHandler.setUnmarshalRecord(this);
     }
 

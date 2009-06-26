@@ -33,6 +33,10 @@ public class AnyObjectNoDefaultRootComplexChildrenTestCases extends XMLMappingTe
         setControlDocument(XML_RESOURCE_PATH);
     }
 
+    public boolean isUnmarshalTest() {
+        return false;
+    }
+
     public Object getControlObject() {
         Root root = new Root();
         Child child = new Child();
@@ -41,15 +45,4 @@ public class AnyObjectNoDefaultRootComplexChildrenTestCases extends XMLMappingTe
         return root;
     }
 
-    // override superclass testcase since it is invalid here
-    public void testXMLToObjectFromInputStream() throws Exception {
-    }
-
-    // override superclass testcase since it is invalid here
-    public void testXMLToObjectFromURL() throws Exception {
-    }
-
-    // override superclass testcase since it is invalid here
-    public void testUnmarshallerHandler() throws Exception {
-    }
 }

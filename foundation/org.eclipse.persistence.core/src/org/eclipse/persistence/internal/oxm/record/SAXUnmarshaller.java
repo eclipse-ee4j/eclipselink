@@ -41,6 +41,7 @@ import org.eclipse.persistence.oxm.record.XMLRootRecord;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.platform.xml.DefaultErrorHandler;
+import org.eclipse.persistence.platform.xml.SAXDocumentBuilder;
 import org.eclipse.persistence.platform.xml.XMLParser;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.oxm.XMLUnmarshallerHandler;
@@ -225,26 +226,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     }
 
     public Object unmarshal(InputSource inputSource) {
-        try {
-            XMLContext xmlContext = xmlUnmarshaller.getXMLContext();
-            if (xmlContext.hasDocumentPreservation()) {
-                Node domElement = xmlParser.parse(inputSource).getDocumentElement();
-                return unmarshal(domElement);
-            }
-            SAXUnmarshallerHandler saxUnmarshallerHandler = new SAXUnmarshallerHandler(xmlContext);
-            saxUnmarshallerHandler.setXMLReader(xmlReader);
-            saxUnmarshallerHandler.setUnmarshaller(xmlUnmarshaller);
-            xmlReader.setContentHandler(saxUnmarshallerHandler);
-            xmlReader.parse(inputSource);
-            
-            // resolve any mapping references
-            saxUnmarshallerHandler.resolveReferences();
-            return saxUnmarshallerHandler.getObject();
-        } catch (IOException e) {
-            throw XMLMarshalException.unmarshalException(e);
-        } catch (SAXException e) {
-            throw convertSAXException(e);
-        }
+        return unmarshal(xmlReader, inputSource);
     }
 
     public Object unmarshal(InputSource inputSource, XMLReader xmlReader) {
@@ -266,58 +248,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     }
 
     public Object unmarshal(InputSource inputSource, Class clazz) {
-        XMLContext xmlContext = xmlUnmarshaller.getXMLContext();
-
-        if (xmlContext.hasDocumentPreservation()) {
-            Node domElement = xmlParser.parse(inputSource).getDocumentElement();
-            return unmarshal(domElement, clazz);
-        }
-        boolean isPrimitiveWrapper = isPrimitiveWrapper(clazz);         	
-        UnmarshalRecord unmarshalRecord;
-        XMLDescriptor xmlDescriptor = null;
-
-        AbstractSession session = null;
-
-        // check for case where the reference class is a primitive wrapper - in this case, we 
-        // need to use the conversion manager to convert the node's value to the primitive 
-        // wrapper class, then create, populate and return an XMLRoot.  This will be done
-        // via XMLRootRecord.
-        if (isPrimitiveWrapper) {
-            unmarshalRecord = new XMLRootRecord(clazz);
-            unmarshalRecord.setSession((AbstractSession) xmlUnmarshaller.getXMLContext().getSession(0));
-        } else {
-            // for XMLObjectReferenceMappings we need a non-shared cache, so
-            // try and get a Unit Of Work from the XMLContext
-            session = xmlContext.getReadSession(clazz);
-            xmlDescriptor = (XMLDescriptor) session.getDescriptor(clazz);
-            unmarshalRecord = (UnmarshalRecord) xmlDescriptor.getObjectBuilder().createRecord(session);
-        }
-        try {
-            unmarshalRecord.setXMLReader(xmlReader);
-            unmarshalRecord.setUnmarshaller(xmlUnmarshaller);
-            xmlReader.setContentHandler(unmarshalRecord);
-            try {
-                xmlReader.setProperty("http://xml.org/sax/properties/lexical-handler", unmarshalRecord);
-            } catch (SAXNotRecognizedException ex) {
-            } catch (SAXNotSupportedException ex) {
-                //if lexical handling is not supported by this parser, just ignore. 
-            }
-            xmlReader.parse(inputSource);
-
-        } catch (IOException e) {
-            throw XMLMarshalException.unmarshalException(e);
-        } catch (SAXException e) {
-            throw convertSAXException(e);
-        }
-
-        // resolve mapping references
-        xmlUnmarshaller.resolveReferences(session);
-
-        if (isPrimitiveWrapper) {
-            return unmarshalRecord.getCurrentObject();
-        }
-        return xmlDescriptor.wrapObjectInXMLRoot(unmarshalRecord, this.isResultAlwaysXMLRoot);
-
+        return unmarshal(xmlReader, inputSource, clazz);
     }
 
     public Object unmarshal(InputSource inputSource, Class clazz, XMLReader xmlReader) {
@@ -623,6 +554,98 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             return unmarshalRecord.getCurrentObject();
         }
         return xmlDescriptor.wrapObjectInXMLRoot(unmarshalRecord, this.isResultAlwaysXMLRoot);
+    }
+
+    public Object unmarshal(org.xml.sax.XMLReader xmlReader, InputSource inputSource) {
+        try {
+            XMLContext xmlContext = xmlUnmarshaller.getXMLContext();
+            if (xmlContext.hasDocumentPreservation()) {
+                SAXDocumentBuilder saxDocumentBuilder = new SAXDocumentBuilder();
+                xmlReader.setContentHandler(saxDocumentBuilder);
+                xmlReader.parse(inputSource);
+                return unmarshal(saxDocumentBuilder.getDocument().getDocumentElement());
+            }
+            XMLReader extendedXMLReader;
+            if(xmlReader instanceof XMLReader) {
+                extendedXMLReader = (XMLReader) xmlReader;
+            } else {
+                extendedXMLReader = new XMLReader(xmlReader);
+            }
+            SAXUnmarshallerHandler saxUnmarshallerHandler = new SAXUnmarshallerHandler(xmlContext);
+            saxUnmarshallerHandler.setXMLReader(extendedXMLReader);
+            saxUnmarshallerHandler.setUnmarshaller(xmlUnmarshaller);
+            extendedXMLReader.setContentHandler(saxUnmarshallerHandler);
+            extendedXMLReader.parse(inputSource, saxUnmarshallerHandler);
+
+            // resolve any mapping references
+            saxUnmarshallerHandler.resolveReferences();
+            return saxUnmarshallerHandler.getObject();
+        } catch (IOException e) {
+            throw XMLMarshalException.unmarshalException(e);
+        } catch (SAXException e) {
+            throw convertSAXException(e);
+        }
+    }
+
+    public Object unmarshal(org.xml.sax.XMLReader xmlReader, InputSource inputSource, Class clazz) {
+        try {
+            XMLContext xmlContext = xmlUnmarshaller.getXMLContext();
+
+            if (xmlContext.hasDocumentPreservation()) {
+                SAXDocumentBuilder saxDocumentBuilder = new SAXDocumentBuilder();
+                xmlReader.setContentHandler(saxDocumentBuilder);
+                xmlReader.parse(inputSource);
+                return unmarshal(saxDocumentBuilder.getDocument().getDocumentElement(), clazz);
+            }
+            boolean isPrimitiveWrapper = isPrimitiveWrapper(clazz);
+            UnmarshalRecord unmarshalRecord;
+            XMLDescriptor xmlDescriptor = null;
+
+            AbstractSession session = null;
+
+            // check for case where the reference class is a primitive wrapper - in this case, we 
+            // need to use the conversion manager to convert the node's value to the primitive 
+            // wrapper class, then create, populate and return an XMLRoot.  This will be done
+            // via XMLRootRecord.
+            if (isPrimitiveWrapper) {
+                unmarshalRecord = new XMLRootRecord(clazz);
+                unmarshalRecord.setSession((AbstractSession) xmlUnmarshaller.getXMLContext().getSession(0));
+            } else {
+                // for XMLObjectReferenceMappings we need a non-shared cache, so
+                // try and get a Unit Of Work from the XMLContext
+                session = xmlContext.getReadSession(clazz);
+                xmlDescriptor = (XMLDescriptor) session.getDescriptor(clazz);
+                unmarshalRecord = (UnmarshalRecord) xmlDescriptor.getObjectBuilder().createRecord(session);
+            }
+            XMLReader extendedXMLReader;
+            if(xmlReader instanceof XMLReader) {
+                extendedXMLReader = (XMLReader) xmlReader;
+            } else {
+                extendedXMLReader = new XMLReader(xmlReader);
+            }
+            unmarshalRecord.setXMLReader(extendedXMLReader);
+            unmarshalRecord.setUnmarshaller(xmlUnmarshaller);
+            extendedXMLReader.setContentHandler(unmarshalRecord);
+            try {
+                extendedXMLReader.setProperty("http://xml.org/sax/properties/lexical-handler", unmarshalRecord);
+            } catch (SAXNotRecognizedException ex) {
+            } catch (SAXNotSupportedException ex) {
+                //if lexical handling is not supported by this parser, just ignore. 
+            }
+            extendedXMLReader.parse(inputSource);
+
+            // resolve mapping references
+            xmlUnmarshaller.resolveReferences(session);
+
+            if (isPrimitiveWrapper) {
+                return unmarshalRecord.getCurrentObject();
+            }
+            return xmlDescriptor.wrapObjectInXMLRoot(unmarshalRecord, this.isResultAlwaysXMLRoot);
+        } catch (IOException e) {
+            throw XMLMarshalException.unmarshalException(e);
+        } catch (SAXException e) {
+            throw convertSAXException(e);
+        }
     }
 
     private EclipseLinkException convertSAXException(SAXException saxException) {
