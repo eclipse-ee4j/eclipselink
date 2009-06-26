@@ -29,7 +29,6 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.Result;
-import javax.xml.transform.stax.StAXResult;
 import javax.xml.validation.Schema;
 
 import java.lang.reflect.Constructor;
@@ -41,6 +40,7 @@ import org.xml.sax.ContentHandler;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLRoot;
+import org.eclipse.persistence.oxm.record.XMLStreamWriterRecord;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -284,9 +284,18 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
 	}
 
 	public void marshal(Object object, XMLStreamWriter streamWriter) throws JAXBException {
+        if (object == null || streamWriter == null) {
+            throw new IllegalArgumentException();
+        }
+		// let the JAXBIntrospector determine if the object is a JAXBElement
+		if (object instanceof JAXBElement) {
+			// use the JAXBElement's properties to populate an XMLRoot
+			object = createXMLRootFromJAXBElement((JAXBElement) object);
+		}
 	    try {
-	        StAXResult staxResult = new StAXResult(streamWriter);
-	        this.marshal(object, staxResult);
+	        XMLStreamWriterRecord record = new XMLStreamWriterRecord(streamWriter);
+	        record.setMarshaller(this.xmlMarshaller);
+	        this.xmlMarshaller.marshal(object, record);
 	    } catch (Exception ex) {
 	        throw new MarshalException(ex);
 	    }

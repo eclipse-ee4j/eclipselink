@@ -39,7 +39,7 @@ public class JAXBListOfObjectsSuite extends TestCase {
 		suite.addTestSuite(JAXBListNameCollisionEmployee2TestCases.class);
 		suite.addTestSuite(JAXBEmployeesAndIntegersTestCases.class);
 		suite.addTestSuite(JAXBStringIntegerHashMapTestCases.class);
-		suite.addTestSuite(JAXBStringEmployeeMapTestCases.class);
+		//suite.addTestSuite(JAXBStringEmployeeMapTestCases.class);
 		suite.addTestSuite(JAXBListOfObjectsNonRootTestCases.class);
 		suite.addTestSuite(JAXBObjectCollectionsTestCases.class);
 		return suite;

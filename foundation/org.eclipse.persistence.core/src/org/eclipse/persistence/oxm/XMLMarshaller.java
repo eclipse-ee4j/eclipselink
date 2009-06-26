@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2008 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -99,25 +99,35 @@ public class XMLMarshaller {
     private Schema schema;
 
     private static final String STAX_RESULT_CLASS_NAME = "javax.xml.transform.stax.StAXResult";
-    private static final String XML_STREAM_RESULT_WRAPPER_CLASS_NAME = "org.eclipse.persistence.internal.oxm.stax.XMLStreamResultWrapper"; 
-    private static final String GET_XML_STREAM_WRITER_METHOD_NAME = "getXMLStreamWriter"; 
+    private static final String GET_XML_STREAM_WRITER_METHOD_NAME = "getXMLStreamWriter";
+    private static final String XML_STREAM_WRITER_RECORD_CLASS_NAME = "org.eclipse.persistence.oxm.record.XMLStreamWriterRecord";
+    private static final String XML_STREAM_WRITER_CLASS_NAME = "javax.xml.stream.XMLStreamWriter";
+    private static final String DOM_TO_STREAM_WRITER_CLASS_NAME = "org.eclipse.persistence.internal.oxm.stax.DomToXMLStreamWriter";
+    private static final String WRITE_TO_STREAM_METHOD_NAME = "writeToStream";
+
     private static Class staxResultClass;
-    private static Constructor xmlStreamResultConstructor; 
     private static Method staxResultGetStreamWriterMethod;
-    
+    private static Constructor xmlStreamWriterRecordConstructor;
+    private static Method writeToStreamMethod;
+    private static Class domToStreamWriterClass;
+
     static {
         try {
             staxResultClass = PrivilegedAccessHelper.getClassForName(STAX_RESULT_CLASS_NAME);
             if(staxResultClass != null) {
                 staxResultGetStreamWriterMethod = PrivilegedAccessHelper.getDeclaredMethod(staxResultClass, GET_XML_STREAM_WRITER_METHOD_NAME, new Class[]{});
-                Class xmlStreamResultClass = PrivilegedAccessHelper.getClassForName(XML_STREAM_RESULT_WRAPPER_CLASS_NAME);
-                xmlStreamResultConstructor = PrivilegedAccessHelper.getConstructorFor(xmlStreamResultClass, new Class[]{staxResultClass, XMLMarshaller.class}, true); 
             }
+            Class streamWriterRecordClass = PrivilegedAccessHelper.getClassForName(XML_STREAM_WRITER_RECORD_CLASS_NAME);
+            Class streamWriterClass = PrivilegedAccessHelper.getClassForName(XML_STREAM_WRITER_CLASS_NAME);
+            xmlStreamWriterRecordConstructor = PrivilegedAccessHelper.getConstructorFor(streamWriterRecordClass, new Class[]{streamWriterClass}, true);
+
+            domToStreamWriterClass = PrivilegedAccessHelper.getClassForName(DOM_TO_STREAM_WRITER_CLASS_NAME);
+            writeToStreamMethod = PrivilegedAccessHelper.getMethod(domToStreamWriterClass, WRITE_TO_STREAM_METHOD_NAME, new Class[] {ClassConstants.NODE, streamWriterClass}, true);
         } catch (Exception ex) {
             // Do nothing
         }
-    } 
-    
+    }
+
     /**
     * Create a new XMLMarshaller based on the specified session
     * @param session A single session
@@ -143,7 +153,7 @@ public class XMLMarshaller {
         return xmlContext;
     }
 
-    /** 
+    /**
      * Set the XMLContext used by this instance of XMLMarshaller.
      */
     public void setXMLContext(XMLContext value) {
@@ -294,15 +304,19 @@ public class XMLMarshaller {
                     try {
                         Object xmlStreamWriter = PrivilegedAccessHelper.invokeMethod(staxResultGetStreamWriterMethod, result);
                         if (xmlStreamWriter != null) {
-                            result = (Result) PrivilegedAccessHelper.invokeConstructor(this.xmlStreamResultConstructor, new Object[]{result, this});  
+                            MarshalRecord record = (MarshalRecord)PrivilegedAccessHelper.invokeConstructor(xmlStreamWriterRecordConstructor, new Object[]{xmlStreamWriter});
+                            record.setMarshaller(this);
+                            marshal(object, record);
+                            return;
                         }
                     } catch (Exception e) {
+                        throw XMLMarshalException.marshalException(e);
                     }
                 }
-            	java.io.StringWriter writer = new java.io.StringWriter();
-            	marshal(object, writer);
-            	javax.xml.transform.stream.StreamSource source = new javax.xml.transform.stream.StreamSource(new java.io.StringReader(writer.toString()));
-            	transformer.transform(source, result);
+                java.io.StringWriter writer = new java.io.StringWriter();
+                marshal(object, writer);
+                javax.xml.transform.stream.StreamSource source = new javax.xml.transform.stream.StreamSource(new java.io.StringReader(writer.toString()));
+                transformer.transform(source, result);
             }
             return;
         }
@@ -327,6 +341,19 @@ public class XMLMarshaller {
 
                 }
             } else {
+                if (result.getClass().equals(staxResultClass)) {
+                    try {
+                        Object xmlStreamWriter = PrivilegedAccessHelper.invokeMethod(staxResultGetStreamWriterMethod, result);
+                        if (xmlStreamWriter != null) {
+                            Object domtostax = PrivilegedAccessHelper.newInstanceFromClass(domToStreamWriterClass);
+                            PrivilegedAccessHelper.invokeMethod(writeToStreamMethod, domtostax, new Object[]{document, xmlStreamWriter});
+                            return;
+                        }
+
+                    } catch(Exception e) {
+                        throw XMLMarshalException.marshalException(e);
+                    }
+                }
                 if (isXMLRoot) {
                     String oldEncoding = transformer.getEncoding();
                     String oldVersion = transformer.getVersion();
@@ -547,8 +574,8 @@ public class XMLMarshaller {
                 return;
             }
 
-            //If preserving document, may return the cached doc. Need to 
-            //Copy contents of the cached doc to the supplied node. 
+            //If preserving document, may return the cached doc. Need to
+            //Copy contents of the cached doc to the supplied node.
             Node doc = objectToXMLNode(object, node, xmlDescriptor, isXMLRoot);
             DOMResult result = new DOMResult(node);
             if (isXMLRoot) {
@@ -597,12 +624,12 @@ public class XMLMarshaller {
         if (getAttachmentMarshaller() != null) {
             marshalRecord.setXOPPackage(getAttachmentMarshaller().isXOPPackage());
         }
-        
+
         addDescriptorNamespacesToXMLRecord(descriptor, marshalRecord);
         NamespaceResolver nr = marshalRecord.getNamespaceResolver();
         XMLRoot root = null;
         if(isXMLRoot) {
-        	root = (XMLRoot)object;
+            root = (XMLRoot)object;
         }
         if (getMarshalListener() != null) {
             getMarshalListener().beforeMarshal(object);
@@ -647,7 +674,7 @@ public class XMLMarshaller {
                 nr.put(XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
             }
         }
-        
+
         TreeObjectBuilder treeObjectBuilder = null;
         AbstractSession session = null;
         if (descriptor != null) {
@@ -657,7 +684,7 @@ public class XMLMarshaller {
             session = (AbstractSession) xmlContext.getSession(0);
         }
         marshalRecord.setSession(session);
-        
+
         if (null != rootFragment) {
             marshalRecord.startPrefixMappings(nr);
             if (!isXMLRoot && descriptor.getNamespaceResolver() == null && rootFragment.hasNamespace()) {
@@ -685,8 +712,8 @@ public class XMLMarshaller {
         if (treeObjectBuilder != null) {
             treeObjectBuilder.buildRow(marshalRecord, object, (AbstractSession) session, this);
         } else if (isXMLRoot) {
-        	String value = null;
-      		value = (String) XMLConversionManager.getDefaultXMLManager().convertObject(object, String.class, root.getSchemaType());
+            String value = null;
+            value = (String) XMLConversionManager.getDefaultXMLManager().convertObject(object, String.class, root.getSchemaType());
             marshalRecord.characters(value);
         }
 
@@ -737,7 +764,7 @@ public class XMLMarshaller {
                         throw XMLMarshalException.namespaceResolverNotSpecified(null);
                     }
                     uri = descriptor.getNamespaceResolver().resolveNamespacePrefix(rootFragment.getPrefix());
-                
+
                     if(uri == null) {
                         throw XMLMarshalException.namespaceNotFound(rootFragment.getPrefix());
                     }
@@ -753,9 +780,9 @@ public class XMLMarshaller {
     }
 
     private void writeTypeAttribute(MarshalRecord marshalRecord, XMLDescriptor descriptor, String xsiPrefix) {
-        //xsi:type=schemacontext               
+        //xsi:type=schemacontext
         String typeValue = descriptor.getSchemaReference().getSchemaContext();
-        
+
         // handle case where the schema context is set as a QName
         if (typeValue == null) {
             QName contextAsQName = descriptor.getSchemaReference().getSchemaContextAsQName();
@@ -771,7 +798,7 @@ public class XMLMarshaller {
                     typeValue = localPart;
                 } else {
                     prefix = marshalRecord.getNamespaceResolver().generatePrefix();
-                    marshalRecord.attribute(XMLConstants.XMLNS_URL, XMLConstants.XMLNS, XMLConstants.XMLNS + ":" + prefix, uri);
+                    marshalRecord.attribute(XMLConstants.XMLNS_URL, prefix, XMLConstants.XMLNS + ":" + prefix, uri);
                     typeValue = prefix + ":" + localPart;
                 }
             } else {
@@ -780,13 +807,13 @@ public class XMLMarshaller {
         } else {
             typeValue = typeValue.substring(1);
         }
-        
+
         marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE, xsiPrefix + ":" + XMLConstants.SCHEMA_TYPE_ATTRIBUTE, typeValue);
     }
 
     private boolean isSimpleXMLRoot(XMLRoot xmlRoot) {
         Class xmlRootObjectClass = xmlRoot.getObject().getClass();
-        
+
         if (XMLConversionManager.getDefaultJavaTypes().get(xmlRootObjectClass) != null || ClassConstants.List_Class.isAssignableFrom(xmlRootObjectClass) || ClassConstants.XML_GREGORIAN_CALENDAR.isAssignableFrom(xmlRootObjectClass) || ClassConstants.DURATION.isAssignableFrom(xmlRootObjectClass)) {
             return true;
         }
@@ -903,7 +930,7 @@ public class XMLMarshaller {
     public Document objectToXML(Object object, Node parent) throws XMLMarshalException {
         return objectToXML(object, parent, null);
     }
-    
+
     public Document objectToXML(Object object, Node parent, DocumentPreservationPolicy docPresPolicy) {
         boolean isXMLRoot = (object instanceof XMLRoot);
         XMLDescriptor descriptor = getDescriptor(object, isXMLRoot);
@@ -922,14 +949,14 @@ public class XMLMarshaller {
             xmlRow.setMarshaller(this);
             if (getAttachmentMarshaller() != null) {
                 xmlRow.setXOPPackage(getAttachmentMarshaller().isXOPPackage());
-            }            
+            }
             return objectToXML(object, descriptor, xmlRow, isXMLRoot, docPresPolicy);
         }
         MarshalRecord marshalRecord = new NodeRecord(localRootName, parent);
         marshalRecord.setMarshaller(this);
         marshal(object, marshalRecord, descriptor, isXMLRoot);
         return marshalRecord.getDocument();
-        
+
     }
 
     /**
@@ -977,7 +1004,7 @@ public class XMLMarshaller {
                 xmlRow.setMarshaller(this);
                 if (getAttachmentMarshaller() != null) {
                     xmlRow.setXOPPackage(getAttachmentMarshaller().isXOPPackage());
-                }                
+                }
                 if (!isRootDocumentFragment) {
                     if (shouldCallSetAttributeNS) {
                         if (xmlRootPrefix != null) {
@@ -1052,8 +1079,8 @@ public class XMLMarshaller {
         boolean writeTypeAttribute = false;
 
         if (isXMLRoot && (descriptor != null)) {
-            XMLRoot xr = (XMLRoot) object;          
-            
+            XMLRoot xr = (XMLRoot) object;
+
             if (descriptor.hasInheritance()) {
                 XMLField classIndicatorField = (XMLField) descriptor.getInheritancePolicy().getClassIndicatorField();
                 String classIndicatorUri = null;
@@ -1073,11 +1100,11 @@ public class XMLMarshaller {
             if (xdesc != null) {
                 return xdesc.getJavaClass() != descriptor.getJavaClass();
             }
-            
+
             if (descriptor.getSchemaReference() == null) {
                 return false;
             }
-            
+
             String xmlRootLocalName = xr.getLocalName();
             String xmlRootUri = xr.getNamespaceURI();
             writeTypeAttribute = true;
@@ -1100,7 +1127,7 @@ public class XMLMarshaller {
                     } else {
                         defaultRootLocalName = defaultRootQualifiedName;
                     }
-                    
+
                     if (xmlRootLocalName != null) {
                         if ((((defaultRootLocalName == null) && (xmlRootLocalName == null)) || (defaultRootLocalName.equals(xmlRootLocalName)))
                                 && (((defaultRootUri == null) && (xmlRootUri == null)) || ((xmlRootUri != null) && (defaultRootUri != null) && (defaultRootUri.equals(xmlRootUri))))) {

@@ -61,9 +61,9 @@ public class TypeNodeValue extends NodeValue {
             }else{
                 schemaTypePrefix = namespaceResolver.generatePrefix();
             }
-            marshalRecord.attribute(XMLConstants.XMLNS_URL, XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + schemaTypePrefix, schemaType.getNamespaceURI());        	
+            marshalRecord.attribute(XMLConstants.XMLNS_URL, schemaTypePrefix, XMLConstants.XMLNS + ":" + schemaTypePrefix, schemaType.getNamespaceURI());        	
         }
-        marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, schemaType.getLocalPart(), typeQName, schemaTypePrefix + ':' + schemaType.getLocalPart());
+        marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, "type", typeQName, schemaTypePrefix + ':' + schemaType.getLocalPart());
         marshalRecord.closeStartGroupingElements(groupingFragment);
         return true;
     }

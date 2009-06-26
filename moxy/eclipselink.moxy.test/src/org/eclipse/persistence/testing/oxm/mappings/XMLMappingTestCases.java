@@ -1,15 +1,15 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2008 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.mappings;
 
 import java.io.InputStream;
@@ -19,6 +19,11 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamWriter;
+import javax.xml.transform.stax.StAXResult;
+
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
@@ -26,6 +31,7 @@ import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.XMLUnmarshallerHandler;
+import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.platform.xml.SAXDocumentBuilder;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
@@ -45,20 +51,29 @@ public abstract class XMLMappingTestCases extends OXTestCase {
     protected String controlDocumentLocation;
     protected String writeControlDocumentLocation;
 
+    protected static XMLOutputFactory XML_OUTPUT_FACTORY;
+
+    static {
+        try {
+            XML_OUTPUT_FACTORY = XMLOutputFactory.newInstance();
+        } catch(Exception ex) {
+            XML_OUTPUT_FACTORY = null;
+        }
+    }
     public XMLMappingTestCases(String name) throws Exception {
         super(name);
         setupParser();
     }
 
     public void setupControlDocs() throws Exception{
-    	if(this.controlDocumentLocation != null) {
+        if(this.controlDocumentLocation != null) {
             InputStream inputStream = ClassLoader.getSystemResourceAsStream(controlDocumentLocation);
             resourceName = controlDocumentLocation;
             controlDocument = parser.parse(inputStream);
             removeEmptyTextNodes(controlDocument);
             inputStream.close();
         }
-        
+
         if(this.writeControlDocumentLocation != null) {
             InputStream inputStream = ClassLoader.getSystemResourceAsStream(writeControlDocumentLocation);
             resourceName = writeControlDocumentLocation;
@@ -67,19 +82,19 @@ public abstract class XMLMappingTestCases extends OXTestCase {
             inputStream.close();
         }
     }
-    
+
     public void setUp() throws Exception {
         setupParser();
-        
+
         setupControlDocs();
-        
+
         xmlContext = getXMLContext(project);
         xmlMarshaller = xmlContext.createMarshaller();
         xmlMarshaller.setFormattedOutput(false);
         xmlUnmarshaller = xmlContext.createUnmarshaller();
-        
+
     }
-    
+
     public void tearDown() {
         parser = null;
         xmlContext = null;
@@ -88,9 +103,9 @@ public abstract class XMLMappingTestCases extends OXTestCase {
         controlDocument = null;
         controlDocumentLocation = null;
     }
-    
-    
-    
+
+
+
     protected void setupParser() {
         try {
             DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
@@ -124,9 +139,9 @@ public abstract class XMLMappingTestCases extends OXTestCase {
      * @throws Exception
      */
     protected Document getWriteControlDocument() throws Exception {
-    	if(writeControlDocument != null){
-    		return writeControlDocument;
-    	}
+        if(writeControlDocument != null){
+            return writeControlDocument;
+        }
         return getControlDocument();
     }
 
@@ -227,15 +242,15 @@ public abstract class XMLMappingTestCases extends OXTestCase {
         } else {
             desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(objectToWrite.getClass());
         }
- 
+
         int sizeBefore = getNamespaceResolverSize(desc);
 
         xmlMarshaller.marshal(objectToWrite, writer);
-        
+
         int sizeAfter = getNamespaceResolverSize(desc);
-        
+
         assertEquals(sizeBefore, sizeAfter);
-        
+
         StringReader reader = new StringReader(writer.toString());
         InputSource inputSource = new InputSource(reader);
         Document testDocument = parser.parse(inputSource);
@@ -244,7 +259,42 @@ public abstract class XMLMappingTestCases extends OXTestCase {
 
         objectToXMLDocumentTest(testDocument);
     }
-    
+
+    public void testObjectToXMLStreamWriter() throws Exception {
+        if(XML_OUTPUT_FACTORY != null) {
+            StringWriter writer = new StringWriter();
+            XMLOutputFactory factory = XMLOutputFactory.newInstance();
+            factory.setProperty(factory.IS_REPAIRING_NAMESPACES, new Boolean(false));
+            XMLStreamWriter streamWriter= factory.createXMLStreamWriter(writer);
+
+            Object objectToWrite = getWriteControlObject();
+            XMLDescriptor desc = null;
+            if (objectToWrite instanceof XMLRoot) {
+                desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(((XMLRoot)objectToWrite).getObject().getClass());
+            } else {
+                desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(objectToWrite.getClass());
+            }
+
+            int sizeBefore = getNamespaceResolverSize(desc);
+            //MarshalRecord record = new XMLStreamWriterRecord(streamWriter);
+            //record.setMarshaller(xmlMarshaller);
+
+            StAXResult result = new StAXResult(streamWriter);
+            xmlMarshaller.marshal(objectToWrite, result);
+
+            streamWriter.flush();
+            int sizeAfter = getNamespaceResolverSize(desc);
+            //System.out.println(writer);
+            assertEquals(sizeBefore, sizeAfter);
+            StringReader reader = new StringReader(writer.toString());
+            InputSource inputSource = new InputSource(reader);
+            Document testDocument = parser.parse(inputSource);
+            writer.close();
+            reader.close();
+            objectToXMLDocumentTest(testDocument);
+        }
+    }
+
     protected int getNamespaceResolverSize(XMLDescriptor desc){
        int size = -1;
         if (desc != null) {
@@ -253,7 +303,7 @@ public abstract class XMLMappingTestCases extends OXTestCase {
                 size = nr.getNamespaces().size();
             }else{
               size =0;
-            } 
+            }
         }
         return size;
     }
@@ -270,9 +320,9 @@ public abstract class XMLMappingTestCases extends OXTestCase {
         int sizeBefore = getNamespaceResolverSize(desc);
 
         xmlMarshaller.marshal(objectToWrite, builder);
-        
+
         int sizeAfter = getNamespaceResolverSize(desc);
-        
+
         assertEquals(sizeBefore, sizeAfter);
 
         Document controlDocument = getWriteControlDocument();

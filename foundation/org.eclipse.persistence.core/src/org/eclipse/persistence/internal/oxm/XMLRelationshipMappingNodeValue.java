@@ -140,11 +140,11 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
             xsiPrefix = descriptor.getNamespaceResolver().resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
         } else {
             xsiPrefix = XMLConstants.SCHEMA_INSTANCE_PREFIX;
-            marshalRecord.attribute(XMLConstants.XMLNS_URL, XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
+            marshalRecord.attribute(XMLConstants.XMLNS_URL, xsiPrefix, XMLConstants.XMLNS + ":" + xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
         }
         if (xsiPrefix == null) {
             xsiPrefix = descriptor.getNamespaceResolver().generatePrefix(XMLConstants.SCHEMA_INSTANCE_PREFIX);
-            marshalRecord.attribute(XMLConstants.XMLNS_URL, XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
+            marshalRecord.attribute(XMLConstants.XMLNS_URL, xsiPrefix, XMLConstants.XMLNS + ":" + xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
         }
         marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE, xsiPrefix + ":" + XMLConstants.SCHEMA_TYPE_ATTRIBUTE, typeValue);
     }
@@ -155,7 +155,7 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
         }
         for (int i = 0; i < extraNamespaces.size(); i++) {
             Namespace next = (Namespace)extraNamespaces.get(i);            
-            ((MarshalRecord)xmlRecord).attribute(XMLConstants.XMLNS_URL, XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + next.getPrefix(), next.getNamespaceURI());            
+            ((MarshalRecord)xmlRecord).attribute(XMLConstants.XMLNS_URL, next.getPrefix(), XMLConstants.XMLNS + ":" + next.getPrefix(), next.getNamespaceURI());            
         }
   
     }

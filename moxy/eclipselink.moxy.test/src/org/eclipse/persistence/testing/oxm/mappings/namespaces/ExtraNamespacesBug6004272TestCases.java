@@ -12,11 +12,21 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.oxm.mappings.namespaces;
 
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamWriter;
+import javax.xml.transform.stax.StAXResult;
+
+import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLLogin;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
 
 public class ExtraNamespacesBug6004272TestCases extends XMLMappingTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/namespaces/ExtraNamespaces.xml";
@@ -154,6 +164,9 @@ public class ExtraNamespacesBug6004272TestCases extends XMLMappingTestCases {
         return theRoot ;
     }
 
+    public void testObjectToXMLStreamWriter() throws Exception {
+    }
+    
     public static void main(String[] args) {
         String[] arguments = { "-c", "org.eclipse.persistence.testing.oxm.mappings.namespaces.ExtraNamespacesBug6004272TestCases" };
         junit.textui.TestRunner.main(arguments);

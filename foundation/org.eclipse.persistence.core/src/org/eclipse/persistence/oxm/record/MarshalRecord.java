@@ -121,7 +121,7 @@ public abstract class MarshalRecord extends XMLRecord {
             String stringValue = (String)xcm.convertObject(value, String.class);
             attribute(lastFragment, xmlField.getNamespaceResolver(), stringValue);
         } else {
-            element(lastFragment.getNamespaceURI(), lastFragment.getXPath(), lastFragment.getShortName());
+            element(lastFragment.getNamespaceURI(), lastFragment.getLocalName(), lastFragment.getShortName());
         }
     }
 

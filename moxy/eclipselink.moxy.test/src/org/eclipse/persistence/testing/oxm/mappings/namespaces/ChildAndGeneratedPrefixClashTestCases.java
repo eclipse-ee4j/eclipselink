@@ -75,6 +75,9 @@ public class ChildAndGeneratedPrefixClashTestCases extends XMLMappingTestCases {
         return theRoot;
     }
     
+    public void testObjectToXMLStreamWriter() throws Exception {
+    }
+    
      public static void main(String[] args) {
         String[] arguments = { "-c", "org.eclipse.persistence.testing.oxm.mappings.namespaces.ChildAndGeneratedPrefixClashTestCases" };
         junit.textui.TestRunner.main(arguments);

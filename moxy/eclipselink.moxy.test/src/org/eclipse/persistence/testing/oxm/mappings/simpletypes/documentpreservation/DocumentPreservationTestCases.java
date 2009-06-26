@@ -22,6 +22,9 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamWriter;
+import javax.xml.transform.stax.StAXResult;
 
 // XML imports
 import org.w3c.dom.Document;
@@ -30,9 +33,12 @@ import org.xml.sax.XMLReader;
 
 // TopLink imports
 import org.eclipse.persistence.oxm.XMLContext;
+import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLMarshaller;
+import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.XMLUnmarshallerHandler;
 import org.eclipse.persistence.oxm.platform.DOMPlatform;
+import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
@@ -141,6 +147,9 @@ public class DocumentPreservationTestCases extends XMLMappingTestCases {
         Document testDocument = parser.parse(inputSource);
         objectToXMLDocumentTest(testDocument);
     }
+
+    public void testObjectToXMLStreamWriter() throws Exception {
+    }    
 
     public void testUnmarshallerHandler() throws Exception {
         SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
