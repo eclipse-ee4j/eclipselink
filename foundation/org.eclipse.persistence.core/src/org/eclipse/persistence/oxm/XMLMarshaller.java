@@ -102,7 +102,7 @@ public class XMLMarshaller {
     private static final String GET_XML_STREAM_WRITER_METHOD_NAME = "getXMLStreamWriter";
     private static final String XML_STREAM_WRITER_RECORD_CLASS_NAME = "org.eclipse.persistence.oxm.record.XMLStreamWriterRecord";
     private static final String XML_STREAM_WRITER_CLASS_NAME = "javax.xml.stream.XMLStreamWriter";
-    private static final String DOM_TO_STREAM_WRITER_CLASS_NAME = "org.eclipse.persistence.internal.oxm.stax.DomToXMLStreamWriter";
+    private static final String DOM_TO_STREAM_WRITER_CLASS_NAME = "org.eclipse.persistence.internal.oxm.record.DomToXMLStreamWriter";
     private static final String WRITE_TO_STREAM_METHOD_NAME = "writeToStream";
 
     private static Class staxResultClass;
