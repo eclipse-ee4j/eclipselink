@@ -110,14 +110,31 @@ public class AnnotationsProcessor {
         this.helper = helper;
         this.javaClassToType = javaClassToType;
     }
-    
-    /*
+
+    /**
+     * Generate TypeInfo instances for a given array of JavaClasses.
+     * 
+     * @param classes
+     */
     public void processClassesAndProperties(JavaClass[] classes) {
+        init();
+        preBuildTypeInfo(classes);
+        classes = postBuildTypeInfo(classes);
+        processJavaClasses(classes);
+    }
+
+    /**
+     * Initialize maps, lists, etc. Typically called prior to processing a set of 
+     * classes via preBuildTypeInfo, postBuildTypeInfo, processJavaClasses.
+     */
+    public void init() {
         typeInfoClasses = new ArrayList<JavaClass>();
         typeInfo = new HashMap<String, TypeInfo>();
-        typeQNames = new ArrayList<QName>();        
+        typeQNames = new ArrayList<QName>();
         userDefinedSchemaTypes = new HashMap<String, QName>();
-        packageToNamespaceMappings = new HashMap<String, NamespaceInfo>(); 
+        if (packageToNamespaceMappings == null) {
+            packageToNamespaceMappings = new HashMap<String, NamespaceInfo>();
+        }
         this.factoryMethods = new HashMap<String, JavaMethod>();
         this.namespaceResolver = new NamespaceResolver();
         this.xmlRootElements = new HashMap<String, ElementDeclaration>();
@@ -125,87 +142,225 @@ public class AnnotationsProcessor {
 
         arrayClassesToGeneratedClasses = new HashMap<String, Class>();
         collectionClassesToGeneratedClasses = new HashMap<java.lang.reflect.Type, Class>();
-
         generatedClassesToArrayClasses = new HashMap<Class, JavaClass>();
         generatedClassesToCollectionClasses = new HashMap<Class, java.lang.reflect.Type>();
-        
-        
-        ArrayList<JavaClass> extraClasses = new ArrayList<JavaClass>();        
-        ArrayList<JavaClass> classesToProcess = new ArrayList<JavaClass>();
-        //check for ObjectFactories and process them
-        for(JavaClass javaClass:classes) {                	
-        	if(javaClass.isArray()){
-        		if(!helper.isBuiltInJavaType(javaClass.getComponentType())){
-        			extraClasses.add(javaClass.getComponentType());
-        		}
-        		Class generatedClass = generateWrapperForArrayClass(javaClass);
-        		extraClasses.add(helper.getJavaClass(generatedClass));
-        		arrayClassesToGeneratedClasses.put(javaClass.getRawName(), generatedClass);  
-        		generatedClassesToArrayClasses.put(generatedClass, javaClass);
-        	}else if(isCollectionType(javaClass)){
-                JavaClass componentClass;
-                if(javaClass.hasActualTypeArguments()){
-                    componentClass  = (JavaClass)javaClass.getActualTypeArguments().toArray()[0];
-                    if(!componentClass.isPrimitive()){
-                        extraClasses.add(componentClass);
-                    }
-                }else{
-                    componentClass = helper.getJavaClass(Object.class);
-                }
-                if(javaClassToType != null){
-                    java.lang.reflect.Type theType = javaClassToType.get(javaClass);
-                    if(theType != null){
-                        Class generatedClass = generateWrapperForArrayClass(javaClass);
-                        collectionClassesToGeneratedClasses.put(theType, generatedClass);
-                        generatedClassesToCollectionClasses.put(generatedClass, theType);
-                        extraClasses.add(helper.getJavaClass(generatedClass));
-                    }            		 
-                }    
-             } else if(isMapType(javaClass)){
-            	 
-            	JavaClass keyClass;
-            	JavaClass valueClass;
-         		if(javaClass.hasActualTypeArguments()){
-         			keyClass = (JavaClass) javaClass.getActualTypeArguments().toArray()[0];
-                    if(!helper.isBuiltInJavaType(keyClass)){
-                       extraClasses.add(keyClass);
-                    }                     
-                    valueClass = (JavaClass) javaClass.getActualTypeArguments().toArray()[1];        		 
-                    if(!helper.isBuiltInJavaType(valueClass)){
-                        extraClasses.add(valueClass);
-                    } 
-             	}else{
-             		keyClass = helper.getJavaClass(Object.class);
-             		valueClass = helper.getJavaClass(Object.class);
-             	}
-         	   if(javaClassToType != null){
-                   java.lang.reflect.Type theType = javaClassToType.get(javaClass);
-                   if(theType != null){
-                       Class generatedClass = generateWrapperForMapClass(javaClass, keyClass, valueClass);       				  
-                       collectionClassesToGeneratedClasses.put(theType, generatedClass);       				 
-                       extraClasses.add(helper.getJavaClass(generatedClass));
-                   }            		 
-               } 
-             
-            }else{
-                processClass(javaClass, classesToProcess);
-            }       
-        }
-        
-        for(JavaClass javaClass:extraClasses) {
-        	processClass(javaClass, classesToProcess);
-        }        
-        
-        updateGlobalElements(classesToProcess);
-        
-        for (JavaClass javaClass : classesToProcess) {
-            if (javaClass == null) { continue; }
+    }
 
-            createTypeInfoFor(javaClass);
+    /**
+     * Process class level annotations only. It is assumed that a call to init() 
+     * has been made prior to calling this method. After the types created via 
+     * this method have been modified (if necessary) postBuildTypeInfo and 
+     * processJavaClasses should be called to finish processing.
+     * 
+     * @param javaClasses
+     * @return
+     */
+    public Map<String, TypeInfo> preBuildTypeInfo(JavaClass[] javaClasses) {
+        for (JavaClass javaClass : javaClasses) {
+            if (javaClass == null || !shouldGenerateTypeInfo(javaClass) || helper.isAnnotationPresent(javaClass, XmlRegistry.class)) {
+                continue;
+            }
+
+            TypeInfo info = typeInfo.get(javaClass.getQualifiedName());
+            if (info != null) {
+                if (info.isPreBuilt()) {
+                    continue;
+                }
+            }
+
+            if (javaClass.isEnum()) {
+                info = new EnumTypeInfo(helper);
+            } else {
+                info = new TypeInfo(helper);
+            }
+            info.setPreBuilt(true);
+
+            // handle @XmlTransient
+            if (helper.isAnnotationPresent(javaClass, XmlTransient.class)) {
+                info.setXmlTransient(true);
+            }
+
+            // handle @XmlRootElement
+            processXmlRootElement(javaClass, info);
+
+            // handle @XmlSeeAlso
+            processXmlSeeAlso(javaClass, info);
+            NamespaceInfo packageNamespace = getNamespaceInfoForPackage(javaClass);
+
+            // handle @XmlType
+            preProcessXmlType(javaClass, info, packageNamespace);
+
+            // process @XmlAccessorType
+            preProcessXmlAccessorType(javaClass, info, packageNamespace);
+
+            typeInfoClasses.add(javaClass);
+            typeInfo.put(javaClass.getQualifiedName(), info);
+        }
+        return typeInfo;
+    }
+
+    /**
+     * Process any additional classes (i.e. inner classes, @XmlSeeAlso, @XmlRegisrty, etc.) 
+     * for a given set of JavaClasses, then complete building all of the required TypeInfo 
+     * objects. This method is typically called after init and preBuildTypeInfo have been 
+     * called.
+     * 
+     * @param javaClasses
+     * @return updated array of JavaClasses, made up of the original classes plus any additional ones
+     */
+    public JavaClass[] postBuildTypeInfo(JavaClass[] javaClasses) {
+        if (javaClasses.length == 0) {
+            return javaClasses;
+        }
+        // create type info instances for any additional classes
+        javaClasses = processAdditionalClasses(javaClasses);
+        preBuildTypeInfo(javaClasses);
+        updateGlobalElements(javaClasses);
+        buildTypeInfo(javaClasses);
+        return javaClasses;
+    }
+
+    /**
+     * INTERNAL:
+     * 
+     * Complete building TypeInfo objects for a given set of JavaClass instances. This method assumes 
+     * that init, preBuildTypeInfo, and postBuildTypeInfo have been called.
+     * 
+     * @param allClasses
+     * @return
+     */
+    private Map<String, TypeInfo> buildTypeInfo(JavaClass[] allClasses) {
+        for (JavaClass javaClass : allClasses) {
+            if (javaClass == null) {
+                continue;
+            }
+
+            TypeInfo info = typeInfo.get(javaClass.getQualifiedName());
+            if (info == null) {
+                continue;
+            }
+            if (info.isPostBuilt()) {
+                continue;
+            }
+            info.setPostBuilt(true);
+
+            // handle factory methods
+            processFactoryMethods(javaClass, info);
+
+            // handle package level @XmlJavaTypeAdapters
+            processPackageLevelAdapters(javaClass, info);
+
+            // handle class level @XmlJavaTypeAdapters
+            processClassLevelAdapters(javaClass, info);
+
+            // handle @XmlSchemaType(s)
+            processSchemaTypes(javaClass, info);
+
+            NamespaceInfo packageNamespace = getNamespaceInfoForPackage(javaClass);
+
+            // handle @XmlType
+            postProcessXmlType(javaClass, info, packageNamespace);
+
+            // handle @XmlEnum
+            if (info.isEnumerationType()) {
+                addEnumTypeInfo(javaClass, ((EnumTypeInfo) info));
+                continue;
+            }
+
+            // process schema type name
+            processTypeQName(javaClass, info, packageNamespace);
+
+            // process @XmlAccessorType
+            postProcessXmlAccessorType(info);
+
+            // handle superclass if necessary
+            JavaClass superClass = (JavaClass) javaClass.getSuperclass();
+            if (shouldGenerateTypeInfo(superClass)) {
+                JavaClass[] jClassArray = new JavaClass[] { superClass };
+                preBuildTypeInfo(jClassArray);
+                postBuildTypeInfo(jClassArray);
+            }
+
+            // add properties
+            info.setProperties(getPropertiesForClass(javaClass, info));
+
+            // process @XmlAccessorOrder
+            processXmlAccessorOrder(javaClass, info);
+
+            // process properties
+            processTypeInfoProperties(info);
+
+            // Make sure this class has a factory method or a zero arg constructor
+            if (info.getFactoryMethodName() == null && info.getObjectFactoryClassName() == null) {
+                JavaConstructor zeroArgConstructor = javaClass.getDeclaredConstructor(new JavaClass[] {});
+                if (zeroArgConstructor == null) {
+                    throw org.eclipse.persistence.exceptions.JAXBException.factoryMethodOrConstructorRequired(javaClass.getName());
+                }
+            }
+            validatePropOrderForInfo(info);
+        }
+        return typeInfo;
+    }
+
+    /**
+     * Process a given TypeInfo instance's properties.
+     * 
+     * @param info
+     */
+    private void processTypeInfoProperties(TypeInfo info) {
+        ArrayList<Property> properties = info.getPropertyList();
+        for (Property property : properties) {
+            JavaClass propertyType = property.getType();
+            if (this.isCollectionType(property)) {
+                // check for a generic type
+                JavaClass gType = property.getGenericType();
+                if (gType != null) {
+                    // handle nested generics
+                    if (gType.hasActualTypeArguments()) {
+                        propertyType = helper.getJavaClass(gType.getRawName());
+                    } else if (gType instanceof JavaClass) {
+                        propertyType = (JavaClass) gType;
+                    }
+                }
+            } else if (propertyType.isArray()) {
+                propertyType = (JavaClass) propertyType.getComponentType();
+            }
+
+            // handle @XmlElement
+            propertyType = processXmlElement(property, propertyType, info);
+
+            // handle @XmlID
+            processXmlID(property, info);
+
+            // handle @XmlIDREF - validate these properties after processing of all types is completed
+            processXmlIDREF(property);
+
+            // handle property level @XmlJavaTypeAdapter
+            propertyType = processXmlJavaTypeAdapter(property, propertyType);
+
+            if (shouldGenerateTypeInfo(propertyType)) {
+                JavaClass[] jClassArray = new JavaClass[] { propertyType };
+                preBuildTypeInfo(jClassArray);
+                postBuildTypeInfo(jClassArray);
+            }
+        }
+    }
+
+    /**
+     * Process a given set of JavaClass instances. Global elements will processed (via @XmlRootElement, 
+     * @XmlIDREFs) will be validated, and call back methods will be handled as required. This method 
+     * is typically called after init, preBuildTypeInfo, and postBuildTypeInfo have been called.
+     * 
+     * @param classes
+     */
+    public void processJavaClasses(JavaClass[] classes) {
+        ArrayList<JavaClass> classesToProcess = new ArrayList<JavaClass>();
+        for (JavaClass javaClass : classes) {
+            classesToProcess.add(javaClass);
         }
 
         checkForCallbackMethods();
-        
+
         // validate @XmlIDREF annotated properties - target class must have an XmlID annotation
         for (Property property : xmlIdRefProps) {
             JavaClass typeClass = property.getType();
@@ -220,148 +375,177 @@ public class AnnotationsProcessor {
                 throw JAXBException.invalidIdRef(property.getPropertyName(), typeClass.getQualifiedName());
             }
         }
-    }    
-    
-    private void processClass(JavaClass javaClass, ArrayList<JavaClass>classesToProcess){
-        if(shouldGenerateTypeInfo(javaClass)) {
-        	if(helper.isAnnotationPresent(javaClass, XmlRegistry.class)) {
-        		this.processObjectFactory(javaClass, classesToProcess);
-        	} else {
-        		classesToProcess.add(javaClass);
-        		//reflectively load XmlSeeAlso class to avoid dependency
-        		Class xmlSeeAlsoClass = null;
-        		Method valueMethod = null;
-        		try {
-        		    xmlSeeAlsoClass = PrivilegedAccessHelper.getClassForName("javax.xml.bind.annotation.XmlSeeAlso");
-        		    valueMethod = PrivilegedAccessHelper.getDeclaredMethod(xmlSeeAlsoClass, "value", new Class[]{});
-        		} catch(ClassNotFoundException ex) {
-        		    //Ignore this exception. If SeeAlso isn't available, don't try to process
-        		} catch(NoSuchMethodException ex) {
-        		    
-        		}
-        		if(xmlSeeAlsoClass != null && helper.isAnnotationPresent(javaClass, xmlSeeAlsoClass)) {
-        		    Object seeAlso = helper.getAnnotation(javaClass, xmlSeeAlsoClass);
-        		    Class[] values = null;
-        		    try {
-        		        values = (Class[])PrivilegedAccessHelper.invokeMethod(valueMethod, seeAlso, new Object[]{});
-        		    } catch(Exception ex) {}
-        		    for(Class next:values) {
-        		        classesToProcess.add(helper.getJavaClass(next));
-        		    }
-        		}
-        		//handle inner classes
-                for (Iterator<JavaClass> jClassIt = javaClass.getDeclaredClasses().iterator(); jClassIt.hasNext(); ) {
+    }
+
+    /**
+     * Process any additional classes, such as inner classes, @XmlRegistry or from @XmlSeeAlso.
+     * 
+     * @param classes
+     * @return
+     */
+    private JavaClass[] processAdditionalClasses(JavaClass[] classes) {
+        ArrayList<JavaClass> extraClasses = new ArrayList<JavaClass>();
+        ArrayList<JavaClass> classesToProcess = new ArrayList<JavaClass>();
+        for (JavaClass javaClass : classes) {
+            if (javaClass.isArray()) {
+                if (!helper.isBuiltInJavaType(javaClass.getComponentType())) {
+                    extraClasses.add(javaClass.getComponentType());
+                }
+                Class generatedClass = generateWrapperForArrayClass(javaClass);
+                extraClasses.add(helper.getJavaClass(generatedClass));
+                arrayClassesToGeneratedClasses.put(javaClass.getRawName(), generatedClass);
+                generatedClassesToArrayClasses.put(generatedClass, javaClass);
+            } else if (isCollectionType(javaClass)) {
+                JavaClass componentClass;
+                if (javaClass.hasActualTypeArguments()) {
+                    componentClass = (JavaClass) javaClass.getActualTypeArguments().toArray()[0];
+                    if (!componentClass.isPrimitive()) {
+                        extraClasses.add(componentClass);
+                    }
+                } else {
+                    componentClass = helper.getJavaClass(Object.class);
+                }
+                if (javaClassToType != null) {
+                    java.lang.reflect.Type theType = javaClassToType.get(javaClass);
+                    if (theType != null) {
+                        Class generatedClass = generateWrapperForArrayClass(javaClass);
+                        collectionClassesToGeneratedClasses.put(theType, generatedClass);
+                        generatedClassesToCollectionClasses.put(generatedClass, theType);
+                        extraClasses.add(helper.getJavaClass(generatedClass));
+                    }
+                }
+            } else if (isMapType(javaClass)) {
+                JavaClass keyClass;
+                JavaClass valueClass;
+                if (javaClass.hasActualTypeArguments()) {
+                    keyClass = (JavaClass) javaClass.getActualTypeArguments().toArray()[0];
+                    if (!helper.isBuiltInJavaType(keyClass)) {
+                        extraClasses.add(keyClass);
+                    }
+                    valueClass = (JavaClass) javaClass.getActualTypeArguments().toArray()[1];
+                    if (!helper.isBuiltInJavaType(valueClass)) {
+                        extraClasses.add(valueClass);
+                    }
+                } else {
+                    keyClass = helper.getJavaClass(Object.class);
+                    valueClass = helper.getJavaClass(Object.class);
+                }
+                if (javaClassToType != null) {
+                    java.lang.reflect.Type theType = javaClassToType.get(javaClass);
+                    if (theType != null) {
+                        Class generatedClass = generateWrapperForMapClass(javaClass, keyClass, valueClass);
+                        collectionClassesToGeneratedClasses.put(theType, generatedClass);
+                        extraClasses.add(helper.getJavaClass(generatedClass));
+                    }
+                }
+            } else {
+                // process @XmlRegistry, @XmlSeeAlso and inner classes
+                processClass(javaClass, classesToProcess);
+            }
+        }
+        // process @XmlRegistry, @XmlSeeAlso and inner classes
+        for (JavaClass javaClass : extraClasses) {
+            processClass(javaClass, classesToProcess);
+        }
+
+        return classesToProcess.toArray(new JavaClass[classesToProcess.size()]);
+    }
+
+    /**
+     * Adds additional classes to the given List, from inner classes, 
+     * @XmlRegistry or @XmlSeeAlso.
+     * 
+     * @param javaClass
+     * @param classesToProcess
+     */
+    private void processClass(JavaClass javaClass, ArrayList<JavaClass> classesToProcess) {
+        if (shouldGenerateTypeInfo(javaClass)) {
+            if (helper.isAnnotationPresent(javaClass, XmlRegistry.class)) {
+                this.processObjectFactory(javaClass, classesToProcess);
+            } else {
+                classesToProcess.add(javaClass);
+                // handle @XmlSeeAlso
+                TypeInfo info = typeInfo.get(javaClass.getQualifiedName());
+                if (info != null && info.isSetXmlSeeAlso()) {
+                    for (String jClassName : info.getXmlSeeAlso()) {
+                        classesToProcess.add(helper.getJavaClass(jClassName));
+                    }
+                }
+                // handle inner classes
+                for (Iterator<JavaClass> jClassIt = javaClass.getDeclaredClasses().iterator(); jClassIt.hasNext();) {
                     JavaClass innerClass = jClassIt.next();
                     if (shouldGenerateTypeInfo(innerClass)) {
-                        if(!(helper.isAnnotationPresent(innerClass, XmlTransient.class))) {
+                        if (!(helper.isAnnotationPresent(innerClass, XmlTransient.class))) {
                             classesToProcess.add(innerClass);
                         }
                     }
                 }
             }
         }
-    }*/
-    
-    public SchemaTypeInfo addClass(JavaClass javaClass) {
-        if (javaClass == null) {
-            return null;
-        } else if (helper.isAnnotationPresent(javaClass, XmlTransient.class)) {
-            return null;
-        }
-
-        if (typeInfo == null) {
-            // this is the first class. Initialize all the properties
-            this.typeInfoClasses = new ArrayList<JavaClass>();
-            this.typeInfo = new HashMap<String, TypeInfo>();
-            this.typeQNames = new ArrayList<QName>();
-            this.userDefinedSchemaTypes = new HashMap<String, QName>();
-            this.packageToNamespaceMappings = new HashMap<String, NamespaceInfo>();
-            this.namespaceResolver = new NamespaceResolver();
-        }
-
-        JavaClass[] jClasses = new JavaClass[] { javaClass };
-        preBuildTypeInfo(jClasses);
-        postBuildTypeInfo(jClasses);
-        TypeInfo info = typeInfo.get(javaClass.getQualifiedName());
-
-        NamespaceInfo namespaceInfo;
-        String packageName = javaClass.getPackageName();
-        namespaceInfo = this.packageToNamespaceMappings.get(packageName);
-
-        SchemaTypeInfo schemaInfo = new SchemaTypeInfo();
-        schemaInfo.setSchemaTypeName(new QName(info.getClassNamespace(), info.getSchemaTypeName()));
-
-        if (info.isSetXmlRootElement()) {
-            org.eclipse.persistence.jaxb.xmlmodel.XmlRootElement xmlRE = info.getXmlRootElement();
-            String elementName = xmlRE.getName();
-            if (elementName.equals("##default") || elementName.equals("")) {
-                if (javaClass.getName().indexOf("$") != -1) {
-                    elementName = Introspector.decapitalize(javaClass.getName().substring(javaClass.getName().lastIndexOf('$') + 1));
-                } else {
-                    elementName = Introspector.decapitalize(javaClass.getName().substring(javaClass.getName().lastIndexOf('.') + 1));
-                }
-
-                // TODO - remove this TCK hack...
-                if (elementName.length() >= 3) {
-                    int idx = elementName.length() - 1;
-                    char ch = elementName.charAt(idx - 1);
-                    if (Character.isDigit(ch)) {
-                        char lastCh = Character.toUpperCase(elementName.charAt(idx));
-                        elementName = elementName.substring(0, idx) + lastCh;
-                    }
-                }
-
-            }
-            String rootNamespace = xmlRE.getNamespace();
-            QName rootElemName = null;
-            if (rootNamespace.equals("##default")) {
-                rootElemName = new QName(namespaceInfo.getNamespace(), elementName);
-            } else {
-                rootElemName = new QName(rootNamespace, elementName);
-            }
-            schemaInfo.getGlobalElementDeclarations().add(rootElemName);
-            ElementDeclaration declaration = new ElementDeclaration(rootElemName, javaClass, javaClass.getRawName(), false);
-            this.globalElements.put(rootElemName, declaration);
-        }
-
-        return schemaInfo;
     }
 
-    /*
-    public TypeInfo createTypeInfoFor(JavaClass javaClass) {
-        if (javaClass == null) { return null; }
+    /**
+     * Process an @XmlSeeAlso annotation. TypeInfo instances will be created for each class listed.
+     * 
+     * @param javaClass
+     */
+    private void processXmlSeeAlso(JavaClass javaClass, TypeInfo info) {
+        // reflectively load @XmlSeeAlso class to avoid dependency
+        Class xmlSeeAlsoClass = null;
+        Method valueMethod = null;
+        try {
+            xmlSeeAlsoClass = PrivilegedAccessHelper.getClassForName("javax.xml.bind.annotation.XmlSeeAlso");
+            valueMethod = PrivilegedAccessHelper.getDeclaredMethod(xmlSeeAlsoClass, "value", new Class[] {});
+        } catch (ClassNotFoundException ex) {
+            // Ignore this exception. If SeeAlso isn't available, don't try to process
+        } catch (NoSuchMethodException ex) {
+        }
+        if (xmlSeeAlsoClass != null && helper.isAnnotationPresent(javaClass, xmlSeeAlsoClass)) {
+            Object seeAlso = helper.getAnnotation(javaClass, xmlSeeAlsoClass);
+            Class[] values = null;
+            try {
+                values = (Class[]) PrivilegedAccessHelper.invokeMethod(valueMethod, seeAlso, new Object[] {});
+            } catch (Exception ex) {
+            }
+            List<String> seeAlsoClassNames = new ArrayList<String>();
+            for (Class next : values) {
+                seeAlsoClassNames.add(next.getName());
+            }
+            info.setXmlSeeAlso(seeAlsoClassNames);
+        }
+    }
 
-        if (typeInfo.containsKey(javaClass.getQualifiedName())) {
-            return typeInfo.get(javaClass.getQualifiedName());
-        }
-        
-        TypeInfo info = null;
-        if (javaClass.isEnum()) {
-            info = new EnumTypeInfo(helper);
-        } else {
-            info = new TypeInfo(helper);
-        }
-
-        if (helper.isAnnotationPresent(javaClass, XmlTransient.class)) {
-        	info.setTransient(true);
-        }
-        
-        JavaMethod factoryMethod = this.factoryMethods.get(javaClass.getRawName()); 
-        if(factoryMethod != null) {
-            //set up factory method info for mappings.
+    /**
+     * Process any factory methods.
+     * 
+     * @param javaClass
+     * @param info
+     */
+    private void processFactoryMethods(JavaClass javaClass, TypeInfo info) {
+        JavaMethod factoryMethod = this.factoryMethods.get(javaClass.getRawName());
+        if (factoryMethod != null) {
+            // set up factory method info for mappings.
             info.setFactoryMethodName(factoryMethod.getName());
             info.setObjectFactoryClassName(factoryMethod.getOwningClass().getRawName());
             JavaClass[] paramTypes = factoryMethod.getParameterTypes();
-            if(paramTypes != null && paramTypes.length > 0) {
+            if (paramTypes != null && paramTypes.length > 0) {
                 String[] paramTypeNames = new String[paramTypes.length];
-                for(int i = 0; i < paramTypes.length; i++) {
+                for (int i = 0; i < paramTypes.length; i++) {
                     paramTypeNames[i] = paramTypes[i].getRawName();
                 }
                 info.setFactoryMethodParamTypes(paramTypeNames);
             }
         }
+    }
+
+    /**
+     * Process any package-level @XmlJavaTypeAdapters.
+     * 
+     * @param javaClass
+     * @param info
+     */
+    private void processPackageLevelAdapters(JavaClass javaClass, TypeInfo info) {
         JavaPackage pack = javaClass.getPackage();
-        // handle package level adapters (add them to the type info for this class)
         if (helper.isAnnotationPresent(pack, XmlJavaTypeAdapters.class)) {
             XmlJavaTypeAdapters adapters = (XmlJavaTypeAdapters) helper.getAnnotation(pack, XmlJavaTypeAdapters.class);
             XmlJavaTypeAdapter[] adapterArray = adapters.value();
@@ -375,23 +559,38 @@ public class AnnotationsProcessor {
                 }
             }
         }
-        // handle class level adapters (add them to the type info for this class)
+    }
+
+    /**
+     * Process any class-level @XmlJavaTypeAdapters.
+     * 
+     * @param javaClass
+     * @param info
+     */
+    private void processClassLevelAdapters(JavaClass javaClass, TypeInfo info) {
         if (helper.isAnnotationPresent(javaClass, XmlJavaTypeAdapters.class)) {
             XmlJavaTypeAdapters adapters = (XmlJavaTypeAdapters) helper.getAnnotation(javaClass, XmlJavaTypeAdapters.class);
             XmlJavaTypeAdapter[] adapterArray = adapters.value();
             for (XmlJavaTypeAdapter next : adapterArray) {
                 JavaClass adapterClass = helper.getJavaClass(next.value());
                 JavaClass boundType = helper.getJavaClass(next.type());
-                if(boundType != null) {
+                if (boundType != null) {
                     info.addAdapterClass(adapterClass, boundType);
                 }
             }
         }
+    }
 
-        // figure out namespace info   
-        NamespaceInfo packageNamespace = getNamespaceInfoForPackage(javaClass);
+    /**
+     * Process any @XmlSchemaType(s).
+     * 
+     * @param javaClass
+     * @param info
+     */
+    private void processSchemaTypes(JavaClass javaClass, TypeInfo info) {
+        JavaPackage pack = javaClass.getPackage();
         if (helper.isAnnotationPresent(pack, XmlSchemaTypes.class)) {
-            XmlSchemaTypes types = (XmlSchemaTypes) helper.getAnnotation(pack, XmlSchemaTypes.class); 
+            XmlSchemaTypes types = (XmlSchemaTypes) helper.getAnnotation(pack, XmlSchemaTypes.class);
             XmlSchemaType[] typeArray = types.value();
             for (XmlSchemaType next : typeArray) {
                 processSchemaType(next);
@@ -399,162 +598,264 @@ public class AnnotationsProcessor {
         } else if (helper.isAnnotationPresent(pack, XmlSchemaType.class)) {
             processSchemaType((XmlSchemaType) helper.getAnnotation(pack, XmlSchemaType.class));
         }
-      
+    }
 
-        String[] propOrder = new String[]{""};
-        String typeName = "";
-        
+    /**
+     * Process @XmlRootElement annotation on a given JavaClass.
+     * 
+     * @param javaClass
+     * @param info
+     */
+    private void processXmlRootElement(JavaClass javaClass, TypeInfo info) {
+        if (!(info.isTransient()) && helper.isAnnotationPresent(javaClass, XmlRootElement.class)) {
+            XmlRootElement rootElemAnnotation = (XmlRootElement) helper.getAnnotation(javaClass, XmlRootElement.class);
+            org.eclipse.persistence.jaxb.xmlmodel.XmlRootElement xmlRE = new org.eclipse.persistence.jaxb.xmlmodel.XmlRootElement();
+            xmlRE.setName(rootElemAnnotation.name());
+            xmlRE.setNamespace(rootElemAnnotation.namespace());
+            info.setXmlRootElement(xmlRE);
+        }
+    }
+
+    /**
+     * Process @XmlType annotation on a given JavaClass and update the TypeInfo for pre-processing.
+     * Note that if no @XmlType annotation is present we still create a new XmlType an set it on 
+     * the TypeInfo.
+     * 
+     * @param javaClass
+     * @param info
+     * @param packageNamespace
+     */
+    private void preProcessXmlType(JavaClass javaClass, TypeInfo info, NamespaceInfo packageNamespace) {
+        org.eclipse.persistence.jaxb.xmlmodel.XmlType xmlType = new org.eclipse.persistence.jaxb.xmlmodel.XmlType();
         if (helper.isAnnotationPresent(javaClass, XmlType.class)) {
-            // figure out type name
             XmlType typeAnnotation = (XmlType) helper.getAnnotation(javaClass, XmlType.class);
-            typeName = typeAnnotation.name();
-            if (typeName.equals("##default")) {
-                typeName = getSchemaTypeNameForClassName(javaClass.getName());
+            // set name
+            xmlType.setName(typeAnnotation.name());
+            // set namespace
+            xmlType.setNamespace(typeAnnotation.namespace());
+            // set propOrder
+            String[] propOrder = typeAnnotation.propOrder();
+            // handle case where propOrder is an empty array
+            if (propOrder != null) {
+                xmlType.getPropOrder();
             }
-            propOrder = typeAnnotation.propOrder();
-            if (!typeAnnotation.namespace().equals("##default")) {
-                info.setClassNamespace(typeAnnotation.namespace());
-            } else {
-                info.setClassNamespace(packageNamespace.getNamespace());
+            for (String prop : propOrder) {
+                xmlType.getPropOrder().add(prop);
             }
+            // set factoryClass
             Class factoryClass = typeAnnotation.factoryClass();
-            if(factoryClass != DEFAULT.class) {
-                String factoryMethodName = typeAnnotation.factoryMethod();
-                if(factoryMethodName == null || factoryMethodName.equals("")) {
-                    throw org.eclipse.persistence.exceptions.JAXBException.factoryClassWithoutFactoryMethod(javaClass.getName());
-                }
-                info.setFactoryMethodName(factoryMethodName);
-                info.setObjectFactoryClassName(factoryClass.getCanonicalName());
+            if (factoryClass == DEFAULT.class) {
+                xmlType.setFactoryClass("javax.xml.bind.annotation.XmlType.DEFAULT");
             } else {
-                String factoryMethodName = typeAnnotation.factoryMethod();
-                if(factoryMethodName != null && !factoryMethodName.equals("")) {
-                    //factory method applies to the current class verify method exists
-                    JavaMethod method = javaClass.getDeclaredMethod(factoryMethodName, new JavaClass[]{});
-                    if(method == null) {
-                        throw org.eclipse.persistence.exceptions.JAXBException.factoryMethodNotDeclared(factoryMethodName, javaClass.getName());
-                    }
-                    info.setFactoryMethodName(factoryMethodName);
-                    info.setObjectFactoryClassName(javaClass.getRawName());
+                xmlType.setFactoryClass(factoryClass.getCanonicalName());
+            }
+            // set factoryMethodName
+            xmlType.setFactoryMethod(typeAnnotation.factoryMethod());
+        } else {
+            // set defaults
+            xmlType.setName(getSchemaTypeNameForClassName(javaClass.getName()));
+            xmlType.setNamespace(packageNamespace.getNamespace());
+        }
+        info.setXmlType(xmlType);
+    }
+
+    /**
+     * Process XmlType for a given TypeInfo. Here we assume that the TypeInfo has an XmlType 
+     * set - typically via preProcessXmlType or XmlProcessor override.
+     * 
+     * @param javaClass
+     * @param info
+     * @param packageNamespace
+     */
+    private void postProcessXmlType(JavaClass javaClass, TypeInfo info, NamespaceInfo packageNamespace) {
+        // assumes that the TypeInfo has an XmlType set from
+        org.eclipse.persistence.jaxb.xmlmodel.XmlType xmlType = info.getXmlType();
+
+        // set/validate factoryClass and factoryMethod
+        String factoryClassName = xmlType.getFactoryClass();
+        String factoryMethodName = xmlType.getFactoryMethod();
+
+        if (factoryClassName.equals("javax.xml.bind.annotation.XmlType.DEFAULT")) {
+            if (factoryMethodName != null && !factoryMethodName.equals("")) {
+                // factory method applies to the current class verify method exists
+                JavaMethod method = javaClass.getDeclaredMethod(factoryMethodName, new JavaClass[] {});
+                if (method == null) {
+                    throw org.eclipse.persistence.exceptions.JAXBException.factoryMethodNotDeclared(factoryMethodName, javaClass.getName());
                 }
+                info.setObjectFactoryClassName(javaClass.getRawName());
+                info.setFactoryMethodName(factoryMethodName);
             }
         } else {
+            if (factoryMethodName == null || factoryMethodName.equals("")) {
+                throw org.eclipse.persistence.exceptions.JAXBException.factoryClassWithoutFactoryMethod(javaClass.getName());
+            }
+            info.setObjectFactoryClassName(factoryClassName);
+            info.setFactoryMethodName(factoryMethodName);
+        }
+
+        // figure out type name
+        String typeName = xmlType.getName();
+        if (typeName.equals("##default")) {
             typeName = getSchemaTypeNameForClassName(javaClass.getName());
-            info.setClassNamespace(packageNamespace.getNamespace());
         }
-        info.setPropOrder(propOrder);
         info.setSchemaTypeName(typeName);
-        
-        if (info.isEnumerationType()) {
-            addEnumTypeInfo(javaClass, ((EnumTypeInfo)info));
-            return info;
-        } 
-        
-        typeInfoClasses.add(javaClass);
-        typeInfo.put(javaClass.getQualifiedName(), info);
-        if(typeName!= null && !("".equals(typeName))){
-        	QName typeQName = new QName(packageNamespace.getNamespace(), typeName);
-        	boolean containsQName = typeQNames.contains(typeQName);
-        	if(containsQName){
-        		throw JAXBException.nameCollision(typeQName.getNamespaceURI(), typeQName.getLocalPart());
-        	}else{
-        		typeQNames.add(typeQName);        	
-       		}        	
+
+        // set propOrder
+        if (xmlType.isSetPropOrder()) {
+            List<String> props = xmlType.getPropOrder();
+            if (props.size() == 0) {
+                info.setPropOrder(new String[0]);
+            } else if (props.get(0).equals("")) {
+                info.setPropOrder(new String[] { "" });
+            } else {
+                info.setPropOrder(xmlType.getPropOrder().toArray(new String[xmlType.getPropOrder().size()]));
+            }
         }
+
+        // figure out namespace
+        if (xmlType.getNamespace().equals("##default")) {
+            info.setClassNamespace(packageNamespace.getNamespace());
+        } else {
+            info.setClassNamespace(xmlType.getNamespace());
+        }
+    }
+
+    /**
+     * Process @XmlAccessorType annotation on a given JavaClass and update the TypeInfo for pre-processing.
+     * 
+     * @param javaClass
+     * @param info
+     * @param packageNamespace
+     */
+    private void preProcessXmlAccessorType(JavaClass javaClass, TypeInfo info, NamespaceInfo packageNamespace) {
+        org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType xmlAccessType;
+
         if (helper.isAnnotationPresent(javaClass, XmlAccessorType.class)) {
             XmlAccessorType accessorType = (XmlAccessorType) helper.getAnnotation(javaClass, XmlAccessorType.class);
-            info.setAccessType(accessorType.value());
+            xmlAccessType = org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType.fromValue(accessorType.value().name());
         } else {
-            info.setAccessType(packageNamespace.getAccessType());
+            xmlAccessType = org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType.fromValue(packageNamespace.getAccessType().name());
         }
-                
-        JavaClass superClass = (JavaClass) javaClass.getSuperclass();
-        if (shouldGenerateTypeInfo(superClass)) {
-            createTypeInfoFor(superClass);
-        }
-        
-        info.setProperties(getPropertiesForClass(javaClass, info));
-        
+        info.setXmlAccessType(xmlAccessType);
+    }
+
+    /**
+     * Process XmlAccessorType for a given TypeInfo. Here we assume that the TypeInfo has an 
+     * XmlAccessorType set - typically via preProcessXmlType or XmlProcessor override.
+     * 
+     * @param info
+     */
+    private void postProcessXmlAccessorType(TypeInfo info) {
+        info.setAccessType(XmlAccessType.valueOf(info.getXmlAccessType().name()));
+    }
+
+    /**
+     * Process package and class @XmlAccessorOrder. Class level annotation overrides a package level annotation.
+     * 
+     * @param javaClass
+     * @param info
+     */
+    private void processXmlAccessorOrder(JavaClass javaClass, TypeInfo info) {
         XmlAccessorOrder order = null;
-        if (helper.isAnnotationPresent(pack, XmlAccessorOrder.class)) {
-            order = (XmlAccessorOrder) helper.getAnnotation(pack, XmlAccessorOrder.class);
+        if (helper.isAnnotationPresent(javaClass.getPackage(), XmlAccessorOrder.class)) {
+            order = (XmlAccessorOrder) helper.getAnnotation(javaClass.getPackage(), XmlAccessorOrder.class);
         }
-        
+        // class level annotation overrides package level annotation
         if (helper.isAnnotationPresent(javaClass, XmlAccessorOrder.class)) {
             order = (XmlAccessorOrder) helper.getAnnotation(javaClass, XmlAccessorOrder.class);
         }
-        
         if (order != null) {
             info.orderProperties(order.value());
-        }              
-        
-        ArrayList<Property> properties = info.getPropertyList();
-        for (Property property : properties) {
-            JavaClass propertyType = property.getType();
-            if (this.isCollectionType(property)) {
-                // check for a generic type
-                JavaClass gType = property.getGenericType();
-                if (gType != null) {
-                    // handle nested generics
-                    if (gType.hasActualTypeArguments()) {
-                        propertyType = helper.getJavaClass(gType.getRawName());                                    
-                    } else if (gType instanceof JavaClass) {
-                        propertyType = (JavaClass) gType;
-                    }
-                }
-            } else if (propertyType.isArray()) {
-                propertyType = (JavaClass) propertyType.getComponentType();
-            }
-            if (helper.isAnnotationPresent(property.getElement(), XmlElement.class)) {
-                XmlElement element = (XmlElement) helper.getAnnotation(property.getElement(), XmlElement.class);
-                if (element.type() != XmlElement.DEFAULT.class) {
-                    propertyType = helper.getJavaClass(element.type());
-                    //if list setvaluetype to propertyType else do the same
-                    property.setType(propertyType);
-                }
-                // handle default value
-                if (!element.defaultValue().equals("\u0000")) {
-                    property.setDefaultValue(element.defaultValue());
-                }
-                validateElementIsInPropOrder(info, property.getPropertyName());
-            }
-            // handle @XmlID
-            if (helper.isAnnotationPresent(property.getElement(), XmlID.class)) {
-                if (!areEquals(property.getType(), String.class)) {
-                    throw JAXBException.invalidId(property.getPropertyName());
-                }
-                if (info.isIDSet()) {
-                    // TODO: throw an exception here
-                }
-                info.setIDProperty(property);
-            }
-            // handle @XmlIDREF - validate these properties after processing of all types is completed
-            if (helper.isAnnotationPresent(property.getElement(), XmlIDREF.class)) {
-                xmlIdRefProps.add(property);
-            }            
-            // handle @XmlJavaTypeAdapter
-            if (helper.isAnnotationPresent(property.getElement(), XmlJavaTypeAdapter.class)) {
-                XmlJavaTypeAdapter adapter = (XmlJavaTypeAdapter) helper.getAnnotation(property.getElement(), XmlJavaTypeAdapter.class);
-                JavaClass adapterClass = helper.getJavaClass(adapter.value());
-                property.setAdapterClass(adapterClass);
-                propertyType = property.getValueType();
-            }
-
-            if (shouldGenerateTypeInfo(propertyType)) {
-                createTypeInfoFor(propertyType);
-            }
         }
-        
-        //Make sure this class has a factory method or a zero arg constructor
-        if(info.getFactoryMethodName() == null && info.getObjectFactoryClassName() == null) {
-            JavaConstructor zeroArgConstructor = javaClass.getDeclaredConstructor(new JavaClass[]{});
-            if(zeroArgConstructor == null) {
-                throw org.eclipse.persistence.exceptions.JAXBException.factoryMethodOrConstructorRequired(javaClass.getName());
-            }
-        }
-        validatePropOrderForInfo(info);
-        return info;
     }
-    */
+
+    /**
+     * Process @XmlElement annotation on a given property.
+     * 
+     * @param property
+     * @return if XmlElement exists and the value is not the default return the element's type; otherwise propertyType
+     */
+    private JavaClass processXmlElement(Property property, JavaClass propertyType, TypeInfo info) {
+        if (helper.isAnnotationPresent(property.getElement(), XmlElement.class)) {
+            XmlElement element = (XmlElement) helper.getAnnotation(property.getElement(), XmlElement.class);
+            if (element.type() != XmlElement.DEFAULT.class) {
+                propertyType = helper.getJavaClass(element.type());
+                // if list setvaluetype to propertyType else do the same
+                property.setType(propertyType);
+            }
+            // handle default value
+            if (!element.defaultValue().equals("\u0000")) {
+                property.setDefaultValue(element.defaultValue());
+            }
+            validateElementIsInPropOrder(info, property.getPropertyName());
+        }
+        return propertyType;
+    }
+
+    /**
+     * Process @XmlID annotation on a given property
+     * 
+     * @param property
+     * @param info
+     */
+    private void processXmlID(Property property, TypeInfo info) {
+        if (helper.isAnnotationPresent(property.getElement(), XmlID.class)) {
+            if (!areEquals(property.getType(), String.class)) {
+                throw JAXBException.invalidId(property.getPropertyName());
+            }
+            if (info.isIDSet()) {
+                // TODO: throw an exception here
+            }
+            info.setIDProperty(property);
+        }
+    }
+
+    /**
+     * Process @XmlIDREF on a given property.
+     * 
+     * @param property
+     */
+    private void processXmlIDREF(Property property) {
+        if (helper.isAnnotationPresent(property.getElement(), XmlIDREF.class)) {
+            xmlIdRefProps.add(property);
+        }
+    }
+
+    /**
+     * Process @XmlJavaTypeAdapter on a given property.
+     * 
+     * @param property
+     * @param propertyType
+     * @return if @XmlJavaTypeAdapter exists return property's value type; otherwise propertyType
+     */
+    private JavaClass processXmlJavaTypeAdapter(Property property, JavaClass propertyType) {
+        if (helper.isAnnotationPresent(property.getElement(), XmlJavaTypeAdapter.class)) {
+            XmlJavaTypeAdapter adapter = (XmlJavaTypeAdapter) helper.getAnnotation(property.getElement(), XmlJavaTypeAdapter.class);
+            JavaClass adapterClass = helper.getJavaClass(adapter.value());
+            property.setAdapterClass(adapterClass);
+            propertyType = property.getValueType();
+        }
+        return propertyType;
+    }
+
+    /**
+     * Store a QName (if necessary) based on a given TypeInfo's schema type name.
+     * 
+     * @param javaClass
+     * @param info
+     */
+    private void processTypeQName(JavaClass javaClass, TypeInfo info, NamespaceInfo packageNamespace) {
+        String typeName = info.getSchemaTypeName();
+        if (typeName != null && !("".equals(typeName))) {
+            QName typeQName = new QName(packageNamespace.getNamespace(), typeName);
+            boolean containsQName = typeQNames.contains(typeQName);
+            if (containsQName) {
+                throw JAXBException.nameCollision(typeQName.getNamespaceURI(), typeQName.getLocalPart());
+            } else {
+                typeQNames.add(typeQName);
+            }
+        }
+    }
 
     public boolean shouldGenerateTypeInfo(JavaClass javaClass) {
         if (javaClass == null || javaClass.isPrimitive() || javaClass.isAnnotation() || javaClass.isInterface() || javaClass.isArray()) {
@@ -1421,7 +1722,6 @@ public class AnnotationsProcessor {
     }
 
     public boolean isCollectionType(JavaClass type) {
-
         if (helper.getJavaClass(java.util.Collection.class).isAssignableFrom(type) 
                 || helper.getJavaClass(java.util.List.class).isAssignableFrom(type) 
                 || helper.getJavaClass(java.util.Set.class).isAssignableFrom(type)) {
@@ -2575,749 +2875,68 @@ public class AnnotationsProcessor {
         this.packageToNamespaceMappings = packageToNamespaceMappings;
     }
 
-    /**
-     * Generate TypeInfo instances for a given array of JavaClasses.
-     * 
-     * @param classes
-     */
-    public void processClassesAndProperties(JavaClass[] classes) {
-        init();
-        preBuildTypeInfo(classes);
-        classes = postBuildTypeInfo(classes);
-        processJavaClasses(classes);
-    }
-
-    /**
-     * Initialize maps, lists, etc. Typically called prior to processing a set of 
-     * classes via preBuildTypeInfo, postBuildTypeInfo, processJavaClasses.
-     */
-    public void init() {
-        typeInfoClasses = new ArrayList<JavaClass>();
-        typeInfo = new HashMap<String, TypeInfo>();
-        typeQNames = new ArrayList<QName>();
-        userDefinedSchemaTypes = new HashMap<String, QName>();
-        if (packageToNamespaceMappings == null) {
-            packageToNamespaceMappings = new HashMap<String, NamespaceInfo>();
-        }
-        this.factoryMethods = new HashMap<String, JavaMethod>();
-        this.namespaceResolver = new NamespaceResolver();
-        this.xmlRootElements = new HashMap<String, ElementDeclaration>();
-        xmlIdRefProps = new ArrayList<Property>();
-
-        arrayClassesToGeneratedClasses = new HashMap<String, Class>();
-        collectionClassesToGeneratedClasses = new HashMap<java.lang.reflect.Type, Class>();
-        generatedClassesToArrayClasses = new HashMap<Class, JavaClass>();
-        generatedClassesToCollectionClasses = new HashMap<Class, java.lang.reflect.Type>();
-    }
-
-    /**
-     * Process class level annotations only. It is assumed that a call to init() 
-     * has been made prior to calling this method. After the types created via 
-     * this method have been modified (if necessary) postBuildTypeInfo and 
-     * processJavaClasses should be called to finish processing.
-     * 
-     * @param javaClasses
-     * @return
-     */
-    public Map<String, TypeInfo> preBuildTypeInfo(JavaClass[] javaClasses) {
-        for (JavaClass javaClass : javaClasses) {
-            if (javaClass == null || !shouldGenerateTypeInfo(javaClass) || helper.isAnnotationPresent(javaClass, XmlRegistry.class)) {
-                continue;
-            }
-
-            TypeInfo info = typeInfo.get(javaClass.getQualifiedName());
-            if (info != null) {
-                if (info.isPreBuilt()) {
-                    continue;
-                }
-            }
-
-            if (javaClass.isEnum()) {
-                info = new EnumTypeInfo(helper);
-            } else {
-                info = new TypeInfo(helper);
-            }
-            info.setPreBuilt(true);
-
-            // handle @XmlTransient
-            if (helper.isAnnotationPresent(javaClass, XmlTransient.class)) {
-                info.setXmlTransient(true);
-            }
-
-            // handle @XmlRootElement
-            processXmlRootElement(javaClass, info);
-
-            // handle @XmlSeeAlso
-            processXmlSeeAlso(javaClass, info);
-            NamespaceInfo packageNamespace = getNamespaceInfoForPackage(javaClass);
-
-            // handle @XmlType
-            preProcessXmlType(javaClass, info, packageNamespace);
-
-            // process @XmlAccessorType
-            preProcessXmlAccessorType(javaClass, info, packageNamespace);
-
-            typeInfoClasses.add(javaClass);
-            typeInfo.put(javaClass.getQualifiedName(), info);
-        }
-        return typeInfo;
-    }
-
-    /**
-     * Process any additional classes (i.e. inner classes, @XmlSeeAlso, @XmlRegisrty, etc.) 
-     * for a given set of JavaClasses, then complete building all of the required TypeInfo 
-     * objects. This method is typically called after init and preBuildTypeInfo have been 
-     * called.
-     * 
-     * @param javaClasses
-     * @return updated array of JavaClasses, made up of the original classes plus any additional ones
-     */
-    public JavaClass[] postBuildTypeInfo(JavaClass[] javaClasses) {
-        if (javaClasses.length == 0) {
-            return javaClasses;
-        }
-        // create type info instances for any additional classes
-        javaClasses = processAdditionalClasses(javaClasses);
-        preBuildTypeInfo(javaClasses);
-        updateGlobalElements(javaClasses);
-        buildTypeInfo(javaClasses);
-        return javaClasses;
-    }
-
-    /**
-     * INTERNAL:
-     * 
-     * Complete building TypeInfo objects for a given set of JavaClass instances. This method assumes 
-     * that init, preBuildTypeInfo, and postBuildTypeInfo have been called.
-     * 
-     * @param allClasses
-     * @return
-     */
-    private Map<String, TypeInfo> buildTypeInfo(JavaClass[] allClasses) {
-        for (JavaClass javaClass : allClasses) {
-            if (javaClass == null) {
-                continue;
-            }
-
-            TypeInfo info = typeInfo.get(javaClass.getQualifiedName());
-            if (info == null) {
-                continue;
-            }
-            if (info.isPostBuilt()) {
-                continue;
-            }
-            info.setPostBuilt(true);
-
-            // handle factory methods
-            processFactoryMethods(javaClass, info);
-
-            // handle package level @XmlJavaTypeAdapters
-            processPackageLevelAdapters(javaClass, info);
-
-            // handle class level @XmlJavaTypeAdapters
-            processClassLevelAdapters(javaClass, info);
-
-            // handle @XmlSchemaType(s)
-            processSchemaTypes(javaClass, info);
-
-            NamespaceInfo packageNamespace = getNamespaceInfoForPackage(javaClass);
-
-            // handle @XmlType
-            postProcessXmlType(javaClass, info, packageNamespace);
-
-            // handle @XmlEnum
-            if (info.isEnumerationType()) {
-                addEnumTypeInfo(javaClass, ((EnumTypeInfo) info));
-                continue;
-            }
-
-            // process schema type name
-            processTypeQName(javaClass, info, packageNamespace);
-
-            // process @XmlAccessorType
-            postProcessXmlAccessorType(info);
-
-            // handle superclass if necessary
-            JavaClass superClass = (JavaClass) javaClass.getSuperclass();
-            if (shouldGenerateTypeInfo(superClass)) {
-                JavaClass[] jClassArray = new JavaClass[] { superClass };
-                preBuildTypeInfo(jClassArray);
-                postBuildTypeInfo(jClassArray);
-            }
-
-            // add properties
-            info.setProperties(getPropertiesForClass(javaClass, info));
-
-            // process @XmlAccessorOrder
-            processXmlAccessorOrder(javaClass, info);
-
-            // process properties
-            processTypeInfoProperties(info);
-
-            // Make sure this class has a factory method or a zero arg constructor
-            if (info.getFactoryMethodName() == null && info.getObjectFactoryClassName() == null) {
-                JavaConstructor zeroArgConstructor = javaClass.getDeclaredConstructor(new JavaClass[] {});
-                if (zeroArgConstructor == null) {
-                    throw org.eclipse.persistence.exceptions.JAXBException.factoryMethodOrConstructorRequired(javaClass.getName());
-                }
-            }
-            validatePropOrderForInfo(info);
-        }
-        return typeInfo;
-    }
-
-    /**
-     * Process a given TypeInfo instance's properties.
-     * 
-     * @param info
-     */
-    private void processTypeInfoProperties(TypeInfo info) {
-        ArrayList<Property> properties = info.getPropertyList();
-        for (Property property : properties) {
-            JavaClass propertyType = property.getType();
-            if (this.isCollectionType(property)) {
-                // check for a generic type
-                JavaClass gType = property.getGenericType();
-                if (gType != null) {
-                    // handle nested generics
-                    if (gType.hasActualTypeArguments()) {
-                        propertyType = helper.getJavaClass(gType.getRawName());
-                    } else if (gType instanceof JavaClass) {
-                        propertyType = (JavaClass) gType;
-                    }
-                }
-            } else if (propertyType.isArray()) {
-                propertyType = (JavaClass) propertyType.getComponentType();
-            }
-
-            // handle @XmlElement
-            propertyType = processXmlElement(property, propertyType, info);
-
-            // handle @XmlID
-            processXmlID(property, info);
-
-            // handle @XmlIDREF - validate these properties after processing of all types is completed
-            processXmlIDREF(property);
-
-            // handle property level @XmlJavaTypeAdapter
-            propertyType = processXmlJavaTypeAdapter(property, propertyType);
-
-            if (shouldGenerateTypeInfo(propertyType)) {
-                JavaClass[] jClassArray = new JavaClass[] { propertyType };
-                preBuildTypeInfo(jClassArray);
-                postBuildTypeInfo(jClassArray);
-            }
-        }
-    }
-
-    /**
-     * Process a given set of JavaClass instances. Global elements will processed (via @XmlRootElement, 
-     * @XmlIDREFs) will be validated, and call back methods will be handled as required. This method 
-     * is typically called after init, preBuildTypeInfo, and postBuildTypeInfo have been called.
-     * 
-     * @param classes
-     */
-    public void processJavaClasses(JavaClass[] classes) {
-        ArrayList<JavaClass> classesToProcess = new ArrayList<JavaClass>();
-        for (JavaClass javaClass : classes) {
-            classesToProcess.add(javaClass);
+    public SchemaTypeInfo addClass(JavaClass javaClass) {
+        if (javaClass == null) {
+            return null;
+        } else if (helper.isAnnotationPresent(javaClass, XmlTransient.class)) {
+            return null;
         }
 
-        checkForCallbackMethods();
-
-        // validate @XmlIDREF annotated properties - target class must have an XmlID annotation
-        for (Property property : xmlIdRefProps) {
-            JavaClass typeClass = property.getType();
-            // handle array or collection
-            if (typeClass.isArray()) {
-                typeClass = typeClass.getComponentType();
-            } else if (isCollectionType(typeClass)) {
-                typeClass = property.getGenericType();
-            }
-            TypeInfo tInfo = typeInfo.get(typeClass.getQualifiedName());
-            if (tInfo != null && tInfo.getIDProperty() == null) {
-                throw JAXBException.invalidIdRef(property.getPropertyName(), typeClass.getQualifiedName());
-            }
+        if (typeInfo == null) {
+            // this is the first class. Initialize all the properties
+            this.typeInfoClasses = new ArrayList<JavaClass>();
+            this.typeInfo = new HashMap<String, TypeInfo>();
+            this.typeQNames = new ArrayList<QName>();
+            this.userDefinedSchemaTypes = new HashMap<String, QName>();
+            this.packageToNamespaceMappings = new HashMap<String, NamespaceInfo>();
+            this.namespaceResolver = new NamespaceResolver();
         }
-    }
 
-    /**
-     * Process any additional classes, such as inner classes, @XmlRegistry or from @XmlSeeAlso.
-     * 
-     * @param classes
-     * @return
-     */
-    private JavaClass[] processAdditionalClasses(JavaClass[] classes) {
-        ArrayList<JavaClass> extraClasses = new ArrayList<JavaClass>();
-        ArrayList<JavaClass> classesToProcess = new ArrayList<JavaClass>();
-        for (JavaClass javaClass : classes) {
-            if (javaClass.isArray()) {
-                if (!helper.isBuiltInJavaType(javaClass.getComponentType())) {
-                    extraClasses.add(javaClass.getComponentType());
-                }
-                Class generatedClass = generateWrapperForArrayClass(javaClass);
-                extraClasses.add(helper.getJavaClass(generatedClass));
-                arrayClassesToGeneratedClasses.put(javaClass.getRawName(), generatedClass);
-                generatedClassesToArrayClasses.put(generatedClass, javaClass);
-            } else if (isCollectionType(javaClass)) {
-                JavaClass componentClass;
-                if (javaClass.hasActualTypeArguments()) {
-                    componentClass = (JavaClass) javaClass.getActualTypeArguments().toArray()[0];
-                    if (!componentClass.isPrimitive()) {
-                        extraClasses.add(componentClass);
-                    }
+        JavaClass[] jClasses = new JavaClass[] { javaClass };
+        preBuildTypeInfo(jClasses);
+        postBuildTypeInfo(jClasses);
+        TypeInfo info = typeInfo.get(javaClass.getQualifiedName());
+
+        NamespaceInfo namespaceInfo;
+        String packageName = javaClass.getPackageName();
+        namespaceInfo = this.packageToNamespaceMappings.get(packageName);
+
+        SchemaTypeInfo schemaInfo = new SchemaTypeInfo();
+        schemaInfo.setSchemaTypeName(new QName(info.getClassNamespace(), info.getSchemaTypeName()));
+
+        if (info.isSetXmlRootElement()) {
+            org.eclipse.persistence.jaxb.xmlmodel.XmlRootElement xmlRE = info.getXmlRootElement();
+            String elementName = xmlRE.getName();
+            if (elementName.equals("##default") || elementName.equals("")) {
+                if (javaClass.getName().indexOf("$") != -1) {
+                    elementName = Introspector.decapitalize(javaClass.getName().substring(javaClass.getName().lastIndexOf('$') + 1));
                 } else {
-                    componentClass = helper.getJavaClass(Object.class);
+                    elementName = Introspector.decapitalize(javaClass.getName().substring(javaClass.getName().lastIndexOf('.') + 1));
                 }
-                if (javaClassToType != null) {
-                    java.lang.reflect.Type theType = javaClassToType.get(javaClass);
-                    if (theType != null) {
-                        Class generatedClass = generateWrapperForArrayClass(javaClass);
-                        collectionClassesToGeneratedClasses.put(theType, generatedClass);
-                        generatedClassesToCollectionClasses.put(generatedClass, theType);
-                        extraClasses.add(helper.getJavaClass(generatedClass));
+
+                // TODO - remove this TCK hack...
+                if (elementName.length() >= 3) {
+                    int idx = elementName.length() - 1;
+                    char ch = elementName.charAt(idx - 1);
+                    if (Character.isDigit(ch)) {
+                        char lastCh = Character.toUpperCase(elementName.charAt(idx));
+                        elementName = elementName.substring(0, idx) + lastCh;
                     }
                 }
-            } else if (isMapType(javaClass)) {
-                JavaClass keyClass;
-                JavaClass valueClass;
-                if (javaClass.hasActualTypeArguments()) {
-                    keyClass = (JavaClass) javaClass.getActualTypeArguments().toArray()[0];
-                    if (!helper.isBuiltInJavaType(keyClass)) {
-                        extraClasses.add(keyClass);
-                    }
-                    valueClass = (JavaClass) javaClass.getActualTypeArguments().toArray()[1];
-                    if (!helper.isBuiltInJavaType(valueClass)) {
-                        extraClasses.add(valueClass);
-                    }
-                } else {
-                    keyClass = helper.getJavaClass(Object.class);
-                    valueClass = helper.getJavaClass(Object.class);
-                }
-                if (javaClassToType != null) {
-                    java.lang.reflect.Type theType = javaClassToType.get(javaClass);
-                    if (theType != null) {
-                        Class generatedClass = generateWrapperForMapClass(javaClass, keyClass, valueClass);
-                        collectionClassesToGeneratedClasses.put(theType, generatedClass);
-                        extraClasses.add(helper.getJavaClass(generatedClass));
-                    }
-                }
+
+            }
+            String rootNamespace = xmlRE.getNamespace();
+            QName rootElemName = null;
+            if (rootNamespace.equals("##default")) {
+                rootElemName = new QName(namespaceInfo.getNamespace(), elementName);
             } else {
-                // process @XmlRegistry, @XmlSeeAlso and inner classes
-                processClass(javaClass, classesToProcess);
+                rootElemName = new QName(rootNamespace, elementName);
             }
-        }
-        // process @XmlRegistry, @XmlSeeAlso and inner classes
-        for (JavaClass javaClass : extraClasses) {
-            processClass(javaClass, classesToProcess);
-        }
-
-        return classesToProcess.toArray(new JavaClass[classesToProcess.size()]);
-    }
-
-    /**
-     * Adds additional classes to the given List, from inner classes, 
-     * @XmlRegistry or @XmlSeeAlso.
-     * 
-     * @param javaClass
-     * @param classesToProcess
-     */
-    private void processClass(JavaClass javaClass, ArrayList<JavaClass> classesToProcess) {
-        if (shouldGenerateTypeInfo(javaClass)) {
-            if (helper.isAnnotationPresent(javaClass, XmlRegistry.class)) {
-                this.processObjectFactory(javaClass, classesToProcess);
-            } else {
-                classesToProcess.add(javaClass);
-                // handle @XmlSeeAlso
-                TypeInfo info = typeInfo.get(javaClass.getQualifiedName());
-                if (info != null && info.isSetXmlSeeAlso()) {
-                    for (String jClassName : info.getXmlSeeAlso()) {
-                        classesToProcess.add(helper.getJavaClass(jClassName));
-                    }
-                }
-                // handle inner classes
-                for (Iterator<JavaClass> jClassIt = javaClass.getDeclaredClasses().iterator(); jClassIt.hasNext();) {
-                    JavaClass innerClass = jClassIt.next();
-                    if (shouldGenerateTypeInfo(innerClass)) {
-                        if (!(helper.isAnnotationPresent(innerClass, XmlTransient.class))) {
-                            classesToProcess.add(innerClass);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * Process an @XmlSeeAlso annotation. TypeInfo instances will be created for each class listed.
-     * 
-     * @param javaClass
-     */
-    private void processXmlSeeAlso(JavaClass javaClass, TypeInfo info) {
-        // reflectively load @XmlSeeAlso class to avoid dependency
-        Class xmlSeeAlsoClass = null;
-        Method valueMethod = null;
-        try {
-            xmlSeeAlsoClass = PrivilegedAccessHelper.getClassForName("javax.xml.bind.annotation.XmlSeeAlso");
-            valueMethod = PrivilegedAccessHelper.getDeclaredMethod(xmlSeeAlsoClass, "value", new Class[] {});
-        } catch (ClassNotFoundException ex) {
-            // Ignore this exception. If SeeAlso isn't available, don't try to process
-        } catch (NoSuchMethodException ex) {
-        }
-        if (xmlSeeAlsoClass != null && helper.isAnnotationPresent(javaClass, xmlSeeAlsoClass)) {
-            Object seeAlso = helper.getAnnotation(javaClass, xmlSeeAlsoClass);
-            Class[] values = null;
-            try {
-                values = (Class[]) PrivilegedAccessHelper.invokeMethod(valueMethod, seeAlso, new Object[] {});
-            } catch (Exception ex) {
-            }
-            List<String> seeAlsoClassNames = new ArrayList<String>();
-            for (Class next : values) {
-                seeAlsoClassNames.add(next.getName());
-            }
-            info.setXmlSeeAlso(seeAlsoClassNames);
-        }
-    }
-
-    /**
-     * Process any factory methods.
-     * 
-     * @param javaClass
-     * @param info
-     */
-    private void processFactoryMethods(JavaClass javaClass, TypeInfo info) {
-        JavaMethod factoryMethod = this.factoryMethods.get(javaClass.getRawName());
-        if (factoryMethod != null) {
-            // set up factory method info for mappings.
-            info.setFactoryMethodName(factoryMethod.getName());
-            info.setObjectFactoryClassName(factoryMethod.getOwningClass().getRawName());
-            JavaClass[] paramTypes = factoryMethod.getParameterTypes();
-            if (paramTypes != null && paramTypes.length > 0) {
-                String[] paramTypeNames = new String[paramTypes.length];
-                for (int i = 0; i < paramTypes.length; i++) {
-                    paramTypeNames[i] = paramTypes[i].getRawName();
-                }
-                info.setFactoryMethodParamTypes(paramTypeNames);
-            }
-        }
-    }
-
-    /**
-     * Process any package-level @XmlJavaTypeAdapters.
-     * 
-     * @param javaClass
-     * @param info
-     */
-    private void processPackageLevelAdapters(JavaClass javaClass, TypeInfo info) {
-        JavaPackage pack = javaClass.getPackage();
-        if (helper.isAnnotationPresent(pack, XmlJavaTypeAdapters.class)) {
-            XmlJavaTypeAdapters adapters = (XmlJavaTypeAdapters) helper.getAnnotation(pack, XmlJavaTypeAdapters.class);
-            XmlJavaTypeAdapter[] adapterArray = adapters.value();
-            for (XmlJavaTypeAdapter next : adapterArray) {
-                JavaClass adapterClass = helper.getJavaClass(next.value());
-                JavaClass boundType = helper.getJavaClass(next.type());
-                if (boundType != null) {
-                    info.addAdapterClass(adapterClass, boundType);
-                } else {
-                    // TODO: Throw an error?
-                }
-            }
-        }
-    }
-
-    /**
-     * Process any class-level @XmlJavaTypeAdapters.
-     * 
-     * @param javaClass
-     * @param info
-     */
-    private void processClassLevelAdapters(JavaClass javaClass, TypeInfo info) {
-        if (helper.isAnnotationPresent(javaClass, XmlJavaTypeAdapters.class)) {
-            XmlJavaTypeAdapters adapters = (XmlJavaTypeAdapters) helper.getAnnotation(javaClass, XmlJavaTypeAdapters.class);
-            XmlJavaTypeAdapter[] adapterArray = adapters.value();
-            for (XmlJavaTypeAdapter next : adapterArray) {
-                JavaClass adapterClass = helper.getJavaClass(next.value());
-                JavaClass boundType = helper.getJavaClass(next.type());
-                if (boundType != null) {
-                    info.addAdapterClass(adapterClass, boundType);
-                }
-            }
-        }
-    }
-
-    /**
-     * Process any @XmlSchemaType(s).
-     * 
-     * @param javaClass
-     * @param info
-     */
-    private void processSchemaTypes(JavaClass javaClass, TypeInfo info) {
-        JavaPackage pack = javaClass.getPackage();
-        if (helper.isAnnotationPresent(pack, XmlSchemaTypes.class)) {
-            XmlSchemaTypes types = (XmlSchemaTypes) helper.getAnnotation(pack, XmlSchemaTypes.class);
-            XmlSchemaType[] typeArray = types.value();
-            for (XmlSchemaType next : typeArray) {
-                processSchemaType(next);
-            }
-        } else if (helper.isAnnotationPresent(pack, XmlSchemaType.class)) {
-            processSchemaType((XmlSchemaType) helper.getAnnotation(pack, XmlSchemaType.class));
-        }
-    }
-
-    /**
-     * Process @XmlRootElement annotation on a given JavaClass.
-     * 
-     * @param javaClass
-     * @param info
-     */
-    private void processXmlRootElement(JavaClass javaClass, TypeInfo info) {
-        if (!(info.isTransient()) && helper.isAnnotationPresent(javaClass, XmlRootElement.class)) {
-            XmlRootElement rootElemAnnotation = (XmlRootElement) helper.getAnnotation(javaClass, XmlRootElement.class);
-            org.eclipse.persistence.jaxb.xmlmodel.XmlRootElement xmlRE = new org.eclipse.persistence.jaxb.xmlmodel.XmlRootElement();
-            xmlRE.setName(rootElemAnnotation.name());
-            xmlRE.setNamespace(rootElemAnnotation.namespace());
-            info.setXmlRootElement(xmlRE);
-        }
-    }
-
-    /**
-     * Process @XmlType annotation on a given JavaClass and update the TypeInfo for pre-processing.
-     * Note that if no @XmlType annotation is present we still create a new XmlType an set it on 
-     * the TypeInfo.
-     * 
-     * @param javaClass
-     * @param info
-     * @param packageNamespace
-     */
-    private void preProcessXmlType(JavaClass javaClass, TypeInfo info, NamespaceInfo packageNamespace) {
-        org.eclipse.persistence.jaxb.xmlmodel.XmlType xmlType = new org.eclipse.persistence.jaxb.xmlmodel.XmlType();
-        if (helper.isAnnotationPresent(javaClass, XmlType.class)) {
-            XmlType typeAnnotation = (XmlType) helper.getAnnotation(javaClass, XmlType.class);
-            // set name
-            xmlType.setName(typeAnnotation.name());
-            // set namespace
-            xmlType.setNamespace(typeAnnotation.namespace());
-            // set propOrder
-            String[] propOrder = typeAnnotation.propOrder();
-            // handle case where propOrder is an empty array
-            if (propOrder != null) {
-                xmlType.getPropOrder();
-            }
-            for (String prop : propOrder) {
-                xmlType.getPropOrder().add(prop);
-            }
-            // set factoryClass
-            Class factoryClass = typeAnnotation.factoryClass();
-            if (factoryClass == DEFAULT.class) {
-                xmlType.setFactoryClass("javax.xml.bind.annotation.XmlType.DEFAULT");
-            } else {
-                xmlType.setFactoryClass(factoryClass.getCanonicalName());
-            }
-            // set factoryMethodName
-            xmlType.setFactoryMethod(typeAnnotation.factoryMethod());
-        } else {
-            // set defaults
-            xmlType.setName(getSchemaTypeNameForClassName(javaClass.getName()));
-            xmlType.setNamespace(packageNamespace.getNamespace());
-        }
-        info.setXmlType(xmlType);
-    }
-
-    /**
-     * Process XmlType for a given TypeInfo. Here we assume that the TypeInfo has an XmlType 
-     * set - typically via preProcessXmlType or XmlProcessor override.
-     * 
-     * @param javaClass
-     * @param info
-     * @param packageNamespace
-     */
-    private void postProcessXmlType(JavaClass javaClass, TypeInfo info, NamespaceInfo packageNamespace) {
-        // assumes that the TypeInfo has an XmlType set from
-        org.eclipse.persistence.jaxb.xmlmodel.XmlType xmlType = info.getXmlType();
-
-        // set/validate factoryClass and factoryMethod
-        String factoryClassName = xmlType.getFactoryClass();
-        String factoryMethodName = xmlType.getFactoryMethod();
-
-        if (factoryClassName.equals("javax.xml.bind.annotation.XmlType.DEFAULT")) {
-            if (factoryMethodName != null && !factoryMethodName.equals("")) {
-                // factory method applies to the current class verify method exists
-                JavaMethod method = javaClass.getDeclaredMethod(factoryMethodName, new JavaClass[] {});
-                if (method == null) {
-                    throw org.eclipse.persistence.exceptions.JAXBException.factoryMethodNotDeclared(factoryMethodName, javaClass.getName());
-                }
-                info.setObjectFactoryClassName(javaClass.getRawName());
-                info.setFactoryMethodName(factoryMethodName);
-            }
-        } else {
-            if (factoryMethodName == null || factoryMethodName.equals("")) {
-                throw org.eclipse.persistence.exceptions.JAXBException.factoryClassWithoutFactoryMethod(javaClass.getName());
-            }
-            info.setObjectFactoryClassName(factoryClassName);
-            info.setFactoryMethodName(factoryMethodName);
+            schemaInfo.getGlobalElementDeclarations().add(rootElemName);
+            ElementDeclaration declaration = new ElementDeclaration(rootElemName, javaClass, javaClass.getRawName(), false);
+            this.globalElements.put(rootElemName, declaration);
         }
 
-        // figure out type name
-        String typeName = xmlType.getName();
-        if (typeName.equals("##default")) {
-            typeName = getSchemaTypeNameForClassName(javaClass.getName());
-        }
-        info.setSchemaTypeName(typeName);
-
-        // set propOrder
-        if (xmlType.isSetPropOrder()) {
-            List<String> props = xmlType.getPropOrder();
-            if (props.size() == 0) {
-                info.setPropOrder(new String[0]);
-            } else if (props.get(0).equals("")) {
-                info.setPropOrder(new String[] { "" });
-            } else {
-                info.setPropOrder(xmlType.getPropOrder().toArray(new String[xmlType.getPropOrder().size()]));
-            }
-        }
-
-        // figure out namespace
-        if (xmlType.getNamespace().equals("##default")) {
-            info.setClassNamespace(packageNamespace.getNamespace());
-        } else {
-            info.setClassNamespace(xmlType.getNamespace());
-        }
-    }
-
-    /**
-     * Process @XmlAccessorType annotation on a given JavaClass and update the TypeInfo for pre-processing.
-     * 
-     * @param javaClass
-     * @param info
-     * @param packageNamespace
-     */
-    private void preProcessXmlAccessorType(JavaClass javaClass, TypeInfo info, NamespaceInfo packageNamespace) {
-        org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType xmlAccessType;
-
-        if (helper.isAnnotationPresent(javaClass, XmlAccessorType.class)) {
-            XmlAccessorType accessorType = (XmlAccessorType) helper.getAnnotation(javaClass, XmlAccessorType.class);
-            xmlAccessType = org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType.fromValue(accessorType.value().name());
-        } else {
-            xmlAccessType = org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType.fromValue(packageNamespace.getAccessType().name());
-        }
-        info.setXmlAccessType(xmlAccessType);
-    }
-
-    /**
-     * Process XmlAccessorType for a given TypeInfo. Here we assume that the TypeInfo has an 
-     * XmlAccessorType set - typically via preProcessXmlType or XmlProcessor override.
-     * 
-     * @param info
-     */
-    private void postProcessXmlAccessorType(TypeInfo info) {
-        info.setAccessType(XmlAccessType.valueOf(info.getXmlAccessType().name()));
-    }
-
-    /**
-     * Process package and class @XmlAccessorOrder. Class level annotation overrides a package level annotation.
-     * 
-     * @param javaClass
-     * @param info
-     */
-    private void processXmlAccessorOrder(JavaClass javaClass, TypeInfo info) {
-        XmlAccessorOrder order = null;
-        if (helper.isAnnotationPresent(javaClass.getPackage(), XmlAccessorOrder.class)) {
-            order = (XmlAccessorOrder) helper.getAnnotation(javaClass.getPackage(), XmlAccessorOrder.class);
-        }
-        // class level annotation overrides package level annotation
-        if (helper.isAnnotationPresent(javaClass, XmlAccessorOrder.class)) {
-            order = (XmlAccessorOrder) helper.getAnnotation(javaClass, XmlAccessorOrder.class);
-        }
-        if (order != null) {
-            info.orderProperties(order.value());
-        }
-    }
-
-    /**
-     * Process @XmlElement annotation on a given property.
-     * 
-     * @param property
-     * @return if XmlElement exists and the value is not the default return the element's type; otherwise propertyType
-     */
-    private JavaClass processXmlElement(Property property, JavaClass propertyType, TypeInfo info) {
-        if (helper.isAnnotationPresent(property.getElement(), XmlElement.class)) {
-            XmlElement element = (XmlElement) helper.getAnnotation(property.getElement(), XmlElement.class);
-            if (element.type() != XmlElement.DEFAULT.class) {
-                propertyType = helper.getJavaClass(element.type());
-                // if list setvaluetype to propertyType else do the same
-                property.setType(propertyType);
-            }
-            // handle default value
-            if (!element.defaultValue().equals("\u0000")) {
-                property.setDefaultValue(element.defaultValue());
-            }
-            validateElementIsInPropOrder(info, property.getPropertyName());
-        }
-        return propertyType;
-    }
-
-    /**
-     * Process @XmlID annotation on a given property
-     * 
-     * @param property
-     * @param info
-     */
-    private void processXmlID(Property property, TypeInfo info) {
-        if (helper.isAnnotationPresent(property.getElement(), XmlID.class)) {
-            if (!areEquals(property.getType(), String.class)) {
-                throw JAXBException.invalidId(property.getPropertyName());
-            }
-            if (info.isIDSet()) {
-                // TODO: throw an exception here
-            }
-            info.setIDProperty(property);
-        }
-    }
-
-    /**
-     * Process @XmlIDREF on a given property.
-     * 
-     * @param property
-     */
-    private void processXmlIDREF(Property property) {
-        if (helper.isAnnotationPresent(property.getElement(), XmlIDREF.class)) {
-            xmlIdRefProps.add(property);
-        }
-    }
-
-    /**
-     * Process @XmlJavaTypeAdapter on a given property.
-     * 
-     * @param property
-     * @param propertyType
-     * @return if @XmlJavaTypeAdapter exists return property's value type; otherwise propertyType
-     */
-    private JavaClass processXmlJavaTypeAdapter(Property property, JavaClass propertyType) {
-        if (helper.isAnnotationPresent(property.getElement(), XmlJavaTypeAdapter.class)) {
-            XmlJavaTypeAdapter adapter = (XmlJavaTypeAdapter) helper.getAnnotation(property.getElement(), XmlJavaTypeAdapter.class);
-            JavaClass adapterClass = helper.getJavaClass(adapter.value());
-            property.setAdapterClass(adapterClass);
-            propertyType = property.getValueType();
-        }
-        return propertyType;
-    }
-
-    /**
-     * Store a QName (if necessary) based on a given TypeInfo's schema type name.
-     * 
-     * @param javaClass
-     * @param info
-     */
-    private void processTypeQName(JavaClass javaClass, TypeInfo info, NamespaceInfo packageNamespace) {
-        String typeName = info.getSchemaTypeName();
-        if (typeName != null && !("".equals(typeName))) {
-            QName typeQName = new QName(packageNamespace.getNamespace(), typeName);
-            boolean containsQName = typeQNames.contains(typeQName);
-            if (containsQName) {
-                throw JAXBException.nameCollision(typeQName.getNamespaceURI(), typeQName.getLocalPart());
-            } else {
-                typeQNames.add(typeQName);
-            }
-        }
+        return schemaInfo;
     }
 }
