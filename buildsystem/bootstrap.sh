@@ -178,7 +178,7 @@ getPrevRevision() {
         ## exclude "build unnecessary" cb's without effecting other build types
         if [ "`tail ${LOG_DIR}/${prev_log} | grep unnece | tr -d '[:punct:]'`" = "" ]
         then
-            PREV_REV=`head -175 ${LOG_DIR}/${prev_log} | grep revision | grep -m1 svn | cut -d= -f2 | tr -d '\047'`
+            PREV_REV=`cat ${LOG_DIR}/${prev_log} | grep revision | grep -m1 svn | cut -d= -f2 | tr -d '\047'`
             break
         fi
     done
@@ -423,19 +423,19 @@ FailedNFSDir="/home/data/httpd/download.eclipse.org/rt/eclipselink/recent-failur
 BUILD_FAILED="false"
 
 #set -x
-## Verify Build Started bothering with setting up for an email or post-processing
+## Verify Build Started before bothering with setting up for an email or post-processing
 ## if [ not "build unnecessary"  ] - (an aborted cb attempt due to no changes)
 ##
 if [ "`tail ${DATED_LOG} | grep unnece | tr -d '[:punct:]'`" = "" ]
 then
     ## find the current version (cannot use $BRANCH, because need current version stored in ANT buildfiles)
     ##
-    VERSION=`head -175 ${DATED_LOG} | grep -m1 "EL version" | cut -d= -f2 | tr -d '\047'`
+    VERSION=`cat ${DATED_LOG} | grep -m1 "EL version" | cut -d= -f2 | tr -d '\047'`
     echo "Generating summary email for ${VERSION} build."
 
     ## find the current revision
     ##
-    CUR_REV=`head -175 ${DATED_LOG} | grep revision | grep -m1 svn | cut -d= -f2 | tr -d '\047'`
+    CUR_REV=`cat ${DATED_LOG} | grep revision | grep -m1 svn | cut -d= -f2 | tr -d '\047'`
 
     ## find the revision of the last build
     ##
@@ -482,12 +482,22 @@ then
         else
             MAIL_SUBJECT="${BRANCH_NM} ${TARG_NM} build has test failures!"
             BUILD_FAILED="true"
+            TESTS_FAILED="true"
         fi
 
     else
         MAIL_SUBJECT="${BRANCH_NM} ${TARG_NM} build failed!"
         BUILD_FAILED="true"
     fi
+
+    #if [ "${TESTS_FAILED}" = "true" ]
+    #then
+    #    if [ "${TARG_NM}" = "cb" ]
+    #    then
+    #        # Zip up test results and copy them to appropriate location
+    #        ant ${ANT_BASEARG} -Dtest.result.dest.dir="${FailedNFSDir}" -Dtest.result.zip="TestResult_-${BRANCH_NM}_${TARG_NM}_${START_DATE}.zip" save-tst-results
+    #    fi
+    #fi
 
     if [ "${BUILD_FAILED}" = "true" ]
     then
