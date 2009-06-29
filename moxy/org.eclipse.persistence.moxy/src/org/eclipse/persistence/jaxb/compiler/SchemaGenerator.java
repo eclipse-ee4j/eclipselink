@@ -100,7 +100,7 @@ public class SchemaGenerator {
         schemaTypeInfo.setSchemaTypeName(new QName(info.getClassNamespace(), info.getSchemaTypeName()));
         this.schemaTypeInfo.put(myClass.getQualifiedName(), schemaTypeInfo);
         NamespaceInfo namespaceInfo = this.packageToNamespaceMappings.get(myClass.getPackageName());
-        if(namespaceInfo.getLocation() != null){
+        if(namespaceInfo.getLocation() != null && !namespaceInfo.getLocation().equals("##generate")) {
         	return;
         }
         Schema schema = getSchemaForNamespace(info.getClassNamespace());
@@ -110,11 +110,11 @@ public class SchemaGenerator {
         String pfx = "";
         
         Property valueField = null;
-        if (helper.isAnnotationPresent(myClass, XmlRootElement.class)) {
+        if (info.isSetXmlRootElement()) {
             //Create the root element and add it to the schema
-            XmlRootElement rootElemAnnotation = (XmlRootElement) helper.getAnnotation(myClass, XmlRootElement.class);
+            org.eclipse.persistence.jaxb.xmlmodel.XmlRootElement xmlRE = info.getXmlRootElement();
             rootElement = new Element();
-            String elementName = rootElemAnnotation.name();
+            String elementName = xmlRE.getName();
             if (elementName.equals("##default") || elementName.equals("")) {
                 if (myClassName.indexOf("$") != -1) {
                     elementName = Introspector.decapitalize(myClassName.substring(myClassName.lastIndexOf('$') + 1));
@@ -133,7 +133,7 @@ public class SchemaGenerator {
                 }
             }
             rootElement.setName(elementName);
-            String rootNamespace = rootElemAnnotation.namespace();
+            String rootNamespace = xmlRE.getNamespace();
             if (rootNamespace.equals("##default")) {
             	Schema rootElementSchema = getSchemaForNamespace(namespaceInfo.getNamespace());
             	if(rootElementSchema != null){
@@ -296,8 +296,12 @@ public class SchemaGenerator {
 	            }
             }
             TypeDefParticle compositor = null;
-            String[] propOrder = info.getPropOrder();
-            if (propOrder.length == 0) {
+            String[] propOrder = null;
+            if (info.isSetPropOrder()) {
+                propOrder = info.getPropOrder();
+            }
+            
+            if (propOrder != null && propOrder.length == 0) {
                 // TODO: needed to hack for TCK - spec requires an 'all' to be
                 // generated in cases where propOrder == 0, however, the TCK 
                 // requires the extension case to use sequences
@@ -310,8 +314,6 @@ public class SchemaGenerator {
             			type.setSequence((Sequence)compositor);
             		}
             	} else if (extension != null) {
-                    //compositor = new Sequence();
-                    //extension.setSequence((Sequence)compositor);
                     compositor = new All();
                     extension.setAll((All)compositor);
                 } else {
@@ -912,7 +914,7 @@ public class SchemaGenerator {
             schema.setName("schema" + schemaCount + ".xsd");
             
             if(namespaceInfo!= null){ 
-            	if(namespaceInfo.getLocation() != null){            	
+            	if(namespaceInfo.getLocation() != null && !namespaceInfo.getLocation().equals("##generate")){            	
             		return null;
             	}
             	java.util.Vector namespaces = namespaceInfo.getNamespaceResolver().getNamespaces();
