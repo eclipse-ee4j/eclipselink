@@ -176,6 +176,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
             childRecord.session = this.session;
             childRecord.xmlReader = this.xmlReader;
             childRecord.setFragmentBuilder(this.getFragmentBuilder());
+            childRecord.setUnmarshalNamespaceResolver(this.getUnmarshalNamespaceResolver());
         }
     }
 
