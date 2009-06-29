@@ -246,10 +246,12 @@
         <echo message=" org.eclipse.persistence.internal.localization;version=&quot;${version.string}&quot;,${line.separator}"                                 file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.internal.localization.i18n;version=&quot;${version.string}&quot;,${line.separator}"                            file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.internal.oxm;version=&quot;${version.string}&quot;,${line.separator}"                                          file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.oxm.accessor;version=&quot;${version.string}&quot;,${line.separator}"                                 file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.internal.oxm.conversion;version=&quot;${version.string}&quot;,${line.separator}"                               file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.internal.oxm.documentpreservation;version=&quot;${version.string}&quot;,${line.separator}"                     file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.internal.oxm.record;version=&quot;${version.string}&quot;,${line.separator}"                                   file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.internal.oxm.record.deferred;version=&quot;${version.string}&quot;,${line.separator}"                          file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.oxm.record.namespaces;version=&quot;${version.string}&quot;,${line.separator}"                        file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.internal.oxm.schema;version=&quot;${version.string}&quot;,${line.separator}"                                   file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.internal.oxm.schema.model;version=&quot;${version.string}&quot;,${line.separator}"                             file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.internal.platform.database;version=&quot;${version.string}&quot;,${line.separator}"                            file="${classes.dir}/MANIFEST.MF" append="true"/>
