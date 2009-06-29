@@ -282,4 +282,10 @@
         <ant antfile="${autobld.file}" dir="${build.root.dir}" target="publish-results"/>
     </target>
 
+    <!-- Below target is intended to be called only by post-processing portion of build script -->
+    <target name="save-tst-results" depends="properties-init" description="Trigger saving of the test results for a failed cb">
+        <echo message="Calling 'save-tst-results' target in '${build.root.dir}/${autobld.file}'"/>
+        <ant antfile="${autobld.file}" dir="${build.root.dir}" target="save-tst-results"/>
+    </target>
+
 </project>
