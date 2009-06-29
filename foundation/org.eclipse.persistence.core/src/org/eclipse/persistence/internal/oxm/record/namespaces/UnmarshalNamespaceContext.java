@@ -15,7 +15,7 @@ package org.eclipse.persistence.internal.oxm.record.namespaces;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.xml.namespace.NamespaceContext;
+import javax.xml.stream.XMLStreamReader;
 
 /**
  *  An UnmarshalNamespaceResolver that delegates all work to a NamespaceContext.
@@ -23,11 +23,11 @@ import javax.xml.namespace.NamespaceContext;
  */
 public class UnmarshalNamespaceContext implements UnmarshalNamespaceResolver {
 
-    private NamespaceContext namespaceContext;
+    private XMLStreamReader xmlStreamReader;
     private Set<String> prefixes;
 
-    public UnmarshalNamespaceContext(NamespaceContext aNamespaceContext) {
-        this.namespaceContext = aNamespaceContext;
+    public UnmarshalNamespaceContext(XMLStreamReader anXMLStreamReader) {
+        this.xmlStreamReader = anXMLStreamReader;
         this.prefixes = new HashSet();
     }
 
@@ -35,11 +35,11 @@ public class UnmarshalNamespaceContext implements UnmarshalNamespaceResolver {
         if(null == prefix) {
             prefix = "";
         }
-        return namespaceContext.getNamespaceURI(prefix);
+        return xmlStreamReader.getNamespaceURI(prefix);
     }
 
     public String getPrefix(String namespaceURI) {
-        return namespaceContext.getPrefix(namespaceURI);
+        return xmlStreamReader.getNamespaceContext().getPrefix(namespaceURI);
     }
 
     /**
@@ -55,7 +55,7 @@ public class UnmarshalNamespaceContext implements UnmarshalNamespaceResolver {
      * appropriate prefix/URI associations.
      */
     public void pop(String prefix) {
-        if(null!= namespaceContext.getNamespaceURI(prefix)) {
+        if(null!= getNamespaceURI(prefix)) {
             prefixes.remove(prefix);
         }
     }

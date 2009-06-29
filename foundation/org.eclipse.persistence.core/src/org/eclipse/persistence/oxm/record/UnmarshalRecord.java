@@ -130,7 +130,6 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
         }
         fragmentBuilder = new SAXFragmentBuilder(this);
         isSelfRecord = false;
-        unmarshalNamespaceResolver = new StackUnmarshalNamespaceResolver();
     }
 
     public String getLocalName() {
@@ -215,6 +214,9 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
     }
 
     public UnmarshalNamespaceResolver getUnmarshalNamespaceResolver() {
+        if(null == unmarshalNamespaceResolver) {
+            this.unmarshalNamespaceResolver = new StackUnmarshalNamespaceResolver();
+        }
         return this.unmarshalNamespaceResolver;
     }
 
@@ -495,11 +497,11 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
     }
 
     public void startPrefixMapping(String prefix, String uri) throws SAXException {
-        unmarshalNamespaceResolver.push(prefix, uri);
+        getUnmarshalNamespaceResolver().push(prefix, uri);
     }
 
     public void endPrefixMapping(String prefix) throws SAXException {
-        unmarshalNamespaceResolver.pop(prefix);
+        getUnmarshalNamespaceResolver().pop(prefix);
     }
 
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {

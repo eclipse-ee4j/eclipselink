@@ -83,7 +83,7 @@ public class XMLStreamReaderReader extends XMLReader {
     public void parse(InputSource input, SAXUnmarshallerHandler saxUnmarshallerHandler) throws SAXException {
         if(input instanceof XMLStreamReaderInputSource) {
             XMLStreamReader xmlStreamReader = ((XMLStreamReaderInputSource) input).getXmlStreamReader();
-            saxUnmarshallerHandler.setUnmarshalNamespaceResolver(new UnmarshalNamespaceContext(xmlStreamReader.getNamespaceContext()));
+            saxUnmarshallerHandler.setUnmarshalNamespaceResolver(new UnmarshalNamespaceContext(xmlStreamReader));
             parse(xmlStreamReader);
         }
     }
@@ -100,7 +100,9 @@ public class XMLStreamReaderReader extends XMLReader {
                 break;
             }
             case XMLStreamReader.CDATA: {
-                if(null != lexicalHandler) {
+                if(null == lexicalHandler) {
+                    getContentHandler().characters(xmlStreamReader.getTextCharacters(), xmlStreamReader.getTextStart(), xmlStreamReader.getTextLength());
+                } else {
                     lexicalHandler.startCDATA();
                     getContentHandler().characters(xmlStreamReader.getTextCharacters(), xmlStreamReader.getTextStart(), xmlStreamReader.getTextLength());
                     lexicalHandler.endCDATA();
