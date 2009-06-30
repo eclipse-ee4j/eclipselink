@@ -8,7 +8,7 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     tware - initial implemenation as part of JPA 2.0 RI
+ *     tware - initial implementation as part of JPA 2.0 RI
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.parsing;
 
@@ -54,7 +54,6 @@ public class NullIfNode extends Node {
     }
     
     public void validate(ParseTreeContext context) {
-        TypeHelper typeHelper = context.getTypeHelper();
         left.validate(context);
         right.validate(context);
         setType(left.getType());

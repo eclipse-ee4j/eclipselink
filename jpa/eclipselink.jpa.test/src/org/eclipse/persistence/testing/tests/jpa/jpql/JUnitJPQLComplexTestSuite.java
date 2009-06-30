@@ -111,10 +111,6 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         suite.setName("JUnitJPQLComplexTestSuite");
         suite.addTest(new JUnitJPQLComplexTestSuite("testSetup"));
         
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexTypeInParamTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexTypeInTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexTypeParameterTest"));
-        
         suite.addTest(new JUnitJPQLComplexTestSuite("complexABSTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexABSWithParameterTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("compexInTest"));
@@ -146,6 +142,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         suite.addTest(new JUnitJPQLComplexTestSuite("complexConstructorAggregatesTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexConstructorCountOnJoinedVariableTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexConstructorConstantTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("complexConstructorCaseTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexConstructorMapTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexResultPropertiesTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexInSubqueryTest"));
@@ -184,6 +181,14 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         suite.addTest(new JUnitJPQLComplexTestSuite("complexCoalesceInSelectTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexNullIfInWhereTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexNullIfInSelectTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("complexSimpleCaseInSelectTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("complexSimpleCaseInWhereTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("complexConditionCaseInSelectTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("complexConditionCaseInWhereTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("complexConditionCaseInUpdateTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("complexTypeInParamTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("complexTypeInTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("complexTypeParameterTest"));
         
         return suite;
     }
@@ -1104,7 +1109,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         Query query = em.createQuery(jpql);
         List<EmployeeDetail> result = query.getResultList();
 
-        Assert.assertTrue("Constructor with aggregates argument Test Case Failed", 
+        Assert.assertTrue("complexConstructorCountOnJoinedVariableTest Failed", 
                           comparer.compareObjects(result, expectedResult));
     }
     
@@ -1125,7 +1130,27 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         EmployeeDetail result = (EmployeeDetail)query.getSingleResult();
         EmployeeDetail expectedResult = new EmployeeDetail(emp.getFirstName(), "Ott");
 
-        Assert.assertTrue("Constructor with variable argument Test Case Failed", result.equals(expectedResult));
+        Assert.assertTrue("complexConstructorConstantTest Failed", result.equals(expectedResult));
+    }
+    
+    public void complexConstructorCaseTest()
+    {
+        if (isOnServer()) {
+            // Not work on the server.
+            return;
+        }
+        JpaEntityManager em = (JpaEntityManager) createEntityManager(); 
+        Expression exp = (new ExpressionBuilder()).get("firstName").equal("Bob");
+        Employee emp = (Employee)em.getActiveSession().readAllObjects(Employee.class, exp).firstElement();
+
+        // constructor query using a case statement as an argument
+        String jpqlString = "SELECT NEW org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLComplexTestSuite.EmployeeDetail(case emp.firstName when 'Bob' then 'Robert' else '' end, 'Ott') FROM Employee emp WHERE emp.id = :id";
+        Query query = em.createQuery(jpqlString);
+        query.setParameter("id", emp.getId());
+        EmployeeDetail result = (EmployeeDetail)query.getSingleResult();
+        EmployeeDetail expectedResult = new EmployeeDetail("Robert", "Ott");
+
+        Assert.assertTrue("complexConstructorCaseTest Failed", result.equals(expectedResult));
     }
     
     public void complexConstructorMapTest()
@@ -2183,5 +2208,94 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         
         Assert.assertTrue("complexIndexOfInWhereClauseTest failed", comparer.compareObjects(result, expectedResult));
     }
+    
+    public void complexSimpleCaseInSelectTest(){
+        EntityManager em = createEntityManager();
+
+        Vector expectedResult = new Vector(12);
+        expectedResult.add("Robert");
+        expectedResult.add("Gillian");
+        for (int i = 0; i<13;i++){
+            expectedResult.add("");
+        }
+        
+        clearCache();
+        String ejbqlString = "select case e.firstName when 'Bob' then 'Robert' when 'Jill' then 'Gillian' else '' end from Employee e";
+        
+        List result = (List)em.createQuery(ejbqlString).getResultList();
+        
+        Assert.assertTrue("complexSimpleCaseInSelectTest failed", comparer.compareObjects(result, expectedResult));
+    }
+    
+    public void complexSimpleCaseInWhereTest(){
+        EntityManager em = createEntityManager();
+
+        Expression exp = (new ExpressionBuilder()).get("firstName").equal("Bob");
+        Vector expectedResult = (Vector)getServerSession().readAllObjects(Employee.class, exp);
+        
+        clearCache();
+        String ejbqlString = "select e from Employee e where case e.firstName when 'Bob' then 'Robert' when 'Jill' then 'Gillian' else '' end = 'Robert'";
+        
+        List result = (List)em.createQuery(ejbqlString).getResultList();
+        
+        Assert.assertTrue("complexSimpleCaseInSelectTest failed", comparer.compareObjects(result, expectedResult));
+    }
+    
+    public void complexConditionCaseInSelectTest(){
+        EntityManager em = createEntityManager();
+
+        Vector expectedResult = new Vector(12);
+        expectedResult.add("Robert");
+        expectedResult.add("Gillian");
+        for (int i = 0; i<13;i++){
+            expectedResult.add("");
+        }
+        
+        clearCache();
+        String ejbqlString = "select case when e.firstName = 'Bob' then 'Robert' when e.firstName = 'Jill' then 'Gillian' else '' end from Employee e";
+        
+        List result = (List)em.createQuery(ejbqlString).getResultList();
+        
+        Assert.assertTrue("complexSimpleCaseInSelectTest failed", comparer.compareObjects(result, expectedResult));
+    }
+    
+    public void complexConditionCaseInWhereTest(){
+        EntityManager em = createEntityManager();
+
+        Expression exp = (new ExpressionBuilder()).get("firstName").equal("Bob");
+        Vector expectedResult = (Vector)getServerSession().readAllObjects(Employee.class, exp);
+        
+        clearCache();
+        String ejbqlString = "select e from Employee e where case when e.firstName = 'Bob' then 'Robert' when e.firstName = 'Jill' then 'Gillian' else '' end = 'Robert'";
+        
+        List result = (List)em.createQuery(ejbqlString).getResultList();
+        
+        Assert.assertTrue("complexSimpleCaseInSelectTest failed", comparer.compareObjects(result, expectedResult));
+    }
+    
+    public void complexConditionCaseInUpdateTest(){
+        EntityManager em = createEntityManager();
+
+        beginTransaction(em);
+        
+        clearCache();
+        String ejbqlString = "Update Employee e set e.lastName = case when e.firstName = 'Bob' then 'Jones' when e.firstName = 'Jill' then 'Jones' else '' end";
+        
+        em.createQuery(ejbqlString).executeUpdate();
+        
+        String verificationString = "select e from Employee e where e.lastName = 'Jones'";
+        List results = em.createQuery(verificationString).getResultList();
+        
+        rollbackTransaction(em);
+        assertTrue("complexConditionCaseInUpdateTest - wrong number of results", results.size() == 2);
+        Iterator i = results.iterator();
+        while (i.hasNext()){
+            Employee e = (Employee)i.next();
+            assertTrue("complexConditionCaseInUpdateTest wrong last name for - " + e.getFirstName(), e.getLastName().equals("Jones"));
+        }
+
+    }
+    
+    
 }
 

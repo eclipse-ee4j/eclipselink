@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *      tware - updates for JPA 2.0 specification
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.parsing;
 
@@ -370,7 +371,7 @@ public interface NodeFactory {
     
     public Object newType(int line, int column, Object left);
     
-    public Object newCaseClause(int line, int column, List whenClauses, Object elseClause);
+    public Object newCaseClause(int line, int column, Object base, List whenClauses, Object elseClause);
     
     public Object newCoalesceClause(int line, int column, List clauses);
     
@@ -379,5 +380,11 @@ public interface NodeFactory {
     public Object newWhenClause(int line, int column, Object conditionClause, Object theClause);
     
     public Object newIndex(int line, int column, Object object);
+    
+    public Object newDateLiteral(int line, int column, Object object);
+    
+    public Object newTimeLiteral(int line, int column, Object object);
+    
+    public Object newTimeStampLiteral(int line, int column, Object object);
 }
 

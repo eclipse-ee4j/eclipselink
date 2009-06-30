@@ -1,4 +1,4 @@
-// $ANTLR 3.0 JPQL.g 2009-06-24 13:50:39
+// $ANTLR 3.0 JPQL.g 2009-06-30 10:32:44
 
     package org.eclipse.persistence.internal.jpa.parsing.jpql.antlr;
 
@@ -11,24 +11,29 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class JPQLLexer extends Lexer {
-    public static final int EXPONENT=109;
-    public static final int FLOAT_SUFFIX=110;
+    public static final int EXPONENT=114;
+    public static final int FLOAT_SUFFIX=115;
+    public static final int DATE_STRING=116;
     public static final int MOD=50;
     public static final int CURRENT_TIME=19;
     public static final int CASE=14;
     public static final int NEW=51;
     public static final int LEFT_ROUND_BRACKET=81;
     public static final int DOUBLE_LITERAL=96;
+    public static final int TIME_LITERAL=100;
     public static final int COUNT=17;
     public static final int EQUALS=80;
     public static final int NOT=52;
     public static final int EOF=-1;
+    public static final int TIME_STRING=117;
     public static final int TYPE=71;
+    public static final int LEFT_CURLY_BRACKET=105;
     public static final int GREATER_THAN_EQUAL_TO=86;
     public static final int ESCAPE=28;
-    public static final int NAMED_PARAM=100;
+    public static final int NAMED_PARAM=103;
     public static final int BOTH=12;
-    public static final int NUMERIC_DIGITS=107;
+    public static final int TIMESTAMP_LITERAL=101;
+    public static final int NUMERIC_DIGITS=112;
     public static final int SELECT=60;
     public static final int DIVIDE=92;
     public static final int COALESCE=15;
@@ -40,14 +45,16 @@ public class JPQLLexer extends Lexer {
     public static final int TRAILING=68;
     public static final int DELETE=22;
     public static final int VALUE=75;
+    public static final int DATE_LITERAL=99;
     public static final int OF=56;
     public static final int LEADING=41;
+    public static final int RIGHT_CURLY_BRACKET=106;
     public static final int EMPTY=25;
-    public static final int INTEGER_SUFFIX=105;
+    public static final int INTEGER_SUFFIX=110;
     public static final int ABS=4;
-    public static final int NOT_EQUAL_TO=84;
     public static final int GROUP=33;
-    public static final int WS=101;
+    public static final int NOT_EQUAL_TO=84;
+    public static final int WS=104;
     public static final int FETCH=31;
     public static final int STRING_LITERAL_SINGLE_QUOTED=98;
     public static final int INTEGER_LITERAL=93;
@@ -55,7 +62,7 @@ public class JPQLLexer extends Lexer {
     public static final int TRIM=69;
     public static final int LESS_THAN=87;
     public static final int RIGHT_ROUND_BRACKET=82;
-    public static final int POSITIONAL_PARAM=99;
+    public static final int POSITIONAL_PARAM=102;
     public static final int LOWER=46;
     public static final int FROM=32;
     public static final int END=26;
@@ -70,7 +77,7 @@ public class JPQLLexer extends Lexer {
     public static final int MEMBER=48;
     public static final int INNER=37;
     public static final int ORDER=58;
-    public static final int TEXTCHAR=102;
+    public static final int TEXTCHAR=107;
     public static final int MAX=47;
     public static final int UPDATE=73;
     public static final int AND=6;
@@ -92,7 +99,7 @@ public class JPQLLexer extends Lexer {
     public static final int ALL=5;
     public static final int IDENT=78;
     public static final int PLUS=89;
-    public static final int HEX_LITERAL=104;
+    public static final int HEX_LITERAL=109;
     public static final int EXISTS=29;
     public static final int DOT=83;
     public static final int CURRENT_TIMESTAMP=20;
@@ -100,21 +107,21 @@ public class JPQLLexer extends Lexer {
     public static final int OUTER=59;
     public static final int BY=13;
     public static final int GREATER_THAN=85;
-    public static final int OCTAL_LITERAL=106;
-    public static final int HEX_DIGIT=103;
+    public static final int OCTAL_LITERAL=111;
+    public static final int HEX_DIGIT=108;
     public static final int SET=61;
     public static final int HAVING=34;
     public static final int ENTRY=27;
     public static final int MIN=49;
     public static final int MINUS=90;
     public static final int SQRT=63;
-    public static final int Tokens=111;
+    public static final int Tokens=118;
     public static final int LONG_LITERAL=94;
     public static final int TRUE=70;
     public static final int JOIN=39;
     public static final int SUBSTRING=65;
     public static final int FLOAT_LITERAL=95;
-    public static final int DOUBLE_SUFFIX=108;
+    public static final int DOUBLE_SUFFIX=113;
     public static final int ANY=7;
     public static final int LOCATE=45;
     public static final int WHEN=76;
@@ -1536,8 +1543,8 @@ public class JPQLLexer extends Lexer {
     public final void mDOT() throws RecognitionException {
         try {
             int _type = DOT;
-            // JPQL.g:1372:7: ( '.' )
-            // JPQL.g:1372:7: '.'
+            // JPQL.g:1380:7: ( '.' )
+            // JPQL.g:1380:7: '.'
             {
             match('.'); 
             
@@ -1554,10 +1561,10 @@ public class JPQLLexer extends Lexer {
     public final void mWS() throws RecognitionException {
         try {
             int _type = WS;
-            // JPQL.g:1375:7: ( ( ' ' | '\\t' | '\\n' | '\\r' )+ )
-            // JPQL.g:1375:7: ( ' ' | '\\t' | '\\n' | '\\r' )+
+            // JPQL.g:1383:7: ( ( ' ' | '\\t' | '\\n' | '\\r' )+ )
+            // JPQL.g:1383:7: ( ' ' | '\\t' | '\\n' | '\\r' )+
             {
-            // JPQL.g:1375:7: ( ' ' | '\\t' | '\\n' | '\\r' )+
+            // JPQL.g:1383:7: ( ' ' | '\\t' | '\\n' | '\\r' )+
             int cnt1=0;
             loop1:
             do {
@@ -1611,8 +1618,8 @@ public class JPQLLexer extends Lexer {
     public final void mLEFT_ROUND_BRACKET() throws RecognitionException {
         try {
             int _type = LEFT_ROUND_BRACKET;
-            // JPQL.g:1379:7: ( '(' )
-            // JPQL.g:1379:7: '('
+            // JPQL.g:1387:7: ( '(' )
+            // JPQL.g:1387:7: '('
             {
             match('('); 
             
@@ -1625,12 +1632,30 @@ public class JPQLLexer extends Lexer {
     }
     // $ANTLR end LEFT_ROUND_BRACKET
 
+    // $ANTLR start LEFT_CURLY_BRACKET
+    public final void mLEFT_CURLY_BRACKET() throws RecognitionException {
+        try {
+            int _type = LEFT_CURLY_BRACKET;
+            // JPQL.g:1391:7: ( '{' )
+            // JPQL.g:1391:7: '{'
+            {
+            match('{'); 
+            
+            }
+    
+            this.type = _type;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end LEFT_CURLY_BRACKET
+
     // $ANTLR start RIGHT_ROUND_BRACKET
     public final void mRIGHT_ROUND_BRACKET() throws RecognitionException {
         try {
             int _type = RIGHT_ROUND_BRACKET;
-            // JPQL.g:1383:7: ( ')' )
-            // JPQL.g:1383:7: ')'
+            // JPQL.g:1395:7: ( ')' )
+            // JPQL.g:1395:7: ')'
             {
             match(')'); 
             
@@ -1643,12 +1668,30 @@ public class JPQLLexer extends Lexer {
     }
     // $ANTLR end RIGHT_ROUND_BRACKET
 
+    // $ANTLR start RIGHT_CURLY_BRACKET
+    public final void mRIGHT_CURLY_BRACKET() throws RecognitionException {
+        try {
+            int _type = RIGHT_CURLY_BRACKET;
+            // JPQL.g:1399:7: ( '}' )
+            // JPQL.g:1399:7: '}'
+            {
+            match('}'); 
+            
+            }
+    
+            this.type = _type;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end RIGHT_CURLY_BRACKET
+
     // $ANTLR start COMMA
     public final void mCOMMA() throws RecognitionException {
         try {
             int _type = COMMA;
-            // JPQL.g:1387:7: ( ',' )
-            // JPQL.g:1387:7: ','
+            // JPQL.g:1403:7: ( ',' )
+            // JPQL.g:1403:7: ','
             {
             match(','); 
             
@@ -1665,8 +1708,8 @@ public class JPQLLexer extends Lexer {
     public final void mIDENT() throws RecognitionException {
         try {
             int _type = IDENT;
-            // JPQL.g:1391:7: ( TEXTCHAR )
-            // JPQL.g:1391:7: TEXTCHAR
+            // JPQL.g:1407:7: ( TEXTCHAR )
+            // JPQL.g:1407:7: TEXTCHAR
             {
             mTEXTCHAR(); 
             
@@ -1685,10 +1728,10 @@ public class JPQLLexer extends Lexer {
             int c1;
             int c2;
     
-            // JPQL.g:1396:7: ( ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '$' | c1= '\\u0080' .. '\\uFFFE' ) ( 'a' .. 'z' | '_' | '$' | '0' .. '9' | c2= '\\u0080' .. '\\uFFFE' )* )
-            // JPQL.g:1396:7: ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '$' | c1= '\\u0080' .. '\\uFFFE' ) ( 'a' .. 'z' | '_' | '$' | '0' .. '9' | c2= '\\u0080' .. '\\uFFFE' )*
+            // JPQL.g:1412:7: ( ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '$' | c1= '\\u0080' .. '\\uFFFE' ) ( 'a' .. 'z' | '_' | '$' | '0' .. '9' | c2= '\\u0080' .. '\\uFFFE' )* )
+            // JPQL.g:1412:7: ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '$' | c1= '\\u0080' .. '\\uFFFE' ) ( 'a' .. 'z' | '_' | '$' | '0' .. '9' | c2= '\\u0080' .. '\\uFFFE' )*
             {
-            // JPQL.g:1396:7: ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '$' | c1= '\\u0080' .. '\\uFFFE' )
+            // JPQL.g:1412:7: ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '$' | c1= '\\u0080' .. '\\uFFFE' )
             int alt2=5;
             int LA2_0 = input.LA(1);
             
@@ -1709,41 +1752,41 @@ public class JPQLLexer extends Lexer {
             }
             else {
                 NoViableAltException nvae =
-                    new NoViableAltException("1396:7: ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '$' | c1= '\\u0080' .. '\\uFFFE' )", 2, 0, input);
+                    new NoViableAltException("1412:7: ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '$' | c1= '\\u0080' .. '\\uFFFE' )", 2, 0, input);
             
                 throw nvae;
             }
             switch (alt2) {
                 case 1 :
-                    // JPQL.g:1396:8: 'a' .. 'z'
+                    // JPQL.g:1412:8: 'a' .. 'z'
                     {
                     matchRange('a','z'); 
                     
                     }
                     break;
                 case 2 :
-                    // JPQL.g:1396:19: 'A' .. 'Z'
+                    // JPQL.g:1412:19: 'A' .. 'Z'
                     {
                     matchRange('A','Z'); 
                     
                     }
                     break;
                 case 3 :
-                    // JPQL.g:1396:30: '_'
+                    // JPQL.g:1412:30: '_'
                     {
                     match('_'); 
                     
                     }
                     break;
                 case 4 :
-                    // JPQL.g:1396:36: '$'
+                    // JPQL.g:1412:36: '$'
                     {
                     match('$'); 
                     
                     }
                     break;
                 case 5 :
-                    // JPQL.g:1397:8: c1= '\\u0080' .. '\\uFFFE'
+                    // JPQL.g:1413:8: c1= '\\u0080' .. '\\uFFFE'
                     {
                     c1 = input.LA(1);
                     matchRange('\u0080','\uFFFE'); 
@@ -1758,7 +1801,7 @@ public class JPQLLexer extends Lexer {
             
             }
 
-            // JPQL.g:1404:7: ( 'a' .. 'z' | '_' | '$' | '0' .. '9' | c2= '\\u0080' .. '\\uFFFE' )*
+            // JPQL.g:1420:7: ( 'a' .. 'z' | '_' | '$' | '0' .. '9' | c2= '\\u0080' .. '\\uFFFE' )*
             loop3:
             do {
                 int alt3=6;
@@ -1783,35 +1826,35 @@ public class JPQLLexer extends Lexer {
             
                 switch (alt3) {
             	case 1 :
-            	    // JPQL.g:1404:8: 'a' .. 'z'
+            	    // JPQL.g:1420:8: 'a' .. 'z'
             	    {
             	    matchRange('a','z'); 
             	    
             	    }
             	    break;
             	case 2 :
-            	    // JPQL.g:1404:19: '_'
+            	    // JPQL.g:1420:19: '_'
             	    {
             	    match('_'); 
             	    
             	    }
             	    break;
             	case 3 :
-            	    // JPQL.g:1404:25: '$'
+            	    // JPQL.g:1420:25: '$'
             	    {
             	    match('$'); 
             	    
             	    }
             	    break;
             	case 4 :
-            	    // JPQL.g:1404:31: '0' .. '9'
+            	    // JPQL.g:1420:31: '0' .. '9'
             	    {
             	    matchRange('0','9'); 
             	    
             	    }
             	    break;
             	case 5 :
-            	    // JPQL.g:1405:8: c2= '\\u0080' .. '\\uFFFE'
+            	    // JPQL.g:1421:8: c2= '\\u0080' .. '\\uFFFE'
             	    {
             	    c2 = input.LA(1);
             	    matchRange('\u0080','\uFFFE'); 
@@ -1842,8 +1885,8 @@ public class JPQLLexer extends Lexer {
     public final void mHEX_LITERAL() throws RecognitionException {
         try {
             int _type = HEX_LITERAL;
-            // JPQL.g:1415:15: ( '0' ( 'x' | 'X' ) ( HEX_DIGIT )+ )
-            // JPQL.g:1415:15: '0' ( 'x' | 'X' ) ( HEX_DIGIT )+
+            // JPQL.g:1431:15: ( '0' ( 'x' | 'X' ) ( HEX_DIGIT )+ )
+            // JPQL.g:1431:15: '0' ( 'x' | 'X' ) ( HEX_DIGIT )+
             {
             match('0'); 
             if ( input.LA(1)=='X'||input.LA(1)=='x' ) {
@@ -1856,7 +1899,7 @@ public class JPQLLexer extends Lexer {
                 recover(mse);    throw mse;
             }
 
-            // JPQL.g:1415:29: ( HEX_DIGIT )+
+            // JPQL.g:1431:29: ( HEX_DIGIT )+
             int cnt4=0;
             loop4:
             do {
@@ -1870,7 +1913,7 @@ public class JPQLLexer extends Lexer {
             
                 switch (alt4) {
             	case 1 :
-            	    // JPQL.g:1415:29: HEX_DIGIT
+            	    // JPQL.g:1431:29: HEX_DIGIT
             	    {
             	    mHEX_DIGIT(); 
             	    
@@ -1900,10 +1943,10 @@ public class JPQLLexer extends Lexer {
     public final void mINTEGER_LITERAL() throws RecognitionException {
         try {
             int _type = INTEGER_LITERAL;
-            // JPQL.g:1417:19: ( ( '0' | '1' .. '9' ( '0' .. '9' )* ) )
-            // JPQL.g:1417:19: ( '0' | '1' .. '9' ( '0' .. '9' )* )
+            // JPQL.g:1433:19: ( ( '0' | '1' .. '9' ( '0' .. '9' )* ) )
+            // JPQL.g:1433:19: ( '0' | '1' .. '9' ( '0' .. '9' )* )
             {
-            // JPQL.g:1417:19: ( '0' | '1' .. '9' ( '0' .. '9' )* )
+            // JPQL.g:1433:19: ( '0' | '1' .. '9' ( '0' .. '9' )* )
             int alt6=2;
             int LA6_0 = input.LA(1);
             
@@ -1915,23 +1958,23 @@ public class JPQLLexer extends Lexer {
             }
             else {
                 NoViableAltException nvae =
-                    new NoViableAltException("1417:19: ( '0' | '1' .. '9' ( '0' .. '9' )* )", 6, 0, input);
+                    new NoViableAltException("1433:19: ( '0' | '1' .. '9' ( '0' .. '9' )* )", 6, 0, input);
             
                 throw nvae;
             }
             switch (alt6) {
                 case 1 :
-                    // JPQL.g:1417:20: '0'
+                    // JPQL.g:1433:20: '0'
                     {
                     match('0'); 
                     
                     }
                     break;
                 case 2 :
-                    // JPQL.g:1417:26: '1' .. '9' ( '0' .. '9' )*
+                    // JPQL.g:1433:26: '1' .. '9' ( '0' .. '9' )*
                     {
                     matchRange('1','9'); 
-                    // JPQL.g:1417:35: ( '0' .. '9' )*
+                    // JPQL.g:1433:35: ( '0' .. '9' )*
                     loop5:
                     do {
                         int alt5=2;
@@ -1944,7 +1987,7 @@ public class JPQLLexer extends Lexer {
                     
                         switch (alt5) {
                     	case 1 :
-                    	    // JPQL.g:1417:35: '0' .. '9'
+                    	    // JPQL.g:1433:35: '0' .. '9'
                     	    {
                     	    matchRange('0','9'); 
                     	    
@@ -1976,8 +2019,8 @@ public class JPQLLexer extends Lexer {
     public final void mLONG_LITERAL() throws RecognitionException {
         try {
             int _type = LONG_LITERAL;
-            // JPQL.g:1419:16: ( INTEGER_LITERAL INTEGER_SUFFIX )
-            // JPQL.g:1419:16: INTEGER_LITERAL INTEGER_SUFFIX
+            // JPQL.g:1435:16: ( INTEGER_LITERAL INTEGER_SUFFIX )
+            // JPQL.g:1435:16: INTEGER_LITERAL INTEGER_SUFFIX
             {
             mINTEGER_LITERAL(); 
             mINTEGER_SUFFIX(); 
@@ -1995,11 +2038,11 @@ public class JPQLLexer extends Lexer {
     public final void mOCTAL_LITERAL() throws RecognitionException {
         try {
             int _type = OCTAL_LITERAL;
-            // JPQL.g:1421:17: ( '0' ( '0' .. '7' )+ )
-            // JPQL.g:1421:17: '0' ( '0' .. '7' )+
+            // JPQL.g:1437:17: ( '0' ( '0' .. '7' )+ )
+            // JPQL.g:1437:17: '0' ( '0' .. '7' )+
             {
             match('0'); 
-            // JPQL.g:1421:21: ( '0' .. '7' )+
+            // JPQL.g:1437:21: ( '0' .. '7' )+
             int cnt7=0;
             loop7:
             do {
@@ -2013,7 +2056,7 @@ public class JPQLLexer extends Lexer {
             
                 switch (alt7) {
             	case 1 :
-            	    // JPQL.g:1421:22: '0' .. '7'
+            	    // JPQL.g:1437:22: '0' .. '7'
             	    {
             	    matchRange('0','7'); 
             	    
@@ -2042,8 +2085,8 @@ public class JPQLLexer extends Lexer {
     // $ANTLR start HEX_DIGIT
     public final void mHEX_DIGIT() throws RecognitionException {
         try {
-            // JPQL.g:1426:9: ( ( '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' ) )
-            // JPQL.g:1426:9: ( '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' )
+            // JPQL.g:1442:9: ( ( '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' ) )
+            // JPQL.g:1442:9: ( '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' )
             {
             if ( (input.LA(1)>='0' && input.LA(1)<='9')||(input.LA(1)>='A' && input.LA(1)<='F')||(input.LA(1)>='a' && input.LA(1)<='f') ) {
                 input.consume();
@@ -2067,8 +2110,8 @@ public class JPQLLexer extends Lexer {
     // $ANTLR start INTEGER_SUFFIX
     public final void mINTEGER_SUFFIX() throws RecognitionException {
         try {
-            // JPQL.g:1430:18: ( ( 'l' | 'L' ) )
-            // JPQL.g:1430:18: ( 'l' | 'L' )
+            // JPQL.g:1446:18: ( ( 'l' | 'L' ) )
+            // JPQL.g:1446:18: ( 'l' | 'L' )
             {
             if ( input.LA(1)=='L'||input.LA(1)=='l' ) {
                 input.consume();
@@ -2092,14 +2135,14 @@ public class JPQLLexer extends Lexer {
     // $ANTLR start NUMERIC_DIGITS
     public final void mNUMERIC_DIGITS() throws RecognitionException {
         try {
-            // JPQL.g:1434:9: ( ( '0' .. '9' )+ '.' ( '0' .. '9' )* | '.' ( '0' .. '9' )+ | ( '0' .. '9' )+ )
+            // JPQL.g:1450:9: ( ( '0' .. '9' )+ '.' ( '0' .. '9' )* | '.' ( '0' .. '9' )+ | ( '0' .. '9' )+ )
             int alt12=3;
             alt12 = dfa12.predict(input);
             switch (alt12) {
                 case 1 :
-                    // JPQL.g:1434:9: ( '0' .. '9' )+ '.' ( '0' .. '9' )*
+                    // JPQL.g:1450:9: ( '0' .. '9' )+ '.' ( '0' .. '9' )*
                     {
-                    // JPQL.g:1434:9: ( '0' .. '9' )+
+                    // JPQL.g:1450:9: ( '0' .. '9' )+
                     int cnt8=0;
                     loop8:
                     do {
@@ -2113,7 +2156,7 @@ public class JPQLLexer extends Lexer {
                     
                         switch (alt8) {
                     	case 1 :
-                    	    // JPQL.g:1434:10: '0' .. '9'
+                    	    // JPQL.g:1450:10: '0' .. '9'
                     	    {
                     	    matchRange('0','9'); 
                     	    
@@ -2130,7 +2173,7 @@ public class JPQLLexer extends Lexer {
                     } while (true);
 
                     match('.'); 
-                    // JPQL.g:1434:25: ( '0' .. '9' )*
+                    // JPQL.g:1450:25: ( '0' .. '9' )*
                     loop9:
                     do {
                         int alt9=2;
@@ -2143,7 +2186,7 @@ public class JPQLLexer extends Lexer {
                     
                         switch (alt9) {
                     	case 1 :
-                    	    // JPQL.g:1434:26: '0' .. '9'
+                    	    // JPQL.g:1450:26: '0' .. '9'
                     	    {
                     	    matchRange('0','9'); 
                     	    
@@ -2159,10 +2202,10 @@ public class JPQLLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // JPQL.g:1435:9: '.' ( '0' .. '9' )+
+                    // JPQL.g:1451:9: '.' ( '0' .. '9' )+
                     {
                     match('.'); 
-                    // JPQL.g:1435:13: ( '0' .. '9' )+
+                    // JPQL.g:1451:13: ( '0' .. '9' )+
                     int cnt10=0;
                     loop10:
                     do {
@@ -2176,7 +2219,7 @@ public class JPQLLexer extends Lexer {
                     
                         switch (alt10) {
                     	case 1 :
-                    	    // JPQL.g:1435:14: '0' .. '9'
+                    	    // JPQL.g:1451:14: '0' .. '9'
                     	    {
                     	    matchRange('0','9'); 
                     	    
@@ -2196,9 +2239,9 @@ public class JPQLLexer extends Lexer {
                     }
                     break;
                 case 3 :
-                    // JPQL.g:1436:9: ( '0' .. '9' )+
+                    // JPQL.g:1452:9: ( '0' .. '9' )+
                     {
-                    // JPQL.g:1436:9: ( '0' .. '9' )+
+                    // JPQL.g:1452:9: ( '0' .. '9' )+
                     int cnt11=0;
                     loop11:
                     do {
@@ -2212,7 +2255,7 @@ public class JPQLLexer extends Lexer {
                     
                         switch (alt11) {
                     	case 1 :
-                    	    // JPQL.g:1436:10: '0' .. '9'
+                    	    // JPQL.g:1452:10: '0' .. '9'
                     	    {
                     	    matchRange('0','9'); 
                     	    
@@ -2243,11 +2286,11 @@ public class JPQLLexer extends Lexer {
     public final void mDOUBLE_LITERAL() throws RecognitionException {
         try {
             int _type = DOUBLE_LITERAL;
-            // JPQL.g:1440:9: ( NUMERIC_DIGITS ( DOUBLE_SUFFIX )? )
-            // JPQL.g:1440:9: NUMERIC_DIGITS ( DOUBLE_SUFFIX )?
+            // JPQL.g:1456:9: ( NUMERIC_DIGITS ( DOUBLE_SUFFIX )? )
+            // JPQL.g:1456:9: NUMERIC_DIGITS ( DOUBLE_SUFFIX )?
             {
             mNUMERIC_DIGITS(); 
-            // JPQL.g:1440:24: ( DOUBLE_SUFFIX )?
+            // JPQL.g:1456:24: ( DOUBLE_SUFFIX )?
             int alt13=2;
             int LA13_0 = input.LA(1);
             
@@ -2256,7 +2299,7 @@ public class JPQLLexer extends Lexer {
             }
             switch (alt13) {
                 case 1 :
-                    // JPQL.g:1440:24: DOUBLE_SUFFIX
+                    // JPQL.g:1456:24: DOUBLE_SUFFIX
                     {
                     mDOUBLE_SUFFIX(); 
                     
@@ -2279,16 +2322,16 @@ public class JPQLLexer extends Lexer {
     public final void mFLOAT_LITERAL() throws RecognitionException {
         try {
             int _type = FLOAT_LITERAL;
-            // JPQL.g:1444:9: ( NUMERIC_DIGITS EXPONENT ( FLOAT_SUFFIX )? | NUMERIC_DIGITS FLOAT_SUFFIX )
+            // JPQL.g:1460:9: ( NUMERIC_DIGITS EXPONENT ( FLOAT_SUFFIX )? | NUMERIC_DIGITS FLOAT_SUFFIX )
             int alt15=2;
             alt15 = dfa15.predict(input);
             switch (alt15) {
                 case 1 :
-                    // JPQL.g:1444:9: NUMERIC_DIGITS EXPONENT ( FLOAT_SUFFIX )?
+                    // JPQL.g:1460:9: NUMERIC_DIGITS EXPONENT ( FLOAT_SUFFIX )?
                     {
                     mNUMERIC_DIGITS(); 
                     mEXPONENT(); 
-                    // JPQL.g:1444:33: ( FLOAT_SUFFIX )?
+                    // JPQL.g:1460:33: ( FLOAT_SUFFIX )?
                     int alt14=2;
                     int LA14_0 = input.LA(1);
                     
@@ -2297,7 +2340,7 @@ public class JPQLLexer extends Lexer {
                     }
                     switch (alt14) {
                         case 1 :
-                            // JPQL.g:1444:33: FLOAT_SUFFIX
+                            // JPQL.g:1460:33: FLOAT_SUFFIX
                             {
                             mFLOAT_SUFFIX(); 
                             
@@ -2310,7 +2353,7 @@ public class JPQLLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // JPQL.g:1445:9: NUMERIC_DIGITS FLOAT_SUFFIX
+                    // JPQL.g:1461:9: NUMERIC_DIGITS FLOAT_SUFFIX
                     {
                     mNUMERIC_DIGITS(); 
                     mFLOAT_SUFFIX(); 
@@ -2329,8 +2372,8 @@ public class JPQLLexer extends Lexer {
     // $ANTLR start EXPONENT
     public final void mEXPONENT() throws RecognitionException {
         try {
-            // JPQL.g:1451:9: ( ( 'e' | 'E' ) ( '+' | '-' )? ( '0' .. '9' )+ )
-            // JPQL.g:1451:9: ( 'e' | 'E' ) ( '+' | '-' )? ( '0' .. '9' )+
+            // JPQL.g:1467:9: ( ( 'e' | 'E' ) ( '+' | '-' )? ( '0' .. '9' )+ )
+            // JPQL.g:1467:9: ( 'e' | 'E' ) ( '+' | '-' )? ( '0' .. '9' )+
             {
             if ( input.LA(1)=='E'||input.LA(1)=='e' ) {
                 input.consume();
@@ -2342,7 +2385,7 @@ public class JPQLLexer extends Lexer {
                 recover(mse);    throw mse;
             }
 
-            // JPQL.g:1451:21: ( '+' | '-' )?
+            // JPQL.g:1467:21: ( '+' | '-' )?
             int alt16=2;
             int LA16_0 = input.LA(1);
             
@@ -2369,7 +2412,7 @@ public class JPQLLexer extends Lexer {
             
             }
 
-            // JPQL.g:1451:32: ( '0' .. '9' )+
+            // JPQL.g:1467:32: ( '0' .. '9' )+
             int cnt17=0;
             loop17:
             do {
@@ -2383,7 +2426,7 @@ public class JPQLLexer extends Lexer {
             
                 switch (alt17) {
             	case 1 :
-            	    // JPQL.g:1451:33: '0' .. '9'
+            	    // JPQL.g:1467:33: '0' .. '9'
             	    {
             	    matchRange('0','9'); 
             	    
@@ -2411,8 +2454,8 @@ public class JPQLLexer extends Lexer {
     // $ANTLR start FLOAT_SUFFIX
     public final void mFLOAT_SUFFIX() throws RecognitionException {
         try {
-            // JPQL.g:1457:9: ( 'f' )
-            // JPQL.g:1457:9: 'f'
+            // JPQL.g:1473:9: ( 'f' )
+            // JPQL.g:1473:9: 'f'
             {
             match('f'); 
             
@@ -2424,298 +2467,79 @@ public class JPQLLexer extends Lexer {
     }
     // $ANTLR end FLOAT_SUFFIX
 
-    // $ANTLR start DOUBLE_SUFFIX
-    public final void mDOUBLE_SUFFIX() throws RecognitionException {
+    // $ANTLR start DATE_LITERAL
+    public final void mDATE_LITERAL() throws RecognitionException {
         try {
-            // JPQL.g:1462:7: ( 'd' )
-            // JPQL.g:1462:7: 'd'
+            int _type = DATE_LITERAL;
+            // JPQL.g:1477:7: ( LEFT_CURLY_BRACKET ( 'd' ) ( ' ' | '\\t' )+ '\\'' DATE_STRING '\\'' ( ' ' | '\\t' )* RIGHT_CURLY_BRACKET )
+            // JPQL.g:1477:7: LEFT_CURLY_BRACKET ( 'd' ) ( ' ' | '\\t' )+ '\\'' DATE_STRING '\\'' ( ' ' | '\\t' )* RIGHT_CURLY_BRACKET
+            {
+            mLEFT_CURLY_BRACKET(); 
+            // JPQL.g:1477:26: ( 'd' )
+            // JPQL.g:1477:27: 'd'
             {
             match('d'); 
             
             }
 
-        }
-        finally {
-        }
-    }
-    // $ANTLR end DOUBLE_SUFFIX
-
-    // $ANTLR start EQUALS
-    public final void mEQUALS() throws RecognitionException {
-        try {
-            int _type = EQUALS;
-            // JPQL.g:1466:7: ( '=' )
-            // JPQL.g:1466:7: '='
-            {
-            match('='); 
-            
-            }
-    
-            this.type = _type;
-        }
-        finally {
-        }
-    }
-    // $ANTLR end EQUALS
-
-    // $ANTLR start GREATER_THAN
-    public final void mGREATER_THAN() throws RecognitionException {
-        try {
-            int _type = GREATER_THAN;
-            // JPQL.g:1470:7: ( '>' )
-            // JPQL.g:1470:7: '>'
-            {
-            match('>'); 
-            
-            }
-    
-            this.type = _type;
-        }
-        finally {
-        }
-    }
-    // $ANTLR end GREATER_THAN
-
-    // $ANTLR start GREATER_THAN_EQUAL_TO
-    public final void mGREATER_THAN_EQUAL_TO() throws RecognitionException {
-        try {
-            int _type = GREATER_THAN_EQUAL_TO;
-            // JPQL.g:1474:7: ( '>=' )
-            // JPQL.g:1474:7: '>='
-            {
-            match(">="); 
-
-            
-            }
-    
-            this.type = _type;
-        }
-        finally {
-        }
-    }
-    // $ANTLR end GREATER_THAN_EQUAL_TO
-
-    // $ANTLR start LESS_THAN
-    public final void mLESS_THAN() throws RecognitionException {
-        try {
-            int _type = LESS_THAN;
-            // JPQL.g:1478:7: ( '<' )
-            // JPQL.g:1478:7: '<'
-            {
-            match('<'); 
-            
-            }
-    
-            this.type = _type;
-        }
-        finally {
-        }
-    }
-    // $ANTLR end LESS_THAN
-
-    // $ANTLR start LESS_THAN_EQUAL_TO
-    public final void mLESS_THAN_EQUAL_TO() throws RecognitionException {
-        try {
-            int _type = LESS_THAN_EQUAL_TO;
-            // JPQL.g:1482:7: ( '<=' )
-            // JPQL.g:1482:7: '<='
-            {
-            match("<="); 
-
-            
-            }
-    
-            this.type = _type;
-        }
-        finally {
-        }
-    }
-    // $ANTLR end LESS_THAN_EQUAL_TO
-
-    // $ANTLR start NOT_EQUAL_TO
-    public final void mNOT_EQUAL_TO() throws RecognitionException {
-        try {
-            int _type = NOT_EQUAL_TO;
-            // JPQL.g:1486:7: ( '<>' )
-            // JPQL.g:1486:7: '<>'
-            {
-            match("<>"); 
-
-            
-            }
-    
-            this.type = _type;
-        }
-        finally {
-        }
-    }
-    // $ANTLR end NOT_EQUAL_TO
-
-    // $ANTLR start MULTIPLY
-    public final void mMULTIPLY() throws RecognitionException {
-        try {
-            int _type = MULTIPLY;
-            // JPQL.g:1490:7: ( '*' )
-            // JPQL.g:1490:7: '*'
-            {
-            match('*'); 
-            
-            }
-    
-            this.type = _type;
-        }
-        finally {
-        }
-    }
-    // $ANTLR end MULTIPLY
-
-    // $ANTLR start DIVIDE
-    public final void mDIVIDE() throws RecognitionException {
-        try {
-            int _type = DIVIDE;
-            // JPQL.g:1494:7: ( '/' )
-            // JPQL.g:1494:7: '/'
-            {
-            match('/'); 
-            
-            }
-    
-            this.type = _type;
-        }
-        finally {
-        }
-    }
-    // $ANTLR end DIVIDE
-
-    // $ANTLR start PLUS
-    public final void mPLUS() throws RecognitionException {
-        try {
-            int _type = PLUS;
-            // JPQL.g:1498:7: ( '+' )
-            // JPQL.g:1498:7: '+'
-            {
-            match('+'); 
-            
-            }
-    
-            this.type = _type;
-        }
-        finally {
-        }
-    }
-    // $ANTLR end PLUS
-
-    // $ANTLR start MINUS
-    public final void mMINUS() throws RecognitionException {
-        try {
-            int _type = MINUS;
-            // JPQL.g:1502:7: ( '-' )
-            // JPQL.g:1502:7: '-'
-            {
-            match('-'); 
-            
-            }
-    
-            this.type = _type;
-        }
-        finally {
-        }
-    }
-    // $ANTLR end MINUS
-
-    // $ANTLR start POSITIONAL_PARAM
-    public final void mPOSITIONAL_PARAM() throws RecognitionException {
-        try {
-            int _type = POSITIONAL_PARAM;
-            // JPQL.g:1507:7: ( '?' ( '1' .. '9' ) ( '0' .. '9' )* )
-            // JPQL.g:1507:7: '?' ( '1' .. '9' ) ( '0' .. '9' )*
-            {
-            match('?'); 
-            // JPQL.g:1507:11: ( '1' .. '9' )
-            // JPQL.g:1507:12: '1' .. '9'
-            {
-            matchRange('1','9'); 
-            
-            }
-
-            // JPQL.g:1507:22: ( '0' .. '9' )*
+            // JPQL.g:1477:32: ( ' ' | '\\t' )+
+            int cnt18=0;
             loop18:
             do {
                 int alt18=2;
                 int LA18_0 = input.LA(1);
                 
-                if ( ((LA18_0>='0' && LA18_0<='9')) ) {
+                if ( (LA18_0=='\t'||LA18_0==' ') ) {
                     alt18=1;
                 }
                 
             
                 switch (alt18) {
             	case 1 :
-            	    // JPQL.g:1507:23: '0' .. '9'
+            	    // JPQL.g:
             	    {
-            	    matchRange('0','9'); 
+            	    if ( input.LA(1)=='\t'||input.LA(1)==' ' ) {
+            	        input.consume();
+            	    
+            	    }
+            	    else {
+            	        MismatchedSetException mse =
+            	            new MismatchedSetException(null,input);
+            	        recover(mse);    throw mse;
+            	    }
+
             	    
             	    }
             	    break;
             
             	default :
-            	    break loop18;
+            	    if ( cnt18 >= 1 ) break loop18;
+                        EarlyExitException eee =
+                            new EarlyExitException(18, input);
+                        throw eee;
                 }
+                cnt18++;
             } while (true);
 
-            
-            }
-    
-            this.type = _type;
-        }
-        finally {
-        }
-    }
-    // $ANTLR end POSITIONAL_PARAM
-
-    // $ANTLR start NAMED_PARAM
-    public final void mNAMED_PARAM() throws RecognitionException {
-        try {
-            int _type = NAMED_PARAM;
-            // JPQL.g:1511:7: ( ':' TEXTCHAR )
-            // JPQL.g:1511:7: ':' TEXTCHAR
-            {
-            match(':'); 
-            mTEXTCHAR(); 
-            
-            }
-    
-            this.type = _type;
-        }
-        finally {
-        }
-    }
-    // $ANTLR end NAMED_PARAM
-
-    // $ANTLR start STRING_LITERAL_DOUBLE_QUOTED
-    public final void mSTRING_LITERAL_DOUBLE_QUOTED() throws RecognitionException {
-        try {
-            int _type = STRING_LITERAL_DOUBLE_QUOTED;
-            // JPQL.g:1517:7: ( '\"' (~ ( '\"' ) )* '\"' )
-            // JPQL.g:1517:7: '\"' (~ ( '\"' ) )* '\"'
-            {
-            match('\"'); 
-            // JPQL.g:1517:11: (~ ( '\"' ) )*
+            match('\''); 
+            mDATE_STRING(); 
+            match('\''); 
+            // JPQL.g:1477:68: ( ' ' | '\\t' )*
             loop19:
             do {
                 int alt19=2;
                 int LA19_0 = input.LA(1);
                 
-                if ( ((LA19_0>='\u0000' && LA19_0<='!')||(LA19_0>='#' && LA19_0<='\uFFFE')) ) {
+                if ( (LA19_0=='\t'||LA19_0==' ') ) {
                     alt19=1;
                 }
                 
             
                 switch (alt19) {
             	case 1 :
-            	    // JPQL.g:1517:12: ~ ( '\"' )
+            	    // JPQL.g:
             	    {
-            	    if ( (input.LA(1)>='\u0000' && input.LA(1)<='!')||(input.LA(1)>='#' && input.LA(1)<='\uFFFE') ) {
+            	    if ( input.LA(1)=='\t'||input.LA(1)==' ' ) {
             	        input.consume();
             	    
             	    }
@@ -2734,6 +2558,629 @@ public class JPQLLexer extends Lexer {
                 }
             } while (true);
 
+            mRIGHT_CURLY_BRACKET(); 
+            
+            }
+    
+            this.type = _type;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end DATE_LITERAL
+
+    // $ANTLR start TIME_LITERAL
+    public final void mTIME_LITERAL() throws RecognitionException {
+        try {
+            int _type = TIME_LITERAL;
+            // JPQL.g:1481:7: ( LEFT_CURLY_BRACKET ( 't' ) ( ' ' | '\\t' )+ '\\'' TIME_STRING '\\'' ( ' ' | '\\t' )* RIGHT_CURLY_BRACKET )
+            // JPQL.g:1481:7: LEFT_CURLY_BRACKET ( 't' ) ( ' ' | '\\t' )+ '\\'' TIME_STRING '\\'' ( ' ' | '\\t' )* RIGHT_CURLY_BRACKET
+            {
+            mLEFT_CURLY_BRACKET(); 
+            // JPQL.g:1481:26: ( 't' )
+            // JPQL.g:1481:27: 't'
+            {
+            match('t'); 
+            
+            }
+
+            // JPQL.g:1481:32: ( ' ' | '\\t' )+
+            int cnt20=0;
+            loop20:
+            do {
+                int alt20=2;
+                int LA20_0 = input.LA(1);
+                
+                if ( (LA20_0=='\t'||LA20_0==' ') ) {
+                    alt20=1;
+                }
+                
+            
+                switch (alt20) {
+            	case 1 :
+            	    // JPQL.g:
+            	    {
+            	    if ( input.LA(1)=='\t'||input.LA(1)==' ' ) {
+            	        input.consume();
+            	    
+            	    }
+            	    else {
+            	        MismatchedSetException mse =
+            	            new MismatchedSetException(null,input);
+            	        recover(mse);    throw mse;
+            	    }
+
+            	    
+            	    }
+            	    break;
+            
+            	default :
+            	    if ( cnt20 >= 1 ) break loop20;
+                        EarlyExitException eee =
+                            new EarlyExitException(20, input);
+                        throw eee;
+                }
+                cnt20++;
+            } while (true);
+
+            match('\''); 
+            mTIME_STRING(); 
+            match('\''); 
+            // JPQL.g:1481:68: ( ' ' | '\\t' )*
+            loop21:
+            do {
+                int alt21=2;
+                int LA21_0 = input.LA(1);
+                
+                if ( (LA21_0=='\t'||LA21_0==' ') ) {
+                    alt21=1;
+                }
+                
+            
+                switch (alt21) {
+            	case 1 :
+            	    // JPQL.g:
+            	    {
+            	    if ( input.LA(1)=='\t'||input.LA(1)==' ' ) {
+            	        input.consume();
+            	    
+            	    }
+            	    else {
+            	        MismatchedSetException mse =
+            	            new MismatchedSetException(null,input);
+            	        recover(mse);    throw mse;
+            	    }
+
+            	    
+            	    }
+            	    break;
+            
+            	default :
+            	    break loop21;
+                }
+            } while (true);
+
+            mRIGHT_CURLY_BRACKET(); 
+            
+            }
+    
+            this.type = _type;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end TIME_LITERAL
+
+    // $ANTLR start TIMESTAMP_LITERAL
+    public final void mTIMESTAMP_LITERAL() throws RecognitionException {
+        try {
+            int _type = TIMESTAMP_LITERAL;
+            // JPQL.g:1485:7: ( LEFT_CURLY_BRACKET ( 'ts' ) ( ' ' | '\\t' )+ '\\'' DATE_STRING ' ' TIME_STRING '\\'' ( ' ' | '\\t' )* RIGHT_CURLY_BRACKET )
+            // JPQL.g:1485:7: LEFT_CURLY_BRACKET ( 'ts' ) ( ' ' | '\\t' )+ '\\'' DATE_STRING ' ' TIME_STRING '\\'' ( ' ' | '\\t' )* RIGHT_CURLY_BRACKET
+            {
+            mLEFT_CURLY_BRACKET(); 
+            // JPQL.g:1485:26: ( 'ts' )
+            // JPQL.g:1485:27: 'ts'
+            {
+            match("ts"); 
+
+            
+            }
+
+            // JPQL.g:1485:33: ( ' ' | '\\t' )+
+            int cnt22=0;
+            loop22:
+            do {
+                int alt22=2;
+                int LA22_0 = input.LA(1);
+                
+                if ( (LA22_0=='\t'||LA22_0==' ') ) {
+                    alt22=1;
+                }
+                
+            
+                switch (alt22) {
+            	case 1 :
+            	    // JPQL.g:
+            	    {
+            	    if ( input.LA(1)=='\t'||input.LA(1)==' ' ) {
+            	        input.consume();
+            	    
+            	    }
+            	    else {
+            	        MismatchedSetException mse =
+            	            new MismatchedSetException(null,input);
+            	        recover(mse);    throw mse;
+            	    }
+
+            	    
+            	    }
+            	    break;
+            
+            	default :
+            	    if ( cnt22 >= 1 ) break loop22;
+                        EarlyExitException eee =
+                            new EarlyExitException(22, input);
+                        throw eee;
+                }
+                cnt22++;
+            } while (true);
+
+            match('\''); 
+            mDATE_STRING(); 
+            match(' '); 
+            mTIME_STRING(); 
+            match('\''); 
+            // JPQL.g:1485:85: ( ' ' | '\\t' )*
+            loop23:
+            do {
+                int alt23=2;
+                int LA23_0 = input.LA(1);
+                
+                if ( (LA23_0=='\t'||LA23_0==' ') ) {
+                    alt23=1;
+                }
+                
+            
+                switch (alt23) {
+            	case 1 :
+            	    // JPQL.g:
+            	    {
+            	    if ( input.LA(1)=='\t'||input.LA(1)==' ' ) {
+            	        input.consume();
+            	    
+            	    }
+            	    else {
+            	        MismatchedSetException mse =
+            	            new MismatchedSetException(null,input);
+            	        recover(mse);    throw mse;
+            	    }
+
+            	    
+            	    }
+            	    break;
+            
+            	default :
+            	    break loop23;
+                }
+            } while (true);
+
+            mRIGHT_CURLY_BRACKET(); 
+            
+            }
+    
+            this.type = _type;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end TIMESTAMP_LITERAL
+
+    // $ANTLR start DATE_STRING
+    public final void mDATE_STRING() throws RecognitionException {
+        try {
+            int _type = DATE_STRING;
+            // JPQL.g:1489:7: ( '0' .. '9' '0' .. '9' '0' .. '9' '0' .. '9' '-' '0' .. '9' '0' .. '9' '-' '0' .. '9' '0' .. '9' )
+            // JPQL.g:1489:7: '0' .. '9' '0' .. '9' '0' .. '9' '0' .. '9' '-' '0' .. '9' '0' .. '9' '-' '0' .. '9' '0' .. '9'
+            {
+            matchRange('0','9'); 
+            matchRange('0','9'); 
+            matchRange('0','9'); 
+            matchRange('0','9'); 
+            match('-'); 
+            matchRange('0','9'); 
+            matchRange('0','9'); 
+            match('-'); 
+            matchRange('0','9'); 
+            matchRange('0','9'); 
+            
+            }
+    
+            this.type = _type;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end DATE_STRING
+
+    // $ANTLR start TIME_STRING
+    public final void mTIME_STRING() throws RecognitionException {
+        try {
+            int _type = TIME_STRING;
+            // JPQL.g:1493:7: ( '0' .. '9' ( '0' .. '9' )? ':' '0' .. '9' '0' .. '9' ':' '0' .. '9' '0' .. '9' '.' ( '0' .. '9' )* )
+            // JPQL.g:1493:7: '0' .. '9' ( '0' .. '9' )? ':' '0' .. '9' '0' .. '9' ':' '0' .. '9' '0' .. '9' '.' ( '0' .. '9' )*
+            {
+            matchRange('0','9'); 
+            // JPQL.g:1493:16: ( '0' .. '9' )?
+            int alt24=2;
+            int LA24_0 = input.LA(1);
+            
+            if ( ((LA24_0>='0' && LA24_0<='9')) ) {
+                alt24=1;
+            }
+            switch (alt24) {
+                case 1 :
+                    // JPQL.g:1493:17: '0' .. '9'
+                    {
+                    matchRange('0','9'); 
+                    
+                    }
+                    break;
+            
+            }
+
+            match(':'); 
+            matchRange('0','9'); 
+            matchRange('0','9'); 
+            match(':'); 
+            matchRange('0','9'); 
+            matchRange('0','9'); 
+            match('.'); 
+            // JPQL.g:1493:76: ( '0' .. '9' )*
+            loop25:
+            do {
+                int alt25=2;
+                int LA25_0 = input.LA(1);
+                
+                if ( ((LA25_0>='0' && LA25_0<='9')) ) {
+                    alt25=1;
+                }
+                
+            
+                switch (alt25) {
+            	case 1 :
+            	    // JPQL.g:1493:76: '0' .. '9'
+            	    {
+            	    matchRange('0','9'); 
+            	    
+            	    }
+            	    break;
+            
+            	default :
+            	    break loop25;
+                }
+            } while (true);
+
+            
+            }
+    
+            this.type = _type;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end TIME_STRING
+
+    // $ANTLR start DOUBLE_SUFFIX
+    public final void mDOUBLE_SUFFIX() throws RecognitionException {
+        try {
+            // JPQL.g:1498:7: ( 'd' )
+            // JPQL.g:1498:7: 'd'
+            {
+            match('d'); 
+            
+            }
+
+        }
+        finally {
+        }
+    }
+    // $ANTLR end DOUBLE_SUFFIX
+
+    // $ANTLR start EQUALS
+    public final void mEQUALS() throws RecognitionException {
+        try {
+            int _type = EQUALS;
+            // JPQL.g:1502:7: ( '=' )
+            // JPQL.g:1502:7: '='
+            {
+            match('='); 
+            
+            }
+    
+            this.type = _type;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end EQUALS
+
+    // $ANTLR start GREATER_THAN
+    public final void mGREATER_THAN() throws RecognitionException {
+        try {
+            int _type = GREATER_THAN;
+            // JPQL.g:1506:7: ( '>' )
+            // JPQL.g:1506:7: '>'
+            {
+            match('>'); 
+            
+            }
+    
+            this.type = _type;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end GREATER_THAN
+
+    // $ANTLR start GREATER_THAN_EQUAL_TO
+    public final void mGREATER_THAN_EQUAL_TO() throws RecognitionException {
+        try {
+            int _type = GREATER_THAN_EQUAL_TO;
+            // JPQL.g:1510:7: ( '>=' )
+            // JPQL.g:1510:7: '>='
+            {
+            match(">="); 
+
+            
+            }
+    
+            this.type = _type;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end GREATER_THAN_EQUAL_TO
+
+    // $ANTLR start LESS_THAN
+    public final void mLESS_THAN() throws RecognitionException {
+        try {
+            int _type = LESS_THAN;
+            // JPQL.g:1514:7: ( '<' )
+            // JPQL.g:1514:7: '<'
+            {
+            match('<'); 
+            
+            }
+    
+            this.type = _type;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end LESS_THAN
+
+    // $ANTLR start LESS_THAN_EQUAL_TO
+    public final void mLESS_THAN_EQUAL_TO() throws RecognitionException {
+        try {
+            int _type = LESS_THAN_EQUAL_TO;
+            // JPQL.g:1518:7: ( '<=' )
+            // JPQL.g:1518:7: '<='
+            {
+            match("<="); 
+
+            
+            }
+    
+            this.type = _type;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end LESS_THAN_EQUAL_TO
+
+    // $ANTLR start NOT_EQUAL_TO
+    public final void mNOT_EQUAL_TO() throws RecognitionException {
+        try {
+            int _type = NOT_EQUAL_TO;
+            // JPQL.g:1522:7: ( '<>' )
+            // JPQL.g:1522:7: '<>'
+            {
+            match("<>"); 
+
+            
+            }
+    
+            this.type = _type;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end NOT_EQUAL_TO
+
+    // $ANTLR start MULTIPLY
+    public final void mMULTIPLY() throws RecognitionException {
+        try {
+            int _type = MULTIPLY;
+            // JPQL.g:1526:7: ( '*' )
+            // JPQL.g:1526:7: '*'
+            {
+            match('*'); 
+            
+            }
+    
+            this.type = _type;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end MULTIPLY
+
+    // $ANTLR start DIVIDE
+    public final void mDIVIDE() throws RecognitionException {
+        try {
+            int _type = DIVIDE;
+            // JPQL.g:1530:7: ( '/' )
+            // JPQL.g:1530:7: '/'
+            {
+            match('/'); 
+            
+            }
+    
+            this.type = _type;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end DIVIDE
+
+    // $ANTLR start PLUS
+    public final void mPLUS() throws RecognitionException {
+        try {
+            int _type = PLUS;
+            // JPQL.g:1534:7: ( '+' )
+            // JPQL.g:1534:7: '+'
+            {
+            match('+'); 
+            
+            }
+    
+            this.type = _type;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end PLUS
+
+    // $ANTLR start MINUS
+    public final void mMINUS() throws RecognitionException {
+        try {
+            int _type = MINUS;
+            // JPQL.g:1538:7: ( '-' )
+            // JPQL.g:1538:7: '-'
+            {
+            match('-'); 
+            
+            }
+    
+            this.type = _type;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end MINUS
+
+    // $ANTLR start POSITIONAL_PARAM
+    public final void mPOSITIONAL_PARAM() throws RecognitionException {
+        try {
+            int _type = POSITIONAL_PARAM;
+            // JPQL.g:1543:7: ( '?' ( '1' .. '9' ) ( '0' .. '9' )* )
+            // JPQL.g:1543:7: '?' ( '1' .. '9' ) ( '0' .. '9' )*
+            {
+            match('?'); 
+            // JPQL.g:1543:11: ( '1' .. '9' )
+            // JPQL.g:1543:12: '1' .. '9'
+            {
+            matchRange('1','9'); 
+            
+            }
+
+            // JPQL.g:1543:22: ( '0' .. '9' )*
+            loop26:
+            do {
+                int alt26=2;
+                int LA26_0 = input.LA(1);
+                
+                if ( ((LA26_0>='0' && LA26_0<='9')) ) {
+                    alt26=1;
+                }
+                
+            
+                switch (alt26) {
+            	case 1 :
+            	    // JPQL.g:1543:23: '0' .. '9'
+            	    {
+            	    matchRange('0','9'); 
+            	    
+            	    }
+            	    break;
+            
+            	default :
+            	    break loop26;
+                }
+            } while (true);
+
+            
+            }
+    
+            this.type = _type;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end POSITIONAL_PARAM
+
+    // $ANTLR start NAMED_PARAM
+    public final void mNAMED_PARAM() throws RecognitionException {
+        try {
+            int _type = NAMED_PARAM;
+            // JPQL.g:1547:7: ( ':' TEXTCHAR )
+            // JPQL.g:1547:7: ':' TEXTCHAR
+            {
+            match(':'); 
+            mTEXTCHAR(); 
+            
+            }
+    
+            this.type = _type;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end NAMED_PARAM
+
+    // $ANTLR start STRING_LITERAL_DOUBLE_QUOTED
+    public final void mSTRING_LITERAL_DOUBLE_QUOTED() throws RecognitionException {
+        try {
+            int _type = STRING_LITERAL_DOUBLE_QUOTED;
+            // JPQL.g:1553:7: ( '\"' (~ ( '\"' ) )* '\"' )
+            // JPQL.g:1553:7: '\"' (~ ( '\"' ) )* '\"'
+            {
+            match('\"'); 
+            // JPQL.g:1553:11: (~ ( '\"' ) )*
+            loop27:
+            do {
+                int alt27=2;
+                int LA27_0 = input.LA(1);
+                
+                if ( ((LA27_0>='\u0000' && LA27_0<='!')||(LA27_0>='#' && LA27_0<='\uFFFE')) ) {
+                    alt27=1;
+                }
+                
+            
+                switch (alt27) {
+            	case 1 :
+            	    // JPQL.g:1553:12: ~ ( '\"' )
+            	    {
+            	    if ( (input.LA(1)>='\u0000' && input.LA(1)<='!')||(input.LA(1)>='#' && input.LA(1)<='\uFFFE') ) {
+            	        input.consume();
+            	    
+            	    }
+            	    else {
+            	        MismatchedSetException mse =
+            	            new MismatchedSetException(null,input);
+            	        recover(mse);    throw mse;
+            	    }
+
+            	    
+            	    }
+            	    break;
+            
+            	default :
+            	    break loop27;
+                }
+            } while (true);
+
             match('\"'); 
             
             }
@@ -2749,33 +3196,33 @@ public class JPQLLexer extends Lexer {
     public final void mSTRING_LITERAL_SINGLE_QUOTED() throws RecognitionException {
         try {
             int _type = STRING_LITERAL_SINGLE_QUOTED;
-            // JPQL.g:1521:7: ( '\\'' (~ ( '\\'' ) | ( '\\'\\'' ) )* '\\'' )
-            // JPQL.g:1521:7: '\\'' (~ ( '\\'' ) | ( '\\'\\'' ) )* '\\''
+            // JPQL.g:1557:7: ( '\\'' (~ ( '\\'' ) | ( '\\'\\'' ) )* '\\'' )
+            // JPQL.g:1557:7: '\\'' (~ ( '\\'' ) | ( '\\'\\'' ) )* '\\''
             {
             match('\''); 
-            // JPQL.g:1521:12: (~ ( '\\'' ) | ( '\\'\\'' ) )*
-            loop20:
+            // JPQL.g:1557:12: (~ ( '\\'' ) | ( '\\'\\'' ) )*
+            loop28:
             do {
-                int alt20=3;
-                int LA20_0 = input.LA(1);
+                int alt28=3;
+                int LA28_0 = input.LA(1);
                 
-                if ( (LA20_0=='\'') ) {
-                    int LA20_1 = input.LA(2);
+                if ( (LA28_0=='\'') ) {
+                    int LA28_1 = input.LA(2);
                     
-                    if ( (LA20_1=='\'') ) {
-                        alt20=2;
+                    if ( (LA28_1=='\'') ) {
+                        alt28=2;
                     }
                     
                 
                 }
-                else if ( ((LA20_0>='\u0000' && LA20_0<='&')||(LA20_0>='(' && LA20_0<='\uFFFE')) ) {
-                    alt20=1;
+                else if ( ((LA28_0>='\u0000' && LA28_0<='&')||(LA28_0>='(' && LA28_0<='\uFFFE')) ) {
+                    alt28=1;
                 }
                 
             
-                switch (alt20) {
+                switch (alt28) {
             	case 1 :
-            	    // JPQL.g:1521:13: ~ ( '\\'' )
+            	    // JPQL.g:1557:13: ~ ( '\\'' )
             	    {
             	    if ( (input.LA(1)>='\u0000' && input.LA(1)<='&')||(input.LA(1)>='(' && input.LA(1)<='\uFFFE') ) {
             	        input.consume();
@@ -2791,10 +3238,10 @@ public class JPQLLexer extends Lexer {
             	    }
             	    break;
             	case 2 :
-            	    // JPQL.g:1521:24: ( '\\'\\'' )
+            	    // JPQL.g:1557:24: ( '\\'\\'' )
             	    {
-            	    // JPQL.g:1521:24: ( '\\'\\'' )
-            	    // JPQL.g:1521:25: '\\'\\''
+            	    // JPQL.g:1557:24: ( '\\'\\'' )
+            	    // JPQL.g:1557:25: '\\'\\''
             	    {
             	    match("\'\'"); 
 
@@ -2806,7 +3253,7 @@ public class JPQLLexer extends Lexer {
             	    break;
             
             	default :
-            	    break loop20;
+            	    break loop28;
                 }
             } while (true);
 
@@ -2822,10 +3269,10 @@ public class JPQLLexer extends Lexer {
     // $ANTLR end STRING_LITERAL_SINGLE_QUOTED
 
     public void mTokens() throws RecognitionException {
-        // JPQL.g:1:10: ( ABS | ALL | AND | ANY | AS | ASC | AVG | BETWEEN | BOTH | BY | CASE | COALESCE | CONCAT | COUNT | CURRENT_DATE | CURRENT_TIME | CURRENT_TIMESTAMP | DESC | DELETE | DISTINCT | ELSE | EMPTY | END | ENTRY | ESCAPE | EXISTS | FALSE | FETCH | FROM | GROUP | HAVING | IN | INDEX | INNER | IS | JOIN | KEY | LEADING | LEFT | LENGTH | LIKE | LOCATE | LOWER | MAX | MEMBER | MIN | MOD | NEW | NOT | NULL | NULLIF | OBJECT | OF | OR | ORDER | OUTER | SELECT | SET | SIZE | SQRT | SOME | SUBSTRING | SUM | THEN | TRAILING | TRIM | TRUE | TYPE | UNKNOWN | UPDATE | UPPER | VALUE | WHEN | WHERE | DOT | WS | LEFT_ROUND_BRACKET | RIGHT_ROUND_BRACKET | COMMA | IDENT | HEX_LITERAL | INTEGER_LITERAL | LONG_LITERAL | OCTAL_LITERAL | DOUBLE_LITERAL | FLOAT_LITERAL | EQUALS | GREATER_THAN | GREATER_THAN_EQUAL_TO | LESS_THAN | LESS_THAN_EQUAL_TO | NOT_EQUAL_TO | MULTIPLY | DIVIDE | PLUS | MINUS | POSITIONAL_PARAM | NAMED_PARAM | STRING_LITERAL_DOUBLE_QUOTED | STRING_LITERAL_SINGLE_QUOTED )
-        int alt21=100;
-        alt21 = dfa21.predict(input);
-        switch (alt21) {
+        // JPQL.g:1:10: ( ABS | ALL | AND | ANY | AS | ASC | AVG | BETWEEN | BOTH | BY | CASE | COALESCE | CONCAT | COUNT | CURRENT_DATE | CURRENT_TIME | CURRENT_TIMESTAMP | DESC | DELETE | DISTINCT | ELSE | EMPTY | END | ENTRY | ESCAPE | EXISTS | FALSE | FETCH | FROM | GROUP | HAVING | IN | INDEX | INNER | IS | JOIN | KEY | LEADING | LEFT | LENGTH | LIKE | LOCATE | LOWER | MAX | MEMBER | MIN | MOD | NEW | NOT | NULL | NULLIF | OBJECT | OF | OR | ORDER | OUTER | SELECT | SET | SIZE | SQRT | SOME | SUBSTRING | SUM | THEN | TRAILING | TRIM | TRUE | TYPE | UNKNOWN | UPDATE | UPPER | VALUE | WHEN | WHERE | DOT | WS | LEFT_ROUND_BRACKET | LEFT_CURLY_BRACKET | RIGHT_ROUND_BRACKET | RIGHT_CURLY_BRACKET | COMMA | IDENT | HEX_LITERAL | INTEGER_LITERAL | LONG_LITERAL | OCTAL_LITERAL | DOUBLE_LITERAL | FLOAT_LITERAL | DATE_LITERAL | TIME_LITERAL | TIMESTAMP_LITERAL | DATE_STRING | TIME_STRING | EQUALS | GREATER_THAN | GREATER_THAN_EQUAL_TO | LESS_THAN | LESS_THAN_EQUAL_TO | NOT_EQUAL_TO | MULTIPLY | DIVIDE | PLUS | MINUS | POSITIONAL_PARAM | NAMED_PARAM | STRING_LITERAL_DOUBLE_QUOTED | STRING_LITERAL_SINGLE_QUOTED )
+        int alt29=107;
+        alt29 = dfa29.predict(input);
+        switch (alt29) {
             case 1 :
                 // JPQL.g:1:10: ABS
                 {
@@ -3366,161 +3813,210 @@ public class JPQLLexer extends Lexer {
                 }
                 break;
             case 78 :
-                // JPQL.g:1:472: RIGHT_ROUND_BRACKET
+                // JPQL.g:1:472: LEFT_CURLY_BRACKET
+                {
+                mLEFT_CURLY_BRACKET(); 
+                
+                }
+                break;
+            case 79 :
+                // JPQL.g:1:491: RIGHT_ROUND_BRACKET
                 {
                 mRIGHT_ROUND_BRACKET(); 
                 
                 }
                 break;
-            case 79 :
-                // JPQL.g:1:492: COMMA
+            case 80 :
+                // JPQL.g:1:511: RIGHT_CURLY_BRACKET
+                {
+                mRIGHT_CURLY_BRACKET(); 
+                
+                }
+                break;
+            case 81 :
+                // JPQL.g:1:531: COMMA
                 {
                 mCOMMA(); 
                 
                 }
                 break;
-            case 80 :
-                // JPQL.g:1:498: IDENT
+            case 82 :
+                // JPQL.g:1:537: IDENT
                 {
                 mIDENT(); 
                 
                 }
                 break;
-            case 81 :
-                // JPQL.g:1:504: HEX_LITERAL
+            case 83 :
+                // JPQL.g:1:543: HEX_LITERAL
                 {
                 mHEX_LITERAL(); 
                 
                 }
                 break;
-            case 82 :
-                // JPQL.g:1:516: INTEGER_LITERAL
+            case 84 :
+                // JPQL.g:1:555: INTEGER_LITERAL
                 {
                 mINTEGER_LITERAL(); 
                 
                 }
                 break;
-            case 83 :
-                // JPQL.g:1:532: LONG_LITERAL
+            case 85 :
+                // JPQL.g:1:571: LONG_LITERAL
                 {
                 mLONG_LITERAL(); 
                 
                 }
                 break;
-            case 84 :
-                // JPQL.g:1:545: OCTAL_LITERAL
+            case 86 :
+                // JPQL.g:1:584: OCTAL_LITERAL
                 {
                 mOCTAL_LITERAL(); 
                 
                 }
                 break;
-            case 85 :
-                // JPQL.g:1:559: DOUBLE_LITERAL
+            case 87 :
+                // JPQL.g:1:598: DOUBLE_LITERAL
                 {
                 mDOUBLE_LITERAL(); 
                 
                 }
                 break;
-            case 86 :
-                // JPQL.g:1:574: FLOAT_LITERAL
+            case 88 :
+                // JPQL.g:1:613: FLOAT_LITERAL
                 {
                 mFLOAT_LITERAL(); 
                 
                 }
                 break;
-            case 87 :
-                // JPQL.g:1:588: EQUALS
+            case 89 :
+                // JPQL.g:1:627: DATE_LITERAL
+                {
+                mDATE_LITERAL(); 
+                
+                }
+                break;
+            case 90 :
+                // JPQL.g:1:640: TIME_LITERAL
+                {
+                mTIME_LITERAL(); 
+                
+                }
+                break;
+            case 91 :
+                // JPQL.g:1:653: TIMESTAMP_LITERAL
+                {
+                mTIMESTAMP_LITERAL(); 
+                
+                }
+                break;
+            case 92 :
+                // JPQL.g:1:671: DATE_STRING
+                {
+                mDATE_STRING(); 
+                
+                }
+                break;
+            case 93 :
+                // JPQL.g:1:683: TIME_STRING
+                {
+                mTIME_STRING(); 
+                
+                }
+                break;
+            case 94 :
+                // JPQL.g:1:695: EQUALS
                 {
                 mEQUALS(); 
                 
                 }
                 break;
-            case 88 :
-                // JPQL.g:1:595: GREATER_THAN
+            case 95 :
+                // JPQL.g:1:702: GREATER_THAN
                 {
                 mGREATER_THAN(); 
                 
                 }
                 break;
-            case 89 :
-                // JPQL.g:1:608: GREATER_THAN_EQUAL_TO
+            case 96 :
+                // JPQL.g:1:715: GREATER_THAN_EQUAL_TO
                 {
                 mGREATER_THAN_EQUAL_TO(); 
                 
                 }
                 break;
-            case 90 :
-                // JPQL.g:1:630: LESS_THAN
+            case 97 :
+                // JPQL.g:1:737: LESS_THAN
                 {
                 mLESS_THAN(); 
                 
                 }
                 break;
-            case 91 :
-                // JPQL.g:1:640: LESS_THAN_EQUAL_TO
+            case 98 :
+                // JPQL.g:1:747: LESS_THAN_EQUAL_TO
                 {
                 mLESS_THAN_EQUAL_TO(); 
                 
                 }
                 break;
-            case 92 :
-                // JPQL.g:1:659: NOT_EQUAL_TO
+            case 99 :
+                // JPQL.g:1:766: NOT_EQUAL_TO
                 {
                 mNOT_EQUAL_TO(); 
                 
                 }
                 break;
-            case 93 :
-                // JPQL.g:1:672: MULTIPLY
+            case 100 :
+                // JPQL.g:1:779: MULTIPLY
                 {
                 mMULTIPLY(); 
                 
                 }
                 break;
-            case 94 :
-                // JPQL.g:1:681: DIVIDE
+            case 101 :
+                // JPQL.g:1:788: DIVIDE
                 {
                 mDIVIDE(); 
                 
                 }
                 break;
-            case 95 :
-                // JPQL.g:1:688: PLUS
+            case 102 :
+                // JPQL.g:1:795: PLUS
                 {
                 mPLUS(); 
                 
                 }
                 break;
-            case 96 :
-                // JPQL.g:1:693: MINUS
+            case 103 :
+                // JPQL.g:1:800: MINUS
                 {
                 mMINUS(); 
                 
                 }
                 break;
-            case 97 :
-                // JPQL.g:1:699: POSITIONAL_PARAM
+            case 104 :
+                // JPQL.g:1:806: POSITIONAL_PARAM
                 {
                 mPOSITIONAL_PARAM(); 
                 
                 }
                 break;
-            case 98 :
-                // JPQL.g:1:716: NAMED_PARAM
+            case 105 :
+                // JPQL.g:1:823: NAMED_PARAM
                 {
                 mNAMED_PARAM(); 
                 
                 }
                 break;
-            case 99 :
-                // JPQL.g:1:728: STRING_LITERAL_DOUBLE_QUOTED
+            case 106 :
+                // JPQL.g:1:835: STRING_LITERAL_DOUBLE_QUOTED
                 {
                 mSTRING_LITERAL_DOUBLE_QUOTED(); 
                 
                 }
                 break;
-            case 100 :
-                // JPQL.g:1:757: STRING_LITERAL_SINGLE_QUOTED
+            case 107 :
+                // JPQL.g:1:864: STRING_LITERAL_SINGLE_QUOTED
                 {
                 mSTRING_LITERAL_SINGLE_QUOTED(); 
                 
@@ -3534,9 +4030,9 @@ public class JPQLLexer extends Lexer {
 
     protected DFA12 dfa12 = new DFA12(this);
     protected DFA15 dfa15 = new DFA15(this);
-    protected DFA21 dfa21 = new DFA21(this);
+    protected DFA29 dfa29 = new DFA29(this);
     static final String DFA12_eotS =
-        "\1\uffff\1\3\3\uffff";
+        "\1\uffff\1\4\3\uffff";
     static final String DFA12_eofS =
         "\5\uffff";
     static final String DFA12_minS =
@@ -3544,12 +4040,12 @@ public class JPQLLexer extends Lexer {
     static final String DFA12_maxS =
         "\2\71\3\uffff";
     static final String DFA12_acceptS =
-        "\2\uffff\1\2\1\3\1\1";
+        "\2\uffff\1\2\1\1\1\3";
     static final String DFA12_specialS =
         "\5\uffff}>";
     static final String[] DFA12_transitionS = {
             "\1\2\1\uffff\12\1",
-            "\1\4\1\uffff\12\1",
+            "\1\3\1\uffff\12\1",
             "",
             "",
             ""
@@ -3585,7 +4081,7 @@ public class JPQLLexer extends Lexer {
             this.transition = DFA12_transition;
         }
         public String getDescription() {
-            return "1432:1: fragment NUMERIC_DIGITS : ( ( '0' .. '9' )+ '.' ( '0' .. '9' )* | '.' ( '0' .. '9' )+ | ( '0' .. '9' )+ );";
+            return "1448:1: fragment NUMERIC_DIGITS : ( ( '0' .. '9' )+ '.' ( '0' .. '9' )* | '.' ( '0' .. '9' )+ | ( '0' .. '9' )+ );";
         }
     }
     static final String DFA15_eotS =
@@ -3593,22 +4089,22 @@ public class JPQLLexer extends Lexer {
     static final String DFA15_eofS =
         "\10\uffff";
     static final String DFA15_minS =
-        "\2\56\2\60\2\uffff\2\60";
+        "\2\56\1\60\1\uffff\1\60\1\uffff\2\60";
     static final String DFA15_maxS =
-        "\1\71\1\146\1\71\1\146\2\uffff\2\146";
+        "\1\71\1\146\1\71\1\uffff\1\146\1\uffff\2\146";
     static final String DFA15_acceptS =
-        "\4\uffff\1\1\1\2\2\uffff";
+        "\3\uffff\1\2\1\uffff\1\1\2\uffff";
     static final String DFA15_specialS =
         "\10\uffff}>";
     static final String[] DFA15_transitionS = {
             "\1\2\1\uffff\12\1",
-            "\1\3\1\uffff\12\1\13\uffff\1\4\37\uffff\1\4\1\5",
+            "\1\4\1\uffff\12\1\13\uffff\1\5\37\uffff\1\5\1\3",
             "\12\6",
-            "\12\7\13\uffff\1\4\37\uffff\1\4\1\5",
             "",
+            "\12\7\13\uffff\1\5\37\uffff\1\5\1\3",
             "",
-            "\12\6\13\uffff\1\4\37\uffff\1\4\1\5",
-            "\12\7\13\uffff\1\4\37\uffff\1\4\1\5"
+            "\12\6\13\uffff\1\5\37\uffff\1\5\1\3",
+            "\12\7\13\uffff\1\5\37\uffff\1\5\1\3"
     };
     
     static final short[] DFA15_eot = DFA.unpackEncodedString(DFA15_eotS);
@@ -3641,265 +4137,262 @@ public class JPQLLexer extends Lexer {
             this.transition = DFA15_transition;
         }
         public String getDescription() {
-            return "1443:1: FLOAT_LITERAL : ( NUMERIC_DIGITS EXPONENT ( FLOAT_SUFFIX )? | NUMERIC_DIGITS FLOAT_SUFFIX );";
+            return "1459:1: FLOAT_LITERAL : ( NUMERIC_DIGITS EXPONENT ( FLOAT_SUFFIX )? | NUMERIC_DIGITS FLOAT_SUFFIX );";
         }
     }
-    static final String DFA21_eotS =
-        "\1\uffff\24\32\1\136\5\uffff\2\140\1\uffff\1\151\1\154\10\uffff"+
-        "\1\32\1\160\5\32\1\166\17\32\1\u008c\1\u008d\14\32\1\u009e\2\32"+
-        "\1\u00a1\14\32\1\144\3\uffff\1\144\1\u00b4\3\uffff\1\144\1\140\5"+
-        "\uffff\1\u00b5\1\u00b6\1\u00b7\1\uffff\1\u00b8\1\u00b9\1\u00ba\2"+
-        "\32\1\uffff\10\32\1\u00c5\14\32\2\uffff\1\32\1\u00d3\7\32\1\u00db"+
-        "\1\u00dc\1\u00dd\1\u00de\1\u00df\2\32\1\uffff\2\32\1\uffff\1\u00e4"+
-        "\4\32\1\u00e9\13\32\1\144\7\uffff\1\32\1\u00f7\4\32\1\u00fc\2\32"+
-        "\1\u00ff\1\uffff\1\32\1\u0101\3\32\1\u0105\6\32\1\u010c\1\uffff"+
-        "\2\32\1\u010f\2\32\1\u0112\1\32\5\uffff\1\u0115\3\32\1\uffff\1\32"+
-        "\1\u011a\1\u011b\1\u011c\1\uffff\1\32\1\u011e\1\u011f\1\u0120\1"+
-        "\32\1\u0122\4\32\1\u0127\2\32\1\uffff\3\32\1\u012d\1\uffff\2\32"+
-        "\1\uffff\1\u0130\1\uffff\1\u0131\2\32\1\uffff\1\u0134\1\u0135\1"+
-        "\u0136\1\32\1\u0138\1\u0139\1\uffff\1\32\1\u013b\1\uffff\2\32\1"+
-        "\uffff\2\32\1\uffff\1\u0140\1\u0141\2\32\3\uffff\1\32\3\uffff\1"+
-        "\32\1\uffff\1\32\1\u0147\1\32\1\u0149\1\uffff\1\u014a\2\32\1\u014d"+
-        "\1\32\1\uffff\1\32\1\u0150\2\uffff\1\u0151\1\u0152\3\uffff\1\u0153"+
-        "\2\uffff\1\u0154\1\uffff\1\32\1\u0156\1\u0157\1\u0158\2\uffff\1"+
-        "\u0159\1\u015a\2\32\1\u015d\1\uffff\1\32\2\uffff\1\u015f\1\32\1"+
-        "\uffff\2\32\5\uffff\1\u0163\5\uffff\2\32\1\uffff\1\u0166\1\uffff"+
-        "\1\32\1\u0169\1\u016a\1\uffff\1\32\1\u016c\1\uffff\2\32\2\uffff"+
-        "\1\u016f\1\uffff\2\32\1\uffff\2\32\1\u0174\1\u0176\1\uffff\1\32"+
-        "\1\uffff\3\32\1\u017b\1\uffff";
-    static final String DFA21_eofS =
-        "\u017c\uffff";
-    static final String DFA21_minS =
+    static final String DFA29_eotS =
+        "\1\uffff\24\34\1\140\2\uffff\1\141\4\uffff\2\150\1\uffff\1\157\1"+
+        "\162\10\uffff\3\34\1\167\2\34\1\173\20\34\1\u0092\1\u0093\15\34"+
+        "\1\u00a5\1\u00a6\15\34\1\151\5\uffff\1\u00bc\2\151\5\uffff\1\150"+
+        "\5\uffff\1\u00c0\1\u00c1\1\u00c2\1\u00c3\1\uffff\1\u00c4\1\u00c5"+
+        "\1\34\1\uffff\12\34\1\u00d1\13\34\2\uffff\1\34\1\u00de\6\34\1\u00e5"+
+        "\1\u00e6\1\34\1\u00e8\1\34\1\u00ea\1\u00eb\2\34\2\uffff\2\34\1\u00f0"+
+        "\1\u00f1\16\34\2\uffff\1\u00bc\1\uffff\2\151\1\150\6\uffff\1\u0104"+
+        "\5\34\1\u010a\1\u010b\3\34\1\uffff\2\34\1\u0111\3\34\1\u0115\4\34"+
+        "\1\u011a\1\uffff\1\u011b\3\34\1\u011f\1\34\2\uffff\1\34\1\uffff"+
+        "\1\u0123\2\uffff\4\34\2\uffff\1\34\1\u0129\1\u012a\1\u012b\1\u012c"+
+        "\1\u012d\1\u012e\1\34\1\u0130\4\34\1\u0135\1\34\1\u00bc\1\151\1"+
+        "\150\1\uffff\2\34\1\u013d\2\34\2\uffff\3\34\1\u0143\1\34\1\uffff"+
+        "\1\u0145\1\u0146\1\u0147\1\uffff\1\u0148\1\34\1\u014a\1\u014b\2"+
+        "\uffff\1\34\1\u014d\1\34\1\uffff\3\34\1\uffff\1\u0152\1\u0153\3"+
+        "\34\6\uffff\1\34\1\uffff\1\34\1\u0159\1\34\1\u015b\1\uffff\1\u015c"+
+        "\1\uffff\1\u00bc\1\151\1\150\2\34\1\uffff\1\u015f\1\34\1\u0161\1"+
+        "\34\1\u0163\1\uffff\1\u0164\4\uffff\1\u0165\2\uffff\1\u0166\1\uffff"+
+        "\1\34\1\u0168\1\u0169\1\u016a\2\uffff\1\u016b\1\u016c\2\34\1\u016f"+
+        "\1\uffff\1\34\2\uffff\1\u0171\1\34\1\uffff\1\34\1\uffff\1\34\4\uffff"+
+        "\1\u0175\5\uffff\2\34\1\uffff\1\u0178\1\uffff\1\34\1\u017b\1\u017c"+
+        "\1\uffff\1\34\1\u017e\1\uffff\2\34\2\uffff\1\u0181\1\uffff\2\34"+
+        "\1\uffff\2\34\1\u0187\1\u0188\1\34\2\uffff\3\34\1\u018d\1\uffff";
+    static final String DFA29_eofS =
+        "\u018e\uffff";
+    static final String DFA29_minS =
         "\1\11\1\142\1\145\1\141\1\145\1\154\1\141\1\162\1\141\1\156\1\157"+
-        "\2\145\1\141\1\145\1\142\1\145\1\150\1\156\1\141\1\150\1\60\5\uffff"+
-        "\2\56\1\uffff\2\75\10\uffff\1\144\1\44\1\147\1\163\1\154\2\164\1"+
-        "\44\1\162\1\141\2\163\1\154\1\144\1\163\1\160\1\151\1\143\1\157"+
-        "\1\164\1\154\1\157\1\166\2\44\1\151\1\171\1\143\1\153\1\141\1\155"+
-        "\1\170\1\144\1\156\1\167\1\164\1\154\1\44\1\164\1\152\1\44\1\154"+
-        "\1\172\1\162\1\155\1\142\1\160\1\141\1\145\1\144\1\153\1\154\1\145"+
-        "\1\60\3\uffff\1\60\1\56\3\uffff\2\56\5\uffff\3\44\1\uffff\3\44\1"+
-        "\167\1\150\1\uffff\1\162\1\143\1\154\1\156\1\145\1\164\1\145\1\143"+
-        "\1\44\1\162\1\145\1\164\1\163\1\141\1\155\1\143\1\163\1\165\1\151"+
-        "\2\145\2\uffff\1\156\1\44\1\141\2\145\1\144\1\147\1\164\1\142\5"+
-        "\44\1\154\1\145\1\uffff\2\145\1\uffff\1\44\2\145\1\164\1\145\1\44"+
-        "\1\163\2\145\1\155\1\151\1\156\1\141\1\145\1\156\1\165\1\156\1\60"+
-        "\7\uffff\1\145\1\44\1\145\1\141\1\145\1\164\1\44\1\151\1\164\1\44"+
-        "\1\uffff\1\171\1\44\1\171\1\164\1\160\1\44\1\150\1\145\1\160\1\156"+
-        "\1\170\1\162\1\44\1\uffff\1\164\1\162\1\44\1\151\1\164\1\44\1\145"+
-        "\5\uffff\1\44\2\162\1\143\1\uffff\1\143\3\44\1\uffff\1\164\3\44"+
-        "\1\154\1\44\1\164\1\162\1\157\1\145\1\44\2\145\1\uffff\1\156\1\164"+
-        "\1\163\1\44\1\uffff\1\156\1\145\1\uffff\1\44\1\uffff\1\44\1\163"+
-        "\1\145\1\uffff\3\44\1\147\2\44\1\uffff\1\145\1\44\1\uffff\1\156"+
-        "\1\150\1\uffff\1\162\1\146\1\uffff\2\44\2\164\3\uffff\1\162\3\uffff"+
-        "\1\151\1\uffff\1\145\1\44\1\167\1\44\1\uffff\1\44\1\156\1\164\1"+
-        "\44\1\143\1\uffff\1\143\1\44\2\uffff\2\44\3\uffff\1\44\2\uffff\1"+
-        "\44\1\uffff\1\147\3\44\2\uffff\2\44\1\151\1\156\1\44\1\uffff\1\156"+
-        "\2\uffff\1\44\1\137\1\uffff\1\145\1\164\5\uffff\1\44\5\uffff\1\156"+
+        "\2\145\1\141\1\145\1\142\1\145\1\150\1\156\1\141\1\150\1\60\2\uffff"+
+        "\1\144\4\uffff\2\56\1\uffff\2\75\10\uffff\1\154\1\163\1\147\1\44"+
+        "\1\144\1\164\1\44\1\164\1\162\1\141\1\163\1\154\1\163\1\143\1\144"+
+        "\1\151\1\163\1\160\1\164\1\154\2\157\1\166\2\44\1\151\1\171\1\153"+
+        "\1\143\1\141\1\144\1\156\1\155\1\170\1\154\1\164\1\167\1\164\2\44"+
+        "\1\152\1\154\1\142\1\162\1\155\1\172\1\160\1\141\1\145\1\144\1\153"+
+        "\1\154\1\145\1\60\2\uffff\1\11\2\uffff\2\56\1\60\5\uffff\1\56\5"+
+        "\uffff\4\44\1\uffff\2\44\1\150\1\uffff\1\167\1\162\1\156\1\143\1"+
+        "\154\1\145\1\143\1\145\1\164\1\141\1\44\1\162\1\163\1\145\1\164"+
+        "\1\143\1\163\1\155\1\165\1\151\2\145\2\uffff\1\156\1\44\1\145\1"+
+        "\141\1\145\1\144\1\164\1\147\2\44\1\142\1\44\1\154\2\44\2\145\2"+
+        "\uffff\2\145\2\44\1\163\1\164\3\145\1\155\1\145\1\151\1\156\1\141"+
+        "\1\145\1\156\1\165\1\156\2\uffff\1\56\1\uffff\1\56\1\60\1\56\6\uffff"+
+        "\1\44\2\145\1\164\1\141\1\145\2\44\1\164\1\151\1\160\1\uffff\1\171"+
+        "\1\164\1\44\1\171\1\150\1\145\1\44\1\160\1\156\1\162\1\170\1\44"+
+        "\1\uffff\1\44\1\164\1\162\1\151\1\44\1\164\2\uffff\1\145\1\uffff"+
+        "\1\44\2\uffff\2\162\2\143\2\uffff\1\164\6\44\1\154\1\44\1\164\1"+
+        "\162\1\157\1\145\1\44\1\145\3\55\1\uffff\1\145\1\156\1\44\1\164"+
+        "\1\163\2\uffff\1\145\1\156\1\145\1\44\1\163\1\uffff\3\44\1\uffff"+
+        "\1\44\1\147\2\44\2\uffff\1\145\1\44\1\156\1\uffff\1\150\1\162\1"+
+        "\146\1\uffff\2\44\2\164\1\162\6\uffff\1\151\1\uffff\1\145\1\44\1"+
+        "\167\1\44\1\uffff\1\44\1\uffff\3\56\1\156\1\164\1\uffff\1\44\1\143"+
+        "\1\44\1\143\1\44\1\uffff\1\44\4\uffff\1\44\2\uffff\1\44\1\uffff"+
+        "\1\147\3\44\2\uffff\2\44\1\151\1\156\1\44\1\uffff\1\156\2\uffff"+
+        "\1\44\1\137\1\uffff\1\145\1\uffff\1\164\4\uffff\1\44\5\uffff\1\156"+
         "\1\147\1\uffff\1\44\1\uffff\1\144\2\44\1\uffff\1\147\1\44\1\uffff"+
-        "\1\141\1\151\2\uffff\1\44\1\uffff\1\164\1\155\1\uffff\2\145\2\44"+
-        "\1\uffff\1\164\1\uffff\1\141\1\155\1\160\1\44\1\uffff";
-    static final String DFA21_maxS =
+        "\1\151\1\141\2\uffff\1\44\1\uffff\1\155\1\164\1\uffff\2\145\2\44"+
+        "\1\164\2\uffff\1\141\1\155\1\160\1\44\1\uffff";
+    static final String DFA29_maxS =
         "\1\ufffe\1\166\1\171\1\165\1\151\1\170\2\162\1\141\1\163\1\157\1"+
-        "\145\2\157\3\165\1\171\1\160\1\141\1\150\1\71\5\uffff\1\170\1\154"+
-        "\1\uffff\1\75\1\76\10\uffff\1\171\1\ufffe\1\147\1\163\1\154\2\164"+
-        "\1\ufffe\1\162\1\165\3\163\1\164\1\163\1\160\1\151\1\143\1\157\1"+
-        "\164\1\154\1\157\1\166\2\ufffe\1\151\1\171\1\167\1\153\1\156\1\155"+
-        "\1\170\1\144\1\156\1\167\1\164\1\154\1\ufffe\1\164\1\152\1\ufffe"+
-        "\1\164\1\172\1\162\2\155\1\160\1\165\1\145\1\160\1\153\1\154\1\145"+
-        "\1\146\3\uffff\2\146\3\uffff\1\146\1\154\5\uffff\3\ufffe\1\uffff"+
-        "\3\ufffe\1\167\1\150\1\uffff\1\162\1\143\1\154\1\156\1\145\1\164"+
-        "\1\145\1\143\1\ufffe\1\162\1\145\1\164\1\163\1\141\1\155\1\143\1"+
-        "\163\1\165\1\151\2\145\2\uffff\1\156\1\ufffe\1\141\2\145\1\144\1"+
-        "\147\1\164\1\142\5\ufffe\1\154\1\145\1\uffff\2\145\1\uffff\1\ufffe"+
-        "\2\145\1\164\1\145\1\ufffe\1\163\2\145\1\155\1\151\1\156\1\141\1"+
-        "\145\1\156\1\165\1\162\1\146\7\uffff\1\145\1\ufffe\1\145\1\141\1"+
-        "\145\1\164\1\ufffe\1\151\1\164\1\ufffe\1\uffff\1\171\1\ufffe\1\171"+
-        "\1\164\1\160\1\ufffe\1\150\1\145\1\160\1\156\1\170\1\162\1\ufffe"+
-        "\1\uffff\1\164\1\162\1\ufffe\1\151\1\164\1\ufffe\1\145\5\uffff\1"+
-        "\ufffe\2\162\1\143\1\uffff\1\143\3\ufffe\1\uffff\1\164\3\ufffe\1"+
-        "\154\1\ufffe\1\164\1\162\1\157\1\145\1\ufffe\2\145\1\uffff\1\156"+
-        "\1\164\1\163\1\ufffe\1\uffff\1\156\1\145\1\uffff\1\ufffe\1\uffff"+
-        "\1\ufffe\1\163\1\145\1\uffff\3\ufffe\1\147\2\ufffe\1\uffff\1\145"+
-        "\1\ufffe\1\uffff\1\156\1\150\1\uffff\1\162\1\146\1\uffff\2\ufffe"+
-        "\2\164\3\uffff\1\162\3\uffff\1\151\1\uffff\1\145\1\ufffe\1\167\1"+
-        "\ufffe\1\uffff\1\ufffe\1\156\1\164\1\ufffe\1\143\1\uffff\1\143\1"+
-        "\ufffe\2\uffff\2\ufffe\3\uffff\1\ufffe\2\uffff\1\ufffe\1\uffff\1"+
-        "\147\3\ufffe\2\uffff\2\ufffe\1\151\1\156\1\ufffe\1\uffff\1\156\2"+
-        "\uffff\1\ufffe\1\137\1\uffff\1\145\1\164\5\uffff\1\ufffe\5\uffff"+
-        "\1\156\1\147\1\uffff\1\ufffe\1\uffff\1\164\2\ufffe\1\uffff\1\147"+
-        "\1\ufffe\1\uffff\1\141\1\151\2\uffff\1\ufffe\1\uffff\1\164\1\155"+
-        "\1\uffff\2\145\2\ufffe\1\uffff\1\164\1\uffff\1\141\1\155\1\160\1"+
-        "\ufffe\1\uffff";
-    static final String DFA21_acceptS =
-        "\26\uffff\1\114\1\115\1\116\1\117\1\120\2\uffff\1\127\2\uffff\1"+
-        "\135\1\136\1\137\1\140\1\141\1\142\1\143\1\144\66\uffff\1\113\1"+
-        "\121\1\122\2\uffff\1\126\1\125\1\123\2\uffff\1\131\1\130\1\133\1"+
-        "\134\1\132\3\uffff\1\5\5\uffff\1\12\25\uffff\1\40\1\43\20\uffff"+
-        "\1\66\2\uffff\1\65\22\uffff\1\124\1\4\1\3\1\6\1\7\1\1\1\2\12\uffff"+
-        "\1\27\15\uffff\1\45\7\uffff\1\54\1\57\1\56\1\60\1\61\4\uffff\1\72"+
-        "\4\uffff\1\77\15\uffff\1\11\4\uffff\1\13\2\uffff\1\22\1\uffff\1"+
-        "\25\3\uffff\1\35\6\uffff\1\44\2\uffff\1\51\2\uffff\1\47\2\uffff"+
-        "\1\62\4\uffff\1\73\1\74\1\75\1\uffff\1\104\1\103\1\102\1\uffff\1"+
-        "\100\4\uffff\1\111\5\uffff\1\16\2\uffff\1\30\1\26\2\uffff\1\34\1"+
-        "\33\1\36\1\uffff\1\41\1\42\1\uffff\1\53\4\uffff\1\67\1\70\5\uffff"+
-        "\1\107\1\uffff\1\110\1\112\2\uffff\1\15\2\uffff\1\23\1\32\1\31\1"+
-        "\37\1\52\1\uffff\1\50\1\55\1\63\1\64\1\71\2\uffff\1\106\1\uffff"+
+        "\145\2\157\3\165\1\171\1\160\1\141\1\150\1\71\2\uffff\1\164\4\uffff"+
+        "\1\170\1\154\1\uffff\1\75\1\76\10\uffff\1\154\1\163\1\147\1\ufffe"+
+        "\1\171\1\164\1\ufffe\1\164\1\162\1\165\3\163\1\143\1\164\1\151\1"+
+        "\163\1\160\1\164\1\154\2\157\1\166\2\ufffe\1\151\1\171\1\153\1\167"+
+        "\1\156\1\144\1\156\1\155\1\170\1\154\1\164\1\167\1\164\2\ufffe\1"+
+        "\152\1\164\1\155\1\162\1\155\1\172\1\160\1\165\1\145\1\160\1\153"+
+        "\1\154\1\145\1\146\2\uffff\1\163\2\uffff\3\146\5\uffff\1\154\5\uffff"+
+        "\4\ufffe\1\uffff\2\ufffe\1\150\1\uffff\1\167\1\162\1\156\1\143\1"+
+        "\154\1\145\1\143\1\145\1\164\1\141\1\ufffe\1\162\1\163\1\145\1\164"+
+        "\1\143\1\163\1\155\1\165\1\151\2\145\2\uffff\1\156\1\ufffe\1\145"+
+        "\1\141\1\145\1\144\1\164\1\147\2\ufffe\1\142\1\ufffe\1\154\2\ufffe"+
+        "\2\145\2\uffff\2\145\2\ufffe\1\163\1\164\3\145\1\155\1\145\1\151"+
+        "\1\156\1\141\1\145\1\156\1\165\1\162\2\uffff\1\146\1\uffff\2\146"+
+        "\1\154\6\uffff\1\ufffe\2\145\1\164\1\141\1\145\2\ufffe\1\164\1\151"+
+        "\1\160\1\uffff\1\171\1\164\1\ufffe\1\171\1\150\1\145\1\ufffe\1\160"+
+        "\1\156\1\162\1\170\1\ufffe\1\uffff\1\ufffe\1\164\1\162\1\151\1\ufffe"+
+        "\1\164\2\uffff\1\145\1\uffff\1\ufffe\2\uffff\2\162\2\143\2\uffff"+
+        "\1\164\6\ufffe\1\154\1\ufffe\1\164\1\162\1\157\1\145\1\ufffe\1\145"+
+        "\2\146\1\154\1\uffff\1\145\1\156\1\ufffe\1\164\1\163\2\uffff\1\145"+
+        "\1\156\1\145\1\ufffe\1\163\1\uffff\3\ufffe\1\uffff\1\ufffe\1\147"+
+        "\2\ufffe\2\uffff\1\145\1\ufffe\1\156\1\uffff\1\150\1\162\1\146\1"+
+        "\uffff\2\ufffe\2\164\1\162\6\uffff\1\151\1\uffff\1\145\1\ufffe\1"+
+        "\167\1\ufffe\1\uffff\1\ufffe\1\uffff\2\146\1\154\1\156\1\164\1\uffff"+
+        "\1\ufffe\1\143\1\ufffe\1\143\1\ufffe\1\uffff\1\ufffe\4\uffff\1\ufffe"+
+        "\2\uffff\1\ufffe\1\uffff\1\147\3\ufffe\2\uffff\2\ufffe\1\151\1\156"+
+        "\1\ufffe\1\uffff\1\156\2\uffff\1\ufffe\1\137\1\uffff\1\145\1\uffff"+
+        "\1\164\4\uffff\1\ufffe\5\uffff\1\156\1\147\1\uffff\1\ufffe\1\uffff"+
+        "\1\164\2\ufffe\1\uffff\1\147\1\ufffe\1\uffff\1\151\1\141\2\uffff"+
+        "\1\ufffe\1\uffff\1\155\1\164\1\uffff\2\145\2\ufffe\1\164\2\uffff"+
+        "\1\141\1\155\1\160\1\ufffe\1\uffff";
+    static final String DFA29_acceptS =
+        "\26\uffff\1\114\1\115\1\uffff\1\117\1\120\1\121\1\122\2\uffff\1"+
+        "\136\2\uffff\1\144\1\145\1\146\1\147\1\150\1\151\1\152\1\153\66"+
+        "\uffff\1\113\1\116\1\uffff\1\131\1\123\3\uffff\1\124\1\127\1\130"+
+        "\1\135\1\125\1\uffff\1\140\1\137\1\143\1\142\1\141\4\uffff\1\5\3"+
+        "\uffff\1\12\26\uffff\1\40\1\43\21\uffff\1\66\1\65\22\uffff\1\133"+
+        "\1\132\1\uffff\1\126\3\uffff\1\2\1\1\1\7\1\6\1\4\1\3\13\uffff\1"+
+        "\27\14\uffff\1\45\6\uffff\1\57\1\56\1\uffff\1\54\1\uffff\1\61\1"+
+        "\60\4\uffff\1\72\1\77\22\uffff\1\11\5\uffff\1\13\1\22\5\uffff\1"+
+        "\25\3\uffff\1\35\4\uffff\1\44\1\51\3\uffff\1\47\3\uffff\1\62\5\uffff"+
+        "\1\74\1\75\1\73\1\104\1\102\1\103\1\uffff\1\100\4\uffff\1\111\1"+
+        "\uffff\1\134\5\uffff\1\16\5\uffff\1\30\1\uffff\1\26\1\34\1\33\1"+
+        "\36\1\uffff\1\42\1\41\1\uffff\1\53\4\uffff\1\70\1\67\5\uffff\1\107"+
+        "\1\uffff\1\110\1\112\2\uffff\1\15\1\uffff\1\23\1\uffff\1\31\1\32"+
+        "\1\37\1\52\1\uffff\1\50\1\55\1\63\1\64\1\71\2\uffff\1\106\1\uffff"+
         "\1\10\3\uffff\1\46\2\uffff\1\105\2\uffff\1\14\1\24\1\uffff\1\101"+
-        "\2\uffff\1\76\4\uffff\1\17\1\uffff\1\20\4\uffff\1\21";
-    static final String DFA21_specialS =
-        "\u017c\uffff}>";
-    static final String[] DFA21_transitionS = {
-            "\2\26\2\uffff\1\26\22\uffff\1\26\1\uffff\1\46\1\uffff\1\32\2"+
-            "\uffff\1\47\1\27\1\30\1\40\1\42\1\31\1\43\1\25\1\41\1\33\11"+
-            "\34\1\45\1\uffff\1\37\1\35\1\36\1\44\1\uffff\32\32\4\uffff\1"+
-            "\32\1\uffff\1\1\1\2\1\3\1\4\1\5\1\6\1\7\1\10\1\11\1\12\1\13"+
-            "\1\14\1\15\1\16\1\17\3\32\1\20\1\21\1\22\1\23\1\24\3\32\5\uffff"+
-            "\uff7f\32",
-            "\1\53\11\uffff\1\54\1\uffff\1\50\4\uffff\1\51\2\uffff\1\52",
-            "\1\55\11\uffff\1\56\11\uffff\1\57",
-            "\1\62\15\uffff\1\61\5\uffff\1\60",
-            "\1\64\3\uffff\1\63",
-            "\1\66\1\67\1\65\4\uffff\1\71\4\uffff\1\70",
-            "\1\74\3\uffff\1\73\14\uffff\1\72",
-            "\1\75",
-            "\1\76",
-            "\1\77\4\uffff\1\100",
-            "\1\101",
-            "\1\102",
-            "\1\105\3\uffff\1\104\5\uffff\1\103",
-            "\1\107\3\uffff\1\106\3\uffff\1\111\5\uffff\1\110",
-            "\1\112\11\uffff\1\113\5\uffff\1\114",
-            "\1\117\3\uffff\1\120\13\uffff\1\115\2\uffff\1\116",
-            "\1\121\3\uffff\1\122\5\uffff\1\124\1\uffff\1\123\3\uffff\1\125",
-            "\1\130\11\uffff\1\127\6\uffff\1\126",
-            "\1\132\1\uffff\1\131",
-            "\1\133",
-            "\1\134",
-            "\12\135",
+        "\2\uffff\1\76\5\uffff\1\20\1\17\4\uffff\1\21";
+    static final String DFA29_specialS =
+        "\u018e\uffff}>";
+    static final String[] DFA29_transitionS = {
+            "\2\26\2\uffff\1\26\22\uffff\1\26\1\uffff\1\50\1\uffff\1\34\2"+
+            "\uffff\1\51\1\27\1\31\1\42\1\44\1\33\1\45\1\25\1\43\1\35\11"+
+            "\36\1\47\1\uffff\1\41\1\37\1\40\1\46\1\uffff\32\34\4\uffff\1"+
+            "\34\1\uffff\1\1\1\2\1\3\1\4\1\5\1\6\1\7\1\10\1\11\1\12\1\13"+
+            "\1\14\1\15\1\16\1\17\3\34\1\20\1\21\1\22\1\23\1\24\3\34\1\30"+
+            "\1\uffff\1\32\2\uffff\uff7f\34",
+            "\1\53\11\uffff\1\52\1\uffff\1\56\4\uffff\1\55\2\uffff\1\54",
+            "\1\61\11\uffff\1\57\11\uffff\1\60",
+            "\1\64\15\uffff\1\63\5\uffff\1\62",
+            "\1\65\3\uffff\1\66",
+            "\1\72\1\73\1\70\4\uffff\1\67\4\uffff\1\71",
+            "\1\75\3\uffff\1\74\14\uffff\1\76",
+            "\1\77",
+            "\1\100",
+            "\1\101\4\uffff\1\102",
+            "\1\103",
+            "\1\104",
+            "\1\107\3\uffff\1\105\5\uffff\1\106",
+            "\1\113\3\uffff\1\112\3\uffff\1\111\5\uffff\1\110",
+            "\1\116\11\uffff\1\115\5\uffff\1\114",
+            "\1\122\3\uffff\1\121\13\uffff\1\120\2\uffff\1\117",
+            "\1\123\3\uffff\1\127\5\uffff\1\126\1\uffff\1\125\3\uffff\1\124",
+            "\1\132\11\uffff\1\131\6\uffff\1\130",
+            "\1\134\1\uffff\1\133",
+            "\1\135",
+            "\1\136",
+            "\12\137",
+            "",
+            "",
+            "\1\143\17\uffff\1\142",
+            "",
+            "",
+            "",
+            "",
+            "\1\147\1\uffff\10\145\2\146\1\153\12\uffff\1\152\6\uffff\1\154"+
+            "\13\uffff\1\144\13\uffff\1\151\2\152\5\uffff\1\154\13\uffff"+
+            "\1\144",
+            "\1\147\1\uffff\12\155\1\153\12\uffff\1\152\6\uffff\1\154\27"+
+            "\uffff\1\151\2\152\5\uffff\1\154",
+            "",
+            "\1\156",
+            "\1\161\1\160",
             "",
             "",
             "",
             "",
             "",
-            "\1\141\1\uffff\10\142\2\146\13\uffff\1\143\6\uffff\1\145\13"+
-            "\uffff\1\137\13\uffff\1\144\2\143\5\uffff\1\145\13\uffff\1\137",
-            "\1\141\1\uffff\12\147\13\uffff\1\143\6\uffff\1\145\27\uffff"+
-            "\1\144\2\143\5\uffff\1\145",
-            "",
-            "\1\150",
-            "\1\152\1\153",
             "",
             "",
             "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "\1\156\24\uffff\1\155",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\2\32\1\157\27\32"+
-            "\5\uffff\uff7f\32",
-            "\1\161",
-            "\1\162",
             "\1\163",
             "\1\164",
             "\1\165",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
-            "\1\167",
-            "\1\171\14\uffff\1\170\6\uffff\1\172",
-            "\1\173",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\2\34\1\166\27\34"+
+            "\5\uffff\uff7f\34",
+            "\1\171\24\uffff\1\170",
+            "\1\172",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
             "\1\174",
-            "\1\175\6\uffff\1\176",
-            "\1\177\17\uffff\1\u0080",
+            "\1\175",
+            "\1\u0080\14\uffff\1\177\6\uffff\1\176",
             "\1\u0081",
-            "\1\u0082",
-            "\1\u0083",
+            "\1\u0083\6\uffff\1\u0082",
             "\1\u0084",
             "\1\u0085",
-            "\1\u0086",
-            "\1\u0087",
+            "\1\u0086\17\uffff\1\u0087",
             "\1\u0088",
             "\1\u0089",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\3\32\1\u008a\11\32"+
-            "\1\u008b\14\32\5\uffff\uff7f\32",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
+            "\1\u008a",
+            "\1\u008b",
+            "\1\u008c",
+            "\1\u008d",
             "\1\u008e",
             "\1\u008f",
-            "\1\u0090\23\uffff\1\u0091",
-            "\1\u0092",
-            "\1\u0093\4\uffff\1\u0095\7\uffff\1\u0094",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\3\34\1\u0091\11\34"+
+            "\1\u0090\14\34\5\uffff\uff7f\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
+            "\1\u0094",
+            "\1\u0095",
             "\1\u0096",
-            "\1\u0097",
-            "\1\u0098",
-            "\1\u0099",
-            "\1\u009a",
-            "\1\u009b",
+            "\1\u0097\23\uffff\1\u0098",
+            "\1\u0099\4\uffff\1\u009a\7\uffff\1\u009b",
             "\1\u009c",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\3\32\1\u009d\26\32"+
-            "\5\uffff\uff7f\32",
+            "\1\u009d",
+            "\1\u009e",
             "\1\u009f",
             "\1\u00a0",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
-            "\1\u00a3\7\uffff\1\u00a2",
-            "\1\u00a4",
-            "\1\u00a5",
-            "\1\u00a6",
-            "\1\u00a8\12\uffff\1\u00a7",
-            "\1\u00a9",
-            "\1\u00ac\7\uffff\1\u00ab\13\uffff\1\u00aa",
+            "\1\u00a1",
+            "\1\u00a2",
+            "\1\u00a3",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\3\34\1\u00a4\26\34"+
+            "\5\uffff\uff7f\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
+            "\1\u00a7",
+            "\1\u00a8\7\uffff\1\u00a9",
+            "\1\u00ab\12\uffff\1\u00aa",
+            "\1\u00ac",
             "\1\u00ad",
-            "\1\u00ae\13\uffff\1\u00af",
-            "\1\u00b0",
-            "\1\u00b1",
-            "\1\u00b2",
-            "\12\135\13\uffff\1\143\37\uffff\2\143",
+            "\1\u00ae",
+            "\1\u00af",
+            "\1\u00b2\7\uffff\1\u00b0\13\uffff\1\u00b1",
+            "\1\u00b3",
+            "\1\u00b4\13\uffff\1\u00b5",
+            "\1\u00b6",
+            "\1\u00b7",
+            "\1\u00b8",
+            "\12\137\13\uffff\1\152\37\uffff\2\152",
+            "",
+            "",
+            "\1\u00ba\26\uffff\1\u00ba\122\uffff\1\u00b9",
+            "",
+            "",
+            "\1\147\1\uffff\10\u00bb\2\u00bd\1\153\12\uffff\1\152\36\uffff"+
+            "\1\151\2\152",
+            "\1\147\1\uffff\12\u00bd\1\153\12\uffff\1\152\37\uffff\2\152",
+            "\12\u00be\13\uffff\1\152\37\uffff\2\152",
             "",
             "",
             "",
-            "\12\u00b3\13\uffff\1\143\37\uffff\2\143",
-            "\1\141\1\uffff\10\142\2\146\13\uffff\1\143\36\uffff\1\144\2"+
-            "\143",
             "",
             "",
-            "",
-            "\1\141\1\uffff\12\146\13\uffff\1\143\37\uffff\2\143",
-            "\1\141\1\uffff\12\147\13\uffff\1\143\6\uffff\1\145\27\uffff"+
-            "\1\144\2\143\5\uffff\1\145",
+            "\1\147\1\uffff\12\u00bf\1\153\12\uffff\1\152\6\uffff\1\154\27"+
+            "\uffff\1\151\2\152\5\uffff\1\154",
             "",
             "",
             "",
             "",
             "",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
             "",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
-            "\1\u00bb",
-            "\1\u00bc",
-            "",
-            "\1\u00bd",
-            "\1\u00be",
-            "\1\u00bf",
-            "\1\u00c0",
-            "\1\u00c1",
-            "\1\u00c2",
-            "\1\u00c3",
-            "\1\u00c4",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
             "\1\u00c6",
+            "",
             "\1\u00c7",
             "\1\u00c8",
             "\1\u00c9",
@@ -3910,12 +4403,10 @@ public class JPQLLexer extends Lexer {
             "\1\u00ce",
             "\1\u00cf",
             "\1\u00d0",
-            "\1\u00d1",
-            "",
-            "",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
             "\1\u00d2",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
+            "\1\u00d3",
             "\1\u00d4",
             "\1\u00d5",
             "\1\u00d6",
@@ -3923,328 +4414,360 @@ public class JPQLLexer extends Lexer {
             "\1\u00d8",
             "\1\u00d9",
             "\1\u00da",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
+            "\1\u00db",
+            "\1\u00dc",
+            "",
+            "",
+            "\1\u00dd",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
+            "\1\u00df",
             "\1\u00e0",
             "\1\u00e1",
-            "",
             "\1\u00e2",
             "\1\u00e3",
-            "",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
-            "\1\u00e5",
-            "\1\u00e6",
+            "\1\u00e4",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
             "\1\u00e7",
-            "\1\u00e8",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
-            "\1\u00ea",
-            "\1\u00eb",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
+            "\1\u00e9",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
             "\1\u00ec",
             "\1\u00ed",
+            "",
+            "",
             "\1\u00ee",
             "\1\u00ef",
-            "\1\u00f0",
-            "\1\u00f1",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
             "\1\u00f2",
             "\1\u00f3",
-            "\1\u00f4\3\uffff\1\u00f5",
-            "\12\u00b3\13\uffff\1\143\37\uffff\2\143",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
+            "\1\u00f4",
+            "\1\u00f5",
             "\1\u00f6",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
+            "\1\u00f7",
             "\1\u00f8",
             "\1\u00f9",
             "\1\u00fa",
             "\1\u00fb",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
+            "\1\u00fc",
             "\1\u00fd",
             "\1\u00fe",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
+            "\1\u00ff\3\uffff\1\u0100",
             "",
-            "\1\u0100",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
-            "\1\u0102",
-            "\1\u0103",
-            "\1\u0104",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
+            "",
+            "\1\147\1\uffff\10\u0101\2\u0102\13\uffff\1\152\36\uffff\1\151"+
+            "\2\152",
+            "",
+            "\1\147\1\uffff\12\u0102\13\uffff\1\152\37\uffff\2\152",
+            "\12\u00be\13\uffff\1\152\37\uffff\2\152",
+            "\1\147\1\uffff\12\u0103\13\uffff\1\152\6\uffff\1\154\27\uffff"+
+            "\1\151\2\152\5\uffff\1\154",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
+            "\1\u0105",
             "\1\u0106",
             "\1\u0107",
             "\1\u0108",
             "\1\u0109",
-            "\1\u010a",
-            "\1\u010b",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
-            "",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
+            "\1\u010c",
             "\1\u010d",
             "\1\u010e",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
+            "",
+            "\1\u010f",
             "\1\u0110",
-            "\1\u0111",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
+            "\1\u0112",
             "\1\u0113",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\10\32\1\u0114\21"+
-            "\32\5\uffff\uff7f\32",
+            "\1\u0114",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
             "\1\u0116",
             "\1\u0117",
             "\1\u0118",
-            "",
             "\1\u0119",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
             "",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
+            "\1\u011c",
             "\1\u011d",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
+            "\1\u011e",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
+            "\1\u0120",
+            "",
+            "",
             "\1\u0121",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
-            "\1\u0123",
+            "",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\10\34\1\u0122\21"+
+            "\34\5\uffff\uff7f\34",
+            "",
+            "",
             "\1\u0124",
             "\1\u0125",
             "\1\u0126",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
+            "\1\u0127",
+            "",
+            "",
             "\1\u0128",
-            "\1\u0129",
-            "",
-            "\1\u012a",
-            "\1\u012b",
-            "\1\u012c",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
-            "",
-            "\1\u012e",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
             "\1\u012f",
-            "",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
-            "",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
+            "\1\u0131",
             "\1\u0132",
             "\1\u0133",
+            "\1\u0134",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
+            "\1\u0136",
+            "\1\u0137\1\147\1\uffff\10\u0138\2\u0139\13\uffff\1\152\36\uffff"+
+            "\1\151\2\152",
+            "\1\u0137\1\147\1\uffff\12\u0139\13\uffff\1\152\37\uffff\2\152",
+            "\1\u0137\1\147\1\uffff\12\u013a\13\uffff\1\152\6\uffff\1\154"+
+            "\27\uffff\1\151\2\152\5\uffff\1\154",
             "",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
-            "\1\u0137",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
-            "",
-            "\1\u013a",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
-            "",
+            "\1\u013b",
             "\1\u013c",
-            "\1\u013d",
-            "",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
             "\1\u013e",
             "\1\u013f",
             "",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
+            "",
+            "\1\u0140",
+            "\1\u0141",
             "\1\u0142",
-            "\1\u0143",
-            "",
-            "",
-            "",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
             "\1\u0144",
             "",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
+            "",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
+            "\1\u0149",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
             "",
             "",
-            "\1\u0145",
-            "",
-            "\1\u0146",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
-            "\1\u0148",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
-            "",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
-            "\1\u014b",
             "\1\u014c",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
             "\1\u014e",
             "",
             "\1\u014f",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
+            "\1\u0150",
+            "\1\u0151",
             "",
-            "",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
-            "",
-            "",
-            "",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
-            "",
-            "",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
-            "",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
+            "\1\u0154",
             "\1\u0155",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
+            "\1\u0156",
             "",
             "",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
-            "\1\u015b",
-            "\1\u015c",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
             "",
+            "",
+            "",
+            "",
+            "\1\u0157",
+            "",
+            "\1\u0158",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
+            "\1\u015a",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
+            "",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
+            "",
+            "\1\147\1\uffff\10\u0138\2\u0139\13\uffff\1\152\36\uffff\1\151"+
+            "\2\152",
+            "\1\147\1\uffff\12\u0139\13\uffff\1\152\37\uffff\2\152",
+            "\1\147\1\uffff\12\u013a\13\uffff\1\152\6\uffff\1\154\27\uffff"+
+            "\1\151\2\152\5\uffff\1\154",
+            "\1\u015d",
             "\1\u015e",
             "",
-            "",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
             "\1\u0160",
-            "",
-            "\1\u0161",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
             "\1\u0162",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
+            "",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
             "",
             "",
             "",
             "",
-            "",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
-            "",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
             "",
             "",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
+            "",
+            "\1\u0167",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
             "",
             "",
-            "\1\u0164",
-            "\1\u0165",
-            "",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
-            "",
-            "\1\u0167\17\uffff\1\u0168",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
-            "",
-            "\1\u016b",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
-            "",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
             "\1\u016d",
             "\1\u016e",
-            "",
-            "",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
             "",
             "\1\u0170",
-            "\1\u0171",
             "",
+            "",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
             "\1\u0172",
-            "\1\u0173",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\22\32\1\u0175\7\32"+
-            "\5\uffff\uff7f\32",
             "",
+            "\1\u0173",
+            "",
+            "\1\u0174",
+            "",
+            "",
+            "",
+            "",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "\1\u0176",
             "\1\u0177",
             "",
-            "\1\u0178",
-            "\1\u0179",
-            "\1\u017a",
-            "\1\32\13\uffff\12\32\45\uffff\1\32\1\uffff\32\32\5\uffff\uff7f"+
-            "\32",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
+            "",
+            "\1\u017a\17\uffff\1\u0179",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
+            "",
+            "\1\u017d",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
+            "",
+            "\1\u017f",
+            "\1\u0180",
+            "",
+            "",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
+            "",
+            "\1\u0182",
+            "\1\u0183",
+            "",
+            "\1\u0184",
+            "\1\u0185",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\22\34\1\u0186\7\34"+
+            "\5\uffff\uff7f\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
+            "\1\u0189",
+            "",
+            "",
+            "\1\u018a",
+            "\1\u018b",
+            "\1\u018c",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
+            "\34",
             ""
     };
     
-    static final short[] DFA21_eot = DFA.unpackEncodedString(DFA21_eotS);
-    static final short[] DFA21_eof = DFA.unpackEncodedString(DFA21_eofS);
-    static final char[] DFA21_min = DFA.unpackEncodedStringToUnsignedChars(DFA21_minS);
-    static final char[] DFA21_max = DFA.unpackEncodedStringToUnsignedChars(DFA21_maxS);
-    static final short[] DFA21_accept = DFA.unpackEncodedString(DFA21_acceptS);
-    static final short[] DFA21_special = DFA.unpackEncodedString(DFA21_specialS);
-    static final short[][] DFA21_transition;
+    static final short[] DFA29_eot = DFA.unpackEncodedString(DFA29_eotS);
+    static final short[] DFA29_eof = DFA.unpackEncodedString(DFA29_eofS);
+    static final char[] DFA29_min = DFA.unpackEncodedStringToUnsignedChars(DFA29_minS);
+    static final char[] DFA29_max = DFA.unpackEncodedStringToUnsignedChars(DFA29_maxS);
+    static final short[] DFA29_accept = DFA.unpackEncodedString(DFA29_acceptS);
+    static final short[] DFA29_special = DFA.unpackEncodedString(DFA29_specialS);
+    static final short[][] DFA29_transition;
     
     static {
-        int numStates = DFA21_transitionS.length;
-        DFA21_transition = new short[numStates][];
+        int numStates = DFA29_transitionS.length;
+        DFA29_transition = new short[numStates][];
         for (int i=0; i<numStates; i++) {
-            DFA21_transition[i] = DFA.unpackEncodedString(DFA21_transitionS[i]);
+            DFA29_transition[i] = DFA.unpackEncodedString(DFA29_transitionS[i]);
         }
     }
     
-    class DFA21 extends DFA {
+    class DFA29 extends DFA {
     
-        public DFA21(BaseRecognizer recognizer) {
+        public DFA29(BaseRecognizer recognizer) {
             this.recognizer = recognizer;
-            this.decisionNumber = 21;
-            this.eot = DFA21_eot;
-            this.eof = DFA21_eof;
-            this.min = DFA21_min;
-            this.max = DFA21_max;
-            this.accept = DFA21_accept;
-            this.special = DFA21_special;
-            this.transition = DFA21_transition;
+            this.decisionNumber = 29;
+            this.eot = DFA29_eot;
+            this.eof = DFA29_eof;
+            this.min = DFA29_min;
+            this.max = DFA29_max;
+            this.accept = DFA29_accept;
+            this.special = DFA29_special;
+            this.transition = DFA29_transition;
         }
         public String getDescription() {
-            return "1:1: Tokens : ( ABS | ALL | AND | ANY | AS | ASC | AVG | BETWEEN | BOTH | BY | CASE | COALESCE | CONCAT | COUNT | CURRENT_DATE | CURRENT_TIME | CURRENT_TIMESTAMP | DESC | DELETE | DISTINCT | ELSE | EMPTY | END | ENTRY | ESCAPE | EXISTS | FALSE | FETCH | FROM | GROUP | HAVING | IN | INDEX | INNER | IS | JOIN | KEY | LEADING | LEFT | LENGTH | LIKE | LOCATE | LOWER | MAX | MEMBER | MIN | MOD | NEW | NOT | NULL | NULLIF | OBJECT | OF | OR | ORDER | OUTER | SELECT | SET | SIZE | SQRT | SOME | SUBSTRING | SUM | THEN | TRAILING | TRIM | TRUE | TYPE | UNKNOWN | UPDATE | UPPER | VALUE | WHEN | WHERE | DOT | WS | LEFT_ROUND_BRACKET | RIGHT_ROUND_BRACKET | COMMA | IDENT | HEX_LITERAL | INTEGER_LITERAL | LONG_LITERAL | OCTAL_LITERAL | DOUBLE_LITERAL | FLOAT_LITERAL | EQUALS | GREATER_THAN | GREATER_THAN_EQUAL_TO | LESS_THAN | LESS_THAN_EQUAL_TO | NOT_EQUAL_TO | MULTIPLY | DIVIDE | PLUS | MINUS | POSITIONAL_PARAM | NAMED_PARAM | STRING_LITERAL_DOUBLE_QUOTED | STRING_LITERAL_SINGLE_QUOTED );";
+            return "1:1: Tokens : ( ABS | ALL | AND | ANY | AS | ASC | AVG | BETWEEN | BOTH | BY | CASE | COALESCE | CONCAT | COUNT | CURRENT_DATE | CURRENT_TIME | CURRENT_TIMESTAMP | DESC | DELETE | DISTINCT | ELSE | EMPTY | END | ENTRY | ESCAPE | EXISTS | FALSE | FETCH | FROM | GROUP | HAVING | IN | INDEX | INNER | IS | JOIN | KEY | LEADING | LEFT | LENGTH | LIKE | LOCATE | LOWER | MAX | MEMBER | MIN | MOD | NEW | NOT | NULL | NULLIF | OBJECT | OF | OR | ORDER | OUTER | SELECT | SET | SIZE | SQRT | SOME | SUBSTRING | SUM | THEN | TRAILING | TRIM | TRUE | TYPE | UNKNOWN | UPDATE | UPPER | VALUE | WHEN | WHERE | DOT | WS | LEFT_ROUND_BRACKET | LEFT_CURLY_BRACKET | RIGHT_ROUND_BRACKET | RIGHT_CURLY_BRACKET | COMMA | IDENT | HEX_LITERAL | INTEGER_LITERAL | LONG_LITERAL | OCTAL_LITERAL | DOUBLE_LITERAL | FLOAT_LITERAL | DATE_LITERAL | TIME_LITERAL | TIMESTAMP_LITERAL | DATE_STRING | TIME_STRING | EQUALS | GREATER_THAN | GREATER_THAN_EQUAL_TO | LESS_THAN | LESS_THAN_EQUAL_TO | NOT_EQUAL_TO | MULTIPLY | DIVIDE | PLUS | MINUS | POSITIONAL_PARAM | NAMED_PARAM | STRING_LITERAL_DOUBLE_QUOTED | STRING_LITERAL_SINGLE_QUOTED );";
         }
     }
  

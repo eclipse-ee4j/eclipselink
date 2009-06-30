@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,10 +9,13 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     tware - updates for JPA 2.0 specification
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.parsing;
 
 import java.util.List;
+
+import org.eclipse.persistence.internal.jpa.parsing.TemporalLiteralNode.TemporalType;
 
 /**
  * INTERNAL
@@ -965,9 +968,15 @@ public class NodeFactoryImpl implements NodeFactory {
         return node;
     }
     
-    public Object newCaseClause(int line, int column, List whenClauses, Object elseClause){
-        // TODO: Add implementation
-        throw new RuntimeException("NOT IMPLEMENTED YET");
+    public Object newCaseClause(int line, int column, Object base, List whenClauses, Object elseClause){
+        CaseNode node = new CaseNode();
+        node.setWhenClauses(whenClauses);
+        if (base != null){
+            node.setLeft((Node)base);
+        }
+        node.setRight((Node)elseClause);
+        setPosition(node, line, column);
+        return node;
     }
     
     public Object newCoalesceClause(int line, int column, List clauses){
@@ -986,8 +995,11 @@ public class NodeFactoryImpl implements NodeFactory {
     }
     
     public Object newWhenClause(int line, int column, Object conditionClause, Object thenClause){
-        // TODO: Add implementation
-        throw new RuntimeException("NOT IMPLEMENTED YET");
+        WhenThenNode node = new WhenThenNode();
+        node.setLeft((Node)conditionClause);
+        node.setRight((Node)thenClause);
+        setPosition(node, line, column);
+        return node;
     }
     
     public Object newIndex(int line, int column, Object object){
@@ -996,5 +1008,27 @@ public class NodeFactoryImpl implements NodeFactory {
         setPosition(node, line, column);
         return node;
     }
+    
+    public Object newDateLiteral(int line, int column, Object value){
+        TemporalLiteralNode node = new TemporalLiteralNode(TemporalType.DATE);
+        node.setLiteral(value);
+        setPosition(node, line, column);
+        return node;
+    }
+    
+    public Object newTimeLiteral(int line, int column, Object value){
+        TemporalLiteralNode node = new TemporalLiteralNode(TemporalType.TIME);
+        node.setLiteral(value);
+        setPosition(node, line, column);
+        return node;
+    }
+    
+    public Object newTimeStampLiteral(int line, int column, Object value){
+        TemporalLiteralNode node = new TemporalLiteralNode(TemporalType.TIMESTAMP);
+        node.setLiteral(value);
+        setPosition(node, line, column);
+        return node;
+    }
+    
 }
 

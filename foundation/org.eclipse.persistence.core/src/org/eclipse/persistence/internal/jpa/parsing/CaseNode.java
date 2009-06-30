@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -12,8 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.parsing;
 
-import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.eclipse.persistence.expressions.Expression;
@@ -22,18 +22,19 @@ import org.eclipse.persistence.queries.ReportQuery;
 
 /**
  * INTERNAL
- * <p><b>Purpose</b>: Represent an COALESCE in EJBQL
+ * <p><b>Purpose</b>: Represent an CASE statement in EJBQL
  * <p><b>Responsibilities</b>:<ul>
- * <li> Generate the correct expression for an COALESCE in EJBQL
+ * <li> Generate the correct expression for an CASE in EJBQL
  * </ul>
  *    @author tware
  *    @since EclipseLink 2.0
  */
-public class CoalesceNode extends Node {
+public class CaseNode extends Node {
 
-    private List clauses = null;
+    private List whenClauses = null;
 
-    public CoalesceNode(){
+
+    public CaseNode(){
         super();
     }
     
@@ -46,28 +47,38 @@ public class CoalesceNode extends Node {
         if (theQuery instanceof ReportQuery) {
             ReportQuery reportQuery = (ReportQuery)theQuery;
             Expression expression = generateExpression(generationContext);
-            reportQuery.addItem("Coalesce", expression);
+            reportQuery.addAttribute("Case", expression, (Class)getType());
         }
     }
     
     /**
      * INTERNAL
-     * Generate the a new EclipseLink Coalesce expression for this node.
+     * Generate the a new EclipseLink TableEntryExpression for this node.
      */
     public Expression generateExpression(GenerationContext context) {
-        List expressions = new ArrayList();
-        Iterator i = clauses.iterator();
+        LinkedHashMap whenClauseMap = new LinkedHashMap(whenClauses.size());
+        Iterator i = whenClauses.iterator();
         while (i.hasNext()){
-            expressions.add(((Node)i.next()).generateExpression(context));
+            WhenThenNode clause = (WhenThenNode)i.next();
+            whenClauseMap.put(clause.generateExpressionForWhen(context), clause.generateExpressionForThen(context));
         }
         
-        Expression whereClause = context.getBaseExpression().coalesce(expressions);
+        Expression whereClause = null;
+        if (getLeft() == null){
+            whereClause = context.getBaseExpression().caseStatement(whenClauseMap, getRight().generateExpression(context));
+        } else {
+            whereClause = getLeft().generateExpression(context).caseStatement(whenClauseMap, getRight().generateExpression(context));
+        }
         return whereClause;
     }
     
     public void validate(ParseTreeContext context) {
         TypeHelper typeHelper = context.getTypeHelper();
-        Iterator i = clauses.iterator();
+        if (left != null){
+            left.validate(context);
+        }
+        right.validate(context);
+        Iterator i = whenClauses.iterator();
         Object type = null;
         while (i.hasNext()){
             Node node = ((Node)i.next());
@@ -75,17 +86,21 @@ public class CoalesceNode extends Node {
             if (type == null){
                 type = node.getType();
             } else if (!type.equals(node.getType())){
-                type = typeHelper.getObjectType();
+                type = Object.class;
             }
         }
-        setType(((Node)clauses.get(0)).getType());
+        if (getRight().getType() != type){
+            type = typeHelper.getObjectType();
+        }
+        setType(type);
     }
     
-    public List getClauses() {
-        return clauses;
+    
+    public List getWhenClauses() {
+        return whenClauses;
     }
 
-    public void setClauses(List clauses) {
-        this.clauses = clauses;
+    public void setWhenClauses(List whenClauses) {
+        this.whenClauses = whenClauses;
     }
 }

@@ -53,6 +53,15 @@ public interface TypeHelper {
 
     /** Returns the char type representation.*/
     public Object getCharType();
+    
+    /** Returns the char type representation.*/
+    public Object getSQLDateType();
+    
+    /** Returns the char type representation.*/
+    public Object getTimeType();
+    
+    /** Returns the char type representation.*/
+    public Object getTimestampType();
 
     /** Returns the int type representation.*/
     public Object getIntType();

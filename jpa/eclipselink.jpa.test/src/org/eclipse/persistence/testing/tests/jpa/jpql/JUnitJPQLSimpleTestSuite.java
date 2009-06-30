@@ -18,6 +18,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -166,6 +167,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         suite.addTest(new JUnitJPQLSimpleTestSuite("testOneEqualsOne"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("simpleTypeTest"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("simpleAsOrderByTest"));
+        suite.addTest(new JUnitJPQLSimpleTestSuite("simpleLiteralDateTest"));
         
         return suite;
     }
@@ -2144,6 +2146,22 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         List result = em.createQuery(ejbqlString).getResultList();
 
         Assert.assertTrue("SimpleTypeTest", comparer.compareObjects(result, expectedResult));
+    }
+    
+    public void simpleLiteralDateTest(){
+        EntityManager em = createEntityManager();
+
+        Date date = Date.valueOf("1901-01-01");
+        Expression exp = (new ExpressionBuilder()).get("period").get("startDate").greaterThan(date);
+        Vector expectedResult = (Vector)getServerSession().readAllObjects(Employee.class, exp);
+        
+        clearCache();
+
+        String ejbqlString = "SELECT e FROM Employee e where e.period.startDate > {d '1901-01-01'}";
+
+        List result = em.createQuery(ejbqlString).getResultList();
+
+        Assert.assertTrue("simpleLiteralDateTest", comparer.compareObjects(result, expectedResult));
     }
 }
 

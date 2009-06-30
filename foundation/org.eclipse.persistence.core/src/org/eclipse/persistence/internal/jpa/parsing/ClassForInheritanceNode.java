@@ -31,7 +31,7 @@ public class ClassForInheritanceNode extends Node {
         if (theQuery instanceof ReportQuery) {
             ReportQuery reportQuery = (ReportQuery)theQuery;
             Expression expression = generateExpression(generationContext);
-            reportQuery.addItem(left.resolveAttribute() + " Type", expression);
+            reportQuery.addAttribute(left.resolveAttribute() + " Type", expression, Class.class);
         }
     }
     
@@ -46,7 +46,6 @@ public class ClassForInheritanceNode extends Node {
     }
     
     public void validate(ParseTreeContext context) {
-        TypeHelper typeHelper = context.getTypeHelper();
         left.validate(context);
         setType(Class.class);
     }

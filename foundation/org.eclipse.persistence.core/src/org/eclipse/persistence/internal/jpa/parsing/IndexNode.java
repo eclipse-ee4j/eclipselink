@@ -41,7 +41,7 @@ public class IndexNode extends Node {
         if (theQuery instanceof ReportQuery) {
             ReportQuery reportQuery = (ReportQuery)theQuery;
             Expression expression = generateExpression(generationContext);
-            reportQuery.addItem(left.resolveAttribute() + "Index", expression);
+            reportQuery.addAttribute(left.resolveAttribute() + "Index", expression, Integer.class);
         }
     }
     
@@ -61,6 +61,6 @@ public class IndexNode extends Node {
         if (!left.isVariableNode()){
             throw JPQLException.indexOnlyAllowedOnVariable(context.getQueryInfo(), getLine(), getColumn(), left.getAsString());
         }
-        setType(Integer.class);
+        setType(typeHelper.getIntType());
     }
 }

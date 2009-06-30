@@ -139,6 +139,21 @@ public class BasicTypeHelperImpl {
     public Object getCharType() {
         return char.class;
     }
+    
+    /** Returns the Date type representation.*/
+    public Object getSQLDateType() {
+        return java.sql.Date.class;
+    }
+    
+    /** Returns the Time type representation.*/
+    public Object getTimeType() {
+        return java.sql.Time.class;
+    }
+    
+    /** Returns the timestamp type representation.*/
+    public Object getTimestampType() {
+        return java.sql.Timestamp.class;
+    }
 
     /** Returns the Character class representation.*/
     public Object getCharacterClassType() {

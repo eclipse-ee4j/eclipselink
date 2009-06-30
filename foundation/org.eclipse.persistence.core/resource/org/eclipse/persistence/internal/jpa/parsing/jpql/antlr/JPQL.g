@@ -863,6 +863,7 @@ nonArithmeticScalarExpression returns [Object node]
     | n = functionsReturningStrings {$node = $n.node;}
     | n = literalString {$node = $n.node;}
     | n = literalBoolean {$node = $n.node;}
+    | n = literalTemporal {$node = $n.node;}
     | n = entityTypeExpression {$node = $n.node;}
     ;
 
@@ -903,9 +904,9 @@ scope{
     node = null;
     $simpleCaseExpression::whens = new ArrayList();
 }
-   : a = CASE caseOperand w = simpleWhenClause {$simpleCaseExpression::whens.add($w.node);} (w = simpleWhenClause {$simpleCaseExpression::whens.add($w.node);})* ELSE e = scalarExpression END
+   : a = CASE c = caseOperand w = simpleWhenClause {$simpleCaseExpression::whens.add($w.node);} (w = simpleWhenClause {$simpleCaseExpression::whens.add($w.node);})* ELSE e = scalarExpression END
            {
-               $node = factory.newCaseClause($a.getLine(), $a.getCharPositionInLine(), 
+               $node = factory.newCaseClause($a.getLine(), $a.getCharPositionInLine(), $c.node,
                     $simpleCaseExpression::whens, $e.node); 
            }
    ;
@@ -920,7 +921,7 @@ scope{
 }
    : a = CASE w = whenClause {$generalCaseExpression::whens.add($w.node);} (w = whenClause {$generalCaseExpression::whens.add($w.node);})* ELSE e = scalarExpression END
            {
-               $node = factory.newCaseClause($a.getLine(), $a.getCharPositionInLine(), 
+               $node = factory.newCaseClause($a.getLine(), $a.getCharPositionInLine(), null,
                     $generalCaseExpression::whens, $e.node); 
            }
    ;
@@ -1044,6 +1045,13 @@ literalString returns [Object node]
             $node = factory.newStringLiteral($s.getLine(), $s.getCharPositionInLine(), 
                                             convertStringLiteral($s.getText())); 
         }
+    ;
+
+literalTemporal returns [Object node]
+@init { node = null; }
+    : d = DATE_LITERAL {$node = factory.newDateLiteral($d.getLine(), $d.getCharPositionInLine(), $d.getText()); }
+    | d = TIME_LITERAL {$node = factory.newTimeLiteral($d.getLine(), $d.getCharPositionInLine(), $d.getText()); }
+    | d = TIMESTAMP_LITERAL {$node = factory.newTimeStampLiteral($d.getLine(), $d.getCharPositionInLine(), $d.getText()); }
     ;
 
 inputParameter returns [Object node]
@@ -1379,8 +1387,16 @@ LEFT_ROUND_BRACKET
     : '('
     ;
 
+LEFT_CURLY_BRACKET
+    : '{'
+    ;	
+
 RIGHT_ROUND_BRACKET
     : ')'
+    ;
+    
+RIGHT_CURLY_BRACKET
+    : '}'
     ;
 
 COMMA
@@ -1455,6 +1471,26 @@ EXPONENT
 fragment
 FLOAT_SUFFIX 
     :   'f'
+    ;
+  
+DATE_LITERAL
+    : LEFT_CURLY_BRACKET ('d') (' ' | '\t')+ '\'' DATE_STRING '\'' (' ' | '\t')* RIGHT_CURLY_BRACKET
+    ;
+
+TIME_LITERAL
+    : LEFT_CURLY_BRACKET ('t') (' ' | '\t')+ '\'' TIME_STRING '\'' (' ' | '\t')* RIGHT_CURLY_BRACKET
+    ;
+    
+TIMESTAMP_LITERAL
+    : LEFT_CURLY_BRACKET ('ts') (' ' | '\t')+ '\'' DATE_STRING ' ' TIME_STRING '\'' (' ' | '\t')* RIGHT_CURLY_BRACKET
+    ;
+
+DATE_STRING
+    : '0'..'9' '0'..'9' '0'..'9' '0'..'9' '-' '0'..'9' '0'..'9' '-' '0'..'9' '0'..'9'
+    ;
+    
+TIME_STRING
+    : '0'..'9' ('0'..'9')? ':' '0'..'9' '0'..'9' ':' '0'..'9' '0'..'9' '.' '0'..'9'*
     ;
 
 fragment
