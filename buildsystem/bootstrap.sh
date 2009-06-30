@@ -491,14 +491,14 @@ then
         BUILD_FAILED="true"
     fi
 
-    #if [ "${TESTS_FAILED}" = "true" ]
-    #then
-    #    if [ "${TARG_NM}" = "cb" ]
-    #    then
-    #        # Zip up test results and copy them to appropriate location
-    #        ant ${ANT_BASEARG} -Dtest.result.dest.dir="${FailedNFSDir}" -Dtest.result.zip="TestResult_-${BRANCH_NM}_${TARG_NM}_${START_DATE}.zip" save-tst-results
-    #    fi
-    #fi
+    if [ "${TESTS_FAILED}" = "true" ]
+    then
+        if [ "${TARG_NM}" = "cb" ]
+        then
+            # Zip up test results and copy them to appropriate location
+            ant ${ANT_BASEARG} -Dtest.result.dest.dir="${FailedNFSDir}" -Dtest.result.zip="TestResult_-${BRANCH_NM}_${TARG_NM}_${START_DATE}.zip" save-tst-results
+        fi
+    fi
 
     if [ "${BUILD_FAILED}" = "true" ]
     then
