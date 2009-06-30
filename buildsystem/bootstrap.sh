@@ -101,8 +101,9 @@ else
 fi
 
 echo "Target     ='${TARGET}'"
-echo "Branch name='${BRANCH_NM}'"
+echo "Target name='${TARG_NM}'"
 echo "Branch     ='${BRANCH}'"
+echo "Branch name='${BRANCH_NM}'"
 
 SVN_EXEC=`which svn`
 if [ $? -ne 0 ]
