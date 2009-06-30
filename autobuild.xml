@@ -493,6 +493,14 @@
     <!--       test.result.dest.dir - location of "failed build" result dir              -->
     <!--                                                                                 -->
     <target name="save-tst-results">
+        <echo message="build.root.dir=${build.root.dir}"/>
+        <echo message="${eclipselink.core.test}/${report.dir}/junit-noframes.html"/>
+        <echo message="${eclipselink.jpa.test}/${report.dir}/junit-noframes.html"/>
+        <echo message="${eclipselink.moxy.test}/${report.dir}/jaxb/junit-noframes.html"/>
+        <echo message="${eclipselink.moxy.test}/${report.dir}/oxm/junit-noframes.html"/>
+        <echo message="${eclipselink.sdo.test}/${report.dir}/true/junit-noframes.html"/>
+        <echo message="${eclipselink.dbws.test}/${report.dir}/junit-noframes.html"/>
+        <echo message="${eclipselink.util.dbws.test}/${report.dir}/junit-noframes.html"/>
         <zip destfile="${basedir}/${test.result.zip}">
             <zipfileset dir="${build.root.dir}">
                 <include name="${eclipselink.core.test}/${report.dir}/junit-noframes.html"/>
