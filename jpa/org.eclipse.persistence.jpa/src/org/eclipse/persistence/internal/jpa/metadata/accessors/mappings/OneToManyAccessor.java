@@ -255,7 +255,7 @@ public class OneToManyAccessor extends CollectionAccessor {
             // able to fix this if it becomes a problem). And thirdly, there is 
             // the 'off' chance we've screwed up metadata processing somewhere 
             // ( yeah right! ) so instead of show casing our mistakes, let's 
-            // hide them! :-) Anyway, long story short, if their is no
+            // hide them! :-) Anyway, long story short, if there is no
             // mappingAccessor for the pkField, don't do anything and silently 
             // continue. Best we can do right now ...
             MappingAccessor mappingAccessor = owningDescriptor.getPrimaryKeyAccessorForField(pkField);

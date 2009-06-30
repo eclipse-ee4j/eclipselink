@@ -31,6 +31,9 @@
  *       - 266912: change mappedSuperclassDescriptors Set to a Map
  *          keyed on MetadataClass - avoiding the use of a hashCode/equals
  *          override on RelationalDescriptor, but requiring a contains check prior to a put
+ *     06/25/2009-2.0 Michael O'Brien 
+ *       - 266912: change MappedSuperclass handling in stage2 to pre process accessors
+ *          in support of the custom descriptors holding mappings required by the Metamodel 
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -57,6 +60,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.exceptions.ValidationException;
 
+import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EmbeddableAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
@@ -193,6 +197,12 @@ public class MetadataProject {
     private HashSet<EmbeddableAccessor> m_rootEmbeddableAccessors;
     
     /**
+     * All mappedSuperclass accessors, identity is handled by keying on className.
+     * @since EclipseLink 2.0 for the JPA 2.0 Reference Implementation
+     */
+    private HashMap<String, MappedSuperclassAccessor> m_mappedSuperclassAccessors;
+    
+    /**
      * INTERNAL:
      * Create and return a new MetadataProject with puInfo as its PersistenceUnitInfo, 
      * session as its Session and weavingEnabled as its global dynamic weaving state.
@@ -234,6 +244,8 @@ public class MetadataProject {
         m_converters = new HashMap<String, AbstractConverterMetadata>();
         
         m_accessorsWithDerivedIDs = new HashSet<ClassAccessor>();
+        
+        m_mappedSuperclassAccessors = new HashMap<String, MappedSuperclassAccessor>();
     }
     
     /**
@@ -406,6 +418,47 @@ public class MetadataProject {
             m_mappedSuperclasses.get(className).merge(mappedSuperclass);
         } else {
             m_mappedSuperclasses.put(className, mappedSuperclass);
+        }
+    }
+
+    /**
+     * INTERNAL:
+     *     The metamodel API requires that descriptors exist for 
+     * mappedSuperclasses in order to obtain their mappings.<p>
+     *     In order to accomplish this, this method that is called from EntityAccessor 
+     * will ensure that the descriptors on all mappedSuperclass accessors 
+     * are setup so that they can be specially processed later in 
+     * MetadataProject.processStage2() - where the m_mappedSuperclassAccessors 
+     * Set is required.
+     * <p>
+     *  This method is referenced by EntityAccessor.addPotentialMappedSuperclass()
+     *  </p>
+     * @param metadataClass - the 
+     * @param accessor - The mappedSuperclass accessor for the field on the mappedSuperclass<p>
+     * @since EclipseLink 2.0 for the JPA 2.0 Reference Implementation
+     */    
+    public void addMappedSuperclassAccessor(MetadataClass metadataClass, MappedSuperclassAccessor accessor) {
+        // If metadataClass is null, then get it from the location on the accessor
+        String className = metadataClass.getName();
+        
+        // check for an existing entry before proceeding - as a Map.put() will replace the existing accessor
+        if(null != className && !m_mappedSuperclassAccessors.containsKey(className)) {
+            // Note: set the back pointer from the MetadataDescriptor back to its' accessor manually before we add accessors
+            accessor.getDescriptor().setClassAccessor(accessor);
+            accessor.processAccessType();
+            // Generics Handler: Check if the referenceType is not set for Collection accessors
+            accessor.addAccessors();
+            m_mappedSuperclassAccessors.put(className, accessor);
+            MetadataDescriptor descriptor = accessor.getDescriptor();
+            // Fake out a database table and primary key
+            // We require string names for table processing that does not actually goto the database.
+            // There will be no conflict with customer values
+            // The descriptor is assumed never to be null
+            descriptor.setPrimaryTable(new DatabaseTable(MetadataConstants.MAPPED_SUPERCLASS_RESERVED_TABLE_NAME));
+            descriptor.getClassDescriptor().addPrimaryKeyFieldName(MetadataConstants.MAPPED_SUPERCLASS_RESERVED_PK_NAME);            
+            // We store our descriptor on the core project for later retrieval by MetamodelImpl
+            // Why not on MetadataProject? because the Metadata processing is transient            
+            m_session.getProject().addMappedSuperclass(metadataClass, (RelationalDescriptor)descriptor.getClassDescriptor());
         }
     }
     
@@ -681,6 +734,15 @@ public class MetadataProject {
      */
     public MappedSuperclassAccessor getMappedSuperclass(MetadataClass cls) {
         return m_mappedSuperclasses.get(cls.getName());
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the Set of MappedSuperclassAccessors
+     * @since EclipseLink 2.0 for the JPA 2.0 Reference Implementation
+     */
+    public HashMap<String, MappedSuperclassAccessor> getMappedSuperclassAccessors() {
+        return m_mappedSuperclassAccessors;
     }
     
     /**
@@ -1008,74 +1070,78 @@ public class MetadataProject {
             // into Descriptors and Login
             boolean usesAuto = false;
             for (MetadataClass entityClass : m_generatedValues.keySet()) {
-                MetadataDescriptor descriptor = m_allAccessors.get(entityClass.getName()).getDescriptor();
-                GeneratedValueMetadata generatedValue = m_generatedValues.get(entityClass);
-                String generatorName = generatedValue.getGenerator();
-                
-                if (generatorName == null) {
-                    // Value was loaded from XML (and it wasn't specified) so
-                    // assign it the annotation default of ""
-                    generatorName = "";
-                }
-                
-                Sequence sequence = null;
-                if (! generatorName.equals("")) {
-                    sequence = sequences.get(generatorName);
-                }
-                
-                if (sequence == null) {
-                    String strategy = generatedValue.getStrategy();
-                    
-                    // A null strategy will default to AUTO.
-                    if (strategy == null || strategy.equals(GenerationType.AUTO.name())) {
-                        usesAuto = true;
-                    } else if (strategy.equals(GenerationType.TABLE.name())) {
-                        if (generatorName.equals("")) {
-                            sequence = defaultTableSequence;
-                        } else {
-                            sequence = (Sequence)defaultTableSequence.clone();
-                            sequence.setName(generatorName);
+                // 266912: skip setting sequences if our accessor is null for mappedSuperclasses
+                ClassAccessor accessor = m_allAccessors.get(entityClass.getName());
+                if(null != accessor) {
+                    MetadataDescriptor descriptor = accessor.getDescriptor();
+                    GeneratedValueMetadata generatedValue = m_generatedValues.get(entityClass);
+                    String generatorName = generatedValue.getGenerator();
+
+                    if (generatorName == null) {
+                        // Value was loaded from XML (and it wasn't specified) so
+                        // assign it the annotation default of ""
+                        generatorName = "";
+                    }
+
+                    Sequence sequence = null;
+                    if (! generatorName.equals("")) {
+                        sequence = sequences.get(generatorName);
+                    }
+
+                    if (sequence == null) {
+                        String strategy = generatedValue.getStrategy();
+
+                        // A null strategy will default to AUTO.
+                        if (strategy == null || strategy.equals(GenerationType.AUTO.name())) {
+                            usesAuto = true;
+                        } else if (strategy.equals(GenerationType.TABLE.name())) {
+                            if (generatorName.equals("")) {
+                                sequence = defaultTableSequence;
+                            } else {
+                                sequence = (Sequence)defaultTableSequence.clone();
+                                sequence.setName(generatorName);
+                            }
+                        } else if (strategy.equals(GenerationType.SEQUENCE.name())) {
+                            if (generatorName.equals("")) {
+                                sequence = defaultObjectNativeSequence;
+                            } else {
+                                sequence = (Sequence)defaultObjectNativeSequence.clone();
+                                sequence.setName(generatorName);
+                            }
+                        } else if (strategy.equals(GenerationType.IDENTITY.name())) {
+                            if (generatorName.equals("")) {
+                                sequence = defaultIdentityNativeSequence;
+                            } else {
+                                sequence = (Sequence)defaultIdentityNativeSequence.clone();
+                                sequence.setName(generatorName);
+                            }
                         }
-                    } else if (strategy.equals(GenerationType.SEQUENCE.name())) {
+                    }
+
+                    if (sequence != null) {
+                        descriptor.setSequenceNumberName(sequence.getName());
+                        login.addSequence(sequence);
+                    } else {
+                        String seqName;
+
                         if (generatorName.equals("")) {
-                            sequence = defaultObjectNativeSequence;
+                            if (defaultAutoSequence != null) {
+                                seqName = defaultAutoSequence.getName();
+                            } else {
+                                seqName = DEFAULT_AUTO_GENERATOR; 
+                            }
                         } else {
-                            sequence = (Sequence)defaultObjectNativeSequence.clone();
-                            sequence.setName(generatorName);
+                            seqName = generatorName;
                         }
-                    } else if (strategy.equals(GenerationType.IDENTITY.name())) {
-                        if (generatorName.equals("")) {
-                            sequence = defaultIdentityNativeSequence;
-                        } else {
-                            sequence = (Sequence)defaultIdentityNativeSequence.clone();
-                            sequence.setName(generatorName);
-                        }
+
+                        descriptor.setSequenceNumberName(seqName);
                     }
                 }
 
-                if (sequence != null) {
-                    descriptor.setSequenceNumberName(sequence.getName());
-                    login.addSequence(sequence);
-                } else {
-                    String seqName;
-                    
-                    if (generatorName.equals("")) {
-                        if (defaultAutoSequence != null) {
-                            seqName = defaultAutoSequence.getName();
-                        } else {
-                            seqName = DEFAULT_AUTO_GENERATOR; 
-                        }
-                    } else {
-                        seqName = generatorName;
+                if (usesAuto) {
+                    if (defaultAutoSequence != null) {
+                        login.setDefaultSequence(defaultAutoSequence);
                     }
-                    
-                    descriptor.setSequenceNumberName(seqName);
-                }
-            }
-            
-            if (usesAuto) {
-                if (defaultAutoSequence != null) {
-                    login.setDefaultSequence(defaultAutoSequence);
                 }
             }
         }
@@ -1129,8 +1195,13 @@ public class MetadataProject {
      * @see processStage3
      */
     public void processStage2() {
-        // Mapped superclasses and embeddables are processed through the entity 
-        // processing.
+        // 266912: process mappedSuperclasses separately from entity descriptors
+        for(MappedSuperclassAccessor msAccessor : m_mappedSuperclassAccessors.values()) {
+            if(!msAccessor.isProcessed()) {               
+                msAccessor.processMetamodelDescriptor();    
+            }
+        }
+        
         for (EntityAccessor entity : getEntityAccessors()) {
             // If the accessor hasn't been processed yet, then process it. An
             // EntityAccessor may get fast tracked if it is an inheritance
@@ -1159,7 +1230,7 @@ public class MetadataProject {
 
         // 2 - Process all the direct collection accessors we found. This list
         // does not include direct collections to an embeddable class.
-        processDirectCollectionAccessors();
+         processDirectCollectionAccessors();
         
         // 3 - Process the sequencing metadata now that every entity has a 
         // validated primary key.
@@ -1244,42 +1315,5 @@ public class MetadataProject {
     public boolean weaveEager() {
         return m_weaveEager;
     }
-    
-    /**
-     * INTERNAL:
-     * Add new descriptors for these mapped superclasses to the core project.
-     * The metadataProject handles interaction with the native project.
-     */    
-    public void addMappedSuperclassToProject(MetadataClass metadataClass) {
-        // 266912: store the mapped superclass as a descriptor on the project
-        // for later use by the Metamodel API
-        // We pass through here more than once - we rely on the Set implementation to handle no duplicates
-        RelationalDescriptor msDescriptor = new RelationalDescriptor();
-        msDescriptor.setAlias(metadataClass.getName());
-        // Set the javaClassName only on the descriptor and use this as the key
-        // when the descriptor is part of a set
-        // The javaClass itself will be set on the descriptor later when we have the correct classLoader
-        msDescriptor.setJavaClassName(metadataClass.getName());
-        // Add the mapped superclass to the native project keyed by MetadataClass
-        m_session.getProject().addMappedSuperclass(metadataClass, msDescriptor);
-    }    
-
-    /**
-     * INTERNAL:
-     * get the mapped superclasses stored on the core project.
-     * The metadataProject handles interaction with the native project.
-     * @param metadataClass - java class name key is extracted from the MetadataClass
-     */    
-    public RelationalDescriptor getMappedSuperclassFromProject(Object metadataClass) {
-        // 266912: get the mapped superclass stored on the native project using the descriptor class name as key
-        RelationalDescriptor relationalDescriptor = null;
-        // we only handle classes, return null for Methods, Fields and URLs 
-        if(null != metadataClass && metadataClass instanceof MetadataClass) {
-            relationalDescriptor = m_session.getProject()
-                .getMappedSuperclass(((MetadataClass)metadataClass));
-        }
-        return relationalDescriptor;
-    }    
-    
-}
+ }
 

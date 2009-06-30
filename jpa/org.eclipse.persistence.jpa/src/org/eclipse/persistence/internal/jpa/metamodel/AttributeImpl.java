@@ -7,24 +7,23 @@
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
+ * Contributors: 
+ *     03/19/2009-2.0  dclarke  - initial API start    
+ *     06/30/2009-2.0  mobrien - finish JPA Metadata API modifications in support
+ *       of the Metamodel implementation for EclipseLink 2.0 release involving
+ *       Map, ElementCollection and Embeddable types on MappedSuperclass descriptors
+ *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)  
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
 import javax.persistence.metamodel.Attribute;
-import javax.persistence.metamodel.Bindable;
 import javax.persistence.metamodel.ManagedType;
-import javax.persistence.metamodel.Type;
-import javax.persistence.metamodel.Bindable.BindableType;
 
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.internal.descriptors.InstanceVariableAttributeAccessor;
 import org.eclipse.persistence.internal.descriptors.MethodAttributeAccessor;
-import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.mappings.AttributeAccessor;
 import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.mappings.DirectToFieldMapping;
 
 /**
  * <p>
@@ -37,10 +36,6 @@ import org.eclipse.persistence.mappings.DirectToFieldMapping;
  * 
  * @since EclipseLink 2.0 - JPA 2.0
  *  
- * Contributors: 
- *     03/19/2009-2.0  dclarke  - initial API start    
- *     04/30/2009-2.0  mobrien - finish implementation for EclipseLink 2.0 release
- *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)  
  */ 
 public abstract class AttributeImpl<X, T> implements Attribute<X, T> {
 
@@ -92,11 +87,9 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T> {
         AttributeAccessor accessor = getMapping().getAttributeAccessor();
 
         if (accessor.isMethodAttributeAccessor()) {
-            //return ((MethodAttributeAccessor) accessor).getGetMethod();
             return ((MethodAttributeAccessor) accessor).getGetMethod();
         }
 
-        //return ((InstanceVariableAttributeAccessor) accessor).getAttributeField();
         return ((InstanceVariableAttributeAccessor) accessor).getAttributeField();
     }
     
@@ -146,18 +139,14 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T> {
         if (getMapping().isManyToManyMapping()) {
             return PersistentAttributeType.MANY_TO_MANY;
         }
-
-        
-        // TODO: implement
-        /*
         if (getMapping().isRelationalMapping()) {
             return PersistentAttributeType.MANY_TO_ONE;
         }
         if (getMapping().isRelationalMapping()) {
             return PersistentAttributeType.ELEMENT_COLLECTION;
-        }*/
+        }
 
-        throw new IllegalStateException("Unkonwn mapping type: " + getMapping());
+        throw new IllegalStateException("Unknown mapping type: " + getMapping());
     }
     
     public javax.persistence.metamodel.Bindable.BindableType getBindableType() {

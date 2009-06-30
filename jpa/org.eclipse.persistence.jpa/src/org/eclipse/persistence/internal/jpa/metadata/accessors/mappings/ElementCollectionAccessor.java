@@ -22,6 +22,9 @@
  *       - 278768: JPA 2.0 Association Override Join Table
  *     06/09/2009-2.0 Guy Pelletier 
  *       - 249037: JPA 2.0 persisting list item index
+ *     06/25/2009-2.0 Michael O'Brien 
+ *       - 266912: change MappedSuperclass handling in stage2 to pre process accessors
+ *          in support of the custom descriptors holding mappings required by the Metamodel 
  ******************************************************************************/ 
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -409,6 +412,8 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
      * INTERNAL:
      * If a targetEntity is specified in metadata, it will be set as the 
      * reference class, otherwise we will look to extract one from generics.
+     * <p>
+     * MappedSuperclass descriptors return Void when their parameterized generic reference class is null
      */
     @Override
     public MetadataClass getReferenceClass() {
@@ -420,6 +425,13 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
                 m_referenceClass = getReferenceClassFromGeneric();
         
                 if (m_referenceClass == null) {
+                    // 266912: We do not currently handle resolution of parameterized generic types when the accessor is a MappedSuperclasses
+                    // the validation exception is relaxed in this case.
+                   if(this.getClassAccessor().isMappedSuperclass()) {
+                        // default to Void
+                        return new MetadataClass(this.getMetadataFactory(), Void.class);
+                    }
+                    
                     // Throw an exception. An element collection accessor must 
                     // have a reference class either through generics or a 
                     // specified target class on the mapping metadata.

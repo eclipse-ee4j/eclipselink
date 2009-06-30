@@ -642,6 +642,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
+     * Return whether this ClassAccessor is a MappedSuperclassAccessor
      */
     public boolean isMappedSuperclass() {
         return false;

@@ -24,6 +24,9 @@
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  *     04/24/2009-2.0 Guy Pelletier 
  *       - 270011: JPA 2.0 MappedById support
+ *     06/25/2009-2.0 Michael O'Brien 
+ *       - 266912: change MappedSuperclass handling in stage2 to pre process accessors
+ *          in support of the custom descriptors holding mappings required by the Metamodel 
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
@@ -216,6 +219,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * 4 - public Collection getTasks() => null
      * 5 - public Map getTasks() => null
      * 6 - public Collection<byte[]> getAudio() => byte[].class
+     * 7 - public Map<X,Y> on a MappedSuperclass where Y is defined in the Entity superclass<T> => Void.class (in all bug 266912 cases)
      * TODO: we don't handle multiple levels of generics too well (or at all really :-( )
      */
     public MetadataClass getReferenceClassFromGeneric(MetadataDescriptor descriptor) {
@@ -240,7 +244,15 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
                 // Assume is a generic type variable, find real type.
                 elementClass = descriptor.getGenericType(elementClass);
             }            
-            return getMetadataFactory().getClassMetadata(elementClass);
+            MetadataClass metadataClass = getMetadataFactory().getClassMetadata(elementClass);
+            // 266912: We do not currently handle resolution of the parameterized generic type when the accessor is a MappedSuperclass
+            // elementClass will be null in this case so a lookup of the metadataClass will also return null on our custom descriptor
+            if(null == metadataClass && descriptor.isMappedSuperclass()) {
+                // default to Void for all use case 7 instances above
+                return new MetadataClass(this.getMetadataFactory(), Void.class);
+            } else {
+                return metadataClass;
+            }
         } else {
             return null;
         }

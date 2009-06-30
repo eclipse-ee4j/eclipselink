@@ -27,10 +27,14 @@
  *       - 270011: JPA 2.0 MappedById support
  *     06/16/2009-2.0 Guy Pelletier 
  *       - 277039: JPA 2.0 Cache Usage Settings
+ *     06/25/2009-2.0 Michael O'Brien 
+ *       - 266912: change MappedSuperclass handling in stage2 to pre process accessors
+ *          in support of the custom descriptors holding mappings required by the Metamodel 
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.persistence.AssociationOverride;
@@ -76,6 +80,7 @@ import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerMet
 
 import org.eclipse.persistence.internal.jpa.metadata.locking.OptimisticLockingMetadata;
 
+import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
@@ -432,6 +437,46 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         // Process the common class level attributes that an entity or
         // mapped superclass may define.
         processClassMetadata();
+    }
+    
+    /**
+     * INTERNAL:
+     * Process the accessType for a MappedSuperclass.
+     * This function is referenced by MetadataProject.addMappedSuperclassAccessor().
+     * The overridden function on the subclass must be used in all other cases.
+     * @since EclipseLink 2.0 for the JPA 2.0 Reference Implementation
+     */
+    public void processAccessType() {
+        // 266912: Note: this function is a port of the subclass protected EntityAccessor.processAccessType() minus step 1 and 2
+        String explicitAccessType = getAccess(); 
+        String defaultAccessType = null;
+        // 3 - If there are no mapped superclasses or no mapped superclasses
+        // without an explicit access type. Check where the annotations are
+        // defined on this entity class.
+        if (havePersistenceFieldAnnotationsDefined(getJavaClass().getFields().values())) {
+            defaultAccessType = MetadataConstants.FIELD;
+        } else if (havePersistenceMethodAnnotationsDefined(getJavaClass().getMethods().values())) {
+            defaultAccessType = MetadataConstants.PROPERTY;
+        } else {
+            // 4 - If there are no annotations defined on either the
+            // fields or properties, check for an xml default from
+            // persistence-unit-metadata-defaults or entity-mappings.
+            if (getDescriptor().getDefaultAccess() != null) {
+                defaultAccessType = getDescriptor().getDefaultAccess();
+            } else {
+                // 5 - We've exhausted our search, set the access type to FIELD.
+                defaultAccessType = MetadataConstants.FIELD;
+            }
+        }
+        
+        // Finally set the default access type on the descriptor and log a 
+        // message to the user if we are defaulting the access type for this
+        // entity to use that default.
+        getDescriptor().setDefaultAccess(defaultAccessType);
+        
+        if (explicitAccessType == null) {
+            getLogger().logConfigMessage(MetadataLogger.ACCESS_TYPE, defaultAccessType, getJavaClass());
+        }
     }
     
     /**
@@ -816,6 +861,20 @@ public class MappedSuperclassAccessor extends ClassAccessor {
                     }
                 }
             }
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Used to process mapped superclasses when creating descriptors for a metamodel.
+     * The MappedSuperclass Descriptors here are separate from non-MappedSuperclass Descriptors.
+     * @since EclipseLink 2.0 for the JPA 2.0 Reference Implementation
+     */
+    public void processMetamodelDescriptor() {        
+        for(Iterator<MappedSuperclassAccessor> mappedSuperclassIterator = 
+            getProject().getMappedSuperclassAccessors().values().iterator();
+            mappedSuperclassIterator.hasNext();) {
+            mappedSuperclassIterator.next().processAccessors();
         }
     }
     

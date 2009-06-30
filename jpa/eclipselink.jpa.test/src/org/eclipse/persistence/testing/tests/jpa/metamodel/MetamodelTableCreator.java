@@ -8,15 +8,38 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
  *     04/30/2009-2.0 Michael O'Brien 
  *       - 266912: JPA 2.0 Metamodel API (part of Criteria API) 
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.metamodel;
 
-import org.eclipse.persistence.tools.schemaframework.*;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
+import org.eclipse.persistence.tools.schemaframework.TableCreator;
+import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 
 public class MetamodelTableCreator extends TableCreator {
+    
+    /**
+     * 
+     * DDL schema cleanup order
+DROP TABLE CMP3_MM_MANUF_MM_COMPUTER
+DROP TABLE CMP3_MM_MANUF_MM_HWDESIGNER
+DROP TABLE CMP3_MM_BOARD_MM_MEMORY
+DROP TABLE CMP3_MM_BOARD_MM_PROC
+DROP TABLE CMP3_MM_COMPUTER_MM_USER
+DROP TABLE CMP3_MM_BOARD_SEQ
+
+DROP TABLE CMP3_MM_COMPUTER
+DROP TABLE CMP3_MM_USER
+DROP TABLE CMP3_MM_HWDESIGNER
+DROP TABLE CMP3_MM_MEMORY
+DROP TABLE CMP3_MM_PROC
+DROP TABLE CMP3_MM_LOCATION
+DROP TABLE CMP3_MM_BOARD
+DROP TABLE CMP3_MM_SWDESIGNER
+DROP TABLE CMP3_MM_MANUF
+     */
+    
     public MetamodelTableCreator() {
         setName("MetamodelProject");
 
@@ -121,8 +144,9 @@ public class MetamodelTableCreator extends TableCreator {
         field3.setUnique(false);
         field3.setIsIdentity(false);
         table.addField(field3);
-        
-        // 1:m does not require a JoinTable - only a JoinColumn
+
+        // from MappedSuperclass
+        // m:1 does not require a JoinTable - only a JoinColumn
         FieldDefinition field6 = new FieldDefinition();
         field6.setName("EMPLOYER_PERSON_ID");
         field6.setTypeName("NUMERIC");
@@ -133,7 +157,32 @@ public class MetamodelTableCreator extends TableCreator {
         field6.setIsIdentity(false);
         field6.setForeignKeyFieldName("CMP3_MM_MANUF.PERSON_ID");
         table.addField(field6);        
-        
+
+        // from MappedSuperclass
+        // 1:1 unidrectional
+        FieldDefinition field7 = new FieldDefinition();
+        field7.setName("PRIME_EMPLOYER_PERSON_ID");
+        field7.setTypeName("NUMERIC");
+        field7.setSize(15);
+        field7.setShouldAllowNull(false);
+        field7.setIsPrimaryKey(false);
+        field7.setUnique(false);
+        field7.setIsIdentity(false);
+        field7.setForeignKeyFieldName("CMP3_MM_MANUF.PERSON_ID");
+        table.addField(field7);        
+
+        // m:1 does not require a JoinTable - only a JoinColumn
+        FieldDefinition field8 = new FieldDefinition();
+        field8.setName("SEC_EMPLOYER_PERSON_ID");
+        field8.setTypeName("NUMERIC");
+        field8.setSize(15);
+        field8.setShouldAllowNull(false);
+        field8.setIsPrimaryKey(false);
+        field8.setUnique(false);
+        field8.setIsIdentity(false);
+        field8.setForeignKeyFieldName("CMP3_MM_MANUF.PERSON_ID");
+        table.addField(field8);        
+
         
         return table;
     }
@@ -171,6 +220,45 @@ public class MetamodelTableCreator extends TableCreator {
         field3.setUnique(false);
         field3.setIsIdentity(false);
         table.addField(field3);
+        
+        // from MappedSuperclass
+/*        // 1:m does not require a JoinTable - only a JoinColumn
+        FieldDefinition field6 = new FieldDefinition();
+        field6.setName("EMPLOYER_PERSON_ID");
+        field6.setTypeName("NUMERIC");
+        field6.setSize(15);
+        field6.setShouldAllowNull(false);
+        field6.setIsPrimaryKey(false);
+        field6.setUnique(false);
+        field6.setIsIdentity(false);
+        field6.setForeignKeyFieldName("CMP3_MM_MANUF.PERSON_ID");
+        table.addField(field6);
+*/        
+        // from MappedSuperclass
+        // 1:1 unidrectional
+        FieldDefinition field7 = new FieldDefinition();
+        field7.setName("PRIME_EMPLOYER_PERSON_ID");
+        field7.setTypeName("NUMERIC");
+        field7.setSize(15);
+        field7.setShouldAllowNull(false);
+        field7.setIsPrimaryKey(false);
+        field7.setUnique(false);
+        field7.setIsIdentity(false);
+        field7.setForeignKeyFieldName("CMP3_MM_MANUF.PERSON_ID");
+        table.addField(field7);        
+
+        // m:1 does not require a JoinTable - only a JoinColumn
+        FieldDefinition field8 = new FieldDefinition();
+        field8.setName("SEC_EMPLOYER_PERSON_ID");
+        field8.setTypeName("NUMERIC");
+        field8.setSize(15);
+        field8.setShouldAllowNull(false);
+        field8.setIsPrimaryKey(false);
+        field8.setUnique(false);
+        field8.setIsIdentity(false);
+        field8.setForeignKeyFieldName("CMP3_MM_MANUF.PERSON_ID");
+        table.addField(field8);        
+        
         
         return table;
     }
@@ -246,6 +334,7 @@ public class MetamodelTableCreator extends TableCreator {
         field3.setIsIdentity(false);
         table.addField(field3);
 
+        // Bidirectional OneToOne with Location.computer
         FieldDefinition field5 = new FieldDefinition();
         field5.setName("LOCATION_LOCATION_ID");
         field5.setTypeName("NUMERIC");
@@ -421,6 +510,18 @@ public class MetamodelTableCreator extends TableCreator {
         field3.setIsIdentity(false);
         table.addField(field3);
 
+        // Bidirectional OneToOne with Computer.location - unidirectional for now
+/*        FieldDefinition field5 = new FieldDefinition();
+        field5.setName("COMPUTER_COMPUTER_ID");
+        field5.setTypeName("NUMERIC");
+        field5.setSize(15);
+        field5.setShouldAllowNull(false);
+        field5.setIsPrimaryKey(false);
+        field5.setUnique(false);
+        field5.setIsIdentity(false);
+        field5.setForeignKeyFieldName("CMP3_MM_COMPUTER.COMPUTER_ID");
+        table.addField(field5);
+*/
         return table;
     }
     

@@ -7,14 +7,17 @@
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
+ * Contributors: 
+ *     03/19/2009-2.0  dclarke  - initial API start    
+ *     06/30/2009-2.0  mobrien - finish JPA Metadata API modifications in support
+ *       of the Metamodel implementation for EclipseLink 2.0 release involving
+ *       Map, ElementCollection and Embeddable types on MappedSuperclass descriptors
+ *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)  
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
 import java.util.Set;
 
-import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.CollectionAttribute;
 import javax.persistence.metamodel.EmbeddableType;
 import javax.persistence.metamodel.ListAttribute;
@@ -35,10 +38,6 @@ import org.eclipse.persistence.descriptors.RelationalDescriptor;
  * 
  * @since EclipseLink 2.0 - JPA 2.0
  *  
- * Contributors: 
- *     03/19/2009-2.0  dclarke  - initial API start    
- *     04/30/2009-2.0  mobrien - finish implementation for EclipseLink 2.0 release
- *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)  
  */ 
 public class EmbeddableTypeImpl<X> extends ManagedTypeImpl<X> implements EmbeddableType<X> {
 
@@ -60,23 +59,11 @@ public class EmbeddableTypeImpl<X> extends ManagedTypeImpl<X> implements Embedda
         return null;
     }
 
-/*    @Override
-    public Set<AbstractCollection<? super X, ?, ?>> getCollections() {
-        // TODO Auto-generated method stub
-        return null;
-    }*/
-
     @Override
     public <E> CollectionAttribute<X, E> getDeclaredCollection(String name, Class<E> elementType) {
         // TODO Auto-generated method stub
         return null;
     }
-
-/*    @Override
-    public Set<AbstractCollection<X, ?, ?>> getDeclaredCollections() {
-        // TODO Auto-generated method stub
-        return null;
-    }*/
 
     @Override
     public <E> ListAttribute<X, E> getDeclaredList(String name, Class<E> elementType) {
@@ -101,13 +88,7 @@ public class EmbeddableTypeImpl<X> extends ManagedTypeImpl<X> implements Embedda
         // TODO Auto-generated method stub
         return null;
     }
-
     
-    public Attribute<X, ?> getDeclaredAttribute(String name) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
     public CollectionAttribute<X, ?> getDeclaredCollection(String name) {
         // TODO Auto-generated method stub
         return null;

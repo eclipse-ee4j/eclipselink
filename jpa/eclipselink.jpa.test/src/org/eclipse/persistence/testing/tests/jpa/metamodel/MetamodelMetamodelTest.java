@@ -8,22 +8,21 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
+ *     06/30/2009-2.0  mobrien - finish JPA Metadata API modifications in support
+ *       of the Metamodel implementation for EclipseLink 2.0 release involving
+ *       Map, ElementCollection and Embeddable types on MappedSuperclass descriptors
+ *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)  
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.metamodel;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.criteria.QueryBuilder;
-import javax.persistence.metamodel.EntityType;
+import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.Metamodel;
 
 import junit.framework.Test;
@@ -34,18 +33,12 @@ import org.eclipse.persistence.internal.jpa.metamodel.EntityTypeImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.MappedSuperclassTypeImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.MetamodelImpl;
 import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.sessions.server.ServerSession;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
-import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
-import org.eclipse.persistence.testing.models.jpa.metamodel.ArrayProcessor;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Board;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Computer;
 import org.eclipse.persistence.testing.models.jpa.metamodel.HardwareDesigner;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Location;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Memory;
-import org.eclipse.persistence.testing.models.jpa.metamodel.Person;
-import org.eclipse.persistence.testing.models.jpa.metamodel.Processor;
 import org.eclipse.persistence.testing.models.jpa.metamodel.SoftwareDesigner;
 import org.eclipse.persistence.testing.models.jpa.metamodel.User;
 import org.eclipse.persistence.testing.models.jpa.metamodel.VectorProcessor;
@@ -140,6 +133,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             manufacturer.setComputers(computersList);
             manufacturer.setHardwareDesigners(hardwareDesigners);
             hardwareDesigner1.setEmployer(manufacturer);
+            hardwareDesigner1.setPrimaryEmployer(manufacturer);
+            hardwareDesigner1.setSecondaryEmployer(manufacturer);
             computer1.setManufacturer(manufacturer);
             computer2.setManufacturer(manufacturer);
             board1.setMemories(memories);
@@ -148,6 +143,10 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             board1.setProcessors(processors);
             //arrayProcessor1.setBoard(board1);
             vectorProcessor1.setBoard(board1);            
+            
+            softwareDesigner1.setPrimaryEmployer(manufacturer);
+            softwareDesigner1.setSecondaryEmployer(manufacturer);
+            
             
             // set 1:1 relationships
             computer1.setLocation(location1);
@@ -257,16 +256,30 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             //System.out.println("_entityManufacturer.getSupertype(): " + entityManufacturer.getSupertype());
             //entityManufacturer.getVersion(manufacturer.getVersion());
 
+            
+            // Normal use cases
+            // Composite table FK's that include a MappedSuperclass
+            // get an Attribute<Container, Type==String>
+            Attribute nameAttribute = entityManufacturer.getAttribute("name");
+            assertTrue(null != nameAttribute);
+            
+            // get an Attribute<Container, Type==MappedSuperclass>
+            Attribute employerAttribute = entityHardwareDesigner.getAttribute("employer");
+            assertTrue(null != employerAttribute);
+
+            
 
             // Variant use cases
             try {
                 //System.out.println("_entityManufacturer.getDeclaredCollection(type): " + entityManufacturer.getDeclaredCollection("name", String.class));
+                // Ask for a Collection using a String type - invalid
                 entityManufacturer.getDeclaredCollection("name", String.class);
             } catch (Exception e) {
-                exceptionThrown = true;
+                // This exception is expected here
+                exceptionThrown = true;                
                 //e.printStackTrace();
             }
-            //assertTrue(exceptionThrown);
+            assertTrue(exceptionThrown);
             exceptionThrown = false;
             
             //System.out.println("_entityManufacturer.getDeclaredCollection(): " + entityManufacturer.getDeclaredCollection("name"));            
@@ -298,11 +311,10 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             }
             assertTrue(count > 0);
             
-            
-            
-            
         } catch (Exception e) {
+            // we enter here on a failed commit() - for example if the table schema is incorrectly defined
             e.printStackTrace();
+            exceptionThrown = true;
         } finally {
             assertFalse(exceptionThrown);
             //finalizeForTest(em, entityMap);
@@ -326,7 +338,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                     
                     em.getTransaction().commit();
 */            } catch (Exception e) {
-                e.printStackTrace();
+                    e.printStackTrace();
             } finally {
                 if(null != em) {
                     cleanup(em);

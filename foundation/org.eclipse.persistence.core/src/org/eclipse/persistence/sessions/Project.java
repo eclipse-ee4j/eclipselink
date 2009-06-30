@@ -96,7 +96,8 @@ public class Project implements Serializable, Cloneable {
      * Mapped Superclasses (JPA 2) collection of parent non-relational descriptors keyed on MetadataClass
      * without creating a compile time dependency on JPA.
      * The descriptor values of this map must not be replaced by a put() so that the 
-     * mappings on the initial descriptor are not overwritten.
+     * mappings on the initial descriptor are not overwritten.<p>
+     * @since EclipseLink 2.0 for the JPA 2.0 Reference Implementation
      */
     protected Map<Object, RelationalDescriptor> mappedSuperclassDescriptors;
     

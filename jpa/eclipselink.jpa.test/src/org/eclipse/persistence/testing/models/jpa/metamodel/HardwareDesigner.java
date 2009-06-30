@@ -8,18 +8,22 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
+ *     06/30/2009-2.0  mobrien - finish JPA Metadata API modifications in support
+ *       of the Metamodel implementation for EclipseLink 2.0 release involving
+ *       Map, ElementCollection and Embeddable types on MappedSuperclass descriptors
+ *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)  
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.metamodel;
 
-import java.util.HashSet;
-import java.util.Collection;
-import javax.persistence.*;
-
 import static javax.persistence.FetchType.EAGER;
-import static javax.persistence.GenerationType.*;
-import static javax.persistence.CascadeType.*;
-import org.eclipse.persistence.annotations.Cache;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Version;
 
 @Entity(name="HardwareDesignerMetamodel")
 @Table(name="CMP3_MM_HWDESIGNER")

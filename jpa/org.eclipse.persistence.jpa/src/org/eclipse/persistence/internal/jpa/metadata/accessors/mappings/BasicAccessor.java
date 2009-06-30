@@ -25,8 +25,6 @@
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  *     04/24/2009-2.0 Guy Pelletier 
  *       - 270011: JPA 2.0 MappedById support
- *     04/30/2009-2.0 Michael O'Brien 
- *       - 266912: JPA 2.0 Metamodel API (part of Criteria API)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -326,26 +324,6 @@ public class BasicAccessor extends DirectAccessor {
         if (m_sequenceGenerator != null) {
             getProject().addSequenceGenerator(m_sequenceGenerator);
         }
-        
-        // 266912: Also, add mapping to the mapped superclass descriptor collection on the project
-        // This object could be URL, Class, Method or Field
-        Object key = this.getClassAccessor().getLocation();
-        // Get mapped superclass on the descriptor if present
-        ClassAccessor classAccessor = getClassAccessor();
-        if(classAccessor.isMappedSuperclass()) {
-            RelationalDescriptor msDescriptor = getProject().getMappedSuperclassFromProject(key);
-            // we only handle classes and skip, Methods, Fields and URLs
-            if(null != msDescriptor) {
-                // Do we clone this mapping (yes if we customize it for the mappedSuperclass)
-                DirectToFieldMapping msMapping = (DirectToFieldMapping)mapping.clone(); // deep copy
-                // remove pointer to old descriptor (inheriting child class)
-                msMapping.setDescriptor(null);
-                // add mapping to new descriptor and vice-versa
-                msDescriptor.addMapping(msMapping);
-                // TODO: set the javaClass now on the descriptor - as we have the correct classLoader
-                //msDescriptor.setJavaClass(theJavaClass);         
-            }
-        }        
     }
 
     /**

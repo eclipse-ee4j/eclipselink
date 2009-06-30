@@ -7,8 +7,12 @@
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
+ * Contributors: 
+ *     03/19/2009-2.0  dclarke  - initial API start    
+ *     06/30/2009-2.0  mobrien - finish JPA Metadata API modifications in support
+ *       of the Metamodel implementation for EclipseLink 2.0 release involving
+ *       Map, ElementCollection and Embeddable types on MappedSuperclass descriptors
+ *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)  
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
@@ -25,13 +29,10 @@ import javax.persistence.metamodel.BasicType;
  * 
  * @since EclipseLink 2.0 - JPA 2.0
  *  
- * Contributors: 
- *     03/19/2009-2.0   
- *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)  
  */ 
-public class BasicImpl<X> extends TypeImpl<X> implements BasicType<X> {
+public class BasicTypeImpl<X> extends TypeImpl<X> implements BasicType<X> {
 
-    protected BasicImpl(Class javaClass) {
+    protected BasicTypeImpl(Class javaClass) {
         super(javaClass);
     }
 

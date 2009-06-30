@@ -39,6 +39,9 @@
  *       - 278768: JPA 2.0 Association Override Join Table
  *     06/16/2009-2.0 Guy Pelletier 
  *       - 277039: JPA 2.0 Cache Usage Settings
+ *     06/25/2009-2.0 Michael O'Brien 
+ *       - 266912: add isMappedSuperclass() helper function in support
+ *         of MappedSuperclass handling for the Metamodel API. 
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -111,7 +114,7 @@ public class MetadataDescriptor {
     private ClassAccessor m_classAccessor;
     private ClassDescriptor m_descriptor;
     private DatabaseTable m_primaryTable;
-    // The embedded id accessor for this descritor if one exists.
+    // The embedded id accessor for this descriptor if one exists.
     private EmbeddedIdAccessor m_embeddedIdAccessor;
     
     private List<String> m_idAttributeNames;
@@ -1131,6 +1134,15 @@ public class MetadataDescriptor {
      */
     public boolean isInheritanceSubclass() {
         return m_inheritanceParentDescriptor != null;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return whether the ClassAccessor on this MetadataDescriptor is a MappedSuperclassAccessor.
+     * @since EclipseLink 2.0 for the JPA 2.0 Reference Implementation
+     */
+    public boolean isMappedSuperclass() {
+        return getClassAccessor().isMappedSuperclass();
     }
     
     /**

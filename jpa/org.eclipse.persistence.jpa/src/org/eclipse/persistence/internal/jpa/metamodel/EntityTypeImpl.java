@@ -7,14 +7,26 @@
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
+ * Contributors: 
+ *     03/19/2009-2.0  dclarke  - initial API start    
+ *     06/30/2009-2.0  mobrien - finish JPA Metadata API modifications in support
+ *       of the Metamodel implementation for EclipseLink 2.0 release involving
+ *       Map, ElementCollection and Embeddable types on MappedSuperclass descriptors
+ *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)  
+ *     
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
 import java.util.Set;
 
-import javax.persistence.metamodel.*;
+import javax.persistence.metamodel.Attribute;
+import javax.persistence.metamodel.CollectionAttribute;
+import javax.persistence.metamodel.EntityType;
+import javax.persistence.metamodel.ListAttribute;
+import javax.persistence.metamodel.MapAttribute;
+import javax.persistence.metamodel.PluralAttribute;
+import javax.persistence.metamodel.SingularAttribute;
+import javax.persistence.metamodel.Type;
 
 import org.eclipse.persistence.descriptors.CMPPolicy;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
@@ -25,6 +37,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
  * <p>
  * <b>Purpose</b>: Provides the implementation for the EntityType interface 
  *  of the JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)
+ * <br>EntityTypeImpl implements the IdentifiableType interface via EntityType
  * <p>
  * <b>Description</b>: 
  * 
@@ -32,13 +45,8 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
  * 
  * @since EclipseLink 2.0 - JPA 2.0
  *  
- * Contributors: 
- *     03/19/2009-2.0  dclarke  - initial API start    
- *     04/30/2009-2.0  mobrien - finish implementation for EclipseLink 2.0 release
- *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)  
  */ 
-public class EntityTypeImpl<X> extends ManagedTypeImpl<X> implements EntityType<X>, Bindable<X> {
-//public class EntityTypeImpl<X> extends IdentifiableTypeImpl<X> implements EntityType<X>, Bindable<X> {
+public class EntityTypeImpl<X> extends ManagedTypeImpl<X> implements EntityType<X> {
     // TODO: getSet(String) and getSet(String, Class) need to be overridden here
     
     protected EntityTypeImpl(MetamodelImpl metamodel, RelationalDescriptor descriptor) {
@@ -184,13 +192,6 @@ public class EntityTypeImpl<X> extends ManagedTypeImpl<X> implements EntityType<
     public <E> CollectionAttribute<X, E> getDeclaredCollection(String name, Class<E> elementType) {
         return getCollectionHelper(name, elementType, true);
     }
-/*
-    @Override
-    // TODO: Why is get*Collections the only function that returns a java.util.Set instead of a javax.persistence.metamodel.Set
-    public java.util.Set<AbstractCollection<X, ?, ?>> getDeclaredCollections() {
-        // TODO Auto-generated method stub
-        return (java.util.Set<AbstractCollection<X, ?, ?>>) this.getMembers();
-    }*/
 
     @Override
     public <E> ListAttribute<X, E> getDeclaredList(String name, Class<E> elementType) {
@@ -247,10 +248,6 @@ public class EntityTypeImpl<X> extends ManagedTypeImpl<X> implements EntityType<
     }
     
     
-    public boolean hasIdAttribute() {
-        return false;
-    }
- 
     public ListAttribute<X, ?> getDeclaredList(String name) {
         // TODO: What is the difference between getDeclaredList and getList
         return (ListAttribute<X, ?>) this.getMembers().get(name);
@@ -272,8 +269,7 @@ public class EntityTypeImpl<X> extends ManagedTypeImpl<X> implements EntityType<
             java.util.List<DatabaseMapping> pkMappings = getDescriptor().getObjectBuilder().getPrimaryKeyMappings();
             
             if (pkMappings.size() == 1) {
-                @SuppressWarnings("unused")
-				Class aClass = pkMappings.get(0).getAttributeClassification();
+                //Class aClass = pkMappings.get(0).getAttributeClassification();
                 // Basic Type?
                 return null;//new BasicImpl(aClass);
             }
@@ -281,18 +277,12 @@ public class EntityTypeImpl<X> extends ManagedTypeImpl<X> implements EntityType<
         
         if (cmpPolicy instanceof CMP3Policy) {
             // EntityType or IdentifiableType?
-            @SuppressWarnings("unused")
-			Class aClass = ((CMP3Policy) cmpPolicy).getPKClass();
+            //Class aClass = ((CMP3Policy) cmpPolicy).getPKClass();
             return this.getSupertype();
         }
         
         // TODO: Error message for incompatible JPA config
         throw new IllegalStateException("?");
-    }
-
-    public Attribute<X, ?> getDeclaredAttribute(String name) {
-        // TODO Auto-generated method stub
-        return (Attribute<X, ?>) this.getMembers().get(name);
     }
 
     public Set<SingularAttribute<? super X, ?>> getIdClassAttributes() {
@@ -312,7 +302,7 @@ public class EntityTypeImpl<X> extends ManagedTypeImpl<X> implements EntityType<
 
     public Set<PluralAttribute<? super X, ?, ?>> getCollections() {
         // TODO Auto-generated method stub
-        return null;
+        return (Set<PluralAttribute<? super X, ?, ?>>) this.getMembers();
     }
 
     public Set<PluralAttribute<X, ?, ?>> getDeclaredCollections() {

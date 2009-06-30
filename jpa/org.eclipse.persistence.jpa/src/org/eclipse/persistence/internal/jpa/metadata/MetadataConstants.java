@@ -29,4 +29,9 @@ public class MetadataConstants {
     /** AccessType enum values */
     public static final String FIELD = "FIELD";
     public static final String PROPERTY = "PROPERTY";
+
+    /** Metamodel processing for MappedSuperclasses non-functional names */
+    public static final String MAPPED_SUPERCLASS_RESERVED_PK_NAME = "__PK_METAMODEL_RESERVED_IN_MEM_ONLY_FIELD_NAME";
+    public static final String MAPPED_SUPERCLASS_RESERVED_TABLE_NAME = "__METAMODEL_RESERVED_IN_MEM_ONLY_TABLE_NAME";    
+
 }

@@ -30,6 +30,11 @@
  *       - 270011: JPA 2.0 MappedById support
  *     06/02/2009-2.0 Guy Pelletier 
  *       - 278768: JPA 2.0 Association Override Join Table
+ *     06/25/2009-2.0 Michael O'Brien 
+ *       - 266912: change MappedSuperclass handling in stage2 to pre process accessors
+ *          in support of the custom descriptors holding mappings required by the Metamodel. 
+ *          We handle undefined parameterized generic types for a MappedSuperclass defined
+ *          Map field by returning Void in this case.
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -55,6 +60,7 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.indirection.TransparentIndirectionPolicy;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.AccessMethodsMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
@@ -506,8 +512,9 @@ public abstract class MappingAccessor extends MetadataAccessor {
     /**
      * INTERNAL:
      * Return the map key reference class for this accessor if applicable. It 
-     * will try to extract a reference class from a generic specification. If 
-     * no generics are used, then it will return void.class. This avoids NPE's 
+     * will try to extract a reference class from a generic specification.<p>
+     * Parameterized generic keys on a MappedSuperclass will return void.class.<p>  
+     * If no generics are used, then it will return void.class. This avoids NPE's 
      * when processing JPA converters that can default (Enumerated and Temporal) 
      * based on the reference class.
      */
@@ -517,8 +524,26 @@ public abstract class MappingAccessor extends MetadataAccessor {
         
             if (referenceClass == null) {
                 throw ValidationException.unableToDetermineMapKeyClass(getAttributeName(), getJavaClass());
-            }
+            }            
         
+            /**
+             * 266912:  Use of parameterized generic types like Map<X,Y> inherits from class<T> in a MappedSuperclass field
+             * will cause referencing issues - as in we are unable to determine the correct type for T.
+             * A workaround for this is to detect when we are in this state and return a standard top level class.
+             * An invalid class will be of the form MetadataClass.m_name="T" 
+             */
+            if(this.getClassAccessor().isMappedSuperclass()) {
+                // Determine whether we are directly referencing a class or using a parameterized generic reference
+                // by trying to load the class and catching any validationException.
+                // If we do not get an exception on getClass then the referenceClass.m_name is valid and should be directly returned
+                try {
+                    MetadataHelper.getClassForName(referenceClass.getName(), getMetadataFactory().getLoader());
+                } catch (ValidationException exception) {
+                    // Default to Void for parameterized types
+                    // Ideally we would need a MetadataClass.isParameterized() to inform us instead.
+                    return new MetadataClass(this.getMetadataFactory(), Void.class);
+                }                          
+            }
             return referenceClass;
         } else {
             return getMetadataFactory().getClassMetadata(void.class.getName());
@@ -1271,7 +1296,6 @@ public abstract class MappingAccessor extends MetadataAccessor {
      */
     protected String processMapKey(String mapKey, CollectionMapping mapping) {
         MetadataDescriptor referenceDescriptor = getReferenceDescriptor();
-            
         if ((mapKey == null || mapKey.equals("")) && referenceDescriptor.hasCompositePrimaryKey()) {
             // No persistent property or field name has been provided, and the 
             // reference class has a composite primary key class.  Return null,
@@ -1287,7 +1311,12 @@ public abstract class MappingAccessor extends MetadataAccessor {
             // Look up the referenceAccessor
             MetadataAccessor referenceAccessor = referenceDescriptor.getAccessorFor(fieldOrPropertyName);
             if (referenceAccessor == null) {
-                throw ValidationException.couldNotFindMapKey(fieldOrPropertyName, referenceDescriptor.getJavaClass(), mapping);
+                // 266912: relax validation for MappedSuperclass descriptors when the map key is an unresolved generic type
+                if(!referenceDescriptor.isMappedSuperclass()) {
+                    throw ValidationException.couldNotFindMapKey(fieldOrPropertyName, referenceDescriptor.getJavaClass(), mapping);
+                } else {
+                    return null;
+                }
             }
         
             return referenceAccessor.getAccessibleObjectName();

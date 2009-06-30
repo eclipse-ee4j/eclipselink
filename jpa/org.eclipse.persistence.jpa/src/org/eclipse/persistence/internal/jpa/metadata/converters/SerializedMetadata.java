@@ -12,6 +12,9 @@
  *       - 218084: Implement metadata merging functionality between mapping files
  *     03/27/2009-2.0 Guy Pelletier 
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+ *     06/25/2009-2.0 Michael O'Brien 
+ *       - 266912: change MappedSuperclass handling in stage2 to pre process accessors
+ *          in support of the custom descriptors holding mappings required by the Metamodel 
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
@@ -64,7 +67,10 @@ public class SerializedMetadata extends MetadataConverter {
                 || accessor.getReferenceClass().isInterface()) {
             setConverter(mapping, new SerializedObjectConverter(mapping), isForMapKey);
         } else {
-            throw ValidationException.invalidTypeForSerializedAttribute(mapping.getAttributeName(), accessor.getReferenceClass(), accessor.getJavaClass());
+            // 266912: relax validation for MappedSuperclass descriptors
+            if(!accessor.getClassAccessor().isMappedSuperclass()) {
+                throw ValidationException.invalidTypeForSerializedAttribute(mapping.getAttributeName(), accessor.getReferenceClass(), accessor.getJavaClass());
+            }
         }
     }
     

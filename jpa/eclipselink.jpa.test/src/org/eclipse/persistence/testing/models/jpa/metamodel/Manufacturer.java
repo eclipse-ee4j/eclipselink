@@ -8,15 +8,23 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
+ *     06/30/2009-2.0  mobrien - finish JPA Metadata API modifications in support
+ *       of the Metamodel implementation for EclipseLink 2.0 release involving
+ *       Map, ElementCollection and Embeddable types on MappedSuperclass descriptors
+ *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)  
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.metamodel;
 
-import java.util.HashSet;
+import static javax.persistence.CascadeType.ALL;
+
 import java.util.Collection;
-import javax.persistence.*;
-import static javax.persistence.GenerationType.*;
-import static javax.persistence.CascadeType.*;
+import java.util.HashSet;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Version;
 
 @Entity(name="ManufacturerMetamodel")
 @Table(name="CMP3_MM_MANUF")
@@ -33,10 +41,10 @@ public class Manufacturer extends Corporation implements java.io.Serializable{
     @OneToMany(cascade=ALL, mappedBy="employer")
     private Collection<HardwareDesigner> hardwareDesigners = new HashSet<HardwareDesigner>();
     
-/*    // If a JoinTable with a JoinColumn is used - then we need a mappedBy on the inverse side here
-    @OneToMany(cascade=ALL, mappedBy="manufacturer")
-    private Collection<SoftwareDesigner> softwareDesigners = new HashSet<SoftwareDesigner>();
-*/
+    // If a JoinTable with a JoinColumn is used - then we need a mappedBy on the inverse side here
+    //@OneToMany(cascade=ALL, mappedBy="manufacturer")
+    //private Collection<SoftwareDesigner> softwareDesigners = new HashSet<SoftwareDesigner>();
+
     public Manufacturer() {}
 
     public int getVersion() { 
@@ -69,8 +77,8 @@ public class Manufacturer extends Corporation implements java.io.Serializable{
         return hardwareDesigners;
     }
 
-    public void setHardwareDesigners(Collection<HardwareDesigner> hardwareDesigners) {
-        this.hardwareDesigners = hardwareDesigners;
+    public void setHardwareDesigners(Collection<HardwareDesigner> designers) {
+        this.hardwareDesigners = designers;
     }
 
     

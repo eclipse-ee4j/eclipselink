@@ -13,6 +13,10 @@
  *       - 218084: Implement metadata merging functionality between mapping files
  *     07/15/2008-1.0.1 Guy Pelletier 
  *       - 240679: MappedSuperclass Id not picked when on get() method accessor
+ *     06/29/2009-2.0 Michael O'Brien 
+ *       - 266912: change MappedSuperclass handling in stage2 to pre process accessors
+ *          in support of the custom descriptors holding mappings required by the Metamodel 
+ *          getClassForName is now public and referenced by MappingAccessor.getMapKeyReferenceClass()
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -40,7 +44,7 @@ public class MetadataHelper {
      * INTERNAL: XMLEntityMappings calls this one
      * Load a class from a given class name.
      */
-    static Class getClassForName(String classname, ClassLoader loader) {
+    public static Class getClassForName(String classname, ClassLoader loader) {
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {

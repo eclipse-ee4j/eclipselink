@@ -1563,7 +1563,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     * This method creates an records changes for a particular object.
+     * This method creates a records change set for a particular object.
      * It should only be used by aggregates.
      * @return ObjectChangeSet
      */

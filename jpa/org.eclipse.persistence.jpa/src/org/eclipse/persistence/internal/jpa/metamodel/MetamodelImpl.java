@@ -7,25 +7,32 @@
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
+ * Contributors: 
+ *     03/19/2009-2.0  dclarke  - initial API start    
+ *     06/30/2009-2.0  mobrien - finish JPA Metadata API modifications in support
+ *       of the Metamodel implementation for EclipseLink 2.0 release involving
+ *       Map, ElementCollection and Embeddable types on MappedSuperclass descriptors
+ *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)  
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
-import java.util.*;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.metamodel.*;
+import javax.persistence.metamodel.EmbeddableType;
+import javax.persistence.metamodel.EntityType;
+import javax.persistence.metamodel.IdentifiableType;
+import javax.persistence.metamodel.ManagedType;
+import javax.persistence.metamodel.Metamodel;
 import javax.persistence.metamodel.Type.PersistenceType;
 
-import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.MappedSuperclassAccessor;
 import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Project;
@@ -41,10 +48,6 @@ import org.eclipse.persistence.sessions.Project;
  * 
  * @since EclipseLink 2.0 - JPA 2.0
  *  
- * Contributors: 
- *     03/19/2009-2.0  dclarke  - initial API start    
- *     04/30/2009-2.0  mobrien - finish implementation for EclipseLink 2.0 release
- *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)  
  */ 
 public class MetamodelImpl implements Metamodel {
 
@@ -142,12 +145,8 @@ public class MetamodelImpl implements Metamodel {
             Project project = session.getProject();
             Map<Object, RelationalDescriptor> descriptors = project.getMappedSuperclassDescriptors();
             for(Iterator<RelationalDescriptor> anIterator = descriptors.values().iterator(); anIterator.hasNext();) {
-                //Class key = anIterator.next();
                 RelationalDescriptor descriptor = anIterator.next();//mappedSuperclassesSet.get(key);
-                //MappedSuperclassTypeImpl mappedSuperclassType = new MappedSuperclassTypeImpl(key, descriptor);
                 MappedSuperclassTypeImpl mappedSuperclassType = new MappedSuperclassTypeImpl(descriptor);
-                //MappedSuperclassTypeImpl<?> type = (MappedSuperclassTypeImpl<?>)ManagedTypeImpl.create(this, descriptor);
-                //this.mappedSuperclasses.put(key, mappedSuperclassType);
                 this.mappedSuperclasses.add(mappedSuperclassType);
             }
         } catch (Exception e) {
@@ -183,7 +182,7 @@ public class MetamodelImpl implements Metamodel {
             // TODO: synchronize creating types?
             synchronized (this.types) {
                 type = this.types.get(javaClass);
-                type = new BasicImpl(javaClass);
+                type = new BasicTypeImpl(javaClass);
                 this.types.put(javaClass, type);
             }
         }

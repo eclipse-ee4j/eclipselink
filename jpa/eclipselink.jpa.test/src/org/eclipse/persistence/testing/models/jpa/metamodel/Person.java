@@ -8,18 +8,19 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
+ *     06/30/2009-2.0  mobrien - finish JPA Metadata API modifications in support
+ *       of the Metamodel implementation for EclipseLink 2.0 release involving
+ *       Map, ElementCollection and Embeddable types on MappedSuperclass descriptors
+ *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)  
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.metamodel;
 
-import static javax.persistence.FetchType.EAGER;
 import static javax.persistence.GenerationType.TABLE;
 
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
-import javax.persistence.OneToOne;
 import javax.persistence.TableGenerator;
 
 @MappedSuperclass
@@ -32,8 +33,7 @@ public abstract class Person {
         pkColumnName="SEQ_MM_NAME", 
         valueColumnName="SEQ_MM_COUNT",
         pkColumnValue="CUST_MM_SEQ"
-    )
-    
+    )    
     // InstanceVariableAttributeAccessor testing
     @Column(name="PERSON_ID")    
     private Integer id;

@@ -31,6 +31,9 @@
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  *     04/24/2009-2.0 Guy Pelletier 
  *       - 270011: JPA 2.0 MappedById support
+ *     06/25/2009-2.0 Michael O'Brien 
+ *       - 266912: change MappedSuperclass handling in stage2 to pre process accessors
+ *          in support of the custom descriptors holding mappings required by the Metamodel 
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -145,6 +148,8 @@ public class EmbeddableAccessor extends ClassAccessor {
      * INTERNAL:
      * This method processes an embeddable class, if we have not processed it 
      * yet. Be careful while changing the order of processing.
+     * <p>
+     * MappedSuperclass descriptors have relaxed constraints.
      */
     public void process(MetadataDescriptor owningDescriptor) {
         if (isProcessed()) {
@@ -152,7 +157,7 @@ public class EmbeddableAccessor extends ClassAccessor {
             // that it is not used in entities with conflicting access type
             // when the embeddable doesn't have its own explicit setting. The
             // biggest mistake that could occur otherwise is that FIELD
-            // processing 'could' yield a different mapping set then PROPERTY
+            // processing 'could' yield a different mapping set than PROPERTY
             // processing would. Do we really care? If both access types
             // yielded the same mappings then the only difference would be
             // how they are accessed and well ... does it really matter at this
@@ -170,7 +175,10 @@ public class EmbeddableAccessor extends ClassAccessor {
             if (! hasAccess()) {
                 // We inherited our access from our owning entity.
                 if (! getDescriptor().getDefaultAccess().equals(owningDescriptor.getDefaultAccess())) {
-                    throw ValidationException.conflictingAccessTypeForEmbeddable(getJavaClass(), usesPropertyAccess(), owningDescriptor.getJavaClass(), owningDescriptor.getClassAccessor().usesPropertyAccess());
+                    // 266912: relax restrictions when either the accessor on this or the owning descriptor is a MappedSuperclass                    
+                    if(!getDescriptor().isMappedSuperclass() && !owningDescriptor.isMappedSuperclass()) {
+                            throw ValidationException.conflictingAccessTypeForEmbeddable(getJavaClass(), usesPropertyAccess(), owningDescriptor.getJavaClass(), owningDescriptor.getClassAccessor().usesPropertyAccess());
+                    }
                 }
             }
             
@@ -218,4 +226,5 @@ public class EmbeddableAccessor extends ClassAccessor {
             getDescriptor().setIgnoreDefaultMappings(excludeDefaultMappings());
         } 
     }
+
 }

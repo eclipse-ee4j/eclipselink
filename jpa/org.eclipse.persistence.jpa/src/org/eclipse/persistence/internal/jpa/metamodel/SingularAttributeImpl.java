@@ -7,8 +7,12 @@
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
+ * Contributors: 
+ *     05/26/2009-2.0  mobrien - API update
+ *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)
+ *     06/30/2009-2.0  mobrien - finish JPA Metadata API modifications in support
+ *       of the Metamodel implementation for EclipseLink 2.0 release involving
+ *       Map, ElementCollection and Embeddable types on MappedSuperclass descriptors
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
@@ -32,9 +36,6 @@ import org.eclipse.persistence.mappings.DirectToFieldMapping;
  *
  * @param <X>
  * @param <T>
- * Contributors: 
- *     05/26/2009-2.0  mobrien - API update
- *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)  
  * 
  */
 public class SingularAttributeImpl<X,T> extends AttributeImpl<X,T> implements SingularAttribute<X, T> {

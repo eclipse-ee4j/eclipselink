@@ -7,8 +7,12 @@
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
+ * Contributors: 
+ *     03/19/2009-2.0  dclarke  - initial API start    
+ *     06/30/2009-2.0  mobrien - finish JPA Metadata API modifications in support
+ *       of the Metamodel implementation for EclipseLink 2.0 release involving
+ *       Map, ElementCollection and Embeddable types on MappedSuperclass descriptors
+ *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)  
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
@@ -17,9 +21,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-//import javax.persistence.metamodel.AbstractCollection;
 import javax.persistence.metamodel.Attribute;
-import javax.persistence.metamodel.Bindable;
 import javax.persistence.metamodel.CollectionAttribute;
 import javax.persistence.metamodel.IdentifiableType;
 import javax.persistence.metamodel.ListAttribute;
@@ -28,7 +30,6 @@ import javax.persistence.metamodel.MapAttribute;
 import javax.persistence.metamodel.PluralAttribute;
 import javax.persistence.metamodel.SetAttribute;
 import javax.persistence.metamodel.SingularAttribute;
-//import javax.persistence.metamodel.Member;
 
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.mappings.CollectionMapping;
@@ -45,10 +46,6 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
  * 
  * @since EclipseLink 2.0 - JPA 2.0
  *  
- * Contributors: 
- *     03/19/2009-2.0  dclarke  - initial API start    
- *     04/30/2009-2.0  mobrien - finish implementation for EclipseLink 2.0 release
- *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)  
  */ 
 public class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedType<X> {
 
@@ -128,12 +125,11 @@ public class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedType<X> {
 
         for (Iterator i = getDescriptor().getMappings().iterator(); i.hasNext();) {
             DatabaseMapping mapping = (DatabaseMapping) i.next();
-            //MemberImpl member = null;
             AttributeImpl member = null;
 
+            // Tie into the collection hierarchy at a lower level
             if (mapping.isCollectionMapping()) {
                 CollectionMapping colMapping = (CollectionMapping) mapping;
-
                 if (colMapping.getContainerPolicy().isMapPolicy()) {
                     member = new MapAttributeImpl(this, colMapping);
                 } else if (colMapping.getContainerPolicy().isListPolicy()) {
@@ -184,10 +180,11 @@ public class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedType<X> {
      *  @param name  the name of the represented attribute
      *  @return attribute with given name
      *  @throws IllegalArgumentException if attribute of the given
-     *          name is not present in the managed type      */
-      public Attribute<X, ?> getAttribute(String attributeName){
-          return null;
-      }
+     *          name is not present in the managed type     
+     */
+      public Attribute<X, ?> getAttribute(String attributeName) {
+          return members.get(attributeName);
+    }
 
       public Set<Attribute<? super X, ?>> getAttributes() {
         return new HashSet(this.members.values());
@@ -347,5 +344,4 @@ public class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedType<X> {
         return null;
     }
 
-    
 }

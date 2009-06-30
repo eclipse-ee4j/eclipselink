@@ -39,6 +39,10 @@
  *       - 266912: JPA 2.0 Metamodel API (part of Criteria API)
  *     06/16/2009-2.0 Guy Pelletier 
  *       - 277039: JPA 2.0 Cache Usage Settings 
+ *     06/25/2009-2.0 Michael O'Brien 
+ *       - 266912: change MappedSuperclass handling in stage2 to pre process accessors
+ *          in support of the custom descriptors holding mappings required by the Metamodel. 
+ *          processAccessType() is now public and is overridden in the superclass 
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -158,7 +162,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
             DatabaseField pkField = primaryKeyJoinColumn.getPrimaryKeyField();
             pkField.setName(getName(pkField, defaultPKFieldName, PK_CTX));
             pkField.setTable(sourceTable);
-
+            
             DatabaseField fkField = primaryKeyJoinColumn.getForeignKeyField();
             fkField.setName(getName(fkField, pkField.getName(), FK_CTX));
             fkField.setTable(targetTable);
@@ -184,12 +188,21 @@ public class EntityAccessor extends MappedSuperclassAccessor {
             if (metadataClass.isAnnotationPresent(MappedSuperclass.class)) {
                 m_mappedSuperclasses.add(new MappedSuperclassAccessor(
                         metadataClass.getAnnotation(MappedSuperclass.class), metadataClass, getDescriptor()));
-                // 266912: store the mapped superclass as a descriptor on the project for later use by the Metamodel API
-                getProject().addMappedSuperclassToProject(metadataClass);
+                // 266912: process and store mappedSuperclass descriptors on the project for later use by the Metamodel API
+                MappedSuperclassAccessor msAccessor = new MappedSuperclassAccessor(
+                        metadataClass.getAnnotation(MappedSuperclass.class), 
+                        metadataClass,
+                        getProject());
+                // process what type of access is on the superclass (in case inheriting members differ in their access type)
+                getProject().addMappedSuperclassAccessor(metadataClass, msAccessor);
             }
         } else {
-            // TODO: 266912 add descriptor for xml clients
-            m_mappedSuperclasses.add(reloadMappedSuperclass(accessor, getDescriptor()));
+            // Reload the accessor from XML to get our own instance not already on the project
+            MappedSuperclassAccessor msAccessor = reloadMappedSuperclass(accessor, getDescriptor());
+            m_mappedSuperclasses.add(msAccessor);
+            // 266912: process and store mappedSuperclass descriptors on the project for later use by the Metamodel API
+            // Note: we must again reload our accessor from XML or we will be sharing instances of the descriptor
+            getProject().addMappedSuperclassAccessor(metadataClass, reloadMappedSuperclass(accessor,  new MetadataDescriptor(metadataClass)));
         }
     }
     
@@ -245,7 +258,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
             
                 // We found a parent entity.
                 if (parentAccessor != null) {
-                    // Set the immediate parent's descriptor the current descriptor.
+                    // Set the immediate parent's descriptor to the current descriptor.
                     currentAccessor.getDescriptor().setInheritanceParentDescriptor(parentAccessor.getDescriptor());
                 
                     // Remember the last accessor first ...
@@ -808,7 +821,9 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      *     entity-mappings setting.    
      * 6 - we have exhausted our search, default to FIELD.
      */
-    protected void processAccessType() {
+    public void processAccessType() {
+        // 266912: this function has been partially overridden in the MappedSuperclassAccessor parent
+        // do not call the superclass method in MappedSuperclassAccessor
         // Step 1 - Check for an explicit setting.
         String explicitAccessType = getAccess(); 
         
