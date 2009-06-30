@@ -492,7 +492,7 @@
     <!--       test.result.zip      - name of zip containing test result files           -->
     <!--       test.result.dest.dir - location of "failed build" result dir              -->
     <!--                                                                                 -->
-    <target name="save-tst-results">
+    <target name="save-tst-results" depends="init">
         <echo message="build.root.dir=${build.root.dir}"/>
         <echo message="${eclipselink.core.test}/${report.dir}/junit-noframes.html"/>
         <echo message="${eclipselink.jpa.test}/${report.dir}/junit-noframes.html"/>

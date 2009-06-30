@@ -47,11 +47,11 @@ then
             #temporarily store Name of Milestone in TARGET
             #Syntax: ./bootstrap.sh milestone M4 QUALIFIER [branch]
             #  milestone - tells system that it will be promoting a build to a milestone
-            #  M4        - an example of the milestone. Used in dir storage, and maven. 
+            #  M4        - an example of the milestone. Used in dir storage, and maven.
             #              Also of note "release" is a special milestone value that tells
             #              the system to promote build to the release for the version.
-            #  QUALIFIER - gives the system all the info it needs to identify the build 
-            #              to promote.              
+            #  QUALIFIER - gives the system all the info it needs to identify the build
+            #              to promote.
             TARGET=${BRANCH}
             BRANCH=$4
             TARG_NM=${TARGET}
@@ -335,7 +335,7 @@ then
         echo "BLDDATE Error: There is something wrong with QUALIFIER. ('$QUALIFIER' should be vDATE-rREV)!"
         exit 2
     fi
-    
+
     ## Parse $QUALIFIER for SVN revision value
     SVNREV=`echo ${QUALIFIER} | cut -s -d'-' -f2 | cut -s -dr -f2`
     if [ "${SVNREV}" = "" ]
