@@ -294,7 +294,6 @@ public class DatasourcePlatform implements Platform {
         addOperator(ExpressionOperator.rightTrim());
         addOperator(ExpressionOperator.rightTrim2());
         addOperator(ExpressionOperator.substring());
-        addOperator(ExpressionOperator.substringSingleArg());
         addOperator(ExpressionOperator.toNumber());
         addOperator(ExpressionOperator.toChar());
         addOperator(ExpressionOperator.toCharWithFormat());
