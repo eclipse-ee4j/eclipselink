@@ -2212,15 +2212,12 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     public void complexSimpleCaseInSelectTest(){
         EntityManager em = createEntityManager();
 
-        Vector expectedResult = new Vector(12);
+        Vector expectedResult = new Vector(2);
         expectedResult.add("Robert");
         expectedResult.add("Gillian");
-        for (int i = 0; i<13;i++){
-            expectedResult.add("");
-        }
         
         clearCache();
-        String ejbqlString = "select case e.firstName when 'Bob' then 'Robert' when 'Jill' then 'Gillian' else '' end from Employee e";
+        String ejbqlString = "select case e.firstName when 'Bob' then 'Robert' when 'Jill' then 'Gillian' else '' end from Employee e where e.firstName = 'Bob' or e.firstName = 'Jill'";
         
         List result = (List)em.createQuery(ejbqlString).getResultList();
         
@@ -2244,15 +2241,12 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     public void complexConditionCaseInSelectTest(){
         EntityManager em = createEntityManager();
 
-        Vector expectedResult = new Vector(12);
+        Vector expectedResult = new Vector(2);
         expectedResult.add("Robert");
         expectedResult.add("Gillian");
-        for (int i = 0; i<13;i++){
-            expectedResult.add("");
-        }
         
         clearCache();
-        String ejbqlString = "select case when e.firstName = 'Bob' then 'Robert' when e.firstName = 'Jill' then 'Gillian' else '' end from Employee e";
+        String ejbqlString = "select case when e.firstName = 'Bob' then 'Robert' when e.firstName = 'Jill' then 'Gillian' else '' end from Employee e  where e.firstName = 'Bob' or e.firstName = 'Jill'";
         
         List result = (List)em.createQuery(ejbqlString).getResultList();
         
