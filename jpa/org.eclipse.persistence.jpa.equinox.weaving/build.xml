@@ -36,6 +36,7 @@
         <contains string="${weaving.build.location}" substring="jpa"/>
     </condition>
     <property name="weaving.2.common.plugins.dir" value="${weaving.2.base.dir}/plugins"/>
+    <property name="weaving.2.buildsys.dir" value="${weaving.2.base.dir}/buildsystem"/>
     <property name="weaving.2.jpa.plugins.dir" value="../plugins"/>
     <property name="extensions.depend.dir" value="${weaving.2.base.dir}/../extension.lib.external"/>
     <echo message="extensions.depend.dir        = '${extensions.depend.dir}'"/>
@@ -53,8 +54,9 @@
     <property name="svn.revision"          value="NA"/>
     <property name="version.qualifier"     value="qualifier"/>
     <property name="version.string"        value="${release.version}.${version.qualifier}"/>
-    <property name="specification.vendor"  value="EclipseLink Project"/>
-    <property name="implementation.vendor" value="EclipseLink Project"/>
+    <property name="release.designation"   value="EclipseLink ${release.version} Build"/>
+    <property name="specification.vendor"  value="Eclipse.org - EclipseLink Project"/>
+    <property name="implementation.vendor" value="${specification.vendor}"/>
 
     <!-- Set Compile Path-->
     <path id="weaving.compile.path">
@@ -79,6 +81,7 @@
 
     <!-- all -->
     <target name="build" depends="clean, compile, generate-manifest, package" description="build JPA Equinox weaving component"/>
+    <target name="bnd"   depends="clean, compile, bnd-package" description="build JPA Equinox Weaving component using bnd"/>
 
     <!-- clean -->
     <target name="clean" description="Clean all generated content">
@@ -126,7 +129,7 @@
              <fileset dir="${weaving.build.location}">
                 <include name="hookconfigurators.properties"/>
             </fileset>
-       </jar>
+        </jar>
         <jar jarfile="${weaving.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar">
              <manifest>
                 <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
@@ -168,5 +171,38 @@
         <echo message="Export-Package: org.eclipse.persistence.jpa.equinox.weaving;x-internal:=true${line.separator}"                     file="${classes.dir}/MANIFEST.MF" append="true"/>
     </target>
 
+    <target name="bnd-package" if="osgi.bundle.exist">
+        <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${weaving.2.buildsys.dir}/bnd-0.0.313.jar"/>
+        <bnd
+            classpath="${classes.dir}"
+            eclipse="false"
+            sourcepath="${src.dir}"
+            failok="false"
+            exceptions="true"
+            files="./org.eclipse.persistence.jpa.equinox.weaving.bnd"
+            output="${weaving.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar"/>
+        <jar jarfile="${weaving.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar">
+             <manifest>
+                <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
+                <attribute name="Specification-Version"  value="${release.version}"/>
+                <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
+                <attribute name="Implementation-Version" value="${version.string}"/>
+                <attribute name="Bundle-ManifestVersion" value="2"/>
+                <attribute name="Bundle-Name"            value="Dynamic Weaving Fragment for Equinox Source"/>
+                <attribute name="Bundle-SymbolicName"    value="${ant.project.name}.source"/>
+                <attribute name="Bundle-Vendor"          value="${implementation.vendor}"/>
+                <attribute name="Bundle-Version"         value="${version.string}"/>
+                <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${version.string}&quot;"/>
+            </manifest>
+            <fileset dir="${weaving.2.base.dir}">
+                <include name="about.html"/>
+                <include name="readme.html"/>
+                <include name="license.*"/>
+            </fileset>
+            <fileset dir="${src.dir}">
+                <include name="org/eclipse/persistence/**/*.java"/>
+            </fileset>
+        </jar>
+    </target>
 
 </project>

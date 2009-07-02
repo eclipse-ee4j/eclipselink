@@ -1,18 +1,21 @@
--debug
-
-Specification-Vendor: ${specification.vendor}
-Specification-Version: ${release.version}
+Export-Package: org.eclipse.persistence*;version="${version.string}";-noimport:=true,
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.jpa
+Require-Bundle: org.eclipse.persistence.core;bundle-version="${version.string}";visibility:=reexport, \
+ org.eclipse.persistence.asm;bundle-version="${version.string}";resolution:=optional
 Implementation-Vendor: ${implementation.vendor}
 Implementation-Version: ${version.string}
+Specification-Vendor: ${specification.vendor}
 Bundle-Name: EclipseLink JPA
 Bundle-Vendor: ${implementation.vendor}
 Bundle-Version: ${version.string}
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Export-Package: org.eclipse.persistence*;version="${version.string}";-noimport:=true,
-Require-Bundle: org.eclipse.persistence.core;bundle-version="${version.string}";visibility:=reexport, \
- org.eclipse.persistence.asm;bundle-version="${version.string}";resolution:=optional
 Bundle-Activator: org.eclipse.persistence.jpa.osgi.Activator
-HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.jpa
+Include-Resource:\
+ ${core.2.base.dir}/about.html,\
+ ${core.2.base.dir}/readme.html,\
+ ${core.2.base.dir}/license.html,\
+ org/eclipse/persistence/jpa=resource/org/eclipse/persistence/jpa,\
+ META-INF/services/javax.persistence.spi.PersistenceProvider=resource/META-INF/services/javax.persistence.spi.PersistenceProvider
 Import-Package:                                                         \
  javax.persistence.*;version="[1.99.4, 2.1)",                           \
  javax.sql.*;resolution:=optional,                                      \
@@ -24,4 +27,5 @@ Import-Package:                                                         \
  org.osgi.*;resolution:=optional,                                       \
  org.w3c.*;resolution:=optional,                                        \
  org.xml.sax;resolution:=optional 
+Specification-Version: ${release.version}
 

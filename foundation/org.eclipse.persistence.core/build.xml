@@ -36,12 +36,7 @@
         <contains string="${core.build.location}" substring="foundation"/>
     </condition>
     <property name="core.2.common.plugins.dir" value="${core.2.base.dir}/plugins"/>
-
-    <!-- TEMPORARY HACK PENDING DECISION ABOUT WHETHER ECLIPSELINK FOUNDATION WILL DEPEND ON JPA CLASSES -->
-    <condition property="core.2.jpa.plugins.dir" value="../../jpa/plugins" else="../plugins">
-        <contains string="${core.build.location}" substring="foundation"/>
-    </condition>
-    <!-- End of Temporary hack -->
+    <property name="core.2.buildsys.dir" value="${core.2.base.dir}/buildsystem"/>
 
     <property file="${user.home}/build.properties"/>
     <property file="./build.properties"/>
@@ -56,31 +51,25 @@
     <property name="svn.revision" value="NA"/>
     <property name="version.qualifier" value="qualifier"/>
     <property name="version.string" value="${release.version}.${version.qualifier}"/>
-    <property name="release.designation"  value="EclipseLink DeveloperBuild"/>
-    <property name="eclipselink.core.bndl.prefix" value="${ant.project.name}"/>
+    <property name="release.designation"  value="EclipseLink ${release.version} Build"/>
+    <property name="specification.vendor"  value="Eclipse.org - EclipseLink Project"/>
+    <property name="implementation.vendor"  value="${specification.vendor}"/>
 
     <!-- Set Compile Path-->
     <path id="core.compile.path">
         <pathelement path="${core.2.common.plugins.dir}/${antlr}"/>
         <pathelement path="${core.2.common.plugins.dir}/${asm}"/>
-         <pathelement path="${core.2.common.plugins.dir}/${persistence.jar}"/>
+        <pathelement path="${core.2.common.plugins.dir}/${persistence.jar}"/>
         <fileset
             dir="${core.2.common.plugins.dir}"
             includes="${eclipselink.core.depend}"/>
-
-         <!-- TEMPORARY HACK PENDING DECISION ABOUT WHETHER ECLIPSELINK FOUNDATION WILL DEPEND ON JPA CLASSES -->
-         <pathelement path="${core.2.jpa.plugins.dir}/javax.persistence_2.0_preview.jar"/>
-         <!-- End of Temporary hack -->
     </path>
     <available file="${core.2.common.plugins.dir}/${antlr}_${version.string}.jar" property="antlr.bundle.exist"/>
     <available file="${core.2.common.plugins.dir}/${asm}_${version.string}.jar" property="asm.bundle.exist"/>
-    <!-- TEMPORARY HACK PENDING DECISION ABOUT WHETHER ECLIPSELINK FOUNDATION WILL DEPEND ON JPA CLASSES -->
-    <available file="${core.2.jpa.plugins.dir}/javax.persistence_2.0_preview.jar" property="jpa2.jar.exist"/>
-    <!-- End of Temporary hack -->
-
 
     <!-- all -->
     <target name="build" depends="clean, compile, generate-manifest, package" description="build Core component"/>
+    <target name="bnd"   depends="clean, compile, bnd-package" description="build JPA component using bnd"/>
 
     <!-- clean -->
     <target name="clean" description="Clean the build">
@@ -94,9 +83,6 @@
     <target name="compile" description="Compile EclipseLink Core">
         <fail message="Cannot find ANTLR: '${core.2.common.plugins.dir}/${antlr}_${version.string}.jar'." unless="antlr.bundle.exist"/>
         <fail message="Cannot find ASM: '${core.2.common.plugins.dir}/${asm}_${version.string}.jar'." unless="asm.bundle.exist"/>
-        <!-- TEMPORARY HACK PENDING DECISION ABOUT WHETHER ECLIPSELINK FOUNDATION WILL DEPEND ON JPA CLASSES -->
-        <fail message="Cannot find JPA 2.0:'../plugins/javax.persistence_2.0_preview.jar'." unless="jpa2.jar.exist"/>
-        <!-- End of Temporary hack -->
         <mkdir dir="${classes.dir}"/>
         <echo message="Stamping the following values:"/>
         <echo message="version:       '${release.version}'"/>
@@ -194,17 +180,17 @@
 
     <target name="generate-manifest" description="Generate the OSGi bundle manifest before jarring">
         <delete file="${classes.dir}/MANIFEST.MF*" quiet="true"/>
-        <echo message="Manifest-Version: 1.0${line.separator}"                                                      file="${classes.dir}/MANIFEST.MF" append="false"/>
-        <echo message="Specification-Vendor: ${specification.vendor}${line.separator}"                              file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Specification-Version: ${release.version}${line.separator}"                                  file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Implementation-Vendor: ${implementation.vendor}${line.separator}"                            file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Implementation-Version: ${version.string}${line.separator}"                                  file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-ManifestVersion: 2${line.separator}"                                                  file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-Name: EclipseLink Core${line.separator}"                                              file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-SymbolicName: ${ant.project.name}${line.separator}"                                   file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-Vendor: ${implementation.vendor}${line.separator}"                                    file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-Version: ${version.string}${line.separator}"                                          file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-RequiredExecutionEnvironment: J2SE-1.5${line.separator}"                                                                          file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Manifest-Version: 1.0${line.separator}"                                                                                                 file="${classes.dir}/MANIFEST.MF" append="false"/>
+        <echo message="Specification-Vendor: ${specification.vendor}${line.separator}"                                                                         file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Specification-Version: ${release.version}${line.separator}"                                                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Implementation-Vendor: ${implementation.vendor}${line.separator}"                                                                       file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Implementation-Version: ${version.string}${line.separator}"                                                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-ManifestVersion: 2${line.separator}"                                                                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-Name: EclipseLink Core${line.separator}"                                                                                         file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-SymbolicName: ${ant.project.name}${line.separator}"                                                                              file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-Vendor: ${implementation.vendor}${line.separator}"                                                                               file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-Version: ${version.string}${line.separator}"                                                                                     file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-RequiredExecutionEnvironment: J2SE-1.5${line.separator}"                                                                         file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="Require-Bundle: org.eclipse.persistence.antlr;bundle-version=&quot;${version.string}&quot;;resolution:=optional,${line.separator}"      file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.asm;bundle-version=&quot;${version.string}&quot;;resolution:=optional${line.separator}"                        file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="Export-Package: org.eclipse.persistence;version=&quot;${version.string}&quot;,${line.separator}"                                        file="${classes.dir}/MANIFEST.MF" append="true"/>
@@ -293,7 +279,7 @@
         <echo message=" org.eclipse.persistence.mappings.transformers;version=&quot;${version.string}&quot;,${line.separator}"                                 file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.mappings.xdb;version=&quot;${version.string}&quot;,${line.separator}"                                          file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.oxm;version=&quot;${version.string}&quot;,${line.separator}"                                                   file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.oxm.annotations;version=&quot;${version.string}&quot;,${line.separator}"                                                   file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.oxm.annotations;version=&quot;${version.string}&quot;,${line.separator}"                                       file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.oxm.attachment;version=&quot;${version.string}&quot;,${line.separator}"                                        file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.oxm.documentpreservation;version=&quot;${version.string}&quot;,${line.separator}"                              file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.oxm.mappings;version=&quot;${version.string}&quot;,${line.separator}"                                          file="${classes.dir}/MANIFEST.MF" append="true"/>
@@ -348,19 +334,61 @@
         <echo message=" org.eclipse.persistence.transaction.was;version=&quot;${version.string}&quot;,${line.separator}"                                       file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.transaction.wls;version=&quot;${version.string}&quot;,${line.separator}"                                       file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" xsd;version=&quot;${version.string}&quot;${line.separator}"                                                                            file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-ClassPath: .${line.separator}"                                                                                                    file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Import-Package: javax.activation;vendor=sun;resolution:=optional,${line.separator}"                                                      file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.jms;version=&quot;1.1.0&quot;;resolution:=optional,${line.separator}"                                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.mail;resolution:=optional,${line.separator}"                                                                                      file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.mail.internet;resolution:=optional,${line.separator}"                                                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.persistence;version=&quot;1.0.0&quot;;resolution:=optional,${line.separator}"                                                     file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.persistence.spi;version=&quot;1.0.0&quot;;resolution:=optional,${line.separator}"                                                 file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.resource;version=&quot;1.5.0&quot;;resolution:=optional,${line.separator}"                                                        file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.resource.cci;version=&quot;1.5.0&quot;;resolution:=optional,${line.separator}"                                                    file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.transaction;version=&quot;1.1.0&quot;;resolution:=optional,${line.separator}"                                                     file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.w3c.dom${line.separator}"                                                                                                           file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="HK2-Bundle-Name: org.eclipse.persistence:${ant.project.name}${line.separator}"                                                  file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Premain-Class: org.eclipse.persistence.internal.jpa.deployment.JavaSECMPInitializerAgent${line.separator}"                               file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-ClassPath: .${line.separator}"                                                                                                   file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Import-Package: javax.activation;vendor=sun;resolution:=optional,${line.separator}"                                                     file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" javax.jms;version=&quot;1.1.0&quot;;resolution:=optional,${line.separator}"                                                            file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" javax.mail;resolution:=optional,${line.separator}"                                                                                     file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" javax.mail.internet;resolution:=optional,${line.separator}"                                                                            file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" javax.persistence;version=&quot;1.0.0&quot;;resolution:=optional,${line.separator}"                                                    file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" javax.persistence.spi;version=&quot;1.0.0&quot;;resolution:=optional,${line.separator}"                                                file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" javax.resource;version=&quot;1.5.0&quot;;resolution:=optional,${line.separator}"                                                       file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" javax.resource.cci;version=&quot;1.5.0&quot;;resolution:=optional,${line.separator}"                                                   file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" javax.transaction;version=&quot;1.1.0&quot;;resolution:=optional,${line.separator}"                                                    file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.w3c.dom${line.separator}"                                                                                                          file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="HK2-Bundle-Name: org.eclipse.persistence:${ant.project.name}${line.separator}"                                                          file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Premain-Class: org.eclipse.persistence.internal.jpa.deployment.JavaSECMPInitializerAgent${line.separator}"                              file="${classes.dir}/MANIFEST.MF" append="true"/>
     </target>
 
+    <target name="bnd-package">
+        <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${core.2.buildsys.dir}/bnd-0.0.313.jar"/>
+        <bnd
+            classpath="${classes.dir}"
+            eclipse="false"
+            sourcepath="${src.dir}"
+            failok="false"
+            exceptions="true"
+            files="./org.eclipse.persistence.core.bnd"
+            output="${core.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar"/>
+        <jar jarfile="${core.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar">
+             <manifest>
+                <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
+                <attribute name="Specification-Version"  value="${release.version}"/>
+                <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
+                <attribute name="Implementation-Version" value="${version.string}"/>
+                <attribute name="Bundle-ManifestVersion" value="2"/>
+                <attribute name="Bundle-Name"            value="EclipseLink Core Source"/>
+                <attribute name="Bundle-SymbolicName"    value="${ant.project.name}.source"/>
+                <attribute name="Bundle-Vendor"          value="${implementation.vendor}"/>
+                <attribute name="Bundle-Version"         value="${version.string}"/>
+                <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${version.string}&quot;"/>
+            </manifest>
+            <fileset dir="${core.2.base.dir}">
+                <include name="about.html"/>
+                <include name="readme.html"/>
+                <include name="license.*"/>
+            </fileset>
+            <fileset dir="${classes.dir}">
+                <include name="org/eclipse/persistence/Version.java"/>
+            </fileset>
+            <fileset dir="${src.dir}">
+                <include name="org/eclipse/persistence/**/*.java"/>
+                <exclude name="org/eclipse/persistence/Version.java"/>
+            </fileset>
+            <fileset dir="${resource.dir}">
+                <include name="xsd/*.xsd"/>
+                <include name="org/eclipse/persistence/internal/helper/VendorNameToPlatformMapping.properties"/>
+            </fileset>
+        </jar>
+        <delete file="${classes.dir}/org/eclipse/persistence/Version.java"/>
+    </target>
 </project>
