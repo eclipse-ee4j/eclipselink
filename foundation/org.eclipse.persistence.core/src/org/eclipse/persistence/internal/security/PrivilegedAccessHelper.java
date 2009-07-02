@@ -56,6 +56,8 @@ public class PrivilegedAccessHelper {
      */
     private static Method findMethod(Class javaClass, String methodName, Class[] methodParameterTypes) throws NoSuchMethodException {
         try {
+            // use a combination of getDeclaredMethod() and recursion to ensure we get the non-public methods
+            // getMethod will not help because it returns only public methods
             return javaClass.getDeclaredMethod(methodName, methodParameterTypes);
         } catch (NoSuchMethodException ex) {
             Class superclass = javaClass.getSuperclass();

@@ -80,8 +80,12 @@ public class SubstringNode extends StringFunctionNode {
     public Expression generateExpression(GenerationContext context) {
         Expression whereClause = getLeft().generateExpression(context);
         Expression startPosition = getStartPosition().generateExpression(context);
-        Expression stringLength = getStringLength().generateExpression(context);
-        whereClause = whereClause.substring(startPosition, stringLength);
+        if (getStringLength() != null){
+            Expression stringLength = getStringLength().generateExpression(context);
+            whereClause = whereClause.substring(startPosition, stringLength);
+        } else {
+            whereClause = whereClause.substring(startPosition);
+        }
         return whereClause;
     }
 

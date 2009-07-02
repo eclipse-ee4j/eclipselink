@@ -15,6 +15,7 @@ package org.eclipse.persistence.platform.database;
 import java.io.*;
 import java.sql.*;
 import java.util.*;
+
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
@@ -421,6 +422,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
         addOperator(ExpressionOperator.simpleFunction(ExpressionOperator.Length, "CHAR_LENGTH"));
         addOperator(ExpressionOperator.sybaseLocateOperator());
         addOperator(ExpressionOperator.simpleThreeArgumentFunction(ExpressionOperator.Substring, "SUBSTRING"));
+        addOperator(singleArgumentSubstringOperator());
         addOperator(ExpressionOperator.addDate());
         addOperator(ExpressionOperator.dateName());
         addOperator(ExpressionOperator.datePart());
@@ -587,6 +589,30 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
         return false;
     }
 
+    /**
+     * Override the default SubstringSingleArg operator.
+     */
+    public ExpressionOperator singleArgumentSubstringOperator() {
+        ExpressionOperator result = new ExpressionOperator();
+        result.setSelector(ExpressionOperator.SubstringSingleArg);
+        result.setType(ExpressionOperator.FunctionOperator);
+        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        v.addElement("SUBSTRING(");
+        v.addElement(",");
+        v.addElement(", CHAR_LENGTH(");
+        v.addElement("))");
+        result.printsAs(v);
+        int[] indices = new int[3];
+        indices[0] = 0;
+        indices[1] = 1;
+        indices[2] = 0;
+
+        result.setArgumentIndices(indices);
+        result.setNodeClass(ClassConstants.FunctionExpression_Class);
+        result.bePrefix();
+        return result;
+    }
+    
     /**
      *  INTERNAL:
      *  Indicates whether the platform supports identity.

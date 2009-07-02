@@ -407,6 +407,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
         addOperator(ExpressionOperator.simpleFunction(ExpressionOperator.CurrentTime, "GETDATE"));
         addOperator(ExpressionOperator.simpleFunction(ExpressionOperator.Length, "CHAR_LENGTH"));
         addOperator(ExpressionOperator.simpleThreeArgumentFunction(ExpressionOperator.Substring, "SUBSTRING"));
+        addOperator(singleArgumentSubstringOperator());
         addOperator(ExpressionOperator.addDate());
         addOperator(ExpressionOperator.dateName());
         addOperator(ExpressionOperator.datePart());
@@ -489,6 +490,30 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
         result.printsAs(v);
         result.bePostfix();
         result.setNodeClass(org.eclipse.persistence.internal.expressions.FunctionExpression.class);
+        return result;
+    }
+    
+    /**
+     * Override the default SubstringSingleArg operator.
+     */
+    public ExpressionOperator singleArgumentSubstringOperator() {
+        ExpressionOperator result = new ExpressionOperator();
+        result.setSelector(ExpressionOperator.SubstringSingleArg);
+        result.setType(ExpressionOperator.FunctionOperator);
+        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        v.addElement("SUBSTRING(");
+        v.addElement(",");
+        v.addElement(", LEN(");
+        v.addElement("))");
+        result.printsAs(v);
+        int[] indices = new int[3];
+        indices[0] = 0;
+        indices[1] = 1;
+        indices[2] = 0;
+
+        result.setArgumentIndices(indices);
+        result.setNodeClass(ClassConstants.FunctionExpression_Class);
+        result.bePrefix();
         return result;
     }
 

@@ -136,6 +136,7 @@ public class ExpressionOperator implements Serializable {
     public static final int All = 120;
     public static final int Trim2 = 121;
     public static final int LeftTrim2 = 122;
+    public static final int SubstringSingleArg = 133;
 
     // Date
     public static final int AddMonths = 47;
@@ -328,6 +329,10 @@ public class ExpressionOperator implements Serializable {
                 // assume the first parameter to be 1-based first index of the substring, the second - substring length.
                 int beginIndexInclusive = ((Number)arguments.elementAt(0)).intValue() - 1;
                 int endIndexExclusive = beginIndexInclusive +  ((Number)arguments.elementAt(1)).intValue();
+                return ((String)source).substring(beginIndexInclusive, endIndexExclusive);
+            } else if ((getSelector() == SubstringSingleArg) && (arguments.size() == 1) && (arguments.elementAt(0) instanceof Number)) {
+                int beginIndexInclusive = ((Number)arguments.elementAt(0)).intValue() - 1;
+                int endIndexExclusive = ((String)source).length();
                 return ((String)source).substring(beginIndexInclusive, endIndexExclusive);
             } else if (getSelector() == ToNumber) {
                 return new java.math.BigDecimal((String)source);
@@ -1231,6 +1236,7 @@ public class ExpressionOperator implements Serializable {
         platformOperatorNames.put(new Integer(RightPad), "RightPad");
         platformOperatorNames.put(new Integer(RightTrim), "RightTrim");
         platformOperatorNames.put(new Integer(Substring), "Substring");
+        platformOperatorNames.put(new Integer(SubstringSingleArg), "Substring");
         platformOperatorNames.put(new Integer(Translate), "Translate");
         platformOperatorNames.put(new Integer(Ascii), "Ascii");
         platformOperatorNames.put(new Integer(Length), "Length");
@@ -2305,7 +2311,15 @@ public class ExpressionOperator implements Serializable {
     public static ExpressionOperator substring() {
         return simpleThreeArgumentFunction(Substring, "SUBSTR");
     }
-
+    
+    /**
+     * INTERNAL:
+     * Build operator.
+     */
+    public static ExpressionOperator substringSingleArg() {
+        return simpleTwoArgumentFunction(SubstringSingleArg, "SUBSTR");
+    }
+    
     /**
      * INTERNAL:
      * Create the SUM operator.

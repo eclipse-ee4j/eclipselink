@@ -3754,7 +3754,10 @@ public abstract class Expression implements Serializable, Cloneable {
 
     /**
      * PUBLIC:
-     * Function, returns the substring from the souce string.
+     * Function, returns the substring from the source string.
+     * TopLink: employee.get("firstName").substring(1, 2)
+     * Java: NA
+     * SQL: SUBSTR(FIRST_NAME, 1, 2)
      */
     public Expression substring(int startPosition, int size) {
         return substring(new Integer(startPosition), new Integer(size));
@@ -3762,13 +3765,41 @@ public abstract class Expression implements Serializable, Cloneable {
 
     /**
      * PUBLIC:
-     * Function, returns the substring from the souce string.
+     * Function, returns the substring from the source string.
+     * TopLink: employee.get("firstName").substring(1, 2)
+     * Java: NA
+     * SQL: SUBSTR(FIRST_NAME, 1, 2)
      */
     public Expression substring(Object startPosition, Object size) {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.Substring);
         Vector args = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
         args.addElement(startPosition);
         args.addElement(size);
+        return anOperator.expressionForArguments(this, args);
+    }
+    
+    /**
+     * PUBLIC:
+     * Function, returns the substring from the source string.
+     * TopLink: employee.get("firstName").substring(1)
+     * Java: NA
+     * SQL: SUBSTR(FIRST_NAME, 1)
+     */
+    public Expression substring(int startPosition) {
+        return substring(new Integer(startPosition));
+    }
+
+    /**
+     * PUBLIC:
+     * Function, returns the substring from the source string.
+     * TopLink: employee.get("firstName").substring(1)
+     * Java: NA
+     * SQL: SUBSTR(FIRST_NAME, 1)
+     */
+    public Expression substring(Object startPosition) {
+        ExpressionOperator anOperator = getOperator(ExpressionOperator.SubstringSingleArg);
+        Vector args = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
+        args.addElement(startPosition);
         return anOperator.expressionForArguments(this, args);
     }
 

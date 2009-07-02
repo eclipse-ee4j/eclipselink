@@ -93,6 +93,8 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         suite.setName("JUnitJPQLSimpleTestSuite");
         suite.addTest(new JUnitJPQLSimpleTestSuite("testSetup"));
         
+        suite.addTest(new JUnitJPQLSimpleTestSuite("simpleSingleArgSubstringTest"));
+        
         suite.addTest(new JUnitJPQLSimpleTestSuite("simpleJoinFetchTest"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("simpleJoinFetchTest2"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("baseTestCase"));
@@ -168,6 +170,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         suite.addTest(new JUnitJPQLSimpleTestSuite("simpleTypeTest"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("simpleAsOrderByTest"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("simpleLiteralDateTest"));
+        suite.addTest(new JUnitJPQLSimpleTestSuite("simpleSingleArgSubstringTest"));
         
         return suite;
     }
@@ -2162,6 +2165,21 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         List result = em.createQuery(ejbqlString).getResultList();
 
         Assert.assertTrue("simpleLiteralDateTest", comparer.compareObjects(result, expectedResult));
+    }
+    
+    public void simpleSingleArgSubstringTest(){
+        EntityManager em = createEntityManager();
+
+        Expression exp = (new ExpressionBuilder()).get("firstName").equal("Bob");
+        Vector expectedResult = (Vector)getServerSession().readAllObjects(Employee.class, exp);
+        
+        clearCache();
+
+        String ejbqlString = "SELECT e FROM Employee e where substring(e.firstName, 2) = 'ob'";
+
+        List result = em.createQuery(ejbqlString).getResultList();
+
+        Assert.assertTrue("simpleSingleArgSubstringTest", comparer.compareObjects(result, expectedResult));
     }
 }
 
