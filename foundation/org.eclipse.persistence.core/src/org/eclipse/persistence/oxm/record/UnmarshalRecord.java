@@ -529,8 +529,8 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
                 for (int x = 0; x < selfRecordsSize; x++) {                
                     UnmarshalRecord selfRecord =((UnmarshalRecord)selfRecords.get(x));                	
                     if(selfRecord == null){                		
+                        getXMLReader().setContentHandler(getFragmentBuilder());
                         getFragmentBuilder().startElement(namespaceURI, localName, qName, atts);
-                        getXMLReader().setContentHandler(getFragmentBuilder());                		
                     }else{
                         selfRecord.startElement(namespaceURI, localName, qName, atts);
                     }                                        

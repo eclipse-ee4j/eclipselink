@@ -356,14 +356,16 @@ public class JAXBValueStore implements ValueStore {
                 if (null == attributeChildrenMap) {
                     xPathNode = null;
                 } else {
-                    xPathNode = (XPathNode) xPathNode.getAttributeChildrenMap().get(xPathFragment);
+                    xPathNode = (XPathNode) attributeChildrenMap.get(xPathFragment);
                 }
+            } else if (xPathFragment.nameIsText()) {
+                xPathNode = xPathNode.getTextNode(); 
             } else {
                 Map nonAttributeChildrenMap = xPathNode.getNonAttributeChildrenMap();
                 if (null == nonAttributeChildrenMap) {
                     xPathNode = null;
                 } else {
-                    xPathNode = (XPathNode) xPathNode.getNonAttributeChildrenMap().get(xPathFragment);
+                    xPathNode = (XPathNode) nonAttributeChildrenMap.get(xPathFragment);
                 }
             }
             xPathFragment = xPathFragment.getNextFragment();
