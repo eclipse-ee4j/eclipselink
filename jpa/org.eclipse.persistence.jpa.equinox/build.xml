@@ -36,6 +36,8 @@
     </condition>
     <property name="equinox.2.common.plugins.dir" value="${equinox.2.base.dir}/plugins"/>
     <property name="equinox.2.jpa.plugins.dir" value="../plugins"/>
+    <property name="extensions.depend.dir" value="${equinox.2.base.dir}/../extension.lib.external"/>
+    <echo message="extensions.depend.dir        = '${extensions.depend.dir}'"/>
 
     <property file="${user.home}/build.properties"/>
     <property file="${equinox.build.location}/build.properties"/>
@@ -64,14 +66,24 @@
             "/>
         <fileset
             dir="${equinox.2.jpa.plugins.dir}"
-            includes="org.eclipse.osgi_3.5.0.v20090311-1300.jar,
+            includes="org.eclipse.osgi_*.jar,
                       javax.persistence_2.0_preview.jar
             "/>
+        <fileset
+            dir="${equinox.2.jpa.plugins.dir}"
+            includes="org.eclipse.osgi_*.jar"/>
     </path>
     <available file="${equinox.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar" property="core.bundle.exist"/>
-    <available file="${equinox.2.common.plugins.dir}/org.eclipse.persistence.jpa_${version.string}.jar" property="jpa.bundle.exist"/>
-    <available file="${equinox.2.common.plugins.dir}/${ant.project.name}.weaving_${version.string}.jar" property="weaving.bundle.exist"/>
-
+    <available file="${equinox.2.common.plugins.dir}/org.eclipse.persistence.jpa_${version.string}.jar"  property="jpa.bundle.exist"/>
+    <available classname="org.eclipse.osgi.baseadaptor.BaseData" classpathref="equinox.compile.path"     property="osgi.bundle.exist"/>
+    <available file="${equinox.2.common.plugins.dir}/${ant.project.name}.weaving_${version.string}.jar"  property="weaving.bundle.exist"/>
+    <condition property="compile.ok">
+        <and>
+            <isset property="osgi.bundle.exist"/>
+            <isset property="weaving.bundle.exist"/>
+        </and>
+    </condition>
+    
     <!-- all -->
     <target name="build" if="weaving.bundle.exist" depends="clean, compile, generate-manifest, package" description="build JPA Equinox component"/>
 
@@ -84,10 +96,14 @@
     </target>
 
     <!-- compile -->
-    <target name="compile" if="weaving.bundle.exist" description="Compile EclipseLink JPA">
+    <target name="no-compile-warning" unless="compile.ok">
+        <echo message="Compile will be skipped..."/>
+        <echo message="    Either the Equinox OSGi bundle wasn't found (org.eclipse.osgi_*.jar in jpa/plugins or external.depends)"/>
+        <echo message="    or the EclipseLink Weaving bundle wasn't found. Verify it compiled correctly."/>
+    </target>
+    <target name="compile" if="compile.ok" depends="no-compile-warning" description="Compile EclipseLink JPA">
         <fail message="Cannot find Core: '${equinox.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar'." unless="core.bundle.exist"/>
         <fail message="Cannot find JPA: '${equinox.2.common.plugins.dir}/org.eclipse.persistence.jpa_${version.string}.jar'." unless="jpa.bundle.exist"/>
-        <fail message="Cannot find Weaving: '${equinox.2.common.plugins.dir}/${ant.project.name}.weaving_${version.string}.jar'." unless="weaving.bundle.exist"/>
         <mkdir dir="${classes.dir}"/>
         <javac srcdir="${src.dir}"
                destdir="${classes.dir}"
@@ -106,7 +122,7 @@
     </target>
 
     <!-- package -->
-    <target name="package" if="weaving.bundle.exist" description="jar OSGI bundle">
+    <target name="package" if="compile.ok" description="jar OSGI bundle">
         <jar jarfile="${equinox.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" manifest="${classes.dir}/MANIFEST.MF">
             <fileset dir="${equinox.2.base.dir}">
                 <include name="about.html"/>
@@ -141,7 +157,7 @@
         </jar>
     </target>
 
-    <target name="generate-manifest" if="weaving.bundle.exist" description="Generate the OSGi bundle manifest before jarring">
+    <target name="generate-manifest" if="compile.ok" description="Generate the OSGi bundle manifest before jarring">
         <delete file="${classes.dir}/MANIFEST.MF*" quiet="true"/>
         <echo message="Manifest-Version: 1.0${line.separator}"                                                                            file="${classes.dir}/MANIFEST.MF" append="false"/>
         <echo message="Specification-Vendor: ${specification.vendor}${line.separator}"                                                    file="${classes.dir}/MANIFEST.MF" append="true"/>

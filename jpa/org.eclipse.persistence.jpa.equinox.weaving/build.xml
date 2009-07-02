@@ -37,6 +37,8 @@
     </condition>
     <property name="weaving.2.common.plugins.dir" value="${weaving.2.base.dir}/plugins"/>
     <property name="weaving.2.jpa.plugins.dir" value="../plugins"/>
+    <property name="extensions.depend.dir" value="${weaving.2.base.dir}/../extension.lib.external"/>
+    <echo message="extensions.depend.dir        = '${extensions.depend.dir}'"/>
 
     <property file="${user.home}/build.properties"/>
     <property file="${weaving.build.location}/build.properties"/>
@@ -53,9 +55,7 @@
     <property name="version.string"        value="${release.version}.${version.qualifier}"/>
     <property name="specification.vendor"  value="EclipseLink Project"/>
     <property name="implementation.vendor" value="EclipseLink Project"/>
-    
-    <property name="eclipse.osgi.jar"      value="org.eclipse.osgi_3.5.0.v20090311-1300.jar"/>
-    
+
     <!-- Set Compile Path-->
     <path id="weaving.compile.path">
         <fileset
@@ -69,10 +69,13 @@
             includes="org.eclipse.osgi_*.jar,
                       javax.persistence_2.0_preview.jar
             "/>
+        <fileset
+            dir="${weaving.2.jpa.plugins.dir}"
+            includes="org.eclipse.osgi_*.jar"/>
     </path>
     <available file="${weaving.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar" property="core.bundle.exist"/>
     <available file="${weaving.2.common.plugins.dir}/org.eclipse.persistence.jpa_${version.string}.jar" property="jpa.bundle.exist"/>
-    <available file="${weaving.2.jpa.plugins.dir}/${eclipse.osgi.jar}" property="osgi.bundle.exist"/>
+    <available classname="org.eclipse.osgi.baseadaptor.BaseData" classpathref="weaving.compile.path" property="osgi.bundle.exist"/>
 
     <!-- all -->
     <target name="build" depends="clean, compile, generate-manifest, package" description="build JPA Equinox weaving component"/>
@@ -86,7 +89,10 @@
     </target>
 
     <!-- compile -->
-    <target name="compile" if="osgi.bundle.exist" description="Compile EclipseLink JPA">
+    <target name="no-compile-warning" unless="osgi.bundle.exist">
+        <echo message="Compile will be skipped - EclipseLink Weaving bundle not found. Verify it compiled correctly."/>
+    </target>
+    <target name="compile" if="osgi.bundle.exist" depends="no-compile-warning" description="Compile EclipseLink JPA">
         <fail message="Cannot find Core: '${weaving.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar'." unless="core.bundle.exist"/>
         <fail message="Cannot find JPA: '${weaving.2.common.plugins.dir}/org.eclipse.persistence.jpa_${version.string}.jar'." unless="jpa.bundle.exist"/>
         <mkdir dir="${classes.dir}"/>
