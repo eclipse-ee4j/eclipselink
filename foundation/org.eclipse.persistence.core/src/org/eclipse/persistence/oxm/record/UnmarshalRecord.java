@@ -675,9 +675,14 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
                     xPathNode = xPathNode.getParent();
                 }
             } else {
-                if (xPathNode.getNonAttributeChildrenMap() != null) {
-                    XPathNode textNode = (XPathNode) xPathNode.getNonAttributeChildrenMap().get(XPathFragment.TEXT_FRAGMENT);
-                    if (null != textNode && textNode.isWhitespaceAware() && stringBuffer.length() == 0) {
+                XPathNode textNode = (XPathNode) xPathNode.getTextNode();
+                
+                if (null != textNode && textNode.isWhitespaceAware() && stringBuffer.length() == 0) {
+                    boolean isXsiNil = false;
+                    if (getAttributes() != null) {
+                        isXsiNil = getAttributes().getIndex(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE) >= 0;
+                    }
+                    if (!isXsiNil) {
                         if (textNode.getUnmarshalNodeValue().isMappingNodeValue()) {
                             MappingNodeValue mappingNodeValue = (MappingNodeValue) textNode.getUnmarshalNodeValue();
                             mappingNodeValue.endElement(xPathFragment, this);
@@ -737,23 +742,20 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
                 }
             }
 
-            XPathNode textNode = null;
-            if (null != xPathNode.getNonAttributeChildrenMap()) {
-                textNode = (XPathNode)xPathNode.getNonAttributeChildrenMap().get(XPathFragment.TEXT_FRAGMENT);
-                if (null == textNode) {
-                    textNode = (XPathNode)xPathNode.getNonAttributeChildrenMap().get(XPathFragment.ANY_FRAGMENT);
-
-                    if (textNode != null) {
-                        if (0 == length) {
-                            return;
-                        }
-                        String tmpString = new String(ch, start, length);
-                        if (EMPTY_STRING.equals(tmpString.trim()) && !textNode.isWhitespaceAware()) {
-                            return;
-                        }
+            XPathNode textNode = xPathNode.getTextNode();
+            if (null == textNode && xPathNode.getNonAttributeChildrenMap() != null) {
+                textNode = (XPathNode) xPathNode.getNonAttributeChildrenMap().get(XPathFragment.ANY_FRAGMENT);
+                if (textNode != null) {
+                    if (0 == length) {
+                        return;
+                    }
+                    String tmpString = new String(ch, start, length);
+                    if (EMPTY_STRING.equals(tmpString.trim()) && !textNode.isWhitespaceAware()) {
+                        return;
                     }
                 }
             }
+            
             if (null != textNode) {
                 xPathNode = textNode;
                 unmarshalContext.characters(this);

@@ -19,6 +19,7 @@ import junit.framework.TestSuite;
 import org.eclipse.persistence.testing.oxm.mappings.directtofield.singleattribute.xmlattribute.DirectToXMLAttributeTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.directtofield.singleattribute.xmlattribute.DirectToXMLAttributeNullTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.directtofield.singleattribute.xmlelement.DirectToXMLElementTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.directtofield.singleattribute.xmlelement.EmptyElementEmptyStringTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.directtofield.singleattribute.xmlelementwithwhitespace.DirectToXMLElementWithWhitespaceTestCases;
 
 public class SingleAttributeTestCases extends TestCase {
@@ -29,6 +30,7 @@ public class SingleAttributeTestCases extends TestCase {
 		suite.addTestSuite(DirectToXMLAttributeNullTestCases.class);
     suite.addTestSuite(DirectToXMLElementTestCases.class);
     suite.addTestSuite(DirectToXMLElementWithWhitespaceTestCases.class);
+    suite.addTestSuite(EmptyElementEmptyStringTestCases.class);
     return suite;
   }
 

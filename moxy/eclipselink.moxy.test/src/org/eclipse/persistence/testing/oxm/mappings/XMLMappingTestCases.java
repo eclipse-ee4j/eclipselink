@@ -79,6 +79,8 @@ public abstract class XMLMappingTestCases extends OXTestCase {
     protected String controlDocumentLocation;
     protected String writeControlDocumentLocation;
 
+    private boolean shouldRemoveEmptyTextNodesFromControlDoc = true;
+    
     public XMLMappingTestCases(String name) throws Exception {
         super(name);
         setupParser();
@@ -93,7 +95,9 @@ public abstract class XMLMappingTestCases extends OXTestCase {
             InputStream inputStream = ClassLoader.getSystemResourceAsStream(controlDocumentLocation);
             resourceName = controlDocumentLocation;
             controlDocument = parser.parse(inputStream);
-            removeEmptyTextNodes(controlDocument);
+            if (shouldRemoveEmptyTextNodesFromControlDoc()) {
+                removeEmptyTextNodes(controlDocument);
+            }
             inputStream.close();
         }
 
@@ -101,7 +105,9 @@ public abstract class XMLMappingTestCases extends OXTestCase {
             InputStream inputStream = ClassLoader.getSystemResourceAsStream(writeControlDocumentLocation);
             resourceName = writeControlDocumentLocation;
             writeControlDocument = parser.parse(inputStream);
-            removeEmptyTextNodes(writeControlDocument);
+            if (shouldRemoveEmptyTextNodesFromControlDoc()) {
+                removeEmptyTextNodes(writeControlDocument);
+            }
             inputStream.close();
         }
     }
@@ -396,6 +402,14 @@ public abstract class XMLMappingTestCases extends OXTestCase {
 
             xmlToObjectTest(xmlUnmarshallerHandler.getResult());
         }
+    }
+
+    public boolean shouldRemoveEmptyTextNodesFromControlDoc() {
+        return shouldRemoveEmptyTextNodesFromControlDoc;
+    }
+
+    public void setShouldRemoveEmptyTextNodesFromControlDoc(boolean value) {
+        this.shouldRemoveEmptyTextNodesFromControlDoc = value;
     }
 
 }

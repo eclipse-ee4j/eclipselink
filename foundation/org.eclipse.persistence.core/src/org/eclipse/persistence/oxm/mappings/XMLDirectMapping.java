@@ -186,14 +186,13 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
     AbstractNullPolicy nullPolicy;
     public boolean isCDATA;
     private boolean isWriteOnly;
-    private boolean isWhitespacePreserved;
 
     public XMLDirectMapping() {
         super();
         // The default policy is NullPolicy
         nullPolicy = new NullPolicy();
+        nullPolicy.setNullRepresentedByEmptyNode(true);
         isCDATA = false;
-        isWhitespacePreserved = false;
     }
 
     /**
@@ -246,8 +245,11 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
     public Object getAttributeValue(Object fieldValue, AbstractSession session, XMLRecord record) {
     	// Unmarshal DOM
         // If attribute is empty string representing (null) then return the nullValue
-        if (EMPTY_STRING.equals(fieldValue)) {
-            fieldValue = null;
+        boolean isNullRepresentedByEmptyNode = getNullPolicy().isNullRepresentedByEmptyNode();
+        if (EMPTY_STRING.equals(fieldValue) && isNullRepresentedByEmptyNode) {
+           fieldValue = null;
+        } else if (null == fieldValue && !isNullRepresentedByEmptyNode) {
+            fieldValue = EMPTY_STRING;
         }
         
         // PERF: Direct variable access.
@@ -396,14 +398,6 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
         getAttributeAccessor().setIsWriteOnly(this.isWriteOnly());
         getAttributeAccessor().setIsReadOnly(this.isReadOnly());
         super.preInitialize(session);
-    }
-
-    public boolean isWhitespacePreserved() {
-        return isWhitespacePreserved;
-    }
-
-    public void setWhitespacePreserved(boolean isWhitespacePreserved) {
-        this.isWhitespacePreserved = isWhitespacePreserved;
     }
 
 }

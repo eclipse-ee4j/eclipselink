@@ -34,7 +34,7 @@ public class DirectIsSetNullPolicyElementSetNillableIsSetTrueTestCases extends X
 
         AbstractNullPolicy aNullPolicy = new IsSetNullPolicy();
     	// Alter unmarshal policy state
-    	aNullPolicy.setNullRepresentedByEmptyNode(false); // no effect
+    	aNullPolicy.setNullRepresentedByEmptyNode(true);
     	aNullPolicy.setNullRepresentedByXsiNil(false);  // no effect
     	// Alter marshal policy state
     	aNullPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.XSI_NIL);

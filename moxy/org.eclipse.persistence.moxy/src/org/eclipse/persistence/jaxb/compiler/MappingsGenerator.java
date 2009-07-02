@@ -586,13 +586,12 @@ public class MappingsGenerator {
         }
         mapping.setField(getXPathForField(property, namespaceInfo, true));
 
-        mapping.setWhitespacePreserved(true);
+        if (property.getType().getRawName().equals("java.lang.String")) {
+            mapping.getNullPolicy().setNullRepresentedByEmptyNode(false);
+        }
+        
         if (!mapping.getXPath().equals("text()")) {
             ((NullPolicy) mapping.getNullPolicy()).setSetPerformedForAbsentNode(false);
-        }
-
-        if (property.getType().getRawName().equals("java.lang.String")) {
-            mapping.setNullValue("");
         }
 
         if(XMLConstants.QNAME_QNAME.equals(property.getSchemaType())){
@@ -1585,6 +1584,7 @@ public class MappingsGenerator {
                         }               
                         
                         IsSetNullPolicy nullPolicy = new IsSetNullPolicy("isSetValue", false, true, XMLNullRepresentationType.ABSENT_NODE);
+                        nullPolicy.setNullRepresentedByEmptyNode(true);
                         mapping.setNullPolicy(nullPolicy);
                                             
                         if(type != null && type.isEnumerationType()){

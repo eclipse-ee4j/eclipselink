@@ -43,7 +43,7 @@ public class DirectIsSetOptionalNodeNullPolicyNonNillableElementDefaultSetNullTe
 
         AbstractNullPolicy aNullPolicy = new IsSetNullPolicy();
     	// alter unmarshal policy state
-    	aNullPolicy.setNullRepresentedByEmptyNode(false);  // no effect
+    	aNullPolicy.setNullRepresentedByEmptyNode(true);
     	aNullPolicy.setNullRepresentedByXsiNil(false); // no effect
     	// alter marshal policy state
     	aNullPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);

@@ -33,7 +33,7 @@ public class DirectIsSetNodeNullPolicyTrueTestCases extends XMLMappingTestCases 
 
         AbstractNullPolicy aNullPolicy = new IsSetNullPolicy();
     	// alter unmarshal policy state
-    	aNullPolicy.setNullRepresentedByEmptyNode(false); // no effect
+    	aNullPolicy.setNullRepresentedByEmptyNode(true); // no effect
     	aNullPolicy.setNullRepresentedByXsiNil(false); // no effect
     	// alter marshal policy state
     	aNullPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.XSI_NIL);//.EMPTY_NODE);

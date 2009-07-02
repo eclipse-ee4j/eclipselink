@@ -56,6 +56,7 @@ public class XPathNode {
     private Map nonAttributeChildrenMap;
     private XMLAnyAttributeMappingNodeValue anyAttributeNodeValue;
     private XPathNode anyAttributeNode;
+    private XPathNode textNode;
 
     public XPathFragment getXPathFragment() {
         return xPathFragment;
@@ -139,6 +140,14 @@ public class XPathNode {
         return this.anyAttributeNode;
     }
 
+    public XPathNode getTextNode() {
+        return this.textNode;
+    }
+
+    public void setTextNode(XPathNode xPathNode) {
+        this.textNode = xPathNode;
+    }
+
     public boolean equals(Object object) {
         try {
             XPathNode perfNode = (XPathNode)object;
@@ -166,6 +175,26 @@ public class XPathNode {
     }
 
     public void addChild(XPathFragment anXPathFragment, NodeValue aNodeValue, NamespaceResolver namespaceResolver) {
+        if (null != anXPathFragment && anXPathFragment.nameIsText()) {
+            if (aNodeValue.isOwningNode(anXPathFragment)) {
+                XPathNode textXPathNode = new XPathNode();
+                textXPathNode.setParent(this);
+                textXPathNode.setXPathFragment(anXPathFragment);
+                if (aNodeValue.isMarshalNodeValue()) {
+                    textXPathNode.setMarshalNodeValue(aNodeValue);
+                }
+                if (aNodeValue.isUnmarshalNodeValue()) {
+                    textXPathNode.setUnmarshalNodeValue(aNodeValue);
+                }
+                this.setTextNode(textXPathNode);
+                if (null == nonAttributeChildren) {
+                    nonAttributeChildren = new ArrayList();
+                }
+                nonAttributeChildren.add(textXPathNode);
+                return;
+            }
+        }
+
         if (anXPathFragment != null && namespaceResolver != null && anXPathFragment.getNamespaceURI() == null && !anXPathFragment.nameIsText()) {
             if(!anXPathFragment.isAttribute()) {
                 anXPathFragment.setNamespaceURI(namespaceResolver.resolveNamespacePrefix(anXPathFragment.getPrefix()));
@@ -183,6 +212,8 @@ public class XPathNode {
         if ((anXPathFragment != null) && anXPathFragment.isAttribute()) {
             if (null == attributeChildren) {
                 attributeChildren = new ArrayList();
+            }
+            if (null == attributeChildrenMap) {
                 attributeChildrenMap = new HashMap();
             }
             children = attributeChildren;
@@ -190,6 +221,8 @@ public class XPathNode {
         } else {
             if (null == nonAttributeChildren) {
                 nonAttributeChildren = new ArrayList();
+            }
+            if (null == nonAttributeChildrenMap) {
                 nonAttributeChildrenMap = new HashMap();
             }
             children = nonAttributeChildren;

@@ -68,10 +68,15 @@ public class SequencedMarshalContext implements MarshalContext {
         if(null == setting.getName()) {
             return xPathNode.getNonAttributeChildrenMap().get(null);
         } else {
-            indexFragment.setLocalName(null);
-            indexFragment.setXPath(setting.getName());
-            indexFragment.setNamespaceURI(setting.getNamespaceURI());
-            return xPathNode.getNonAttributeChildrenMap().get(indexFragment);
+            if (setting.getName().equals("text()")) {
+                return xPathNode.getTextNode();
+            } else {
+                indexFragment.setLocalName(null);
+                indexFragment.setXPath(setting.getName());
+                indexFragment.setNamespaceURI(setting.getNamespaceURI());
+                return xPathNode.getNonAttributeChildrenMap().get(indexFragment);
+                
+            }
         }
     }
 

@@ -94,9 +94,6 @@ public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullC
             return;
         }
         Object value = unmarshalRecord.getStringBuffer().toString();
-        if (value.equals(EMPTY_STRING)) {
-            value = null;
-        }
         unmarshalRecord.resetStringBuffer();
 
         XMLConversionManager xmlConversionManager = (XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager();
@@ -125,7 +122,7 @@ public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullC
     }
 
     public boolean isWhitespaceAware() {
-        return xmlDirectMapping.isWhitespacePreserved();
+        return !xmlDirectMapping.getNullPolicy().isNullRepresentedByEmptyNode();
     }
 
 }

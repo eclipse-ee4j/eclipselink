@@ -34,7 +34,7 @@ public class DirectNullPolicyElementSetNillableTestCases extends XMLMappingTestC
 
         AbstractNullPolicy aNullPolicy = new NullPolicy();
     	// Alter unmarshal policy state
-    	aNullPolicy.setNullRepresentedByEmptyNode(false); // no effect
+    	aNullPolicy.setNullRepresentedByEmptyNode(true);
     	aNullPolicy.setNullRepresentedByXsiNil(true);  // no effect
     	// Alter marshal policy state
     	aNullPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.XSI_NIL);
