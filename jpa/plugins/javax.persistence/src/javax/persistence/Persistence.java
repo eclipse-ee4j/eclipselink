@@ -31,7 +31,6 @@ import java.util.HashSet;
 import javax.persistence.spi.PersistenceProvider;
 import javax.persistence.spi.PersistenceProviderResolver;
 import javax.persistence.spi.PersistenceProviderResolverHolder;
-import javax.persistence.spi.PersistenceUtil;
 
 /**
  * Bootstrap class that is used to obtain an {@link EntityManagerFactory}.
