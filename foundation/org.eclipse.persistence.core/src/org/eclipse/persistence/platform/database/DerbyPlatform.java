@@ -36,6 +36,9 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
  */
 public class DerbyPlatform extends DB2Platform {
 
+    public static final int MAX_CLOB = 2147483647;  //The maximum clob/blob size is 2 gigs in Derby.
+    public static final int MAX_BLOB = MAX_CLOB;
+
     /**
      * INTERNAL:
      * TODO: Need to find out how can byte arrays be inlined in Derby
@@ -235,12 +238,12 @@ public class DerbyPlatform extends DB2Platform {
 
         fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR", 255));
         fieldTypeMapping.put(Character.class, new FieldTypeDefinition("CHAR", 1));
-        fieldTypeMapping.put(Byte[].class, new FieldTypeDefinition("BLOB", 64000));
-        fieldTypeMapping.put(Character[].class, new FieldTypeDefinition("CLOB", 64000));
-        fieldTypeMapping.put(byte[].class, new FieldTypeDefinition("BLOB", 64000));
-        fieldTypeMapping.put(char[].class, new FieldTypeDefinition("CLOB", 64000));
-        fieldTypeMapping.put(java.sql.Blob.class, new FieldTypeDefinition("BLOB", 64000));
-        fieldTypeMapping.put(java.sql.Clob.class, new FieldTypeDefinition("CLOB", 64000));        
+        fieldTypeMapping.put(Byte[].class, new FieldTypeDefinition("BLOB", MAX_BLOB));
+        fieldTypeMapping.put(Character[].class, new FieldTypeDefinition("CLOB", MAX_CLOB));
+        fieldTypeMapping.put(byte[].class, new FieldTypeDefinition("BLOB", MAX_BLOB));
+        fieldTypeMapping.put(char[].class, new FieldTypeDefinition("CLOB", MAX_CLOB));
+        fieldTypeMapping.put(java.sql.Blob.class, new FieldTypeDefinition("BLOB", MAX_BLOB));
+        fieldTypeMapping.put(java.sql.Clob.class, new FieldTypeDefinition("CLOB", MAX_CLOB));        
         
         fieldTypeMapping.put(java.sql.Date.class, new FieldTypeDefinition("DATE", false));
         fieldTypeMapping.put(java.sql.Time.class, new FieldTypeDefinition("TIME", false));
