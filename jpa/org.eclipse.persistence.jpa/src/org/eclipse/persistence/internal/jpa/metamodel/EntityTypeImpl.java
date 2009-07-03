@@ -19,12 +19,15 @@ package org.eclipse.persistence.internal.jpa.metamodel;
 
 import java.util.Set;
 
+import javax.persistence.PersistenceException;
 import javax.persistence.metamodel.Attribute;
+import javax.persistence.metamodel.Bindable;
 import javax.persistence.metamodel.CollectionAttribute;
 import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.ListAttribute;
 import javax.persistence.metamodel.MapAttribute;
 import javax.persistence.metamodel.PluralAttribute;
+import javax.persistence.metamodel.SetAttribute;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.Type;
 
@@ -47,65 +50,17 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
  *  
  */ 
 public class EntityTypeImpl<X> extends ManagedTypeImpl<X> implements EntityType<X> {
-    // TODO: getSet(String) and getSet(String, Class) need to be overridden here
-    
+   
     protected EntityTypeImpl(MetamodelImpl metamodel, RelationalDescriptor descriptor) {
         super(metamodel, descriptor);
     }
 
-    /* (non-Javadoc)
-     * @see javax.persistence.metamodel.Entity#getName(java.lang.Class)
-     */
-    public String getName() {
-        return getDescriptor().getAlias();
+    public Bindable.BindableType getBindableType() {
+    	return Bindable.BindableType.ENTITY_TYPE;
     }
     
-    /* (non-Javadoc)
-     * @see javax.persistence.metamodel.IdentifiableType#getDeclaredId(java.lang.Class)
-     */
-    //@Override
-    //public <Y> Attribute<X, Y> getDeclaredId(Class<Y> type) {
-    public <Y> SingularAttribute<X, Y> getDeclaredId(Class<Y> type) {
-        // TODO Auto-generated method stub
-        // return the Id only if it is declared on this entity
-        //if(this.metamodel != null);
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see javax.persistence.metamodel.IdentifiableType#getDeclaredVersion(java.lang.Class)
-     */
-    //@Override
-    public <Y> SingularAttribute<X, Y> getDeclaredVersion(Class<Y> type) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see javax.persistence.metamodel.IdentifiableType#getId(java.lang.Class)
-     */
-    //@Override
-    public <Y> SingularAttribute<? super X, Y> getId(Class<Y> type) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-     /* (non-Javadoc)
-     * @see javax.persistence.metamodel.IdentifiableType#getVersion(java.lang.Class)
-     */
-    //@Override
-    public <Y> SingularAttribute<? super X, Y> getVersion(Class<Y> type) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public javax.persistence.metamodel.Type.PersistenceType getPersistenceType() {
-        return javax.persistence.metamodel.Type.PersistenceType.ENTITY;
-    }
-
-    public CollectionAttribute<X, ?> getDeclaredCollection(String name) {
-        // TODO Auto-generated method stub
-        return null;//(Collection<X, ?>) this.getMembers().get(name);
+    public Class<X> getBindableJavaType() {
+    	throw new PersistenceException("Not Yet Implemented");
     }
     
     @Override
@@ -120,14 +75,6 @@ public class EntityTypeImpl<X> extends ManagedTypeImpl<X> implements EntityType<
                     (CollectionMapping)((MemberImpl)aMember).getMapping());
         return aSet;*/
     }
-
-    /*
-    @Override
-    // TODO: Why is get*Collections the only function that returns a java.util.Set instead of a javax.persistence.metamodel.Set
-    public java.util.Set<AbstractCollection<? super X, ?, ?>> getCollections() {
-        // TODO Auto-generated method stub
-        return null;//(java.util.Set<AbstractCollection<? super X,?, ?>>) this.getMembers();
-    }*/
 
     /**
      * INTERNAL:
@@ -188,78 +135,86 @@ public class EntityTypeImpl<X> extends ManagedTypeImpl<X> implements EntityType<
         }
     }
     
+    public Set<PluralAttribute<? super X, ?, ?>> getCollections() {
+        return (Set<PluralAttribute<? super X, ?, ?>>) this.getMembers();
+    }
+
+    public CollectionAttribute<X, ?> getDeclaredCollection(String name) {
+    	throw new PersistenceException("Not Yet Implemented");
+        //return (Collection<X, ?>) this.getMembers().get(name);
+    }
+    
     @Override
     public <E> CollectionAttribute<X, E> getDeclaredCollection(String name, Class<E> elementType) {
         return getCollectionHelper(name, elementType, true);
     }
 
-    @Override
-    public <E> ListAttribute<X, E> getDeclaredList(String name, Class<E> elementType) {
-        // TODO: What is the difference between getDeclaredList and getList
-        return (ListAttribute<X,E>) this.getMembers().get(name);
+    public Set<PluralAttribute<X, ?, ?>> getDeclaredCollections() {
+    	throw new PersistenceException("Not Yet Implemented");
+    }
+    
+    //@Override
+    public <Y> SingularAttribute<X, Y> getDeclaredId(Class<Y> type) {
+        // return the Id only if it is declared on this entity
+    	throw new PersistenceException("Not Yet Implemented");
     }
 
-    @Override
-    public <K, V> MapAttribute<X, K, V> getDeclaredMap(String name, Class<K> keyType, Class<V> valueType) {
-        // TODO: What is the difference between getDeclaredMap and getMap
-        // TODO: we are ignoring keyType and valueType here
-        return (MapAttribute<X, K, V>) this.getMembers().get(name);
-    }
-
-    @Override
-    public <E> ListAttribute<? super X, E> getList(String name, Class<E> elementType) {
-        // TODO: we are ignoring elementType here
-        return (ListAttribute<X,E>) this.getMembers().get(name);
-    }
-
-    public MapAttribute<? super X, ?, ?> getMap(String name) {
-        // TODO Auto-generated method stub
-        return (MapAttribute<X, ?, ?>) this.getMembers().get(name);
-    }
-    
-    @Override
-    public <K, V> MapAttribute<? super X, K, V> getMap(String name, Class<K> keyType, Class<V> valueType) {
-        // TODO: we are ignoring keyType and valueType here
-        return (MapAttribute<X, K, V>) this.getMembers().get(name);
-    }
-    
-    @Override
-    public javax.persistence.metamodel.SetAttribute<? super X, ?> getSet(String name) {
-        // TODO: we are ignoring elementType here
-        return (javax.persistence.metamodel.SetAttribute<? super X, ?>) this.getMembers().get(name);
-    }
-
-    public javax.persistence.metamodel.SetAttribute<X, ?> getDeclaredSet(String name) {
-        // TODO Auto-generated method stub
-        return (javax.persistence.metamodel.SetAttribute<X, ?>) this.getMembers().get(name);        
-    }
-    
-    @Override
-    public  <E> javax.persistence.metamodel.SetAttribute<X, E> getSet(String name, Class<E> elementType) {
-        // TODO: we are ignoring elementType here
-        return (javax.persistence.metamodel.SetAttribute<X, E>) this.getMembers().get(name);
-    }
-    
-    @Override
-    public <E> javax.persistence.metamodel.SetAttribute<X, E> getDeclaredSet(String name, Class<E> elementType) {
-        // TODO: What is the difference between getDeclaredMap and getMap
-        // TODO: we are ignoring elementType here
-        return (javax.persistence.metamodel.SetAttribute<X, E>) this.getMembers().get(name);
-    }
-    
-    
     public ListAttribute<X, ?> getDeclaredList(String name) {
-        // TODO: What is the difference between getDeclaredList and getList
         return (ListAttribute<X, ?>) this.getMembers().get(name);
     }
     
+    @Override
+    public <E> ListAttribute<X, E> getDeclaredList(String name, Class<E> elementType) {
+        return (ListAttribute<X,E>) this.getMembers().get(name);
+    }
+ 
     public MapAttribute<X, ?, ?> getDeclaredMap(String name) {
         return (MapAttribute<X, ?, ?>) this.getMembers().get(name);
     }
 
-    /* (non-Javadoc)
-     * @see javax.persistence.metamodel.IdentifiableType#getIdType()
-     */
+    @Override
+    public <K, V> MapAttribute<X, K, V> getDeclaredMap(String name, Class<K> keyType, Class<V> valueType) {
+        // We are ignoring keyType and valueType here
+        return (MapAttribute<X, K, V>) this.getMembers().get(name);
+    }
+    
+    public SetAttribute<X, ?> getDeclaredSet(String name) {
+        return (SetAttribute<X, ?>) this.getMembers().get(name);        
+    }
+    
+    @Override
+    public <E> SetAttribute<X, E> getDeclaredSet(String name, Class<E> elementType) {
+        // We are ignoring elementType here
+        return (SetAttribute<X, E>) this.getMembers().get(name);
+    }
+    
+    public SingularAttribute<X, ?> getDeclaredSingularAttribute(String name) {
+    	throw new PersistenceException("Not Yet Implemented");
+    }
+    
+    public <Y> SingularAttribute<X, Y> getDeclaredSingularAttribute(String name, Class<Y> type) {
+    	throw new PersistenceException("Not Yet Implemented");
+    }
+
+    public Set<SingularAttribute<X, ?>> getDeclaredSingularAttributes() {
+    	throw new PersistenceException("Not Yet Implemented");
+    }
+        
+    
+    //@Override
+    public <Y> SingularAttribute<X, Y> getDeclaredVersion(Class<Y> type) {
+    	throw new PersistenceException("Not Yet Implemented");
+    }
+
+    //@Override
+    public <Y> SingularAttribute<? super X, Y> getId(Class<Y> type) {
+    	throw new PersistenceException("Not Yet Implemented");
+    }
+
+    public Set<SingularAttribute<? super X, ?>> getIdClassAttributes() {
+    	throw new PersistenceException("Not Yet Implemented");
+    }
+
     public Type<?> getIdType() {
         // NOTE: This code is another good reason to abstract out a PKPolicy on the descriptor
         // descriptor.getPrimaryKeyPolicy().getIdClass();
@@ -282,76 +237,67 @@ public class EntityTypeImpl<X> extends ManagedTypeImpl<X> implements EntityType<
         }
         
         // TODO: Error message for incompatible JPA config
-        throw new IllegalStateException("?");
+        throw new IllegalStateException("Incompatible persistence configuration");
+    }
+    
+    @Override
+    public <E> ListAttribute<? super X, E> getList(String name, Class<E> elementType) {
+        // We are ignoring elementType here
+        return (ListAttribute<X,E>) this.getMembers().get(name);
     }
 
-    public Set<SingularAttribute<? super X, ?>> getIdClassAttributes() {
-        // TODO Auto-generated method stub
-        return null;
+    public MapAttribute<? super X, ?, ?> getMap(String name) {
+        return (MapAttribute<X, ?, ?>) this.getMembers().get(name);
+    }
+    
+    @Override
+    public <K, V> MapAttribute<? super X, K, V> getMap(String name, Class<K> keyType, Class<V> valueType) {
+        // We are ignoring keyType and valueType here
+        return (MapAttribute<X, K, V>) this.getMembers().get(name);
+    }
+    
+    public String getName() {
+        return getDescriptor().getAlias();
+    }
+    
+    public Type.PersistenceType getPersistenceType() {
+        return Type.PersistenceType.ENTITY;
     }
 
-    public boolean hasSingleIdAttribute() {
-        // TODO Auto-generated method stub
-        return false;
+    @Override
+    public SetAttribute<? super X, ?> getSet(String name) {
+        // We are ignoring elementType here
+        return (SetAttribute<? super X, ?>) this.getMembers().get(name);
     }
 
-    public boolean hasVersionAttribute() {
-        // TODO Auto-generated method stub
-        return false;
+    @Override
+    public  <E> SetAttribute<X, E> getSet(String name, Class<E> elementType) {
+        // We are ignoring elementType here
+        return (SetAttribute<X, E>) this.getMembers().get(name);
     }
-
-    public Set<PluralAttribute<? super X, ?, ?>> getCollections() {
-        // TODO Auto-generated method stub
-        return (Set<PluralAttribute<? super X, ?, ?>>) this.getMembers();
-    }
-
-    public Set<PluralAttribute<X, ?, ?>> getDeclaredCollections() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public <Y> SingularAttribute<X, Y> getDeclaredSingularAttribute(String name,
-            Class<Y> type) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public SingularAttribute<X, ?> getDeclaredSingularAttribute(String name) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public Set<SingularAttribute<X, ?>> getDeclaredSingularAttributes() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public <Y> SingularAttribute<? super X, Y> getSingularAttribute(String name,
-            Class<Y> type) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
+    
     public SingularAttribute<? super X, ?> getSingularAttribute(String name) {
-        // TODO Auto-generated method stub
-        return null;
+    	throw new PersistenceException("Not Yet Implemented");
+    }
+
+    public <Y> SingularAttribute<? super X, Y> getSingularAttribute(String name, Class<Y> type) {
+    	throw new PersistenceException("Not Yet Implemented");
     }
 
     public Set<SingularAttribute<? super X, ?>> getSingularAttributes() {
-        // TODO Auto-generated method stub
-        return null;
+    	throw new PersistenceException("Not Yet Implemented");
     }
 
-    public Class<X> getBindableJavaType() {
-        // TODO Auto-generated method stub
-        return null;
+    //@Override
+    public <Y> SingularAttribute<? super X, Y> getVersion(Class<Y> type) {
+    	throw new PersistenceException("Not Yet Implemented");
     }
-
-    public javax.persistence.metamodel.Bindable.BindableType getBindableType() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-
     
+    public boolean hasSingleIdAttribute() {
+    	throw new PersistenceException("Not Yet Implemented");
+    }
+
+    public boolean hasVersionAttribute() {
+    	throw new PersistenceException("Not Yet Implemented");
+    }
 }

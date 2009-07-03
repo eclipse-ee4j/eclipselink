@@ -31,7 +31,7 @@ import javax.persistence.metamodel.Type;
  */ 
 public abstract class TypeImpl<X> implements Type<X> {
     
-    /** The Java Class used that this Type represents */
+    /** The Java Class in use that this Type represents */
     private Class javaClass;
     
     protected TypeImpl(Class javaClass) {
@@ -43,5 +43,4 @@ public abstract class TypeImpl<X> implements Type<X> {
     }
 
     public abstract PersistenceType getPersistenceType();
-
 }

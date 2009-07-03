@@ -16,6 +16,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
+import javax.persistence.metamodel.Bindable;
 import javax.persistence.metamodel.PluralAttribute;
 import javax.persistence.metamodel.Type;
 
@@ -35,6 +36,7 @@ import org.eclipse.persistence.mappings.CollectionMapping;
  *  
  */ 
 public abstract class PluralAttributeImpl<X, C, V> extends AttributeImpl<X, C> implements PluralAttribute<X, C, V> {
+    /** The type representing this collection type **/
     private TypeImpl<V> elementType;
 
     protected PluralAttributeImpl(ManagedTypeImpl<X> managedType, CollectionMapping mapping) {
@@ -52,6 +54,10 @@ public abstract class PluralAttributeImpl<X, C, V> extends AttributeImpl<X, C> i
         }
     }
 
+    public BindableType getBindableType() {
+    	return Bindable.BindableType.PLURAL_ATTRIBUTE;
+    }
+    
     public CollectionMapping getCollectionMapping() {
         return (CollectionMapping) getMapping();
     }

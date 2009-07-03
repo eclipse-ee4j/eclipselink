@@ -18,6 +18,7 @@ package org.eclipse.persistence.internal.jpa.metamodel;
 
 import java.util.Set;
 
+import javax.persistence.PersistenceException;
 import javax.persistence.metamodel.CollectionAttribute;
 import javax.persistence.metamodel.EmbeddableType;
 import javax.persistence.metamodel.ListAttribute;
@@ -45,115 +46,93 @@ public class EmbeddableTypeImpl<X> extends ManagedTypeImpl<X> implements Embedda
         super(metamodel, descriptor);
     }
 
+    @Override
+    public <E> CollectionAttribute<? super X, E> getCollection(String name, Class<E> elementType) {
+    	throw new PersistenceException("Not Yet Implemented");
+    }
+
+    public Set<PluralAttribute<? super X, ?, ?>> getCollections() {
+    	throw new PersistenceException("Not Yet Implemented");
+    }
+
+    public CollectionAttribute<X, ?> getDeclaredCollection(String name) {
+    	throw new PersistenceException("Not Yet Implemented");
+    }
+
+    @Override
+    public <E> CollectionAttribute<X, E> getDeclaredCollection(String name, Class<E> elementType) {
+    	throw new PersistenceException("Not Yet Implemented");
+    }
+
+    public Set<PluralAttribute<X, ?, ?>> getDeclaredCollections() {
+    	throw new PersistenceException("Not Yet Implemented");
+    }
+    
+    public ListAttribute<X, ?> getDeclaredList(String name) {
+    	throw new PersistenceException("Not Yet Implemented");
+    }
+
+    @Override
+    public <E> ListAttribute<X, E> getDeclaredList(String name, Class<E> elementType) {
+    	throw new PersistenceException("Not Yet Implemented");
+    }
+
+    public MapAttribute<X, ?, ?> getDeclaredMap(String name) {
+    	throw new PersistenceException("Not Yet Implemented");
+    }
+
+    @Override
+    public <K, V> MapAttribute<X, K, V> getDeclaredMap(String name, Class<K> keyType, Class<V> valueType) {        
+    	throw new PersistenceException("Not Yet Implemented");
+    }
+
+    public javax.persistence.metamodel.SetAttribute<X, ?> getDeclaredSet(String name) {
+    	throw new PersistenceException("Not Yet Implemented");
+    }
+
+    public SingularAttribute<X, ?> getDeclaredSingularAttribute(String name) {
+    	throw new PersistenceException("Not Yet Implemented");
+    }
+
+    public <Y> SingularAttribute<X, Y> getDeclaredSingularAttribute(String name, Class<Y> type) {
+    	throw new PersistenceException("Not Yet Implemented");
+    }
+
+    public Set<SingularAttribute<X, ?>> getDeclaredSingularAttributes() {
+    	throw new PersistenceException("Not Yet Implemented");
+    }
+
     public Class<X> getJavaType() {
         return getDescriptor().getJavaClass();
+    }
+
+    @Override
+    public <E> ListAttribute<? super X, E> getList(String name, Class<E> elementType) {
+    	throw new PersistenceException("Not Yet Implemented");
+    }
+
+    public MapAttribute<? super X, ?, ?> getMap(String name) {
+    	throw new PersistenceException("Not Yet Implemented");
+    }
+
+    @Override
+    public <K, V> MapAttribute<? super X, K, V> getMap(String name, Class<K> keyType, Class<V> valueType) {
+    	throw new PersistenceException("Not Yet Implemented");
     }
 
     public javax.persistence.metamodel.Type.PersistenceType getPersistenceType() {
         return PersistenceType.EMBEDDABLE;
     }
 
-    @Override
-    public <E> CollectionAttribute<? super X, E> getCollection(String name, Class<E> elementType) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public <E> CollectionAttribute<X, E> getDeclaredCollection(String name, Class<E> elementType) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public <E> ListAttribute<X, E> getDeclaredList(String name, Class<E> elementType) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public <K, V> MapAttribute<X, K, V> getDeclaredMap(String name, Class<K> keyType, Class<V> valueType) {        
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public <E> ListAttribute<? super X, E> getList(String name, Class<E> elementType) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public <K, V> MapAttribute<? super X, K, V> getMap(String name, Class<K> keyType, Class<V> valueType) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-    
-    public CollectionAttribute<X, ?> getDeclaredCollection(String name) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public ListAttribute<X, ?> getDeclaredList(String name) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public MapAttribute<X, ?, ?> getDeclaredMap(String name) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public javax.persistence.metamodel.SetAttribute<X, ?> getDeclaredSet(String name) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public MapAttribute<? super X, ?, ?> getMap(String name) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public Set<PluralAttribute<? super X, ?, ?>> getCollections() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public Set<PluralAttribute<X, ?, ?>> getDeclaredCollections() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public <Y> SingularAttribute<X, Y> getDeclaredSingularAttribute(String name,
-            Class<Y> type) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public SingularAttribute<X, ?> getDeclaredSingularAttribute(String name) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public Set<SingularAttribute<X, ?>> getDeclaredSingularAttributes() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public <Y> SingularAttribute<? super X, Y> getSingularAttribute(String name,
-            Class<Y> type) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
     public SingularAttribute<? super X, ?> getSingularAttribute(String name) {
-        // TODO Auto-generated method stub
-        return null;
+    	throw new PersistenceException("Not Yet Implemented");
+    }
+
+    public <Y> SingularAttribute<? super X, Y> getSingularAttribute(String name, Class<Y> type) {
+    	throw new PersistenceException("Not Yet Implemented");
     }
 
     public Set<SingularAttribute<? super X, ?>> getSingularAttributes() {
-        // TODO Auto-generated method stub
-        return null;
+    	throw new PersistenceException("Not Yet Implemented");
     }
-
 }

@@ -39,7 +39,6 @@ import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.internal.jpa.querydef.CriteriaQueryImpl;
 import org.eclipse.persistence.internal.jpa.transaction.*;
-import org.eclipse.persistence.internal.localization.EclipseLinkLocalization;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.logging.SessionLog;

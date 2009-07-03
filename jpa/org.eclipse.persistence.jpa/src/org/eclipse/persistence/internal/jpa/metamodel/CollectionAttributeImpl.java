@@ -16,7 +16,7 @@ package org.eclipse.persistence.internal.jpa.metamodel;
 
 import java.util.Collection;
 
-import javax.persistence.metamodel.Bindable;
+import javax.persistence.PersistenceException;
 import javax.persistence.metamodel.CollectionAttribute;
 
 import org.eclipse.persistence.mappings.CollectionMapping;
@@ -51,33 +51,24 @@ public class CollectionAttributeImpl<X, V> extends PluralAttributeImpl<X, java.u
         super(managedType, mapping);
     }
 
+    @Override
+    public Class<V> getBindableJavaType() {
+    	throw new PersistenceException("Not Yet Implemented");
+    }
+
     public CollectionType getCollectionType() {
         return CollectionType.COLLECTION;
     }
 
     public Class<Collection<V>> getJavaType() {
-        // TODO Auto-generated method stub
         return this.getMapping().getReferenceDescriptor().getJavaClass();
     }
     
-    public Bindable.BindableType getBindableType() {
-        // TODO Auto-generated method stub
-        return Bindable.BindableType.PLURAL_ATTRIBUTE;
+    @Override
+    public boolean isAttribute() {
+    	throw new PersistenceException("Not Yet Implemented");
     }
-    
     public String toString() {
         return "CollectionAttributeImpl[" + getMapping() + "]";
     }
-
-    public Class<V> getBindableJavaType() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public boolean isAttribute() {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
 }

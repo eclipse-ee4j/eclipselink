@@ -39,10 +39,18 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
  */ 
 public abstract class AttributeImpl<X, T> implements Attribute<X, T> {
 
+    /** the ManagedType associated with this attribute **/
     private ManagedTypeImpl<X> managedType;
 
+    /** The databaseMapping associated with this attribute **/
     private DatabaseMapping mapping;
 
+    /**
+     * INTERNAL:
+     * 
+     * @param managedType
+     * @param mapping
+     */
     protected AttributeImpl(ManagedTypeImpl<X> managedType, DatabaseMapping mapping) {
         this.mapping = mapping;
         this.mapping.setProperty(getClass().getName(), this);
@@ -50,35 +58,25 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T> {
     }
     
     /**
-     * INTERNAL:
-     * Return the managed type representing the type in which the member was
-     * declared.
-     * @return
+     *  Return the managed type representing the type in which 
+     *  the attribute was declared.
+     *  @return declaring type
      */
-    public ManagedTypeImpl<X> getManagedTypeImpl() {
-        return this.managedType;
-    }
-
     public ManagedType<X> getDeclaringType() {
         return getManagedTypeImpl();
     }
-    
+
     /**
      * INTERNAL:
-     * Return the databaseMapping that represents the type
+     * Return the Descriptor associated with this attribute 
      * @return
      */
-    public DatabaseMapping getMapping() {
-        return this.mapping;
-    }
-    
     protected RelationalDescriptor getDescriptor() {
         return getManagedTypeImpl().getDescriptor();
     }
 
     /**
-     * Return the java.lang.reflect.Member for the represented member.
-     * 
+     * Return the java.lang.reflect.Member for the represented attribute. 
      * In the case of property access the get method will be returned
      * 
      * @return corresponding java.lang.reflect.Member
@@ -92,38 +90,57 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T> {
 
         return ((InstanceVariableAttributeAccessor) accessor).getAttributeField();
     }
-    
-    public boolean isAssociation() {
-        return getMapping().isReferenceMapping();
-    }
 
-    public boolean isCollection() {
-        return getMapping().isCollectionMapping();
-    }
-    
     /**
-     * INTERNAL:
-     * @return
+     *  Return the Java type of the represented attribute.
+     *  @return Java type
      */
-    public abstract boolean isAttribute();
-
-    public String toString() {
-        return "Attribute[" + getMapping() + "]";
-    }
-
-    //@Override
     public Class<T> getJavaType() {
         return getMapping().getAttributeClassification();
     }
     
+    /**
+     * INTERNAL:
+     * Return the managed type representing the type in which the member was
+     * declared.
+     * @return
+     */
+    public ManagedTypeImpl<X> getManagedTypeImpl() {
+        return this.managedType;
+    }
+
+    /**
+     * INTERNAL:
+     * Return the databaseMapping that represents the type
+     * @return
+     */
+    public DatabaseMapping getMapping() {
+        return this.mapping;
+    }
+    
+    /**
+     * Return the name of the attribute.
+     * @return name
+     */
     public String getName() {
         return this.getMapping().getAttributeName();
     }
 
+    /**
+     *  Return the multiplicity of the attribute.
+     *  @return multiplicity
+     */
     public javax.persistence.metamodel.Attribute.PersistentAttributeType getPersistentAttributeType() {
-        // process the following mappings
-        // MANY_TO_ONE, ONE_TO_ONE, BASIC, EMBEDDED,
-        // MANY_TO_MANY, ONE_TO_MANY, ELEMENT_COLLECTION
+        /**
+         * process the following mappings
+         * MANY_TO_ONE
+         * ONE_TO_ONE
+         * BASIC
+         * EMBEDDED
+         * MANY_TO_MANY
+         * ONE_TO_MANY
+         * ELEMENT_COLLECTION
+         */
         if (getMapping().isDirectToFieldMapping()) {
             return PersistentAttributeType.BASIC;
         }
@@ -149,9 +166,26 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T> {
         throw new IllegalStateException("Unknown mapping type: " + getMapping());
     }
     
-    public javax.persistence.metamodel.Bindable.BindableType getBindableType() {
-        // TODO Auto-generated method stub
-        return null;
+    /**
+     *  Is the attribute an association.
+     *  @return whether an association
+     */
+    public boolean isAssociation() {
+        return getMapping().isReferenceMapping();
     }
-    
+
+    /**
+     * INTERNAL:
+     * Implemented by subclass
+     * @return whether the type is an attribute
+     */
+    public abstract boolean isAttribute();
+
+    /**
+     *  Is the attribute collection-valued.
+     *  @return whether a collection
+     */
+    public boolean isCollection() {
+        return getMapping().isCollectionMapping();
+    }
 }

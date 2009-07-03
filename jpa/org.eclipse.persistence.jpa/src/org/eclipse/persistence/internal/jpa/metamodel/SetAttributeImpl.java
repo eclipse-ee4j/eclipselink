@@ -18,6 +18,7 @@ package org.eclipse.persistence.internal.jpa.metamodel;
 
 import java.util.Set;
 
+import javax.persistence.PersistenceException;
 import javax.persistence.metamodel.SetAttribute;
 
 import org.eclipse.persistence.mappings.CollectionMapping;
@@ -39,32 +40,27 @@ public class SetAttributeImpl<X, V> extends PluralAttributeImpl<X, java.util.Set
         super(managedType, mapping);
     }
 
+    @Override
+    public Class<V> getBindableJavaType() {
+        throw new PersistenceException("Not Yet Implemented");
+    }
+
     public CollectionType getCollectionType() {
         return CollectionType.SET;
     }
     
     public Class<Set<V>> getJavaType() {
-        // TODO Auto-generated method stub
         return this.getMapping().getAttributeClassification();
     }
     
-    public BindableType getBindableType() {
-        // TODO Auto-generated method stub
-        return null;
+    @Override
+    public boolean isAttribute() {
+    	throw new PersistenceException("Not Yet Implemented");
     }
-
+    
     public String toString() {
         return "SetAttributeImpl[" + getMapping() + "]";
     }
 
-    public Class<V> getBindableJavaType() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public boolean isAttribute() {
-        // TODO Auto-generated method stub
-        return false;
-    }
+    
 }

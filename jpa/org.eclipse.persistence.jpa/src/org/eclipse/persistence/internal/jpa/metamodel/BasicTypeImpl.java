@@ -12,7 +12,7 @@
  *     06/30/2009-2.0  mobrien - finish JPA Metadata API modifications in support
  *       of the Metamodel implementation for EclipseLink 2.0 release involving
  *       Map, ElementCollection and Embeddable types on MappedSuperclass descriptors
- *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)  
+ *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
@@ -39,5 +39,4 @@ public class BasicTypeImpl<X> extends TypeImpl<X> implements BasicType<X> {
     public PersistenceType getPersistenceType() {
         return PersistenceType.BASIC;
     }
-
 }

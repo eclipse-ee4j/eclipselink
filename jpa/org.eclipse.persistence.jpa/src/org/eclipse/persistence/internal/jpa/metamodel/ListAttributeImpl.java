@@ -18,6 +18,7 @@ package org.eclipse.persistence.internal.jpa.metamodel;
 
 import java.util.List;
 
+import javax.persistence.PersistenceException;
 import javax.persistence.metamodel.ListAttribute;
 
 import org.eclipse.persistence.mappings.CollectionMapping;
@@ -40,33 +41,25 @@ public class ListAttributeImpl<X, V> extends PluralAttributeImpl<X, java.util.Li
         super(managedType, mapping);
     }
 
+    @Override
+    public Class<V> getBindableJavaType() {
+    	throw new PersistenceException("Not Yet Implemented");
+    }
+
     public CollectionType getCollectionType() {
         return CollectionType.LIST;
     }
     
     public Class<List<V>> getJavaType() {
-        // TODO Auto-generated method stub
         return this.getMapping().getAttributeClassification();
     }
     
-    
-    public BindableType getBindableType() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-    
-    public String toString() {
-        return "ListAttributeImpl[" + getMapping() + "]";
-    }
-
-    public Class<V> getBindableJavaType() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
     @Override
     public boolean isAttribute() {
-        // TODO Auto-generated method stub
-        return false;
+    	throw new PersistenceException("Not Yet Implemented");
+    }
+
+    public String toString() {
+        return "ListAttributeImpl[" + getMapping() + "]";
     }
 }

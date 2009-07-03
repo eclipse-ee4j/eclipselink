@@ -429,7 +429,7 @@ public class MetadataProject {
      * will ensure that the descriptors on all mappedSuperclass accessors 
      * are setup so that they can be specially processed later in 
      * MetadataProject.processStage2() - where the m_mappedSuperclassAccessors 
-     * Set is required.
+     * Map is required.
      * <p>
      *  This method is referenced by EntityAccessor.addPotentialMappedSuperclass()
      *  </p>
@@ -448,6 +448,7 @@ public class MetadataProject {
             accessor.processAccessType();
             // Generics Handler: Check if the referenceType is not set for Collection accessors
             accessor.addAccessors();
+            // Add the accessor to our custom Map keyed on className for separate processing in stage2
             m_mappedSuperclassAccessors.put(className, accessor);
             MetadataDescriptor descriptor = accessor.getDescriptor();
             // Fake out a database table and primary key
@@ -738,7 +739,7 @@ public class MetadataProject {
     
     /**
      * INTERNAL:
-     * Return the Set of MappedSuperclassAccessors
+     * Return the Map of MappedSuperclassAccessors keyed on className
      * @since EclipseLink 2.0 for the JPA 2.0 Reference Implementation
      */
     public HashMap<String, MappedSuperclassAccessor> getMappedSuperclassAccessors() {

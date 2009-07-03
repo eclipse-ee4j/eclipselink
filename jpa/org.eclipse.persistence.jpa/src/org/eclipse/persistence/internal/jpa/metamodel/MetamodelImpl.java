@@ -12,7 +12,9 @@
  *     06/30/2009-2.0  mobrien - finish JPA Metadata API modifications in support
  *       of the Metamodel implementation for EclipseLink 2.0 release involving
  *       Map, ElementCollection and Embeddable types on MappedSuperclass descriptors
- *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)  
+ *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)
+ *     07/02/2009-2.0  mobrien - Metamodel implementation expansion
+ *       - 266912: 
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
@@ -51,17 +53,22 @@ import org.eclipse.persistence.sessions.Project;
  */ 
 public class MetamodelImpl implements Metamodel {
 
+    /** The EclipseLink Session associated with this Metamodel implementation that contains all our descriptors with mappings **/
     protected DatabaseSession session;
 
-    protected java.util.Map<Class, EntityTypeImpl<?>> entities;
+    /** The Map of entities in this metamodel keyed on Class **/
+    protected Map<Class, EntityTypeImpl<?>> entities;
 
-    protected java.util.Map<Class, EmbeddableTypeImpl<?>> embeddables;
+    /** The Map of embeddables in this metamodel keyed on Class **/
+    protected Map<Class, EmbeddableTypeImpl<?>> embeddables;
 
-    protected java.util.Map<Class, ManagedTypeImpl<?>> managedTypes;
+    /** The Map of managed types in this metamodel keyed on Class **/
+    protected Map<Class, ManagedTypeImpl<?>> managedTypes;
     
-    private java.util.Map<Class, TypeImpl<?>> types;
-    
-    //private java.util.Map<Class, MappedSuperclassTypeImpl<?>> mappedSuperclasses;
+    /** The Map of types in this metamodel keyed on Class **/
+    private Map<Class, TypeImpl<?>> types;
+
+    /** The Set of MappedSuperclassTypes in this metamodel**/
     private Set<MappedSuperclassTypeImpl<?>> mappedSuperclasses;
 
     public MetamodelImpl(DatabaseSession session) {
@@ -70,13 +77,19 @@ public class MetamodelImpl implements Metamodel {
     }
 
     public MetamodelImpl(EntityManagerFactory emf) {
+        // Create a new Metamodel using the EclipseLink session on the EMF
         this(JpaHelper.getServerSession(emf));
     }
 
     public MetamodelImpl(EntityManager em) {
+        // Create a new Metamodel using the EclipseLink session on the EM
         this(JpaHelper.getEntityManager(em).getServerSession());
     }
 
+    /**
+     * INTERNAL:
+     * @return
+     */
     public DatabaseSession getSession() {
         return this.session;
     }
@@ -106,6 +119,7 @@ public class MetamodelImpl implements Metamodel {
     }
 
     /**
+     * INTERNAL:
      * Initialize the JPA meta-model wrapping the EclipseLink JPA meta-model.
      */
     private void initialize() {
@@ -132,15 +146,13 @@ public class MetamodelImpl implements Metamodel {
             }
         }            
 
-        // TODO: Add all MAPPED_SUPERCLASS types
-            
-        
         // TODO: Add all BASIC types
         
         // TODO: verify that all entities or'd with embeddables matches the number of types
 
         
-        // Get mapped superclass types from the project (not a regular descriptor)
+        // Add all MAPPED_SUPERCLASS types
+        // Get mapped superclass types from the native project (not a regular descriptor)
         try {
             Project project = session.getProject();
             Map<Object, RelationalDescriptor> descriptors = project.getMappedSuperclassDescriptors();
@@ -190,23 +202,13 @@ public class MetamodelImpl implements Metamodel {
         return type;
     }
     
-    public java.util.Set<MappedSuperclassTypeImpl<?>> getMappedSuperclasses() {
+    /**
+     * INTERNAL:
+     * Return the Set of MappedSuperclassType objects
+     * @return
+     */
+    public Set<MappedSuperclassTypeImpl<?>> getMappedSuperclasses() {
         return mappedSuperclasses;
     }
 
-    public void setMappedSuperclasses(
-            java.util.Set<MappedSuperclassTypeImpl<?>> mappedSuperclasses) {
-        this.mappedSuperclasses = mappedSuperclasses;
-    }
-    
-/*
-    public java.util.Map<Class, MappedSuperclassTypeImpl<?>> getMappedSuperclasses() {
-        return mappedSuperclasses;
-    }
-
-    public void setMappedSuperclasses(
-            java.util.Map<Class, MappedSuperclassTypeImpl<?>> mappedSuperclasses) {
-        this.mappedSuperclasses = mappedSuperclasses;
-    }
-*/
 }

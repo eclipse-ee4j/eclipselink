@@ -18,6 +18,7 @@ package org.eclipse.persistence.internal.jpa.metamodel;
 
 import java.util.Map;
 
+import javax.persistence.PersistenceException;
 import javax.persistence.metamodel.MapAttribute;
 import javax.persistence.metamodel.Type;
 
@@ -39,6 +40,7 @@ import org.eclipse.persistence.mappings.CollectionMapping;
 public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, java.util.Map<K, V>, V> 
     implements MapAttribute<X, K, V> {
 
+    /** The key type that this Map type is based on **/
     private Type<K> keyType;
 
     protected MapAttributeImpl(ManagedTypeImpl<X> managedType, CollectionMapping mapping) {
@@ -50,6 +52,19 @@ public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, java.util.
         this.keyType = (Type<K>) keyType;
     }
 
+    @Override
+    public Class<V> getBindableJavaType() {
+        throw new PersistenceException("Not Yet Implemented");
+    }
+    
+    public CollectionType getCollectionType() {
+        return CollectionType.MAP;
+    }
+    
+    public Class<Map<K, V>> getJavaType() {
+        return this.getMapping().getAttributeClassification();
+    }
+    
     public Class<K> getKeyJavaType() {
         //return ((MapContainerPolicy) getCollectionMapping().getContainerPolicy()).getKeyType();
         return ((MapContainerPolicy) getCollectionMapping().getContainerPolicy()).getContainerClass();
@@ -59,33 +74,12 @@ public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, java.util.
         return this.keyType;
     }
 
-    public CollectionType getCollectionType() {
-        return CollectionType.MAP;
+    @Override
+    public boolean isAttribute() {
+        throw new PersistenceException("Not Yet Implemented");
     }
-    
-    public Class<Map<K, V>> getJavaType() {
-        // TODO Auto-generated method stub
-        return this.getMapping().getAttributeClassification();
-    }
-    
-    public BindableType getBindableType() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-    
+
     public String toString() {
         return "MapAttributeImpl[" + getMapping() + "]";
     }
-
-    public Class<V> getBindableJavaType() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public boolean isAttribute() {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
 }

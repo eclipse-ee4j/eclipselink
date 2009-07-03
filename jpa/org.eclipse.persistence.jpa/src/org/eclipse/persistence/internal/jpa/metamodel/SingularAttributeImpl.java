@@ -16,6 +16,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
+import javax.persistence.PersistenceException;
+import javax.persistence.metamodel.Bindable;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.Type;
 
@@ -42,16 +44,25 @@ public class SingularAttributeImpl<X,T> extends AttributeImpl<X,T> implements Si
 
     protected SingularAttributeImpl(ManagedTypeImpl<X> managedType, DatabaseMapping mapping) {
         super(managedType, mapping);
-        // TODO Auto-generated constructor stub
     }
 
-    // from Attribute
+    public Class<T> getBindableJavaType() {
+        throw new PersistenceException("Not Yet Implemented");
+    }
     
     public Type<T> getType() {
-        // TODO Auto-generated method stub
-        return null;
+    	throw new PersistenceException("Not Yet Implemented");
     }
 
+    /**
+     * INTERNAL:
+     * @return
+     */
+    @Override
+    public boolean isAttribute() {
+        return true;
+    }
+    
     public boolean isId() {
         return getDescriptor().getObjectBuilder().getPrimaryKeyMappings().contains(getMapping());
     }
@@ -69,26 +80,16 @@ public class SingularAttributeImpl<X,T> extends AttributeImpl<X,T> implements Si
         return false;
     }
 
-    // from Bindable
+    public Bindable.BindableType getBindableType() {
+    	return Bindable.BindableType.SINGULAR_ATTRIBUTE;
+    }
     
-    public Class<T> getBindableJavaType() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public javax.persistence.metamodel.Bindable.BindableType getBindableType() {
-        // TODO Auto-generated method stub
-        return null;
-    }
     
     /**
-     * INTERNAL:
-     * @return
+     * Return the String representation of the receiver.
      */
-    @Override
-    public boolean isAttribute() {
-        return true;
+    public String toString() {
+        return "SingularAttributeImpl[" + getMapping() + "]";
     }
     
     
