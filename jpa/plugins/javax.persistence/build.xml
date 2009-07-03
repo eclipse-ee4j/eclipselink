@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <!--/*******************************************************************************
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
@@ -37,6 +38,7 @@
         <contains string="${jpaproto.build.location}" substring="jpa"/>
     </condition>
     <property name="jpaproto.2.common.plugins.dir" value="${jpaproto.2.base.dir}/plugins"/>
+    <property name="jpaproto.2.buildsys.dir" value="${jpaproto.2.base.dir}/buildsystem"/>
 
     <tstamp>
        <format property="build.date" pattern="yyyyMMdd"/>
@@ -44,13 +46,16 @@
     </tstamp>
     
     <property name="jpaproto.qualifier"    value="v${build.date}${build.time}"/>
-    <property name="jpaproto.version" value="1.99.5"/>
-    <property name="jpaproto.jar"     value="${ant.project.name}_2.0_preview.jar"/>
-    <property name="jpaproto.src.jar" value="${ant.project.name}.source_2.0_preview.jar"/>
+    <property name="jpaproto.spec.version" value="2.0 PFD"/>
+    <property name="jpaproto.version"      value="1.99.5"/>
+    <property name="jpaproto.bundle.name"  value="Java Persistence 2.0 - EARLY ACCESS"/>
+    <property name="jpaproto.jar"          value="${ant.project.name}_2.0_preview.jar"/>
+    <property name="jpaproto.src.jar"      value="${ant.project.name}.source_2.0_preview.jar"/>
     <property name="src.dir"               value="src"/>
     <property name="package.dir"           value=".."/>
     <property name="classes.dir"           value="classes"/>
     <property name="jpaproto.resource.dir" value="META-INF"/>
+    <property name="jpaproto.spec.vendor"  value="Sun Microsystems Inc."/>
     <property name="implementation.vendor" value="Eclipse.org - EclipseLink Project"/>
 
     <property name="javac.debug"       value="true"/>
@@ -65,6 +70,7 @@
 
     <!-- all -->
     <target name="build" depends="clean, compile, generate-manifest, package" description="build JAXB 2.0 Prototype component"/>
+    <target name="bnd"   depends="clean, compile, bnd-package" description="build JAXB 2.0 Prototype component using bnd"/>
 
     <target name="clean" description="Clean the build">
         <delete dir="${classes.dir}" includeEmptyDirs="true" quiet="true"/>
@@ -110,19 +116,15 @@
             <fileset dir="${classes.dir}"
                 includes="**/*.class"
             />
-            <fileset dir="${jpaproto.resource.dir}"
-                includes="**"
-                excludes="MANIFEST.MF*"
-            />
         </jar>
         <jar jarfile="${package.dir}/${jpaproto.src.jar}" duplicate="preserve">
             <manifest>
-                <attribute name="Specification-Vendor"   value="Sun Microsystems"/>
-                <attribute name="Specification-Version"  value="1.0"/>
+                <attribute name="Specification-Vendor"   value="${jpaproto.spec.vendor}"/>
+                <attribute name="Specification-Version"  value="${jpaproto.spec.version}"/>
                 <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
                 <attribute name="Implementation-Version" value="${jpaproto.version}"/>
                 <attribute name="Bundle-ManifestVersion" value="2"/>
-                <attribute name="Bundle-Name"            value="EclipseLink's javax.persistence 2.0 Library Preview Source"/>
+                <attribute name="Bundle-Name"            value="${jpaproto.bundle.name} Source"/>
                 <attribute name="Bundle-SymbolicName"    value="${ant.project.name}.source"/>
                 <attribute name="Bundle-Vendor"          value="${implementation.vendor}"/>
                 <attribute name="Bundle-Version"         value="${jpaproto.version}.${jpaproto.qualifier}"/>
@@ -145,12 +147,12 @@
     <target name="generate-manifest" description="Generate the OSGi bundle manifest before jarring">
         <delete file="${classes.dir}/MANIFEST.MF*" quiet="true"/>
         <echo message="Manifest-Version: 1.0${line.separator}"                                                                           file="${classes.dir}/MANIFEST.MF" append="false"/>
-        <echo message="Specification-Vendor: Sun Microsystems Inc.${line.separator}"                                                     file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Specification-Version: 1.0${line.separator}"                                                                      file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Specification-Vendor: ${jpaproto.spec.vendor}${line.separator}"                                                     file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Specification-Version: ${jpaproto.spec.version}${line.separator}"                                                                      file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="Implementation-Vendor: ${implementation.vendor}${line.separator}"                                                 file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Implementation-Version: 1.99${line.separator}"                                                                    file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Implementation-Version: ${jpaproto.version}${line.separator}"                                                                    file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="Bundle-ManifestVersion: 2${line.separator}"                                                                       file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-Name: JPA 1.0 - Extended for OSGi (1.99)${line.separator}"                                                 file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-Name: ${jpaproto.bundle.name}${line.separator}"                                                            file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="Bundle-SymbolicName: ${ant.project.name}${line.separator}"                                                        file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="Bundle-Vendor: ${implementation.vendor}${line.separator}"                                                         file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message="Bundle-Version: ${jpaproto.version}.${jpaproto.qualifier}${line.separator}"                                       file="${classes.dir}/MANIFEST.MF" append="true"/>
@@ -159,10 +161,47 @@
         <echo message=" javax.persistence.criteria;version=&quot;${jpaproto.version}.${jpaproto.qualifier}&quot;,${line.separator}"       file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" javax.persistence.metamodel;version=&quot;${jpaproto.version}.${jpaproto.qualifier}&quot;,${line.separator}"      file="${classes.dir}/MANIFEST.MF" append="true"/>
         <echo message=" javax.persistence.spi;version=&quot;${jpaproto.version}.${jpaproto.qualifier}&quot;${line.separator}"             file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-Activator: javax.persistence.osgi.Activator${line.separator}"                                              file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-ClassPath: .${line.separator}"                                                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Import-Package: org.osgi.framework;resolution:=optional,${line.separator}"                                        file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.osgi.util.tracker;resolution:=optional${line.separator}"                                                     file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-Activator: org.eclipse.persistence.javax.persistence.osgi.Activator${line.separator}"                       file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-ClassPath: .${line.separator}"                                                                              file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Import-Package: org.osgi.framework;resolution:=optional,${line.separator}"                                         file="${classes.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.osgi.util.tracker;resolution:=optional${line.separator}"                                                      file="${classes.dir}/MANIFEST.MF" append="true"/>
+    </target>
+
+    <target name="bnd-package">
+        <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${jpaproto.2.buildsys.dir}/bnd-0.0.313.jar"/>
+        <bnd
+            classpath="${classes.dir}"
+            eclipse="false"
+            sourcepath="${src.dir}"
+            failok="false"
+            exceptions="true"
+            files="./javax.persistence.bnd"
+            output="${package.dir}/${jpaproto.jar}"/>
+        <jar jarfile="${package.dir}/${jpaproto.src.jar}" duplicate="preserve">
+            <manifest>
+                <attribute name="Specification-Vendor"   value="${jpaproto.spec.vendor}"/>
+                <attribute name="Specification-Version"  value="${jpaproto.spec.version}"/>
+                <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
+                <attribute name="Implementation-Version" value="${jpaproto.version}"/>
+                <attribute name="Bundle-ManifestVersion" value="2"/>
+                <attribute name="Bundle-Name"            value="${jpaproto.bundle.name} Source"/>
+                <attribute name="Bundle-SymbolicName"    value="${ant.project.name}.source"/>
+                <attribute name="Bundle-Vendor"          value="${implementation.vendor}"/>
+                <attribute name="Bundle-Version"         value="${jpaproto.version}.${jpaproto.qualifier}"/>
+                <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${jpaproto.version}.${jpaproto.qualifier}&quot;"/>
+            </manifest>
+            <fileset dir="${jpaproto.2.base.dir}">
+                <include name="about.html"/>
+                <include name="readme.html"/>
+                <include name="license.*"/>
+            </fileset>
+            <fileset dir="."
+                includes="readme.txt"
+            />
+            <fileset dir="${src.dir}"
+                includes="**"
+            />
+        </jar>
     </target>
 
 </project>
