@@ -425,7 +425,6 @@ public class PackageRenamer {
     * replacing the old package names with the new ones according to the properties file.
     */
     public void runSearchAndReplacePackageName(java.io.File sourceFile) {
-        String lineSeparator = (String)System.getProperties().get("line.separator");
         String stringContainAllFile = "";
         String sourceFileName = sourceFile.toString();
         String sourceFileNameWithoutRoot = sourceFile.toString().substring(sourceRootDirFile.toString().length() + 1);

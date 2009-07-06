@@ -162,8 +162,7 @@ public class XMLUnionField extends XMLField {
                 		buildQNameFromString((String)value, record);        		                		
                 		break;
                 	}else{
-                		Class javaClass = getType();
-                        javaClass = getJavaClass(nextQName);
+                        Class javaClass = getJavaClass(nextQName);
                         convertedValue = xmlConversionManager.convertObject(value, javaClass, nextQName);
                         break;
                 	}                	                                        

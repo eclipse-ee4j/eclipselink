@@ -549,7 +549,6 @@ public class XPathEngine {
                         String type;
                         String prefix = this.resolveNamespacePrefixForURI(qname.getNamespaceURI(), namespaceResolver);
                         if ((prefix == null) || (prefix.equals(""))) {
-                            type = qname.getLocalPart();
                             if(qname.getNamespaceURI().equals(XMLConstants.SCHEMA_URL)){
                             	prefix = namespaceResolver.generatePrefix(XMLConstants.SCHEMA_PREFIX);
                             }else{

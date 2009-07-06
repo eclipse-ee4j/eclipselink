@@ -381,7 +381,7 @@ public class ElementaryFieldMetaData implements FieldMetaData {
     */
     public void writeOnArray(CobolRow row, byte[] recordData) {
         Object value = row.get(this.getName());
-        ByteConverter converter = new ByteConverter();
+        ByteConverter converter;
         if (this.isArray()) {
             //check for array first adjust size if necessary
             if (this.dependsOn()) {

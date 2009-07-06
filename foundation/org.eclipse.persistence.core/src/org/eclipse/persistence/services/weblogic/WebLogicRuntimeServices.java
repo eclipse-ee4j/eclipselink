@@ -596,10 +596,6 @@ public class WebLogicRuntimeServices extends RuntimeServices {
      * Default behavior is to return "unknown" - we override this behavior here for WebLogic.
      */
     public String getModuleName() {
-        String moduleName = null;
-        DatabaseSessionImpl session = (DatabaseSessionImpl)getSession();
-        ServerPlatform platform = session.getServerPlatform();
-        moduleName = platform.getModuleName();
         return ((DatabaseSessionImpl)getSession())
             .getServerPlatform().getModuleName();
     }
@@ -611,10 +607,6 @@ public class WebLogicRuntimeServices extends RuntimeServices {
      * Default behavior is to return "unknown" - we override this behavior here for WebLogic.
      */
     public String getApplicationName() {
-        String moduleName = null;
-        DatabaseSessionImpl session = (DatabaseSessionImpl)getSession();
-        ServerPlatform platform = session.getServerPlatform();
-        moduleName = platform.getModuleName();
         return ((WebLogicPlatform)((DatabaseSessionImpl)getSession())
                 .getServerPlatform()).getApplicationName();
     }
@@ -851,7 +843,7 @@ public class WebLogicRuntimeServices extends RuntimeServices {
     */
     public int getStatementCacheSize() {
         if (!(getSession().getDatasourceLogin() instanceof DatabaseLogin)) {
-            return new Integer(0);
+            return 0;
         }
         return new Integer(((DatabaseLogin)getSession().getDatasourceLogin()).getStatementCacheSize());
     }
@@ -873,7 +865,7 @@ public class WebLogicRuntimeServices extends RuntimeServices {
     */
     public int getSequencePreallocationSize() {
         if (!(getSession().getDatasourceLogin() instanceof DatabaseLogin)) {
-            return new Integer(0);
+            return 0;
         }
         return ((DatasourcePlatform)getSession().getDatasourcePlatform()).getSequencePreallocationSize();        
     }

@@ -60,7 +60,6 @@ public class ClassSummaryDetail {
 
     static {
         try {
-            ArrayType byteArray= new ArrayType(1, SimpleType.BYTE);
             OpenType[] itemTypes = {
                     SimpleType.STRING,
                     SimpleType.STRING,

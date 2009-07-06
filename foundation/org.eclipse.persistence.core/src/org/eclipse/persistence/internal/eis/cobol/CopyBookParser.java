@@ -49,7 +49,7 @@ public class CopyBookParser {
     * encountered in the stream.
     */
     public Vector parse(InputStream stream) throws Exception {
-        Vector records = new Vector();
+        Vector records;
         currentLineNumber = 0;
         //read file and prepare for parsing
         try {

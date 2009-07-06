@@ -78,7 +78,6 @@ public class VariableNode extends Node {
      */
     public void applyToQuery(ObjectLevelReadQuery theQuery, GenerationContext generationContext) {
         String name = getCanonicalVariableName();
-        ParseTreeContext context = generationContext.getParseTreeContext();
         if (theQuery instanceof ReportQuery) {
             ReportQuery reportQuery = (ReportQuery)theQuery;
             Expression expression = generationContext.expressionFor(name);

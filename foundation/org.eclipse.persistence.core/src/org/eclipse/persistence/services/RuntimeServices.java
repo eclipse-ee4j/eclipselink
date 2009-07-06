@@ -318,7 +318,6 @@ public class RuntimeServices {
     public List getObjectsInIdentityMapSubCacheAsMap(String className) throws ClassNotFoundException {
         Class classToChange = (Class)getSession().getDatasourcePlatform().getConversionManager().convertObject(className, ClassConstants.CLASS);
         IdentityMap map = getSession().getIdentityMapAccessorInstance().getIdentityMap(classToChange);
-        Vector results = new Vector(1);
 
         //CR3855
         List subCache = new ArrayList(0);

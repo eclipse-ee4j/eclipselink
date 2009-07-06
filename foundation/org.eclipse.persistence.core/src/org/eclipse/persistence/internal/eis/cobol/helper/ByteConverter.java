@@ -133,7 +133,7 @@ public class ByteConverter {
     */
     public String getStringValue() {
         int offset = this.getFieldMetaData().getOffset();
-        String stringValue = new String();
+        String stringValue = null;
         if ((this.getFieldMetaData().getType() != FieldMetaData.BINARY) && (this.getFieldMetaData().getType() != FieldMetaData.MANTISSA) && (this.getFieldMetaData().getType() != FieldMetaData.PACKED_DECIMAL)) {
             int length = 0;
             while (length < this.getFieldMetaData().getSize()) {

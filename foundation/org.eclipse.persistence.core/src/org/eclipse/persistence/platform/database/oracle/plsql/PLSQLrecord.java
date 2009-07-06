@@ -155,7 +155,6 @@ public class PLSQLrecord extends ComplexDatabaseType implements OraclePLSQLType,
             super.buildBeginBlock(sb, arg, call);
         } else {
             String target = databaseTypeHelper.buildTarget(arg);
-            String compat = databaseTypeHelper.buildCompatible(arg);
             if (arg.direction == IN | arg.direction == INOUT) {
                 for (PLSQLargument f : fields) {
                     sb.append("  ");
@@ -176,7 +175,6 @@ public class PLSQLrecord extends ComplexDatabaseType implements OraclePLSQLType,
             super.buildOutAssignment(sb, outArg, call);
         } else {
             String target = databaseTypeHelper.buildTarget(outArg);
-            String compat = databaseTypeHelper.buildCompatible(outArg);
             for (PLSQLargument f : fields) {
                 sb.append("  ");
                 sb.append(":");
