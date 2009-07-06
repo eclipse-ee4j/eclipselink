@@ -46,7 +46,6 @@ public class EmbeddableTypeImpl<X> extends ManagedTypeImpl<X> implements Embedda
         super(metamodel, descriptor);
     }
 
-    @Override
     public <E> CollectionAttribute<? super X, E> getCollection(String name, Class<E> elementType) {
     	throw new PersistenceException("Not Yet Implemented");
     }
@@ -59,7 +58,6 @@ public class EmbeddableTypeImpl<X> extends ManagedTypeImpl<X> implements Embedda
     	throw new PersistenceException("Not Yet Implemented");
     }
 
-    @Override
     public <E> CollectionAttribute<X, E> getDeclaredCollection(String name, Class<E> elementType) {
     	throw new PersistenceException("Not Yet Implemented");
     }
@@ -72,7 +70,6 @@ public class EmbeddableTypeImpl<X> extends ManagedTypeImpl<X> implements Embedda
     	throw new PersistenceException("Not Yet Implemented");
     }
 
-    @Override
     public <E> ListAttribute<X, E> getDeclaredList(String name, Class<E> elementType) {
     	throw new PersistenceException("Not Yet Implemented");
     }
@@ -81,7 +78,6 @@ public class EmbeddableTypeImpl<X> extends ManagedTypeImpl<X> implements Embedda
     	throw new PersistenceException("Not Yet Implemented");
     }
 
-    @Override
     public <K, V> MapAttribute<X, K, V> getDeclaredMap(String name, Class<K> keyType, Class<V> valueType) {        
     	throw new PersistenceException("Not Yet Implemented");
     }
@@ -106,7 +102,6 @@ public class EmbeddableTypeImpl<X> extends ManagedTypeImpl<X> implements Embedda
         return getDescriptor().getJavaClass();
     }
 
-    @Override
     public <E> ListAttribute<? super X, E> getList(String name, Class<E> elementType) {
     	throw new PersistenceException("Not Yet Implemented");
     }
@@ -115,7 +110,6 @@ public class EmbeddableTypeImpl<X> extends ManagedTypeImpl<X> implements Embedda
     	throw new PersistenceException("Not Yet Implemented");
     }
 
-    @Override
     public <K, V> MapAttribute<? super X, K, V> getMap(String name, Class<K> keyType, Class<V> valueType) {
     	throw new PersistenceException("Not Yet Implemented");
     }
@@ -135,4 +129,9 @@ public class EmbeddableTypeImpl<X> extends ManagedTypeImpl<X> implements Embedda
     public Set<SingularAttribute<? super X, ?>> getSingularAttributes() {
     	throw new PersistenceException("Not Yet Implemented");
     }
+    
+    public boolean isIdentifiableType() {
+        return false;
+    }
+    
 }

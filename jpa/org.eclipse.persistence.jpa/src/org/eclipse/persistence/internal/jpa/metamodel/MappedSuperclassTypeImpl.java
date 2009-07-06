@@ -13,6 +13,10 @@
  *       of the Metamodel implementation for EclipseLink 2.0 release involving
  *       Map, ElementCollection and Embeddable types on MappedSuperclass descriptors
  *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)  
+ *     07/06/2009-2.0  mobrien - 266912: Introduce IdentifiableTypeImpl between ManagedTypeImpl
+ *       - EntityTypeImpl now inherits from IdentifiableTypeImpl instead of ManagedTypeImpl
+ *       - MappedSuperclassTypeImpl now inherits from IdentifiableTypeImpl instead
+ *       of implementing IdentifiableType indirectly  
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
@@ -44,30 +48,20 @@ import org.eclipse.persistence.descriptors.RelationalDescriptor;
  * @since EclipseLink 2.0 - JPA 2.0
  *  
  */ 
-//public class MappedSuperclassTypeImpl<X> extends ManagedTypeImpl<X> implements MappedSuperclass<X> {
-public class MappedSuperclassTypeImpl<X> implements MappedSuperclassType<X> {
+public class MappedSuperclassTypeImpl<X> extends IdentifiableTypeImpl<X> implements MappedSuperclassType<X> {
     
-    /** The descriptor representing the MappedSuperclass */
-    private RelationalDescriptor descriptor;
-
-    
-    protected MappedSuperclassTypeImpl(Class object, RelationalDescriptor relationalDescriptor) {
-        this(relationalDescriptor);
+    protected MappedSuperclassTypeImpl(Class object, MetamodelImpl metamodel, RelationalDescriptor relationalDescriptor) {
+        this(metamodel, relationalDescriptor);
         //javaClass = object; // could be inherited by extending ManagedType which extends Type
     }
 
-    protected MappedSuperclassTypeImpl(RelationalDescriptor relationalDescriptor) {
-        // TODO Auto-generated constructor stub
-        descriptor = relationalDescriptor;;
-    }
-    
     protected MappedSuperclassTypeImpl(MetamodelImpl metamodel, RelationalDescriptor relationalDescriptor) {
-        this(relationalDescriptor);
+        super(metamodel, relationalDescriptor);
     }
     
     public static MappedSuperclassTypeImpl<?> create(MetamodelImpl metamodel, Class object, RelationalDescriptor relationalDescriptor) {
         //MappedSuperclassTypeImpl<?> mappedSuperclassTypeImpl = new MappedSuperclassTypeImpl(object, relationalDescriptor);
-        MappedSuperclassTypeImpl<?> mappedSuperclassTypeImpl = new MappedSuperclassTypeImpl(relationalDescriptor);
+        MappedSuperclassTypeImpl<?> mappedSuperclassTypeImpl = new MappedSuperclassTypeImpl(object, metamodel, relationalDescriptor);
         //ManagedTypeImpl<?> managedType = (MappedSuperclassTypeImpl<?>) descriptor.getProperty(MappedSuperclassTypeImpl.class.getName());
         return mappedSuperclassTypeImpl;
     }
@@ -92,17 +86,14 @@ public class MappedSuperclassTypeImpl<X> implements MappedSuperclassType<X> {
     }
 */
 
-    //@Override
     public Attribute<X, ?> getAttribute(String name) {
         throw new PersistenceException("Not Yet Implemented");
     }
 
-    //@Override
     public <Y> Attribute<? super X, Y> getAttribute(String name, Class<Y> type) {
         throw new PersistenceException("Not Yet Implemented");
     }
     
-    //@Override
     public Set<Attribute<? super X, ?>> getAttributes() {
         throw new PersistenceException("Not Yet Implemented");
     }
@@ -111,7 +102,6 @@ public class MappedSuperclassTypeImpl<X> implements MappedSuperclassType<X> {
         throw new PersistenceException("Not Yet Implemented");
     }
 
-    //@Override
     public <E> CollectionAttribute<? super X, E> getCollection(String name, Class<E> elementType) {
         throw new PersistenceException("Not Yet Implemented");
     }
@@ -124,12 +114,10 @@ public class MappedSuperclassTypeImpl<X> implements MappedSuperclassType<X> {
         throw new PersistenceException("Not Yet Implemented");
     }
 
-    //@Override
     public <Y> Attribute<X, Y> getDeclaredAttribute(String name, Class<Y> type) {
         throw new PersistenceException("Not Yet Implemented");
     }
 
-    //@Override
     public Set<Attribute<X, ?>> getDeclaredAttributes() {
         throw new PersistenceException("Not Yet Implemented");
     }
@@ -138,7 +126,6 @@ public class MappedSuperclassTypeImpl<X> implements MappedSuperclassType<X> {
         throw new PersistenceException("Not Yet Implemented");
     }
 
-    //@Override
     public <E> CollectionAttribute<X, E> getDeclaredCollection(String name, Class<E> elementType) {
         throw new PersistenceException("Not Yet Implemented");
     }
@@ -163,7 +150,6 @@ public class MappedSuperclassTypeImpl<X> implements MappedSuperclassType<X> {
         throw new PersistenceException("Not Yet Implemented");
     }
 
-    //@Override
     public <K, V> MapAttribute<X, K, V> getDeclaredMap(String name, Class<K> keyType, Class<V> valueType) {
         throw new PersistenceException("Not Yet Implemented");
     }
@@ -172,7 +158,6 @@ public class MappedSuperclassTypeImpl<X> implements MappedSuperclassType<X> {
         throw new PersistenceException("Not Yet Implemented");
     }
 
-    //@Override
     public <E> SetAttribute<X, E> getDeclaredSet(String name, Class<E> elementType) {
         throw new PersistenceException("Not Yet Implemented");
     }
@@ -193,14 +178,6 @@ public class MappedSuperclassTypeImpl<X> implements MappedSuperclassType<X> {
         throw new PersistenceException("Not Yet Implemented");
     }
 
-    /**
-     * INTERNAL:
-     * @return
-     */
-    public RelationalDescriptor getDescriptor() {
-        return descriptor;
-    }
-
     public <Y> SingularAttribute<? super X, Y> getId(Class<Y> type) {
         throw new PersistenceException("Not Yet Implemented");
     }
@@ -210,11 +187,6 @@ public class MappedSuperclassTypeImpl<X> implements MappedSuperclassType<X> {
     }
 
     public Type<?> getIdType() {
-        throw new PersistenceException("Not Yet Implemented");
-    }
-
-    //@Override
-    public Class<X> getJavaType() {
         throw new PersistenceException("Not Yet Implemented");
     }
 
@@ -230,7 +202,6 @@ public class MappedSuperclassTypeImpl<X> implements MappedSuperclassType<X> {
         throw new PersistenceException("Not Yet Implemented");
     }
 
-    //@Override
     public <K, V> MapAttribute<? super X, K, V> getMap(String name, Class<K> keyType, Class<V> valueType) {
         throw new PersistenceException("Not Yet Implemented");
     }
@@ -243,7 +214,6 @@ public class MappedSuperclassTypeImpl<X> implements MappedSuperclassType<X> {
         throw new PersistenceException("Not Yet Implemented");
     }
 
-    //@Override
     public <E> javax.persistence.metamodel.SetAttribute<? super X, E> getSet(String name, Class<E> elementType) {
         throw new PersistenceException("Not Yet Implemented");
     }
@@ -260,7 +230,6 @@ public class MappedSuperclassTypeImpl<X> implements MappedSuperclassType<X> {
         throw new PersistenceException("Not Yet Implemented");
     }
     
-    //@Override
     public IdentifiableType<? super X> getSupertype() {
     	throw new PersistenceException("Not Yet Implemented");
     }
@@ -279,10 +248,6 @@ public class MappedSuperclassTypeImpl<X> implements MappedSuperclassType<X> {
 
     public boolean hasVersionAttribute() {
     	throw new PersistenceException("Not Yet Implemented");
-    }
-
-    public void setDescriptor(RelationalDescriptor descriptor) {
-        this.descriptor = descriptor;
     }
 
     /**

@@ -13,8 +13,9 @@
  *       of the Metamodel implementation for EclipseLink 2.0 release involving
  *       Map, ElementCollection and Embeddable types on MappedSuperclass descriptors
  *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)
- *     07/02/2009-2.0  mobrien - Metamodel implementation expansion
- *       - 266912: 
+ *     07/06/2009-2.0  mobrien - Metamodel implementation expansion
+ *       - 282518: Metamodel superType requires javaClass set on custom 
+ *         descriptor on MappedSuperclassAccessor.
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
@@ -120,7 +121,7 @@ public class MetamodelImpl implements Metamodel {
 
     /**
      * INTERNAL:
-     * Initialize the JPA meta-model wrapping the EclipseLink JPA meta-model.
+     * Initialize the JPA metamodel that wraps the EclipseLink JPA metadata created descriptors.
      */
     private void initialize() {
         // Preserve ordering by using LinkedHashMap
@@ -131,6 +132,7 @@ public class MetamodelImpl implements Metamodel {
         //this.mappedSuperclasses = new LinkedHashMap<Class, MappedSuperclassTypeImpl<?>>();
         this.mappedSuperclasses = new HashSet<MappedSuperclassTypeImpl<?>>();
 
+        // Process all Entity and Embeddable types
         for (Iterator i = session.getDescriptors().values().iterator(); i.hasNext();) {
             RelationalDescriptor descriptor = (RelationalDescriptor) i.next();
             ManagedTypeImpl<?> managedType = ManagedTypeImpl.create(this, descriptor);
@@ -151,31 +153,41 @@ public class MetamodelImpl implements Metamodel {
         // TODO: verify that all entities or'd with embeddables matches the number of types
 
         
-        // Add all MAPPED_SUPERCLASS types
+        // Handle all MAPPED_SUPERCLASS types
         // Get mapped superclass types from the native project (not a regular descriptor)
         try {
             Project project = session.getProject();
             Map<Object, RelationalDescriptor> descriptors = project.getMappedSuperclassDescriptors();
             for(Iterator<RelationalDescriptor> anIterator = descriptors.values().iterator(); anIterator.hasNext();) {
-                RelationalDescriptor descriptor = anIterator.next();//mappedSuperclassesSet.get(key);
-                MappedSuperclassTypeImpl mappedSuperclassType = new MappedSuperclassTypeImpl(descriptor);
+                RelationalDescriptor descriptor = anIterator.next();
+                // Set the class on the descriptor for the current classLoader (normally done in MetadataProject.addMappedSuperclassAccessor)
+                ClassLoader classLoader = this.getSession().getActiveSession().getClass().getClassLoader();
+                descriptor.convertClassNamesToClasses(classLoader);
+                MappedSuperclassTypeImpl mappedSuperclassType = new MappedSuperclassTypeImpl(this, descriptor);
+                // Add the MappedSuperclass to our Set of MappedSuperclasses
                 this.mappedSuperclasses.add(mappedSuperclassType);
+                // Also add the MappedSuperclass to the Map of ManagedTypes
+                // So we can find hierarchies of the form [Entity --> MappedSuperclass(abstract) --> Entity]
+                this.managedTypes.put(mappedSuperclassType.getJavaType(), mappedSuperclassType);
             }
         } catch (Exception e) {
             // TODO: add real exception handling
             e.printStackTrace();
         }
         
-        // Assign all superType fields on managedTypes (only after all managedType objects have been created)
-        // We have no direct descriptors for mappedSuperclasses
+        // Handle all IdentifiableTypes
+        // Assign all superType fields on all IdentifiableTypes (only after all managedType objects have been created)
         for(Iterator<ManagedTypeImpl<?>> mtIterator = managedTypes.values().iterator(); mtIterator.hasNext();) {
-            ManagedTypeImpl managedType = mtIterator.next();
-            Class aClass = managedType.getJavaType();
+            ManagedTypeImpl potentialIdentifiableType = mtIterator.next();
+            Class aClass = potentialIdentifiableType.getJavaType();
             Class superclass = aClass.getSuperclass();
-            // TODO: this will not find mappedSuperclass types (as they have no descriptor)
-            ManagedType managedTypeSuperclass = managedTypes.get(superclass);
-            if(null != managedTypeSuperclass && managedTypeSuperclass instanceof IdentifiableType) {
-                managedType.setSupertype((IdentifiableType)managedTypeSuperclass); 
+            if(potentialIdentifiableType.isIdentifiableType()) {
+                // Get the Entity or MappedSuperclass
+                // A hierarchy of Entity --> Entity or Entity --> MappedSuperclass will be found
+                IdentifiableType identifiableTypeSuperclass = (IdentifiableType)managedTypes.get(superclass);
+                if(null != identifiableTypeSuperclass) {
+                    ((IdentifiableTypeImpl)potentialIdentifiableType).setSupertype(identifiableTypeSuperclass); 
+                }
             }
         }
 

@@ -433,7 +433,7 @@ public class MetadataProject {
      * <p>
      *  This method is referenced by EntityAccessor.addPotentialMappedSuperclass()
      *  </p>
-     * @param metadataClass - the 
+     * @param metadataClass - the wrapped java class that the MappedSuperclass represents
      * @param accessor - The mappedSuperclass accessor for the field on the mappedSuperclass<p>
      * @since EclipseLink 2.0 for the JPA 2.0 Reference Implementation
      */    
@@ -456,10 +456,16 @@ public class MetadataProject {
             // There will be no conflict with customer values
             // The descriptor is assumed never to be null
             descriptor.setPrimaryTable(new DatabaseTable(MetadataConstants.MAPPED_SUPERCLASS_RESERVED_TABLE_NAME));
-            descriptor.getClassDescriptor().addPrimaryKeyFieldName(MetadataConstants.MAPPED_SUPERCLASS_RESERVED_PK_NAME);            
+            descriptor.getClassDescriptor().addPrimaryKeyFieldName(MetadataConstants.MAPPED_SUPERCLASS_RESERVED_PK_NAME);
             // We store our descriptor on the core project for later retrieval by MetamodelImpl
-            // Why not on MetadataProject? because the Metadata processing is transient            
-            m_session.getProject().addMappedSuperclass(metadataClass, (RelationalDescriptor)descriptor.getClassDescriptor());
+            // Why not on MetadataProject? because the Metadata processing is transient 
+            RelationalDescriptor relationalDescriptor = (RelationalDescriptor)descriptor.getClassDescriptor();
+            /*
+             * We could set the javaClass on the descriptor for the current classLoader
+             * but we do not need it until metamodel processing time avoiding a _persistence_new call.
+             * See MetamodelImpl.initialize()
+             */
+            m_session.getProject().addMappedSuperclass(metadataClass, relationalDescriptor);
         }
     }
     

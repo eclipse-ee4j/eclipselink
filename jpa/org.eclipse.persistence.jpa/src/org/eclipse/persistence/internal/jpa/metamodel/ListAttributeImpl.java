@@ -53,7 +53,6 @@ public class ListAttributeImpl<X, V> extends PluralAttributeImpl<X, java.util.Li
         return this.getMapping().getAttributeClassification();
     }
     
-    @Override
     public boolean isAttribute() {
     	throw new PersistenceException("Not Yet Implemented");
     }

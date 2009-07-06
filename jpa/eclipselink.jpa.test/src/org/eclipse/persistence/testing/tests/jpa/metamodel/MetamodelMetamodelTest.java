@@ -22,8 +22,15 @@ import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.Query;
+import javax.persistence.Tuple;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.QueryBuilder;
+import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.Metamodel;
+import javax.persistence.metamodel.SingularAttribute;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -32,7 +39,10 @@ import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.internal.jpa.metamodel.EntityTypeImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.MappedSuperclassTypeImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.MetamodelImpl;
+import org.eclipse.persistence.internal.jpa.querydef.ExpressionImpl;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.testing.framework.QuerySQLTracker;
+import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Board;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Computer;
 import org.eclipse.persistence.testing.models.jpa.metamodel.HardwareDesigner;
@@ -52,6 +62,18 @@ import org.eclipse.persistence.testing.models.jpa.metamodel.VectorProcessor;
  *   - verify metamodel
  *   - delete test entities created above (to reset the database)
  *   - close persistence unit
+ *   
+ *   API Usage 
+ *   There are three ways to query using the Criteria API which can wrap the Metamodel API
+ *   1) Static metamodel class model for type safe queries - these are the _Underscore design time classes
+ *   2) Dynamic metamodel class model for type safe queries 
+ *      - we use generics and pass in both the return type and the type containing the return type
+ *   3) String attribute references for non-type safe queries 
+ *      - see p.262 of the JPA 2.0 specification section 6.7 
+ *      - there may be type or generic usage compiler warnings that 
+ *        the user will need to workaround when using this non-type-safe query in a type-safe environment.
+ *   
+ *   This enhancement deals only with # 2) Dynamic metamodel query generation. 
  *
  */
 public class MetamodelMetamodelTest extends MetamodelTest {
@@ -71,10 +93,256 @@ public class MetamodelMetamodelTest extends MetamodelTest {
     public static Test suite() {
         TestSuite suite = new TestSuite("MetamodelMetamodelTest");
 
+        //suite.addTest(new MetamodelMetamodelTest("testMetamodelStringBasedQuery"));
+        //suite.addTest(new MetamodelMetamodelTest("testMetamodelTypeSafeBasedQuery"));
         suite.addTest(new MetamodelMetamodelTest("testImplementation"));
         return suite;
     }
 
+    /**
+     * Test the Metamodel API using a TypeSafe query via the Criteria API (a user of the Metamodel)
+     */
+    public void testMetamodelTypeSafeBasedQuery() {
+        EntityManagerFactory emf = null;
+        EntityManager em = null;
+        List<Computer> computersList = new ArrayList();
+        List<Memory> memories = new ArrayList();
+        List<VectorProcessor> processors = new ArrayList();
+        List<HardwareDesigner> hardwareDesigners = new ArrayList();
+        Computer computer1 = null;
+        Computer computer2 = null;
+        Manufacturer manufacturer = null;
+        User user = null;
+        HardwareDesigner hardwareDesigner1 = null;
+        SoftwareDesigner softwareDesigner1 = null;
+        VectorProcessor vectorProcessor1 = null;
+        Board board1 = null;
+        Memory memory1 = null;
+        Memory memory2 = null;
+        Location location1 = null;
+        Location location2 = null;        
+        boolean exceptionThrown = false;
+        Metamodel metamodel = null;
+
+        try {
+            emf = initialize();
+            em = emf.createEntityManager();
+            em.getTransaction().begin();
+
+            // setup entity relationships
+            computer1 = new Computer();
+            computer2 = new Computer();
+            memory1 = new Memory();
+            memory2 = new Memory();
+            manufacturer = new Manufacturer();
+            user = new User();
+            hardwareDesigner1 = new HardwareDesigner();
+            softwareDesigner1 = new SoftwareDesigner();
+            vectorProcessor1 = new VectorProcessor();
+            board1 = new Board();
+            location1 = new Location();
+            location2 = new Location();        
+
+            // setup collections
+            computersList.add(computer1);
+            computersList.add(computer2);
+            processors.add(vectorProcessor1);
+            memories.add(memory1);
+            memories.add(memory2);
+            hardwareDesigners.add(hardwareDesigner1);
+
+            // set owning and inverse sides of 1:m and m:1 relationships
+            manufacturer.setComputers(computersList);
+            manufacturer.setHardwareDesigners(hardwareDesigners);
+            hardwareDesigner1.setEmployer(manufacturer);
+            hardwareDesigner1.setPrimaryEmployer(manufacturer);
+            hardwareDesigner1.setSecondaryEmployer(manufacturer);
+            computer1.setManufacturer(manufacturer);
+            computer2.setManufacturer(manufacturer);
+            board1.setMemories(memories);
+            memory1.setBoard(board1);
+            memory2.setBoard(board1);
+            board1.setProcessors(processors);
+            vectorProcessor1.setBoard(board1);            
+            softwareDesigner1.setPrimaryEmployer(manufacturer);
+            softwareDesigner1.setSecondaryEmployer(manufacturer);
+            
+            // set 1:1 relationships
+            computer1.setLocation(location1);
+            computer2.setLocation(location2);
+            
+            // set attributes
+            computer1.setName("CDC-6600");
+            computer2.setName("CM-5");
+            
+            // persist all entities to the database in a single transaction
+            em.persist(computer1);
+            em.persist(computer2);
+            em.persist(manufacturer);
+            em.persist(user);
+            em.persist(hardwareDesigner1);
+            em.persist(softwareDesigner1);
+            em.persist(vectorProcessor1);
+            em.persist(board1);
+            em.persist(memory1);
+            em.persist(memory2);
+            em.persist(location1);
+            em.persist(location2);        
+            
+            em.getTransaction().commit();            
+            
+            // get Metamodel representation of the entity schema
+            metamodel = em.getMetamodel();
+            assertNotNull(metamodel);
+
+            // Setup TypeSafe Criteria API query  
+            QueryBuilder aQueryBuilder = em.getQueryBuilder();
+            // Setup a query to get a list (the JPA 1.0 way) and compare it to the (JPA 2.0 way)
+            // avoid a NPE on .where in query.setExpressionBuilder(((ExpressionImpl)this.where).getCurrentNode().getBuilder());
+            //TypedQuery<Computer> aManufacturerQuery = em.createQuery(aQueryBuilder.createQuery(Computer.class));
+            Query aManufacturerQuery = em.createQuery(aQueryBuilder.createQuery(Computer.class));
+            List<Computer> computersResultsList = aManufacturerQuery.getResultList();
+            Computer aComputer = (Computer)computersResultsList.get(0);
+/*
+            // Get the primary key of the Computer
+            CriteriaQuery<Tuple> aCriteriaQuery = aQueryBuilder.createQuery(Tuple.class);
+            Root from = cq.from(Employee.class);
+            cq.multiselect(from.get("id"), from.get("firstName"));
+            cq.where(qb.equal(from.get("id"), qb.parameter(from.get("id").getModel().getBindableJavaType(), "id")).add(qb.equal(from.get("firstName"), qb.parameter(from.get("firstName").getModel().getBindableJavaType(), "firstName"))));
+            TypedQuery<Tuple> typedQuery = em.createQuery(cq);
+
+            typedQuery.setParameter("id", employee.getId());
+            typedQuery.setParameter("firstName", employee.getFirstName());
+
+            Tuple queryResult = typedQuery.getSingleResult();
+            assertTrue("Query Results do not match selection", queryResult.get(0).equals(employee.getId()) && queryResult.get(1).equals(employee.getFirstName()));
+*/            
+        } catch (Exception e) {
+            // we enter here on a failed commit() - for example if the table schema is incorrectly defined
+            e.printStackTrace();
+            exceptionThrown = true;
+        } finally {
+            assertFalse(exceptionThrown);
+            //finalizeForTest(em, entityMap);
+            if(null != em) {
+                cleanup(em);
+            }
+        }
+    }
+    
+    /**
+     * Test the Metamodel API or lack of using it via a Criteria API using string based queries
+     */
+    public void testMetamodelStringBasedQuery() {
+        EntityManagerFactory emf = null;
+        EntityManager em = null;
+        List<Computer> computersList = new ArrayList();
+        List<Memory> memories = new ArrayList();
+        List<VectorProcessor> processors = new ArrayList();
+        List<HardwareDesigner> hardwareDesigners = new ArrayList();
+        Computer computer1 = null;
+        Computer computer2 = null;
+        Manufacturer manufacturer = null;
+        User user = null;
+        HardwareDesigner hardwareDesigner1 = null;
+        SoftwareDesigner softwareDesigner1 = null;
+        VectorProcessor vectorProcessor1 = null;
+        //ArrayProcessor arrayProcessor1 = null;
+        Board board1 = null;
+        Memory memory1 = null;
+        Memory memory2 = null;
+        Location location1 = null;
+        Location location2 = null;        
+        boolean exceptionThrown = false;
+        Metamodel metamodel = null;
+
+        try {
+            emf = initialize();
+            em = emf.createEntityManager();
+            em.getTransaction().begin();
+
+            // setup entity relationships
+            computer1 = new Computer();
+            computer2 = new Computer();
+            memory1 = new Memory();
+            memory2 = new Memory();
+            manufacturer = new Manufacturer();
+            user = new User();
+            hardwareDesigner1 = new HardwareDesigner();
+            softwareDesigner1 = new SoftwareDesigner();
+            vectorProcessor1 = new VectorProcessor();
+            board1 = new Board();
+            location1 = new Location();
+            location2 = new Location();        
+
+            // setup collections
+            computersList.add(computer1);
+            computersList.add(computer2);
+            processors.add(vectorProcessor1);
+            memories.add(memory1);
+            memories.add(memory2);
+            hardwareDesigners.add(hardwareDesigner1);
+
+            // set owning and inverse sides of 1:m and m:1 relationships
+            manufacturer.setComputers(computersList);
+            manufacturer.setHardwareDesigners(hardwareDesigners);
+            hardwareDesigner1.setEmployer(manufacturer);
+            hardwareDesigner1.setPrimaryEmployer(manufacturer);
+            hardwareDesigner1.setSecondaryEmployer(manufacturer);
+            computer1.setManufacturer(manufacturer);
+            computer2.setManufacturer(manufacturer);
+            board1.setMemories(memories);
+            memory1.setBoard(board1);
+            memory2.setBoard(board1);
+            board1.setProcessors(processors);
+            vectorProcessor1.setBoard(board1);            
+            softwareDesigner1.setPrimaryEmployer(manufacturer);
+            softwareDesigner1.setSecondaryEmployer(manufacturer);
+            
+            // set 1:1 relationships
+            computer1.setLocation(location1);
+            computer2.setLocation(location2);
+            
+            // set attributes
+            computer1.setName("CDC-6600");
+            computer2.setName("CM-5");
+            
+            // persist all entities to the database in a single transaction
+            em.persist(computer1);
+            em.persist(computer2);
+            em.persist(manufacturer);
+            em.persist(user);
+            em.persist(hardwareDesigner1);
+            em.persist(softwareDesigner1);
+            em.persist(vectorProcessor1);
+            //em.persist(arrayProcessor1);
+            em.persist(board1);
+            em.persist(memory1);
+            em.persist(memory2);
+            em.persist(location1);
+            em.persist(location2);        
+            
+            em.getTransaction().commit();            
+            
+            // get Metamodel representation of the entity schema
+            metamodel = em.getMetamodel();
+            assertNotNull(metamodel);
+
+            // Setup a non TypeSafe Criteria API query
+            
+        } catch (Exception e) {
+            // we enter here on a failed commit() - for example if the table schema is incorrectly defined
+            e.printStackTrace();
+            exceptionThrown = true;
+        } finally {
+            assertFalse(exceptionThrown);
+            //finalizeForTest(em, entityMap);
+            if(null != em) {
+                cleanup(em);
+            }
+        }
+    }
+    
     public void testImplementation() {
         EntityManagerFactory emf = null;
         EntityManager em = null;
@@ -147,7 +415,6 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             softwareDesigner1.setPrimaryEmployer(manufacturer);
             softwareDesigner1.setSecondaryEmployer(manufacturer);
             
-            
             // set 1:1 relationships
             computer1.setLocation(location1);
             computer2.setLocation(location2);
@@ -210,6 +477,18 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             /**
              * TODO: all test code below requires assert*() calls - and is in mid implementation
              */
+            
+            // Verify ManagedType operations
+            // ************************************
+            // Verify public Set<SingularAttribute<? super X, ?>> getSingularAttributes() {
+            Set<SingularAttribute<? super Manufacturer, ?>> attributeSet = entityManufacturer.getSingularAttributes();
+            assertNotNull(attributeSet);
+            // We should see 3 singular attributes for Manufacturer (id(from the mappedSuperclass), version, name(from the mappedSuperclass))
+            assertEquals(3, attributeSet.size());
+            // for each managed entity we will see 2 entries (one for the Id, one for the Version)
+            assertTrue(attributeSet.contains(entityManufacturer.getAttribute("id"))); // 
+            assertTrue(attributeSet.contains(entityManufacturer.getAttribute("version"))); //
+            assertTrue(attributeSet.contains(entityManufacturer.getAttribute("name"))); //
             
             
             

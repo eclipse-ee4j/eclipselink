@@ -73,7 +73,6 @@ public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, java.util.
         return this.keyType;
     }
 
-    @Override
     public boolean isAttribute() {
         throw new PersistenceException("Not Yet Implemented");
     }

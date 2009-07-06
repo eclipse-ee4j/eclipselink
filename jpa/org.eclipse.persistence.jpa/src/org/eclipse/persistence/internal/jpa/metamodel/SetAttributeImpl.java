@@ -52,7 +52,6 @@ public class SetAttributeImpl<X, V> extends PluralAttributeImpl<X, java.util.Set
         return this.getMapping().getAttributeClassification();
     }
     
-    @Override
     public boolean isAttribute() {
     	throw new PersistenceException("Not Yet Implemented");
     }

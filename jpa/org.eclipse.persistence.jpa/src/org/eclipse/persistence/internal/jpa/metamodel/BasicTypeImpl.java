@@ -39,4 +39,8 @@ public class BasicTypeImpl<X> extends TypeImpl<X> implements BasicType<X> {
     public PersistenceType getPersistenceType() {
         return PersistenceType.BASIC;
     }
+    
+    public boolean isIdentifiableType() {
+        return false;
+    }
 }

@@ -13,7 +13,10 @@
  *       of the Metamodel implementation for EclipseLink 2.0 release involving
  *       Map, ElementCollection and Embeddable types on MappedSuperclass descriptors
  *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)  
- *     
+ *     07/06/2009-2.0  mobrien - 266912: Introduce IdentifiableTypeImpl between ManagedTypeImpl
+ *       - EntityTypeImpl now inherits from IdentifiableTypeImpl instead of ManagedTypeImpl
+ *       - MappedSuperclassTypeImpl now inherits from IdentifiableTypeImpl instead
+ *       of implementing IdentifiableType indirectly  
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
@@ -49,7 +52,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
  * @since EclipseLink 2.0 - JPA 2.0
  *  
  */ 
-public class EntityTypeImpl<X> extends ManagedTypeImpl<X> implements EntityType<X> {
+public class EntityTypeImpl<X> extends IdentifiableTypeImpl<X> implements EntityType<X> {    
    
     protected EntityTypeImpl(MetamodelImpl metamodel, RelationalDescriptor descriptor) {
         super(metamodel, descriptor);
@@ -63,7 +66,6 @@ public class EntityTypeImpl<X> extends ManagedTypeImpl<X> implements EntityType<
     	throw new PersistenceException("Not Yet Implemented");
     }
     
-    @Override
     public <E> CollectionAttribute<? super X, E> getCollection(String name, Class<E> elementType) {
         return getCollectionHelper(name, elementType, false);
         /*        
@@ -144,7 +146,6 @@ public class EntityTypeImpl<X> extends ManagedTypeImpl<X> implements EntityType<
         //return (Collection<X, ?>) this.getMembers().get(name);
     }
     
-    @Override
     public <E> CollectionAttribute<X, E> getDeclaredCollection(String name, Class<E> elementType) {
         return getCollectionHelper(name, elementType, true);
     }
@@ -153,7 +154,6 @@ public class EntityTypeImpl<X> extends ManagedTypeImpl<X> implements EntityType<
     	throw new PersistenceException("Not Yet Implemented");
     }
     
-    //@Override
     public <Y> SingularAttribute<X, Y> getDeclaredId(Class<Y> type) {
         // return the Id only if it is declared on this entity
     	throw new PersistenceException("Not Yet Implemented");
@@ -163,7 +163,6 @@ public class EntityTypeImpl<X> extends ManagedTypeImpl<X> implements EntityType<
         return (ListAttribute<X, ?>) this.getMembers().get(name);
     }
     
-    @Override
     public <E> ListAttribute<X, E> getDeclaredList(String name, Class<E> elementType) {
         return (ListAttribute<X,E>) this.getMembers().get(name);
     }
@@ -172,7 +171,6 @@ public class EntityTypeImpl<X> extends ManagedTypeImpl<X> implements EntityType<
         return (MapAttribute<X, ?, ?>) this.getMembers().get(name);
     }
 
-    @Override
     public <K, V> MapAttribute<X, K, V> getDeclaredMap(String name, Class<K> keyType, Class<V> valueType) {
         // We are ignoring keyType and valueType here
         return (MapAttribute<X, K, V>) this.getMembers().get(name);
@@ -182,7 +180,6 @@ public class EntityTypeImpl<X> extends ManagedTypeImpl<X> implements EntityType<
         return (SetAttribute<X, ?>) this.getMembers().get(name);        
     }
     
-    @Override
     public <E> SetAttribute<X, E> getDeclaredSet(String name, Class<E> elementType) {
         // We are ignoring elementType here
         return (SetAttribute<X, E>) this.getMembers().get(name);
@@ -200,13 +197,10 @@ public class EntityTypeImpl<X> extends ManagedTypeImpl<X> implements EntityType<
     	throw new PersistenceException("Not Yet Implemented");
     }
         
-    
-    //@Override
     public <Y> SingularAttribute<X, Y> getDeclaredVersion(Class<Y> type) {
     	throw new PersistenceException("Not Yet Implemented");
     }
 
-    //@Override
     public <Y> SingularAttribute<? super X, Y> getId(Class<Y> type) {
     	throw new PersistenceException("Not Yet Implemented");
     }
@@ -240,7 +234,6 @@ public class EntityTypeImpl<X> extends ManagedTypeImpl<X> implements EntityType<
         throw new IllegalStateException("Incompatible persistence configuration");
     }
     
-    @Override
     public <E> ListAttribute<? super X, E> getList(String name, Class<E> elementType) {
         // We are ignoring elementType here
         return (ListAttribute<X,E>) this.getMembers().get(name);
@@ -250,7 +243,6 @@ public class EntityTypeImpl<X> extends ManagedTypeImpl<X> implements EntityType<
         return (MapAttribute<X, ?, ?>) this.getMembers().get(name);
     }
     
-    @Override
     public <K, V> MapAttribute<? super X, K, V> getMap(String name, Class<K> keyType, Class<V> valueType) {
         // We are ignoring keyType and valueType here
         return (MapAttribute<X, K, V>) this.getMembers().get(name);
@@ -264,13 +256,11 @@ public class EntityTypeImpl<X> extends ManagedTypeImpl<X> implements EntityType<
         return Type.PersistenceType.ENTITY;
     }
 
-    @Override
     public SetAttribute<? super X, ?> getSet(String name) {
         // We are ignoring elementType here
         return (SetAttribute<? super X, ?>) this.getMembers().get(name);
     }
 
-    @Override
     public  <E> SetAttribute<X, E> getSet(String name, Class<E> elementType) {
         // We are ignoring elementType here
         return (SetAttribute<X, E>) this.getMembers().get(name);
@@ -284,11 +274,11 @@ public class EntityTypeImpl<X> extends ManagedTypeImpl<X> implements EntityType<
     	throw new PersistenceException("Not Yet Implemented");
     }
 
+    /** implemented by superclass
     public Set<SingularAttribute<? super X, ?>> getSingularAttributes() {
     	throw new PersistenceException("Not Yet Implemented");
-    }
+    }*/
 
-    //@Override
     public <Y> SingularAttribute<? super X, Y> getVersion(Class<Y> type) {
     	throw new PersistenceException("Not Yet Implemented");
     }

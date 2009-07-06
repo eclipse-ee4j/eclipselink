@@ -43,4 +43,11 @@ public abstract class TypeImpl<X> implements Type<X> {
     }
 
     public abstract PersistenceType getPersistenceType();
+    
+    /**
+     * INTERNAL:
+     * Return whether this type is identifiable.
+     * @return
+     */
+    public abstract boolean isIdentifiableType();
 }

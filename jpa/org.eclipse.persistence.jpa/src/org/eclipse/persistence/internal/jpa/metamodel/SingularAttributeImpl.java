@@ -58,7 +58,6 @@ public class SingularAttributeImpl<X,T> extends AttributeImpl<X,T> implements Si
      * INTERNAL:
      * @return
      */
-    @Override
     public boolean isAttribute() {
         return true;
     }
@@ -71,6 +70,10 @@ public class SingularAttributeImpl<X,T> extends AttributeImpl<X,T> implements Si
         return getMapping().isOptional();
     }
 
+    public boolean isPlural() {
+        return false;
+    }
+    
     public boolean isVersion() {
         if (getDescriptor().usesOptimisticLocking() && getMapping().isDirectToFieldMapping()) {
             OptimisticLockingPolicy policy = getDescriptor().getOptimisticLockingPolicy();

@@ -12,7 +12,12 @@
  *     06/30/2009-2.0  mobrien - finish JPA Metadata API modifications in support
  *       of the Metamodel implementation for EclipseLink 2.0 release involving
  *       Map, ElementCollection and Embeddable types on MappedSuperclass descriptors
- *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)  
+ *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)
+ *     07/06/2009-2.0  mobrien - 266912: Introduce IdentifiableTypeImpl between ManagedTypeImpl
+ *       - EntityTypeImpl now inherits from IdentifiableTypeImpl instead of ManagedTypeImpl
+ *       - MappedSuperclassTypeImpl now inherits from IdentifiableTypeImpl instead
+ *       of implementing IdentifiableType indirectly 
+ *       - implement Set<SingularAttribute<? super X, ?>> getSingularAttributes()
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
@@ -25,7 +30,6 @@ import java.util.Set;
 import javax.persistence.PersistenceException;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.CollectionAttribute;
-import javax.persistence.metamodel.IdentifiableType;
 import javax.persistence.metamodel.ListAttribute;
 import javax.persistence.metamodel.ManagedType;
 import javax.persistence.metamodel.MapAttribute;
@@ -55,22 +59,22 @@ public class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedType<X> {
     /** Native RelationalDescriptor that contains all the mappings of this type **/
     private RelationalDescriptor descriptor;
 
-    /** The supertype may be an entity or mappedSuperclass */
-    protected IdentifiableType<? super X> supertype;
+    /** The map of attributes keyed on attribute string name **/
+    protected Map<String, Attribute> members;
 
-    /** **/
-    protected Map<String, AttributeImpl> members;
-
-    /** **/
+    /** Reference to the metamodel that this managed type belongs to **/
     protected MetamodelImpl metamodel;
 
     protected ManagedTypeImpl(MetamodelImpl metamodel, RelationalDescriptor descriptor) {
         super(descriptor.getJavaClass());
-        this.metamodel = metamodel;
         this.descriptor = descriptor;
+        // the metamodel field must be instantiated prior to any *AttributeImpl instantiation which will use the metamodel
+        this.metamodel = metamodel;
         // Cache the ManagedType on the descriptor 
         descriptor.setProperty(getClass().getName(), this);
         initialize();
+        
+        // Initialize superType
         // TODO: set the inheritance hierarchy so we can compute declarations only when all managedTypes are created
         // lookup the current managedType as value by key java class
 /*        Set<ManagedType<?>> managedTypes = this.metamodel.getManagedTypes();
@@ -225,7 +229,7 @@ public class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedType<X> {
      * Return the Map of AttributeImpl members keyed by String.
      * @return
      */
-    public java.util.Map<String, AttributeImpl> getMembers() {
+    public java.util.Map<String, Attribute> getMembers() {
         return this.members;
     }
 
@@ -237,7 +241,6 @@ public class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedType<X> {
         return this.metamodel;
     }
 
-    @Override
     public Type.PersistenceType getPersistenceType() {
         throw new PersistenceException("Not Yet Implemented");
     }
@@ -251,9 +254,9 @@ public class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedType<X> {
     }
 
     public SingularAttribute<? super X, ?> getSingularAttribute(String name) {
-       AttributeImpl member = getMembers().get(name);
+       Attribute member = getMembers().get(name);
         
-        if (member != null && !member.isAttribute()) {
+        if (member != null && !((AttributeImpl)member).isAttribute()) {
             return (SingularAttribute<? super X, ?>) member;
         }
         return null;
@@ -261,26 +264,26 @@ public class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedType<X> {
 
     public <Y> SingularAttribute<? super X, Y> getSingularAttribute(String name, Class<Y> type) {
         // We are ignoring the type parameter
-        AttributeImpl member = getMembers().get(name);
+        Attribute member = getMembers().get(name);
         
-        if (member != null && member.isAttribute()) {
+        if (member != null && ((AttributeImpl)member).isAttribute()) {
             return (SingularAttribute<? super X, Y>) member;
         }
         return null;
     }
 
+    //public abstract Set<SingularAttribute<? super X, ?>> getSingularAttributes();
     public Set<SingularAttribute<? super X, ?>> getSingularAttributes() {
-    	throw new PersistenceException("Not Yet Implemented");
+        // Iterate the members set for attributes of type SingularAttribute
+        Set singularAttributeSet = new HashSet<SingularAttribute<? super X, ?>>();
+        for(Iterator<Attribute> anIterator = this.members.values().iterator(); anIterator.hasNext();) {
+            AttributeImpl anAttribute = (AttributeImpl)anIterator.next();
+            if(!anAttribute.isPlural()) {
+                singularAttributeSet.add(anAttribute);
+            }
+        }
+        return singularAttributeSet;
     }
-    
-    /**
-     * INTERNAL:
-     * @return the supertype (IdentifiableType) for this managed type
-     */
-    public IdentifiableType<? super X> getSupertype() {
-        return this.supertype;
-    }
-
     
     /**
      * INTERNAL:
@@ -288,7 +291,7 @@ public class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedType<X> {
      * We process the appropriate Map, List, Set, Collection or Object/primitive types.
      */
     private void initialize() {
-        this.members = new HashMap<String, AttributeImpl>();
+        this.members = new HashMap<String, Attribute>();
 
         // Get all mappings on the relationalDescriptor
         for (Iterator i = getDescriptor().getMappings().iterator(); i.hasNext();) {
@@ -323,14 +326,12 @@ public class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedType<X> {
         }
     }
 
-    /**
-     * INTERNAL:
-     * @param supertype
-     */
-    protected void setSupertype(IdentifiableType<? super X> supertype) {
-        this.supertype = supertype;
+    
+    public boolean isIdentifiableType() {
+        return false;
     }
 
+    
     /**
      * Return the string representation of the receiver.
      */

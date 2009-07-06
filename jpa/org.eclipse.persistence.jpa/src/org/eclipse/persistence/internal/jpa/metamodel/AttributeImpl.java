@@ -188,4 +188,11 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T> {
     public boolean isCollection() {
         return getMapping().isCollectionMapping();
     }
+    
+    /**
+     * INTERNAL:
+     * Return whether the attribute is plural or singular
+     * @return
+     */
+    public abstract boolean isPlural();
 }

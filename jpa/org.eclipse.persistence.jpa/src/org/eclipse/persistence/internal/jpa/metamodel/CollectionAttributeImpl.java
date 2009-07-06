@@ -54,7 +54,7 @@ public class CollectionAttributeImpl<X, V> extends PluralAttributeImpl<X, java.u
     public Class<V> getBindableJavaType() {
     	throw new PersistenceException("Not Yet Implemented");
     }
-
+    
     public CollectionType getCollectionType() {
         return CollectionType.COLLECTION;
     }
@@ -63,7 +63,6 @@ public class CollectionAttributeImpl<X, V> extends PluralAttributeImpl<X, java.u
         return this.getMapping().getReferenceDescriptor().getJavaClass();
     }
     
-    @Override
     public boolean isAttribute() {
     	throw new PersistenceException("Not Yet Implemented");
     }

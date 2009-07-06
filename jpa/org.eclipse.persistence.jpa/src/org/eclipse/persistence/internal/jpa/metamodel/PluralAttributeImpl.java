@@ -67,5 +67,9 @@ public abstract class PluralAttributeImpl<X, C, V> extends AttributeImpl<X, C> i
     public Type<V> getElementType() {
         return this.elementType;
     }
+    
+    public boolean isPlural() {
+        return true;
+    }
 
 }
