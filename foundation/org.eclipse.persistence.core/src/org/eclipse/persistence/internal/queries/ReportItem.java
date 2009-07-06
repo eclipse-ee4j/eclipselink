@@ -137,7 +137,7 @@ public class ReportItem implements Cloneable, java.io.Serializable {
                     }
                 }
             } else {
-                if (mapping.isAbstractDirectMapping() || getAttributeExpression().isMapEntryExpression()){
+                if (mapping.isAbstractDirectMapping() || getAttributeExpression().isMapEntryExpression() || mapping.isAggregateObjectMapping()){
                         setMapping(mapping);
                 //Bug4942640  Widen the check to support collection mapping too
                 } else if (mapping.isForeignReferenceMapping()) {

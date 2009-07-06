@@ -194,7 +194,11 @@ public class ReportQueryResult implements Serializable, Map {
                     Vector trimedValues = new NonSynchronizedSubVector(row.getValues(), itemIndex, rowSize);
                     subRow = new DatabaseRecord(trimedFields, trimedValues);
                 }
-                value = descriptor.getObjectBuilder().buildObject(query, subRow, joinManager);
+                if (mapping != null && mapping.isAggregateObjectMapping()){
+                    value = ((AggregateObjectMapping)mapping).buildAggregateFromRow(subRow, null, joinManager, query, false, query.getSession());
+                } else {
+                    value = descriptor.getObjectBuilder().buildObject(query, subRow, joinManager);
+                }
                 
                 // this covers two possibilities
                 // 1. We want the actual Map.Entry from the table rather than the just the key

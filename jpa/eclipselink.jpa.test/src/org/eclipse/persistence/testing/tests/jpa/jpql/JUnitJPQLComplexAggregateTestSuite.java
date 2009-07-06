@@ -35,6 +35,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
+import org.eclipse.persistence.testing.models.jpa.advanced.EmploymentPeriod;
 import org.eclipse.persistence.testing.models.jpa.relationships.RelationshipsExamples;
 import org.eclipse.persistence.testing.models.jpa.relationships.RelationshipsTableManager;
 import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Cubicle;
@@ -87,6 +88,9 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
         TestSuite suite = new TestSuite();
         suite.setName("JUnitJPQLComplexAggregateTestSuite");
         suite.addTest(new JUnitJPQLComplexAggregateTestSuite("testSetup"));
+        
+        suite.addTest(new JUnitJPQLComplexAggregateTestSuite("complexSelectAggregateTest"));
+
         suite.addTest(new JUnitJPQLComplexAggregateTestSuite("complexAVGTest"));
         suite.addTest(new JUnitJPQLComplexAggregateTestSuite("complexCountDistinctWithGroupByAndHavingTest"));
         suite.addTest(new JUnitJPQLComplexAggregateTestSuite("complexCountDistinctWithGroupByTest"));
@@ -597,6 +601,23 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
 
         Assert.assertEquals("Complex COUNT on joined variable over ManyToMany self refrenceing relationship failed", 
                             expectedResult, result);
+    }
+    
+    public void complexSelectAggregateTest(){
+        EntityManager em = createEntityManager();
+
+        Expression exp = (new ExpressionBuilder()).get("firstName").equal("Bob");
+        Employee employee = (Employee)getServerSession().readObject(Employee.class, exp);
+        EmploymentPeriod expectedResult = employee.getPeriod();
+
+        String jpql = "SELECT e.period from Employee e where e.firstName = 'Bob'";
+        Query q = em.createQuery(jpql);
+        EmploymentPeriod result = (EmploymentPeriod)q.getSingleResult();
+
+        Assert.assertEquals("complexSelectAggregateTest failed - start dates don't match", 
+                            expectedResult.getStartDate(), result.getStartDate());
+        Assert.assertEquals("complexSelectAggregateTest failed - end dates don't match", 
+                expectedResult.getEndDate(), result.getEndDate());
     }
 
 }
