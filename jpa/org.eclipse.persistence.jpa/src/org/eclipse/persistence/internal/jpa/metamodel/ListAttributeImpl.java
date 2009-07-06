@@ -41,7 +41,6 @@ public class ListAttributeImpl<X, V> extends PluralAttributeImpl<X, java.util.Li
         super(managedType, mapping);
     }
 
-    @Override
     public Class<V> getBindableJavaType() {
     	throw new PersistenceException("Not Yet Implemented");
     }

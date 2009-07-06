@@ -40,7 +40,6 @@ public class SetAttributeImpl<X, V> extends PluralAttributeImpl<X, java.util.Set
         super(managedType, mapping);
     }
 
-    @Override
     public Class<V> getBindableJavaType() {
         throw new PersistenceException("Not Yet Implemented");
     }

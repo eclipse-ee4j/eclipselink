@@ -52,7 +52,6 @@ public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, java.util.
         this.keyType = (Type<K>) keyType;
     }
 
-    @Override
     public Class<V> getBindableJavaType() {
         throw new PersistenceException("Not Yet Implemented");
     }

@@ -51,7 +51,6 @@ public class CollectionAttributeImpl<X, V> extends PluralAttributeImpl<X, java.u
         super(managedType, mapping);
     }
 
-    @Override
     public Class<V> getBindableJavaType() {
     	throw new PersistenceException("Not Yet Implemented");
     }
