@@ -37,10 +37,10 @@ public class MergeChangeSetCommand extends Command {
      * INTERNAL:
      * Return the changes to be applied
      */
-    public UnitOfWorkChangeSet getChangeSet() {
+    public UnitOfWorkChangeSet getChangeSet(AbstractSession session) {
         if ((changeSet == null) && (changeSetBytes != null)) {
             try {
-                changeSet = new UnitOfWorkChangeSet(changeSetBytes);
+                changeSet = new UnitOfWorkChangeSet(changeSetBytes, session);
             } catch (java.io.IOException exception) {
                 throw CommunicationException.unableToPropagateChanges(getServiceId().toString(), exception);
             } catch (ClassNotFoundException exception) {
@@ -79,6 +79,6 @@ public class MergeChangeSetCommand extends Command {
         manager.setCascadePolicy(MergeManager.CASCADE_ALL_PARTS);
 
         // Do the main merge
-        manager.mergeChangesFromChangeSet(getChangeSet());
+        manager.mergeChangesFromChangeSet(getChangeSet(session));
     }
 }
