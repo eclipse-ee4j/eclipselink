@@ -70,6 +70,7 @@ public class JAXBContextFactory {
 
     public static javax.xml.bind.JAXBContext createContext(Class[] classesToBeBound, java.util.Map properties, ClassLoader classLoader) throws JAXBException {       
         JaxbClassLoader loader = new JaxbClassLoader(classLoader);
+        classesToBeBound = updateClassesWithObjectFactory(classesToBeBound, loader);
         try{
             Generator generator = new Generator(new JavaModelInputImpl(classesToBeBound, new JavaModelImpl(loader)));
             return createContext(generator, properties, classLoader, loader, classesToBeBound);
@@ -81,6 +82,7 @@ public class JAXBContextFactory {
     public static javax.xml.bind.JAXBContext createContext(Type[] typesToBeBound, java.util.Map properties, ClassLoader classLoader) throws JAXBException {       
         JaxbClassLoader loader = new JaxbClassLoader(classLoader);
         JavaModelInputImpl inputImpl = new JavaModelInputImpl(typesToBeBound, new JavaModelImpl(loader));
+        typesToBeBound = updateTypesWithObjectFactory(typesToBeBound, loader);
         try{
         	Generator generator = new Generator(inputImpl, inputImpl.getJavaClassToType());
         	return createContext(generator, properties, classLoader, loader, typesToBeBound);
@@ -195,5 +197,46 @@ public class JAXBContextFactory {
         } catch(Exception ex) {
             return false;
         }
+    }
+    
+    private static Class[] updateClassesWithObjectFactory(Class[] classes, ClassLoader loader) {
+        ArrayList<Class> updatedClasses = new ArrayList<Class>();
+        for(Class next:classes) {
+            if(!(updatedClasses.contains(next))) {
+                updatedClasses.add(next);
+            }
+            if(next.getPackage() != null) {
+                String packageName = next.getPackage().getName();
+                try {
+                    Class objectFactoryClass = loader.loadClass(packageName + ".ObjectFactory");
+                    if(!(updatedClasses.contains(objectFactoryClass))) {
+                        updatedClasses.add(objectFactoryClass);
+                    }
+                } catch(Exception ex) {}
+            }
+        }
+         
+        return updatedClasses.toArray(new Class[updatedClasses.size()]);
+    }
+    
+    private static Type[] updateTypesWithObjectFactory(Type[] types, ClassLoader loader) {
+        ArrayList<Type> updatedTypes = new ArrayList<Type>();
+        for(Type next:types) {
+            if(!(updatedTypes.contains(next))) {
+                updatedTypes.add(next);
+            }            
+            if(next instanceof Class) {
+                if(((Class)next).getPackage() != null) {
+                    String packageName = ((Class)next).getPackage().getName();
+                    try {
+                        Class objectFactoryClass = loader.loadClass(packageName + ".ObjectFactory");
+                        if(!(updatedTypes.contains(objectFactoryClass))) {
+                            updatedTypes.add(objectFactoryClass);
+                        }
+                    } catch(Exception ex) {}
+                }
+            }
+        }
+        return updatedTypes.toArray(new Type[updatedTypes.size()]);
     }
 }

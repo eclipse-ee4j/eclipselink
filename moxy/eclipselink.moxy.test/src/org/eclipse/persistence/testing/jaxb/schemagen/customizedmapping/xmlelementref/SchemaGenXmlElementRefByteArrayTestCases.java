@@ -50,7 +50,7 @@ public class SchemaGenXmlElementRefByteArrayTestCases  extends TestCase {
         if (shouldGenerateSchema) {
             outputResolver = new MySchemaOutputResolver();
             try {
-                Class[] classes = new Class[]{ ObjectFactory.class }; 
+                Class[] classes = new Class[]{ WrappedByteArray.class }; 
                 JAXBContext context = (org.eclipse.persistence.jaxb.JAXBContext) org.eclipse.persistence.jaxb.JAXBContextFactory.createContext(classes, null);
                 context.generateSchema(outputResolver);
             } catch (Exception ex) {
