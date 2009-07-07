@@ -47,7 +47,7 @@ public interface Bindable<T> {
      * Return the Java type of the represented object.
      * If the bindable type of the object is PLURAL_ATTRIBUTE,
      * the Java element type is returned. If the bindable type is
-     * SINGLE_ATTRIBUTE or ENTITY_TYPE, the Java type of the
+     * SINGULAR_ATTRIBUTE or ENTITY_TYPE, the Java type of the
      * represented entity or attribute is returned.
      * @return Java type
      */
