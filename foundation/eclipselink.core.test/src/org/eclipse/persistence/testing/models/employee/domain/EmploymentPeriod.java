@@ -112,4 +112,31 @@ public class EmploymentPeriod implements Serializable, ChangeTracker, Cloneable 
         }
         return writer.toString();
     }
+    
+    public boolean equals(Object period){
+        if (this == period){
+            return true;
+        }
+        if (period == null || !(period instanceof EmploymentPeriod)){
+            return false;
+        }
+        EmploymentPeriod empPeriod = (EmploymentPeriod)period;
+        if ((getStartDate() == null && empPeriod.getStartDate() != null) || (getStartDate() != null && empPeriod.getStartDate() == null)){
+            return false;
+        }
+        if ((getEndDate() == null && empPeriod.getEndDate() != null) || (getEndDate() != null && empPeriod.getEndDate() == null)){
+            return false;
+        }
+        boolean match = (getStartDate() == null && empPeriod.getStartDate() == null) || (getStartDate().equals(empPeriod.getStartDate()));
+        match = match && (getEndDate() == null && empPeriod.getEndDate() == null) || getEndDate().equals(empPeriod.getEndDate());
+        return  match;
+    }
+    
+    public int hashCode() {
+        int hash = 0;
+        hash += (this.getStartDate() != null ? this.getStartDate().hashCode() : 0);
+        hash += (this.getEndDate() != null ? this.getEndDate().hashCode() : 0);
+        return hash;
+    }
+
 }
