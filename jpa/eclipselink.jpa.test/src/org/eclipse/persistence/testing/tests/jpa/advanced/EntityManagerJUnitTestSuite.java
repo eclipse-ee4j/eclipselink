@@ -83,6 +83,7 @@ import org.eclipse.persistence.sessions.SessionEvent;
 import org.eclipse.persistence.sessions.SessionEventAdapter;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.jpa.JpaEntityManager;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.CacheUsageIndirectionPolicy;
 import org.eclipse.persistence.config.CascadePolicy;
@@ -7650,17 +7651,25 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         HashSet<Accessor> acquiredReadConnections = new HashSet(); 
         HashSet<Accessor> acquiredWriteConnections = new HashSet(); 
         public void postAcquireConnection(SessionEvent event) {
-            if(event.getSession().isServerSession()) {
-                acquiredReadConnections.add((Accessor)event.getResult());
+            Accessor accessor = (Accessor)event.getResult();
+            Session session = event.getSession();
+            if(session.isServerSession()) {
+                acquiredReadConnections.add(accessor);
+                ((ServerSession)session).log(SessionLog.FINEST, SessionLog.CONNECTION, "AcquireReleaseListener.acquireReadConnection: " + nAcquredReadConnections(), (Object[])null, accessor, false);
             } else {
-                acquiredWriteConnections.add((Accessor)event.getResult());
+                acquiredWriteConnections.add(accessor);
+                ((ClientSession)session).log(SessionLog.FINEST, SessionLog.CONNECTION, "AcquireReleaseListener.acquireWriteConnection: " + nAcquredWriteConnections(), (Object[])null, accessor, false);
             }
         }
         public void preReleaseConnection(SessionEvent event) {
-            if(event.getSession().isServerSession()) {
-                acquiredReadConnections.remove((Accessor)event.getResult());
+            Accessor accessor = (Accessor)event.getResult();
+            Session session = event.getSession();
+            if(session.isServerSession()) {
+                acquiredReadConnections.remove(accessor);
+                ((ServerSession)session).log(SessionLog.FINEST, SessionLog.CONNECTION, "AcquireReleaseListener.releaseReadConnection: " + nAcquredReadConnections(), (Object[])null, accessor, false);
             } else {
-                acquiredWriteConnections.remove((Accessor)event.getResult());
+                acquiredWriteConnections.remove(accessor);
+                ((ClientSession)session).log(SessionLog.FINEST, SessionLog.CONNECTION, "AcquireReleaseListener.releaseWriteConnection: " + nAcquredWriteConnections(), (Object[])null, accessor, false);
             }
         }
         int nAcquredReadConnections() {
@@ -7681,6 +7690,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             // Uses DefaultConnector.
             return;
         }
+        
+        // normally false; set to true for debug output for just this single test
+        boolean shouldForceFinest = true;
+        int originalLogLevel = -1; 
         
         ServerSession ss = ((EntityManagerFactoryImpl)getEntityManagerFactory()).getServerSession();
         
@@ -7715,118 +7728,136 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         ss.getLogin().setConnectionString(newConnectionString);
         AcquireReleaseListener listener = new AcquireReleaseListener();  
         ss.getEventManager().addListener(listener);
+        if(shouldForceFinest) {
+            if(ss.getLogLevel() != SessionLog.FINEST) {
+                originalLogLevel = ss.getLogLevel();
+                ss.setLogLevel(SessionLog.FINEST);
+            }
+        }
         ss.login();
         
-        RuntimeException exception = null;
         String errorMsg = "";
         // test several configurations:
         // all exclusive connection modes
         String[] exclusiveConnectionModeArray = new String[]{ExclusiveConnectionMode.Transactional, ExclusiveConnectionMode.Isolated, ExclusiveConnectionMode.Always};
-        for(int i=0; i<3 && (exception==null); i++) {
-            String exclusiveConnectionMode = exclusiveConnectionModeArray[i];
-            for(int j=0; j<2 && (exception==null); j++) {
-                // either using or not using sequencing 
-                boolean useSequencing = (j==0);
-
-                HashMap emProperties = new HashMap(1);
-                emProperties.put(EntityManagerProperties.EXCLUSIVE_CONNECTION_MODE, exclusiveConnectionMode);
-                EntityManager em = createEntityManager(emProperties);
-                
-                em.find(Employee.class, 1);
-                Employee emp = null;
-                boolean hasUnexpectedlyCommitted = false;
-                try{
-                    em.getTransaction().begin();
-
-                    // imitate disconnecting from network:
-                    // driver's connect method and any method on any connection will throw SQLException
-                    DriverWrapper.breakDriver();
-                    DriverWrapper.breakOldConnections();
+        
+        try {
+            
+            for(int i=0; i<3; i++) {
+                String exclusiveConnectionMode = exclusiveConnectionModeArray[i];                
+                for(int j=0; j<2; j++) {
+                    // either using or not using sequencing 
+                    boolean useSequencing = (j==0);                   
+                    ss.log(SessionLog.FINEST, SessionLog.CONNECTION, "testEMCloseAndOpen: " + (useSequencing ? "sequencing" : "no sequencing"), (Object[])null, null, false);
+                    HashMap emProperties = new HashMap(1);
+                    emProperties.put(EntityManagerProperties.EXCLUSIVE_CONNECTION_MODE, exclusiveConnectionMode);
+                    EntityManager em = createEntityManager(emProperties);
                     
-                    emp = new Employee();
-                    if(!useSequencing) {
-                        emp.setId(id);
-                    }
-                    em.persist(emp);
-                    em.getTransaction().commit();
-
-                    // should never get here - all connections should be broken.
-                    hasUnexpectedlyCommitted = true;
-                    errorMsg += "useSequencing = " + useSequencing + "; exclusiveConnectionMode = " + exclusiveConnectionMode + ": Commit has unexpectedly succeeded - should have failed because all connections broken. driver = " + ss.getLogin().getDriverClassName() + "; url = " + ss.getLogin().getConnectionString();
-                } catch (Exception e){
-                    // expected exception - connection is invalid and cannot be reconnected.
-                    if(em.getTransaction().isActive()) {
-                        em.getTransaction().rollback();
-                    }            
-                }
-                closeEntityManager(em);
-                
-                // verify - all connections should be released
-                String localErrorMsg = "";
-                if(listener.nAcquredWriteConnections() > 0) {
-                    localErrorMsg += "writeConnection not released; ";
-                }
-                if(listener.nAcquredReadConnections() > 0) {
-                    localErrorMsg += "readConnection not released; ";
-                }
-                if(localErrorMsg.length() > 0) {
-                    localErrorMsg = exclusiveConnectionMode + " useSequencing="+useSequencing + ": " + localErrorMsg;
-                    errorMsg += localErrorMsg;
-                    listener.clear();
-                }
-                
-                // imitate  reconnecting to network:
-                // driver's connect method will now work, all newly acquired connections will work, too;
-                // however the old connections cached in the connection pools are still invalid.
-                DriverWrapper.repairDriver();
-                
-                try {
-                    em = createEntityManager();
                     em.find(Employee.class, 1);
-                    if(!hasUnexpectedlyCommitted) {
+                    Employee emp = null;
+                    boolean hasUnexpectedlyCommitted = false;
+                    try{
                         em.getTransaction().begin();
+    
+                        // imitate disconnecting from network:
+                        // driver's connect method and any method on any connection will throw SQLException
+                        ss.log(SessionLog.FINEST, SessionLog.CONNECTION, "testEMCloseAndOpen: DriverWrapper.breakDriver(); DriverWrapper.breakOldConnections();", (Object[])null, null, false);
+                        DriverWrapper.breakDriver();
+                        DriverWrapper.breakOldConnections();
+                        
                         emp = new Employee();
                         if(!useSequencing) {
                             emp.setId(id);
                         }
                         em.persist(emp);
                         em.getTransaction().commit();
+    
+                        // should never get here - all connections should be broken.
+                        hasUnexpectedlyCommitted = true;
+                        errorMsg += "useSequencing = " + useSequencing + "; exclusiveConnectionMode = " + exclusiveConnectionMode + ": Commit has unexpectedly succeeded - should have failed because all connections broken. driver = " + ss.getLogin().getDriverClassName() + "; url = " + ss.getLogin().getConnectionString();
+                    } catch (Exception e){
+                        // expected exception - connection is invalid and cannot be reconnected.
+                        if(em.getTransaction().isActive()) {
+                            em.getTransaction().rollback();
+                        }            
                     }
-                } catch (RuntimeException ex) {
-                    // This should not happen
-                    if(em.getTransaction().isActive()) {
-                        em.getTransaction().rollback();
-                    }
-                    // can't just let exception fly - need to clean up
-                    exception = ex;
                     closeEntityManager(em);
-                    break;
+                    
+                    // verify - all connections should be released
+                    String localErrorMsg = "";
+                    if(listener.nAcquredWriteConnections() > 0) {
+                        localErrorMsg += "writeConnection not released; ";
+                    }
+                    if(listener.nAcquredReadConnections() > 0) {
+                        localErrorMsg += "readConnection not released; ";
+                    }
+                    if(localErrorMsg.length() > 0) {
+                        localErrorMsg = exclusiveConnectionMode + " useSequencing="+useSequencing + ": " + localErrorMsg;
+                        errorMsg += localErrorMsg;
+                        listener.clear();
+                    }
+                    
+                    // imitate  reconnecting to network:
+                    // driver's connect method will now work, all newly acquired connections will work, too;
+                    // however the old connections cached in the connection pools are still invalid.
+                    DriverWrapper.repairDriver();
+                    ss.log(SessionLog.FINEST, SessionLog.CONNECTION, "testEMCloseAndOpen: DriverWrapper.repairDriver();", (Object[])null, null, false);
+                    
+                    boolean failed = true;
+                    try {
+                        em = createEntityManager();
+                        em.find(Employee.class, 1);
+                        if(!hasUnexpectedlyCommitted) {
+                            em.getTransaction().begin();
+                            emp = new Employee();
+                            if(!useSequencing) {
+                                emp.setId(id);
+                            }
+                            em.persist(emp);
+                            em.getTransaction().commit();
+                            failed = false;
+                        }
+                    } finally {
+                        if(failed) {
+                            // This should not happen
+                            if(em.getTransaction().isActive()) {
+                                em.getTransaction().rollback();
+                            }
+                            closeEntityManager(em);
+                            
+                            if(!errorMsg.isEmpty()) {
+                                ss.log(SessionLog.FINEST, SessionLog.CONNECTION, "testEMCloseAndOpen: errorMsg: " + "\n" + errorMsg, (Object[])null, null, false);
+                            }
+                        }
+                    }
+    
+                    // clean-up
+                    // remove the inserted object
+                    em.getTransaction().begin();
+                    em.remove(emp);
+                    em.getTransaction().commit();
+                    closeEntityManager(em);                
                 }
-
-                // clean-up
-                // remove the inserted object
-                em.getTransaction().begin();
-                em.remove(emp);
-                em.getTransaction().commit();
-                closeEntityManager(em);                
             }
-        }
 
-        // clear the driver wrapper
-        DriverWrapper.clear();
+        } finally {
 
-        // reconnect the session using the original driver and connection string
-        ss.getEventManager().removeListener(listener);
-        ss.logout();
-        ss.getLogin().setDriverClassName(originalDriverName);
-        ss.getLogin().setConnectionString(originalConnectionString);
-        ss.login();
-        
-        if(exception != null) {
-            throw exception;
-        }
-        if(errorMsg.length() > 0) {
-            fail(errorMsg);
+            // clear the driver wrapper
+            DriverWrapper.clear();
+    
+            // reconnect the session using the original driver and connection string
+            ss.getEventManager().removeListener(listener);
+            ss.logout();
+            if(originalLogLevel >= 0) {
+                ss.setLogLevel(originalLogLevel);
+            }
+            ss.getLogin().setDriverClassName(originalDriverName);
+            ss.getLogin().setConnectionString(originalConnectionString);
+            ss.login();
+            
+            if(errorMsg.length() > 0) {
+                fail(errorMsg);
+            }
         }
     }
 
