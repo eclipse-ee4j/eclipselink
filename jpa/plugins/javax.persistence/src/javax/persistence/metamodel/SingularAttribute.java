@@ -37,20 +37,21 @@ public interface SingularAttribute<X, T>
 	
     /**
      *  Is the attribute an id attribute.
-     *  @return boolean indicating whether or not an id
+     *  @return boolean indicating whether or not attribute is an id
      */
     boolean isId();
 
     /**
      *  Is the attribute a version attribute.
-     *  @return boolean indicating whether or not a version attribute
+     *  @return boolean indicating whether or not attribute is 
+     *          a version attribute
      */
     boolean isVersion();
 
     /** 
      *  Can the attribute be null.
      *  @return boolean indicating whether or not the attribute can
-     * 				be null
+     *          be null
      */
     boolean isOptional();
 

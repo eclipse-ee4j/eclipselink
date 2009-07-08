@@ -50,18 +50,18 @@ public interface IdentifiableType<X> extends ManagedType<X> {
      *  @param type  the type of the represented version attribute
      *  @return version attribute
      *  @throws IllegalArgumentException if version attribute of the 
-     * 				given type is not present in the identifiable type
+     *          given type is not present in the identifiable type
      */
     <Y> SingularAttribute<? super X, Y> getVersion(Class<Y> type);
 
     /**
      *  Return the attribute that corresponds to the id attribute 
      *  declared by the entity or mapped superclass.
-     *  @param type  the type of the represented declared id 
-     * 					attribute
+     *  @param type  the type of the represented declared id attribute
      *  @return declared id attribute
      *  @throws IllegalArgumentException if id attribute of the given
-     *          type is not present in the identifiable type
+     *          type is not declared in the identifiable type or if
+     *          the identifiable type has an id class
      */
     <Y> SingularAttribute<X, Y> getDeclaredId(Class<Y> type);
 
@@ -72,15 +72,15 @@ public interface IdentifiableType<X> extends ManagedType<X> {
      *               attribute
      *  @return declared version attribute
      *  @throws IllegalArgumentException if version attribute of the 
-     * 			   type is not present in the identifiable type
+     *          type is not declared in the identifiable type
      */
     <Y> SingularAttribute<X, Y> getDeclaredVersion(Class<Y> type);
 	
     /**
      *  Return the identifiable type that corresponds to the most
      *  specific mapped superclass or entity extended by the entity 
-     *  or mapped superclass.
-     *  @return supertype of identifiable type
+     *  or mapped superclass. 
+     *  @return supertype of identifiable type or null if no such supertype
      */
     IdentifiableType<? super X> getSupertype();
 

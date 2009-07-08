@@ -45,8 +45,8 @@ public interface Attribute<X, Y> {
     String getName();
 
     /**
-     *  Return the multiplicity of the attribute.
-     *  @return multiplicity
+     *  Return the persistent attribute type for the attribute.
+     *  @return persistent attribute type
      */
     PersistentAttributeType getPersistentAttributeType();
 
@@ -72,13 +72,15 @@ public interface Attribute<X, Y> {
 
     /**
      *  Is the attribute an association.
-     *  @return whether an association
+     *  @return whether boolean indicating whether attribute 
+     *          corresponds to an association
      */
     boolean isAssociation();
 
     /**
      *  Is the attribute collection-valued.
-     *  @return whether a collection
+     *  @return boolean indicating whether attribute is 
+     *          collection-valued
      */
     boolean isCollection();
 	
