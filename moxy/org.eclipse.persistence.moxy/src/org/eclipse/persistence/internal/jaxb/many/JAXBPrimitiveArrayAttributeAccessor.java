@@ -35,8 +35,10 @@ public class JAXBPrimitiveArrayAttributeAccessor extends AttributeAccessor {
 	
 	public Object getAttributeValueFromObject(Object object) throws DescriptorException {
 		Object value = nestedAccessor.getAttributeValueFromObject(object);
-		Object itemList = buildCollectionFromArray(value);	
-		return itemList;
+		if(value == null){
+            return null;
+		}
+		return buildCollectionFromArray(value);			
 	}
 
 	public void setAttributeValueInObject(Object object, Object value) throws DescriptorException {
@@ -135,36 +137,42 @@ public class JAXBPrimitiveArrayAttributeAccessor extends AttributeAccessor {
 			for(char i:charArray){
 				containerPolicy.addInto(i, results, null);
 			}
+			return results;
 		}else if(ClassConstants.PFLOAT.equals(componentClass)){
 			float[] floatArray = (float[])arrayValue;
 			Object results = containerPolicy.containerInstance(floatArray.length);
 			for(float i:floatArray){
 				containerPolicy.addInto(i, results, null);
 			}
+			return results;
 		}else if(ClassConstants.PINT.equals(componentClass)){
 			int[] intArray = (int[])arrayValue;
 			Object results = containerPolicy.containerInstance(intArray.length);
 			for(int i:intArray){
 				containerPolicy.addInto(i, results, null);
 			}
+			return results;
 		}else if(ClassConstants.PDOUBLE.equals(componentClass)){
 			double[] doubleArray = (double[])arrayValue;
 			Object results = containerPolicy.containerInstance(doubleArray.length);
 			for(double i:doubleArray){
 				containerPolicy.addInto(i, results, null);			
 			}
+			return results;
 		}else if(ClassConstants.PLONG.equals(componentClass)){
 			long[] longArray = (long[])arrayValue;
 			Object results = containerPolicy.containerInstance(longArray.length);
 			for(long i:longArray){
 				containerPolicy.addInto(i, results, null);
 			}
+			return results;
 		}else if(ClassConstants.PSHORT.equals(componentClass)){
 			short[] shortArray = (short[])arrayValue;
 			Object results = containerPolicy.containerInstance(shortArray.length);
 			for(short i:shortArray){
 				containerPolicy.addInto(i, results, null);
 			}
+			return results;
 		}
 		return null;
 	}

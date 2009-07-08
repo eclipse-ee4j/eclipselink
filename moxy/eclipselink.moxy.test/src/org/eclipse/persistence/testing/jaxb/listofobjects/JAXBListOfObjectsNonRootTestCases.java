@@ -88,6 +88,11 @@ public class JAXBListOfObjectsNonRootTestCases extends
 		integerArray[3] = 40;
 		listofObjects.setIntegerArray(integerArray);
 
+		int[] intArray = new int[2];
+		intArray[0] = 1;
+		intArray[1] = 2;
+		listofObjects.intArray = intArray;
+		
 		Employee[] empArray = new Employee[2];
 		empArray[0] = getEmployee1();
 		empArray[1] = getEmployee2();

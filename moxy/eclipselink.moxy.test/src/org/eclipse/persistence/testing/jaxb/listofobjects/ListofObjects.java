@@ -29,6 +29,8 @@ public class ListofObjects {
 	public List<Integer> integerList;
 	public Employee[] empArray;
 	public Integer[] integerArray;
+	public Float[] floatArray;
+	public int[] intArray;
 	public boolean[] booleanArray;
 	public HashMap<String, Integer> stringIntegerHashMap;
 	@XmlTransient
@@ -105,6 +107,17 @@ public class ListofObjects {
 			return false;
 		}
 
+		if (empTreeSet == null && compareListofObjects.getEmpTreeSet() != null) {
+			return false;
+		}
+		if (empTreeSet.size() == compareListofObjects.getEmpTreeSet().size()) {
+			if (!empTreeSet.containsAll(compareListofObjects.getEmpTreeSet())) {
+				return false;
+			}
+		} else {
+			return false;
+		}
+		
 		if (empArrayList == null
 				&& compareListofObjects.getEmpArrayList() != null) {
 			return false;
@@ -131,7 +144,60 @@ public class ListofObjects {
 		} else {
 			return false;
 		}
+		
+		if(booleanArray == null && compareListofObjects.booleanArray !=null){
+			return false;
+		}
+		if (booleanArray.length == compareListofObjects.booleanArray.length) {
+			for (int i = 0; i < booleanArray.length; i++) {
+				if (booleanArray[i] != compareListofObjects.booleanArray[i]) {
+					return false;
+				}
+			}
+		} else {
+			return false;
+		}
+		
+		if(intArray == null && compareListofObjects.intArray !=null){
+			return false;
+		}
+		if (intArray.length == compareListofObjects.intArray.length) {
+			for (int i = 0; i < intArray.length; i++) {
+				if (intArray[i] != compareListofObjects.intArray[i]) {
+					return false;
+				}
+			}
+		} else {
+			return false;
+		}
+		
+		if(integerArray == null && compareListofObjects.integerArray !=null){
+			return false;
+		}
+		if (integerArray.length == compareListofObjects.integerArray.length) {
+			for (int i = 0; i < integerArray.length; i++) {
+				if (!integerArray[i].equals(compareListofObjects.integerArray[i])) {
+					return false;
+				}
+			}
+		} else {
+			return false;
+		}
 
+		if(floatArray == null && compareListofObjects.floatArray !=null){
+			if(compareListofObjects.floatArray.length >0){
+				return false;
+			}
+		}else if (floatArray.length == compareListofObjects.floatArray.length) {
+			for (int i = 0; i < floatArray.length; i++) {
+				if (!floatArray[i].equals(compareListofObjects.floatArray[i])) {
+					return false;
+				}
+			}
+		} else {
+			return false;
+		}
+		
 		if(stringIntegerHashMap.size() == compareListofObjects.stringIntegerHashMap.size()){
 			if(!stringIntegerHashMap.entrySet().containsAll(compareListofObjects.stringIntegerHashMap.entrySet())){
 				return false;

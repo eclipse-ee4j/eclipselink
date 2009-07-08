@@ -38,6 +38,9 @@ public class JAXBObjectArrayAttributeAccessor extends AttributeAccessor {
 	
 	public Object getAttributeValueFromObject(Object object) throws DescriptorException {
 		Object value = nestedAccessor.getAttributeValueFromObject(object);
+		if(value == null){
+            return null;
+		}
 		Object[] objects =(Object[])value;
 		int length = objects.length;
 		Object results = containerPolicy.containerInstance(length);

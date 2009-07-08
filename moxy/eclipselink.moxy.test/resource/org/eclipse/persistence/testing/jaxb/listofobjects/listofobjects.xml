@@ -40,6 +40,8 @@
    <integerArray>20</integerArray>
    <integerArray>30</integerArray>
    <integerArray>40</integerArray>
+   <intArray>1</intArray>
+   <intArray>2</intArray>
    <booleanArray>true</booleanArray>
    <booleanArray>true</booleanArray>
    <booleanArray>false</booleanArray>

@@ -8,6 +8,8 @@
          <xsd:element name="integerList" type="xsd:int" minOccurs="0" maxOccurs="unbounded"/>
          <xsd:element name="empArray" type="xsd:anySimpleType" minOccurs="0" maxOccurs="unbounded"/>
          <xsd:element name="integerArray" type="xsd:anySimpleType" minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:element name="floatArray" type="xsd:anySimpleType" minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:element name="intArray" type="xsd:anySimpleType" minOccurs="0" maxOccurs="unbounded"/>
          <xsd:element name="booleanArray" type="xsd:anySimpleType" minOccurs="0" maxOccurs="unbounded"/>
          <xsd:element name="stringIntegerHashMap" minOccurs="0">
             <xsd:complexType>
