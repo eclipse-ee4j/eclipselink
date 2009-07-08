@@ -19,11 +19,14 @@ import org.eclipse.persistence.config.DescriptorCustomizer;
 import org.eclipse.persistence.config.SessionCustomizer;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.internal.databaseaccess.DatasourceAccessor;
 import org.eclipse.persistence.mappings.querykeys.DirectCollectionQueryKey;
 import org.eclipse.persistence.mappings.querykeys.ManyToManyQueryKey;
 import org.eclipse.persistence.mappings.querykeys.OneToManyQueryKey;
 import org.eclipse.persistence.mappings.querykeys.OneToOneQueryKey;
 import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.SessionEvent;
+import org.eclipse.persistence.sessions.SessionEventAdapter;
 
 /**
  * Session and descriptor customizer.
@@ -40,6 +43,9 @@ public class Customizer implements SessionCustomizer, DescriptorCustomizer {
             num = numberOfCalls.intValue();
         }
         sessionCalls.put(sessionName, new Integer(num + 1));
+        
+        //**temp
+        session.getEventManager().addListener(new AcquireReleaseListener());
     }
     
     public void customize(ClassDescriptor descriptor) {
@@ -172,6 +178,21 @@ public class Customizer implements SessionCustomizer, DescriptorCustomizer {
                     builder.getTable("CMP3_EMP_PROJ").getField("EMPLOYEES_EMP_ID").equal(
                     builder.getField("CMP3_EMPLOYEE.EMP_ID")))));
             descriptor.addQueryKey(employesQueryKey);
+        }
+    }
+    //**temp
+    static class AcquireReleaseListener extends SessionEventAdapter {
+        public void postAcquireConnection(SessionEvent event) {
+            DatasourceAccessor accessor = (DatasourceAccessor)event.getResult();
+            if(accessor.getLogin() == null) {
+                throw new RuntimeException("acquired accessor.getLogin() == null");
+            }
+        }
+        public void preReleaseConnection(SessionEvent event) {
+            DatasourceAccessor accessor = (DatasourceAccessor)event.getResult();
+            if(accessor.getLogin() == null) {
+                throw new RuntimeException("released accessor.getLogin() == null");
+            }
         }
     }
 }
