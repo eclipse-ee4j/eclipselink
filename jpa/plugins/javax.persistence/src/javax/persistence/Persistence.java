@@ -31,6 +31,7 @@ import java.util.HashSet;
 import javax.persistence.spi.PersistenceProvider;
 import javax.persistence.spi.PersistenceProviderResolver;
 import javax.persistence.spi.PersistenceProviderResolverHolder;
+import javax.persistence.spi.LoadState;
 
 /**
  * Bootstrap class that is used to obtain an {@link EntityManagerFactory}.
@@ -87,9 +88,59 @@ public class Persistence {
      * Return the PersistenceUtil instance
      */
     public static PersistenceUtil getPersistenceUtil() {
-        // TODO - Implement Util
-        throw new RuntimeException("JPA 2.0 Feature Not yet Implemented");
-        // return new PersistenceUtilImpl();
+       return new PersistenceUtilImpl();
+    }
+
+    
+    /**
+     * Implementation of PersistenceUtil interface
+     * @since Java Persistence 2.0
+     */
+    private static class PersistenceUtilImpl implements PersistenceUtil {
+        public boolean isLoaded(Object entity, String attributeName) {
+            PersistenceProviderResolver resolver = PersistenceProviderResolverHolder.getPersistenceProviderResolver();
+
+            List<PersistenceProvider> providers = resolver.getPersistenceProviders();
+
+            for (PersistenceProvider provider : providers) {
+                LoadState loadstate = provider.isLoadedWithoutReference(entity, attributeName);
+                if(loadstate == LoadState.LOADED) {
+                    return true;
+                } else if (loadstate == LoadState.NOT_LOADED) {
+                    return false;
+                } // else continue
+            }
+
+            //None of the providers could determine the load state try isLoadedWithReference
+            for (PersistenceProvider provider : providers) {
+                LoadState loadstate = provider.isLoadedWithReference(entity, attributeName);
+                if(loadstate == LoadState.LOADED) {
+                    return true;
+                } else if (loadstate == LoadState.NOT_LOADED) {
+                    return false;
+                } // else continue
+            }
+
+            //None of the providers could determine the load state.
+            return true;
+        }
+
+        public boolean isLoaded(Object entity) {
+            PersistenceProviderResolver resolver = PersistenceProviderResolverHolder.getPersistenceProviderResolver();
+
+            List<PersistenceProvider> providers = resolver.getPersistenceProviders();
+
+            for (PersistenceProvider provider : providers) {
+                LoadState loadstate = provider.isLoaded(entity);
+                if(loadstate == LoadState.LOADED) {
+                    return true;
+                } else if (loadstate == LoadState.NOT_LOADED) {
+                    return false;
+                } // else continue
+            }
+            //None of the providers could determine the load state
+            return true;
+        }
     }
 
     /**

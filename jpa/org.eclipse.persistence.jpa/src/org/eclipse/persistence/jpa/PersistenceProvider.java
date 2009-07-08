@@ -236,18 +236,18 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
     }
 
     public LoadState isLoaded(Object entity) {
-        // TODO 
-       throw new PersistenceException("Not Yet Implemented");
+        // TODO. Need to correctly implement this
+       return LoadState.UNKNOWN;
     }
 
     public LoadState isLoadedWithReference(Object entity, String attributeName) {
-        // TODO 
-        throw new PersistenceException("Not Yet Implemented");
+        // TODO. Need to correctly implement this
+       return LoadState.UNKNOWN;
     }
 
     public LoadState isLoadedWithoutReference(Object entity, String attributeName) {
-        // TODO 
-        throw new PersistenceException("Not Yet Implemented");
+        // TODO. Need to correctly implement this 
+        return LoadState.UNKNOWN;
     }
 
 }
