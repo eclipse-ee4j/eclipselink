@@ -7825,7 +7825,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                             }
                             closeEntityManager(em);
                             
-                            if(!errorMsg.isEmpty()) {
+                            if(errorMsg.length() > 0) {
                                 ss.log(SessionLog.FINEST, SessionLog.CONNECTION, "testEMCloseAndOpen: errorMsg: " + "\n" + errorMsg, (Object[])null, null, false);
                             }
                         }
