@@ -16,7 +16,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
-import javax.persistence.PersistenceException;
 import javax.persistence.metamodel.Bindable;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.Type;
@@ -31,49 +30,72 @@ import org.eclipse.persistence.mappings.DirectToFieldMapping;
  *  of the JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)
  * <p>
  * <b>Description</b>: 
+ * Instances of the type SingularAttribute represents persistent 
+ * single-valued properties or fields.
  *
  * @author Michael O'Brien
  * @see javax.persistence.metamodel.SingularAttribute
  * @since EclipseLink 2.0 - JPA 2.0
  *
- * @param <X>
- * @param <T>
+ * @param <X> The type containing the represented attribute
+ * @param <T> The type of the represented attribute
  * 
  */
 public class SingularAttributeImpl<X,T> extends AttributeImpl<X,T> implements SingularAttribute<X, T> {
 
+    /** The Type representing this type **/
+    protected Type<T> elementType;
+    
     protected SingularAttributeImpl(ManagedTypeImpl<X> managedType, DatabaseMapping mapping) {
         super(managedType, mapping);
-    }
-
-    public Class<T> getBindableJavaType() {
-        throw new PersistenceException("Not Yet Implemented");
-    }
-    
-    public Type<T> getType() {
-    	throw new PersistenceException("Not Yet Implemented");
+        elementType = (Type<T>)managedType.getMetamodel().getType(managedType.getJavaType());        
     }
 
     /**
-     * INTERNAL:
-     * @return
+     * Return the Java type of the represented object.
+     * If the bindable type of the object is PLURAL_ATTRIBUTE,
+     * the Java element type is returned. If the bindable type is
+     * SINGULAR_ATTRIBUTE or ENTITY_TYPE, the Java type of the
+     * represented entity or attribute is returned.
+     * @return Java type
      */
+    public Class<T> getBindableJavaType() {
+        // In SingularAttribute our BindableType is SINGLE_ATTRIBUTE - return the java type of the entity
+        return this.getJavaType();
+    }
+    
+    @Override
     public boolean isAttribute() {
         return true;
     }
     
+    /**
+     *  Is the attribute an id attribute.
+     *  @return boolean indicating whether or not attribute is an id
+     */
     public boolean isId() {
         return getDescriptor().getObjectBuilder().getPrimaryKeyMappings().contains(getMapping());
     }
 
+    /** 
+     *  Can the attribute be null.
+     *  @return boolean indicating whether or not the attribute can
+     *          be null
+     */
     public boolean isOptional() {
         return getMapping().isOptional();
     }
 
+    @Override
     public boolean isPlural() {
         return false;
     }
     
+    /**
+     *  Is the attribute a version attribute.
+     *  @return boolean indicating whether or not attribute is 
+     *          a version attribute
+     */
     public boolean isVersion() {
         if (getDescriptor().usesOptimisticLocking() && getMapping().isDirectToFieldMapping()) {
             OptimisticLockingPolicy policy = getDescriptor().getOptimisticLockingPolicy();
@@ -87,10 +109,18 @@ public class SingularAttributeImpl<X,T> extends AttributeImpl<X,T> implements Si
     	return Bindable.BindableType.SINGULAR_ATTRIBUTE;
     }
     
+    /**
+     * Return the type that represents the type of the attribute.
+     * @return type of attribute
+     */
+     public Type<T> getType() {
+        return elementType;
+    }
     
     /**
      * Return the String representation of the receiver.
      */
+    @Override
     public String toString() {
         return "SingularAttributeImpl[" + getMapping() + "]";
     }

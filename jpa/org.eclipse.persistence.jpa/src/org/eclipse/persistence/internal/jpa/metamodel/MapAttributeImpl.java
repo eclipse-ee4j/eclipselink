@@ -16,9 +16,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
-import java.util.Map;
-
-import javax.persistence.PersistenceException;
 import javax.persistence.metamodel.MapAttribute;
 import javax.persistence.metamodel.Type;
 
@@ -31,52 +28,62 @@ import org.eclipse.persistence.mappings.CollectionMapping;
  *  of the JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)
  * <p>
  * <b>Description</b>: 
+ * Instances of the type MapAttribute represent persistent Map-valued
+ * attributes.
  * 
  * @see javax.persistence.metamodel.MapAttribute
  * 
  * @since EclipseLink 2.0 - JPA 2.0
  *  
+ * @param <X> The type the represented Map belongs to
+ * @param <K> The type of the key of the represented Map
+ * @param <V> The type of the value of the represented Map
+
  */ 
 public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, java.util.Map<K, V>, V> 
     implements MapAttribute<X, K, V> {
 
     /** The key type that this Map type is based on **/
     private Type<K> keyType;
-
+    
     protected MapAttributeImpl(ManagedTypeImpl<X> managedType, CollectionMapping mapping) {
         super(managedType, mapping);
 
         MapContainerPolicy policy = (MapContainerPolicy) mapping.getContainerPolicy();
-        //Type<?> keyType = managedType.getMetamodel().getType(policy.getKeyType());
-        Type<?> keyType = managedType.getMetamodel().getType(policy.getElementClass());
+        Type<?> keyType = managedType.getMetamodel().getType(policy.getKeyType().getClass());
+        //Type<?> keyType = managedType.getMetamodel().getType(policy.getElementClass());
         this.keyType = (Type<K>) keyType;
     }
 
-    public Class<V> getBindableJavaType() {
-        throw new PersistenceException("Not Yet Implemented");
-    }
-    
+    /**
+     * Return the collection type.
+     * @return collection type
+     */
+    @Override
     public CollectionType getCollectionType() {
         return CollectionType.MAP;
     }
     
-    public Class<Map<K, V>> getJavaType() {
-        return this.getMapping().getAttributeClassification();
-    }
-    
+    /**
+     * Return the Java type of the map key.
+     * @return Java key type
+     * @see MapAttribute
+     */
     public Class<K> getKeyJavaType() {
         //return ((MapContainerPolicy) getCollectionMapping().getContainerPolicy()).getKeyType();
         return ((MapContainerPolicy) getCollectionMapping().getContainerPolicy()).getContainerClass();
     }
 
+    /**
+     * Return the type representing the key type of the map.
+     * @return type representing key type
+     * @see MapAttribute
+     */
     public Type<K> getKeyType() {
         return this.keyType;
     }
 
-    public boolean isAttribute() {
-        throw new PersistenceException("Not Yet Implemented");
-    }
-
+    @Override
     public String toString() {
         return "MapAttributeImpl[" + getMapping() + "]";
     }

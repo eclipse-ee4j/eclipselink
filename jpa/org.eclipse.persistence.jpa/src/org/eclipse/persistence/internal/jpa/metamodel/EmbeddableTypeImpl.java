@@ -16,15 +16,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
-import java.util.Set;
-
-import javax.persistence.PersistenceException;
-import javax.persistence.metamodel.CollectionAttribute;
 import javax.persistence.metamodel.EmbeddableType;
-import javax.persistence.metamodel.ListAttribute;
-import javax.persistence.metamodel.MapAttribute;
-import javax.persistence.metamodel.PluralAttribute;
-import javax.persistence.metamodel.SingularAttribute;
 
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 
@@ -34,10 +26,12 @@ import org.eclipse.persistence.descriptors.RelationalDescriptor;
  *  of the JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)
  * <p>
  * <b>Description</b>: 
- * 
+ *  Instances of the type EmbeddableType represent embeddable types.
+ *   
  * @see javax.persistence.metamodel.EmbeddableType
  * 
  * @since EclipseLink 2.0 - JPA 2.0
+ * @param <X> The represented type.
  *  
  */ 
 public class EmbeddableTypeImpl<X> extends ManagedTypeImpl<X> implements EmbeddableType<X> {
@@ -46,92 +40,12 @@ public class EmbeddableTypeImpl<X> extends ManagedTypeImpl<X> implements Embedda
         super(metamodel, descriptor);
     }
 
-    public <E> CollectionAttribute<? super X, E> getCollection(String name, Class<E> elementType) {
-    	throw new PersistenceException("Not Yet Implemented");
-    }
-
-    public Set<PluralAttribute<? super X, ?, ?>> getCollections() {
-    	throw new PersistenceException("Not Yet Implemented");
-    }
-
-    public CollectionAttribute<X, ?> getDeclaredCollection(String name) {
-    	throw new PersistenceException("Not Yet Implemented");
-    }
-
-    public <E> CollectionAttribute<X, E> getDeclaredCollection(String name, Class<E> elementType) {
-    	throw new PersistenceException("Not Yet Implemented");
-    }
-
-    public Set<PluralAttribute<X, ?, ?>> getDeclaredCollections() {
-    	throw new PersistenceException("Not Yet Implemented");
-    }
-    
-    public ListAttribute<X, ?> getDeclaredList(String name) {
-    	throw new PersistenceException("Not Yet Implemented");
-    }
-
-    public <E> ListAttribute<X, E> getDeclaredList(String name, Class<E> elementType) {
-    	throw new PersistenceException("Not Yet Implemented");
-    }
-
-    public MapAttribute<X, ?, ?> getDeclaredMap(String name) {
-    	throw new PersistenceException("Not Yet Implemented");
-    }
-
-    public <K, V> MapAttribute<X, K, V> getDeclaredMap(String name, Class<K> keyType, Class<V> valueType) {        
-    	throw new PersistenceException("Not Yet Implemented");
-    }
-
-    public javax.persistence.metamodel.SetAttribute<X, ?> getDeclaredSet(String name) {
-    	throw new PersistenceException("Not Yet Implemented");
-    }
-
-    public SingularAttribute<X, ?> getDeclaredSingularAttribute(String name) {
-    	throw new PersistenceException("Not Yet Implemented");
-    }
-
-    public <Y> SingularAttribute<X, Y> getDeclaredSingularAttribute(String name, Class<Y> type) {
-    	throw new PersistenceException("Not Yet Implemented");
-    }
-
-    public Set<SingularAttribute<X, ?>> getDeclaredSingularAttributes() {
-    	throw new PersistenceException("Not Yet Implemented");
-    }
-
-    public Class<X> getJavaType() {
-        return getDescriptor().getJavaClass();
-    }
-
-    public <E> ListAttribute<? super X, E> getList(String name, Class<E> elementType) {
-    	throw new PersistenceException("Not Yet Implemented");
-    }
-
-    public MapAttribute<? super X, ?, ?> getMap(String name) {
-    	throw new PersistenceException("Not Yet Implemented");
-    }
-
-    public <K, V> MapAttribute<? super X, K, V> getMap(String name, Class<K> keyType, Class<V> valueType) {
-    	throw new PersistenceException("Not Yet Implemented");
-    }
-
+    /**
+     *  Return the persistence type.
+     *  @return persistence type
+     */ 
     public javax.persistence.metamodel.Type.PersistenceType getPersistenceType() {
         return PersistenceType.EMBEDDABLE;
     }
 
-    public SingularAttribute<? super X, ?> getSingularAttribute(String name) {
-    	throw new PersistenceException("Not Yet Implemented");
-    }
-
-    public <Y> SingularAttribute<? super X, Y> getSingularAttribute(String name, Class<Y> type) {
-    	throw new PersistenceException("Not Yet Implemented");
-    }
-
-    public Set<SingularAttribute<? super X, ?>> getSingularAttributes() {
-    	throw new PersistenceException("Not Yet Implemented");
-    }
-    
-    public boolean isIdentifiableType() {
-        return false;
-    }
-    
 }

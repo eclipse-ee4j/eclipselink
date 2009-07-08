@@ -9,14 +9,13 @@
  *
  * Contributors: 
  *     03/19/2009-2.0  dclarke  - initial API start    
- *     04/30/2009-2.0  mobrien - finish implementation for EclipseLink 2.0 release
+ *     06/30/2009-2.0  mobrien - finish JPA Metadata API modifications in support
+ *       of the Metamodel implementation for EclipseLink 2.0 release involving
+ *       Map, ElementCollection and Embeddable types on MappedSuperclass descriptors
  *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)  
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
-import java.util.Collection;
-
-import javax.persistence.PersistenceException;
 import javax.persistence.metamodel.CollectionAttribute;
 
 import org.eclipse.persistence.mappings.CollectionMapping;
@@ -27,17 +26,15 @@ import org.eclipse.persistence.mappings.CollectionMapping;
  *  of the JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)
  * <p>
  * <b>Description</b>: 
+ * Instances of the type CollectionAttribute represent persistent 
+ * Collection-valued attributes.
  * 
  * @see javax.persistence.metamodel.CollectionAttribute
  * 
  * @since EclipseLink 2.0 - JPA 2.0
+ * @param <X> The type the represented Collection belongs to
+ * @param <V> The element type of the represented Collection
  *  
- * Contributors: 
- *     03/19/2009-2.0  dclarke  - initial API start    
- *     06/30/2009-2.0  mobrien - finish JPA Metadata API modifications in support
- *       of the Metamodel implementation for EclipseLink 2.0 release involving
- *       Map, ElementCollection and Embeddable types on MappedSuperclass descriptors
- *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)  
  */ 
 public class CollectionAttributeImpl<X, V> extends PluralAttributeImpl<X, java.util.Collection<V>, V> implements CollectionAttribute<X, V> {
 
@@ -51,21 +48,16 @@ public class CollectionAttributeImpl<X, V> extends PluralAttributeImpl<X, java.u
         super(managedType, mapping);
     }
 
-    public Class<V> getBindableJavaType() {
-    	throw new PersistenceException("Not Yet Implemented");
-    }
-    
+    /**
+     * Return the collection type.
+     * @return collection type
+     */
+    @Override
     public CollectionType getCollectionType() {
         return CollectionType.COLLECTION;
     }
 
-    public Class<Collection<V>> getJavaType() {
-        return this.getMapping().getReferenceDescriptor().getJavaClass();
-    }
-    
-    public boolean isAttribute() {
-    	throw new PersistenceException("Not Yet Implemented");
-    }
+    @Override
     public String toString() {
         return "CollectionAttributeImpl[" + getMapping() + "]";
     }

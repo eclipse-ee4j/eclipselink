@@ -36,9 +36,10 @@ import javax.persistence.metamodel.MapAttribute;
 import javax.persistence.metamodel.PluralAttribute;
 import javax.persistence.metamodel.SetAttribute;
 import javax.persistence.metamodel.SingularAttribute;
-import javax.persistence.metamodel.Type;
 
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
+import org.eclipse.persistence.indirection.IndirectSet;
+import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 
@@ -47,24 +48,34 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
  * <b>Purpose</b>: Provides the implementation for the ManagedType interface 
  *  of the JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)
  * <p>
- * <b>Description</b>: 
+ * <b>Description</b>:
+ *  Instances of the type ManagedType represent entity, mapped 
+ *  superclass, and embeddable types.
  * 
  * @see javax.persistence.metamodel.ManagedType
  * 
  * @since EclipseLink 2.0 - JPA 2.0
- *  
+ * @param <X> The represented type.  
  */ 
-public class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedType<X> {
+public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedType<X> {
 
     /** Native RelationalDescriptor that contains all the mappings of this type **/
     private RelationalDescriptor descriptor;
 
     /** The map of attributes keyed on attribute string name **/
-    protected Map<String, Attribute> members;
+    protected Map<String, Attribute<X,?>> members;
 
     /** Reference to the metamodel that this managed type belongs to **/
     protected MetamodelImpl metamodel;
 
+    /**
+     * INTERNAL:
+     * This constructor will create a ManagedType but will not initialize its member mappings.
+     * This is accomplished by delayed initialization in MetamodelImpl.initialize()
+     * in order that we have access to all types when resolving relationships in mappings.
+     * @param metamodel
+     * @param descriptor
+     */
     protected ManagedTypeImpl(MetamodelImpl metamodel, RelationalDescriptor descriptor) {
         super(descriptor.getJavaClass());
         this.descriptor = descriptor;
@@ -72,18 +83,8 @@ public class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedType<X> {
         this.metamodel = metamodel;
         // Cache the ManagedType on the descriptor 
         descriptor.setProperty(getClass().getName(), this);
-        initialize();
-        
-        // Initialize superType
-        // TODO: set the inheritance hierarchy so we can compute declarations only when all managedTypes are created
-        // lookup the current managedType as value by key java class
-/*        Set<ManagedType<?>> managedTypes = this.metamodel.getManagedTypes();
-        Set<Class> managedTypesKeys = this.metamodel.managedTypes.keySet();
-        for(Iterator<Class> keyIterator = managedTypesKeys.iterator(); keyIterator.hasNext();) {
-            Class aClass = keyIterator.next();
-            ManagedType managedType = this.metamodel.managedTypes.get(aClass);
-            }
-        }*/
+        // Note: Full initialization of the ManagedType occurs during MetamodelImpl.initialize()
+        //initialize(); // initialize after all types are instantiated
     }
 
     /**
@@ -94,24 +95,85 @@ public class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedType<X> {
      *  @throws IllegalArgumentException if attribute of the given
      *          name is not present in the managed type     
      */
-    public Attribute<X, ?> getAttribute(String attributeName) {
-        return members.get(attributeName);
+    public Attribute<X, ?> getAttribute(String name) {
+        Attribute<X, ?> anAttribute = members.get(name);
+        if(null == anAttribute) {
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
+                    "metamodel_managed_type_attribute_not_present", 
+                    new Object[] { name, this }));
+        }
+        return anAttribute;
     }
     
+    /**
+     *  Return the attributes of the managed type.
+     */
     public Set<Attribute<? super X, ?>> getAttributes() {
-        return new HashSet(this.members.values());
+        return new HashSet<Attribute<? super X, ?>>(this.members.values());
     }
 
+    /**
+     *  Return the Collection-valued attribute of the managed type 
+     *  that corresponds to the specified name.
+     *  @param name  the name of the represented attribute
+     *  @return CollectionAttribute of the given name
+     *  @throws IllegalArgumentException if attribute of the given
+     *          name is not present in the managed type
+     */    
     public CollectionAttribute<? super X, ?> getCollection(String name) {
-        throw new PersistenceException("Not Yet Implemented");
+        // Get the named collection from the set directly
+        /*
+         * Note: We do not perform type checking on the get(name)
+         * If the type is not of the correct Attribute implementation class then
+         * a possible CCE will be allowed to propagate to the client.
+         */
+        CollectionAttribute<? super X, ?> anAttribute = (CollectionAttribute<? super X, ?>)this.members.get(name);
+        if(null == anAttribute) {
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
+                    "metamodel_managed_type_attribute_not_present", 
+                    new Object[] { name, this }));
+        }
+        return anAttribute;
     }
-
+    
+    /**
+     *  Return the Collection-valued attribute of the managed type 
+     *  that corresponds to the specified name and Java element type.
+     *  @param name  the name of the represented attribute
+     *  @param elementType  the element type of the represented 
+     *                      attribute
+     *  @return CollectionAttribute of the given name and element
+     *          type
+     *  @throws IllegalArgumentException if attribute of the given
+     *          name and type is not present in the managed type
+     */    
     public <E> CollectionAttribute<? super X, E> getCollection(String name, Class<E> elementType) {
-        throw new PersistenceException("Not Yet Implemented");
+        CollectionAttribute<? super X, E> anAttribute = (CollectionAttribute<? super X, E>)this.getCollection(name);
+        if(anAttribute.getElementType().getJavaType() != elementType) {
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
+                    "metamodel_managed_type_attribute_type_not_present", 
+                    new Object[] { name, this, elementType }));
+        }
+        return anAttribute;
     }
 
+    /**
+     *  Return all collection-valued attributes of the managed type.
+     *  @return collection valued attributes
+     */
     public Set<PluralAttribute<? super X, ?, ?>> getCollections() {
-        throw new PersistenceException("Not Yet Implemented");
+        // Get all attributes and filter only for PluralAttributes
+        Set<Attribute<? super X, ?>> allAttributes = this.getAttributes();
+        // Is it better to add to a new Set or remove from an existing Set without a concurrentModificationException
+        Set<PluralAttribute<? super X, ?, ?>> pluralAttributes = new HashSet<PluralAttribute<? super X, ?, ?>>();
+        for(Iterator<Attribute<? super X, ?>> anIterator = allAttributes.iterator(); anIterator.hasNext();) {
+            Attribute<? super X, ?> anAttribute = anIterator.next();
+            if(anAttribute.isCollection()) {
+                pluralAttributes.add((PluralAttribute<? super X, ?, ?>)anAttribute);
+
+            }
+        }
+        return pluralAttributes;
     }
 
     /**
@@ -123,29 +185,62 @@ public class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedType<X> {
      *          name is not declared in the managed type
      */
     public Attribute<X, ?> getDeclaredAttribute(String name){
+        // return only an attribute declared on this class - not via inheritance
         throw new PersistenceException("Not Yet Implemented");
     }
 
+    /**
+     *  Return the attributes declared by the managed type.
+     */
     public Set<Attribute<X, ?>> getDeclaredAttributes() {
-        return new HashSet(this.members.values());        
+        // return only the set of attributes declared on this class - not via inheritance
+        return new HashSet<Attribute<X, ?>>(this.members.values());        
     }
 
+    /**
+     *  Return the Collection-valued attribute declared by the 
+     *  managed type that corresponds to the specified name.
+     *  @param name  the name of the represented attribute
+     *  @return declared CollectionAttribute of the given name
+     *  @throws IllegalArgumentException if attribute of the given
+     *          name is not declared in the managed type
+     */
     public CollectionAttribute<X, ?> getDeclaredCollection(String name) {
         // return only a collection declared on this class - not via inheritance
         //return (CollectionAttribute<X,E>) this.getAttributes().getMembers().get(name);
         throw new PersistenceException("Not Yet Implemented");
     }
 
+    /**
+     *  Return the Collection-valued attribute declared by the 
+     *  managed type that corresponds to the specified name and Java 
+     *  element type.
+     *  @param name  the name of the represented attribute
+     *  @param elementType  the element type of the represented 
+     *                      attribute
+     *  @return declared CollectionAttribute of the given name and 
+     *          element type
+     *  @throws IllegalArgumentException if attribute of the given
+     *          name and type is not declared in the managed type
+     */
     public <E> CollectionAttribute<X, E> getDeclaredCollection(String name, Class<E> elementType) {
-        throw new PersistenceException("Not Yet Implemented");
-    }
-
-    public Set<PluralAttribute<X, ?, ?>> getDeclaredCollections() {
+        // return only a collection declared on this class - not via inheritance
         throw new PersistenceException("Not Yet Implemented");
     }
 
     /**
-     * 
+     *  Return all collection-valued attributes declared by the 
+     *  managed type.
+     *  @return declared collection valued attributes
+     */
+    public Set<PluralAttribute<X, ?, ?>> getDeclaredCollections() {
+        // return only a set of collections declared on this class - not via inheritance
+        throw new PersistenceException("Not Yet Implemented");
+    }
+
+    /**
+     * INTERNAL:
+     * Return an instance of a ManagedType based on the RelationalDescriptor parameter
      * @param metamodel
      * @param descriptor
      * @return
@@ -154,72 +249,238 @@ public class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedType<X> {
         // Get the ManagedType property on the descriptor if it exists
         ManagedTypeImpl<?> managedType = (ManagedTypeImpl<?>) descriptor.getProperty(ManagedTypeImpl.class.getName());
 
+        // Create an Entity, Embeddable or MappedSuperclass
         if (managedType == null) {
+            // The descriptor can be one of NORMAL, INTERFACE (not supported), AGGREGATE or AGGREGATE_COLLECTION
+            // TODO: handle MappedSuperclass
             if (descriptor.isAggregateDescriptor()) {
-                managedType = new EmbeddableTypeImpl(metamodel, descriptor);
+                managedType = new EmbeddableTypeImpl(metamodel, descriptor);                
+            //} else if (descriptor.isAggregateCollectionDescriptor()) {
+            //    managedType = new EntityTypeImpl(metamodel, descriptor);
+            } else {
+                managedType = new EntityTypeImpl(metamodel, descriptor);
             }
-            managedType = new EntityTypeImpl(metamodel, descriptor);
         }
 
         return managedType;
     }
 
+    /**
+     *  Return the List-valued attribute of the managed type that
+     *  corresponds to the specified name and Java element type.
+     *  @param name  the name of the represented attribute
+     *  @param elementType  the element type of the represented 
+     *                      attribute
+     *  @return ListAttribute of the given name and element type
+     *  @throws IllegalArgumentException if attribute of the given
+     *          name and type is not present in the managed type
+     */
     public <E> ListAttribute<X, E> getDeclaredList(String name, Class<E> elementType) {
+        // return only a list declared on this class - not via inheritance
     	throw new PersistenceException("Not Yet Implemented");
     }
 
+    /**
+     *  Return the List-valued attribute of the managed type that
+     *  corresponds to the specified name.
+     *  @param name  the name of the represented attribute
+     *  @return ListAttribute of the given name
+     *  @throws IllegalArgumentException if attribute of the given
+     *          name is not present in the managed type
+     */
     public ListAttribute<X, ?> getDeclaredList(String name) {
+        // return only a collection declared on this class - not via inheritance
     	throw new PersistenceException("Not Yet Implemented");
     }
 
+    /**
+     *  Return the Map-valued attribute of the managed type that
+     *  corresponds to the specified name.
+     *  @param name  the name of the represented attribute
+     *  @return MapAttribute of the given name
+     *  @throws IllegalArgumentException if attribute of the given
+     *          name is not present in the managed type
+     */
     public MapAttribute<X, ?, ?> getDeclaredMap(String name) {
+        // return only a map declared on this class - not via inheritance
         throw new PersistenceException("Not Yet Implemented");
     }
 
+    /**
+     *  Return the Map-valued attribute of the managed type that
+     *  corresponds to the specified name and Java key and value
+     *  types.
+     *  @param name  the name of the represented attribute
+     *  @param keyType  the key type of the represented attribute
+     *  @param valueType  the value type of the represented attribute
+     *  @return MapAttribute of the given name and key and value
+     *  types
+     *  @throws IllegalArgumentException if attribute of the given
+     *          name and type is not present in the managed type
+     */
     public <K, V> MapAttribute<X, K, V> getDeclaredMap(String name, Class<K> keyType, Class<V> valueType) {
+        // return only a map declared on this class - not via inheritance
     	throw new PersistenceException("Not Yet Implemented");
     }
 
+    /**
+     *  Return the Set-valued attribute declared by the managed type 
+     *  that corresponds to the specified name.
+     *  @param name  the name of the represented attribute
+     *  @return declared SetAttribute of the given name
+     *  @throws IllegalArgumentException if attribute of the given
+     *          name is not declared in the managed type
+     */
     public SetAttribute<X, ?> getDeclaredSet(String name) {
+        // return only a set declared on this class - not via inheritance
     	throw new PersistenceException("Not Yet Implemented");
     }
 
+    /**
+     *  Return the Set-valued attribute declared by the managed type 
+     *  that corresponds to the specified name and Java element type.
+     *  @param name  the name of the represented attribute
+     *  @param elementType  the element type of the represented 
+     *                      attribute
+     *  @return declared SetAttribute of the given name and 
+     *          element type
+     *  @throws IllegalArgumentException if attribute of the given
+     *          name and type is not declared in the managed type
+     */
     public <E> SetAttribute<X, E> getDeclaredSet(String name, Class<E> elementType) {
+        // return only a set declared on this class - not via inheritance
         throw new PersistenceException("Not Yet Implemented");
     }
     
+    /**
+     *  Return the declared single-valued attribute of the managed
+     *  type that corresponds to the specified name in the
+     *  represented type.
+     *  @param name  the name of the represented attribute
+     *  @return declared single-valued attribute of the given 
+     *          name
+     *  @throws IllegalArgumentException if attribute of the given
+     *          name is not declared in the managed type
+     */
     public SingularAttribute<X, ?> getDeclaredSingularAttribute(String name) {
+        // return only a SingularAttribute declared on this class - not via inheritance
         throw new PersistenceException("Not Yet Implemented");
     }
 
+    /**
+     *  Return the declared single-valued attribute of the 
+     *  managed type that corresponds to the specified name and Java 
+     *  type in the represented type.
+     *  @param name  the name of the represented attribute
+     *  @param type  the type of the represented attribute
+     *  @return declared single-valued attribute of the given 
+     *          name and type
+     *  @throws IllegalArgumentException if attribute of the given
+     *          name and type is not declared in the managed type
+     */
     public <Y> SingularAttribute<X, Y> getDeclaredSingularAttribute(String name, Class<Y> type) {
+        // return only a SingularAttribute declared on this class - not via inheritance
     	throw new PersistenceException("Not Yet Implemented");
     }
 
+    /**
+     *  Return the single-valued attributes declared by the managed
+     *  type.
+     *  @return declared single-valued attributes
+     */
     public Set<SingularAttribute<X, ?>> getDeclaredSingularAttributes() {
+        // return the set of SingularAttributes declared on this class - not via inheritance
     	throw new PersistenceException("Not Yet Implemented");
     }
 
     /**
      * INTERNAL:
+     * Return the RelationalDescriptor associated with this ManagedType
      * @return
      */
     public RelationalDescriptor getDescriptor() {
         return this.descriptor;
     }
 
+    /**
+     *  Return the List-valued attribute of the managed type that
+     *  corresponds to the specified name.
+     *  @param name  the name of the represented attribute
+     *  @return ListAttribute of the given name
+     *  @throws IllegalArgumentException if attribute of the given
+     *          name is not present in the managed type
+     */
     public ListAttribute<? super X, ?> getList(String name) {
-    	throw new PersistenceException("Not Yet Implemented");
+        /*
+         * Note: We do not perform type checking on the get(name)
+         * If the type is not of the correct Attribute implementation class then
+         * a possible CCE will be allowed to propagate to the client.
+         */
+        ListAttribute<? super X, ?> anAttribute = (ListAttribute<? super X, ?>)this.members.get(name);
+        if(null == anAttribute) {
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
+                    "metamodel_managed_type_attribute_not_present", 
+                    new Object[] { name, this }));
+        }
+        return anAttribute;
     }
 
+    /**
+     *  Return the List-valued attribute of the managed type that
+     *  corresponds to the specified name and Java element type.
+     *  @param name  the name of the represented attribute
+     *  @param elementType  the element type of the represented 
+     *                      attribute
+     *  @return ListAttribute of the given name and element type
+     *  @throws IllegalArgumentException if attribute of the given
+     *          name and type is not present in the managed type
+     */
     public <E> ListAttribute<? super X, E> getList(String name, Class<E> elementType) {
-        throw new PersistenceException("Not Yet Implemented");
+        ListAttribute<? super X, E> anAttribute = (ListAttribute<? super X, E>)this.getList(name);
+        if(anAttribute.getElementType().getJavaType() != elementType) {
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
+                "metamodel_managed_type_attribute_type_not_present", 
+                new Object[] { name, this, elementType }));
+        }
+        return anAttribute;
     }
 
+    /**
+     *  Return the Map-valued attribute of the managed type that
+     *  corresponds to the specified name.
+     *  @param name  the name of the represented attribute
+     *  @return MapAttribute of the given name
+     *  @throws IllegalArgumentException if attribute of the given
+     *          name is not present in the managed type
+     */
     public MapAttribute<? super X, ?, ?> getMap(String name) {
-        throw new PersistenceException("Not Yet Implemented");
+        /*
+         * Note: We do not perform type checking on the get(name)
+         * If the type is not of the correct Attribute implementation class then
+         * a possible CCE will be allowed to propagate to the client.
+         */
+        MapAttribute<? super X, ?, ?> anAttribute = (MapAttribute<? super X, ?, ?>)this.members.get(name);
+        if(null == anAttribute) {
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
+                    "metamodel_managed_type_attribute_not_present", 
+                    new Object[] { name, this }));
+        }
+        return anAttribute;
+        
     }
 
+    /**
+     *  Return the Map-valued attribute of the managed type that
+     *  corresponds to the specified name and Java key and value
+     *  types.
+     *  @param name  the name of the represented attribute
+     *  @param keyType  the key type of the represented attribute
+     *  @param valueType  the value type of the represented attribute
+     *  @return MapAttribute of the given name and key and value
+     *  types
+     *  @throws IllegalArgumentException if attribute of the given
+     *          name and type is not present in the managed type
+     */
     public <K, V> MapAttribute<? super X, K, V> getMap(String name, Class<K> keyType, Class<V> valueType) {
     	throw new PersistenceException("Not Yet Implemented");
     }
@@ -229,55 +490,109 @@ public class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedType<X> {
      * Return the Map of AttributeImpl members keyed by String.
      * @return
      */
-    public java.util.Map<String, Attribute> getMembers() {
+    public java.util.Map<String, Attribute<X, ?>> getMembers() {
         return this.members;
     }
 
     /**
      * INTERNAL:
+     * Return the Metamodel that this ManagedType is associated with.
      * @return
      */
     public MetamodelImpl getMetamodel() {
         return this.metamodel;
     }
 
-    public Type.PersistenceType getPersistenceType() {
-        throw new PersistenceException("Not Yet Implemented");
-    }
-
+    /**
+     *  Return the Set-valued attribute of the managed type that
+     *  corresponds to the specified name.
+     *  @param name  the name of the represented attribute
+     *  @return SetAttribute of the given name
+     *  @throws IllegalArgumentException if attribute of the given
+     *          name is not present in the managed type
+     */
     public SetAttribute<? super X, ?> getSet(String name) {
-        throw new PersistenceException("Not Yet Implemented");
+        /*
+         * Note: We do not perform type checking on the get(name)
+         * If the type is not of the correct Attribute implementation class then
+         * a possible CCE will be allowed to propagate to the client.
+         */
+        SetAttribute<? super X, ?> anAttribute = (SetAttribute<? super X, ?>)this.members.get(name);
+        if(null == anAttribute) {
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
+                    "metamodel_managed_type_attribute_not_present", 
+                    new Object[] { name, this }));
+        }
+        return anAttribute;
     }
     
+    /**
+     *  Return the Set-valued attribute of the managed type that
+     *  corresponds to the specified name and Java element type.
+     *  @param name  the name of the represented attribute
+     *  @param elementType  the element type of the represented 
+     *                      attribute
+     *  @return SetAttribute of the given name and element type
+     *  @throws IllegalArgumentException if attribute of the given
+     *          name and type is not present in the managed type
+     */
     public <E> SetAttribute<? super X, E> getSet(String name, Class<E> elementType) {
-    	throw new PersistenceException("Not Yet Implemented");
+        SetAttribute<? super X, E> anAttribute = (SetAttribute<? super X, E>)this.getSet(name);
+        if(anAttribute.getElementType().getJavaType() != elementType) {
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
+                "metamodel_managed_type_attribute_type_not_present", 
+                new Object[] { name, this, elementType }));
+        }
+        return anAttribute;
     }
 
+    /**
+     *  Return the single-valued attribute of the managed type that
+     *  corresponds to the specified name in the represented type.
+     *  @param name  the name of the represented attribute
+     *  @return single-valued attribute with the given name
+     *  @throws IllegalArgumentException if attribute of the given
+     *          name is not present in the managed type
+     */
     public SingularAttribute<? super X, ?> getSingularAttribute(String name) {
-       Attribute member = getMembers().get(name);
+       Attribute<X, ?> member = getMembers().get(name);
         
-        if (member != null && !((AttributeImpl)member).isAttribute()) {
+        if (member != null && !((AttributeImpl<X, ?>)member).isAttribute()) {
             return (SingularAttribute<? super X, ?>) member;
         }
         return null;
     }
 
+    /**
+     *  Return the single-valued attribute of the managed 
+     *  type that corresponds to the specified name and Java type 
+     *  in the represented type.
+     *  @param name  the name of the represented attribute
+     *  @param type  the type of the represented attribute
+     *  @return single-valued attribute with given name and type
+     *  @throws IllegalArgumentException if attribute of the given
+     *          name and type is not present in the managed type
+     */
     public <Y> SingularAttribute<? super X, Y> getSingularAttribute(String name, Class<Y> type) {
         // We are ignoring the type parameter
-        Attribute member = getMembers().get(name);
+        Attribute<X, ?> member = getMembers().get(name);
         
-        if (member != null && ((AttributeImpl)member).isAttribute()) {
+        if (member != null && ((AttributeImpl<X, ?>)member).isAttribute()) {
             return (SingularAttribute<? super X, Y>) member;
         }
         return null;
     }
 
-    //public abstract Set<SingularAttribute<? super X, ?>> getSingularAttributes();
+    /**
+     *  Return the single-valued attributes of the managed type.
+     *  @return single-valued attributes
+     */
     public Set<SingularAttribute<? super X, ?>> getSingularAttributes() {
         // Iterate the members set for attributes of type SingularAttribute
+        //Set<SingularAttribute<? super X, ?>> singularAttributeSet = new HashSet<SingularAttribute<? super X, ?>>();
         Set singularAttributeSet = new HashSet<SingularAttribute<? super X, ?>>();
-        for(Iterator<Attribute> anIterator = this.members.values().iterator(); anIterator.hasNext();) {
-            AttributeImpl anAttribute = (AttributeImpl)anIterator.next();
+        for(Iterator<Attribute<X, ?>> anIterator = this.members.values().iterator(); anIterator.hasNext();) {
+            AttributeImpl<? super X, ?> anAttribute = (AttributeImpl<? super X, ?>)anIterator.next();
             if(!anAttribute.isPlural()) {
                 singularAttributeSet.add(anAttribute);
             }
@@ -288,15 +603,23 @@ public class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedType<X> {
     /**
      * INTERNAL:
      * Initialize the members of this ManagedType based on the mappings defined on the descriptor.
-     * We process the appropriate Map, List, Set, Collection or Object/primitive types.
+     * We process the appropriate Map, List, Set, Collection or Object/primitive types.<p>
+     * Initialization should occur after all types in the metamodel have been created already.
+     * 
      */
-    private void initialize() {
-        this.members = new HashMap<String, Attribute>();
+    protected void initialize() { // TODO: Check all is*Policy() calls
+        /*
+         * Issue 1: The hierarchy of the Metamodel API has Collection alongside List, Set and Map.
+         *              However, in a normal Java collections framework Collection is an 
+         *              abstract superclass of List, Set and Map (with Map not really a Collection).
+         *              We therefore need to treat Collection here as a peer of the other "collections".
+         */
+        this.members = new HashMap<String, Attribute<X, ?>>();
 
         // Get all mappings on the relationalDescriptor
-        for (Iterator i = getDescriptor().getMappings().iterator(); i.hasNext();) {
+        for (Iterator<DatabaseMapping> i = getDescriptor().getMappings().iterator(); i.hasNext();) {
             DatabaseMapping mapping = (DatabaseMapping) i.next();
-            AttributeImpl member = null;
+            AttributeImpl<X, ?> member = null;
 
             // Tie into the collection hierarchy at a lower level
             if (mapping.isCollectionMapping()) {
@@ -305,36 +628,55 @@ public class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedType<X> {
                 if (colMapping.getContainerPolicy().isMapPolicy()) {
                     // Handle Map type mappings
                     member = new MapAttributeImpl(this, colMapping);
-                } else if (colMapping.getContainerPolicy().isListPolicy()) {
+                    // check mapping.attributeAcessor.attributeField.type=Collection
+                } else if (colMapping.getContainerPolicy().isListPolicy()) { // TODO: isListPolicy() will return true for IndirectList (a lazy Collection)                    
                     // Handle List type mappings
                     member = new ListAttributeImpl(this, colMapping);
                 } else {
-                    // Handle Set type mappings
-                    if (colMapping.getContainerPolicy().getContainerClass().isAssignableFrom(Set.class)) {
+                    // Handle Set type mappings (IndirectSet.isAssignableFrom(Set.class) == false)
+                    if (colMapping.getContainerPolicy().getContainerClass().isAssignableFrom(Set.class) ||
+                            colMapping.getContainerPolicy().getContainerClass().isAssignableFrom(IndirectSet.class)) {
                         member = new SetAttributeImpl(this, colMapping);
                     } else {
-                        // Handle Collection type mappings
+                        // Handle Collection type mappings as a default
                         member = new CollectionAttributeImpl(this, colMapping);
                     }
                 }
             } else {
-                // Handle 1:1 single object mappings
+                // Handle 1:1 single object and direct mappings
                 member = new SingularAttributeImpl(this, mapping);
             }
 
             this.members.put(mapping.getAttributeName(), member);
         }
     }
-
     
+    /**
+     * INTERNAL:
+     * Return whether this type is identifiable.
+     * This would be EntityType and MappedSuperclassType
+     * @return
+     */
+    @Override
     public boolean isIdentifiableType() {
         return false;
     }
 
-    
+    /**
+     * INTERNAL:
+     * Return whether this type is identifiable.
+     * This would be EmbeddableType as well as EntityType and MappedSuperclassType
+     * @return
+     */
+    @Override
+    public boolean isManagedType() {
+        return true;
+    }
+   
     /**
      * Return the string representation of the receiver.
      */
+    @Override
     public String toString() {
         return "ManagedTypeImpl[" + getDescriptor() + "]";
     }

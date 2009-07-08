@@ -20,18 +20,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
-import java.util.Set;
-
-import javax.persistence.PersistenceException;
-import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.Bindable;
-import javax.persistence.metamodel.CollectionAttribute;
 import javax.persistence.metamodel.EntityType;
-import javax.persistence.metamodel.ListAttribute;
-import javax.persistence.metamodel.MapAttribute;
-import javax.persistence.metamodel.PluralAttribute;
-import javax.persistence.metamodel.SetAttribute;
-import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.Type;
 
 import org.eclipse.persistence.descriptors.CMPPolicy;
@@ -46,169 +36,46 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
  * <br>EntityTypeImpl implements the IdentifiableType interface via EntityType
  * <p>
  * <b>Description</b>: 
- * 
+ *  Instances of the type EntityType represent entity types.
+ *   
  * @see javax.persistence.metamodel.EntityType
  * 
  * @since EclipseLink 2.0 - JPA 2.0
- *  
+ * @param <X> The represented entity type.  
  */ 
 public class EntityTypeImpl<X> extends IdentifiableTypeImpl<X> implements EntityType<X> {    
    
     protected EntityTypeImpl(MetamodelImpl metamodel, RelationalDescriptor descriptor) {
         super(metamodel, descriptor);
+        // The supertype field will remain uninstantiated until MetamodelImpl.initialize() is complete
     }
 
+    /**
+     *  Return the bindable type of the represented object.
+     *  @return bindable type
+     */ 
     public Bindable.BindableType getBindableType() {
     	return Bindable.BindableType.ENTITY_TYPE;
     }
     
-    public Class<X> getBindableJavaType() {
-    	throw new PersistenceException("Not Yet Implemented");
-    }
-    
-    public <E> CollectionAttribute<? super X, E> getCollection(String name, Class<E> elementType) {
-        return getCollectionHelper(name, elementType, false);
-        /*        
-        //Set aSet = this.metamodel.getEntities();     
-        Member  aMember = this.getMembers().get(name);
-        //java.lang.reflect.Member javaMember = aMember.getJavaMember();
-        javax.persistence.metamodel.Collection<? super X, E>  aSet =
-            new CollectionAttributeImpl((ManagedTypeImpl)aMember.getDeclaringType(), 
-                    (CollectionMapping)((MemberImpl)aMember).getMapping());
-        return aSet;*/
-    }
-
     /**
-     * INTERNAL:
-     * @param <E>
-     * @param name
-     * @param elementType
-     * @param isDeclared
-     * @return
+     * Return the Java type of the represented object.
+     * If the bindable type of the object is PLURAL_ATTRIBUTE,
+     * the Java element type is returned. If the bindable type is
+     * SINGLE_ATTRIBUTE or ENTITY_TYPE, the Java type of the
+     * represented entity or attribute is returned.
+     * @return Java type
      */
-    private <E> CollectionAttribute<X, E> getCollectionHelper(String name, Class<E> elementType, boolean isDeclared) {
-        // verify existence and java element type
-        if(null != name && this.getMembers().containsKey(name)) { 
-                if(this.getMembers().get(name).getJavaType() == elementType ) {
-                    // we assume that the member is of type Collection otherwise we throw a CCE
-                    // return the attribute parameterized by <Owning type, return Type>
-                    Attribute member =  this.getMembers().get(name);
-                    // check whether the member is declared here or is inherited
-                    if(isDeclared) {
-                        // OPTION 3: rely on ManagedType.superType upward tree navigation
-                        // superType implementation is in-progress - just return for now
-                        return (CollectionAttribute<X,E>) member; 
-                        
-                        /*
-                        // OPTION 2: via reflection - discarded
-                        // check the class on the attributeAccessor - if it is different then we are !declared here
-                        AttributeAccessor attributeAccessor = member.getMapping().getAttributeAccessor();
-                        // We cannot rely on whether the accessor if field or method based 
-                        Field field = ((InstanceVariableAttributeAccessor)attributeAccessor).getAttributeField();
-                        // field.clazz is not accessible
-
-                        // OPTION 1: via mappedSuperclass Set - discarded
-                        // iterate the mappedSuperclass set and check for this member
-                        Set<MappedSuperclassTypeImpl<?>> mappedSuperclasses = ((MetamodelImpl)metamodel).getMappedSuperclasses();
-                        DatabaseMapping memberMapping = member.getMapping();
-                        for(Iterator<MappedSuperclassTypeImpl<?>> msIterator = mappedSuperclasses.iterator(); msIterator.hasNext();) {
-                            MappedSuperclassTypeImpl msType = msIterator.next();
-                            RelationalDescriptor descriptor = msType.getDescriptor();
-                            for(Iterator<DatabaseMapping> mappingIterator = descriptor.getMappings().iterator(); mappingIterator.hasNext();) {
-                                DatabaseMapping msMapping = mappingIterator.next();
-                                // this test fails because the child mapping is a copy of the declared parent
-                                // org.eclipse.persistence.mappings.DirectToFieldMapping[name-->CMP3_MM_MANUF.NAME]
-                                // org.eclipse.persistence.mappings.DirectToFieldMapping[name-->CMP3_MM_USER.NAME]
-                                if(msMapping == memberMapping) {
-                                    return null;
-                                } else {
-                                    return (Collection<X,E>) member;            
-                                }
-                            }                                        
-                        }*/
-                    } else {
-                        return (CollectionAttribute<X,E>) member; 
-                    }
-                } else {
-                    throw new IllegalArgumentException("The attribute named [" + name + "] is not of the java type [" + elementType + "].");                    
-                }
-        } else {            
-            throw new IllegalArgumentException("The attribute named [" + name + "] is not present in the managedType [" + this + "].");
-        }
+    public Class<X> getBindableJavaType() {
+        // In EntityType our BindableType is ENTITY_TYPE - return the java type of the entity
+        return this.getJavaType();
     }
     
-    public Set<PluralAttribute<? super X, ?, ?>> getCollections() {
-        return (Set<PluralAttribute<? super X, ?, ?>>) this.getMembers();
-    }
-
-    public CollectionAttribute<X, ?> getDeclaredCollection(String name) {
-    	throw new PersistenceException("Not Yet Implemented");
-        //return (Collection<X, ?>) this.getMembers().get(name);
-    }
-    
-    public <E> CollectionAttribute<X, E> getDeclaredCollection(String name, Class<E> elementType) {
-        return getCollectionHelper(name, elementType, true);
-    }
-
-    public Set<PluralAttribute<X, ?, ?>> getDeclaredCollections() {
-    	throw new PersistenceException("Not Yet Implemented");
-    }
-    
-    public <Y> SingularAttribute<X, Y> getDeclaredId(Class<Y> type) {
-        // return the Id only if it is declared on this entity
-    	throw new PersistenceException("Not Yet Implemented");
-    }
-
-    public ListAttribute<X, ?> getDeclaredList(String name) {
-        return (ListAttribute<X, ?>) this.getMembers().get(name);
-    }
-    
-    public <E> ListAttribute<X, E> getDeclaredList(String name, Class<E> elementType) {
-        return (ListAttribute<X,E>) this.getMembers().get(name);
-    }
- 
-    public MapAttribute<X, ?, ?> getDeclaredMap(String name) {
-        return (MapAttribute<X, ?, ?>) this.getMembers().get(name);
-    }
-
-    public <K, V> MapAttribute<X, K, V> getDeclaredMap(String name, Class<K> keyType, Class<V> valueType) {
-        // We are ignoring keyType and valueType here
-        return (MapAttribute<X, K, V>) this.getMembers().get(name);
-    }
-    
-    public SetAttribute<X, ?> getDeclaredSet(String name) {
-        return (SetAttribute<X, ?>) this.getMembers().get(name);        
-    }
-    
-    public <E> SetAttribute<X, E> getDeclaredSet(String name, Class<E> elementType) {
-        // We are ignoring elementType here
-        return (SetAttribute<X, E>) this.getMembers().get(name);
-    }
-    
-    public SingularAttribute<X, ?> getDeclaredSingularAttribute(String name) {
-    	throw new PersistenceException("Not Yet Implemented");
-    }
-    
-    public <Y> SingularAttribute<X, Y> getDeclaredSingularAttribute(String name, Class<Y> type) {
-    	throw new PersistenceException("Not Yet Implemented");
-    }
-
-    public Set<SingularAttribute<X, ?>> getDeclaredSingularAttributes() {
-    	throw new PersistenceException("Not Yet Implemented");
-    }
-        
-    public <Y> SingularAttribute<X, Y> getDeclaredVersion(Class<Y> type) {
-    	throw new PersistenceException("Not Yet Implemented");
-    }
-
-    public <Y> SingularAttribute<? super X, Y> getId(Class<Y> type) {
-    	throw new PersistenceException("Not Yet Implemented");
-    }
-
-    public Set<SingularAttribute<? super X, ?>> getIdClassAttributes() {
-    	throw new PersistenceException("Not Yet Implemented");
-    }
-
+    /**
+     *  Return the type that represents the type of the id.
+     *  @return type of id
+     */
+    @Override
     public Type<?> getIdType() {
         // NOTE: This code is another good reason to abstract out a PKPolicy on the descriptor
         // descriptor.getPrimaryKeyPolicy().getIdClass();
@@ -234,60 +101,19 @@ public class EntityTypeImpl<X> extends IdentifiableTypeImpl<X> implements Entity
         throw new IllegalStateException("Incompatible persistence configuration");
     }
     
-    public <E> ListAttribute<? super X, E> getList(String name, Class<E> elementType) {
-        // We are ignoring elementType here
-        return (ListAttribute<X,E>) this.getMembers().get(name);
-    }
-
-    public MapAttribute<? super X, ?, ?> getMap(String name) {
-        return (MapAttribute<X, ?, ?>) this.getMembers().get(name);
-    }
-    
-    public <K, V> MapAttribute<? super X, K, V> getMap(String name, Class<K> keyType, Class<V> valueType) {
-        // We are ignoring keyType and valueType here
-        return (MapAttribute<X, K, V>) this.getMembers().get(name);
-    }
-    
+    /**
+     *  Return the entity name
+     *  @return entity name
+     */
     public String getName() {
         return getDescriptor().getAlias();
     }
     
+    /**
+     *  Return the persistence type.
+     *  @return persistence type
+     */ 
     public Type.PersistenceType getPersistenceType() {
         return Type.PersistenceType.ENTITY;
-    }
-
-    public SetAttribute<? super X, ?> getSet(String name) {
-        // We are ignoring elementType here
-        return (SetAttribute<? super X, ?>) this.getMembers().get(name);
-    }
-
-    public  <E> SetAttribute<X, E> getSet(String name, Class<E> elementType) {
-        // We are ignoring elementType here
-        return (SetAttribute<X, E>) this.getMembers().get(name);
-    }
-    
-    public SingularAttribute<? super X, ?> getSingularAttribute(String name) {
-    	throw new PersistenceException("Not Yet Implemented");
-    }
-
-    public <Y> SingularAttribute<? super X, Y> getSingularAttribute(String name, Class<Y> type) {
-    	throw new PersistenceException("Not Yet Implemented");
-    }
-
-    /** implemented by superclass
-    public Set<SingularAttribute<? super X, ?>> getSingularAttributes() {
-    	throw new PersistenceException("Not Yet Implemented");
-    }*/
-
-    public <Y> SingularAttribute<? super X, Y> getVersion(Class<Y> type) {
-    	throw new PersistenceException("Not Yet Implemented");
-    }
-    
-    public boolean hasSingleIdAttribute() {
-    	throw new PersistenceException("Not Yet Implemented");
-    }
-
-    public boolean hasVersionAttribute() {
-    	throw new PersistenceException("Not Yet Implemented");
     }
 }

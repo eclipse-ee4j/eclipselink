@@ -30,11 +30,14 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
  * <b>Purpose</b>: Provides the implementation for the Attribute interface 
  *  of the JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)
  * <p>
- * <b>Description</b>: 
+ * <b>Description</b>:
+ * An attribute of a Java type  
  * 
  * @see javax.persistence.metamodel.Attribute
  * 
  * @since EclipseLink 2.0 - JPA 2.0
+ * @param <X> The represented type that contains the attribute
+ * @param <T> The type of the represented attribute
  *  
  */ 
 public abstract class AttributeImpl<X, T> implements Attribute<X, T> {
@@ -96,7 +99,7 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T> {
      *  @return Java type
      */
     public Class<T> getJavaType() {
-        return getMapping().getAttributeClassification();
+        return getMapping().getAttributeClassification(); // returns null for OneToManyMapping
     }
     
     /**
@@ -127,8 +130,8 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T> {
     }
 
     /**
-     *  Return the multiplicity of the attribute.
-     *  @return multiplicity
+     *  Return the persistent attribute type for the attribute.
+     *  @return persistent attribute type
      */
     public javax.persistence.metamodel.Attribute.PersistentAttributeType getPersistentAttributeType() {
         /**
@@ -168,7 +171,8 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T> {
     
     /**
      *  Is the attribute an association.
-     *  @return whether an association
+     *  @return whether boolean indicating whether attribute 
+     *          corresponds to an association
      */
     public boolean isAssociation() {
         return getMapping().isReferenceMapping();
@@ -183,7 +187,8 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T> {
 
     /**
      *  Is the attribute collection-valued.
-     *  @return whether a collection
+     *  @return boolean indicating whether attribute is 
+     *          collection-valued
      */
     public boolean isCollection() {
         return getMapping().isCollectionMapping();

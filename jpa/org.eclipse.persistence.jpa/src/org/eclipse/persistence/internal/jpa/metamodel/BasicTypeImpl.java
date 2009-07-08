@@ -23,24 +23,50 @@ import javax.persistence.metamodel.BasicType;
  * <b>Purpose</b>: Provides the implementation for the Basic interface 
  *  of the JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)
  * <p>
- * <b>Description</b>: 
+ * <b>Description</b>:
+ * Instances of the type BasicType represent basic types (including
+ * temporal and enumerated types).
  * 
  * @see javax.persistence.metamodel.Basic
  * 
  * @since EclipseLink 2.0 - JPA 2.0
- *  
+ * @param <X> The type of the represented basic type
+ *   
  */ 
 public class BasicTypeImpl<X> extends TypeImpl<X> implements BasicType<X> {
 
-    protected BasicTypeImpl(Class javaClass) {
+    protected BasicTypeImpl(Class<X> javaClass) {
         super(javaClass);
     }
-
+    
+    /**
+     *  Return the persistence type.
+     *  @return persistence type
+     */ 
     public PersistenceType getPersistenceType() {
         return PersistenceType.BASIC;
     }
     
+    /**
+     * INTERNAL:
+     * Return whether this type is identifiable.
+     * This would be EntityType and MappedSuperclassType
+     * @return
+     */
+    @Override
     public boolean isIdentifiableType() {
         return false;
     }
+
+    /**
+     * INTERNAL:
+     * Return whether this type is identifiable.
+     * This would be EmbeddableType as well as EntityType and MappedSuperclassType
+     * @return
+     */
+    @Override
+    public boolean isManagedType() {
+        return false;
+    }
+    
 }

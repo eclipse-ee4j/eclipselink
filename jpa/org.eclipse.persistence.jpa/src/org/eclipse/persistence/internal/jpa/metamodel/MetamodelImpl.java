@@ -46,6 +46,8 @@ import org.eclipse.persistence.sessions.Project;
  *  of the JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)
  * <p>
  * <b>Description</b>: 
+ * Provides access to the metamodel of persistent
+ * entities in the persistence unit. 
  * 
  * @see javax.persistence.metamodel.Metamodel
  * 
@@ -89,32 +91,65 @@ public class MetamodelImpl implements Metamodel {
 
     /**
      * INTERNAL:
+     * Return the DatabaseSession associated with this Metamodel
      * @return
      */
     public DatabaseSession getSession() {
         return this.session;
     }
 
+    /**
+     *  Return the metamodel embeddable type representing the
+     *  embeddable class.
+     *  @param cls  the type of the represented embeddable class
+     *  @return the metamodel embeddable type
+     *  @throws IllegalArgumentException if not an embeddable class
+     */
     public <X> EmbeddableType<X> embeddable(Class<X> clazz) {
         return (EmbeddableType<X>) this.embeddables.get(clazz);
     }
 
+    /**
+     *  Return the metamodel entity type representing the entity.
+     *  @param cls  the type of the represented entity
+     *  @return the metamodel entity type
+     *  @throws IllegalArgumentException if not an entity
+     */
     public <X> EntityType<X> entity(Class<X> clazz) {
         return (EntityType<X>) this.entities.get(clazz);
     }
 
+    /**
+     *  Return the metamodel managed type representing the 
+     *  entity, mapped superclass, or embeddable class.
+     *  @param cls  the type of the represented managed class
+     *  @return the metamodel managed type
+     *  @throws IllegalArgumentException if not a managed class
+     */
     public <X> ManagedType<X> type(Class<X> clazz) {
         return (ManagedType<X>) this.managedTypes.get(clazz);
     }
 
+    /**
+     * Return the metamodel embeddable types.
+     * @return the metamodel embeddable types
+     */
     public Set<EmbeddableType<?>> getEmbeddables() {
         return new LinkedHashSet<EmbeddableType<?>>(this.embeddables.values());
     }
 
+    /**
+     * Return the metamodel entity types.
+     * @return the metamodel entity types
+     */
     public Set<EntityType<?>> getEntities() {
         return new LinkedHashSet<EntityType<?>>(this.entities.values());
     }
 
+    /**
+     *  Return the metamodel managed types.
+     *  @return the metamodel managed types
+     */
     public Set<ManagedType<?>> getManagedTypes() {
         return new LinkedHashSet<ManagedType<?>>(this.managedTypes.values());
     }
@@ -133,8 +168,8 @@ public class MetamodelImpl implements Metamodel {
         this.mappedSuperclasses = new HashSet<MappedSuperclassTypeImpl<?>>();
 
         // Process all Entity and Embeddable types
-        for (Iterator i = session.getDescriptors().values().iterator(); i.hasNext();) {
-            RelationalDescriptor descriptor = (RelationalDescriptor) i.next();
+        for (Iterator<RelationalDescriptor> i = this.getSession().getDescriptors().values().iterator(); i.hasNext();) {
+            RelationalDescriptor descriptor = i.next();
             ManagedTypeImpl<?> managedType = ManagedTypeImpl.create(this, descriptor);
 
             this.types.put(managedType.getJavaType(), managedType);
@@ -146,45 +181,58 @@ public class MetamodelImpl implements Metamodel {
             if (managedType.getPersistenceType().equals(PersistenceType.EMBEDDABLE)) {
                 this.embeddables.put(managedType.getJavaType(), (EmbeddableTypeImpl<?>) managedType);
             }
-        }            
-
+        }
+        
         // TODO: Add all BASIC types
         
         // TODO: verify that all entities or'd with embeddables matches the number of types
-
         
         // Handle all MAPPED_SUPERCLASS types
         // Get mapped superclass types from the native project (not a regular descriptor)
         try {
-            Project project = session.getProject();
+            Project project = this.getSession().getProject();
             Map<Object, RelationalDescriptor> descriptors = project.getMappedSuperclassDescriptors();
             for(Iterator<RelationalDescriptor> anIterator = descriptors.values().iterator(); anIterator.hasNext();) {
                 RelationalDescriptor descriptor = anIterator.next();
                 // Set the class on the descriptor for the current classLoader (normally done in MetadataProject.addMappedSuperclassAccessor)
+                // getActiveSession will return a possible external transaction controller session when running on an application server container 
                 ClassLoader classLoader = this.getSession().getActiveSession().getClass().getClassLoader();
                 descriptor.convertClassNamesToClasses(classLoader);
-                MappedSuperclassTypeImpl mappedSuperclassType = new MappedSuperclassTypeImpl(this, descriptor);
+                MappedSuperclassTypeImpl<?> mappedSuperclassType = new MappedSuperclassTypeImpl(this, descriptor);
                 // Add the MappedSuperclass to our Set of MappedSuperclasses
                 this.mappedSuperclasses.add(mappedSuperclassType);
+                
                 // Also add the MappedSuperclass to the Map of ManagedTypes
                 // So we can find hierarchies of the form [Entity --> MappedSuperclass(abstract) --> Entity]
                 this.managedTypes.put(mappedSuperclassType.getJavaType(), mappedSuperclassType);
+                
+                // Also add this MappedSuperclass to the Collection of Types
+                this.types.put(mappedSuperclassType.getJavaType(), mappedSuperclassType);
             }
         } catch (Exception e) {
             // TODO: add real exception handling
             e.printStackTrace();
         }
+
+        // Initialize-delayed (process all mappings) all types (This includes all IdentifiableTypes = Entity and MappedSuperclass types)
+        for(Iterator<TypeImpl<?>> anIterator = this.types.values().iterator(); anIterator.hasNext();) {
+            TypeImpl<?> aType = anIterator.next();
+            if(aType.isManagedType()) {
+                ((ManagedTypeImpl<?>)aType).initialize();
+            }
+        }
+
         
-        // Handle all IdentifiableTypes
+        // Handle all IdentifiableTypes (after all ManagedTypes have been created)
         // Assign all superType fields on all IdentifiableTypes (only after all managedType objects have been created)
         for(Iterator<ManagedTypeImpl<?>> mtIterator = managedTypes.values().iterator(); mtIterator.hasNext();) {
-            ManagedTypeImpl potentialIdentifiableType = mtIterator.next();
+            ManagedTypeImpl<?> potentialIdentifiableType = mtIterator.next();
             Class aClass = potentialIdentifiableType.getJavaType();
             Class superclass = aClass.getSuperclass();
             if(potentialIdentifiableType.isIdentifiableType()) {
                 // Get the Entity or MappedSuperclass
                 // A hierarchy of Entity --> Entity or Entity --> MappedSuperclass will be found
-                IdentifiableType identifiableTypeSuperclass = (IdentifiableType)managedTypes.get(superclass);
+                IdentifiableType<?> identifiableTypeSuperclass = (IdentifiableType<?>)managedTypes.get(superclass);
                 if(null != identifiableTypeSuperclass) {
                     ((IdentifiableTypeImpl)potentialIdentifiableType).setSupertype(identifiableTypeSuperclass); 
                 }
@@ -196,21 +244,30 @@ public class MetamodelImpl implements Metamodel {
 
     /**
      * INTERNAL:
+     * Return a Type representation of a java Class for use by the Metamodel Attributes
      * @param javaClass
      * @return
      */
-    public TypeImpl<?> getType(Class javaClass) {
-        TypeImpl<?> type = this.types.get(javaClass);
-        
-        if (type == null) {
-            // TODO: synchronize creating types?
+    public <X> TypeImpl<X> getType(Class<X> javaClass) {
+        // Return an existing matching type on the metamodel keyed on class name
+        TypeImpl type = this.types.get(javaClass);
+        // No longer required because of delayed initialization on Types
+/*        
+        // the type was not cached yet on the metamodel - lets add it
+        if (null == type) {
+            // make types field modification thread-safe
             synchronized (this.types) {
+                // check for a cached type right after we synchronize
                 type = this.types.get(javaClass);
-                type = new BasicTypeImpl(javaClass);
-                this.types.put(javaClass, type);
+                // We make the type one of Entity, Basic, Embeddable or MappedSuperclass
+                if(null == type) {
+                    
+                    type = new BasicTypeImpl<X>(javaClass);
+                    this.types.put(javaClass, type);
+                }
             }
         }
-        
+*/        
         return type;
     }
     

@@ -49,13 +49,11 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "error_marshalling_arguments", "Error marshalling arguments" },
                                            { "error_unmarshalling_return", "error unmarshalling return" },
                                            { "null_jar_file_names", "Null jar file names" },
-                                           { "weblogic_mbean_runtime_exception", "An exception occurred while creating a WebLogic runtime service for exposing EclipseLink session information, exception is: {0}" },
-                                           
-    { "error_loading_resources", "Error loading resources {0} from the classpath" },
+                                           { "weblogic_mbean_runtime_exception", "An exception occurred while creating a WebLogic runtime service for exposing EclipseLink session information, exception is: {0}" },                                           
+                                           { "error_loading_resources", "Error loading resources {0} from the classpath" },
                                            { "error_parsing_resources", "Error parsing resources {0}" },
-                                           { "unexpect_argument", "Unexpected input argument {0}" },
-                                           
-    { "error_executing_jar_process", "Error executing jar process" },
+                                           { "unexpect_argument", "Unexpected input argument {0}" },                                           
+                                           { "error_executing_jar_process", "Error executing jar process" },
                                            { "error_invoking_deploy", "Error invoking Deploy" },
                                            { "bean_definition_vector_arguments_are_of_different_sizes", "Bean definition vector arguments are of different sizes" },
                                            { "missing_toplink_bean_definition_for", "Missing TopLink bean definition for {0}" },
@@ -114,8 +112,9 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "entity_manager_properties_conflict_default_connector_vs_jndi_connector", "EntityManager properties' conflict: javax.persistence.driver and/or javax.persistence.url require DefaultConnector, but javax.persistence.jtaDataSource and/or javax.persistence.nonjtaDataSource require JNDIConnector."},
                                            { "entity_manager_properties_conflict_default_connector_vs_external_transaction_controller", "EntityManager properties' conflict: javax.persistence.driver and/or javax.persistence.url require DefaultConnector, but persistence unit uses external transaction controller, therefore JNDIConnector is required."},
                                            { "invalid_lock_query", "A lock type can only be used with a select query (which allows the database to be locked where necessary)."},
-                                           { "cant_lock_not_managed_object", "Entity must be managed to call lock: {0}, try merging the detached and try the lock again."}
-                                           
+                                           { "cant_lock_not_managed_object", "Entity must be managed to call lock: {0}, try merging the detached and try the lock again."},
+                                           { "metamodel_managed_type_attribute_not_present", "The attribute [{0}] from the managed type [{1}] is not present." },
+                                           { "metamodel_managed_type_attribute_type_not_present", "The attribute type [{2}] from the managed type [{1}] for attribute [{0}] is not present." }
     };
 
     /**

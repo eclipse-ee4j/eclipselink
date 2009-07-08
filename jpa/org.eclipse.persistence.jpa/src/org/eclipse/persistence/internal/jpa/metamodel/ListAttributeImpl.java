@@ -18,7 +18,6 @@ package org.eclipse.persistence.internal.jpa.metamodel;
 
 import java.util.List;
 
-import javax.persistence.PersistenceException;
 import javax.persistence.metamodel.ListAttribute;
 
 import org.eclipse.persistence.mappings.CollectionMapping;
@@ -29,10 +28,14 @@ import org.eclipse.persistence.mappings.CollectionMapping;
  *  of the JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)
  * <p>
  * <b>Description</b>: 
+ * Instances of the type ListAttribute represent persistent 
+ * List-valued attributes.
  * 
  * @see javax.persistence.metamodel.ListAttribute
  * 
  * @since EclipseLink 2.0 - JPA 2.0
+ * @param <X> The type the represented List belongs to
+ * @param <V> The element type of the represented List
  *  
  */ 
 public class ListAttributeImpl<X, V> extends PluralAttributeImpl<X, java.util.List<V>, V> implements ListAttribute<X, V> {
@@ -41,22 +44,16 @@ public class ListAttributeImpl<X, V> extends PluralAttributeImpl<X, java.util.Li
         super(managedType, mapping);
     }
 
-    public Class<V> getBindableJavaType() {
-    	throw new PersistenceException("Not Yet Implemented");
-    }
-
+    /**
+     * Return the collection type.
+     * @return collection type
+     */
+    @Override
     public CollectionType getCollectionType() {
         return CollectionType.LIST;
     }
     
-    public Class<List<V>> getJavaType() {
-        return this.getMapping().getAttributeClassification();
-    }
-    
-    public boolean isAttribute() {
-    	throw new PersistenceException("Not Yet Implemented");
-    }
-
+    @Override
     public String toString() {
         return "ListAttributeImpl[" + getMapping() + "]";
     }

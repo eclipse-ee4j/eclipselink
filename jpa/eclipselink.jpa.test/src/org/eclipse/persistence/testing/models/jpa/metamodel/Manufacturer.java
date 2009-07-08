@@ -19,6 +19,7 @@ import static javax.persistence.CascadeType.ALL;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -35,7 +36,7 @@ public class Manufacturer extends Corporation implements java.io.Serializable{
     
     // If a JoinTable with a JoinColumn is used - then we need a mappedBy on the inverse side here
     @OneToMany(cascade=ALL, mappedBy="manufacturer")
-    private Collection<Computer> computers = new HashSet<Computer>();
+    private Set<Computer> computers = new HashSet<Computer>();
 
     // If a JoinTable with a JoinColumn is used - then we need a mappedBy on the inverse side here
     @OneToMany(cascade=ALL, mappedBy="employer")
@@ -60,7 +61,7 @@ public class Manufacturer extends Corporation implements java.io.Serializable{
         return computers; 
     }
     
-    public void setComputers(Collection<Computer> newValue) { 
+    public void setComputers(Set<Computer> newValue) { 
         this.computers = newValue; 
     }
 

@@ -16,9 +16,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
-import java.util.Set;
-
-import javax.persistence.PersistenceException;
 import javax.persistence.metamodel.SetAttribute;
 
 import org.eclipse.persistence.mappings.CollectionMapping;
@@ -28,10 +25,15 @@ import org.eclipse.persistence.mappings.CollectionMapping;
  * <b>Purpose</b>: Provides the implementation for the SetAttribute interface 
  *  of the JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)
  * <p>
- * <b>Description</b>: 
- * 
+ * <b>Description</b>:
+ * Instances of the type SetAttribute represent persistent Set-valued
+ * attributes.
+ *
  * @see javax.persistence.metamodel.SetAttribute 
  * @since EclipseLink 2.0 - JPA 2.0
+ *
+ * @param <X> The type the represented Set belongs to
+ * @param <V> The element type of the represented Set
  *  
  */ 
 public class SetAttributeImpl<X, V> extends PluralAttributeImpl<X, java.util.Set<V>, V> implements SetAttribute<X, V> {
@@ -40,22 +42,16 @@ public class SetAttributeImpl<X, V> extends PluralAttributeImpl<X, java.util.Set
         super(managedType, mapping);
     }
 
-    public Class<V> getBindableJavaType() {
-        throw new PersistenceException("Not Yet Implemented");
-    }
-
+    /**
+     * Return the collection type.
+     * @return collection type
+     */
+    @Override
     public CollectionType getCollectionType() {
         return CollectionType.SET;
     }
     
-    public Class<Set<V>> getJavaType() {
-        return this.getMapping().getAttributeClassification();
-    }
-    
-    public boolean isAttribute() {
-    	throw new PersistenceException("Not Yet Implemented");
-    }
-    
+    @Override
     public String toString() {
         return "SetAttributeImpl[" + getMapping() + "]";
     }

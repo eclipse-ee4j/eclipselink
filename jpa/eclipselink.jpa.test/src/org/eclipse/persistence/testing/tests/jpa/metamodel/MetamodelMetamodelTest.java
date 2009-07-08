@@ -16,6 +16,8 @@
 package org.eclipse.persistence.testing.tests.jpa.metamodel;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -29,7 +31,12 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.QueryBuilder;
 import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.Attribute;
+import javax.persistence.metamodel.CollectionAttribute;
+import javax.persistence.metamodel.ListAttribute;
+import javax.persistence.metamodel.MapAttribute;
 import javax.persistence.metamodel.Metamodel;
+import javax.persistence.metamodel.PluralAttribute;
+import javax.persistence.metamodel.SetAttribute;
 import javax.persistence.metamodel.SingularAttribute;
 
 import junit.framework.Test;
@@ -105,7 +112,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
     public void testMetamodelTypeSafeBasedQuery() {
         EntityManagerFactory emf = null;
         EntityManager em = null;
-        List<Computer> computersList = new ArrayList();
+        
+        Set<Computer> computersList = new HashSet();
         List<Memory> memories = new ArrayList();
         List<VectorProcessor> processors = new ArrayList();
         List<HardwareDesigner> hardwareDesigners = new ArrayList();
@@ -236,7 +244,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
     public void testMetamodelStringBasedQuery() {
         EntityManagerFactory emf = null;
         EntityManager em = null;
-        List<Computer> computersList = new ArrayList();
+        Set<Computer> computersList = new HashSet();
         List<Memory> memories = new ArrayList();
         List<VectorProcessor> processors = new ArrayList();
         List<HardwareDesigner> hardwareDesigners = new ArrayList();
@@ -346,10 +354,10 @@ public class MetamodelMetamodelTest extends MetamodelTest {
     public void testImplementation() {
         EntityManagerFactory emf = null;
         EntityManager em = null;
-        List<Computer> computersList = new ArrayList();
-        List<Memory> memories = new ArrayList();
-        List<VectorProcessor> processors = new ArrayList();
-        List<HardwareDesigner> hardwareDesigners = new ArrayList();
+        Set<Computer> computersList = new HashSet();
+        Collection<Memory> memories = new HashSet();
+        Collection<VectorProcessor> processors = new HashSet();
+        Collection<HardwareDesigner> hardwareDesigners = new HashSet();
         Computer computer1 = null;
         Computer computer2 = null;
         Manufacturer manufacturer = null;
@@ -371,6 +379,11 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             emf = initialize();
             //emf = initialize();
             em = emf.createEntityManager();
+
+            // Pre-Persist: get Metamodel representation of the entity schema
+            metamodel = em.getMetamodel();
+            assertNotNull(metamodel);
+
             em.getTransaction().begin();
 
             // setup entity relationships
@@ -440,9 +453,9 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             
             em.getTransaction().commit();            
             
-            // get Metamodel representation of the entity schema
-            metamodel = em.getMetamodel();
-            assertNotNull(metamodel);
+            // Post-Persist: get Metamodel representation of the entity schema
+            //metamodel = em.getMetamodel();
+            //assertNotNull(metamodel);
             
             // Verify EntityType access to entities in the metamodel
             // These enties are metamodel entities (1 per type) not JPA entity instances (IdentifiableType)
@@ -480,16 +493,324 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             
             // Verify ManagedType operations
             // ************************************
-            // Verify public Set<SingularAttribute<? super X, ?>> getSingularAttributes() {
-            Set<SingularAttribute<? super Manufacturer, ?>> attributeSet = entityManufacturer.getSingularAttributes();
+            
+            /**
+             *  Return the attributes of the managed type.
+             */
+             //java.util.Set<Attribute<? super X, ?>> getAttributes();
+            Set<Attribute<? super Manufacturer, ?>> attributeSet = entityManufacturer.getAttributes();
             assertNotNull(attributeSet);
-            // We should see 3 singular attributes for Manufacturer (id(from the mappedSuperclass), version, name(from the mappedSuperclass))
-            assertEquals(3, attributeSet.size());
+            // We should see 5 attributes (2 List, 3 Singular) for Manufacturer (computers, hardwareDesigners, id(from the mappedSuperclass), version, name(from the mappedSuperclass))
+            assertEquals(5, attributeSet.size());
             // for each managed entity we will see 2 entries (one for the Id, one for the Version)
             assertTrue(attributeSet.contains(entityManufacturer.getAttribute("id"))); // 
             assertTrue(attributeSet.contains(entityManufacturer.getAttribute("version"))); //
             assertTrue(attributeSet.contains(entityManufacturer.getAttribute("name"))); //
+            assertTrue(attributeSet.contains(entityManufacturer.getAttribute("computers"))); //
+            assertTrue(attributeSet.contains(entityManufacturer.getAttribute("hardwareDesigners"))); //
+
+            // try a getAttribute on a missing type - should cause an IAE
+            boolean iae1thrown = false;
+            try {
+                attributeSet.contains(entityManufacturer.getAttribute("_unknownAttribute"));
+            } catch (IllegalArgumentException iae) {
+                System.err.println("Metamodel: The following IAE exception is expected");
+                iae1thrown = true;
+            }
+            // verify that we got an expected exception
+            assertTrue(iae1thrown);
             
+            /**
+             *  Return the attributes declared by the managed type.
+             */
+             //java.util.Set<Attribute<X, ?>> getDeclaredAttributes();
+
+            /**
+             *  Return the single-valued attribute of the managed 
+             *  type that corresponds to the specified name and Java type 
+             *  in the represented type.
+             *  @param name  the name of the represented attribute
+             *  @param type  the type of the represented attribute
+             *  @return single-valued attribute with given name and type
+             *  @throws IllegalArgumentException if attribute of the given
+             *          name and type is not present in the managed type
+             */
+            //<Y> SingularAttribute<? super X, Y> getSingularAttribute(String name, Class<Y> type);
+
+            /**
+             *  Return the declared single-valued attribute of the 
+             *  managed type that corresponds to the specified name and Java 
+             *  type in the represented type.
+             *  @param name  the name of the represented attribute
+             *  @param type  the type of the represented attribute
+             *  @return declared single-valued attribute of the given 
+             *          name and type
+             *  @throws IllegalArgumentException if attribute of the given
+             *          name and type is not declared in the managed type
+             */
+            //<Y> SingularAttribute<X, Y> getDeclaredSingularAttribute(String name, Class<Y> type);
+            
+            /**
+             *  Return the single-valued attributes of the managed type.
+             *  @return single-valued attributes
+             */
+            //java.util.Set<SingularAttribute<? super X, ?>> getSingularAttributes();
+            Set<SingularAttribute<? super Manufacturer, ?>> singularAttributeSet = entityManufacturer.getSingularAttributes();
+            assertNotNull(singularAttributeSet);
+            // We should see 3 singular attributes for Manufacturer (id(from the mappedSuperclass), version, name(from the mappedSuperclass))
+            assertEquals(3, singularAttributeSet.size());
+            // for each managed entity we will see 2 entries (one for the Id, one for the Version)
+            assertTrue(singularAttributeSet.contains(entityManufacturer.getAttribute("id"))); // 
+            assertTrue(singularAttributeSet.contains(entityManufacturer.getAttribute("version"))); //
+            assertTrue(singularAttributeSet.contains(entityManufacturer.getAttribute("name"))); //
+
+            /**
+             *  Return the single-valued attributes declared by the managed
+             *  type.
+             *  @return declared single-valued attributes
+             */
+            //java.util.Set<SingularAttribute<X, ?>> getDeclaredSingularAttributes();
+            
+            /**
+             *  Return the Collection-valued attribute of the managed type 
+             *  that corresponds to the specified name and Java element type.
+             *  @param name  the name of the represented attribute
+             *  @param elementType  the element type of the represented 
+             *                      attribute
+             *  @return CollectionAttribute of the given name and element
+             *          type
+             *  @throws IllegalArgumentException if attribute of the given
+             *          name and type is not present in the managed type
+             */    
+            //<E> CollectionAttribute<? super X, E> getCollection(String name, Class<E> elementType);
+
+            /**
+             *  Return the Set-valued attribute of the managed type that
+             *  corresponds to the specified name and Java element type.
+             *  @param name  the name of the represented attribute
+             *  @param elementType  the element type of the represented 
+             *                      attribute
+             *  @return SetAttribute of the given name and element type
+             *  @throws IllegalArgumentException if attribute of the given
+             *          name and type is not present in the managed type
+             */
+            //<E> SetAttribute<? super X, E> getSet(String name, Class<E> elementType);
+
+            /**
+             *  Return the List-valued attribute of the managed type that
+             *  corresponds to the specified name and Java element type.
+             *  @param name  the name of the represented attribute
+             *  @param elementType  the element type of the represented 
+             *                      attribute
+             *  @return ListAttribute of the given name and element type
+             *  @throws IllegalArgumentException if attribute of the given
+             *          name and type is not present in the managed type
+             */
+            //<E> ListAttribute<? super X, E> getList(String name, Class<E> elementType);
+
+            /**
+             *  Return the Map-valued attribute of the managed type that
+             *  corresponds to the specified name and Java key and value
+             *  types.
+             *  @param name  the name of the represented attribute
+             *  @param keyType  the key type of the represented attribute
+             *  @param valueType  the value type of the represented attribute
+             *  @return MapAttribute of the given name and key and value
+             *  types
+             *  @throws IllegalArgumentException if attribute of the given
+             *          name and type is not present in the managed type
+             */
+            //<K, V> MapAttribute<? super X, K, V> getMap(String name, Class<K> keyType, Class<V> valueType);
+
+            /**
+             *  Return the Collection-valued attribute declared by the 
+             *  managed type that corresponds to the specified name and Java 
+             *  element type.
+             *  @param name  the name of the represented attribute
+             *  @param elementType  the element type of the represented 
+             *                      attribute
+             *  @return declared CollectionAttribute of the given name and 
+             *          element type
+             *  @throws IllegalArgumentException if attribute of the given
+             *          name and type is not declared in the managed type
+             */
+            //<E> CollectionAttribute<X, E> getDeclaredCollection(String name, Class<E> elementType);
+
+            /**
+             *  Return the Set-valued attribute declared by the managed type 
+             *  that corresponds to the specified name and Java element type.
+             *  @param name  the name of the represented attribute
+             *  @param elementType  the element type of the represented 
+             *                      attribute
+             *  @return declared SetAttribute of the given name and 
+             *          element type
+             *  @throws IllegalArgumentException if attribute of the given
+             *          name and type is not declared in the managed type
+             */
+            //<E> SetAttribute<X, E> getDeclaredSet(String name, Class<E> elementType);
+
+            /**
+             *  Return the List-valued attribute declared by the managed 
+             *  type that corresponds to the specified name and Java 
+             *  element type.
+             *  @param name  the name of the represented attribute
+             *  @param elementType  the element type of the represented 
+             *                      attribute
+             *  @return declared ListAttribute of the given name and 
+             *          element type
+             *  @throws IllegalArgumentException if attribute of the given
+             *          name and type is not declared in the managed type
+             */
+            //<E> ListAttribute<X, E> getDeclaredList(String name, Class<E> elementType);
+
+            /**
+             *  Return the Map-valued attribute declared by the managed 
+             *  type that corresponds to the specified name and Java key 
+             *  and value types.
+             *  @param name  the name of the represented attribute
+             *  @param keyType  the key type of the represented attribute
+             *  @param valueType  the value type of the represented attribute
+             *  @return declared MapAttribute of the given name and key 
+             *          and value types
+             *  @throws IllegalArgumentException if attribute of the given
+             *          name and type is not declared in the managed type
+             */
+            //<K, V> MapAttribute<X, K, V> getDeclaredMap(String name, Class<K> keyType, Class<V> valueType);
+            
+            /**
+             *  Return all collection-valued attributes of the managed type.
+             *  @return collection valued attributes
+             */
+            //java.util.Set<PluralAttribute<? super X, ?, ?>> getCollections();
+
+            /**
+             *  Return all collection-valued attributes declared by the 
+             *  managed type.
+             *  @return declared collection valued attributes
+             */
+            //java.util.Set<PluralAttribute<X, ?, ?>> getDeclaredCollections();
+
+            /**
+             *  Return the attribute of the managed
+             *  type that corresponds to the specified name.
+             *  @param name  the name of the represented attribute
+             *  @return attribute with given name
+             *  @throws IllegalArgumentException if attribute of the given
+             *          name is not present in the managed type
+             */
+            //Attribute<? super X, ?> getAttribute(String name); 
+
+            /**
+             *  Return the declared attribute of the managed
+             *  type that corresponds to the specified name.
+             *  @param name  the name of the represented attribute
+             *  @return attribute with given name
+             *  @throws IllegalArgumentException if attribute of the given
+             *          name is not declared in the managed type
+             */
+            //Attribute<X, ?> getDeclaredAttribute(String name); 
+
+            /**
+             *  Return the single-valued attribute of the managed type that
+             *  corresponds to the specified name in the represented type.
+             *  @param name  the name of the represented attribute
+             *  @return single-valued attribute with the given name
+             *  @throws IllegalArgumentException if attribute of the given
+             *          name is not present in the managed type
+             */
+            //SingularAttribute<? super X, ?> getSingularAttribute(String name);
+
+            /**
+             *  Return the declared single-valued attribute of the managed
+             *  type that corresponds to the specified name in the
+             *  represented type.
+             *  @param name  the name of the represented attribute
+             *  @return declared single-valued attribute of the given 
+             *          name
+             *  @throws IllegalArgumentException if attribute of the given
+             *          name is not declared in the managed type
+             */
+            //SingularAttribute<X, ?> getDeclaredSingularAttribute(String name);
+
+            /**
+             *  Return the Collection-valued attribute of the managed type 
+             *  that corresponds to the specified name.
+             *  @param name  the name of the represented attribute
+             *  @return CollectionAttribute of the given name
+             *  @throws IllegalArgumentException if attribute of the given
+             *          name is not present in the managed type
+             */    
+            //CollectionAttribute<? super X, ?> getCollection(String name); 
+
+            /**
+             *  Return the Set-valued attribute of the managed type that
+             *  corresponds to the specified name.
+             *  @param name  the name of the represented attribute
+             *  @return SetAttribute of the given name
+             *  @throws IllegalArgumentException if attribute of the given
+             *          name is not present in the managed type
+             */
+            //SetAttribute<? super X, ?> getSet(String name);
+
+            /**
+             *  Return the List-valued attribute of the managed type that
+             *  corresponds to the specified name.
+             *  @param name  the name of the represented attribute
+             *  @return ListAttribute of the given name
+             *  @throws IllegalArgumentException if attribute of the given
+             *          name is not present in the managed type
+             */
+            //ListAttribute<? super X, ?> getList(String name);
+
+            /**
+             *  Return the Map-valued attribute of the managed type that
+             *  corresponds to the specified name.
+             *  @param name  the name of the represented attribute
+             *  @return MapAttribute of the given name
+             *  @throws IllegalArgumentException if attribute of the given
+             *          name is not present in the managed type
+             */
+            //MapAttribute<? super X, ?, ?> getMap(String name); 
+
+            /**
+             *  Return the Collection-valued attribute declared by the 
+             *  managed type that corresponds to the specified name.
+             *  @param name  the name of the represented attribute
+             *  @return declared CollectionAttribute of the given name
+             *  @throws IllegalArgumentException if attribute of the given
+             *          name is not declared in the managed type
+             */
+            //CollectionAttribute<X, ?> getDeclaredCollection(String name); 
+
+            /**
+             *  Return the Set-valued attribute declared by the managed type 
+             *  that corresponds to the specified name.
+             *  @param name  the name of the represented attribute
+             *  @return declared SetAttribute of the given name
+             *  @throws IllegalArgumentException if attribute of the given
+             *          name is not declared in the managed type
+             */
+            //SetAttribute<X, ?> getDeclaredSet(String name);
+
+            /**
+             *  Return the List-valued attribute declared by the managed 
+             *  type that corresponds to the specified name.
+             *  @param name  the name of the represented attribute
+             *  @return declared ListAttribute of the given name
+             *  @throws IllegalArgumentException if attribute of the given
+             *          name is not declared in the managed type
+             */
+            //ListAttribute<X, ?> getDeclaredList(String name);
+
+            /**
+             *  Return the Map-valued attribute declared by the managed 
+             *  type that corresponds to the specified name.
+             *  @param name  the name of the represented attribute
+             *  @return declared MapAttribute of the given name
+             *  @throws IllegalArgumentException if attribute of the given
+             *          name is not declared in the managed type
+             */
+            //MapAttribute<X, ?, ?> getDeclaredMap(String name);            
             
             
             // get some static (non-runtime) attributes parameterized by <Owning type, return Type>
@@ -509,11 +830,16 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             // The attributes are in the field ManagedTypeImpl.members
             // The managedType is the owner of the attribute
             //hardwareDesigners=CollectionAttribute[org.eclipse.persistence.mappings.OneToManyMapping[hardwareDesigners]], 
-            //computers=CollectionAttribute[org.eclipse.persistence.mappings.OneToManyMapping[computers]], 
-            //javax.persistence.metamodel.CollectionAttribute<? super Manufacturer, Computer> computersAttribute = 
-            //    entityManufacturer.getCollection("computers", Computer.class);
-            //javax.persistence.metamodel.Set<Manufacturer, Computer> computersAttribute2 = 
-            //    entityManufacturer.getSet("computers", Computer.class);
+            //computers=CollectionAttribute[org.eclipse.persistence.mappings.OneToManyMapping[computers]],
+            
+            // 20090707: We are getting a CCE because "all" Collections are defaulting to List 
+            // when they are lazy instantiated as IndirectList if persisted as a List independent of what the OneToOne mapping is defined as
+//            javax.persistence.metamodel.CollectionAttribute<? super Manufacturer, Computer> computersAttribute = 
+//                entityManufacturer.getCollection("computers", Computer.class);
+//            javax.persistence.metamodel.CollectionAttribute<? super Manufacturer, Computer> computersAttribute2 = 
+//                entityManufacturer.getCollection("computers", Computer.class);
+            javax.persistence.metamodel.SetAttribute<? super Manufacturer, Computer> computersAttribute = 
+                entityManufacturer.getSet("computers", Computer.class);
             //System.out.println("_Manufacturer.computers: " + computersAttribute);
             
             //version=Attribute[org.eclipse.persistence.mappings.DirectToFieldMapping[version-->CMP3_MM_MANUF.MANUF_VERSION]], 
@@ -559,6 +885,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //e.printStackTrace();
             }
             assertTrue(exceptionThrown);
+            // reset exception flag
             exceptionThrown = false;
             
             //System.out.println("_entityManufacturer.getDeclaredCollection(): " + entityManufacturer.getDeclaredCollection("name"));            
