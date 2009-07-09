@@ -435,9 +435,10 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             
             // clean-up
             beginTransaction(em);
-            em.remove(b.getComments().get(0));
-            em.remove(b.getComments().get(1));
-            em.remove(b);
+            CKeyEntityB b0 = em.find(CKeyEntityB.class, b.getKey());
+            em.remove(b0.getComments().get(0));
+            em.remove(b0.getComments().get(1));
+            em.remove(b0);
             commitTransaction(em);
         } catch (RuntimeException e) {
             if (isTransactionActive(em))

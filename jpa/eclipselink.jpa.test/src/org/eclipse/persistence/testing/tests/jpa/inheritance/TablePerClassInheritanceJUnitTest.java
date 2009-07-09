@@ -590,21 +590,23 @@ public class TablePerClassInheritanceJUnitTest extends JUnitTestCase {
     // reference class. So it's not a full feature test.
     public void testUpdateAllQuery() {
         EntityManager em = createEntityManager();
-        
+        beginTransaction(em);
         try {
             ExpressionBuilder eb = new ExpressionBuilder();
             UpdateAllQuery updateQuery = new UpdateAllQuery(Assassin.class);
-            //updateQuery.setSelectionCriteria(eb.get("name"));
             updateQuery.addUpdate(eb.get("name"), "Generic Assassin Name");
-            ((JpaEntityManager) em).getServerSession().executeQuery(updateQuery);
+            ((JpaEntityManager)em.getDelegate()).getServerSession().executeQuery(updateQuery);
             Assassin assassin = (Assassin) em.find(ContractedPersonel.class, assassinId);
             em.refresh(assassin);
-            
+            commitTransaction(em);
             assertTrue("Update all did not work", assassin.getName().equals("Generic Assassin Name"));
         } catch (Exception e) {
             e.printStackTrace();
             fail("Error issuing update all contracted personel query: " + e.getMessage());
         } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
             closeEntityManager(em);
         }
     }

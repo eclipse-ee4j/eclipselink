@@ -14,6 +14,7 @@ package org.eclipse.persistence.testing.tests.jpa.advanced;
 
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.advanced.*;
+import org.eclipse.persistence.exceptions.OptimisticLockException;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -169,8 +170,19 @@ import javax.persistence.PersistenceException;
             fail("updating object version with wrong value didn't throw exception");
         } catch (PersistenceException pe) {
             // expected behavior
-        } catch (Exception e) {
-            fail("updating object version with wrong value threw a wrong exception: " + e.getMessage());
+        } catch (Exception exception) {
+            Throwable persistenceException = exception;
+            // Remove an wrapping exceptions such as rollback, runtime, etc.
+            while (persistenceException != null && !(persistenceException instanceof OptimisticLockException)) {
+                // In the server this is always a rollback exception, need to get nested exception.
+                persistenceException = persistenceException.getCause();
+            }
+            if (persistenceException instanceof OptimisticLockException) {
+                OptimisticLockException oe = (OptimisticLockException) persistenceException;
+                return;
+            } else {
+                fail("updating object version with wrong value threw a wrong exception: " + exception.getMessage());
+            }
         } finally {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -200,8 +212,19 @@ import javax.persistence.PersistenceException;
             fail("employee2.setVersion(null) didn't throw exception");
         } catch (PersistenceException pe) {
             // expected behavior
-        } catch (Exception e) {
-            fail("employee2.setVersion(null) threw a wrong exception: " + e.getMessage());
+        } catch (Exception exception) {
+            Throwable persistenceException = exception;
+            // Remove an wrapping exceptions such as rollback, runtime, etc.
+            while (persistenceException != null && !(persistenceException instanceof OptimisticLockException)) {
+                // In the server this is always a rollback exception, need to get nested exception.
+                persistenceException = persistenceException.getCause();
+            }
+            if (persistenceException instanceof OptimisticLockException) {
+                OptimisticLockException oe = (OptimisticLockException) persistenceException;
+                return;
+            } else {
+                fail("employee2.setVersion(null) threw a wrong exception: " + exception.getMessage());
+            }
         } finally {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
