@@ -17,7 +17,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAccessOrder;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlValue;
 import javax.xml.namespace.QName;
@@ -34,6 +33,7 @@ import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 
+import org.eclipse.persistence.jaxb.xmlmodel.XmlAccessOrder;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlRootElement;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlType;
@@ -71,7 +71,6 @@ public class TypeInfo {
     private String classNamespace;
     private String schemaTypeName;
     private TypeDefParticle compositor;
-    private javax.xml.bind.annotation.XmlAccessType accessType;
     private ArrayList<String> propertyNames;
     private ArrayList<Property> propertyList;// keep the keys in a list to preserve order
     private HashMap<String, Property> properties;
@@ -94,6 +93,7 @@ public class TypeInfo {
     private XmlRootElement xmlRootElement;
     private XmlType xmlType;
     private XmlAccessType xmlAccessType;
+    private XmlAccessOrder xmlAccessOrder;
 
     public TypeInfo(Helper helper) {
         propertyNames = new ArrayList<String>();
@@ -221,15 +221,7 @@ public class TypeInfo {
     public void setCompositor(TypeDefParticle particle) {
         compositor = particle;
     }
-
-    public javax.xml.bind.annotation.XmlAccessType getAccessType() {
-        return accessType;
-    }
-
-    public void setAccessType(javax.xml.bind.annotation.XmlAccessType type) {
-        accessType = type;
-    }
-
+    
     public ArrayList<String> getPropertyNames() {
         return propertyNames;
     }
@@ -272,10 +264,14 @@ public class TypeInfo {
         }
     }
 
-    public void orderProperties(XmlAccessOrder order) {
-        // Order the arraylist of property names according to the
-        // XmlAccessorOrder annotation
-        if (order == XmlAccessOrder.ALPHABETICAL) {
+    /**
+     * Order the properties based on the XmlAccessOrder, if set.
+     */
+    public void orderProperties() {
+        if (!isSetXmlAccessOrder()) {
+            return;
+        }
+        if (xmlAccessOrder == XmlAccessOrder.ALPHABETICAL) {
             if (this.propertyNames != null) {
                 Collections.sort(this.propertyNames);
             }
@@ -483,6 +479,18 @@ public class TypeInfo {
         this.xmlAccessType = xmlAccessType;
     }
     
+    public boolean isSetXmlAccessOrder() {
+        return xmlAccessOrder != null;
+    }
+    
+    public XmlAccessOrder getXmlAccessOrder() {
+        return xmlAccessOrder;
+    }
+    
+    public void setXmlAccessOrder(XmlAccessOrder xmlAccessOrder) {
+        this.xmlAccessOrder = xmlAccessOrder;
+    }
+
     public boolean isPreBuilt() {
         return isPreBuilt;
     }

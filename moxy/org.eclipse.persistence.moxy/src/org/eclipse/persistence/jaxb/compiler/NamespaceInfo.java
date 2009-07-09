@@ -12,8 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.jaxb.compiler;
 
-import javax.xml.bind.annotation.XmlAccessType;
-
+import org.eclipse.persistence.jaxb.xmlmodel.XmlAccessOrder;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 
 /**
@@ -36,6 +36,7 @@ public class NamespaceInfo {
     private boolean elementFormQualified = false;
     private NamespaceResolver namespaceResolver;
     private XmlAccessType accessType = XmlAccessType.PUBLIC_MEMBER;
+    private XmlAccessOrder accessOrder = XmlAccessOrder.UNDEFINED;
     private String location;
     
     public String getNamespace() {
@@ -73,8 +74,17 @@ public class NamespaceInfo {
     public XmlAccessType getAccessType() {
         return accessType;
     }
+    
     public void setAccessType(XmlAccessType type) {
         this.accessType = type;
+    }
+
+    public XmlAccessOrder getAccessOrder() {
+        return accessOrder;
+    }
+    
+    public void setAccessOrder(XmlAccessOrder order) {
+        this.accessOrder = order;
     }
 
     public String getLocation() {
@@ -84,5 +94,4 @@ public class NamespaceInfo {
     public void setLocation(String location) {
         this.location = location;
     }
-    
 }

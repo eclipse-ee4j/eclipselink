@@ -30,6 +30,7 @@ import org.eclipse.persistence.oxm.*;
 import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaModelInput;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
 import org.eclipse.persistence.sessions.Project;
 
 /**
@@ -75,6 +76,29 @@ public class Generator {
     }
     
     /**
+     * This constructor will process and apply the given XmlBindings as appropriate.  Classes
+     * declared in the bindings will be amalgamated with any classes in the JavaModelInput.
+     *  
+     * If xmlBindings is null or empty, AnnotationsProcessor will be used to process 
+     * annotations as per usual.
+     *  
+     * @param jModelInput
+     * @param xmlBindings map of XmlBindings keyed on package name
+     * @param cLoader
+     */
+    public Generator(JavaModelInput jModelInput, Map<String, XmlBindings> xmlBindings, ClassLoader cLoader) {
+        helper = new Helper(jModelInput.getJavaModel());
+        annotationsProcessor = new AnnotationsProcessor(helper);
+        schemaGenerator = new SchemaGenerator(helper);
+        mappingsGenerator = new MappingsGenerator(helper);
+        if (xmlBindings != null && xmlBindings.size() > 0) {
+            new XMLProcessor(xmlBindings).processXML(annotationsProcessor, jModelInput);
+        } else {
+            annotationsProcessor.processClassesAndProperties(jModelInput.getJavaClasses());
+        }
+    }
+    
+    /**
      * This constructor creates a Helper using the JavaModelInput 
 	 * instance's JavaModel and a map of javaclasses that were generated from Type objects.
 	 * Annotations are processed here as well.
@@ -87,6 +111,30 @@ public class Generator {
         schemaGenerator = new SchemaGenerator(helper);
         mappingsGenerator = new MappingsGenerator(helper);
         annotationsProcessor.processClassesAndProperties(jModelInput.getJavaClasses());
+    }
+    
+    /**
+     * This constructor will process and apply the given XmlBindings as appropriate.  Classes
+     * declared in the bindings will be amalgamated with any classes in the JavaModelInput.
+     *  
+     * If xmlBindings is null or empty, AnnotationsProcessor will be used to process 
+     * annotations as per usual.
+     *  
+     * @param jModelInput
+     * @param javaClassToType
+     * @param xmlBindings map of XmlBindings keyed on package name
+     * @param cLoader
+     */
+    public Generator(JavaModelInput jModelInput, Map<JavaClass, Type> javaClassToType, Map<String, XmlBindings> xmlBindings, ClassLoader cLoader) {
+        helper = new Helper(jModelInput.getJavaModel());
+        annotationsProcessor = new AnnotationsProcessor(helper, javaClassToType);
+        schemaGenerator = new SchemaGenerator(helper);
+        mappingsGenerator = new MappingsGenerator(helper);
+        if (xmlBindings != null && xmlBindings.size() > 0) {
+            new XMLProcessor(xmlBindings).processXML(annotationsProcessor, jModelInput);
+        } else {
+            annotationsProcessor.processClassesAndProperties(jModelInput.getJavaClasses());
+        }
     }
     
     /**

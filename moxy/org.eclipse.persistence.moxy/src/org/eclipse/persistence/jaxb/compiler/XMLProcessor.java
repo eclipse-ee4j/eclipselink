@@ -12,16 +12,11 @@
  ******************************************************************************/
 package org.eclipse.persistence.jaxb.compiler;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
-import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
-import org.eclipse.persistence.jaxb.javamodel.JavaModel;
 import org.eclipse.persistence.jaxb.javamodel.JavaModelInput;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaAttribute;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaType;
@@ -41,9 +36,7 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlSchema.XmlNs;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 
 public class XMLProcessor {
-    
     private Map<String, XmlBindings> xmlBindingMap;
-    private AnnotationsProcessor annotationsProcessor;
         
     /**
      * This is the preferred constructor.
@@ -55,40 +48,70 @@ public class XMLProcessor {
     }
     
     /**
+     * Process XmlBindings on a per package basis for a given AnnotationsPorcessor instance.
      * 
      * @param annotationsProcessor
      */
     public void processXML(AnnotationsProcessor annotationsProcessor, JavaModelInput jModelInput) {
-        this.annotationsProcessor = annotationsProcessor;
-        
         // process each XmlBindings in the map
         XmlBindings xmlBindings; 
         for (String packageName : xmlBindingMap.keySet()) {
             xmlBindings = xmlBindingMap.get(packageName);
 
             // handle @XmlSchema override
-            HashMap<String, NamespaceInfo> additionalNamespaceInfo = processXmlSchema(xmlBindings);
-            if (additionalNamespaceInfo != null) {
-                annotationsProcessor.setPackageToNamespaceMappings(additionalNamespaceInfo);
+            NamespaceInfo nsInfo = processXmlSchema(xmlBindings, packageName);
+            if (nsInfo != null) {
+                annotationsProcessor.addPackageToNamespaceMapping(packageName, nsInfo);
             }
-
+            
             // build an array of JavaModel classes
             int idx = 0;
             JavaClass[] javaClasses = new JavaClass[xmlBindings.getJavaTypes().getJavaType().size()];
             for (JavaType javaType : xmlBindings.getJavaTypes().getJavaType()) {
-                JavaClass jClass = jModelInput.getJavaModel().getClass(javaType.getName());
-                javaClasses[idx++] = jClass; 
+                javaClasses[idx++] = jModelInput.getJavaModel().getClass(javaType.getName()); 
             }
+            
             // pre-build the TypeInfo objects
             annotationsProcessor.init();
             Map<String, TypeInfo> typeInfoMap = annotationsProcessor.preBuildTypeInfo(javaClasses);
 
             for (JavaType javaType : xmlBindings.getJavaTypes().getJavaType()) {
                 TypeInfo info = typeInfoMap.get(javaType.getName());
-                // handle @XmlAccessorType override
+
+                nsInfo = annotationsProcessor.getPackageToNamespaceMappings().get(packageName);
+                
+                // package/class override order:
+                //   1 - xml class-level
+                //   2 - java object class-level
+                //   3 - xml package-level
+                //   4 - package-info.java
+                
+                // handle class-level @XmlAccessorOrder override
+                if (javaType.isSetXmlAccessorOrder()) {
+                    info.setXmlAccessOrder(javaType.getXmlAccessorOrder());
+                } else if (!info.isSetXmlAccessOrder())  {
+                    // handle package-level @XmlAccessorOrder override
+                    if (xmlBindings.isSetXmlAccessorOrder()) {
+                        info.setXmlAccessOrder(xmlBindings.getXmlAccessorOrder());
+                    } else {
+                        // finally, check the NamespaceInfo
+                        info.setXmlAccessOrder(nsInfo.getAccessOrder());
+                    }
+                }
+                
+                // handle class-level @XmlAccessorType override
                 if (javaType.isSetXmlAccessorType()) {
                     info.setXmlAccessType(javaType.getXmlAccessorType());
+                } else if (!info.isSetXmlAccessType()) {
+                    if (xmlBindings.isSetXmlAccessorType()) {
+                        // handle package-level @XmlAccessorType override
+                        info.setXmlAccessType(xmlBindings.getXmlAccessorType());
+                    } else {
+                        // finally, check the NamespaceInfo
+                        info.setXmlAccessType(nsInfo.getAccessType());
+                    }
                 }
+                
                 // handle @XmlTransient override
                 if (javaType.isSetXmlTransient()) {
                     info.setXmlTransient(javaType.isXmlTransient());
@@ -199,26 +222,20 @@ public class XMLProcessor {
     }
     
     /**
-     * Process an XmlSchema.  This involves creating a NamespaceInfo instance,
-     * populating it based on the given XmlSchema, and putting the newly
-     * created NamespaceInfo object in the annotations processor's 
-     * 'packageToNamespaceMappings' map.
-     * 
-     * Here it is assumed that the XmlSchema configuration is to be 
-     * applied to the one and only package contained within the 
-     * XmlBindings file. 
+     * Process an XmlSchema.  This involves creating a NamespaceInfo instance
+     * and populating it based on the given XmlSchema.
      * 
      * @param xmlBindings
+     * @param packageName
      * @see NamespaceInfo
      * @see AnnotationsProcessor
-     * @return HashMap of additional package name to namespace info, or null if schema is null
+     * @return newly created namespace info, or null if schema is null
      */
-    private HashMap<String, NamespaceInfo> processXmlSchema(XmlBindings xmlBindings) {
+    private NamespaceInfo processXmlSchema(XmlBindings xmlBindings, String packageName) {
         XmlSchema schema = xmlBindings.getXmlSchema();
         if (schema == null) {
             return null;
         }
-        HashMap<String, NamespaceInfo> additionalNamespaceInfo = new HashMap<String, NamespaceInfo>();
         // create NamespaceInfo
         NamespaceInfo nsInfo = new NamespaceInfo();
         // process XmlSchema
@@ -228,60 +245,14 @@ public class XMLProcessor {
         nsInfo.setElementFormQualified(form.equals(form.QUALIFIED));
         
         // make sure defaults are set, not null
-        nsInfo.setLocation(schema.getLocation()==null?"##generate":schema.getLocation());
-        nsInfo.setNamespace(schema.getNamespace()==null?"":schema.getNamespace());
+        nsInfo.setLocation(schema.getLocation() == null ? "##generate" : schema.getLocation());
+        nsInfo.setNamespace(schema.getNamespace() == null ? "" : schema.getNamespace());
         NamespaceResolver nsr = new NamespaceResolver();
         // process XmlNs
         for (XmlNs xmlns : schema.getXmlNs()) {
             nsr.put(xmlns.getPrefix(), xmlns.getNamespaceUri());
         }
         nsInfo.setNamespaceResolver(nsr);
-        
-        // assume this applies to each package
-        for (JavaType jType : xmlBindings.getJavaTypes().getJavaType()) {
-            String typeName = jType.getName();
-            String typePackageName = "";
-            int lastDot = typeName.lastIndexOf('.');
-            if (lastDot > 0) {
-                typePackageName = typeName.substring(0, lastDot);
-            }
-            additionalNamespaceInfo.put(typePackageName, nsInfo);
-            // at this point we assume that there is one exlipselink-oxm.xml per package,
-            // so we might as well break out after we set the new NamespaceInfo for the
-            // one and only package
-            break;
-        }
-        return additionalNamespaceInfo;
-    }
-    
-    /**
-     * Process an XmlSeeAlso.  Each string in the list will be loaded by the JavaModel; any non-null
-     * JavaClass instances returned will be added to the list of existingSeeAlsoClasses.
-     * 
-     * @param existingSeeAlsoClasses
-     * @param seeAlsoClassNames
-     * @param jModel
-     * @return
-     */
-    private List<JavaClass> processXmlSeeAlso(List<String> seeAlsoClassNames, JavaModel jModel) {
-        List<JavaClass> seeAlsoClasses = new ArrayList<JavaClass>();
-        for (String seeAlso : seeAlsoClassNames) {
-            JavaClass jClass = jModel.getClass(seeAlso);
-            if (jClass != null) {
-                seeAlsoClasses.add(jClass);
-            }
-        }
-        return seeAlsoClasses;
-    }
-    
-    private List<JavaClass> processXmlSeeAlso(List<JavaClass> existingSeeAlsoClasses, List<String> seeAlsoClassNames, JavaModel jModel) {
-        List<JavaClass> seeAlsoClasses = existingSeeAlsoClasses;
-        for (String seeAlso : seeAlsoClassNames) {
-            JavaClass jClass = jModel.getClass(seeAlso);
-            if (jClass != null) {
-                seeAlsoClasses.add(jClass);
-            }
-        }
-        return seeAlsoClasses;
+        return nsInfo;
     }
 }

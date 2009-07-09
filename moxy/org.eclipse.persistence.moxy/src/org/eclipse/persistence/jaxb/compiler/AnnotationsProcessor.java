@@ -28,7 +28,35 @@ import java.util.Map;
 
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessorOrder;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAnyAttribute;
+import javax.xml.bind.annotation.XmlAnyElement;
+import javax.xml.bind.annotation.XmlAttachmentRef;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementDecl;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlElementRefs;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlElements;
+import javax.xml.bind.annotation.XmlEnum;
+import javax.xml.bind.annotation.XmlEnumValue;
+import javax.xml.bind.annotation.XmlID;
+import javax.xml.bind.annotation.XmlIDREF;
+import javax.xml.bind.annotation.XmlList;
+import javax.xml.bind.annotation.XmlMimeType;
+import javax.xml.bind.annotation.XmlMixed;
+import javax.xml.bind.annotation.XmlNs;
+import javax.xml.bind.annotation.XmlNsForm;
+import javax.xml.bind.annotation.XmlRegistry;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSchema;
+import javax.xml.bind.annotation.XmlSchemaType;
+import javax.xml.bind.annotation.XmlSchemaTypes;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlValue;
 import javax.xml.bind.annotation.XmlType.DEFAULT;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapters;
@@ -56,6 +84,8 @@ import org.eclipse.persistence.jaxb.javamodel.JavaField;
 import org.eclipse.persistence.jaxb.javamodel.JavaHasAnnotations;
 import org.eclipse.persistence.jaxb.javamodel.JavaMethod;
 import org.eclipse.persistence.jaxb.javamodel.JavaPackage;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlAccessOrder;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType;
 
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
@@ -185,13 +215,17 @@ public class AnnotationsProcessor {
 
             // handle @XmlSeeAlso
             processXmlSeeAlso(javaClass, info);
+            
             NamespaceInfo packageNamespace = getNamespaceInfoForPackage(javaClass);
 
             // handle @XmlType
             preProcessXmlType(javaClass, info, packageNamespace);
 
-            // process @XmlAccessorType
+            // handle @XmlAccessorType
             preProcessXmlAccessorType(javaClass, info, packageNamespace);
+            
+            // handle @XmlAccessorOrder
+            preProcessXmlAccessorOrder(javaClass, info, packageNamespace);
 
             typeInfoClasses.add(javaClass);
             typeInfo.put(javaClass.getQualifiedName(), info);
@@ -236,10 +270,7 @@ public class AnnotationsProcessor {
             }
 
             TypeInfo info = typeInfo.get(javaClass.getQualifiedName());
-            if (info == null) {
-                continue;
-            }
-            if (info.isPostBuilt()) {
+            if (info == null || info.isPostBuilt()) {
                 continue;
             }
             info.setPostBuilt(true);
@@ -256,6 +287,9 @@ public class AnnotationsProcessor {
             // handle @XmlSchemaType(s)
             processSchemaTypes(javaClass, info);
 
+            // handle @XmlAccessorType
+            postProcessXmlAccessorType(info);
+
             NamespaceInfo packageNamespace = getNamespaceInfoForPackage(javaClass);
 
             // handle @XmlType
@@ -270,9 +304,6 @@ public class AnnotationsProcessor {
             // process schema type name
             processTypeQName(javaClass, info, packageNamespace);
 
-            // process @XmlAccessorType
-            postProcessXmlAccessorType(info);
-
             // handle superclass if necessary
             JavaClass superClass = (JavaClass) javaClass.getSuperclass();
             if (shouldGenerateTypeInfo(superClass)) {
@@ -284,12 +315,12 @@ public class AnnotationsProcessor {
             // add properties
             info.setProperties(getPropertiesForClass(javaClass, info));
 
-            // process @XmlAccessorOrder
-            processXmlAccessorOrder(javaClass, info);
-
             // process properties
             processTypeInfoProperties(info);
 
+            // handle @XmlAccessorOrder
+            postProcessXmlAccessorOrder(info);
+            
             // Make sure this class has a factory method or a zero arg constructor
             if (info.getFactoryMethodName() == null && info.getObjectFactoryClassName() == null) {
                 JavaConstructor zeroArgConstructor = javaClass.getDeclaredConstructor(new JavaClass[] {});
@@ -607,7 +638,7 @@ public class AnnotationsProcessor {
      * @param info
      */
     private void processXmlRootElement(JavaClass javaClass, TypeInfo info) {
-        if (!(info.isTransient()) && helper.isAnnotationPresent(javaClass, XmlRootElement.class)) {
+        if (helper.isAnnotationPresent(javaClass, XmlRootElement.class)) {
             XmlRootElement rootElemAnnotation = (XmlRootElement) helper.getAnnotation(javaClass, XmlRootElement.class);
             org.eclipse.persistence.jaxb.xmlmodel.XmlRootElement xmlRE = new org.eclipse.persistence.jaxb.xmlmodel.XmlRootElement();
             xmlRE.setName(rootElemAnnotation.name());
@@ -729,24 +760,24 @@ public class AnnotationsProcessor {
      */
     private void preProcessXmlAccessorType(JavaClass javaClass, TypeInfo info, NamespaceInfo packageNamespace) {
         org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType xmlAccessType;
-
         if (helper.isAnnotationPresent(javaClass, XmlAccessorType.class)) {
             XmlAccessorType accessorType = (XmlAccessorType) helper.getAnnotation(javaClass, XmlAccessorType.class);
             xmlAccessType = org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType.fromValue(accessorType.value().name());
-        } else {
-            xmlAccessType = org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType.fromValue(packageNamespace.getAccessType().name());
+            info.setXmlAccessType(xmlAccessType);
         }
-        info.setXmlAccessType(xmlAccessType);
     }
 
     /**
-     * Process XmlAccessorType for a given TypeInfo. Here we assume that the TypeInfo has an 
-     * XmlAccessorType set - typically via preProcessXmlType or XmlProcessor override.
+     * Post process XmlAccessorType.  In some cases, such as @XmlSeeAlso classes, the access type
+     * may not have been set
      * 
      * @param info
      */
     private void postProcessXmlAccessorType(TypeInfo info) {
-        info.setAccessType(XmlAccessType.valueOf(info.getXmlAccessType().name()));
+        if (!info.isSetXmlAccessType()) {
+            // set default
+            info.setXmlAccessType(XmlAccessType.PUBLIC_MEMBER);
+        }
     }
 
     /**
@@ -754,19 +785,27 @@ public class AnnotationsProcessor {
      * 
      * @param javaClass
      * @param info
+     * @param packageNamespace
      */
-    private void processXmlAccessorOrder(JavaClass javaClass, TypeInfo info) {
+    private void preProcessXmlAccessorOrder(JavaClass javaClass, TypeInfo info, NamespaceInfo packageNamespace) {
         XmlAccessorOrder order = null;
-        if (helper.isAnnotationPresent(javaClass.getPackage(), XmlAccessorOrder.class)) {
-            order = (XmlAccessorOrder) helper.getAnnotation(javaClass.getPackage(), XmlAccessorOrder.class);
-        }
         // class level annotation overrides package level annotation
         if (helper.isAnnotationPresent(javaClass, XmlAccessorOrder.class)) {
             order = (XmlAccessorOrder) helper.getAnnotation(javaClass, XmlAccessorOrder.class);
+            info.setXmlAccessOrder(XmlAccessOrder.fromValue(order.value().name()));
         }
-        if (order != null) {
-            info.orderProperties(order.value());
-        }
+    }
+    
+    /**
+     * Post process XmlAccessorOrder.  This method assumes that the given TypeInfo has 
+     * already had its order set (via annotations in preProcessXmlAccessorOrder or
+     * via xml metadata override in XMLProcessor).
+     * 
+     * @param javaClass
+     * @param info
+     */
+    private void postProcessXmlAccessorOrder(TypeInfo info) {
+        info.orderProperties();
     }
 
     /**
@@ -889,11 +928,11 @@ public class AnnotationsProcessor {
 
         if (info.isTransient()) {
             returnList.addAll(getNoAccessTypePropertiesForClass(cls, info));
-        } else if (info.getAccessType() == XmlAccessType.FIELD) {
+        } else if (info.getXmlAccessType() == XmlAccessType.FIELD) {
             returnList.addAll(getFieldPropertiesForClass(cls, info, false));
-        } else if (info.getAccessType() == XmlAccessType.PROPERTY) {
+        } else if (info.getXmlAccessType() == XmlAccessType.PROPERTY) {
             returnList.addAll(getPropertyPropertiesForClass(cls, info, false));
-        } else if (info.getAccessType() == XmlAccessType.PUBLIC_MEMBER) {
+        } else if (info.getXmlAccessType() == XmlAccessType.PUBLIC_MEMBER) {
             returnList.addAll(getPublicMemberPropertiesForClass(cls, info));
         } else {
             returnList.addAll(getNoAccessTypePropertiesForClass(cls, info));
@@ -1854,6 +1893,19 @@ public class AnnotationsProcessor {
         return packageToNamespaceMappings;
     }
 
+    /**
+     * Add a package name/NamespaceInfo entry to the map.  This method will lazy-load
+     * the map if necessary.
+     * 
+     * @return
+     */
+    public void addPackageToNamespaceMapping(String packageName, NamespaceInfo nsInfo) {
+        if (packageToNamespaceMappings == null) {
+            packageToNamespaceMappings = new HashMap<String, NamespaceInfo>();
+        }
+        packageToNamespaceMappings.put(packageName, nsInfo);
+    }
+
     public NamespaceInfo getNamespaceInfoForPackage(JavaClass javaClass) {
         NamespaceInfo packageNamespace = packageToNamespaceMappings.get(javaClass.getPackageName());
         if (packageNamespace == null) {
@@ -1874,7 +1926,11 @@ public class AnnotationsProcessor {
             }
             if (helper.isAnnotationPresent(pack, XmlAccessorType.class)) {
                 XmlAccessorType xmlAccessorType = (XmlAccessorType) helper.getAnnotation(pack, XmlAccessorType.class);
-                packageNamespace.setAccessType(xmlAccessorType.value());
+                packageNamespace.setAccessType(XmlAccessType.fromValue(xmlAccessorType.value().name()));
+            }
+            if (helper.isAnnotationPresent(pack, XmlAccessorOrder.class)) {
+                XmlAccessorOrder xmlAccessorOrder = (XmlAccessorOrder) helper.getAnnotation(pack, XmlAccessorOrder.class);
+                packageNamespace.setAccessOrder(XmlAccessOrder.fromValue(xmlAccessorOrder.value().name()));
             }
 
             packageToNamespaceMappings.put(pack.getQualifiedName(), packageNamespace);

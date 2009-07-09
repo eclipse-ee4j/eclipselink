@@ -264,9 +264,9 @@ public class JavaType {
     }
     
     /**
-     * Indicates if XmlTransient has been set.
+     * Indicates if xmlTransient has been set, i.e. is non-null.
      *  
-     * @return
+     * @return true is xmlTransient is non-null, false otherwise
      */
     public boolean isSetXmlTransient() {
         return xmlTransient != null;
@@ -327,6 +327,15 @@ public class JavaType {
     public void setXmlAccessorOrder(XmlAccessOrder value) {
         this.xmlAccessorOrder = value;
     }
+    
+    /**
+     * Indicates if xmlAccessorOrder has been set, i.e. is non-null.
+     * 
+     * @return true if xmlAccessorOrder is non-null, false otherwise
+     */
+    public boolean isSetXmlAccessorOrder() {
+        return xmlAccessorOrder != null;
+    }
 
     /**
      * Gets the value of the xmlAccessorType property.
@@ -356,6 +365,11 @@ public class JavaType {
         this.xmlAccessorType = value;
     }
 
+    /**
+     * Indicates if xmlAccessorType has been set, i.e. is non-null.
+     * 
+     * @return true if xmlAccessorType is non-null, false otherwise
+     */
     public boolean isSetXmlAccessorType() {
         return xmlAccessorType != null;
     }

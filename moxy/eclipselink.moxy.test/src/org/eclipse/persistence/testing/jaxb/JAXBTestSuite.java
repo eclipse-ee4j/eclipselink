@@ -87,6 +87,7 @@ public class JAXBTestSuite extends TestCase {
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.jaxbcontext.JaxbContextCreationTests.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.binder.adapter.BinderWithAdapterTestCases.class);
         suite.addTest(org.eclipse.persistence.testing.jaxb.listofobjects.JAXBListOfObjectsSuite.suite());
+        suite.addTest(org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestSuite.suite());
         return suite;
     }
 

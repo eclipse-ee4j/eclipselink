@@ -237,6 +237,15 @@ public class XmlBindings {
     }
 
     /**
+     * Indicates if XmlAccessorOrder is set, i.e. non-null.
+     * 
+     * @return true if xmlAccessorOrder is not null, false otherwise
+     */
+    public boolean isSetXmlAccessorOrder() {
+        return xmlAccessorOrder != null;
+    }
+
+    /**
      * Gets the value of the xmlAccessorType property.
      * 
      * @return
@@ -264,6 +273,14 @@ public class XmlBindings {
         this.xmlAccessorType = value;
     }
 
+    /**
+     * Indicates if XmlAccessorType is set, i.e. non-null.
+     * 
+     * @return true if xmlAccessorType is not null, false otherwise
+     */
+    public boolean isSetXmlAccessorType() {
+        return xmlAccessorType != null;
+    }
 
     /**
      * <p>Java class for anonymous complex type.

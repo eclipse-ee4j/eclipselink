@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<employee-type>
+	<firstName>firstName</firstName>
+	<lastName>lastName</lastName>
+	<id>666</id>
+	<isSet>false</isSet>
+</employee-type>
