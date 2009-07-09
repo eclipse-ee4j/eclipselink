@@ -51,8 +51,9 @@ public interface From<Z, X> extends Path<X>, FetchParent<Z, X> {
     java.util.Set<Join<X, ?>> getJoins();
 
     /**
-     * Join to the specified attribute using an inner join.
-     * 
+     *  Join to the specified single-valued attribute using an 
+     *  inner join.
+     *  
      * @param attribute
      *            target of the join
      * @return the resulting join
@@ -60,7 +61,8 @@ public interface From<Z, X> extends Path<X>, FetchParent<Z, X> {
     <Y> Join<X, Y> join(SingularAttribute<? super X, Y> attribute);
 
     /**
-     * Join to the specified attribute, using the given join type.
+     *  Join to the specified single-valued attribute using the 
+     *  given join type.
      * 
      * @param attribute
      *            target of the join

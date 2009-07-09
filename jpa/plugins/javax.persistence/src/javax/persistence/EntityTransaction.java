@@ -11,6 +11,8 @@
  * Contributors:
  *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
  *     		     Specification available from http://jcp.org/en/jsr/detail?id=317
+ *     gyorke - Java Persistence 2.0 - Post Proposed Final Draft (March 13, 2009) Updates
+ *               Specification available from http://jcp.org/en/jsr/detail?id=317
  *
  * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
  * This is an implementation of an early-draft specification developed under the 
@@ -34,8 +36,8 @@ public interface EntityTransaction {
     public void begin();
 
     /**
-     * Commit the current transaction, writing any non-flushed changes to the
-     * database.
+     * Commit the current resource transaction, writing any 
+     * unflushed changes to the database.  
      * 
      * @throws IllegalStateException
      *             if isActive() is false.
@@ -45,7 +47,7 @@ public interface EntityTransaction {
     public void commit();
 
     /**
-     * Roll back the current transaction.
+     * Roll back the current resource transaction. 
      * 
      * @throws IllegalStateException
      *             if isActive() is false.
@@ -55,8 +57,9 @@ public interface EntityTransaction {
     public void rollback();
 
     /**
-     * Mark the current transaction so that the only possible outcome of the
-     * transaction is for the transaction to be rolled back.
+     * Mark the current resource transaction so that the only 
+     * possible outcome of the transaction is for the transaction 
+     * to be rolled back. 
      * 
      * @throws IllegalStateException
      *             if isActive() is false.
@@ -64,7 +67,8 @@ public interface EntityTransaction {
     public void setRollbackOnly();
 
     /**
-     * Determine whether the current transaction has been marked for rollback.
+     * Determine whether the current resource transaction has been 
+     * marked for rollback.
      * 
      * @throws IllegalStateException
      *             if isActive() is false.
@@ -72,7 +76,7 @@ public interface EntityTransaction {
     public boolean getRollbackOnly();
 
     /**
-     * Indicate whether a transaction is in progress.
+     * Indicate whether a resource transaction is in progress.
      * 
      * @throws PersistenceException
      *             if an unexpected error condition is encountered.

@@ -12,10 +12,12 @@
  *
  ******************************************************************************/package org.eclipse.persistence.internal.jpa.querydef;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Predicate.BooleanOperator;
 import javax.persistence.metamodel.Metamodel;
 
 /**
@@ -45,7 +47,7 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
     }
     
     public Predicate in(Object... values) {
-        return new PredicateImpl(this.metamodel, this.currentNode.in(values));
+        return new PredicateImpl(this.metamodel, this.currentNode.in(values), new ArrayList(), BooleanOperator.AND);
     }
 
     /**
@@ -55,7 +57,7 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
      * @return predicate testing for membership
      */
     public Predicate in(Expression<?>... values) {
-        return new PredicateImpl(this.metamodel, this.currentNode.in(values));
+        return new PredicateImpl(this.metamodel, this.currentNode.in(values), new ArrayList(), BooleanOperator.AND);
     }
 
     /**
@@ -65,7 +67,7 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
      * @return predicate testing for membership
      */
     public Predicate in(Collection<?> values) {
-        return new PredicateImpl(this.metamodel, this.currentNode.in(values));
+        return new PredicateImpl(this.metamodel, this.currentNode.in(values), new ArrayList(), BooleanOperator.AND);
     }
     /**
      * Apply a predicate to test whether the expression is a member
@@ -74,16 +76,16 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
      * @return predicate testing for membership
      */
     public Predicate in(Expression<Collection<?>> values) {
-        return new PredicateImpl(this.metamodel, this.currentNode.in(((ExpressionImpl)values).getCurrentNode()));
+        return new PredicateImpl(this.metamodel, this.currentNode.in(((ExpressionImpl)values).getCurrentNode()), new ArrayList(), BooleanOperator.AND);
     }
     
     public Predicate isNotNull() {
-        return new PredicateImpl(this.metamodel, this.currentNode.notNull());
+        return new PredicateImpl(this.metamodel, this.currentNode.notNull(), new ArrayList(), BooleanOperator.AND);
     }
 
     
     public Predicate isNull() {
-        return new PredicateImpl(this.metamodel, this.currentNode.isNull());
+        return new PredicateImpl(this.metamodel, this.currentNode.isNull(), new ArrayList(), BooleanOperator.AND);
     }
     
     public boolean isPredicate(){

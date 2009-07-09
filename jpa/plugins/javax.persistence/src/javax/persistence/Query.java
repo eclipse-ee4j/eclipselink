@@ -11,6 +11,8 @@
  * Contributors:
  *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
  *     		     Specification available from http://jcp.org/en/jsr/detail?id=317
+ *     gyorke - Java Persistence 2.0 - Post Proposed Final Draft (March 13, 2009) Updates
+ *               Specification available from http://jcp.org/en/jsr/detail?id=317
  *
  * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
  * This is an implementation of an early-draft specification developed under the 
@@ -168,16 +170,47 @@ public interface Query {
      */
     Set<String> getSupportedHints();
 
+   /**
+     * Bind a Parameter object.
+     * @param param  parameter
+     * @param value  parameter value
+     * @return the same query instance
+     * @throws IllegalArgumentException if parameter
+     *         does not correspond to a parameter of the
+     *         query
+     */
+    <T> Query setParameter(Parameter<T> param, T value);
+
+    /**
+     * Bind an instance of java.util.Date to a Parameter object.
+     * @param parameter object
+     * @param value
+     * @param temporalType
+     * @return the same query instance
+     * @throws IllegalArgumentException if position does not
+     *         correspond to a parameter of the query
+     */
+    Query setParameter(Parameter<Date> param, Date value,  TemporalType temporalType);
+
+    /**
+     * Bind an instance of java.util.Calendar to a Parameter object.
+     * @param parameter
+     * @param value
+     * @param temporalType
+     * @return the same query instance
+     * @throws IllegalArgumentException if position does not
+     *         correspond to a parameter of the query
+     */
+    Query setParameter(Parameter<Calendar> param, Calendar value,  TemporalType temporalType);
+
     /**
      * Bind an argument to a named parameter.
-     * 
-     * @param name
-     *            the parameter name
+     * @param name the parameter name
      * @param value
      * @return the same query instance
-     * @throws IllegalArgumentException
-     *             if parameter name does not correspond to a parameter of the
-     *             query or if the argument is of incorrect type
+     * @throws IllegalArgumentException if parameter name does not
+     *         correspond to a parameter of the query or if
+     *         the argument is of incorrect type
      */
     Query setParameter(String name, Object value);
 
@@ -207,18 +240,7 @@ public interface Query {
      */
     Query setParameter(String name, Calendar value, TemporalType temporalType);
 
-    /**
-     * Set the value of a Parameter object.
-     * @param param  parameter to be set
-     * @param value  parameter value
-     * @return query instance
-     * @throws IllegalArgumentException if parameter
-     *         does not correspond to a parameter of the
-     *         query
-     */
-    <T> Query setParameter(Parameter<T> param, T value);
-
-    /**
+     /**
      * Bind an argument to a positional parameter.
      * 
      * @param position
@@ -265,23 +287,23 @@ public interface Query {
     Set<Parameter<?>> getParameters();
 
     /**
-     * Get the parameter of the given name and type.
+     * Get the parameter of the given name
      * 
      * @return parameter object
      * @throws IllegalArgumentException
-     *             if the parameter of the specified name and type doesn't exist
+     *             if the parameter of the specified name doesn't exist
      */
-    <T> Parameter<T> getParameter(String name, Class<T> type);
+    Parameter<?> getParameter(String name);
 
     /**
-     * Get the positional parameter with the given position and type.
+     * Get the positional parameter with the given position
      * 
      * @return parameter object
      * @throws IllegalArgumentException
-     *             if the parameter with the specified position and type doesn't
+     *             if the parameter with the specified position doesn't
      *             exist
      */
-    <T> Parameter<T> getParameter(int position, Class<T> type);
+    Parameter<?> getParameter(int position);
 
     /**
      * Return the value that has been bound to the parameter.
@@ -295,10 +317,27 @@ public interface Query {
     <T> T getParameterValue(Parameter<T> param);
 
     /**
-     * Set the flush mode type to be used for the query execution. The flush
-     * mode type applies to the query regardless of the flush mode type in use
-     * for the entity manager.
-     * 
+     * Return the value bound to the named parameter.
+     * @param name
+     * @return parameter value
+     * @throws IllegalStateException if the parameter has not been
+     *         been bound
+     */
+    Object getParameterValue(String name);
+
+    /**
+     * Return the value bound to the positional parameter.
+     * @param position
+     * @return parameter value
+     * @throws IllegalStateException if the parameter has not been
+     *         been bound
+     */
+    Object getParameterValue(int position);
+
+    /**
+     * Set the flush mode type to be used for the query execution.
+     * The flush mode type applies to the query regardless of the
+     * flush mode type in use for the entity manager.
      * @param flushMode
      */
     Query setFlushMode(FlushModeType flushMode);

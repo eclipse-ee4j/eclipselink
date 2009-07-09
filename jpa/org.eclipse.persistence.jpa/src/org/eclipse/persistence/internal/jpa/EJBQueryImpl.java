@@ -969,7 +969,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      * @param value
      * @return the same query instance
      */
-    public Query setParameter(String name, Object value) {
+    public TypedQuery setParameter(String name, Object value) {
         try {
             entityManager.verifyOpen();
             setParameterInternal(name, value, false);
@@ -988,7 +988,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      * @param temporalType
      * @return the same query instance
      */
-    public Query setParameter(String name, Date value, TemporalType temporalType) {
+    public TypedQuery setParameter(String name, Date value, TemporalType temporalType) {
         return setParameter(name, convertTemporalType(value, temporalType));
     }
 
@@ -1000,7 +1000,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      * @param temporalType
      * @return the same query instance
      */
-    public Query setParameter(String name, Calendar value, TemporalType temporalType) {
+    public TypedQuery setParameter(String name, Calendar value, TemporalType temporalType) {
         return setParameter(name, convertTemporalType(value, temporalType));
     }
 
@@ -1011,7 +1011,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      * @param value
      * @return the same query instance
      */
-    public Query setParameter(int position, Object value) {
+    public TypedQuery setParameter(int position, Object value) {
         try {
             entityManager.verifyOpen();
             setParameterInternal(position, value);
@@ -1030,7 +1030,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      * @param temporalType
      * @return the same query instance
      */
-    public Query setParameter(int position, Date value, TemporalType temporalType) {
+    public TypedQuery setParameter(int position, Date value, TemporalType temporalType) {
         return setParameter(position, convertTemporalType(value, temporalType));
     }
 
@@ -1042,7 +1042,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      * @param temporalType
      * @return the same query instance
      */
-    public Query setParameter(int position, Calendar value, TemporalType temporalType) {
+    public TypedQuery setParameter(int position, Calendar value, TemporalType temporalType) {
         return setParameter(position, convertTemporalType(value, temporalType));
     }
 
@@ -1188,6 +1188,24 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
     }
 
     /**
+     * @see Query#getParameter(String, Class)
+     * @since Java Persistence 2.0
+     */
+    public Parameter<?> getParameter(String name) {
+        // TODO
+        throw new PersistenceException("Not yet Implemented");
+    }
+
+    /**
+     * @see Query#getParameter(int, Class)
+     * @since Java Persistence 2.0
+     */
+    public Parameter<?> getParameter(int position) {
+        // TODO
+        throw new PersistenceException("Not yet Implemented");
+    }
+
+    /**
      * @see Query#getParameterValue(Parameter)
      * @since Java Persistence 2.0
      */
@@ -1196,6 +1214,32 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
         throw new PersistenceException("Not yet Implemented");
     }
 
+    /**
+     * Return the value bound to the named parameter.
+     * @param name
+     * @return parameter value
+     * @throws IllegalStateException if the parameter has not been
+     *         been bound
+     */
+    public Object getParameterValue(String name){
+        return this.parameters.get(name);
+    }
+
+    /**
+     * Return the value bound to the positional parameter.
+     * @param position
+     * @return parameter value
+     * @throws IllegalStateException if the parameter has not been
+     *         been bound
+     */
+    public Object getParameterValue(int position){
+        String param = String.valueOf(position);
+        if (!this.parameters.containsKey(param)){
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("position_param_not_found", new Object[]{position}));
+        }
+        return this.parameters.get(param);
+    }
+    
     /**
      * @see Query#getParameters()
      * @since Java Persistence 2.0
@@ -1273,6 +1317,34 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * Bind an instance of java.util.Date to a Parameter object.
+     * @param parameter object
+     * @param value
+     * @param temporalType
+     * @return the same query instance
+     * @throws IllegalArgumentException if position does not
+     *         correspond to a parameter of the query
+     */
+    public TypedQuery setParameter(Parameter<Date> param, Date value,  TemporalType temporalType){
+        //TODO
+        throw new UnsupportedOperationException();
+    }
+    
+    /**
+     * Bind an instance of java.util.Calendar to a Parameter object.
+     * @param parameter
+     * @param value
+     * @param temporalType
+     * @return the same query instance
+     * @throws IllegalArgumentException if position does not
+     *         correspond to a parameter of the query
+     */
+    public TypedQuery setParameter(Parameter<Calendar> param, Calendar value,  TemporalType temporalType){
+        //TODO
+        throw new UnsupportedOperationException();
+    }
+    
     /**
      * Unwrap the query into the JPA implementation classes/interfaces or the
      * underlying native EclipseLink query.

@@ -2,7 +2,9 @@ package org.eclipse.persistence.internal.jpa.querydef;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -37,7 +39,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      *  @return query object
      */
     public CriteriaQuery<Object> createQuery(){
-        return new CriteriaQueryImpl(this.metamodel, ResultType.OBJECT_ARRAY, new SelectionImpl(ClassConstants.AOBJECT, null));
+        return new CriteriaQueryImpl(this.metamodel, ResultType.OBJECT_ARRAY, new SelectionImpl(ClassConstants.AOBJECT, null), this);
     }
 
     /**
@@ -46,15 +48,15 @@ public class QueryBuilderImpl implements QueryBuilder {
      */
     public <T> CriteriaQuery<T> createQuery(Class<T> resultClass){
         if (resultClass.equals(Tuple.class)){
-            return new CriteriaQueryImpl(this.metamodel, ResultType.TUPLE, new SelectionImpl(resultClass, null));
+            return new CriteriaQueryImpl(this.metamodel, ResultType.TUPLE, new SelectionImpl(resultClass, null), this);
         }else if(resultClass.equals(ClassConstants.AOBJECT)){
-            return new CriteriaQueryImpl<T>(this.metamodel, ResultType.OBJECT_ARRAY, new SelectionImpl(resultClass, null));
+            return new CriteriaQueryImpl<T>(this.metamodel, ResultType.OBJECT_ARRAY, new SelectionImpl(resultClass, null), this);
         }else{
             ManagedType type = this.metamodel.type(resultClass);
             if (type != null && type.getPersistenceType().equals(PersistenceType.ENTITY)){
-                return new CriteriaQueryImpl(this.metamodel, ResultType.ENTITY, new SelectionImpl(resultClass, null));
+                return new CriteriaQueryImpl(this.metamodel, ResultType.ENTITY, new SelectionImpl(resultClass, null), this);
             }else {
-                return new CriteriaQueryImpl(this.metamodel, ResultType.CONSTRUCTOR, new SelectionImpl(resultClass, null));
+                return new CriteriaQueryImpl(this.metamodel, ResultType.CONSTRUCTOR, new SelectionImpl(resultClass, null), this);
             }
         }
     }
@@ -65,7 +67,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      *  @return query object
      */
     public CriteriaQuery<Tuple> createTupleQuery(){
-        return new CriteriaQueryImpl(this.metamodel, ResultType.TUPLE, new SelectionImpl(Tuple.class, null));
+        return new CriteriaQueryImpl(this.metamodel, ResultType.TUPLE, new SelectionImpl(Tuple.class, null), this);
     }
 
     /**
@@ -275,14 +277,34 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return and predicate
      */
     public Predicate and(Expression<Boolean> x, Expression<Boolean> y){
-        if (((ExpressionImpl)x).isPredicate()){
-            ((PredicateImpl)x).setOperator(BooleanOperator.AND);
-            ((PredicateImpl)x).add(y);
-            return (Predicate)x;
+        PredicateImpl xp = null;
+        PredicateImpl yp = null;
+        
+        if (!((ExpressionImpl)x).isPredicate()){
+            xp = (PredicateImpl)this.isTrue(x);
+        }else{
+            xp = (PredicateImpl)x;
         }
-        Predicate predicate = new PredicateImpl(this.metamodel, ((ExpressionImpl)x).getCurrentNode());
-        predicate.add(y);
-        return predicate;
+        if (!((ExpressionImpl)y).isPredicate()){
+            yp = (PredicateImpl)this.isTrue(y);
+        }else{
+            yp = (PredicateImpl)y;
+        }
+        if (yp.expressions.isEmpty()){
+            if (yp.isNegated()){
+                return yp;
+            }else{
+                return xp;
+            }
+        }
+        if (xp.expressions.isEmpty()){
+            if (xp.isNegated()){
+                return xp;
+            }else{
+                return yp;
+            }
+        }
+        return new PredicateImpl(this.metamodel, xp.getCurrentNode().and(yp.getCurrentNode()), buildList(xp,yp), BooleanOperator.AND);
     }
 
     /**
@@ -295,15 +317,30 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return or predicate
      */
     public Predicate or(Expression<Boolean> x, Expression<Boolean> y){
-        if (((ExpressionImpl)x).isPredicate()){
-            ((PredicateImpl)x).setOperator(BooleanOperator.OR);
-            ((PredicateImpl)x).add(y);
-            return (Predicate)x;
+        PredicateImpl xp = null;
+        PredicateImpl yp = null;
+        
+        if (!((ExpressionImpl)x).isPredicate()){
+            xp = (PredicateImpl)this.isTrue(x);
+        }else{
+            xp = (PredicateImpl)x;
         }
-        Predicate predicate = new PredicateImpl(this.metamodel, ((ExpressionImpl)x).getCurrentNode());
-        ((PredicateImpl)predicate).setOperator(BooleanOperator.OR);
-        predicate.add(y);
-        return predicate;
+        if (!((ExpressionImpl)y).isPredicate()){
+            yp = (PredicateImpl)this.isTrue(y);
+        }else{
+            yp = (PredicateImpl)y;
+        }
+        if (yp.expressions.isEmpty()){
+            if (yp.isNegated()){
+                return xp;
+            }
+        }
+        if (xp.expressions.isEmpty()){
+            if (xp.isNegated()){
+                return yp;
+            }
+        }
+        return new PredicateImpl(this.metamodel, xp.getCurrentNode().or(yp.getCurrentNode()), buildList(xp,yp), BooleanOperator.OR);
     }
 
     /**
@@ -315,15 +352,15 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return and predicate
      */
     public Predicate and(Predicate... restrictions){
-        if (restrictions == null || restrictions.length == 0){
-            return new PredicateImpl(this.metamodel, null);
+        int max = restrictions.length;
+        if (max == 0){
+            return this.conjunction();
         }
-        Predicate predicate = restrictions[0];
-        ((PredicateImpl)predicate).setOperator(BooleanOperator.AND);
-        for (int i = 1; i< restrictions.length; ++i){
-            predicate.add(restrictions[i]);
+        Predicate a = restrictions[0];
+        for (int i = 1; i < max; ++i){
+            a = this.and(a, restrictions[i]);
         }
-        return predicate;
+        return a;
     }
 
     /**
@@ -335,15 +372,15 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return and predicate
      */
     public Predicate or(Predicate... restrictions){
-        if (restrictions == null || restrictions.length == 0){
-            return new PredicateImpl(this.metamodel, null, BooleanOperator.OR);
+        int max = restrictions.length;
+        if (max == 0){
+            return this.disjunction();
         }
-        Predicate predicate = restrictions[0];
-        ((PredicateImpl)predicate).setOperator(BooleanOperator.OR);
-        for (int i = 1; i< restrictions.length; ++i){
-            predicate.add(restrictions[i]);
+        Predicate a = restrictions[0];
+        for (int i = 1; i < max; ++i){
+            a = this.or(a, restrictions[i]);
         }
-        return predicate;
+        return a;
     }
 
     /**
@@ -355,10 +392,9 @@ public class QueryBuilderImpl implements QueryBuilder {
      */
     public Predicate not(Expression<Boolean> restriction){
         if (((ExpressionImpl)restriction).isPredicate()){
-            ((PredicateImpl)restriction).negate();
-            return (Predicate)restriction;
+            return ((PredicateImpl)restriction).negate();
         }
-        return new PredicateImpl(this.metamodel, ((ExpressionImpl)restriction).getCurrentNode().not());
+        return new PredicateImpl(this.metamodel, ((ExpressionImpl)restriction).currentNode.not(), buildList(restriction), BooleanOperator.NOT);
     }
 
     /**
@@ -368,7 +404,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return and predicate
      */
     public Predicate conjunction(){
-        return new PredicateImpl(this.metamodel, null);
+        return new PredicateImpl(this.metamodel, null, new ArrayList(), BooleanOperator.AND);
     }
 
     /**
@@ -378,9 +414,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return or predicate
      */
     public Predicate disjunction(){
-        PredicateImpl predicate = new PredicateImpl(this.metamodel, null);
-        predicate.setOperator(BooleanOperator.OR);
-        return predicate;
+        return new PredicateImpl(this.metamodel, null, new ArrayList(), BooleanOperator.OR);
     }
 
     // turn Expression<Boolean> into a Predicate
@@ -400,7 +434,7 @@ public class QueryBuilderImpl implements QueryBuilder {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("PREDICATE_PASSED_TO_EVALUATION"));
             }
         }
-        return new PredicateImpl(this.metamodel, ((ExpressionImpl)x).getCurrentNode().equal(true));
+        return new PredicateImpl(this.metamodel, ((ExpressionImpl)x).getCurrentNode().equal(true), new ArrayList(), BooleanOperator.AND);
     }
 
     /**
@@ -411,7 +445,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return predicate
      */
     public Predicate isFalse(Expression<Boolean> x){
-        return new PredicateImpl(this.metamodel, ((ExpressionImpl)x).getCurrentNode().equal(false));
+        return new PredicateImpl(this.metamodel, ((ExpressionImpl)x).getCurrentNode().equal(false), new ArrayList(), BooleanOperator.AND);
     }
 
     // equality:
@@ -425,7 +459,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return equality predicate
      */
     public Predicate equal(Expression<?> x, Expression<?> y){
-        return new PredicateImpl(this.metamodel, ((ExpressionImpl)x).getCurrentNode().equal(((ExpressionImpl)y).getCurrentNode()));
+        return new PredicateImpl(this.metamodel, ((ExpressionImpl)x).getCurrentNode().equal(((ExpressionImpl)y).getCurrentNode()), new ArrayList(), BooleanOperator.AND);
     }
 
     /**
@@ -438,7 +472,7 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return inequality predicate
      */
     public Predicate notEqual(Expression<?> x, Expression<?> y){
-        return new PredicateImpl(this.metamodel, ((ExpressionImpl)x).getCurrentNode().notEqual(((ExpressionImpl)y).getCurrentNode()));
+        return new PredicateImpl(this.metamodel, ((ExpressionImpl)x).getCurrentNode().notEqual(((ExpressionImpl)y).getCurrentNode()), new ArrayList(), BooleanOperator.AND);
     }
 
     /**
@@ -454,7 +488,7 @@ public class QueryBuilderImpl implements QueryBuilder {
         if (((ExpressionImpl)x).getCurrentNode() == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
         }
-        return new PredicateImpl(this.metamodel, ((ExpressionImpl)x).getCurrentNode().equal(y));
+        return new PredicateImpl(this.metamodel, ((ExpressionImpl)x).getCurrentNode().equal(y), new ArrayList(), BooleanOperator.AND);
     }
 
     /**
@@ -470,7 +504,7 @@ public class QueryBuilderImpl implements QueryBuilder {
         if (((ExpressionImpl)x).getCurrentNode() == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
         }
-        return new PredicateImpl(this.metamodel, ((ExpressionImpl)x).getCurrentNode().notEqual(y));
+        return new PredicateImpl(this.metamodel, ((ExpressionImpl)x).getCurrentNode().notEqual(y), new ArrayList(), BooleanOperator.AND);
     }
 
     // comparisons for generic (non-numeric) operands:
@@ -626,6 +660,14 @@ public class QueryBuilderImpl implements QueryBuilder {
     public <Y extends Comparable<Y>> Predicate between(Expression<? extends Y> v, Y x, Y y){
         //TODO
         return null;
+    }
+    
+    protected List<Expression<Boolean>> buildList(Expression<Boolean>... expressions){
+        ArrayList list = new ArrayList();
+        for(Expression<Boolean> exp : expressions){
+            list.add(exp);
+        }
+        return list;
     }
 
     // comparisons for numeric operands:
@@ -1224,6 +1266,25 @@ public class QueryBuilderImpl implements QueryBuilder {
      * @return predicate
      */
     public <E, C extends Collection<E>> Predicate isNotMember(Expression<E> elem, Expression<C> collection){
+        //TODO
+        return null;
+    }
+
+    /**
+     * Create a predicate to test whether the expression is null.
+     * @param x expression
+     * @return predicate
+     */
+    public Predicate isNull(Expression<?> x){
+        //TODO
+        return null;
+    }
+    /**
+     * Create a predicate to test whether the expression is not null.
+     * @param x expression
+     * @return predicate
+     */
+    public Predicate isNotNull(Expression<?> x){
         //TODO
         return null;
     }

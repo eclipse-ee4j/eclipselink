@@ -292,14 +292,29 @@ public interface QueryBuilder {
      */
     Predicate isFalse(Expression<Boolean> x);
 
-    // equality:
+	
+    //null tests:
+
+    /**
+     * Create a predicate to test whether the expression is null.
+     * @param x expression
+     * @return predicate
+     */
+    Predicate isNull(Expression<?> x);
+
+    /**
+     * Create a predicate to test whether the expression is not null.
+     * @param x expression
+     * @return predicate
+     */
+    Predicate isNotNull(Expression<?> x);
+
+    //equality:
+	
     /**
      * Create a predicate for testing the arguments for equality.
-     * 
-     * @param x
-     *            expression
-     * @param y
-     *            expression
+     * @param x  expression
+     * @param y  expression
      * @return equality predicate
      */
     Predicate equal(Expression<?> x, Expression<?> y);

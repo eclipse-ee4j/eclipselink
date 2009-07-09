@@ -11,6 +11,8 @@
  * Contributors:
  *     dclarke - Java Persistence 2.0 - Proposed Final Draft (March 13, 2009)
  *     		     Specification available from http://jcp.org/en/jsr/detail?id=317
+ *     gyorke - Java Persistence 2.0 - Post Proposed Final Draft (March 13, 2009) Updates
+ *               Specification available from http://jcp.org/en/jsr/detail?id=317
  *
  * Java(TM) Persistence API, Version 2.0 - EARLY ACCESS
  * This is an implementation of an early-draft specification developed under the 
@@ -35,7 +37,7 @@ import java.util.List;
  */
 public interface Predicate extends Expression<Boolean> {
     public static enum BooleanOperator {
-        AND, OR
+        AND, OR, NOT
     }
 
     /**
@@ -59,14 +61,6 @@ public interface Predicate extends Expression<Boolean> {
      * @return list boolean expressions forming the predicate
      */
     List<Expression<Boolean>> getExpressions();
-
-    /**
-     * Add another operand to the predicate. Whether the operand is added as a
-     * conjunct or disjunct is determined by the predicate operator.
-     * 
-     * @return the resulting compound predicate
-     */
-    Predicate add(Expression<Boolean> exp);
 
     /**
      * Apply negation to the predicate.

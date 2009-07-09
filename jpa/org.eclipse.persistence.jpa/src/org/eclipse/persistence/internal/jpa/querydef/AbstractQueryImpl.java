@@ -51,15 +51,17 @@ public class AbstractQueryImpl<T> implements AbstractQuery<T> {
     protected Set<Root<?>> roots;
     protected Expression<Boolean> where; 
     protected ResultType queryResult;
+    protected QueryBuilderImpl queryBuilder;
     
     protected enum ResultType{
         OBJECT_ARRAY, PARTIAL, TUPLE, ENTITY, CONSTRUCTOR
     }
     
-    public AbstractQueryImpl(Metamodel metamodel, ResultType queryResult){
+    public AbstractQueryImpl(Metamodel metamodel, ResultType queryResult, QueryBuilderImpl queryBuilder){
         this.roots = new HashSet<Root<?>>();
         this.metamodel = metamodel;
         this.queryResult = queryResult;
+        this.queryBuilder = queryBuilder;
     }
     
     /**
@@ -127,12 +129,7 @@ public class AbstractQueryImpl<T> implements AbstractQuery<T> {
         if (restrictions == null || restrictions.length == 0){
             this.where = null;
         }
-        Predicate predicate = restrictions[0];
-        ((PredicateImpl)predicate).setOperator(BooleanOperator.AND);
-        for (int i = 1; i< restrictions.length; ++i){
-            predicate.add(restrictions[i]);
-        }
-        this.where = predicate;
+        this.where = this.queryBuilder.and(restrictions);
         return this;
     }
 

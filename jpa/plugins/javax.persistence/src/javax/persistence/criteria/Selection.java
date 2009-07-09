@@ -25,6 +25,8 @@
  ******************************************************************************/
 package javax.persistence.criteria;
 
+import java.util.List;
+
 import javax.persistence.TupleElement;
 
 /**
@@ -42,5 +44,22 @@ public interface Selection<X> extends TupleElement<X> {
      * @param name
      *            alias
      */
-    void setAlias(String name);
+    Selection<X> alias(String name);
+    
+
+    /**
+     * Whether the selection item is a compound selection
+     * @return boolean 
+     */
+    boolean isCompoundSelection();
+
+    /**
+     * Return selection items composing a compound selection
+     * @return list of selection items
+     * @throws IllegalStateException if selection is not a compound
+     *           selection
+     */
+    List<Selection<?>> getCompoundSelectionItems();
+
+
 }

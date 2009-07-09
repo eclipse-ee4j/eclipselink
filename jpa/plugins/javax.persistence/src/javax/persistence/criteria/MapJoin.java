@@ -27,6 +27,8 @@ package javax.persistence.criteria;
 
 import java.util.Map;
 
+import javax.persistence.metamodel.MapAttribute;
+
 /**
  * The interface MapJoin is the type of the result of joining to a collection
  * over an association or element collection that has been specified as a
@@ -49,7 +51,7 @@ public interface MapJoin<Z, K, V>
      * @return metamodel type representing the Map that is the target of the
      *         join
      */
-    javax.persistence.metamodel.MapAttribute<? super Z, K, V> getModel();
+    MapAttribute<? super Z, K, V> getModel();
 
     /**
      * Specify an innerjoin over the map key.

@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.querydef;
 
+import java.util.List;
+
 import javax.persistence.criteria.Selection;
 
 import org.eclipse.persistence.expressions.Expression;
@@ -50,10 +52,16 @@ public class SelectionImpl<X> implements Selection<X> {
         this.currentNode = expressionNode;
     }
 
-    public void setAlias(String name) {
+    /**
+     * Assign an alias to the selection.
+     * 
+     * @param name
+     *            alias
+     */
+    public Selection<X> alias(String name) {
         this.alias = name;
+        return this;
     }
-
     public String getAlias() {
         return this.alias;
     }
@@ -64,6 +72,26 @@ public class SelectionImpl<X> implements Selection<X> {
     
     public boolean isConstructor(){
         return false;
+    }
+
+    /**
+     * Whether the selection item is a compound selection
+     * @return boolean 
+     */
+    public boolean isCompoundSelection(){
+        //TODO
+        return false;
+    }
+
+    /**
+     * Return selection items composing a compound selection
+     * @return list of selection items
+     * @throws IllegalStateException if selection is not a compound
+     *           selection
+     */
+    public List<Selection<?>> getCompoundSelectionItems(){
+        //TODO
+        return null;
     }
 
 }

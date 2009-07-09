@@ -24,6 +24,8 @@
  ******************************************************************************/
 package javax.persistence;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public interface TypedQuery<X> extends Query {
@@ -105,6 +107,118 @@ public interface TypedQuery<X> extends Query {
      *         query
      */
     <T> TypedQuery<X> setParameter(Parameter<T> param, T value);
+
+    /**
+     * Bind an instance of java.util.Date to a Parameter object.
+     * @param parameter object
+     * @param value
+     * @param temporalType
+     * @return the same query instance
+     * @throws IllegalArgumentException if position does not
+     *         correspond to a parameter of the query
+     */
+    TypedQuery<X> setParameter(Parameter<Date> param, Date value,  TemporalType temporalType);
+
+
+    /**
+     * Bind an instance of java.util.Calendar to a Parameter object.
+     * @param parameter
+     * @param value
+     * @param temporalType
+     * @return the same query instance
+     * @throws IllegalArgumentException if position does not
+     *         correspond to a parameter of the query
+     */
+    TypedQuery<X> setParameter(Parameter<Calendar> param, Calendar value,  TemporalType temporalType);
+
+    /**
+     * Bind an argument to a named parameter.
+     * @param name the parameter name
+     * @param value
+     * @return the same query instance
+     * @throws IllegalArgumentException if parameter name does not
+     *         correspond to a parameter of the query or if
+     *         the argument is of incorrect type
+     */
+    TypedQuery<X> setParameter(String name, Object value);
+
+    /**
+     * Bind an instance of java.util.Date to a named parameter.
+     * @param name
+     * @param value
+     * @param temporalType
+     * @return the same query instance
+     * @throws IllegalArgumentException if parameter name does not
+     *         correspond to a parameter of the query
+     */
+    TypedQuery<X> setParameter(String name, Date value, TemporalType temporalType);
+
+    /**
+     * Bind an instance of java.util.Calendar to a named parameter.
+     * @param name
+     * @param value
+     * @param temporalType
+     * @return the same query instance
+     * @throws IllegalArgumentException if parameter name does not
+     *         correspond to a parameter of the query 
+     */
+    TypedQuery<X> setParameter(String name, Calendar value, TemporalType temporalType);
+
+    /**
+     * Bind an argument to a positional parameter.
+     * @param position
+     * @param value
+     * @return the same query instance
+     * @throws IllegalArgumentException if position does not
+     *         correspond to a positional parameter of the
+     *         query or if the argument is of incorrect type
+     */
+    TypedQuery<X> setParameter(int position, Object value);
+
+    /**
+     * Bind an instance of java.util.Date to a positional parameter.
+     * @param position
+     * @param value
+     * @param temporalType
+     * @return the same query instance
+     * @throws IllegalArgumentException if position does not
+     *         correspond to a positional parameter of the query
+     */
+    TypedQuery<X> setParameter(int position, Date value,  TemporalType temporalType);
+
+    /**
+     * Bind an instance of java.util.Calendar to a positional
+     * parameter.
+     * @param position
+     * @param value
+     * @param temporalType
+     * @return the same query instance
+     * @throws IllegalArgumentException if position does not
+     *         correspond to a positional parameter of the query
+     */
+    TypedQuery<X> setParameter(int position, Calendar value,  TemporalType temporalType);
+
+    /**
+     * Get the parameter of the given name and type.
+     * @param name 
+     * @param type
+     * @return parameter object
+     * @throws IllegalArgumentException if the parameter of the
+     *         specified name does not exist or is not assignable
+     *         to the type
+     */
+    <T> Parameter<T> getParameter(String name, Class<T> type);
+
+    /**
+     * Get the positional parameter with the given position and type.
+     * @param position 
+     * @param type
+     * @return parameter object
+     * @throws IllegalArgumentException if the parameter with the
+     *         specified position does not exist or is not assignable
+     *         to the type
+     */
+    <T> Parameter<T> getParameter(int position, Class<T> type);
 
      /**
       * Set the flush mode type to be used for the query execution.

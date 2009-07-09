@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     GYorke - non-bug update to set accessor in case of connection failure.  Thi
+ *              will allow the retry code to function.
  ******************************************************************************/  
 package org.eclipse.persistence.internal.databaseaccess;
 
@@ -321,10 +323,16 @@ public abstract class DatasourceAccessor implements Accessor {
      * Exceptions are caught and re-thrown as EclipseLink exceptions.
      */
     protected void connectInternal(Login login, AbstractSession session) throws DatabaseException {
-        this.datasourceConnection = login.connectToDatasource(this, session);
-        this.isConnected = true;
-        if(this.customizer != null) {
-            customizer.customize();
+        try{
+            this.datasourceConnection = login.connectToDatasource(this, session);
+            this.isConnected = true;
+            if(this.customizer != null) {
+                customizer.customize();
+            }
+        }catch (DatabaseException ex){
+            //Set the accessor to ensure the retry code has an oportunity to retry.
+            ex.setAccessor(this);
+            throw ex;
         }
     }
 

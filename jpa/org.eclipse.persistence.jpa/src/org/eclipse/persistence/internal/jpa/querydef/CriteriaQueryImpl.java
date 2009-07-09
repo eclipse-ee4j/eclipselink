@@ -50,13 +50,13 @@ import org.eclipse.persistence.queries.ReportQuery;
 public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements CriteriaQuery<T> {
     
     protected List<Selection<?>> selections;
-    protected Selection<T> selection;
+    protected Selection selection;
     protected Class<T> queryType;
     
     protected boolean distinct;
 
-    public CriteriaQueryImpl(Metamodel metamodel, ResultType queryResult, Selection<T> initSelection){
-        super(metamodel, queryResult);
+    public CriteriaQueryImpl(Metamodel metamodel, ResultType queryResult, Selection<T> initSelection, QueryBuilderImpl queryBuilder){
+        super(metamodel, queryResult, queryBuilder);
         this.selections = new ArrayList<Selection<?>>();
         this.selection = initSelection;
     }
@@ -68,19 +68,106 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      *        is to be returned in the query result
      * @return the modified query
      */
-    public CriteriaQuery<T> select(Selection<T> selection){
+    public CriteriaQuery<T> select(Selection<? extends T> selection){
         this.selection = selection;
         return this;
     }
 
     /**
-     * Specify the items that are to be returned in the query result,
-     * Replaces the previously specified selections, if any.
+     * Specify the items that are to be returned in the query result.
+     * Replaces the previously specified selection(s), if any.
+     *
+     * The type of the result of the query execution depends on
+     * the specification of the criteria query object as well as the
+     * arguments to the multiselect method as follows:
+     *
+     * If the type of the criteria query is CriteriaQuery<Tuple>,
+     * a Tuple object corresponding to the arguments of the 
+     * multiselect method will be instantiated and returned for 
+     * each row that results from the query execution.
+     *
+     * If the type of the criteria query is CriteriaQuery<X> for
+     * some user-defined class X, then the arguments to the 
+     * multiselect method will be passed to the X constructor and 
+     * an instance of type X will be returned for each row.  
+     * The IllegalStateException will be thrown if a constructor 
+     * for the given argument types does not exist.
+     *
+     * If the type of the criteria query is CriteriaQuery<X[]> for
+     * some class X, an instance of type X[] will be returned for 
+     * each row.  The elements of the array will correspond to the 
+     * arguments of the multiselect method.    The 
+     * IllegalStateException will be thrown if the arguments to the 
+     * multiselect method are not of type X.
+     *
+     * If the type of the criteria query is CriteriaQuery<Object>,
+     * and only a single argument is passed to the multiselect 
+     * method, an instance of type Object will be returned for 
+     * each row.
+     *
+     * If the type of the criteria query is CriteriaQuery<Object>,
+     * and more than one argument is passed to the multiselect 
+     * method, an instance of type Object[] will be instantiated 
+     * and returned for each row.  The elements of the array will
+     * correspond to the arguments to the multiselect method.
+     *
      * @param selections  expressions specifying the items that
-     *        are returned in the query result
+     *        are to be returned in the query result
      * @return the modified query
      */
     public CriteriaQuery<T> multiselect(Selection<?>... selections){
+        this.selections.clear();
+        for(Selection selection: selections){
+            this.selections.add(selection);
+        }
+        return this;
+    }
+
+    /**
+     * Specify the items that are to be returned in the query result.
+     * Replaces the previously specified selection(s), if any.
+     *
+     * The type of the result of the query execution depends on
+     * the specification of the criteria query object as well as the
+     * arguments to the multiselect method as follows:
+     *
+     * If the type of the criteria query is CriteriaQuery<Tuple>,
+     * a Tuple object corresponding to the items in the selection
+     * list passed to the multiselect method will be instantiated 
+     * and returned for each row that results from the query execution.
+     *
+     * If the type of the criteria query is CriteriaQuery<X> for
+     * some user-defined class X, then the items in the selection 
+     * list passed to the multiselect method will be passed to 
+     * the X constructor and an instance of type X will be returned 
+     * for each row.  The IllegalStateException will be thrown if a 
+     * constructor for the given argument types does not exist.
+     *
+     * If the type of the criteria query is CriteriaQuery<X[]> for
+     * some class X, an instance of type X[] will be returned for 
+     * each row.  The elements of the array will correspond to the 
+     * items in the selection list passed to the multiselect method.    
+     * The IllegalStateException will be thrown if the elements in
+     * the selection list passed to the multiselect method are 
+     * not of type X.
+     *
+     * If the type of the criteria query is CriteriaQuery<Object>,
+     * and the selection list passed to the multiselect method
+     * contains only a single item, an instance of type Object 
+     * will be returned for each row.
+     *
+     * If the type of the criteria query is CriteriaQuery<Object>,
+     * and the selection list passed to the multiselect method
+     * contains more than one item, an instance of type Object[] 
+     * will be instantiated and returned for each row.  The elements 
+     * of the array will correspond to the items in the selection
+     * list passed to the multiselect method.
+     *
+     * @param selectionList  list of expressions specifying the 
+     *        items that to be are returned in the query result
+     * @return the modified query
+     */
+    public CriteriaQuery<T> multiselect(List<Selection<?>> selectionList){
         this.selections.clear();
         for(Selection selection: selections){
             this.selections.add(selection);
@@ -253,11 +340,16 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
     }
 
     /**
-     * Return the selection items of the query as a list
-     * @return the selection items of the query as a list
+     * Return the result type of the query.
+     * If a result type was specified as an argument to the
+     * createQuery method, that type will be returned.
+     * If the query was created using the createTupleQuery
+     * method, the result type is Tuple.
+     * Otherwise, the result type is Object.
+     * @return result type
      */
-    public List<Selection<?>> getSelectionList(){
-        return this.selections;
+    public Class<?> getResultType(){
+        return this.queryType;
     }
     
     /**
@@ -275,19 +367,19 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
             query = new ReadAllQuery(this.getSelection().getJavaType());
         }else if (this.queryResult.equals(ResultType.PARTIAL)){
             ReadAllQuery raq = new ReadAllQuery(this.getSelection().getJavaType());
-            for (Selection selection: getSelectionList()){
+            for (Selection selection: this.selections){
                 raq.addPartialAttribute(((SelectionImpl)selection).currentNode);
             }
             query = raq;
         }else{
             ReportQuery reportQuery = null;
             if (this.queryResult.equals(ResultType.TUPLE)){
-                reportQuery = new TupleQuery(this.getSelectionList());
+                reportQuery = new TupleQuery(this.selections);
             }else{
                 reportQuery = new ReportQuery();
                 reportQuery.setShouldReturnWithoutReportQueryResult(true);
             }
-            for (Selection selection: getSelectionList()){
+            for (Selection selection: this.selections){
                 if (((SelectionImpl)selection).isConstructor()){
                     reportQuery.addConstructorReportItem(((ConstructorSelectionImpl)selection).translate());
                 }else{

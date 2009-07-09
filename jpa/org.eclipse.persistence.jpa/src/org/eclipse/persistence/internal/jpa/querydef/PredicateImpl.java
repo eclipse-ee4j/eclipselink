@@ -39,18 +39,11 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
 public class PredicateImpl extends ExpressionImpl<Boolean> implements Predicate {
     
     protected BooleanOperator operator;
-    protected boolean isNegated;
     protected List<Expression<Boolean>> expressions;
     
-    public <T> PredicateImpl (Metamodel metamodel, org.eclipse.persistence.expressions.Expression expressionNode){
+    public <T> PredicateImpl (Metamodel metamodel, org.eclipse.persistence.expressions.Expression expressionNode, List<Expression<Boolean>> parentExpressions, BooleanOperator operator){
         super(metamodel, (Class<Boolean>)ClassConstants.BOOLEAN, expressionNode);
-        this.expressions = new ArrayList<Expression<Boolean>>();
-        if (expressionNode == null) return;
-        this.expressions.add(this);
-    }
-    
-    public <T> PredicateImpl (Metamodel metamodel, org.eclipse.persistence.expressions.Expression expressionNode, BooleanOperator operator){
-        this(metamodel, expressionNode);
+        this.expressions = new ArrayList<Expression<Boolean>>(parentExpressions);
         this.operator = operator;
     }
 
@@ -70,7 +63,7 @@ public class PredicateImpl extends ExpressionImpl<Boolean> implements Predicate 
      * @return boolean indicating if the predicate has been negated
      */
     public boolean isNegated(){
-        return this.isNegated;
+        return this.operator == BooleanOperator.NOT;
     }
 
     /**
@@ -83,41 +76,17 @@ public class PredicateImpl extends ExpressionImpl<Boolean> implements Predicate 
     }
 
     /**
-     * Add another operand to the predicate. Whether the operand is added as a
-     * conjunct or disjunct is determined by the predicate operator.
-     * 
-     * @return the resulting compound predicate
-     */
-    public Predicate add(Expression<Boolean> s){
-        org.eclipse.persistence.expressions.Expression node = ((ExpressionImpl)s).getCurrentNode();
-        if (node == null) return this;
-        
-        if (this.currentNode == null){
-            this.currentNode = node;
-            return this;
-        }
-        this.expressions.add(s);
-        if (this.operator.equals(BooleanOperator.AND)){
-            this.currentNode = this.currentNode.and(node);
-        }else{
-            this.currentNode = this.currentNode.or(node);
-        }
-        return this;
-    }
-
-    /**
      * Apply negation to the predicate.
      * 
      * @return the negated predicate
      */
     public Predicate negate(){
-        this.isNegated = true;
         if (this.currentNode == null){
-            this.operator = BooleanOperator.OR;
-            return this;
+            return new PredicateImpl(this.metamodel, null, new ArrayList(), BooleanOperator.NOT);
         }
-        this.currentNode = this.currentNode.not();
-        return this;
+        List<Expression<Boolean>> list = new ArrayList<Expression<Boolean>>();
+        list.add(this);
+        return new PredicateImpl(this.metamodel, this.currentNode.not(), list, BooleanOperator.NOT);
     }
 
     /**

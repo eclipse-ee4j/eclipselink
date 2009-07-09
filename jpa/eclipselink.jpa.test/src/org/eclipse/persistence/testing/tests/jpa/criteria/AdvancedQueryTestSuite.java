@@ -28,6 +28,9 @@ import javax.persistence.RollbackException;
 import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.QueryBuilder;
 import javax.persistence.criteria.Root;
 
@@ -54,6 +57,7 @@ import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.QuerySQLTracker;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
+import org.eclipse.persistence.testing.models.jpa.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitDomainObjectComparer;
@@ -144,6 +148,47 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
     /**
      * Test that a cache hit will occur on a primary key query.
      */
+    public void testUntypedPath() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        QuerySQLTracker counter = null;
+        try {
+            // Load an employee into the cache.  
+            QueryBuilder qb = em.getQueryBuilder();
+            CriteriaQuery cq = qb.createQuery(Employee.class);
+            Query query = em.createQuery(cq);
+            List result = query.getResultList();
+            Employee employee = (Employee)result.get(0);
+
+            // Count SQL.
+            counter = new QuerySQLTracker(getServerSession());
+            // Query by primary key.
+            CriteriaQuery<Employee> empCQ= qb.createQuery(Employee.class);
+            Root<Employee> from = empCQ.from(Employee.class);
+            Join<Employee, Address> join = from.join("address");
+            empCQ.where(qb.greaterThanOrEqualTo(from.get("id").as(Integer.class), qb.literal(5)));
+            query = em.createQuery(empCQ);
+            query.setHint(QueryHints.CACHE_USAGE, CacheUsage.CheckCacheByExactPrimaryKey);
+            query.setParameter("id", employee.getId());
+            Employee queryResult = (Employee)query.getSingleResult();
+            if (queryResult != employee) {
+                fail("Employees are not equal: " + employee + ", " + queryResult);
+            }
+            if (counter.getSqlStatements().size() > 0) {
+                fail("Cache hit do not occur: " + counter.getSqlStatements());
+            }
+        } finally {
+            rollbackTransaction(em);
+            if (counter != null) {
+                counter.remove();
+            }
+        }
+    }
+
+
+    /**
+     * Test that a cache hit will occur on a primary key query.
+     */
     public void testTupleQuery() {
         EntityManager em = createEntityManager();
         beginTransaction(em);
@@ -162,7 +207,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             CriteriaQuery<Tuple> cq = qb.createQuery(Tuple.class);
             Root from = cq.from(Employee.class);
             cq.multiselect(from.get("id"), from.get("firstName"));
-            cq.where(qb.equal(from.get("id"), qb.parameter(from.get("id").getModel().getBindableJavaType(), "id")).add(qb.equal(from.get("firstName"), qb.parameter(from.get("firstName").getModel().getBindableJavaType(), "firstName"))));
+            cq.where(qb.and(qb.equal(from.get("id"), qb.parameter(from.get("id").getModel().getBindableJavaType(), "id")), qb.equal(from.get("firstName"), qb.parameter(from.get("firstName").getModel().getBindableJavaType(), "firstName"))));
             TypedQuery<Tuple> typedQuery = em.createQuery(cq);
 
             typedQuery.setParameter("id", employee.getId());
@@ -230,13 +275,13 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             Query query = em.createQuery(em.getQueryBuilder().createQuery(Employee.class));
             List result = query.getResultList();
             Employee employee = (Employee)result.get(0);
-
-            // Test multi object, as an array.
+            
             QueryBuilder qb = em.getQueryBuilder();
+            // Test multi object, as an array.
             CriteriaQuery<?> cq = qb.createQuery(Object[].class);
             Root<Employee> from = cq.from(Employee.class);
             cq.multiselect(from, from.get("address"), from.get("id"));
-            cq.where(qb.equal(from.get("id"), qb.parameter(from.get("id").getModel().getBindableJavaType(), "id")).add(qb.equal(from.get("firstName"), qb.parameter(from.get("firstName").getModel().getBindableJavaType(), "firstName"))));
+            cq.where(qb.and(qb.equal(from.get("id"), qb.parameter(from.get("id").getModel().getBindableJavaType(), "id")),qb.equal(from.get("firstName"), qb.parameter(from.get("firstName").getModel().getBindableJavaType(), "firstName"))));
             query = em.createQuery(cq);
             query.setParameter("id", employee.getId());
             query.setParameter("firstName", employee.getFirstName());
@@ -254,7 +299,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             cq = qb.createQuery(Object[].class);
             from = cq.from(Employee.class);
             cq.multiselect(from.get("id"));
-            cq.where(qb.equal(from.get("id"), qb.parameter(from.get("id").getModel().getBindableJavaType(), "id")).add(qb.equal(from.get("firstName"), qb.parameter(from.get("firstName").getModel().getBindableJavaType(), "firstName"))));
+            cq.where(qb.and(qb.equal(from.get("id"), qb.parameter(from.get("id").getModel().getBindableJavaType(), "id")), (qb.equal(from.get("firstName"), qb.parameter(from.get("firstName").getModel().getBindableJavaType(), "firstName")))));
             query = em.createQuery(cq);
             query.setHint(QueryHints.RESULT_TYPE, ResultType.Array);
             query.setParameter("id", employee.getId());
@@ -273,7 +318,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             cq = qb.createQuery(Object[].class);
             from = cq.from(Employee.class);
             cq.multiselect(from, from.get("address"), from.get("id"));
-            cq.where(qb.equal(from.get("id"), qb.parameter(from.get("id").getModel().getBindableJavaType(), "id")).add(qb.equal(from.get("firstName"), qb.parameter(from.get("firstName").getModel().getBindableJavaType(), "firstName"))));
+            cq.where(qb.and(qb.equal(from.get("id"), qb.parameter(from.get("id").getModel().getBindableJavaType(), "id")), qb.equal(from.get("firstName"), qb.parameter(from.get("firstName").getModel().getBindableJavaType(), "firstName"))));
             query = em.createQuery(cq);
             query.setHint(QueryHints.RESULT_TYPE, ResultType.Map);
             query.setParameter("id", employee.getId());
@@ -292,7 +337,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             cq = qb.createQuery(Object[].class);
             from = cq.from(Employee.class);
             cq.multiselect(from.get("id"));
-            cq.where(qb.equal(from.get("id"), qb.parameter(from.get("id").getModel().getBindableJavaType(), "id")).add(qb.equal(from.get("firstName"), qb.parameter(from.get("firstName").getModel().getBindableJavaType(), "firstName"))));
+            cq.where(qb.and(qb.equal(from.get("id"), qb.parameter(from.get("id").getModel().getBindableJavaType(), "id")), qb.equal(from.get("firstName"), qb.parameter(from.get("firstName").getModel().getBindableJavaType(), "firstName"))));
             query = em.createQuery(cq);
             query.setHint(QueryHints.RESULT_TYPE, ResultType.Map);
             query.setParameter("id", employee.getId());
@@ -310,7 +355,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             // Test single object, as an array.
             cq = qb.createQuery(Employee.class);
             from = cq.from(Employee.class);
-            cq.where(qb.equal(from.get("id"), qb.parameter(from.get("id").getModel().getBindableJavaType(), "id")).add(qb.equal(from.get("firstName"), qb.parameter(from.get("firstName").getModel().getBindableJavaType(), "firstName"))));
+            cq.where(qb.and(qb.equal(from.get("id"), qb.parameter(from.get("id").getModel().getBindableJavaType(), "id")), qb.equal(from.get("firstName"), qb.parameter(from.get("firstName").getModel().getBindableJavaType(), "firstName"))));
             query = em.createQuery(cq);
             query.setHint(QueryHints.QUERY_TYPE, QueryType.Report);
             query.setHint(QueryHints.RESULT_TYPE, ResultType.Array);
@@ -325,7 +370,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             cq = qb.createQuery(Object[].class);
             from = cq.from(Employee.class);
             cq.multiselect(from.get("id"));
-            cq.where(qb.equal(from.get("id"), qb.parameter(from.get("id").getModel().getBindableJavaType(), "id")).add(qb.equal(from.get("firstName"), qb.parameter(from.get("firstName").getModel().getBindableJavaType(), "firstName"))));
+            cq.where(qb.and(qb.equal(from.get("id"), qb.parameter(from.get("id").getModel().getBindableJavaType(), "id")), qb.equal(from.get("firstName"), qb.parameter(from.get("firstName").getModel().getBindableJavaType(), "firstName"))));
             query = em.createQuery(cq);
             query.setParameter("id", employee.getId());
             query.setParameter("firstName", employee.getFirstName());
@@ -343,7 +388,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             cq = qb.createQuery(Object[].class);
             from = cq.from(Employee.class);
             cq.multiselect(from.get("id"), from.get("firstName"));
-            cq.where(qb.equal(from.get("id"), qb.parameter(from.get("id").getModel().getBindableJavaType(), "id")).add(qb.equal(from.get("firstName"), qb.parameter(from.get("firstName").getModel().getBindableJavaType(), "firstName"))));
+            cq.where(qb.and(qb.equal(from.get("id"), qb.parameter(from.get("id").getModel().getBindableJavaType(), "id")), qb.equal(from.get("firstName"), qb.parameter(from.get("firstName").getModel().getBindableJavaType(), "firstName"))));
             query = em.createQuery(cq);
             query.setHint(QueryHints.RESULT_TYPE, ResultType.Value);
             query.setParameter("id", employee.getId());
@@ -357,7 +402,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             cq = qb.createQuery(Object[].class);
             from = cq.from(Employee.class);
             cq.multiselect(from.get("id"));
-            cq.where(qb.equal(from.get("id"), qb.parameter(from.get("id").getModel().getBindableJavaType(), "id")).add(qb.equal(from.get("firstName"), qb.parameter(from.get("firstName").getModel().getBindableJavaType(), "firstName"))));
+            cq.where(qb.and(qb.equal(from.get("id"), qb.parameter(from.get("id").getModel().getBindableJavaType(), "id")), qb.equal(from.get("firstName"), qb.parameter(from.get("firstName").getModel().getBindableJavaType(), "firstName"))));
             query = em.createQuery(cq);
             query.setHint(QueryHints.RESULT_TYPE, ResultType.Attribute);
             query.setParameter("id", employee.getId());

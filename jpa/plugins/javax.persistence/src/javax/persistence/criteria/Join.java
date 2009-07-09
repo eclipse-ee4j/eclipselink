@@ -42,7 +42,7 @@ public interface Join<Z, X> extends From<Z, X> {
     /**
      * Return the metamodel member corresponding to the join.
      * 
-     * @return metamodel member type for the join
+     * @return metamodel attribute corresponding to the join
      */
     Attribute<? super Z, ?> getAttribute();
 
