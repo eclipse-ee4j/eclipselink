@@ -89,6 +89,8 @@ public class TypeInfo {
     
     private boolean isSetXmlTransient;
     
+    private boolean isAnyAttributeProperty;
+    
     private List<String> xmlSeeAlso;
     private XmlRootElement xmlRootElement;
     private XmlType xmlType;
@@ -505,5 +507,13 @@ public class TypeInfo {
     
     public void setPostBuilt(boolean isPostBuilt) {
         this.isPostBuilt = isPostBuilt;
+    }
+
+    public boolean isAnyAttributeProperty() {
+        return isAnyAttributeProperty;
+    }
+
+    public void setAnyAttributeProperty(boolean isAnyAttributeProperty) {
+        this.isAnyAttributeProperty = isAnyAttributeProperty;
     }
 }

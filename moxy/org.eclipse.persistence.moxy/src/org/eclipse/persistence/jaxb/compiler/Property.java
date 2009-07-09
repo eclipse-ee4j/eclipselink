@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.jaxb.compiler;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.jaxb.javamodel.Helper;
@@ -46,7 +47,6 @@ public class Property {
     private String mimeType;
     private JavaClass type;
     private JavaClass adapterClass;
-    private JavaClass valueType;
     private JavaHasAnnotations element;
     private JavaClass genericType;
     private boolean isAttribute = false;
@@ -59,12 +59,15 @@ public class Property {
     private String defaultValue;
     private boolean isSetDefaultValue = false;
     private boolean isMixedContent = false;
+    private boolean xmlElementType;
     
     public Property() {
+    	xmlElementType = false;
     }
 
     public Property(Helper helper) {
         this.helper = helper;
+        xmlElementType = false;
     }
 
     public void setHelper(Helper helper) {
@@ -85,8 +88,8 @@ public class Property {
     
     public void setAdapterClass(JavaClass adapterCls) {
         adapterClass = adapterCls;
-        valueType = helper.getJavaClass(Object.class);
-
+        JavaClass newType  = helper.getJavaClass(Object.class);
+                
         // look for marshal method
         for (Iterator<JavaMethod> methodIt = adapterClass.getDeclaredMethods().iterator(); methodIt.hasNext(); ) {
             JavaMethod method = methodIt.next();
@@ -95,14 +98,11 @@ public class Property {
             //if (method.getName().equals("marshal") && method.getReturnType() != Object.class && method.getParameterTypes()[0] != Object.class) {
             // TODO verify that inherited marshal methods are not being returned...
             if (method.getName().equals("marshal")) {
-                valueType = (JavaClass) method.getReturnType();
+            	newType = (JavaClass) method.getReturnType();
                 break;
             }
         }
-    }
-
-    public JavaClass getValueType() {
-        return valueType;
+        setType(newType);
     }
     
     public JavaHasAnnotations getElement() {
@@ -138,7 +138,28 @@ public class Property {
     }
     
     public void setType(JavaClass cls) {
-        type = cls;
+        if(cls == null){
+            return;
+        }
+    	String clsName= cls.getRawName();
+        if(type != null && isCollectionType(type)){  
+            genericType = cls;
+        }else if(isCollectionType(cls)){
+        	if(cls.hasActualTypeArguments()){
+        		ArrayList typeArgs =  (ArrayList) cls.getActualTypeArguments();
+        		genericType = (JavaClass) typeArgs.get(0);
+        	}else{
+        		genericType = helper.getJavaClass(Object.class);
+        	}
+            type = cls;  
+                	
+        }
+        else if(cls.isArray()  && !clsName.equals("byte[]")  && !clsName.equals("java.lang.Byte[]")){
+        	type = cls;
+        	genericType = cls.getComponentType();
+        }else{
+            type = cls;
+        }          	
     }
     
     public JavaClass getType() {
@@ -273,4 +294,35 @@ public class Property {
     public void setMixedContent(boolean b) {
         this.isMixedContent = b;
     }
+
+    public void setHasXmlElementType(boolean hasXmlElementType) {
+        this.xmlElementType = hasXmlElementType;
+    }
+
+    public boolean isXmlElementType() {
+        return xmlElementType;
+    }
+    
+  public boolean isCollectionType(JavaClass type) {
+        
+        if (helper.getJavaClass(java.util.Collection.class).isAssignableFrom(type) 
+                || helper.getJavaClass(java.util.List.class).isAssignableFrom(type) 
+                || helper.getJavaClass(java.util.Set.class).isAssignableFrom(type)) {
+            return true;
+        }
+        return false;
+    }
+
+  /**
+   * Return the generic type if it was set (collection or array item type)
+   * otherwise return the type of this property 
+   * @return 
+   */
+  public JavaClass getActualType(){
+	  if(genericType != null){
+		  return genericType;
+	  }else{
+		  return type;
+	  }
+  }
 }

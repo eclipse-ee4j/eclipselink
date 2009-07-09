@@ -4,16 +4,16 @@
 		  <firstName>Bob</firstName>
 		  <lastName>Smith</lastName>
 		  <responsibilities>
-			 <responsibility>Fix Bugs</responsibility>
-			 <responsibility>Write JAXB2.0 Prototype</responsibility>
-			 <responsibility>Write Design Spec</responsibility>
+			 <responsibility xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema' xsi:type="xsd:string">Fix Bugs</responsibility>
+			 <responsibility xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema' xsi:type="xsd:string">Write JAXB2.0 Prototype</responsibility>
+			 <responsibility xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema' xsi:type="xsd:string">Write Design Spec</responsibility>
 		 </responsibilities>
    </empList>
    <empList id="100">
 		  <firstName>Bob2</firstName>
 		  <lastName>Smith2</lastName>
 		  <responsibilities>
-			 <responsibility>Fix Bugs</responsibility>
+			 <responsibility xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema' xsi:type="xsd:string">Fix Bugs</responsibility>
 		 </responsibilities>
    </empList>
    <integerList>10</integerList>
@@ -24,16 +24,16 @@
 		  <firstName>Bob</firstName>
 		  <lastName>Smith</lastName>
 		  <responsibilities>
-			 <responsibility>Fix Bugs</responsibility>
-			 <responsibility>Write JAXB2.0 Prototype</responsibility>
-			 <responsibility>Write Design Spec</responsibility>
+			 <responsibility xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema' xsi:type="xsd:string">Fix Bugs</responsibility>
+			 <responsibility xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema' xsi:type="xsd:string">Write JAXB2.0 Prototype</responsibility>
+			 <responsibility xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema' xsi:type="xsd:string">Write Design Spec</responsibility>
 		 </responsibilities>
    </empArray>
    <empArray id="100">
 		  <firstName>Bob2</firstName>
 		  <lastName>Smith2</lastName>
 		  <responsibilities>
-			 <responsibility>Fix Bugs</responsibility>
+			 <responsibility xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema' xsi:type="xsd:string">Fix Bugs</responsibility>
 		 </responsibilities>
    </empArray>
    <integerArray>10</integerArray>

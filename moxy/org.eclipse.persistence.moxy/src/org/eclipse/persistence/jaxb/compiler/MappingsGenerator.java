@@ -230,8 +230,8 @@ public class MappingsGenerator {
             // direct mapping (anything we can create a descriptor for) or
             // a composite mapping
             JavaClass adapterClass = property.getAdapterClass();
-            JavaClass valueType = property.getValueType();
-
+            JavaClass valueType = property.getActualType();
+                      
             // if the value type is something we have a descriptor for, create
             // a composite object mapping, otherwise create a direct mapping
             if (typeInfo.containsKey(valueType.getQualifiedName())) {
@@ -594,6 +594,11 @@ public class MappingsGenerator {
             ((NullPolicy) mapping.getNullPolicy()).setSetPerformedForAbsentNode(false);
         }
 
+        if(property.isXmlElementType()){
+        	Class theClass = helper.getClassForJavaClass(property.getType());
+        	mapping.setAttributeClassification(theClass);
+        } 
+
         if(XMLConstants.QNAME_QNAME.equals(property.getSchemaType())){
             ((XMLField) mapping.getField()).setSchemaType(XMLConstants.QNAME_QNAME);
         }
@@ -672,20 +677,11 @@ public class MappingsGenerator {
     
     public void generateCollectionMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
         // check to see if this should be a composite or direct mapping
-        JavaClass javaClass = null;
-        if (property.getGenericType() != null) {
-            javaClass = (JavaClass) property.getGenericType();
-        }
+        JavaClass javaClass = property.getActualType();
        
         if (property.isMixedContent()) {
             generateAnyCollectionMapping(property, descriptor, namespaceInfo, true);
             return;
-        }
-        if (helper.isAnnotationPresent(property.getElement(), XmlElement.class)) {
-            XmlElement xmlElement = (XmlElement) helper.getAnnotation(property.getElement(), XmlElement.class);
-            if (xmlElement.type() != XmlElement.DEFAULT.class) {
-                javaClass = helper.getJavaClass(xmlElement.type());
-            }
         }
         if (javaClass != null && typeInfo.get(javaClass.getQualifiedName()) != null) {
             TypeInfo referenceInfo = typeInfo.get(javaClass.getQualifiedName());
@@ -1119,6 +1115,12 @@ public class MappingsGenerator {
             ((XMLField) mapping.getField()).setSchemaType(XMLConstants.QNAME_QNAME);
         }
         
+       	
+        if(property.isXmlElementType() && property.getGenericType()!=null ){           	
+        	Class theClass = helper.getClassForJavaClass(property.getGenericType());
+        	mapping.setAttributeElementClass(theClass);
+        } 
+        
         if(xmlField.getXPathFragment().isAttribute()){
             mapping.setUsesSingleNode(true);
         }                
@@ -1428,9 +1430,13 @@ public class MappingsGenerator {
             if (property.getSchemaType() != null) {
                 schemaType = property.getSchemaType();
             }
-            if (schemaType == null) {
-                schemaType = (QName) helper.getXMLToJavaTypeMap().get(property.getType());
-            }
+            
+            
+            if (schemaType == null){
+            	JavaClass propertyType = property.getActualType();
+            	            	
+                schemaType = (QName) helper.getXMLToJavaTypeMap().get(propertyType.getRawName());
+            }            
             xmlField.setSchemaType(schemaType);
         }
         return xmlField;

@@ -20,7 +20,7 @@ public class ReferenceProperty extends Property {
 	private ArrayList<ElementDeclaration> referencedElements;
 	
 	public ReferenceProperty(Helper helper) {
-		super();
+		super(helper);
 	}
 	
 	public void addReferencedElement(ElementDeclaration element) {

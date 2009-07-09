@@ -25,7 +25,6 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlList;
-import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlValue;
@@ -192,14 +191,8 @@ public class SchemaGenerator {
                 type.setRestriction(restriction);
             } else {
                 valueField = info.getProperties().get(propertyNames.get(0));
-                QName baseType = null;
-                if(valueField.getType().isArray()) {
-                    baseType = getSchemaTypeFor(valueField.getType().getComponentType());
-                } else if(valueField.getGenericType() != null) {
-                    baseType = getSchemaTypeFor(valueField.getGenericType());
-                } else {
-                    baseType = getSchemaTypeFor(valueField.getType());
-                }
+                JavaClass javaType = valueField.getActualType();
+                QName baseType = getSchemaTypeFor(javaType);
                 String prefix = null;
                 if(baseType.getNamespaceURI() != null && !baseType.getNamespaceURI().equals("")) {
                     if(baseType.getNamespaceURI().equals(XMLConstants.SCHEMA_URL)) {
@@ -212,7 +205,7 @@ public class SchemaGenerator {
                 if(prefix != null) {
                     baseTypeName = prefix + ":" + baseTypeName;
                 }
-                if (helper.isAnnotationPresent(valueField.getElement(), XmlList.class) || isCollectionType(valueField)) {
+                if (helper.isAnnotationPresent(valueField.getElement(), XmlList.class) || (valueField.getGenericType() != null)){                	
                     //generate a list instead of a restriction
                     List list = new List();
                     list.setItemType(baseTypeName);
@@ -507,7 +500,7 @@ public class SchemaGenerator {
                     Choice choice = new Choice();
                     ArrayList<Property> choiceProperties = (ArrayList<Property>)((ChoiceProperty)next).getChoiceProperties();
                     addToSchemaType(ownerTypeInfo, choiceProperties, choice, parentType, schema);
-                    if(isCollectionType(next)) {
+                    if(next.getGenericType() != null) {                    	
                         choice.setMaxOccurs(Occurs.UNBOUNDED);
                     }
                     if(parentCompositor instanceof Sequence) {
@@ -548,16 +541,16 @@ public class SchemaGenerator {
                 		} else {
                 			element.setRef(prefix + ":" + localName);
                 		}
-
-                		if (isCollectionType(next)) {
+                		
+                		if (next.getGenericType() != null) {	
                             element.setMinOccurs(Occurs.ZERO);
                 			element.setMaxOccurs(Occurs.UNBOUNDED);
                 		}
                 		parentCompositor.addElement(element);
                 	} else {
                 		// otherwise, add a choice of referenced elements.
-                		Choice choice = new Choice();
-                		if(isCollectionType(next)) {
+                		Choice choice = new Choice();                		
+                        if (next.getGenericType() != null) {
                 			choice.setMaxOccurs(Occurs.UNBOUNDED);
                 		}
                 		for(ElementDeclaration elementDecl:referencedElements) {
@@ -595,16 +588,9 @@ public class SchemaGenerator {
                     }
                     
                     QName elementName = next.getSchemaName();
-                    JavaClass javaType = next.getType();
-                    boolean isCollectionType = isCollectionType(next);
+                    JavaClass javaType = next.getActualType();
                     boolean isMapType = isMapType(next);
-                    if (isCollectionType) {
-                        JavaClass gType = next.getGenericType();
-                        if (gType != null && javaType.hasActualTypeArguments()) {
-                             Object[] params = javaType.getActualTypeArguments().toArray();
-                            javaType = (JavaClass) params[0];
-                        }
-                    }
+                    
                     element.setName(elementName.getLocalPart());
                     
                     TypeInfo info = (TypeInfo)typeInfo.get(javaType.getQualifiedName());
@@ -670,7 +656,7 @@ public class SchemaGenerator {
                         }
                     }
                     
-                    if (isCollectionType) {
+                    if(next.getGenericType() != null){
                         if (helper.isAnnotationPresent(next.getElement(), XmlList.class)) {
                             if (isComplexType) {
                                 //TODO: Error case probably
@@ -685,8 +671,6 @@ public class SchemaGenerator {
                             element.setType(typeName);
                         }
                     }else if(isMapType){                    	
-                    	
-                    	
                     	ComplexType entryComplexType = new ComplexType();
                     	Sequence entrySequence = new Sequence();
                     	                    
@@ -694,11 +678,10 @@ public class SchemaGenerator {
                     	keyElement.setName("key");
                     	keyElement.setMinOccurs(Occurs.ZERO);   
                     	
-                    	JavaClass gType = next.getGenericType();
-                    	JavaClass keyType = javaType;
-                    	JavaClass valueType = javaType;
+                    	JavaClass keyType = helper.getJavaClass(Object.class);
+                    	JavaClass valueType = helper.getJavaClass(Object.class);
 
-                        if (gType != null && javaType.hasActualTypeArguments()) {
+                        if (javaType.hasActualTypeArguments()) {
                              Object[] params = javaType.getActualTypeArguments().toArray();
                              keyType = (JavaClass) params[0];
                              valueType  = (JavaClass) params[1];
@@ -892,8 +875,7 @@ public class SchemaGenerator {
         JavaClass type = field.getType();
         return (helper.getJavaClass(java.util.Collection.class).isAssignableFrom(type) 
                 || helper.getJavaClass(java.util.List.class).isAssignableFrom(type) 
-                || helper.getJavaClass(java.util.Set.class).isAssignableFrom(type)
-                || type.isArray());
+                || helper.getJavaClass(java.util.Set.class).isAssignableFrom(type));
     } 
     
     public boolean isMapType(Property field){

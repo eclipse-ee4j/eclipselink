@@ -6,11 +6,11 @@
          <xsd:element name="empTreeSet" type="x:employee" minOccurs="0" maxOccurs="unbounded"/>
          <xsd:element name="empArrayList" type="x:employee" minOccurs="0" maxOccurs="unbounded"/>
          <xsd:element name="integerList" type="xsd:int" minOccurs="0" maxOccurs="unbounded"/>
-         <xsd:element name="empArray" type="xsd:anySimpleType" minOccurs="0" maxOccurs="unbounded"/>
-         <xsd:element name="integerArray" type="xsd:anySimpleType" minOccurs="0" maxOccurs="unbounded"/>
-         <xsd:element name="floatArray" type="xsd:anySimpleType" minOccurs="0" maxOccurs="unbounded"/>
-         <xsd:element name="intArray" type="xsd:anySimpleType" minOccurs="0" maxOccurs="unbounded"/>
-         <xsd:element name="booleanArray" type="xsd:anySimpleType" minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:element name="empArray" type="x:employee" minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:element name="integerArray" type="xsd:int" minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:element name="floatArray" type="xsd:float" minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:element name="intArray" type="xsd:int" maxOccurs="unbounded"/>
+         <xsd:element name="booleanArray" type="xsd:boolean" maxOccurs="unbounded"/>
          <xsd:element name="stringIntegerHashMap" minOccurs="0">
             <xsd:complexType>
                <xsd:sequence>
@@ -35,7 +35,7 @@
          <xsd:element name="responsibilities" minOccurs="0">
             <xsd:complexType>
                <xsd:sequence>
-                  <xsd:element name="responsibility" type="xsd:anySimpleType" minOccurs="0" maxOccurs="unbounded"/>
+                  <xsd:element name="responsibility" type="xsd:anyType" minOccurs="0" maxOccurs="unbounded"/>
                </xsd:sequence>
             </xsd:complexType>
          </xsd:element>

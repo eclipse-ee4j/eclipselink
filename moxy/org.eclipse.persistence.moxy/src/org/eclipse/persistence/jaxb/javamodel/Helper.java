@@ -19,6 +19,7 @@ import java.util.HashMap;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.jaxb.javamodel.JavaAnnotation;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaField;
@@ -130,27 +131,6 @@ public class Helper {
         javaTypes.put(DURATION, XMLConstants.DURATION_QNAME);
         javaTypes.put(UUID, XMLConstants.STRING_QNAME);
         return javaTypes;
-    }
-    
-    /*public JavaAnnotation getAnnotaion(JavaHasAnnotations element, Class annotationClass) {
-        return element.getAnnotation(jModel.getClass(annotationClass));
-    }*/
-    
-    /**
-     * Return a given field's generic type.
-     * 
-     * @param field
-     * @return
-     */
-    public JavaClass getGenericType(JavaField field) {
-        JavaClass result = (JavaClass) field.getResolvedType();
-        JavaClass jClass = null;
-        
-        if (result.hasActualTypeArguments()) {
-            ArrayList typeArgs =  (ArrayList) result.getActualTypeArguments();
-            jClass = (JavaClass) typeArgs.get(0);
-        }
-        return jClass;
     }
     
     /**
@@ -288,6 +268,36 @@ public class Helper {
         	return getNextMappedSuperClass(superClass);
         }
         
-        return superClass;
+        return superClass; 
+    }
+    
+    public Class getClassForJavaClass(JavaClass javaClass){
+    	
+    	String javaClassName = javaClass.getRawName();
+    	if(javaClass.isPrimitive() || javaClass.isArray() && javaClass.getComponentType().isPrimitive()){
+    		if(ClassConstants.APBYTE.getName().equals(javaClassName)){
+    			return Byte[].class;    			
+    		}else if(ClassConstants.PBYTE.getName().equals(javaClassName)){
+    			return Byte.class;
+    		}else if(ClassConstants.PBOOLEAN.getName().equals(javaClassName)){
+    			return Boolean.class;
+    		}else if(ClassConstants.PSHORT.getName().equals(javaClassName)){
+    			return Short.class;
+    		}else if(ClassConstants.PFLOAT.getName().equals(javaClassName)){
+    			return Float.class;
+    		}else if(ClassConstants.PCHAR.getName().equals(javaClassName)){
+    			return Character.class;
+    		}else if(ClassConstants.PDOUBLE.getName().equals(javaClassName)){
+    			return Double.class;
+    		}else if(ClassConstants.PINT.getName().equals(javaClassName)){
+    			return Integer.class;
+    		}else if(ClassConstants.PLONG.getName().equals(javaClassName)){
+    			return Long.class;
+    		}else{
+    			return null;
+    		}
+    	}else{
+    		return org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(javaClass.getRawName(), getClass().getClassLoader());                          		
+    	}
     }
 }
