@@ -233,7 +233,7 @@ public class XPathNode {
             if(aNodeValue.isMarshalNodeValue()) {
                 xPathNode.setMarshalNodeValue(aNodeValue);
             }
-            if(aNodeValue.isUnmarshalNodeValue()) {
+            if(aNodeValue.isUnmarshalNodeValue() && xPathNode.getUnmarshalNodeValue() == null) {
                 xPathNode.setUnmarshalNodeValue(aNodeValue);
             }
             xPathNode.setParent(this);
@@ -273,7 +273,7 @@ public class XPathNode {
             if(aNodeValue.isMarshalNodeValue()) {
                 xPathNode.setMarshalNodeValue(aNodeValue);
             } 
-            if(aNodeValue.isUnmarshalNodeValue()) {
+            if(aNodeValue.isUnmarshalNodeValue() && xPathNode.getUnmarshalNodeValue() == null) {
                 xPathNode.setUnmarshalNodeValue(aNodeValue);
             }
         } else {

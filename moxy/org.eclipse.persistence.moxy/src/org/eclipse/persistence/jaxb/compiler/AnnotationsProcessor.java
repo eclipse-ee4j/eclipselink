@@ -1931,9 +1931,14 @@ public class AnnotationsProcessor {
         while (elementQnames.hasNext()) {
             QName next = elementQnames.next();
             ElementDeclaration nextDeclaration = this.globalElements.get(next);
-            if (nextDeclaration.getSubstitutionHead() != null) {
-                ElementDeclaration rootDeclaration = this.globalElements.get(nextDeclaration.getSubstitutionHead());
+            QName substitutionHead = nextDeclaration.getSubstitutionHead();
+            while(substitutionHead != null) {
+                ElementDeclaration rootDeclaration = this.globalElements.get(substitutionHead);
                 rootDeclaration.addSubstitutableElement(nextDeclaration);
+                /*if(rootDeclaration == nextDeclaration) {
+                    break;
+                }*/
+                substitutionHead = rootDeclaration.getSubstitutionHead();
             }
         }
     }
