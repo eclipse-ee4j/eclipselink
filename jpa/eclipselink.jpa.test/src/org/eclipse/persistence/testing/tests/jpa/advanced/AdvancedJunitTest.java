@@ -88,30 +88,32 @@ public class AdvancedJunitTest extends JUnitTestCase {
     }
     
     public void testEL254937(){
-        EntityManager em = createEntityManager();
-        beginTransaction(em);
-        LargeProject lp1 = new LargeProject();
-        lp1.setName("one");
-        em.persist(lp1);
-        commitTransaction(em);
-        em = createEntityManager();
-        beginTransaction(em);
-        em.remove(em.find(LargeProject.class, lp1.getId()));
-        em.flush();
-        JpaEntityManager eclipselinkEm = (JpaEntityManager)em.getDelegate();
-        RepeatableWriteUnitOfWork uow = 
-            (RepeatableWriteUnitOfWork)eclipselinkEm.getActiveSession();
-        //duplicate the beforeCompletion call
-        uow.issueSQLbeforeCompletion();
-        //commit the transaction
-        uow.setShouldTerminateTransaction(true);
-        uow.commitTransaction();
-        //duplicate the AfterCompletion call.  This should merge, removing the LargeProject from the shared cache
-        uow.mergeClonesAfterCompletion();
-        em = createEntityManager();
-        LargeProject cachedLargeProject = em.find(LargeProject.class, lp1.getId());
-        closeEntityManager(em);
-        assertTrue("Entity removed during flush was not removed from the shared cache on commit", cachedLargeProject==null);
+        // Should not run in the server - bug 264589
+        if (! isOnServer()) {
+            EntityManager em = createEntityManager();
+            beginTransaction(em);
+            LargeProject lp1 = new LargeProject();
+            lp1.setName("one");
+            em.persist(lp1);
+            commitTransaction(em);
+            em = createEntityManager();
+            beginTransaction(em);
+            em.remove(em.find(LargeProject.class, lp1.getId()));
+            em.flush();
+            JpaEntityManager eclipselinkEm = (JpaEntityManager)em.getDelegate();
+            RepeatableWriteUnitOfWork uow = (RepeatableWriteUnitOfWork)eclipselinkEm.getActiveSession();
+            //duplicate the beforeCompletion call
+            uow.issueSQLbeforeCompletion();
+            //commit the transaction
+            uow.setShouldTerminateTransaction(true);
+            uow.commitTransaction();
+            //duplicate the AfterCompletion call.  This should merge, removing the LargeProject from the shared cache
+            uow.mergeClonesAfterCompletion();
+            em = createEntityManager();
+            LargeProject cachedLargeProject = em.find(LargeProject.class, lp1.getId());
+            closeEntityManager(em);
+            assertTrue("Entity removed during flush was not removed from the shared cache on commit", cachedLargeProject==null);
+        }
     }
     
     public void testGF1894() {
