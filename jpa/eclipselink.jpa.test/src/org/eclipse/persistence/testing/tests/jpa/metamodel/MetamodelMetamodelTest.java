@@ -493,6 +493,12 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             
             // Verify ManagedType operations
             // ************************************
+            /**
+             * The following variant test cases are common to all functions
+             * 1) get*Attribute(name) = null (missing) --> IAE
+             * 2) get*Attribute(name, type) = null (missing, type=irrelevant) --> IAE
+             * 3) get*Attribute(name, type) = exists but type != returned type --> IAE
+             */
             
             /**
              *  Return the attributes of the managed type.
@@ -509,16 +515,6 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertTrue(attributeSet.contains(entityManufacturer.getAttribute("computers"))); //
             assertTrue(attributeSet.contains(entityManufacturer.getAttribute("hardwareDesigners"))); //
 
-            // try a getAttribute on a missing type - should cause an IAE
-            boolean iae1thrown = false;
-            try {
-                attributeSet.contains(entityManufacturer.getAttribute("_unknownAttribute"));
-            } catch (IllegalArgumentException iae) {
-                System.err.println("Metamodel: The following IAE exception is expected");
-                iae1thrown = true;
-            }
-            // verify that we got an expected exception
-            assertTrue(iae1thrown);
             
             /**
              *  Return the attributes declared by the managed type.
@@ -635,7 +631,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
              *          name and type is not declared in the managed type
              */
             //<E> CollectionAttribute<X, E> getDeclaredCollection(String name, Class<E> elementType);
-
+            
             /**
              *  Return the Set-valued attribute declared by the managed type 
              *  that corresponds to the specified name and Java element type.
@@ -662,6 +658,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
              *          name and type is not declared in the managed type
              */
             //<E> ListAttribute<X, E> getDeclaredList(String name, Class<E> elementType);
+            ListAttribute<Manufacturer, HardwareDesigner> anAttribute = entityManufacturer.getDeclaredList("hardwareDesigners", entityHardwareDesigner.getJavaType());
+            System.out.println("entityManufacturer.getDeclaredList(hardwareDesigners) " + anAttribute);
 
             /**
              *  Return the Map-valued attribute declared by the managed 
@@ -875,6 +873,59 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             
 
             // Variant use cases
+            
+            // try a getAttribute on a missing attribute - should cause an IAE
+            boolean iae1thrown = false;
+            try {
+                entityManufacturer.getAttribute("_unknownAttribute");
+            } catch (IllegalArgumentException expectedIAE) {
+                //System.err.println("Metamodel: The following IAE exception is expected");
+                // java.lang.IllegalArgumentException: The attribute [_unknownAttribute] from the managed type [ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer --> [DatabaseTable(CMP3_MM_MANUF)])]] is not present.
+                iae1thrown = true;
+            }
+            // verify that we got an expected exception
+            assertTrue(iae1thrown);
+
+            // try a getSet on an unknown Set attribute - should still cause a IAE
+            iae1thrown = false;
+            try {
+                entityManufacturer.getSet("_unknownAttribute");
+            } catch (IllegalArgumentException expectedIAE) {
+                //System.err.println("Metamodel: The following IAE exception is expected");
+                // java.lang.IllegalArgumentException: The attribute [_unknownAttribute] from the managed type [ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer --> [DatabaseTable(CMP3_MM_MANUF)])]] is not present.
+                iae1thrown = true;
+            }
+            // verify that we got an expected exception
+            assertTrue(iae1thrown);
+            
+            // try a getSet on an unknown Set attribute - but with the right type (but how do we really know the type) - should still cause the same IAE
+            iae1thrown = false;
+            try {
+                entityManufacturer.getSet("_unknownSet", entityComputer.getJavaType());
+            } catch (IllegalArgumentException expectedIAE) {
+                //System.err.println("Metamodel: The following IAE exception is expected");
+                // java.lang.IllegalArgumentException: The attribute [_unknownSet] from the managed type [ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer --> [DatabaseTable(CMP3_MM_MANUF)])]] is not present.
+                iae1thrown = true;
+            }
+            // verify that we got an expected exception
+            assertTrue(iae1thrown);
+
+            // try a getSet on a known Set attribute - but with the wrong type like another EntityType Memory - should cause a different IAE
+            iae1thrown = false;
+            try {
+                entityManufacturer.getSet("computers", entityMemory.getJavaType());
+            } catch (IllegalArgumentException expectedIAE) {
+                //System.err.println("Metamodel: The following IAE exception is expected");
+                //expectedIAE.printStackTrace();
+                //java.lang.IllegalArgumentException: Expected attribute type [class org.eclipse.persistence.testing.models.jpa.metamodel.Memory] on the existing attribute [computers] on the managed type [ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer --> [DatabaseTable(CMP3_MM_MANUF)])]] but found attribute type [org.eclipse.persistence.testing.models.jpa.metamodel.Computer].
+                iae1thrown = true;
+            } catch (Exception unexpectedException) {
+                unexpectedException.printStackTrace();
+            }
+            // verify that we got an expected exception
+            assertTrue(iae1thrown);
+
+            exceptionThrown = false;
             try {
                 //System.out.println("_entityManufacturer.getDeclaredCollection(type): " + entityManufacturer.getDeclaredCollection("name", String.class));
                 // Ask for a Collection using a String type - invalid

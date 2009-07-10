@@ -179,13 +179,6 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T> {
     }
 
     /**
-     * INTERNAL:
-     * Implemented by subclass
-     * @return whether the type is an attribute
-     */
-    public abstract boolean isAttribute();
-
-    /**
      *  Is the attribute collection-valued.
      *  @return boolean indicating whether attribute is 
      *          collection-valued

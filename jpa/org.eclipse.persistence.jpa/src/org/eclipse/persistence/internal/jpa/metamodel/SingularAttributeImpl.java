@@ -64,11 +64,6 @@ public class SingularAttributeImpl<X,T> extends AttributeImpl<X,T> implements Si
         return this.getJavaType();
     }
     
-    @Override
-    public boolean isAttribute() {
-        return true;
-    }
-    
     /**
      *  Is the attribute an id attribute.
      *  @return boolean indicating whether or not attribute is an id

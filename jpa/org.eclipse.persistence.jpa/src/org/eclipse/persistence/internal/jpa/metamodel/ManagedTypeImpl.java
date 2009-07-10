@@ -18,6 +18,10 @@
  *       - MappedSuperclassTypeImpl now inherits from IdentifiableTypeImpl instead
  *       of implementing IdentifiableType indirectly 
  *       - implement Set<SingularAttribute<? super X, ?>> getSingularAttributes()
+ *     07/09/2009-2.0  mobrien - 266912: implement get*Attribute() functionality
+ *       - functions throw 2 types of IllegalArgumentExceptions depending on whether
+ *         the member is missing or is the wrong type - see design issue #41
+ *         http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_41:_When_to_throw_IAE_for_missing_member_or_wrong_type_on_get.28.29_call
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
@@ -73,8 +77,8 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      * This constructor will create a ManagedType but will not initialize its member mappings.
      * This is accomplished by delayed initialization in MetamodelImpl.initialize()
      * in order that we have access to all types when resolving relationships in mappings.
-     * @param metamodel
-     * @param descriptor
+     * @param metamodel - the metamodel that this managedType is associated with
+     * @param descriptor - the RelationalDescriptor that defines this managedType
      */
     protected ManagedTypeImpl(MetamodelImpl metamodel, RelationalDescriptor descriptor) {
         super(descriptor.getJavaClass());
@@ -149,10 +153,11 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      */    
     public <E> CollectionAttribute<? super X, E> getCollection(String name, Class<E> elementType) {
         CollectionAttribute<? super X, E> anAttribute = (CollectionAttribute<? super X, E>)this.getCollection(name);
-        if(anAttribute.getElementType().getJavaType() != elementType) {
+        Class<E> aClass = anAttribute.getElementType().getJavaType();
+        if(elementType != aClass) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
-                    "metamodel_managed_type_attribute_type_not_present", 
-                    new Object[] { name, this, elementType }));
+                    "metamodel_managed_type_attribute_type_incorrect", 
+                    new Object[] { name, this, elementType, aClass }));
         }
         return anAttribute;
     }
@@ -411,13 +416,23 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      *          name is not present in the managed type
      */
     public ListAttribute<? super X, ?> getList(String name) {
+        return getList(name, true);
+    }
+    
+    /**
+     * INTERNAL:
+     * @param name
+     * @param performNullCheck - flag on whether we should be doing an IAException check
+     * @return
+     */
+    protected ListAttribute<? super X, ?> getList(String name, boolean performNullCheck) {
         /*
          * Note: We do not perform type checking on the get(name)
          * If the type is not of the correct Attribute implementation class then
          * a possible CCE will be allowed to propagate to the client.
          */
         ListAttribute<? super X, ?> anAttribute = (ListAttribute<? super X, ?>)this.members.get(name);
-        if(null == anAttribute) {
+        if(performNullCheck && null == anAttribute) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
                     "metamodel_managed_type_attribute_not_present", 
                     new Object[] { name, this }));
@@ -437,10 +452,11 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      */
     public <E> ListAttribute<? super X, E> getList(String name, Class<E> elementType) {
         ListAttribute<? super X, E> anAttribute = (ListAttribute<? super X, E>)this.getList(name);
-        if(anAttribute.getElementType().getJavaType() != elementType) {
+        Class<E> aClass = anAttribute.getElementType().getJavaType();
+        if(elementType != aClass) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
-                "metamodel_managed_type_attribute_type_not_present", 
-                new Object[] { name, this, elementType }));
+                "metamodel_managed_type_attribute_type_incorrect", 
+                new Object[] { name, this, elementType, aClass }));
         }
         return anAttribute;
     }
@@ -482,7 +498,14 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      *          name and type is not present in the managed type
      */
     public <K, V> MapAttribute<? super X, K, V> getMap(String name, Class<K> keyType, Class<V> valueType) {
-    	throw new PersistenceException("Not Yet Implemented");
+        MapAttribute<? super X, K, V> anAttribute = (MapAttribute<? super X, K, V>)this.getMap(name);
+        Class<V> aClass = anAttribute.getElementType().getJavaType();
+        if(valueType != aClass) {
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
+                    "metamodel_managed_type_attribute_type_incorrect", 
+                    new Object[] { name, this, valueType, aClass }));
+        }
+        return anAttribute;
     }
     
     /**
@@ -537,11 +560,12 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      *          name and type is not present in the managed type
      */
     public <E> SetAttribute<? super X, E> getSet(String name, Class<E> elementType) {
-        SetAttribute<? super X, E> anAttribute = (SetAttribute<? super X, E>)this.getSet(name);
-        if(anAttribute.getElementType().getJavaType() != elementType) {
+        SetAttribute<? super X, E> anAttribute = (SetAttribute<? super X, E>)getSet(name);
+        Class<E> aClass = anAttribute.getElementType().getJavaType();
+        if(elementType != aClass) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
-                "metamodel_managed_type_attribute_type_not_present", 
-                new Object[] { name, this, elementType }));
+                "metamodel_managed_type_attribute_type_incorrect", 
+                new Object[] { name, this, elementType, aClass.getName() }));
         }
         return anAttribute;
     }
@@ -555,12 +579,13 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      *          name is not present in the managed type
      */
     public SingularAttribute<? super X, ?> getSingularAttribute(String name) {
-       Attribute<X, ?> member = getMembers().get(name);
-        
-        if (member != null && !((AttributeImpl<X, ?>)member).isAttribute()) {
-            return (SingularAttribute<? super X, ?>) member;
+        Attribute<X, ?> anAttribute = getMembers().get(name);
+        if(null == anAttribute) {
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
+                    "metamodel_managed_type_attribute_not_present", 
+                    new Object[] { name, this }));
         }
-        return null;
+        return (SingularAttribute<? super X, ?>)anAttribute;
     }
 
     /**
@@ -574,13 +599,14 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      *          name and type is not present in the managed type
      */
     public <Y> SingularAttribute<? super X, Y> getSingularAttribute(String name, Class<Y> type) {
-        // We are ignoring the type parameter
-        Attribute<X, ?> member = getMembers().get(name);
-        
-        if (member != null && ((AttributeImpl<X, ?>)member).isAttribute()) {
-            return (SingularAttribute<? super X, Y>) member;
+        SingularAttribute<? super X, Y> anAttribute = (SingularAttribute<? super X, Y>)getSingularAttribute(name);
+        Class<Y> aClass = anAttribute.getType().getJavaType();
+        if(type != aClass) {
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
+                "metamodel_managed_type_attribute_type_incorrect", 
+                new Object[] { name, this, type, aClass }));
         }
-        return null;
+        return anAttribute;
     }
 
     /**

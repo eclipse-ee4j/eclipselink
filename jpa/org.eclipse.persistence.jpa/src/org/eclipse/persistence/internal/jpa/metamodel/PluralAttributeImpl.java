@@ -122,11 +122,6 @@ public abstract class PluralAttributeImpl<X, C, V> extends AttributeImpl<X, C> i
     }
     
     @Override
-    public boolean isAttribute() {
-        return true;
-    }
-    
-    @Override
     public boolean isPlural() {
         return true;
     }

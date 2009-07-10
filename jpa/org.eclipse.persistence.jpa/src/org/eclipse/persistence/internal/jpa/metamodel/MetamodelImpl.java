@@ -36,6 +36,7 @@ import javax.persistence.metamodel.Metamodel;
 import javax.persistence.metamodel.Type.PersistenceType;
 
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
+import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Project;
@@ -228,18 +229,18 @@ public class MetamodelImpl implements Metamodel {
         for(Iterator<ManagedTypeImpl<?>> mtIterator = managedTypes.values().iterator(); mtIterator.hasNext();) {
             ManagedTypeImpl<?> potentialIdentifiableType = mtIterator.next();
             Class aClass = potentialIdentifiableType.getJavaType();
+            // The superclass for top-level types will be Object - which we will leave as a null supertype on the type
             Class superclass = aClass.getSuperclass();
-            if(potentialIdentifiableType.isIdentifiableType()) {
+            if(potentialIdentifiableType.isIdentifiableType() && (superclass != ClassConstants.OBJECT)) {
                 // Get the Entity or MappedSuperclass
                 // A hierarchy of Entity --> Entity or Entity --> MappedSuperclass will be found
                 IdentifiableType<?> identifiableTypeSuperclass = (IdentifiableType<?>)managedTypes.get(superclass);
-                if(null != identifiableTypeSuperclass) {
-                    ((IdentifiableTypeImpl)potentialIdentifiableType).setSupertype(identifiableTypeSuperclass); 
-                }
+                // If there is no superclass (besides Object for a top level identifiable type) then keep the supertype set to null
+                // See design issue #42 - we return Object for top-level types (with no superclass) and null if the supertype was not set
+                // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_42:_20090709:_IdentifiableType.supertype_-_what_do_top-level_types_set_it_to
+                ((IdentifiableTypeImpl)potentialIdentifiableType).setSupertype(identifiableTypeSuperclass);                    
             }
-        }
-
-        
+        }        
     }
 
     /**
