@@ -98,6 +98,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
+import org.eclipse.persistence.internal.databaseaccess.DatasourceAccessor;
 import org.eclipse.persistence.internal.descriptors.PersistenceEntity;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
@@ -430,14 +431,14 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     Employee employee2 = em2.find(Employee.class, employee.getId());
                     employee2.setFirstName("Tilly");
                     commitTransaction(em2);
-                    em2.close();
                 } catch (RuntimeException ex) {
                     if (isTransactionActive(em2)) {
                         rollbackTransaction(em2);
                     }
                     
-                    closeEntityManager(em2);
                     throw ex;
+                } finally {
+                    closeEntityManager(em2);
                 }
             
                 try {
@@ -1396,14 +1397,14 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     Employee employee2 = em2.find(Employee.class, employee.getId());
                     employee2.setFirstName("Michael");
                     commitTransaction(em2);
-                    em2.close();
                 } catch (RuntimeException ex) {
                     if (isTransactionActive(em2)) {
                         rollbackTransaction(em2);
                     }
                     
-                    closeEntityManager(em2);
                     throw ex;
+                } finally {
+                    closeEntityManager(em2);
                 }
             
                 try {
@@ -1493,6 +1494,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                         throw ex;
                     } 
                 } finally {
+                    rollbackTransaction(em2);
                     closeEntityManager(em2);
                 }
             
@@ -1559,6 +1561,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                         throw ex;
                     } 
                 } finally {
+                    rollbackTransaction(em2);
                     closeEntityManager(em2);
                 }
             
@@ -1744,6 +1747,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     employee2.setFirstName("Invalid Lock Employee");
                     commitTransaction(em2);
                 } catch (PersistenceException ex) {
+                    if (isTransactionActive(em2)) {
+                        rollbackTransaction(em2);
+                    }
                     if (ex instanceof javax.persistence.LockTimeoutException) {
                         lockTimeOutException = ex;
                     } else {
@@ -1794,6 +1800,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     employee2.setFirstName("Invalid Lock Employee");
                     commitTransaction(em2);
                 } catch (PersistenceException ex) {
+                    if (isTransactionActive(em2)) {
+                        rollbackTransaction(em2);
+                    }
                     if (ex instanceof javax.persistence.LockTimeoutException) {
                         lockTimeOutException = ex;
                     } else {
@@ -7660,6 +7669,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 acquiredWriteConnections.add(accessor);
                 ((ClientSession)session).log(SessionLog.FINEST, SessionLog.CONNECTION, "AcquireReleaseListener.acquireWriteConnection: " + nAcquredWriteConnections(), (Object[])null, accessor, false);
             }
+            if(((DatasourceAccessor)accessor).getLogin() == null) {
+                throw new RuntimeException("AcquireReleaseListener: acquired accessor.getLogin() == null");
+            }
         }
         public void preReleaseConnection(SessionEvent event) {
             Accessor accessor = (Accessor)event.getResult();
@@ -7670,6 +7682,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             } else {
                 acquiredWriteConnections.remove(accessor);
                 ((ClientSession)session).log(SessionLog.FINEST, SessionLog.CONNECTION, "AcquireReleaseListener.releaseWriteConnection: " + nAcquredWriteConnections(), (Object[])null, accessor, false);
+            }
+            if(((DatasourceAccessor)accessor).getLogin() == null) {
+                throw new RuntimeException("AcquireReleaseListener: acquired accessor.getLogin() == null");
             }
         }
         int nAcquredReadConnections() {
