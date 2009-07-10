@@ -100,13 +100,12 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      *          name is not present in the managed type     
      */
     public Attribute<X, ?> getAttribute(String name) {
-        Attribute<X, ?> anAttribute = members.get(name);
-        if(null == anAttribute) {
+        if(!members.containsKey(name)) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
                     "metamodel_managed_type_attribute_not_present", 
                     new Object[] { name, this }));
         }
-        return anAttribute;
+        return members.get(name);
     }
     
     /**

@@ -16,13 +16,18 @@
  *     07/06/2009-2.0  mobrien - Metamodel implementation expansion
  *       - 282518: Metamodel superType requires javaClass set on custom 
  *         descriptor on MappedSuperclassAccessor.
+ *     07/10/2009-2.0  mobrien - Adjust BasicType processing to handle non-Entity Java types
+ *       - 266912: As part of Attribute.getType() and specifically SingularAttribute.getBindableJavaType 
+ *         set the appropriate elementType based on the mapping type.
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -216,13 +221,14 @@ public class MetamodelImpl implements Metamodel {
         }
 
         // Initialize-delayed (process all mappings) all types (This includes all IdentifiableTypes = Entity and MappedSuperclass types)
-        for(Iterator<TypeImpl<?>> anIterator = this.types.values().iterator(); anIterator.hasNext();) {
-            TypeImpl<?> aType = anIterator.next();
+        // To avoid a ConcurrentModificationException on the types map, iterate a list instead of the Map values directly
+        List<TypeImpl> aTypeList = new ArrayList<TypeImpl>(this.types.values());
+        for(int index=0; index < aTypeList.size(); index++) {
+            TypeImpl<?> aType = aTypeList.get(index);
             if(aType.isManagedType()) {
                 ((ManagedTypeImpl<?>)aType).initialize();
             }
         }
-
         
         // Handle all IdentifiableTypes (after all ManagedTypes have been created)
         // Assign all superType fields on all IdentifiableTypes (only after all managedType objects have been created)
@@ -253,7 +259,7 @@ public class MetamodelImpl implements Metamodel {
         // Return an existing matching type on the metamodel keyed on class name
         TypeImpl type = this.types.get(javaClass);
         // No longer required because of delayed initialization on Types
-/*        
+        
         // the type was not cached yet on the metamodel - lets add it
         if (null == type) {
             // make types field modification thread-safe
@@ -261,14 +267,13 @@ public class MetamodelImpl implements Metamodel {
                 // check for a cached type right after we synchronize
                 type = this.types.get(javaClass);
                 // We make the type one of Entity, Basic, Embeddable or MappedSuperclass
-                if(null == type) {
-                    
+                if(null == type) {                    
                     type = new BasicTypeImpl<X>(javaClass);
                     this.types.put(javaClass, type);
                 }
             }
         }
-*/        
+        
         return type;
     }
     

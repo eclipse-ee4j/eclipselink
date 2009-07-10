@@ -20,9 +20,11 @@ import javax.persistence.metamodel.Bindable;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.Type;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
+import org.eclipse.persistence.mappings.OneToOneMapping;
 
 /**
  * <p>
@@ -48,7 +50,22 @@ public class SingularAttributeImpl<X,T> extends AttributeImpl<X,T> implements Si
     
     protected SingularAttributeImpl(ManagedTypeImpl<X> managedType, DatabaseMapping mapping) {
         super(managedType, mapping);
-        elementType = (Type<T>)managedType.getMetamodel().getType(managedType.getJavaType());        
+        Class attributeClassification = mapping.getAttributeClassification();
+
+        if (null == attributeClassification) {
+            // EntityType
+            // We support @OneToOne but not EIS, Reference or VariableOneToOne
+            if(mapping.isOneToOneMapping()) {
+                elementType = (Type<T>)managedType.getMetamodel().getType(
+                        ((OneToOneMapping)mapping).getReferenceClass());
+            } else {
+                // TODO: default to containing class
+                elementType = (Type<T>)managedType.getMetamodel().getType(managedType.getJavaType()); 
+            }
+        } else {
+            // BasicType
+            elementType = (Type<T>)managedType.getMetamodel().getType(attributeClassification);
+        }
     }
 
     /**
@@ -61,7 +78,7 @@ public class SingularAttributeImpl<X,T> extends AttributeImpl<X,T> implements Si
      */
     public Class<T> getBindableJavaType() {
         // In SingularAttribute our BindableType is SINGLE_ATTRIBUTE - return the java type of the entity
-        return this.getJavaType();
+        return this.elementType.getJavaType();
     }
     
     /**

@@ -114,7 +114,9 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "invalid_lock_query", "A lock type can only be used with a select query (which allows the database to be locked where necessary)."},
                                            { "cant_lock_not_managed_object", "Entity must be managed to call lock: {0}, try merging the detached and try the lock again."},
                                            { "metamodel_managed_type_attribute_not_present", "The attribute [{0}] from the managed type [{1}] is not present." },
-                                           { "metamodel_managed_type_attribute_type_incorrect", "Expected attribute type [{2}] on the existing attribute [{0}] on the managed type [{1}] but found attribute type [{3}]." }                                           
+                                           { "metamodel_managed_type_attribute_type_incorrect", "Expected attribute type [{2}] on the existing attribute [{0}] on the managed type [{1}] but found attribute type [{3}]." },
+                                           { "metamodel_identifiable_version_attribute_type_incorrect", "Expected version attribute type [{2}] on the existing version attribute [{0}] on the identifiable type [{1}] but found attribute type [{3}]." },
+                                           { "metamodel_identifiable_id_attribute_type_incorrect", "Expected id attribute type [{2}] on the existing id attribute [{0}] on the identifiable type [{1}] but found attribute type [{3}]." }                                          
     };
 
     /**
