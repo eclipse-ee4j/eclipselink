@@ -211,4 +211,8 @@ public class TableMetadata extends ORMetadata {
     public void setUniqueConstraints(List<UniqueConstraintMetadata> uniqueConstraints) {
         m_uniqueConstraints = uniqueConstraints;
     }
+    
+    public void setUseDelimiters(boolean useDelimiters){
+        m_databaseTable.setUseDelimiters(useDelimiters);
+    }
 }

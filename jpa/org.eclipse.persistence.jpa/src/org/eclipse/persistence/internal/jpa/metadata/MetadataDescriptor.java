@@ -472,7 +472,12 @@ public class MetadataDescriptor {
      * it is the table name of the root descriptor metadata.
      */
     public String getDefaultTableName() {
-        String defaultTableName = getAlias().toUpperCase();
+        String defaultTableName = null;
+        if (getProject() != null && getProject().getPersistenceUnitMetadata() != null && getProject().getPersistenceUnitMetadata().isDelimitedIdentifiers()){
+            defaultTableName = getAlias();
+        } else {
+            defaultTableName = getAlias().toUpperCase();
+        }
         
         if (isInheritanceSubclass()) {    
             if (getInheritanceRootDescriptor().usesSingleTableInheritanceStrategy()) {

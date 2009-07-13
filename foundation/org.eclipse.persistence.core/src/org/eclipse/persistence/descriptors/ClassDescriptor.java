@@ -2380,7 +2380,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
     public Vector getTableNames() {
         Vector tableNames = new Vector(getTables().size());
         for (Enumeration fieldsEnum = getTables().elements(); fieldsEnum.hasMoreElements();) {
-            tableNames.addElement(((DatabaseTable)fieldsEnum.nextElement()).getQualifiedName());
+            tableNames.addElement(((DatabaseTable)fieldsEnum.nextElement()).getQualifiedNameDelimited());
         }
 
         return tableNames;

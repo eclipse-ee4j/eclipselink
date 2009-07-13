@@ -200,11 +200,11 @@ public class SQLDeleteAllStatement extends SQLDeleteStatement {
                 writer.write(tableAliasInSelectCall);
                 writer.write('.');
             }
-            writer.write(((DatabaseField)aliasedFields.elementAt(i)).getName());
+            writer.write(((DatabaseField)aliasedFields.elementAt(i)).getNameDelimited());
             writer.write(" = ");
-            writer.write(table.getQualifiedName());
+            writer.write(table.getQualifiedNameDelimited());
             writer.write('.');
-            writer.write(((DatabaseField)originalFields.elementAt(i)).getName());
+            writer.write(((DatabaseField)originalFields.elementAt(i)).getNameDelimited());
         }
 
         // add parameters

@@ -81,8 +81,11 @@ public class OrderColumnMetadata extends DirectColumnMetadata {
             // Get the database field with metadata applied.
             DatabaseField orderField = getDatabaseField();
             
+            boolean useDelimitedIdentifier = (descriptor.getProject() != null) ? descriptor.getProject().useDelimitedIdentifier() : false;
+
             // Process and default is necessary the name.
             orderField.setName(MetadataHelper.getName(getName(), mapping.getAttributeName() + _ORDER, MetadataLogger.ORDER_COLUMN, descriptor.getLogger(), getAccessibleObject().toString()));
+            orderField.setUseDelimiters(useDelimitedIdentifier);
             
             // We don't set a table, the mapping will figure that out for us at runtime.
     

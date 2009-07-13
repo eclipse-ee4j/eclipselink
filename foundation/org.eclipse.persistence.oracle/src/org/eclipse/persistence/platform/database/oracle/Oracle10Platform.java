@@ -32,15 +32,15 @@ public class Oracle10Platform extends Oracle9Platform  {
     @Override
     public void writeLOB(DatabaseField field, Object value, ResultSet resultSet, AbstractSession session) throws SQLException {
         if (isBlob(field.getType())) {
-            java.sql.Blob blob = (java.sql.Blob)resultSet.getObject(field.getName());
+            java.sql.Blob blob = (java.sql.Blob)resultSet.getObject(field.getNameDelimited());
             blob.setBytes(1, (byte[])value);
             //impose the locallization
-            session.log(SessionLog.FINEST, SessionLog.SQL, "write_BLOB", new Long(blob.length()), field.getName());
+            session.log(SessionLog.FINEST, SessionLog.SQL, "write_BLOB", new Long(blob.length()), field.getNameDelimited());
         } else if (isClob(field.getType())) {
-            java.sql.Clob clob = (java.sql.Clob)resultSet.getObject(field.getName());
+            java.sql.Clob clob = (java.sql.Clob)resultSet.getObject(field.getNameDelimited());
             clob.setString(1, (String)value);
             //impose the locallization
-            session.log(SessionLog.FINEST, SessionLog.SQL, "write_CLOB", new Long(clob.length()), field.getName());
+            session.log(SessionLog.FINEST, SessionLog.SQL, "write_CLOB", new Long(clob.length()), field.getNameDelimited());
         } else {
             //do nothing for now, open to BFILE or NCLOB types
         }

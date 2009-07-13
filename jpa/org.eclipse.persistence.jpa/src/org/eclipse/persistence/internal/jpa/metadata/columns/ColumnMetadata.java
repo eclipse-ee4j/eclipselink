@@ -17,6 +17,7 @@
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
@@ -176,7 +177,10 @@ public class ColumnMetadata extends DirectColumnMetadata {
     /**
      * INTERNAL:
      */
-    public String getUpperCaseAttributeName() {
+    public String getDefaultAttributeName(MetadataProject project) {
+        if (project != null && project.getPersistenceUnitMetadata() != null && project.getPersistenceUnitMetadata().isDelimitedIdentifiers()){
+            return getAttributeName();
+        }
         return m_attributeName.toUpperCase();
     }
 	
@@ -192,7 +196,7 @@ public class ColumnMetadata extends DirectColumnMetadata {
 
     /**
 	 * INTERNAL:
-     * The attribute name is used when loggin messages. Users should call this 
+     * The attribute name is used when logging messages. Users should call this 
      * method if they would like to override the attribute name for this column
      * @see AttributeOverrideMetadata initXMLObject.
 	 */

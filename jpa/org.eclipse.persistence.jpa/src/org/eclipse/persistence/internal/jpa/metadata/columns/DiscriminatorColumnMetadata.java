@@ -101,9 +101,12 @@ public class DiscriminatorColumnMetadata extends MetadataColumn {
      */
     public DatabaseField process(MetadataDescriptor descriptor, String annotatedElementName, String loggingCtx) {     
         DatabaseField field = getDatabaseField();
-
+        
+        boolean useDelimitedIdentifier = (descriptor.getProject() != null) ? descriptor.getProject().useDelimitedIdentifier() : false;
+        
         // Process the name
         field.setName(MetadataHelper.getName(field.getName(), "DTYPE", loggingCtx, descriptor.getLogger(), annotatedElementName));
+        field.setUseDelimiters(useDelimitedIdentifier);
         
         // Set the table.
         field.setTable(descriptor.getPrimaryTable());

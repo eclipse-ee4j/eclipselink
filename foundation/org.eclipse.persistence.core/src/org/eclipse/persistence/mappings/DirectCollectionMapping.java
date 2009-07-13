@@ -1129,7 +1129,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         if (getReferenceTable() == null) {
             return null;
         }
-        return getReferenceTable().getQualifiedName();
+        return getReferenceTable().getQualifiedNameDelimited();
     }
 
     /**

@@ -339,7 +339,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         if(aliasTables.isEmpty()) {
             return null;
         } else if(aliasTables.size() == 1) {
-            return aliasTable.getQualifiedName();
+            return aliasTable.getQualifiedNameDelimited();
         }
         // The table has several aliases, 
         // remove the aliases that used by DataExpressions 

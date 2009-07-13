@@ -1784,6 +1784,16 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         
         descriptor.addMapping(getEntityListenersMapping());
         
+        XMLDirectMapping delimitedIdentifiersMapping = new XMLDirectMapping();
+        delimitedIdentifiersMapping.setAttributeName("m_delimitedIdentifiers");
+        delimitedIdentifiersMapping.setGetMethodName("getDelimitedIdentifiers");
+        delimitedIdentifiersMapping.setSetMethodName("setDelimitedIdentifiers");
+        IsSetNullPolicy delimitedIdentifiersPolicy = new IsSetNullPolicy("isDelimitedIdentifiers");
+        delimitedIdentifiersPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);
+        delimitedIdentifiersMapping.setNullPolicy(delimitedIdentifiersPolicy);
+        delimitedIdentifiersMapping.setXPath("orm:delimited-identifiers/text()");
+        descriptor.addMapping(delimitedIdentifiersMapping);
+        
         return descriptor;
     }
 

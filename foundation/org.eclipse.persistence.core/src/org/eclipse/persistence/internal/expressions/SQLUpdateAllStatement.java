@@ -133,7 +133,7 @@ public class SQLUpdateAllStatement extends SQLModifyStatement {
                 writer.write(" ");
             }
 
-            writer.write(getTable().getQualifiedName());
+            writer.write(getTable().getQualifiedNameDelimited());
 
             // SET CLAUSE //
             writer.write(" SET ");
@@ -149,7 +149,7 @@ public class SQLUpdateAllStatement extends SQLModifyStatement {
                 DatabaseField field = (DatabaseField)i.next();
                 Object value = m_updateClauses.get(field);
 
-                writer.write(field.getName());
+                writer.write(field.getNameDelimited());
                 writer.write(" = ");
                 if(value instanceof Expression) {
                     printer.printExpression((Expression)value);
@@ -196,14 +196,14 @@ public class SQLUpdateAllStatement extends SQLModifyStatement {
             } else {
                 writer.write(" AND ");
             }
-            String fieldName = ((DatabaseField)it.next()).getName();
+            String fieldName = ((DatabaseField)it.next()).getNameDelimited();
             if(tableAliasInSelectCall != null) {
                 writer.write(tableAliasInSelectCall);
                 writer.write('.');
             }
             writer.write(fieldName);
             writer.write(" = ");
-            writer.write(table.getQualifiedName());
+            writer.write(table.getQualifiedNameDelimited());
             writer.write('.');
             writer.write(fieldName);
         }

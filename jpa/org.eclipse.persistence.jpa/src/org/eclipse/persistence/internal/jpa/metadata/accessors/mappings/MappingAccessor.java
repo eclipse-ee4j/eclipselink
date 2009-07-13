@@ -357,7 +357,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
     protected DatabaseField getDatabaseField(DatabaseTable defaultTable, String loggingCtx) {
         // Check if we have an attribute override first, otherwise process for a column
         ColumnMetadata column  = hasAttributeOverride(loggingCtx) ? getAttributeOverride(loggingCtx).getColumn() : getColumn(loggingCtx);
-           
+        
         // Get the actual database field and apply any defaults.
         DatabaseField field = column.getDatabaseField();
            
@@ -365,16 +365,20 @@ public abstract class MappingAccessor extends MetadataAccessor {
         if (field.getTableName().equals("")) {
             field.setTable(defaultTable);
         }
-           
+          
         // Set the correct field name, defaulting and logging when necessary.
-        String defaultName = column.getUpperCaseAttributeName();
+        String defaultName = column.getDefaultAttributeName(getProject());
            
         // If this is for a map key column, append a suffix.
         if (loggingCtx.equals(MetadataLogger.MAP_KEY_COLUMN)) {
             defaultName += DEFAULT_MAP_KEY_COLUMN_SUFFIX;
         }
+        
            
         field.setName(getName(field.getName(), defaultName, loggingCtx));
+
+        field.getTable().setUseDelimiters(useDelimitedIdentifier());
+        field.setUseDelimiters(useDelimitedIdentifier());
                        
         return field;
     }
@@ -1405,10 +1409,12 @@ public abstract class MappingAccessor extends MetadataAccessor {
         for (JoinColumnMetadata joinColumn : joinColumns) {
             DatabaseField pkField = joinColumn.getPrimaryKeyField();
             pkField.setName(getName(pkField, defaultPKFieldName, MetadataLogger.PK_COLUMN));
+            pkField.setUseDelimiters(useDelimitedIdentifier());
             pkField.setTable(defaultPKTable);
             
             DatabaseField fkField = joinColumn.getForeignKeyField();
             fkField.setName(getName(fkField, defaultFKFieldName, MetadataLogger.FK_COLUMN));
+            fkField.setUseDelimiters(useDelimitedIdentifier());
             // Set the table name if one is not already set.
             if (fkField.getTableName().equals("")) {
                 fkField.setTable(defaultFKTable);

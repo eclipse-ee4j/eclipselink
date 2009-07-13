@@ -103,6 +103,6 @@ public class OutputParameterForCallableStatement extends BindCallCustomParameter
     }
 
     public String toString() {
-        return "=> " + getOutputField().getName();
+        return "=> " + getOutputField().getNameDelimited();
     }
 }

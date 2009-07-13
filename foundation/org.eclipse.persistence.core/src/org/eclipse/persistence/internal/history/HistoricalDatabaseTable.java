@@ -54,7 +54,7 @@ public class HistoricalDatabaseTable extends DatabaseTable {
      */
     public HistoricalDatabaseTable(DatabaseTable source, DatabaseTable mirroring) {
         super(source.getName(), source.getTableQualifier());
-        this.historicalName = mirroring.getQualifiedName();
+        this.historicalName = mirroring.getQualifiedNameDelimited();
     }
 
     public void setHistoricalName(String name) {
@@ -65,7 +65,7 @@ public class HistoricalDatabaseTable extends DatabaseTable {
         if (historicalName != null) {
             return historicalName;
         } else {
-            return super.getQualifiedName();
+            return super.getQualifiedNameDelimited();
         }
     }
 }

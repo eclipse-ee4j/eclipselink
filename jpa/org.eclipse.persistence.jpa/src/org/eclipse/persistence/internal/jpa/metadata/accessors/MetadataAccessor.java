@@ -335,7 +335,10 @@ public abstract class MetadataAccessor extends ORMetadata {
      * Return the upper cased attribute name for this accessor. Used when
      * defaulting.
      */
-    protected String getUpperCaseAttributeName() {
+    protected String getDefaultAttributeName() {
+        if (m_project != null && m_project.getPersistenceUnitMetadata() != null && m_project.getPersistenceUnitMetadata().isDelimitedIdentifiers()){
+            return getAttributeName();
+        }
         return getAttributeName().toUpperCase();
     }
     
@@ -641,4 +644,10 @@ public abstract class MetadataAccessor extends ORMetadata {
     public void setTypeConverters(List<TypeConverterMetadata> typeConverters) {
         m_typeConverters = typeConverters;
     }
+    
+    protected boolean useDelimitedIdentifier() {
+        return m_project.useDelimitedIdentifier();
+      }
+    
 }
+

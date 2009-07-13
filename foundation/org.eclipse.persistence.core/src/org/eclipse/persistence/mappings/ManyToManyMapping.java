@@ -307,7 +307,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
         if (relationTable == null) {
             return null;
         }
-        return relationTable.getQualifiedName();
+        return relationTable.getQualifiedNameDelimited();
     }
 
     /**

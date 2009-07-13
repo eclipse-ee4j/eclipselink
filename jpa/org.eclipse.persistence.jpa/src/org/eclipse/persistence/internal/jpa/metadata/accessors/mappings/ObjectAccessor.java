@@ -458,7 +458,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
         // relationship property or field of the referencing entity or
         // embeddable class; "_"; the name of the referenced primary key 
         // column.
-        String defaultFKFieldName = getUpperCaseAttributeName() + "_" + defaultPKFieldName;
+        String defaultFKFieldName = getDefaultAttributeName() + "_" + defaultPKFieldName;
         
         processOneToOneForeignKeyRelationship(mapping, getJoinColumns(getJoinColumns(), getReferenceDescriptor()), defaultPKFieldName, getReferenceDatabaseTable(), defaultFKFieldName, getDescriptor().getPrimaryTable());        
     }
@@ -474,19 +474,21 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
     protected void processOneToOnePrimaryKeyRelationship(OneToOneMapping mapping) {
         MetadataDescriptor referenceDescriptor = getReferenceDescriptor();
         List<PrimaryKeyJoinColumnMetadata> pkJoinColumns = processPrimaryKeyJoinColumns(new PrimaryKeyJoinColumnsMetadata(getPrimaryKeyJoinColumns()));
-
+ 
         // Add the source foreign key fields to the mapping.
         for (PrimaryKeyJoinColumnMetadata primaryKeyJoinColumn : pkJoinColumns) {
             // The default primary key name is the primary key field name of the
             // referenced entity.
             DatabaseField pkField = primaryKeyJoinColumn.getPrimaryKeyField();
             pkField.setName(getName(pkField, referenceDescriptor.getPrimaryKeyFieldName(), MetadataLogger.PK_COLUMN));
+            pkField.setUseDelimiters(useDelimitedIdentifier());
             pkField.setTable(referenceDescriptor.getPrimaryTable());
             
             // The default foreign key name is the primary key of the
             // referencing entity.
             DatabaseField fkField = primaryKeyJoinColumn.getForeignKeyField();
             fkField.setName(getName(fkField, getDescriptor().getPrimaryKeyFieldName(), MetadataLogger.FK_COLUMN));
+            fkField.setUseDelimiters(useDelimitedIdentifier());
             fkField.setTable(getDescriptor().getPrimaryTable());
             
             // Add a source foreign key to the mapping.

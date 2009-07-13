@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     tware - added handling of database delimiters
  ******************************************************************************/  
 package org.eclipse.persistence.internal.helper;
 
@@ -31,7 +32,8 @@ public class DatabaseTable implements Cloneable, Serializable {
     protected String tableQualifier;
     protected String qualifiedName;
     protected Vector<List<String>> uniqueConstraints; //Element is columnNames
-
+    protected boolean useDelimiters = false;
+    
     /** 
      * Initialize the newly allocated instance of this class.
      * By default their is no qualifier.
@@ -48,9 +50,14 @@ public class DatabaseTable implements Cloneable, Serializable {
     }
 
     public DatabaseTable(String tableName, String qualifier) {
-        this.name = tableName;
+        setName(tableName);
         this.tableQualifier = qualifier;
         uniqueConstraints = new Vector<List<String>>();
+    }
+    
+    public DatabaseTable(String tableName, String qualifier, boolean useDelimiters) {
+        this(tableName, qualifier);
+        this.useDelimiters = useDelimiters;
     }
 
     /**
@@ -118,6 +125,16 @@ public class DatabaseTable implements Cloneable, Serializable {
     public String getName() {
         return name;
     }
+    
+    /** 
+     * Get method for table name.
+     */
+    public String getNameDelimited() {
+        if (useDelimiters){
+            return Helper.getStartDatabaseDelimiter() + name + Helper.getEndDatabaseDelimiter();
+        }
+        return name;
+    }
 
     public String getQualifiedName() {
         if (qualifiedName == null) {
@@ -130,8 +147,31 @@ public class DatabaseTable implements Cloneable, Serializable {
 
         return qualifiedName;
     }
+    
+    public String getQualifiedNameDelimited() {
+        if (qualifiedName == null) {
+            if (tableQualifier.equals("")) {
+                if (useDelimiters){
+                    qualifiedName = Helper.getStartDatabaseDelimiter() + getName() + Helper.getEndDatabaseDelimiter();
+                } else {
+                    qualifiedName = getName();
+                }
+            } else {
+                if (useDelimiters){
+                    qualifiedName = Helper.getStartDatabaseDelimiter() + getTableQualifier() + Helper.getEndDatabaseDelimiter() + "." 
+                      + Helper.getStartDatabaseDelimiter() + getName() + Helper.getEndDatabaseDelimiter();
+                } else {
+                    qualifiedName = getTableQualifier() + "." + getName();
+                }
+            }
+        }
+        return qualifiedName;
+    }
 
     public String getTableQualifier() {
+        if (useDelimiters && tableQualifier != null && !tableQualifier.equals("")){
+            return Helper.getStartDatabaseDelimiter() + tableQualifier + Helper.getEndDatabaseDelimiter();
+        }
         return tableQualifier;
     }
     
@@ -180,10 +220,18 @@ public class DatabaseTable implements Cloneable, Serializable {
      * This method will set the table name regardless if the name has
      * a qualifier. Used when aliasing table names.
      * 
+     * If the name contains database delimiters, they will be stripped and a flag will be set to have them 
+     * added when the DatabaseTable is written to SQL
+     * 
      * @param name
      */
     public void setName(String name) {
-        this.name = name;
+        if (name.startsWith(Helper.getStartDatabaseDelimiter()) && name.endsWith(Helper.getEndDatabaseDelimiter())){
+            this.name = name.substring(1, name.length() - 1);
+            useDelimiters = true;
+        } else {
+            this.name = name ;
+        }
         resetQualifiedName();
     }
     
@@ -200,20 +248,33 @@ public class DatabaseTable implements Cloneable, Serializable {
         int index = possiblyQualifiedName.lastIndexOf('.');
 
         if (index == -1) {
-            this.name = possiblyQualifiedName;
+            setName(possiblyQualifiedName);
             this.tableQualifier = "";
         } else {
-            this.name = possiblyQualifiedName.substring(index + 1, possiblyQualifiedName.length());
-            this.tableQualifier = possiblyQualifiedName.substring(0, index);
+            setName(possiblyQualifiedName.substring(index + 1, possiblyQualifiedName.length()));
+            setTableQualifier(possiblyQualifiedName.substring(0, index));
         }
     }
 
     public void setTableQualifier(String qualifier) {
-        this.tableQualifier = qualifier;
+        if (qualifier.startsWith(Helper.getStartDatabaseDelimiter()) && qualifier.endsWith(Helper.getEndDatabaseDelimiter())){
+            this.tableQualifier = qualifier.substring(1, qualifier.length() - 1);
+            useDelimiters = true;
+        } else {
+            this.tableQualifier = qualifier;
+        }
         resetQualifiedName();
     }
 
     public String toString() {
         return "DatabaseTable(" + getQualifiedName() + ")";
+    }
+    
+    public void setUseDelimiters(boolean useDelimiters) {
+        this.useDelimiters = useDelimiters;
+    }
+    
+    public boolean shouldUseDelimiters() {
+        return useDelimiters;
     }
 }

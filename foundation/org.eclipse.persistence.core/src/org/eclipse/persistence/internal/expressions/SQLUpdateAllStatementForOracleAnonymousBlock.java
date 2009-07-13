@@ -127,7 +127,7 @@ public class SQLUpdateAllStatementForOracleAnonymousBlock extends SQLModifyState
                 writer.write("UPDATE ");
                 Map.Entry entry = (Map.Entry)itEntries.next();
                 DatabaseTable t = (DatabaseTable)entry.getKey();
-                writer.write(t.getQualifiedName());
+                writer.write(t.getQualifiedNameDelimited());
                 writer.write(" SET ");
                 HashMap databaseFieldsToValues = (HashMap)entry.getValue();
                 int counter = 0;
@@ -135,7 +135,7 @@ public class SQLUpdateAllStatementForOracleAnonymousBlock extends SQLModifyState
                 while(itDatabaseFields.hasNext()) {
                     counter++;
                     DatabaseField field = (DatabaseField)itDatabaseFields.next();
-                    writer.write(field.getName());
+                    writer.write(field.getNameDelimited());
                     writer.write(" = ");
                     writeVar(writer, field);
                     writer.write("(i)");
@@ -150,7 +150,7 @@ public class SQLUpdateAllStatementForOracleAnonymousBlock extends SQLModifyState
                 tablePrimaryKeys.addAll((Collection)tablesToPrimaryKeyFields.get(t));
                 for(int i=0; i < mainPrimaryKeys.size(); i++) {
                     DatabaseField tableField = (DatabaseField)tablePrimaryKeys.elementAt(i);
-                    writer.write(tableField.getName());
+                    writer.write(tableField.getNameDelimited());
                     writer.write(" = ");
                     DatabaseField mainField = (DatabaseField )mainPrimaryKeys.elementAt(i);
                     writeVar(writer, mainField);
@@ -187,9 +187,9 @@ public class SQLUpdateAllStatementForOracleAnonymousBlock extends SQLModifyState
     
     protected static void writeUniqueFieldName(Writer writer, DatabaseField field) throws IOException {
         // EMPLOYEE_EMP_ID
-        writer.write(field.getTableName());
+        writer.write(field.getTable().getNameDelimited());
         writer.write("_");
-        writer.write(field.getName());
+        writer.write(field.getNameDelimited());
     }
     
     protected static void writeType(Writer writer, DatabaseField field) throws IOException {

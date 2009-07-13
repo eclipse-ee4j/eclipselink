@@ -35,6 +35,7 @@ public class XMLPersistenceUnitDefaults extends ORMetadata {
     private String m_access;
     private String m_catalog;
     private String m_schema;
+    private boolean m_delimitedIdentifiers = false;
 
     /**
      * INTERNAL:
@@ -66,6 +67,10 @@ public class XMLPersistenceUnitDefaults extends ORMetadata {
             if (! valuesMatch(persistenceUnitDefaults.isCascadePersist(), isCascadePersist())) {
                 return false;
             } 
+            
+            if (! valuesMatch(persistenceUnitDefaults.isDelimitedIdentifiers(), isDelimitedIdentifiers())) {
+                return false;
+            } 
         
             return true;
         }
@@ -86,6 +91,14 @@ public class XMLPersistenceUnitDefaults extends ORMetadata {
      * Used for OX mapping.
      */
     public String getCascadePersist() {
+        return null;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getDelimitedIdentifiers() {
         return null;
     }
     
@@ -121,6 +134,10 @@ public class XMLPersistenceUnitDefaults extends ORMetadata {
         return m_cascadePersist;
     }
     
+    public boolean isDelimitedIdentifiers(){
+        return m_delimitedIdentifiers;
+    }
+    
     /**
      * INTERNAL:
      */
@@ -130,7 +147,9 @@ public class XMLPersistenceUnitDefaults extends ORMetadata {
         if (persistenceUnitDefaults != null) {
             // Primitive boolean merging.
             mergePrimitiveBoolean(m_cascadePersist, persistenceUnitDefaults.isCascadePersist(), persistenceUnitDefaults, "cascade-persist");
-        
+            mergePrimitiveBoolean(m_delimitedIdentifiers, persistenceUnitDefaults.isDelimitedIdentifiers(), persistenceUnitDefaults, "delimited-identifiers");
+
+            
             // Simple object merging.
             m_access = (String) mergeSimpleObjects(m_access, persistenceUnitDefaults.getAccess(), persistenceUnitDefaults, "<access>");
             m_catalog = (String) mergeSimpleObjects(m_catalog, persistenceUnitDefaults.getCatalog(), persistenceUnitDefaults, "<catalog>");
@@ -168,6 +187,10 @@ public class XMLPersistenceUnitDefaults extends ORMetadata {
      */
     public void setCascadePersist(String ignore) {
         m_cascadePersist = true;
+    }
+    
+    public void setDelimitedIdentifiers(String ignore){
+        m_delimitedIdentifiers = true;
     }
     
     /**

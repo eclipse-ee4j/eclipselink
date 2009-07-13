@@ -128,6 +128,11 @@ public class XMLPersistenceUnitMetadata extends ORMetadata {
         return null;
     }
 
+    
+    public boolean isDelimitedIdentifiers(){
+        return (m_persistenceUnitDefaults == null) ? false : m_persistenceUnitDefaults.isDelimitedIdentifiers(); 
+    }
+    
     /**
      * INTERNAL:
      * Used for OX mapping.

@@ -1797,7 +1797,7 @@ public class ExpressionOperator implements Serializable {
             Expression item = (Expression)items.elementAt(index);
             if ((getSelector() == Ref) || ((getSelector() == Deref) && (item.isObjectExpression()))) {
                 DatabaseTable alias = ((ObjectExpression)item).aliasForTable(((ObjectExpression)item).getDescriptor().getTables().firstElement());
-                printer.printString(alias.getName());
+                printer.printString(alias.getNameDelimited());
             } else if ((getSelector() == Count) && (item.isExpressionBuilder())) {
                 printer.printString("*");
             } else if (getType() == FunctionOperator) {

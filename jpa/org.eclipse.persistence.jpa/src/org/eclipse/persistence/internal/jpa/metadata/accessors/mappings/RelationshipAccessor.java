@@ -150,6 +150,7 @@ public abstract class RelationshipAccessor extends MappingAccessor {
             String defaultPKFieldName = descriptor.getPrimaryKeyFieldName();
             DatabaseField pkField = joinColumn.getPrimaryKeyField();
             pkField.setName(getName(pkField, defaultPKFieldName, PK_CTX));
+            pkField.setUseDelimiters(useDelimitedIdentifier());
             pkField.setTable(descriptor.getPrimaryKeyTable());
             
             // If the fk field (name) is not specified, it defaults to the 
@@ -163,6 +164,7 @@ public abstract class RelationshipAccessor extends MappingAccessor {
             DatabaseField fkField = joinColumn.getForeignKeyField();
             String defaultFKFieldName = defaultFieldName + "_" + defaultPKFieldName;
             fkField.setName(getName(fkField, defaultFKFieldName, FK_CTX));
+            fkField.setUseDelimiters(useDelimitedIdentifier());
             // Target table name here is the join table name.
             // If the user had specified a different table name in the join
             // column, it is ignored. Perhaps an error or warning should be

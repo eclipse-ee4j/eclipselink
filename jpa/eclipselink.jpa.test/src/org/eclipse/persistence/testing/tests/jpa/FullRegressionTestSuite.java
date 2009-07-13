@@ -72,6 +72,7 @@ import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLValidationTestSui
 import org.eclipse.persistence.testing.tests.jpa.xml.EntityMappingsJUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.cacheable.CacheableModelJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.ddlgeneration.DDLGenerationJUnitTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.delimited.DelimitedPUTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.deployment.CompositeEnumerationTest;
 
 public class FullRegressionTestSuite extends TestSuite{
@@ -203,6 +204,9 @@ public class FullRegressionTestSuite extends TestSuite{
         
         // JPA 2.0 Cacheable model
         fullSuite.addTest(CacheableModelJunitTest.suite());
+        
+        // JPA 2.0 Delimited Identifiers model
+        fullSuite.addTest(DelimitedPUTestSuite.suite());
 
         return fullSuite;
     }

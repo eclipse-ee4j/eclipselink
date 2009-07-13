@@ -175,11 +175,13 @@ public class BasicCollectionAccessor extends DirectCollectionAccessor {
             // The default name is the primary key of the owning entity.
             DatabaseField pkField = primaryKeyJoinColumn.getPrimaryKeyField();
             pkField.setName(getName(pkField, getOwningDescriptor().getPrimaryKeyFieldName(), MetadataLogger.PK_COLUMN));
+            pkField.setUseDelimiters(useDelimitedIdentifier());
             pkField.setTable(getDescriptor().getPrimaryTable());
             
             // The default name is the primary key of the owning entity.
             DatabaseField fkField = primaryKeyJoinColumn.getForeignKeyField();
             fkField.setName(getName(fkField, getOwningDescriptor().getPrimaryKeyFieldName(), MetadataLogger.FK_COLUMN));
+            fkField.setUseDelimiters(useDelimitedIdentifier());
             fkField.setTable(getReferenceDatabaseTable());
             
             // Add the reference key field for the direct collection mapping.

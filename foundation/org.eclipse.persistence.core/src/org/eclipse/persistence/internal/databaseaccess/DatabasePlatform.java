@@ -2139,7 +2139,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      * @return DatabaseTable temorary table
      */
      public DatabaseTable getTempTableForTable(DatabaseTable table) {
-         return new DatabaseTable("TL_" + table.getName(), table.getTableQualifier());
+         return new DatabaseTable("TL_" + table.getName(), table.getTableQualifier(), table.shouldUseDelimiters());
      }          
 
     /**
@@ -2227,9 +2227,9 @@ public class DatabasePlatform extends DatasourcePlatform {
                     if (type == null) {
                         type = ClassConstants.STRING;
                     }
-                   fieldDef = new FieldDefinition(field.getName(), type);
+                   fieldDef = new FieldDefinition(field.getNameDelimited(), type);
                 } else {
-                   fieldDef = new FieldDefinition(field.getName(), field.getColumnDefinition());
+                   fieldDef = new FieldDefinition(field.getNameDelimited(), field.getColumnDefinition());
                 }
                 if (pkFields.contains(field) && shouldTempTableSpecifyPrimaryKeys()) {
                     fieldDef.setIsPrimaryKey(true);
@@ -2237,12 +2237,12 @@ public class DatabasePlatform extends DatasourcePlatform {
                 tableDef.addField(fieldDef);
             }            
             tableDef.setCreationPrefix(getCreateTempTableSqlPrefix());
-            tableDef.setName(getTempTableForTable(table).getQualifiedName());
+            tableDef.setName(getTempTableForTable(table).getQualifiedNameDelimited());
             tableDef.setCreationSuffix(getCreateTempTableSqlSuffix());
             tableDef.buildCreationWriter(session, writer);
         } else {
             writer.write(getCreateTempTableSqlPrefix());
-            writer.write(getTempTableForTable(table).getQualifiedName());
+            writer.write(getTempTableForTable(table).getQualifiedNameDelimited());
             writer.write(body);
             writer.write(getCreateTempTableSqlSuffix());
         }
@@ -2260,7 +2260,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      */
      public void writeInsertIntoTableSql(Writer writer, DatabaseTable table, Collection usedFields) throws IOException {
         writer.write("INSERT INTO ");
-        writer.write(getTempTableForTable(table).getQualifiedName());
+        writer.write(getTempTableForTable(table).getQualifiedNameDelimited());
 
         writer.write(" (");        
         writeFieldsList(writer, usedFields);
@@ -2292,18 +2292,18 @@ public class DatabasePlatform extends DatasourcePlatform {
                                                      Collection assignedFields) throws IOException 
     {
         writer.write("UPDATE ");
-        String tableName = table.getQualifiedName();
+        String tableName = table.getQualifiedNameDelimited();
         writer.write(tableName);
         writer.write(" SET (");
         writeFieldsList(writer, assignedFields);
         writer.write(") = (SELECT ");        
         writeFieldsList(writer, assignedFields);
         writer.write(" FROM ");
-        String tempTableName = getTempTableForTable(table).getQualifiedName();
+        String tempTableName = getTempTableForTable(table).getQualifiedNameDelimited();
         writer.write(tempTableName);
         writeAutoJoinWhereClause(writer, null, tableName, pkFields);
         writer.write(") WHERE EXISTS(SELECT ");
-        writer.write(((DatabaseField)pkFields.iterator().next()).getName());
+        writer.write(((DatabaseField)pkFields.iterator().next()).getNameDelimited());
         writer.write(" FROM ");
         writer.write(tempTableName);
         writeAutoJoinWhereClause(writer, null, tableName, pkFields);
@@ -2331,12 +2331,12 @@ public class DatabasePlatform extends DatasourcePlatform {
                                                      Collection targetPkFields) throws IOException 
     {
         writer.write("DELETE FROM ");
-        String targetTableName = targetTable.getQualifiedName();
+        String targetTableName = targetTable.getQualifiedNameDelimited();
         writer.write(targetTableName);
         writer.write(" WHERE EXISTS(SELECT ");
-        writer.write(((DatabaseField)pkFields.iterator().next()).getName());
+        writer.write(((DatabaseField)pkFields.iterator().next()).getNameDelimited());
         writer.write(" FROM ");
-        String tempTableName = getTempTableForTable(table).getQualifiedName();
+        String tempTableName = getTempTableForTable(table).getQualifiedNameDelimited();
         writer.write(tempTableName);
         writeJoinWhereClause(writer, null, targetTableName, pkFields, targetPkFields);
         writer.write(")");
@@ -2392,7 +2392,7 @@ public class DatabasePlatform extends DatasourcePlatform {
             // supportsGlobalTempTables() == true
             writer.write("DELETE FROM ");
         }
-        writer.write(getTempTableForTable(table).getQualifiedName());
+        writer.write(getTempTableForTable(table).getQualifiedNameDelimited());
     }          
 
     /**
@@ -2432,7 +2432,7 @@ public class DatabasePlatform extends DatasourcePlatform {
                 writer.write(", ");
             }
             DatabaseField field = (DatabaseField)itFields.next();
-            writer.write(field.getName());
+            writer.write(field.getNameDelimited());
         }
     }
     
@@ -2488,14 +2488,14 @@ public class DatabasePlatform extends DatasourcePlatform {
                 writer.write(tableName1);
                 writer.write(".");
             }
-            String fieldName1 = ((DatabaseField)itFields1.next()).getName();
+            String fieldName1 = ((DatabaseField)itFields1.next()).getNameDelimited();
             writer.write(fieldName1);
             writer.write(" = ");
             if(tableName2 != null) {
                 writer.write(tableName2);
                 writer.write(".");
             }
-            String fieldName2 = ((DatabaseField)itFields2.next()).getName();
+            String fieldName2 = ((DatabaseField)itFields2.next()).getNameDelimited();
             writer.write(fieldName2);
         }
     }

@@ -442,7 +442,7 @@ public class MySQLPlatform extends DatabasePlatform {
      * INTERNAL:
      */
      protected String getCreateTempTableSqlBodyForTable(DatabaseTable table) {
-         return " LIKE " + table.getQualifiedName();
+         return " LIKE " + table.getQualifiedNameDelimited();
      }
      
     /**
@@ -527,10 +527,10 @@ public class MySQLPlatform extends DatabasePlatform {
                                                     Collection assignedFields) throws IOException 
     {
         writer.write("UPDATE ");
-        String tableName = table.getQualifiedName();
+        String tableName = table.getQualifiedNameDelimited();
         writer.write(tableName);
         writer.write(", ");
-        String tempTableName = getTempTableForTable(table).getQualifiedName();
+        String tempTableName = getTempTableForTable(table).getQualifiedNameDelimited();
         writer.write(tempTableName);
         writeAutoAssignmentSetClause(writer, tableName, tempTableName, assignedFields);
         writeAutoJoinWhereClause(writer, tableName, tempTableName, pkFields);
@@ -545,12 +545,12 @@ public class MySQLPlatform extends DatabasePlatform {
                                                         Collection targetPkFields) throws IOException 
     {
         writer.write("DELETE FROM ");
-        String targetTableName = targetTable.getQualifiedName();
+        String targetTableName = targetTable.getQualifiedNameDelimited();
         writer.write(targetTableName);
         writer.write(" USING ");
         writer.write(targetTableName);
         writer.write(", ");
-        String tempTableName = getTempTableForTable(table).getQualifiedName();
+        String tempTableName = getTempTableForTable(table).getQualifiedNameDelimited();
         writer.write(tempTableName);
         writeJoinWhereClause(writer, targetTableName, tempTableName, targetPkFields, pkFields);
     }

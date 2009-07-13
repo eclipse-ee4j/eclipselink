@@ -628,11 +628,13 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
             // The default name is the primary key of the owning entity.
             DatabaseField pkField = joinColumn.getPrimaryKeyField();
             pkField.setName(getName(pkField, getDescriptor().getPrimaryKeyFieldName(), MetadataLogger.PK_COLUMN));
+            pkField.setUseDelimiters(useDelimitedIdentifier());
             pkField.setTable(getDescriptor().getPrimaryTable());
                 
             // The default name is the primary key of the owning entity.
             DatabaseField fkField = joinColumn.getForeignKeyField();
             fkField.setName(getName(fkField, getDescriptor().getAlias() + "_" + getDescriptor().getPrimaryKeyFieldName(), MetadataLogger.FK_COLUMN));
+            fkField.setUseDelimiters(useDelimitedIdentifier());
             fkField.setTable(getReferenceDatabaseTable());
                 
             if (mapping.isDirectCollectionMapping()) {

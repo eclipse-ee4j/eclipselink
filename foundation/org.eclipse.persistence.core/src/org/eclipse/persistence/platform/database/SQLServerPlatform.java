@@ -637,7 +637,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
      * INTERNAL:
      */
     public DatabaseTable getTempTableForTable(DatabaseTable table) {
-        return new DatabaseTable("#" + table.getName(), table.getTableQualifier());
+        return new DatabaseTable("#" + table.getName(), table.getTableQualifier(), table.shouldUseDelimiters());
     }          
 
     /**
@@ -648,9 +648,9 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
                                                     Collection assignedFields) throws IOException 
     {
         writer.write("UPDATE ");
-        String tableName = table.getQualifiedName();
+        String tableName = table.getQualifiedNameDelimited();
         writer.write(tableName);
-        String tempTableName = getTempTableForTable(table).getQualifiedName();
+        String tempTableName = getTempTableForTable(table).getQualifiedNameDelimited();
         writeAutoAssignmentSetClause(writer, null, tempTableName, assignedFields);
         writer.write(" FROM ");
         writer.write(tableName);

@@ -428,17 +428,25 @@ public class TableDefinition extends DatabaseObjectDefinition {
             }
             adjustedTableName = buff.toString();
         }
-        String foreignKeyName = "FK_" + adjustedTableName + "_" + fieldName;
+        StringBuffer buff = new StringBuffer();
+        for(int i = 0; i < fieldName.length(); i++) {
+            char c = fieldName.charAt(i);
+            if(c != ' ' && c != '\"' && c != '`') {
+                buff.append(c);
+            }
+        }
+        String adjustedFieldName = buff.toString();
+        String foreignKeyName = "FK_" + adjustedTableName + "_" + adjustedFieldName;
         if (foreignKeyName.length() > maximumNameLength) {
             // First Remove the "FK_" prefix.
-            foreignKeyName = adjustedTableName + "_" + fieldName;
+            foreignKeyName = adjustedTableName + "_" + adjustedFieldName;
             if (foreignKeyName.length() > maximumNameLength) {
                 // Still too long: remove the underscore characters
-                foreignKeyName = Helper.removeAllButAlphaNumericToFit(adjustedTableName + fieldName, maximumNameLength);
+                foreignKeyName = Helper.removeAllButAlphaNumericToFit(adjustedTableName + adjustedFieldName, maximumNameLength);
                 if (foreignKeyName.length() > maximumNameLength) {
                     // Still too long: remove vowels from the table name and field name.
                     String onlyAlphaNumericTableName = Helper.removeAllButAlphaNumericToFit(adjustedTableName, 0);
-                    String onlyAlphaNumericFieldName = Helper.removeAllButAlphaNumericToFit(fieldName, 0);
+                    String onlyAlphaNumericFieldName = Helper.removeAllButAlphaNumericToFit(adjustedFieldName, 0);
                     foreignKeyName = Helper.shortenStringsByRemovingVowelsToFit(onlyAlphaNumericTableName, onlyAlphaNumericFieldName, maximumNameLength);
                     if (foreignKeyName.length() > maximumNameLength) {
                         // Still too long: remove vowels from the table name and field name and truncate the table name.

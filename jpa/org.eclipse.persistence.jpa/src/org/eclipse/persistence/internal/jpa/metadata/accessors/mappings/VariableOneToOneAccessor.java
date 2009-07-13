@@ -259,12 +259,12 @@ public class VariableOneToOneAccessor extends ObjectAccessor {
             String queryKeyName = getName(joinColumn.getReferencedColumnName(), DEFAULT_QUERY_KEY, MetadataLogger.QK_COLUMN);
             
             DatabaseField fkField = joinColumn.getForeignKeyField();
-            fkField.setName(getName(fkField, getUpperCaseAttributeName() + "_ID", MetadataLogger.FK_COLUMN));
+            fkField.setName(getName(fkField, getDefaultAttributeName() + "_ID", MetadataLogger.FK_COLUMN));
             // Set the table name if one is not already set.
             if (fkField.getTableName().equals("")) {
                 fkField.setTable(getDescriptor().getPrimaryTable());
             }
-            
+            fkField.setUseDelimiters(useDelimitedIdentifier());
             // Add the foreign query key to the mapping.
             mapping.addForeignQueryKeyName(fkField, queryKeyName);
             

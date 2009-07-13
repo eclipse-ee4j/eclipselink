@@ -1289,6 +1289,8 @@ public class MetadataProject {
         }
         
         table.setFullyQualifiedTableName(tableName);
+
+        table.setUseDelimiters(useDelimitedIdentifier());
         
         // Process the unique constraints
         table.processUniqueConstraints();
@@ -1315,6 +1317,10 @@ public class MetadataProject {
     public void setWeavingEnabled(boolean weavingEnabled) {
         m_weavingEnabled = weavingEnabled;
     }
+    
+    public boolean useDelimitedIdentifier() {
+        return m_persistenceUnitMetadata != null && m_persistenceUnitMetadata.isDelimitedIdentifiers();
+      }
     
     /**
      * Return if the project should use indirection for eager relationships.

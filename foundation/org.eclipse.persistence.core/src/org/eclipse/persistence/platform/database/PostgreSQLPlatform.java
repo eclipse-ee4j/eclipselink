@@ -505,11 +505,11 @@ public class PostgreSQLPlatform extends DatabasePlatform {
                                                      Collection assignedFields) throws IOException 
     {
         writer.write("UPDATE ");
-        String tableName = table.getQualifiedName();
+        String tableName = table.getQualifiedNameDelimited();
         writer.write(tableName);
         writer.write(" SET ");
         
-        String tempTableName = getTempTableForTable(table).getQualifiedName();
+        String tempTableName = getTempTableForTable(table).getQualifiedNameDelimited();
         boolean isFirst = true;
         Iterator itFields = assignedFields.iterator();
         while(itFields.hasNext()) {
@@ -519,7 +519,7 @@ public class PostgreSQLPlatform extends DatabasePlatform {
                 writer.write(", ");
             }
             DatabaseField field = (DatabaseField)itFields.next();
-            String fieldName = field.getName();
+            String fieldName = field.getNameDelimited();
             writer.write(fieldName);
             writer.write(" = (SELECT ");
             writer.write(fieldName);
@@ -530,7 +530,7 @@ public class PostgreSQLPlatform extends DatabasePlatform {
         }
         
         writer.write(" WHERE EXISTS(SELECT ");
-        writer.write(((DatabaseField)pkFields.iterator().next()).getName());
+        writer.write(((DatabaseField)pkFields.iterator().next()).getNameDelimited());
         writer.write(" FROM ");
         writer.write(tempTableName);
         writeAutoJoinWhereClause(writer, null, tableName, pkFields);

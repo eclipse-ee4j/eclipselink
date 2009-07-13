@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     tware - added handling of database delimiters
  ******************************************************************************/  
 package org.eclipse.persistence.internal.helper;
 
@@ -68,6 +69,8 @@ public class DatabaseField implements Cloneable, Serializable {
      */
     public int index;
     
+    protected boolean useDelimiters = false;
+
     /**
      * used to represent the value when it has not being defined
      */
@@ -83,10 +86,10 @@ public class DatabaseField implements Cloneable, Serializable {
         int index = qualifiedName.lastIndexOf('.');
 
         if (index == -1) {
-            this.name = qualifiedName;
+            setName(qualifiedName);
             this.table = new DatabaseTable();
         } else {
-            this.name = qualifiedName.substring(index + 1, qualifiedName.length());
+            setName(qualifiedName.substring(index + 1, qualifiedName.length()));
             this.table = new DatabaseTable(qualifiedName.substring(0, index));
         }
         initDDLFields();
@@ -99,7 +102,7 @@ public class DatabaseField implements Cloneable, Serializable {
     public DatabaseField(String fieldName, DatabaseTable databaseTable) {
         this.index = -1;
         this.sqlType = NULL_SQL_TYPE;
-        this.name = fieldName;
+        setName(fieldName);
         this.table = databaseTable;
         initDDLFields();
     }
@@ -212,6 +215,19 @@ public class DatabaseField implements Cloneable, Serializable {
     public String getName() {
         return name;
     }
+
+    /**
+     * Returns this fields name with database delimiters if useDelimiters is true.
+     * 
+     * This method should be called any time the field name is requested for writing SQL
+     * @return
+     */
+    public String getNameDelimited() {
+        if (useDelimiters){
+            return Helper.getStartDatabaseDelimiter() + name + Helper.getEndDatabaseDelimiter();
+        }
+        return name;
+    }
     
     /**
      * Returns the precision for a decimal column when generating DDL.
@@ -227,9 +243,9 @@ public class DatabaseField implements Cloneable, Serializable {
     public String getQualifiedName() {
         if (this.qualifiedName == null) {
             if (hasTableName()) {
-                this.qualifiedName = this.table.getQualifiedName() + "." + this.name;
+                this.qualifiedName = this.table.getQualifiedNameDelimited() + "." + getNameDelimited();
             } else {
-                this.qualifiedName = this.name;
+                this.qualifiedName = getNameDelimited();
             }
         }
         return this.qualifiedName;
@@ -387,9 +403,17 @@ public class DatabaseField implements Cloneable, Serializable {
     
     /**
      * Set the unqualified name of the field.
+     * 
+     * If the name contains database delimiters, they will be stripped and a flag will be set to have them 
+     * added when the DatabaseField is written to SQL
      */
     public void setName(String name) {
-        this.name = name;
+        if (name.startsWith(Helper.getStartDatabaseDelimiter()) && name.endsWith(Helper.getEndDatabaseDelimiter())){
+            this.name = name.substring(1, name.length() - 1);
+            useDelimiters = true;
+        } else {
+            this.name = name;
+        }
         this.qualifiedName = null;
     }
     
@@ -464,4 +488,14 @@ public class DatabaseField implements Cloneable, Serializable {
     public String toString() {
         return this.getQualifiedName();
     }
+    
+
+    public void setUseDelimiters(boolean useDelimiters) {
+        this.useDelimiters = useDelimiters;
+    }
+    
+    public boolean shouldUseDelimiters() {
+        return useDelimiters;
+    }
+
 }

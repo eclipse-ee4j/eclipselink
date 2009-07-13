@@ -84,6 +84,11 @@ public class Helper implements Serializable {
     public static final int POSITION_AFTER_IS_PREFIX = IS_PROPERTY_METHOD_PREFIX.length();
     public static final int POSITION_AFTER_GET_PREFIX = GET_PROPERTY_METHOD_PREFIX.length();
     
+    public static final String DEFAULT_DATABASE_DELIMITER = "\"";
+
+    private static String startDatabaseDelimiter = null;
+    private static String endDatabaseDelimiter = null;
+    
     /**
      * Return if JDBC date access should be optimized.
      */
@@ -2195,4 +2200,43 @@ public class Helper implements Serializable {
         
         return leadingChar.toLowerCase().concat(restOfName);
     }
+    
+    public static String getStartDatabaseDelimiter(){
+        if (startDatabaseDelimiter == null){
+            startDatabaseDelimiter = DEFAULT_DATABASE_DELIMITER;
+        }
+        return startDatabaseDelimiter;
+    }
+    
+    public static String getEndDatabaseDelimiter(){
+        if (endDatabaseDelimiter == null){
+            endDatabaseDelimiter = DEFAULT_DATABASE_DELIMITER;
+        }
+        return endDatabaseDelimiter;
+    }
+    
+    /**
+     * By default when JPA is set to use delimited strings the string "\"" is used.
+     * 
+     * This method can be used to change the delimiter
+     * @param delimiter
+     */
+    public static void setDatabaseDelimiters(String delimiter){
+        if (delimiter.length() == 1){
+            startDatabaseDelimiter = delimiter;
+            endDatabaseDelimiter = delimiter;
+        } else {
+            startDatabaseDelimiter = delimiter.substring(0,1);
+            endDatabaseDelimiter = delimiter.substring(1,2);
+        }
+    }
+    
+    public static void setStartDatabaseDelimiter(String delimiter){
+        startDatabaseDelimiter = delimiter;
+    }
+    
+    public static void setEndDatabaseDelimiter(String delimiter){
+        endDatabaseDelimiter = delimiter;
+    }
+    
 }

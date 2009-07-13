@@ -782,6 +782,16 @@ public class PersistenceUnitProperties {
     /** INTERNAL: The following properties will not be displayed through logging but instead have an alternate value shown in the log. */
     public static final Map<String, String> PROPERTY_LOG_OVERRIDES = new HashMap<String, String>(1);
     
+    /**
+     * Used to set delimiter used when using delimited identifiers
+     * Due to the way this property is used, it is universally set rather than configurable on per-persistence-unit basis
+     * (i.e. it is a global setting)
+     * This property should be set as a string that contains the following:
+     * 1. If the start and end delimiter are the same, the string consists of that identifier
+     * 2. If the start and end delimiter are different, the string has two characters, the first being the start identifier the second being the end identifier
+     */
+    public static final String DATABASE_DELIMITERS = "eclipselink.database.delimiters";
+    
     static {
         PROPERTY_LOG_OVERRIDES.put(JDBC_PASSWORD, "xxxxxx");
     }

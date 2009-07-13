@@ -383,8 +383,8 @@ public class DefaultTableGenerator {
         for (int index = 0; index < fkFields.size(); index++) {
             fkField = (DatabaseField) fkFields.get(index);
             targetField = (DatabaseField) targetFields.get(index);
-            fkFieldNames.add(fkField.getName());
-            targetFieldNames.add(targetField.getName());
+            fkFieldNames.add(fkField.getNameDelimited());
+            targetFieldNames.add(targetField.getNameDelimited());
             
             fkField = resolveDatabaseField(fkField, targetField);
             setFieldToRelationTable(fkField, tblDef);
@@ -541,7 +541,7 @@ public class DefaultTableGenerator {
         if (tblDef == null) {
             //table not built yet, simply built it
             tblDef = new TableDefinition();
-            tblDef.setName(dbTbl.getName());
+            tblDef.setName(dbTbl.getNameDelimited());
             tblDef.setQualifier(dbTbl.getTableQualifier());
             addUniqueKeyConstraints(tblDef, dbTbl.getUniqueConstraints());
             tableMap.put(dbTbl.getName(), tblDef);
@@ -579,6 +579,7 @@ public class DefaultTableGenerator {
         resolvedDatabaseField.setNullable(childField.isNullable());
         resolvedDatabaseField.setUpdatable(childField.isUpdatable());
         resolvedDatabaseField.setInsertable(childField.isInsertable());
+        resolvedDatabaseField.setUseDelimiters(childField.shouldUseDelimiters());
         
         String columnDef = childField.getColumnDefinition();
         if(columnDef == null || columnDef.trim().equals("")) {
@@ -602,7 +603,7 @@ public class DefaultTableGenerator {
         if (fieldDef == null) {
             //not built yet, build one
             fieldDef = new FieldDefinition();
-            fieldDef.setName(dbField.getName());
+            fieldDef.setName(dbField.getNameDelimited());
 
             if (dbField.getColumnDefinition() != null && dbField.getColumnDefinition().length() > 0) {
                 // This column definition would include the complete definition of the  

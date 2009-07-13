@@ -113,16 +113,18 @@ public class MetadataHelper {
      * therefore, don't log a message and return name.
      */
     public static String getName(String name, String defaultName, String context, MetadataLogger logger, Object location) {
+        String actualName = null;
         // Check if a candidate was specified otherwise use the default.
         if (name != null && !name.equals("")) {
-            return name;
+            actualName =  name;
         } else if (defaultName == null || defaultName.equals("")) {
             return "";
         } else {
             // Log the defaulting field name based on the given context.
             logger.logConfigMessage(context, location, defaultName);
-            return defaultName;
+            actualName =  defaultName;
         }
+        return actualName;
     }
     
     /**

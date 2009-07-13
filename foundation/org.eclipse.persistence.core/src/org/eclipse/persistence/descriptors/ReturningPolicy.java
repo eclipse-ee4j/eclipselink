@@ -585,7 +585,7 @@ public class ReturningPolicy implements Serializable, Cloneable {
             } else {
                 // keep the original type if specified
                 info1.getField().setName(descField.getName()); 
-                info1.getField().setTableName(getDescriptor().getDefaultTable().getQualifiedName());
+                info1.getField().setTableName(getDescriptor().getDefaultTable().getQualifiedNameDelimited());
             }
             Info info2 = (Info)infoHashtable.get(info1.getField());
             if (info2 == null) {

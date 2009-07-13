@@ -223,17 +223,19 @@ public class OneToManyAccessor extends CollectionAccessor {
         // concatenation of the following: the name of the referencing 
         // relationship property or field of the referencing entity; "_"; 
         // the name of the referenced primary key column.
-        String defaultFKFieldName = getUpperCaseAttributeName() + "_" + defaultPKFieldName;
+        String defaultFKFieldName = getDefaultAttributeName() + "_" + defaultPKFieldName;
             
         // Join columns will come from a @JoinColumn(s).
         // Add the source foreign key fields to the mapping.
         for (JoinColumnMetadata joinColumn : joinColumns) {
             DatabaseField pkField = joinColumn.getPrimaryKeyField();
             pkField.setName(getName(pkField, defaultPKFieldName, MetadataLogger.PK_COLUMN));
+            pkField.setUseDelimiters(useDelimitedIdentifier());
             pkField.setTable(owningDescriptor.getPrimaryKeyTable());
             
             DatabaseField fkField = joinColumn.getForeignKeyField();
             fkField.setName(getName(fkField, defaultFKFieldName, MetadataLogger.FK_COLUMN));
+            fkField.setUseDelimiters(useDelimitedIdentifier());
             // Set the table name if one is not already set.
             if (fkField.getTableName().equals("")) {
                 fkField.setTable(getReferenceDescriptor().getPrimaryTable());

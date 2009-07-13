@@ -669,7 +669,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
             scratchTable = new DatabaseTable(table.getQualifiedName());
             if (scratchTable.getTableQualifier().length() == 0) {
                 scratchTable.setTableQualifier(tableQualifier);
-                table.setHistoricalName(scratchTable.getQualifiedName());
+                table.setHistoricalName(scratchTable.getQualifiedNameDelimited());
             }
         }
     }

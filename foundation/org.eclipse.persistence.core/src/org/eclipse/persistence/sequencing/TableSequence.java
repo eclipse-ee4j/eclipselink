@@ -137,7 +137,7 @@ public class TableSequence extends QuerySequence {
     }
     
     public String getTableName() {
-        return getTable().getQualifiedName();
+        return getTable().getQualifiedNameDelimited();
     }
 
     public String getQualifiedTableName() {
