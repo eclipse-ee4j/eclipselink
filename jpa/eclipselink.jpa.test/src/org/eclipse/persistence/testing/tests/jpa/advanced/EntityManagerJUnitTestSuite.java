@@ -484,7 +484,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", session.getPlatform().isSybase());
 
         // Cannot create parallel entity managers in the server.
-        if (! isOnServer() && isSelectForUpateSupported()) {
+        if (! isOnServer() && isSelectForUpateNoWaitSupported()) {
             EntityManager em = createEntityManager();
             Department dept = null;
             
@@ -549,7 +549,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", session.getPlatform().isSybase());
 
         // Cannot create parallel entity managers in the server.
-        if (! isOnServer() && isSelectForUpateSupported()) {
+        if (! isOnServer() && isSelectForUpateNoWaitSupported()) {
             EntityManager em = createEntityManager();
             Department dept = null;
             
@@ -1451,7 +1451,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", session.getPlatform().isSybase());
         
         // Cannot create parallel entity managers in the server.
-        if (! isOnServer() && isSelectForUpateSupported()) {
+        if (! isOnServer() && isSelectForUpateNoWaitSupported()) {
             EntityManager em = createEntityManager();
             Department dept = null;
             
@@ -1518,7 +1518,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         Assert.assertFalse("Warning Sybase does not support SELECT FOR UPDATE outside of a cursor or stored procedure.", session.getPlatform().isSybase());
 
         // Cannot create parallel entity managers in the server.
-        if (! isOnServer() && isSelectForUpateSupported()) {
+        if (! isOnServer() && isSelectForUpateNoWaitSupported()) {
             EntityManager em = createEntityManager();
             Department dept = null;
             
@@ -7669,9 +7669,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 acquiredWriteConnections.add(accessor);
                 ((ClientSession)session).log(SessionLog.FINEST, SessionLog.CONNECTION, "AcquireReleaseListener.acquireWriteConnection: " + nAcquredWriteConnections(), (Object[])null, accessor, false);
             }
-            if(((DatasourceAccessor)accessor).getLogin() == null) {
-                throw new RuntimeException("AcquireReleaseListener: acquired accessor.getLogin() == null");
-            }
         }
         public void preReleaseConnection(SessionEvent event) {
             Accessor accessor = (Accessor)event.getResult();
@@ -7682,9 +7679,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             } else {
                 acquiredWriteConnections.remove(accessor);
                 ((ClientSession)session).log(SessionLog.FINEST, SessionLog.CONNECTION, "AcquireReleaseListener.releaseWriteConnection: " + nAcquredWriteConnections(), (Object[])null, accessor, false);
-            }
-            if(((DatasourceAccessor)accessor).getLogin() == null) {
-                throw new RuntimeException("AcquireReleaseListener: acquired accessor.getLogin() == null");
             }
         }
         int nAcquredReadConnections() {

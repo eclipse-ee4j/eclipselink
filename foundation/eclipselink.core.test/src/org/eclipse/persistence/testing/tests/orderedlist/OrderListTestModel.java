@@ -1962,7 +1962,6 @@ public class OrderListTestModel extends TestModel {
                     
                     managers.clear();
                     managers.addAll((List<Employee>)getSession().executeQuery(query));
-                    System.out.println();
                 }
                 if(managers.size() != managerClones.size()) {
                     errorMsg = "wrong managers size " + managers.size() + "; expected size is " + managerClones.size();  

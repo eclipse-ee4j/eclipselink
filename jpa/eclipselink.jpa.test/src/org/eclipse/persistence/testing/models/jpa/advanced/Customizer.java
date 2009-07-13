@@ -184,14 +184,30 @@ public class Customizer implements SessionCustomizer, DescriptorCustomizer {
     static class AcquireReleaseListener extends SessionEventAdapter {
         public void postAcquireConnection(SessionEvent event) {
             DatasourceAccessor accessor = (DatasourceAccessor)event.getResult();
-            if(accessor.getLogin() == null) {
-                throw new RuntimeException("acquired accessor.getLogin() == null");
+            try {
+                if(accessor.getLogin() == null) {
+                    throw new RuntimeException("acquired accessor.getLogin() == null");
+                }
+                if(accessor.getDatasourceConnection() == null) {
+                    throw new RuntimeException("AcquireReleaseListener: acquired accessor.getDatasourceConnection() == null");
+                }
+            } catch (RuntimeException ex) {
+                ex.printStackTrace();
+                throw ex;
             }
         }
         public void preReleaseConnection(SessionEvent event) {
             DatasourceAccessor accessor = (DatasourceAccessor)event.getResult();
-            if(accessor.getLogin() == null) {
-                throw new RuntimeException("released accessor.getLogin() == null");
+            try {
+                if(accessor.getLogin() == null) {
+                    throw new RuntimeException("released accessor.getLogin() == null");
+                }
+                if(accessor.getDatasourceConnection() == null) {
+                    throw new RuntimeException("AcquireReleaseListener: released accessor.getDatasourceConnection() == null");
+                }
+            } catch (RuntimeException ex) {
+                ex.printStackTrace();
+                throw ex;
             }
         }
     }
