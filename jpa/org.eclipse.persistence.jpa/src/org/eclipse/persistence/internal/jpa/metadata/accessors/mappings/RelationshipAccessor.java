@@ -43,6 +43,7 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
@@ -192,6 +193,21 @@ public abstract class RelationshipAccessor extends MappingAccessor {
      * INTERNAL:
      */
     public abstract String getDefaultFetchType();
+    
+    /**
+     * INTERNAL:
+     * Return the default table to hold the foreign key of a MapKey when
+     * and Entity is used as the MapKey
+     * @return
+     */
+    @Override
+    protected DatabaseTable getDefaultTableForEntityMapKey(){
+        if (getJoinTable() != null){
+            return getJoinTable().getDatabaseTable();
+        } else {
+            return super.getDefaultTableForEntityMapKey();
+        }
+    }
     
     /**
      * INTERNAL: 

@@ -392,6 +392,16 @@ public abstract class MappingAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
+     * Return the default table to hold the foreign key of a MapKey when
+     * and Entity is used as the MapKey
+     * @return
+     */
+    protected DatabaseTable getDefaultTableForEntityMapKey(){
+        return getReferenceDescriptor().getPrimaryTable();
+    }
+    
+    /**
+     * INTERNAL:
      * Return the enumerated metadata for this accessor.
      * @see DirectAccessor
      * @see ElementCollectionAccessor
@@ -1243,7 +1253,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
         // embeddable; "_"; "KEY"
         String defaultFKFieldName = getAttributeName() + DEFAULT_MAP_KEY_COLUMN_SUFFIX;
         
-        processOneToOneForeignKeyRelationship(keyMapping, getJoinColumns(mappedKeyMapAccessor.getMapKeyJoinColumns(), mapKeyClassDescriptor), defaultPKFieldName, mapKeyClassDescriptor.getPrimaryTable(), defaultFKFieldName, getReferenceDescriptor().getPrimaryTable());
+        processOneToOneForeignKeyRelationship(keyMapping, getJoinColumns(mappedKeyMapAccessor.getMapKeyJoinColumns(), mapKeyClassDescriptor), defaultPKFieldName, mapKeyClassDescriptor.getPrimaryTable(), defaultFKFieldName, getDefaultTableForEntityMapKey());
 
         return keyMapping;
     }

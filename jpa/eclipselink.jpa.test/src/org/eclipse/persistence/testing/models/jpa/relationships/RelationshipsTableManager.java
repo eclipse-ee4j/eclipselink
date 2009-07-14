@@ -39,6 +39,10 @@ public class RelationshipsTableManager extends TableCreator {
         addTableDefinition(buildLEGOTable());
         addTableDefinition(buildMEGABRANDSTable());
         addTableDefinition(buildNAMCOTable());
+        
+        addTableDefinition(buildServiceCallTable());
+        addTableDefinition(buildCustomerServiceRepTable());
+        addTableDefinition(buildCustRepTable());
     }
         
     public static TableCreator getCreator(){
@@ -685,4 +689,104 @@ public class RelationshipsTableManager extends TableCreator {
 
         return table;
     }
+    
+    
+    public static TableDefinition buildServiceCallTable(){
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_SERVICE_CALL");
+
+        FieldDefinition fieldCUST_ID = new FieldDefinition();
+        fieldCUST_ID.setName("ID");
+        fieldCUST_ID.setTypeName("NUMBER");
+        fieldCUST_ID.setSize(15);
+        fieldCUST_ID.setSubSize(0);
+        fieldCUST_ID.setIsPrimaryKey(true);
+        fieldCUST_ID.setIsIdentity(false);
+        fieldCUST_ID.setUnique(false);
+        fieldCUST_ID.setShouldAllowNull(false);
+        table.addField(fieldCUST_ID);
+
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("DESCRIPTION");
+        fieldNAME.setTypeName("VARCHAR2");
+        fieldNAME.setSize(80);
+        fieldNAME.setSubSize(0);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setIsIdentity(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setShouldAllowNull(true);
+        table.addField(fieldNAME);
+
+        return table;
+    }
+    
+    public static  TableDefinition buildCustomerServiceRepTable(){
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_CUSTOMER_SERVICE_REP");
+
+        FieldDefinition fieldCUST_ID = new FieldDefinition();
+        fieldCUST_ID.setName("ID");
+        fieldCUST_ID.setTypeName("NUMBER");
+        fieldCUST_ID.setSize(15);
+        fieldCUST_ID.setSubSize(0);
+        fieldCUST_ID.setIsPrimaryKey(true);
+        fieldCUST_ID.setIsIdentity(false);
+        fieldCUST_ID.setUnique(false);
+        fieldCUST_ID.setShouldAllowNull(false);
+        table.addField(fieldCUST_ID);
+
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("NAME");
+        fieldNAME.setTypeName("VARCHAR2");
+        fieldNAME.setSize(80);
+        fieldNAME.setSubSize(0);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setIsIdentity(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setShouldAllowNull(true);
+        table.addField(fieldNAME);
+
+        return table;
+    }
+    
+    public static  TableDefinition buildCustRepTable(){
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_CUST_REP");
+
+        FieldDefinition fieldCUST_ID = new FieldDefinition();
+        fieldCUST_ID.setName("CUST_ID");
+        fieldCUST_ID.setTypeName("NUMBER");
+        fieldCUST_ID.setSize(15);
+        fieldCUST_ID.setSubSize(0);
+        fieldCUST_ID.setIsPrimaryKey(true);
+        fieldCUST_ID.setIsIdentity(false);
+        fieldCUST_ID.setUnique(false);
+        fieldCUST_ID.setShouldAllowNull(false);
+        table.addField(fieldCUST_ID);
+
+        FieldDefinition fieldREP_ID = new FieldDefinition();
+        fieldREP_ID.setName("REP_ID");
+        fieldREP_ID.setTypeName("NUMBER");
+        fieldREP_ID.setSize(15);
+        fieldREP_ID.setSubSize(0);
+        fieldREP_ID.setIsPrimaryKey(true);
+        fieldREP_ID.setIsIdentity(false);
+        fieldREP_ID.setUnique(false);
+        fieldREP_ID.setShouldAllowNull(false);
+        table.addField(fieldREP_ID);
+        
+        FieldDefinition fieldCALL_ID = new FieldDefinition();
+        fieldCALL_ID.setName("customerServiceInteractions_KEY");
+        fieldCALL_ID.setTypeName("NUMBER");
+        fieldCALL_ID.setSize(15);
+        fieldCALL_ID.setSubSize(0);
+        fieldCALL_ID.setIsPrimaryKey(true);
+        fieldCALL_ID.setIsIdentity(false);
+        fieldCALL_ID.setUnique(false);
+        fieldCALL_ID.setShouldAllowNull(false);
+        table.addField(fieldCALL_ID);
+
+        return table;
+    }
 }
+

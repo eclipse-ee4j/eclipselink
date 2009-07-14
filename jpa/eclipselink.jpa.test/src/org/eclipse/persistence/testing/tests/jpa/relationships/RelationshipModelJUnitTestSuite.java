@@ -23,6 +23,7 @@ import org.eclipse.persistence.descriptors.copying.CopyPolicy;
 import org.eclipse.persistence.descriptors.copying.InstantiationCopyPolicy;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.relationships.CustomerCollection;
+import org.eclipse.persistence.testing.models.jpa.relationships.CustomerServiceRepresentative;
 import org.eclipse.persistence.testing.models.jpa.relationships.Lego;
 import org.eclipse.persistence.testing.models.jpa.relationships.Item;
 import org.eclipse.persistence.testing.models.jpa.relationships.Mattel;
@@ -30,6 +31,7 @@ import org.eclipse.persistence.testing.models.jpa.relationships.MegaBrands;
 import org.eclipse.persistence.testing.models.jpa.relationships.Namco;
 import org.eclipse.persistence.testing.models.jpa.relationships.RelationshipsTableManager;
 import org.eclipse.persistence.testing.models.jpa.relationships.Order;
+import org.eclipse.persistence.testing.models.jpa.relationships.ServiceCall;
 import org.eclipse.persistence.testing.models.jpa.relationships.TestInstantiationCopyPolicy;
 
 import org.eclipse.persistence.testing.models.jpa.relationships.Customer;
@@ -57,6 +59,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new RelationshipModelJUnitTestSuite("testCopyPolicy"));
         suite.addTest(new RelationshipModelJUnitTestSuite("testCloneCopyPolicy"));
         suite.addTest(new RelationshipModelJUnitTestSuite("testCollectionImplementation"));
+        suite.addTest(new RelationshipModelJUnitTestSuite("testCustomerServiceRepMap"));
 
         return suite;
     }
@@ -203,5 +206,29 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
             throw e;
         }
         closeEntityManager(em);
+    }
+    
+    // Bug 282571 - Map and ManyToMany
+    public void testCustomerServiceRepMap(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        Customer cust = new Customer();
+        cust.setName("Kovie");
+        cust.setCity("Ottawa");
+        
+        CustomerServiceRepresentative rep = new CustomerServiceRepresentative();
+        rep.setName("Brian");
+        
+        ServiceCall call = new ServiceCall();
+        call.setDescription("Trade from Habs.");
+        
+        cust.addCustomerServiceInteraction(call, rep);
+        
+        em.persist(call);
+        em.persist(cust);
+        em.flush();
+        
+        rollbackTransaction(em);
     }
 }

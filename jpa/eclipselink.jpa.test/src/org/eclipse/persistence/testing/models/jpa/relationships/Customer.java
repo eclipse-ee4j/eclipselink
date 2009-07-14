@@ -12,9 +12,13 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.relationships;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Collection;
+import java.util.Map;
+
 import javax.persistence.*;
+
 import static javax.persistence.GenerationType.*;
 import static javax.persistence.CascadeType.*;
 
@@ -38,6 +42,7 @@ public class Customer implements java.io.Serializable{
     private String name;
     private Collection<Order> orders = new HashSet<Order>();
     private CustomerCollection controlledCustomers = new CustomerCollection();
+    private Map<ServiceCall, CustomerServiceRepresentative> customerServiceInteractions = new HashMap<ServiceCall, CustomerServiceRepresentative>();
         
     public Customer() {}
 
@@ -117,4 +122,31 @@ public class Customer implements java.io.Serializable{
     public void addCCustomer(Customer controlledCustomer) {
         getCCustomers().add(controlledCustomer);
     }
+    
+    @ManyToMany(cascade={ALL})
+    @MapKeyClass(ServiceCall.class)
+    @JoinTable(
+            name="CMP3_CUST_REP",
+            joinColumns=
+            @JoinColumn(name="CUST_ID", referencedColumnName="CUST_ID"),
+            inverseJoinColumns=
+            @JoinColumn(name="REP_ID", referencedColumnName="ID")
+    )
+    public Map<ServiceCall, CustomerServiceRepresentative> getCustomerServiceInteractions(){
+        return customerServiceInteractions;
+    }
+    
+    public void setCustomerServiceInteractions(Map<ServiceCall, CustomerServiceRepresentative> interactions){
+        this.customerServiceInteractions = interactions;
+    }
+    
+    public void addCustomerServiceInteraction(ServiceCall call, CustomerServiceRepresentative rep){
+        customerServiceInteractions.put(call, rep);
+        rep.addCustomer(this);
+    }
+    
+    public void removeCustomerServiceInteraction(ServiceCall call){
+        customerServiceInteractions.remove(call);
+    }
 }
+
