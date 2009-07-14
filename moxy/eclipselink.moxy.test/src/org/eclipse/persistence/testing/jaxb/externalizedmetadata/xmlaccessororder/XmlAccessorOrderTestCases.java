@@ -98,7 +98,7 @@ public class XmlAccessorOrderTestCases extends ExternalizedMetadataTestCases {
         String contextPath = CONTEXT_PATH + ".packagelevel.classoverride";
         String path = PATH + "packagelevel/classoverride/";
         
-        outputResolver = generateSchema(new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessororder.packagelevel.Employee.class }, contextPath, path, 1);
+        outputResolver = generateSchema(new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessororder.packagelevel.classoverride.Employee.class }, contextPath, path, 1);
         
         String src = PATH + "employee-unordered.xml";
         String result = validateAgainstSchema(src, 0, outputResolver);

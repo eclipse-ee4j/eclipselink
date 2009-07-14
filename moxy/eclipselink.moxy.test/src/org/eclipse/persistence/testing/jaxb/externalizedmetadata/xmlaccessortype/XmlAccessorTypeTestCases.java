@@ -63,7 +63,7 @@ public class XmlAccessorTypeTestCases extends ExternalizedMetadataTestCases {
         String contextPath = CONTEXT_PATH + ".field";
         String path = PATH + "field/";
         
-        outputResolver = generateSchema(contextPath, path, 1);
+        outputResolver = generateSchema(new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessortype.field.Employee.class }, contextPath, path, 1);
         
         String src = PATH + "employee-field.xml";
         String result = validateAgainstSchema(src, 0, outputResolver);
@@ -81,7 +81,7 @@ public class XmlAccessorTypeTestCases extends ExternalizedMetadataTestCases {
         String contextPath = CONTEXT_PATH + ".property";
         String path = PATH + "property/";
         
-        outputResolver = generateSchema(contextPath, path, 1);
+        outputResolver = generateSchema(new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessortype.property.Employee.class }, contextPath, path, 1);
         
         String src = PATH + "employee-property.xml";
         String result = validateAgainstSchema(src, 0, outputResolver);
@@ -99,7 +99,7 @@ public class XmlAccessorTypeTestCases extends ExternalizedMetadataTestCases {
         String contextPath = CONTEXT_PATH + ".publicmember";
         String path = PATH + "publicmember/";
         
-        outputResolver = generateSchema(contextPath, path, 1);
+        outputResolver = generateSchema(new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessortype.publicmember.Employee.class }, contextPath, path, 1);
         
         String src = PATH + "employee-publicmember.xml";
         String result = validateAgainstSchema(src, 0, outputResolver);
@@ -135,7 +135,7 @@ public class XmlAccessorTypeTestCases extends ExternalizedMetadataTestCases {
         String contextPath = CONTEXT_PATH + ".packagelevel.classoverride";
         String path = PATH + "packagelevel/classoverride/";
         
-        outputResolver = generateSchema(new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessortype.packagelevel.Employee.class }, contextPath, path, 1);
+        outputResolver = generateSchema(new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessortype.packagelevel.classoverride.Employee.class }, contextPath, path, 1);
         
         String src = PATH + "employee-publicmember.xml";
         String result = validateAgainstSchema(src, 0, outputResolver);
@@ -159,5 +159,40 @@ public class XmlAccessorTypeTestCases extends ExternalizedMetadataTestCases {
         String src = PATH + "employee-field.xml";
         String result = validateAgainstSchema(src, 0, outputResolver);
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
+    }
+    
+    /**
+     * Tests the @XmlAccessorType set in package-info.java.  No overrides will 
+     * be performed.
+     * 
+     * Positive test.
+     */
+    public void testPkgXmlAccessorOrderNoOverride() {
+        String contextPath = CONTEXT_PATH + ".packagelevel.nooverride";
+        String path = PATH + "packagelevel/nooverride/";
+        
+        outputResolver = generateSchema(new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessortype.packagelevel.nooverride.Employee.class }, 1);
+        
+        String src = PATH + "employee-none.xml";
+        String result = validateAgainstSchema(src, 0, outputResolver);
+        assertTrue("Schema validation failed unxepectedly: " + result, result == null);
+    }
+
+    /**
+     * Tests the @XmlAccessorType set in package-info.java.  No overrides will 
+     * be performed.
+     * 
+     * Negative test.
+     */
+    public void testPkgXmlAccessorOrderNoOverrideFail() {
+        String contextPath = CONTEXT_PATH + ".packagelevel.nooverride";
+        String path = PATH + "packagelevel/nooverride/";
+        
+        outputResolver = generateSchema(new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessortype.packagelevel.nooverride.Employee.class }, 1);
+        
+        String src = PATH + "employee-property.xml";
+        // since package-info sets to NONE, the following should fail
+        String result = validateAgainstSchema(src, 0, outputResolver);
+        assertTrue("Schema validation passed unxepectedly", result != null);
     }
 }

@@ -287,10 +287,10 @@ public class AnnotationsProcessor {
             // handle @XmlSchemaType(s)
             processSchemaTypes(javaClass, info);
 
-            // handle @XmlAccessorType
-            postProcessXmlAccessorType(info);
-
             NamespaceInfo packageNamespace = getNamespaceInfoForPackage(javaClass);
+
+            // handle @XmlAccessorType
+            postProcessXmlAccessorType(info, packageNamespace);
 
             // handle @XmlType
             postProcessXmlType(javaClass, info, packageNamespace);
@@ -319,7 +319,7 @@ public class AnnotationsProcessor {
             processTypeInfoProperties(info);
 
             // handle @XmlAccessorOrder
-            postProcessXmlAccessorOrder(info);
+            postProcessXmlAccessorOrder(info, packageNamespace);
             
             // Make sure this class has a factory method or a zero arg constructor
             if (info.getFactoryMethodName() == null && info.getObjectFactoryClassName() == null) {
@@ -747,10 +747,10 @@ public class AnnotationsProcessor {
      * 
      * @param info
      */
-    private void postProcessXmlAccessorType(TypeInfo info) {
+    private void postProcessXmlAccessorType(TypeInfo info, NamespaceInfo packageNamespace) {
         if (!info.isSetXmlAccessType()) {
-            // set default
-            info.setXmlAccessType(XmlAccessType.PUBLIC_MEMBER);
+            // use value in package-info.java as last resort - will default if not set
+            info.setXmlAccessType(org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType.fromValue(packageNamespace.getAccessType().name()));
         }
     }
 
@@ -778,7 +778,11 @@ public class AnnotationsProcessor {
      * @param javaClass
      * @param info
      */
-    private void postProcessXmlAccessorOrder(TypeInfo info) {
+    private void postProcessXmlAccessorOrder(TypeInfo info, NamespaceInfo packageNamespace) {
+        if (!info.isSetXmlAccessOrder()) {
+            // use value in package-info.java as last resort - will default if not set
+            info.setXmlAccessOrder(org.eclipse.persistence.jaxb.xmlmodel.XmlAccessOrder.fromValue(packageNamespace.getAccessOrder().name()));
+        }
         info.orderProperties();
     }
 
