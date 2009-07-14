@@ -27,7 +27,7 @@ public class XmlAdapterTestSuite extends TestCase {
     }
 
     public static void main(String[] args) {
-        junit.textui.TestRunner.main(new String[] { "-c", "org.eclipse.persistence.testing.jaxb.xmladapte.XmlAdapterTestSuite" });
+        junit.textui.TestRunner.main(new String[] { "-c", "org.eclipse.persistence.testing.jaxb.xmladapter.XmlAdapterTestSuite" });
     }
 
     public static Test suite() {

@@ -233,7 +233,13 @@ public class XPathEngine {
                 String returnString = "";
                 for (int i = 0; i < ((List)value).size(); i++) {
                     Object nextItem = ((List)value).get(i);
-                    String nextConvertedItem = (String) ((XMLConversionManager)session.getDatasourcePlatform().getConversionManager()).convertObject(nextItem, ClassConstants.STRING, schemaType);
+                    
+                    String nextConvertedItem = null;
+                    if(schemaType != null && schemaType.equals(XMLConstants.QNAME_QNAME)){
+                        nextConvertedItem = getStringForQName((QName)nextItem, getNamespaceResolverForField(xmlField));
+                    }else{
+                    	nextConvertedItem = (String) ((XMLConversionManager)session.getDatasourcePlatform().getConversionManager()).convertObject(nextItem, ClassConstants.STRING, schemaType);
+                    }                    
                     returnString += nextConvertedItem;
                     if (i < (((List)value).size() - 1)) {
                         returnString += " ";

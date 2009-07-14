@@ -17,7 +17,9 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
@@ -102,23 +104,9 @@ public class PropertyTypeTestCases extends JAXBTestCases {
     }
 
     public void testSchemaGen() throws Exception {
-        MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
-        getJAXBContext().generateSchema(outputResolver);
-
-        List<File> generatedSchemas = outputResolver.getSchemaFiles();
-        assertEquals(1, generatedSchemas.size());
-
-        InputStream controlInputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/annotations/propertyType.xsd");
-        File generatedSchema = generatedSchemas.get(0);
-        InputStream controlstream = controlInputStream;
-        Document control = parser.parse(controlstream);
-
-        FileInputStream teststream = new FileInputStream(generatedSchema);
-        Document test = parser.parse(teststream);
-
-        JAXBXMLComparer xmlComparer = new JAXBXMLComparer();
-        assertTrue("generated schema did not match control schema", xmlComparer.isSchemaEqual(control, test));
-
-    }
-
+    	InputStream controlInputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/annotations/propertyType.xsd");
+    	Map<String, InputStream> controlSchemas = new HashMap<String, InputStream>();
+    	controlSchemas.put("", controlInputStream);
+    	testSchemaGen(controlSchemas);
+    }    
 }

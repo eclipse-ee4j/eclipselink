@@ -47,12 +47,9 @@ public class SchemaTypeQNameTestCases extends XMLMappingTestCases {
         theQNamesList.add(XMLConstants.DATE_TIME_QNAME);
         QName aQName = new QName("mydefaultnamespace", "someOtherLocalName");
         theQNamesList.add(aQName);
-        qnameHolder.setTheQNames(theQNamesList);
         
+        qnameHolder.setTheQNames(theQNamesList);
+        qnameHolder.setTheQNames2(theQNamesList);
         return qnameHolder;
-    }
-    
-    protected Document getWriteControlDocument() throws Exception {
-        return writeControlDocument;
-    }
+    }        
 }

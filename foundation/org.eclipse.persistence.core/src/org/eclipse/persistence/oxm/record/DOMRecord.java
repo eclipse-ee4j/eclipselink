@@ -51,6 +51,7 @@ import org.w3c.dom.NodeList;
  */
 public class DOMRecord extends XMLRecord {
     private Node dom;
+    private Node currentNode;
     private XMLField lastUpdatedField;
 
     /**
@@ -199,6 +200,7 @@ public class DOMRecord extends XMLRecord {
         if(getDOM() instanceof Element) {
             String domName = ((Element)getDOM()).getTagName();
             this.dom = createNewDocument(domName, null);
+            this.currentNode = this.dom;
         }
     }
 
@@ -296,7 +298,6 @@ public class DOMRecord extends XMLRecord {
             return noEntry;
         }
         Node node = (Node)result;
-        
         if(shouldReturnNode) {
             return node;
         }
@@ -310,7 +311,6 @@ public class DOMRecord extends XMLRecord {
             if (node.getNodeType() == Node.ATTRIBUTE_NODE) {
                 getValueFromAttribute((Attr)node, field);
             }
-
             // For Text, must handle typed elements
             return getValueFromElement((Element)node.getParentNode(), node, field);
         }
@@ -377,7 +377,7 @@ public class DOMRecord extends XMLRecord {
         }
         // Assumption:  NodeList contains nodes of the same type
         Node firstNode = nodeList.item(0);
-        if ((firstNode == null) || (firstNode.getNodeType() != Node.ELEMENT_NODE)) {
+        if ((firstNode == null) || (firstNode.getNodeType() != Node.ELEMENT_NODE)) {        	
             if (field.usesSingleNode() && (resultSize == 1)) {
                 Node next = nodeList.item(0);
                 if (next == null) {
@@ -392,7 +392,6 @@ public class DOMRecord extends XMLRecord {
                         Object nextItem = convertValue((Element)next.getParentNode(), field, token);
                         list.add(nextItem);
                     }
-
                     return list;
                 }
             }
@@ -414,7 +413,11 @@ public class DOMRecord extends XMLRecord {
     }
 
     private Object getValueFromAttribute(Attr node, XMLField key) {
-        return key.convertValueBasedOnSchemaType(node.getNodeValue(), (XMLConversionManager) session.getDatasourcePlatform().getConversionManager(), this);
+    	currentNode = node.getOwnerElement();
+    	Object convertedValue = key.convertValueBasedOnSchemaType(node.getNodeValue(), (XMLConversionManager) session.getDatasourcePlatform().getConversionManager(), this);
+    	currentNode = getDOM();
+    	return convertedValue;
+    	
     }
 
     private Object getValueFromElement(Element node, Node textChild, XMLField key) {
@@ -444,7 +447,10 @@ public class DOMRecord extends XMLRecord {
                 }
             }
         }
-        return key.convertValueBasedOnSchemaType(value, xmlCnvMgr, this);
+        currentNode = node;
+        Object convertedValue = key.convertValueBasedOnSchemaType(value, xmlCnvMgr, this);
+        currentNode = getDOM();
+        return convertedValue;
     }
 
     /**
@@ -592,11 +598,13 @@ public class DOMRecord extends XMLRecord {
      */
     public void setDOM(Node element) {
         this.dom = element;
+        this.currentNode = element;
         this.getNamespaceResolver().setDOM(element);
     }
     
     public void setDOM(Element element) {
         this.dom = element;
+        this.currentNode = element;
         this.getNamespaceResolver().setDOM(element);
     }
 
@@ -712,6 +720,6 @@ public class DOMRecord extends XMLRecord {
 
     public String resolveNamespacePrefix(String prefix) {
         XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
-        return xmlPlatform.resolveNamespacePrefix(this.getDOM(), prefix);
+        return xmlPlatform.resolveNamespacePrefix(currentNode, prefix);
     }
 }

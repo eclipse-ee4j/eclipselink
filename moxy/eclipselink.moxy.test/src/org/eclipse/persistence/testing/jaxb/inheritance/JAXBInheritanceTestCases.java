@@ -17,7 +17,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.SchemaOutputResolver;
@@ -57,25 +59,15 @@ public class JAXBInheritanceTestCases extends JAXBTestCases {
 	}
 
 	public void testSchemaGen() throws Exception {
-		List<File> generatedFiles = generateSchema();
-		assertNotNull(generatedFiles);
-		assertEquals(1, generatedFiles.size());
-		
-		String controlSchemaFileName = "org/eclipse/persistence/testing/jaxb/inheritance/schema0.xsd";
-
-		DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-		builderFactory.setIgnoringElementContentWhitespace(true);
-		builderFactory.setNamespaceAware(true);
-		
-		InputStream stream = ClassLoader.getSystemResourceAsStream(controlSchemaFileName);
-		Document control = parser.parse(stream);
-
-		stream = new FileInputStream(generatedFiles.get(0));
-		Document test = parser.parse(stream);
-
-		JAXBXMLComparer xmlComparer = new JAXBXMLComparer();
-
-		assertTrue("schema0.xsd did not match control document", xmlComparer.isSchemaEqual(control, test));
-
+		testSchemaGen(getControlSchemaFiles());
 	}
+	
+    public  Map<String, InputStream> getControlSchemaFiles(){
+	    InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/inheritance/schema0.xsd");
+				
+		Map<String,InputStream> controlSchema = new HashMap<String, InputStream>();
+		controlSchema.put("",instream);
+		return controlSchema;
+	}
+	
 }

@@ -6,5 +6,6 @@
 	    <item>xsd:integer</item>
 	    <item>xsd:dateTime</item>
 	    <item>someOtherLocalName</item>
+        <item2>xsd:string xsd:integer xsd:dateTime someOtherLocalName</item2>
 	</the-qnames>
 </qnameholder>

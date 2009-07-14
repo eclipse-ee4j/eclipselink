@@ -41,8 +41,14 @@ public class SchemaTypeQNameProject extends Project {
 		    qnamesMapping.setAttributeName("theQNames");
 		    qnamesMapping.setXPath("the-qnames/item/text()");
 		    ((XMLField)qnamesMapping.getField()).setSchemaType(XMLConstants.QNAME_QNAME);
-
-		    descriptor.addMapping(qnamesMapping);    
+		    descriptor.addMapping(qnamesMapping);
+		    
+		    XMLCompositeDirectCollectionMapping qnames2Mapping = new XMLCompositeDirectCollectionMapping();
+		    qnames2Mapping.setAttributeName("theQNames2");
+		    qnames2Mapping.setXPath("the-qnames/item2/text()");
+		    ((XMLField)qnames2Mapping.getField()).setSchemaType(XMLConstants.QNAME_QNAME);
+		    ((XMLField)qnames2Mapping.getField()).setUsesSingleNode(true);
+		    descriptor.addMapping(qnames2Mapping);    
 
 		    NamespaceResolver nr = new NamespaceResolver();
 		    nr.put("somePrefix", "someURI");

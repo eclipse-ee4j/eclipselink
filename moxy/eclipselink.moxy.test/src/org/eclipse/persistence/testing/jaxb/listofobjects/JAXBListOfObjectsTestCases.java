@@ -177,46 +177,8 @@ public abstract class JAXBListOfObjectsTestCases extends JAXBTestCases {
 	public abstract Map<String, InputStream> getControlSchemaFiles();
 	
 	public void testSchemaGen() throws Exception {
-		MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
-		getJAXBContext().generateSchema(outputResolver);
-		
-		Map<String, File> generatedSchemas = outputResolver.getSchemaFiles();		
-		Map<String,InputStream> controlSchemas = getControlSchemaFiles();
-		
-		assertEquals(controlSchemas.size(), generatedSchemas.size());
-		
-		Iterator<String> keyIter = controlSchemas.keySet().iterator();
-		while(keyIter.hasNext()){
-			String nextKey = keyIter.next();
-			InputStream nextControlValue = controlSchemas.get(nextKey);
-			File nextGeneratedValue =generatedSchemas.get(nextKey);
-			assertNotNull("Generated Schema for namespace not found:" + nextKey, nextGeneratedValue);
-			Document control = parser.parse(nextControlValue);
-			Document test = parser.parse(nextGeneratedValue);
-			
-			JAXBXMLComparer xmlComparer = new JAXBXMLComparer();	        
-			boolean isEqual = xmlComparer.isSchemaEqual(control, test);
-			if(!isEqual){
-				
-				logDocument(control);
-				logDocument(test);
-			}
-			assertTrue("generated schema did not match control schema", isEqual);
-		}
+		testSchemaGen(getControlSchemaFiles());
 	}
-	
-	 protected void logDocument(Document document){
-  	   try {
-             TransformerFactory transformerFactory = TransformerFactory.newInstance();
-             Transformer transformer = transformerFactory.newTransformer();
-             DOMSource source = new DOMSource(document);
-             StreamResult result = new StreamResult(System.out);
-             transformer.transform(source, result);
-         } catch (Exception e) {
-             e.printStackTrace();
-         }
-  }
-
 	
 	public Object getWriteControlObject(){
 		JAXBElement jaxbElement = (JAXBElement)getControlObject();
@@ -240,29 +202,7 @@ public abstract class JAXBListOfObjectsTestCases extends JAXBTestCases {
 
 	protected abstract String getNoXsiTypeControlResourceName();
 	
-	class MySchemaOutputResolver extends SchemaOutputResolver {
-		// keep a list of processed schemas for the validation phase of the
-		// test(s)
-		public Map<String, File> schemaFiles;
-
-		public MySchemaOutputResolver() {
-			schemaFiles = new java.util.HashMap<String, File>();
-		}
-
-		public Result createOutput(String namespaceURI, String suggestedFileName)
-				throws IOException {
-			File schemaFile = new File(suggestedFileName);
-			if(namespaceURI == null){
-				namespaceURI ="";
-			}
-			schemaFiles.put(namespaceURI, schemaFile);
-			return new StreamResult(schemaFile);
-		}
-
-		public Map<String,File> getSchemaFiles() {
-			return schemaFiles;
-		}
-	}
+	
 	
 
 }

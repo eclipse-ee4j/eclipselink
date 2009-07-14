@@ -103,7 +103,6 @@ public abstract class XMLMappingTestCases extends OXTestCase {
 
         if(this.writeControlDocumentLocation != null) {
             InputStream inputStream = ClassLoader.getSystemResourceAsStream(writeControlDocumentLocation);
-            resourceName = writeControlDocumentLocation;
             writeControlDocument = parser.parse(inputStream);
             if (shouldRemoveEmptyTextNodesFromControlDoc()) {
                 removeEmptyTextNodes(writeControlDocument);

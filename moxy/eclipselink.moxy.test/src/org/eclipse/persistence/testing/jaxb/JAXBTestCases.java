@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
@@ -36,6 +37,9 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.Result;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -369,31 +373,67 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         xmlToObjectTest(jaxbUnmarshallerHandler.getResult());
     }
 
-    public List<File> generateSchema() throws Exception{
-        MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
-        jaxbContext.generateSchema(outputResolver);
-        return outputResolver.getSchemaFiles();
-    }
-
+    public void testSchemaGen(Map<String,InputStream> controlSchemas) throws Exception {
+		MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
+		getJAXBContext().generateSchema(outputResolver);
+		
+		Map<String, File> generatedSchemas = outputResolver.getSchemaFiles();		
+		
+		assertEquals(controlSchemas.size(), generatedSchemas.size());
+		
+		Iterator<String> keyIter = controlSchemas.keySet().iterator();
+		while(keyIter.hasNext()){
+			String nextKey = keyIter.next();
+			InputStream nextControlValue = controlSchemas.get(nextKey);
+			File nextGeneratedValue =generatedSchemas.get(nextKey);
+			assertNotNull("Generated Schema for namespace not found:" + nextKey, nextGeneratedValue);
+			Document control = parser.parse(nextControlValue);
+			Document test = parser.parse(nextGeneratedValue);
+			
+			JAXBXMLComparer xmlComparer = new JAXBXMLComparer();	        
+			boolean isEqual = xmlComparer.isSchemaEqual(control, test);
+			if(!isEqual){				
+				logDocument(control);
+				logDocument(test);
+			}
+			assertTrue("generated schema did not match control schema", isEqual);
+		}
+	}
+    
     public class MySchemaOutputResolver extends SchemaOutputResolver {
-            // keep a list of processed schemas for the validation phase of the test(s)
-            public List<File> schemaFiles;
+		// keep a list of processed schemas for the validation phase of the
+		// test(s)
+		public Map<String, File> schemaFiles;
 
-            public MySchemaOutputResolver() {
-                schemaFiles = new ArrayList<File>();
-            }
+		public MySchemaOutputResolver() {
+			schemaFiles = new java.util.HashMap<String, File>();
+		}
 
-            public Result createOutput(String namespaceURI, String suggestedFileName) throws IOException {
-                File schemaFile = new File(suggestedFileName);
-                schemaFiles.add(schemaFile);
-                return new StreamResult(schemaFile);
-            }
+		public Result createOutput(String namespaceURI, String suggestedFileName)
+				throws IOException {
+			File schemaFile = new File(suggestedFileName);
+			if(namespaceURI == null){
+				namespaceURI ="";
+			}
+			schemaFiles.put(namespaceURI, schemaFile);
+			return new StreamResult(schemaFile);
+		}
 
-            public List<File> getSchemaFiles(){
-                return schemaFiles;
-            }
-        }
+		public Map<String,File> getSchemaFiles() {
+			return schemaFiles;
+		}
+	}
 
-
+    protected void logDocument(Document document){
+   	   try {
+              TransformerFactory transformerFactory = TransformerFactory.newInstance();
+              Transformer transformer = transformerFactory.newTransformer();
+              DOMSource source = new DOMSource(document);
+              StreamResult result = new StreamResult(System.out);
+              transformer.transform(source, result);
+          } catch (Exception e) {
+              e.printStackTrace();
+          }
+   }
 
 }

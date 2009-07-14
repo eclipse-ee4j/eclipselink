@@ -190,9 +190,9 @@ public class DOMReader extends XMLReader {
             qname = getQName(elem);
         }
         getContentHandler().startElement(elem.getNamespaceURI(), lname, qname, attributes);
-        handleChildNodes(elem.getChildNodes());
-        endPrefixMappings(elem);
+        handleChildNodes(elem.getChildNodes());        
         getContentHandler().endElement(elem.getNamespaceURI(), lname, qname);
+        endPrefixMappings(elem);
     }
  
     protected IndexedAttributeList buildAttributeList(Element elem) throws SAXException {

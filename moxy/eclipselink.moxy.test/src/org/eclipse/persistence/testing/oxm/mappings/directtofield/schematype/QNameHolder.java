@@ -19,6 +19,7 @@ import javax.xml.namespace.QName;
 public class QNameHolder {
 	private QName theQName;
 	private List<QName> theQNames;
+	private List<QName> theQNames2;
 
 	public boolean equals(Object object) {
 		try {
@@ -33,6 +34,15 @@ public class QNameHolder {
 			for (int i = 0; i < getTheQNames().size(); i++) {
 				if (!(getTheQNames().get(i).equals(qnameHolder.getTheQNames()
 						.get(i)))) {
+					return false;
+				}
+			}
+			
+			if (this.getTheQNames2().size() != qnameHolder.getTheQNames2().size()) {
+				return false;
+			}
+			for (int i = 0; i < getTheQNames2().size(); i++) {
+				if (!(getTheQNames2().get(i).equals(qnameHolder.getTheQNames2().get(i)))) {
 					return false;
 				}
 			}
@@ -53,6 +63,11 @@ public class QNameHolder {
 					qnameString = theQNames.get(i).getNamespaceURI() + ":" + theQNames.get(i).getLocalPart();
 					returnString += qnameString; 
 				}
+	     returnString += " theQNames2-->";
+		for(int i=0; i<theQNames2.size(); i++){						
+			qnameString = theQNames2.get(i).getNamespaceURI() + ":" + theQNames2.get(i).getLocalPart();
+			returnString += qnameString; 
+		}				
 			return returnString;
 	  } 
 
@@ -71,4 +86,12 @@ public class QNameHolder {
 	public void setTheQNames(List<QName> theQNames) {
 		this.theQNames = theQNames;
 	}
+
+	public List<QName> getTheQNames2() {
+        return theQNames2;
+    }
+
+	public void setTheQNames2(List<QName> theQNames2) {
+        this.theQNames2 = theQNames2;
+    }
 }
