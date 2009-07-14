@@ -475,9 +475,9 @@ public abstract class JUnitTestCase extends TestCase {
      * Return if pessimistic locking/select for update nowait is supported for this test platform.
      * Currently testing supports nowait on Oracle, SQLServer.
      */
-    public boolean isNoWaitSupported() {
+    public boolean isSelectForUpateNoWaitSupported() {
         DatabasePlatform platform = getServerSession().getPlatform();
-        if (platform.isDB2() || platform.isAccess() || platform.isSybase() || platform.isSQLAnywhere() || platform.isDerby() || platform.isMySQL() || platform.isTimesTen()) {
+        if (platform.isDB2() || platform.isAccess() || platform.isSybase() || platform.isSQLAnywhere() || platform.isDerby() || platform.isPostgreSQL() || platform.isMySQL() || platform.isTimesTen()) {
             warning("This database does not support NOWAIT.");
             return false;        
         }
