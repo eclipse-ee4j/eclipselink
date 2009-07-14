@@ -12,27 +12,33 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltransient;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.testing.jaxb.JAXBXMLComparer;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessortype.Employee;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltransient.inheritance.Person;
+import org.w3c.dom.Document;
 
 /**
  * Tests XmlTransient via eclipselink-oxm.xml
- *
+ * 
  */
 public class XmlTransientTestCases extends ExternalizedMetadataTestCases {
     private boolean shouldGenerateSchema = true;
-    private MySchemaOutputResolver outputResolver; 
+    private MySchemaOutputResolver outputResolver;
     private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltransient";
     private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmltransient/";
-    
+
     /**
      * This is the preferred (and only) constructor.
      * 
@@ -41,10 +47,9 @@ public class XmlTransientTestCases extends ExternalizedMetadataTestCases {
     public XmlTransientTestCases(String name) {
         super(name);
     }
-    
+
     /**
-     * Test marking the Address class as transient.  Validation for employee.xml 
-     * should succeed.
+     * Test marking the Address class as transient. Validation for employee.xml should succeed.
      * 
      * Positive test.
      */
@@ -58,8 +63,8 @@ public class XmlTransientTestCases extends ExternalizedMetadataTestCases {
     }
 
     /**
-     * Test marking the Address class as transient.  Validation for address.xml 
-     * should fail as Address is marked transient.
+     * Test marking the Address class as transient. Validation for address.xml should fail as
+     * Address is marked transient.
      * 
      * Negative test.
      */
@@ -73,7 +78,7 @@ public class XmlTransientTestCases extends ExternalizedMetadataTestCases {
     }
 
     /**
-     * Test marking the myInt property on Employee as transient.  Validation for 
+     * Test marking the myInt property on Employee as transient. Validation for
      * employee-invalidproperty.xml should fail.
      * 
      * Negative test.
@@ -88,7 +93,7 @@ public class XmlTransientTestCases extends ExternalizedMetadataTestCases {
     }
 
     /**
-     * Test marking the lastName field on Employee as transient.  Validation for 
+     * Test marking the lastName field on Employee as transient. Validation for
      * employee-invalidfield.xml should fail.
      * 
      * Negative test.
@@ -110,8 +115,24 @@ public class XmlTransientTestCases extends ExternalizedMetadataTestCases {
     public void testUnsetXmlTransientOnClass() {
         String contextPath = CONTEXT_PATH + ".unset.classlevel";
         String path = PATH + "unset/classlevel/";
-        outputResolver = generateSchema(contextPath, path, 1);
+        outputResolver = generateSchema(new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltransient.unset.classlevel.Employee.class }, contextPath, path, 1);
         String result = validateAgainstSchema(PATH + "employee.xml", outputResolver);
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
+    }
+
+    /**
+     * Test schema generation when a transient superclass is marked not transient via
+     * eclipselink-oxm.xml
+     * 
+     * Positive test.
+     */
+    public void testXmlTransientWithInheritance() {
+        String contextPath = CONTEXT_PATH + ".inheritance";
+        String path = PATH + "inheritance/";
+        outputResolver = generateSchema(new Class[] { Person.class, org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltransient.inheritance.Employee.class }, contextPath, path, 1);
+
+        // validate schema against control schema
+        String result = compareSchemas(new File(path + "schema.xsd"), outputResolver.schemaFiles.get(0));
+        assertFalse(result, result.length() > 0);
     }
 }

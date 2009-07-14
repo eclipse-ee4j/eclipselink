@@ -8,16 +8,12 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- * dmccann - June 17/2009 - 2.0 - Initial implementation
+ * dmccann - July 09/2009 - 2.0 - Initial implementation
  ******************************************************************************/
-package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltransient;
+package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltransient.inheritance;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlID;
 
-@XmlRootElement(name = "address")
-public class Address {
-    public String state;
-    public String street;
-    public String city;
-    public String zip;
+public class Employee extends Person {
+    public int employeeId;
 }

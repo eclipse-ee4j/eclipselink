@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory;
 
+import java.io.File;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -96,35 +97,38 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
     }
 
     /**
-     * Tests override via eclipselink-oxm.xml.  Here, the metadata files are
-     * handed in via properties, which takes precedence over context path and
-     * package.  Various overrides will be performed to ensure the xml files 
-     * were picked up properly.
+     * Test loading metadata via properties and context path.  Here, the eclipselink-oxm.xml file
+     * for the bar package will be in the properties map, and the eclipselink-oxm.xml file for the
+     * foo package will be looked up via context path.
      * 
-     * 1 x Positive test, 1x Negative test
+     * Positive test.
      */
     public void testLoadXmlFilesViaProperties() {
         String contextPath = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.properties.foo:org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.properties.bar";
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        String metadataFile = PATH + "eclipselink-oxm.xml";
+        String metadataFile = PATH + "properties/bar/eclipselink-oxm.xml";
         
         InputStream iStream = classLoader.getResourceAsStream(metadataFile);
         if (iStream == null) {
             fail("Couldn't load metadata file [" + metadataFile + "]");
         }
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory", new StreamSource(iStream));
+        metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.properties.bar", new StreamSource(iStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
         
         outputResolver = generateSchema(contextPath, properties, 1);
-                
-        String src = PATH + "employee.xml";
-        String result = validateAgainstSchema(src, 0, outputResolver);
-        assertTrue("Schema validation failed unxepectedly: " + result, result == null);
-        src = PATH + "address.xml";
+        
+        // validate schema against control schema
+        String result = compareSchemas(new File(PATH + "properties/schema.xsd"), outputResolver.schemaFiles.get(0));
+        assertFalse(result, result.length() > 0);
+
+        // validate instance docs against schema
+        String src = PATH + "properties/bar/employee.xml";
         result = validateAgainstSchema(src, 0, outputResolver);
-        // address is set to transient in Xml, should fail
-        assertTrue("Schema validation passed unxepectedly", result != null);
+        assertTrue("Schema validation failed unxepectedly: " + result, result == null);
+        src = PATH + "properties/foo/home-address.xml";
+        result = validateAgainstSchema(src, 0, outputResolver);
+        assertTrue("Schema validation failed unxepectedly: " + result, result == null);
     }
 }

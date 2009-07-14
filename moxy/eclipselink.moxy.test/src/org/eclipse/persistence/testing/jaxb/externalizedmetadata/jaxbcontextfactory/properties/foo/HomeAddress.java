@@ -10,14 +10,8 @@
  * Contributors:
  * dmccann - June 17/2009 - 2.0 - Initial implementation
  ******************************************************************************/
-package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltransient;
+package org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.properties.foo;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
-@XmlRootElement(name = "address")
-public class Address {
-    public String state;
-    public String street;
-    public String city;
-    public String zip;
+public class HomeAddress extends Address {
+    public int rouralRouteNumber;
 }

@@ -15,9 +15,5 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfac
 public class Employee {
     public String firstName;
     public String lastName;
-    
-    public void setMyInt(int newInt) {}
-    public int getMyInt() {
-        return 66;
-    }
+    public Manager manager;
 }

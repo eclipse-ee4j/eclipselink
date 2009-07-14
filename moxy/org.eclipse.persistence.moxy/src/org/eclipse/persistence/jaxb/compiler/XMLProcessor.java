@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.jaxb.compiler;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
@@ -63,13 +64,9 @@ public class XMLProcessor {
             if (nsInfo != null) {
                 annotationsProcessor.addPackageToNamespaceMapping(packageName, nsInfo);
             }
-            
-            // build an array of JavaModel classes
-            int idx = 0;
-            JavaClass[] javaClasses = new JavaClass[xmlBindings.getJavaTypes().getJavaType().size()];
-            for (JavaType javaType : xmlBindings.getJavaTypes().getJavaType()) {
-                javaClasses[idx++] = jModelInput.getJavaModel().getClass(javaType.getName()); 
-            }
+
+            // build an array of JavaModel classes to process
+            JavaClass[] javaClasses = getClassesToProcess(xmlBindings, jModelInput);
             
             // pre-build the TypeInfo objects
             annotationsProcessor.init();
@@ -254,5 +251,29 @@ public class XMLProcessor {
         }
         nsInfo.setNamespaceResolver(nsr);
         return nsInfo;
+    }
+    
+    /**
+     * Combines classes from XmlBindings and JavaModel into a single array.  Duplicates will
+     * not exist in the array.
+     * 
+     * @param xmlBindings
+     * @param jModelInput
+     * @return an array of JavaClass instances based on a given JavaModel
+     */
+    private JavaClass[] getClassesToProcess(XmlBindings xmlBindings, JavaModelInput jModelInput) {
+        ArrayList allClasses = new ArrayList<JavaClass>();
+        // add binding classes - the Java Model will be used to get a JavaClass via class name
+        for (JavaType javaType : xmlBindings.getJavaTypes().getJavaType()) {
+            //javaClasses[idx++] = jModelInput.getJavaModel().getClass(javaType.getName());
+            allClasses.add(jModelInput.getJavaModel().getClass(javaType.getName()));
+        }
+        // add any other classes that aren't declared via external metadata
+        for (JavaClass jClass : jModelInput.getJavaClasses()) {
+            if (!allClasses.contains(jClass)) {
+                allClasses.add(jClass);
+            }
+        }
+        return (JavaClass[]) allClasses.toArray(new JavaClass[allClasses.size()]);
     }
 }

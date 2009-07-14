@@ -13,6 +13,7 @@
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -22,6 +23,8 @@ import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.SchemaOutputResolver;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamResult;
@@ -33,7 +36,9 @@ import javax.xml.validation.Validator;
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.testing.jaxb.JAXBXMLComparer;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessortype.Employee;
+import org.w3c.dom.Document;
 
 import junit.framework.TestCase;
 
@@ -86,39 +91,6 @@ public class ExternalizedMetadataTestCases extends TestCase {
         MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
         try {
             generateSchema(contextPath, outputResolver);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            fail("Schema generation failed unexpectedly: " + ex.toString());
-        }
-        assertTrue("No schemas were generated", outputResolver.schemaFiles.size() > 0);
-        assertTrue("Expected schema generation count to be ["+expectedSchemaCount+"], but was [" + outputResolver.schemaFiles.size() + "]", outputResolver.schemaFiles.size() == expectedSchemaCount);
-        return outputResolver;
-    }
-
-    /**
-     * Generate the schema(s) for a given context path, and apply the eclipselink-oxm.xml
-     * file found on the path.  The eclipselink-oxm.xml will be stored in the property map
-     * using the contextPath as a key (maps package name to xml metadata file).
-     * 
-     * @param contextPath
-     * @param path
-     * @param expectedSchemaCount
-     */
-    public MySchemaOutputResolver generateSchema(String contextPath, String path, int expectedSchemaCount) {
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        String metadataFile = path + "eclipselink-oxm.xml";
-        
-        InputStream iStream = classLoader.getResourceAsStream(metadataFile);
-        if (iStream == null) {
-            fail("Couldn't load metadata file [" + metadataFile + "]");
-        }
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put(contextPath, new StreamSource(iStream));
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
-        MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
-        try {
-            generateSchema(new Class[] { Employee.class }, properties, outputResolver, classLoader); 
         } catch (Exception ex) {
             ex.printStackTrace();
             fail("Schema generation failed unexpectedly: " + ex.toString());
@@ -265,6 +237,35 @@ public class ExternalizedMetadataTestCases extends TestCase {
             return e.getMessage();
         }
         return null;
+    }
+
+    /**
+     * Compare two schemas for equality.  If they are not equal, a message is returned,
+     * otherwise an empty string is returned.
+     * 
+     * @param testSchema
+     * @param controlSchema
+     * @return empty string if successful, message otherwise
+     */
+    public String compareSchemas(File testSchema, File controlSchema) {
+        String message = "";
+        try {
+            DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+            builderFactory.setIgnoringElementContentWhitespace(true);
+            builderFactory.setNamespaceAware(true);
+            DocumentBuilder parser = builderFactory.newDocumentBuilder();
+            InputStream stream = new FileInputStream(testSchema);
+            Document control = parser.parse(stream);
+            stream = new FileInputStream(controlSchema);
+            Document test = parser.parse(stream);
+            JAXBXMLComparer xmlComparer = new JAXBXMLComparer();
+            if (!xmlComparer.isSchemaEqual(control, test)) {
+                message = "The test schema did not match the control schema";
+            }
+        } catch (Exception x) {
+            message = "An error occurred during schema comparison: " + x.getMessage();
+        }
+        return message;
     }
     
     /**
