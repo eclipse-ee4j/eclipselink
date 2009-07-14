@@ -15,8 +15,23 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.metamodel;
 
+import static javax.persistence.CascadeType.ALL;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.persistence.Column;
+import javax.persistence.JoinColumn;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.OneToMany;
 
 @MappedSuperclass
 public abstract class Corporation extends Person {
+
+    // If a JoinTable with a JoinColumn is used - then we need a mappedBy on the inverse side here
+    @OneToMany(cascade=ALL)//, mappedBy="corporation")
+    //@JoinColumn(name="CORP_COMPUTERS")
+    private Collection<Computer> corporateComputers = new HashSet<Computer>();
+    
 }

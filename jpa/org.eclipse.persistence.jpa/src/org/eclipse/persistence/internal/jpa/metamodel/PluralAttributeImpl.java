@@ -21,7 +21,6 @@ import javax.persistence.metamodel.PluralAttribute;
 import javax.persistence.metamodel.Type;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
 import org.eclipse.persistence.internal.queries.MapContainerPolicy;
 import org.eclipse.persistence.mappings.CollectionMapping;
 

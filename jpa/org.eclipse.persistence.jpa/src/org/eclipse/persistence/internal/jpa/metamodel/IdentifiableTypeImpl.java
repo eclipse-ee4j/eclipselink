@@ -17,10 +17,7 @@ package org.eclipse.persistence.internal.jpa.metamodel;
 import java.util.Set;
 
 import javax.persistence.PersistenceException;
-import javax.persistence.metamodel.Attribute;
-import javax.persistence.metamodel.CollectionAttribute;
 import javax.persistence.metamodel.IdentifiableType;
-import javax.persistence.metamodel.ListAttribute;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.Type;
 
@@ -52,66 +49,12 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
     
     protected IdentifiableTypeImpl(MetamodelImpl metamodel, RelationalDescriptor descriptor) {
         super(metamodel, descriptor);
-        // the superType field cannot be set until all ManagedType instances have been instantiated for this metamodel
+        /* The superType field cannot be set until all ManagedType instances 
+         * have been instantiated for this metamodel.
+         * This occurs later in MetamodelImpl.initialize()
+         */
     }
 
-    /**
-     * All getDeclared*(name, *) function calls require navigation up the superclass tree
-     * in order to determine if the member name is declared on the current managedType.<p>
-     * If the attribute is found anywhere above on the superclass tree - then throw an IAE. 
-     */
-    /**
-     *  Return the List-valued attribute of the managed type that
-     *  corresponds to the specified name and Java element type.
-     *  @param name  the name of the represented attribute
-     *  @param elementType  the element type of the represented 
-     *                      attribute
-     *  @return ListAttribute of the given name and element type
-     *  @throws IllegalArgumentException if attribute of the given
-     *          name and type is not present in the managed type
-     */
-    @Override
-    public <E> ListAttribute<X, E> getDeclaredList(String name, Class<E> elementType) {
-        // TODO: This function is in mid-implementation
-        // TODO: IAE if the type is wrong
-        // TODO: IAE if the attribute is on a superclass        
-        // get the attribute parameterized by <Owning type, return Type>
-        ListAttribute<X, E> anAttribute = (ListAttribute<X, E>) getList(name, false);
-        // a null attribute above will normally throw an IAE but we have disabled this check so we can be recursive
-        if(null == anAttribute && null != this.superType) {
-            // keep checking the hierarchy but skip this level
-            return  ((IdentifiableTypeImpl)getSupertype()).getDeclaredList(name, elementType);
-        } else {
-            if(null == anAttribute) {
-                // we are at the root, return null
-                return null;
-            } else {
-                Class javaType = anAttribute.getJavaType();
-                if(elementType == javaType) {
-                    // check whether the member is declared here or is inherited from a superclass
-                    /*
-                     * Algorithm: 
-                     * Rely on ManagedType.superType for upward tree navigation.
-                     * If we find the name attribute on a superclass then the attribute is not declared
-                     * on this managedType - return null in this case.
-                     */
-                    // Get the Entity or MappedSuperclass superType
-                    IdentifiableTypeImpl superType = (IdentifiableTypeImpl)this.getSupertype();
-                    if(null == superType) {
-                        // we are at the top of the hierarchy
-                        return (ListAttribute<X,E>) anAttribute;
-                    } else {
-                        return superType.getDeclaredList(name, elementType);
-                    }
-                } else {
-                    throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
-                            "metamodel_managed_type_attribute_type_incorrect", 
-                            new Object[] { name, this, elementType, javaType}));
-                }
-            }
-        }
-    }
-    
     /**
      *  Return the attribute that corresponds to the id attribute 
      *  declared by the entity or mapped superclass.
@@ -160,7 +103,14 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
      *          the identifiable type has an id class
      */
     public <Y> SingularAttribute<? super X, Y> getId(Class<Y> type) {
-        throw new PersistenceException("Not Yet Implemented");
+        SingularAttribute<? super X, Y> anAttribute = null;
+        Class<Y> realType = null;
+        if(type != realType) {
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
+                "metamodel_identifiable_id_attribute_type_incorrect", 
+                new Object[] { anAttribute, this, type, realType}));
+        }
+        return anAttribute;
     }
     
     /**
@@ -188,7 +138,14 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
      *          given type is not present in the identifiable type
      */
     public <Y> SingularAttribute<? super X, Y> getVersion(Class<Y> type) {
-        throw new PersistenceException("Not Yet Implemented");
+        SingularAttribute<? super X, Y> anAttribute = null;
+        Class<Y> realType = null;
+        if(type != realType) {
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
+                "metamodel_identifiable_version_attribute_type_incorrect", 
+                new Object[] { anAttribute, this, type, realType}));
+        }
+        return anAttribute;
     }
     
     /**
@@ -211,6 +168,12 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
         throw new PersistenceException("Not Yet Implemented");
     }
     
+    /**
+     * INTERNAL:
+     * Return whether this type is identifiable.
+     * This would be EntityType and MappedSuperclassType
+     * @return
+     */
     @Override
     public boolean isIdentifiableType() {
         return true;

@@ -107,7 +107,7 @@ public class MetamodelImpl implements Metamodel {
     /**
      *  Return the metamodel embeddable type representing the
      *  embeddable class.
-     *  @param cls  the type of the represented embeddable class
+     *  @param clazz  the type of the represented embeddable class
      *  @return the metamodel embeddable type
      *  @throws IllegalArgumentException if not an embeddable class
      */
@@ -117,7 +117,7 @@ public class MetamodelImpl implements Metamodel {
 
     /**
      *  Return the metamodel entity type representing the entity.
-     *  @param cls  the type of the represented entity
+     *  @param clazz  the type of the represented entity
      *  @return the metamodel entity type
      *  @throws IllegalArgumentException if not an entity
      */
@@ -128,7 +128,7 @@ public class MetamodelImpl implements Metamodel {
     /**
      *  Return the metamodel managed type representing the 
      *  entity, mapped superclass, or embeddable class.
-     *  @param cls  the type of the represented managed class
+     *  @param clazz  the type of the represented managed class
      *  @return the metamodel managed type
      *  @throws IllegalArgumentException if not a managed class
      */
@@ -251,7 +251,9 @@ public class MetamodelImpl implements Metamodel {
 
     /**
      * INTERNAL:
-     * Return a Type representation of a java Class for use by the Metamodel Attributes
+     * Return a Type representation of a java Class for use by the Metamodel Attributes.<p>
+     * This function will handle all Metamodel defined and core java classes.
+     * 
      * @param javaClass
      * @return
      */
@@ -260,7 +262,7 @@ public class MetamodelImpl implements Metamodel {
         TypeImpl type = this.types.get(javaClass);
         // No longer required because of delayed initialization on Types
         
-        // the type was not cached yet on the metamodel - lets add it
+        // the type was not cached yet on the metamodel - lets add it - usually a non Metamodel class like Integer
         if (null == type) {
             // make types field modification thread-safe
             synchronized (this.types) {
@@ -269,11 +271,11 @@ public class MetamodelImpl implements Metamodel {
                 // We make the type one of Entity, Basic, Embeddable or MappedSuperclass
                 if(null == type) {                    
                     type = new BasicTypeImpl<X>(javaClass);
+                    // add the type to the types map keyed on Java class
                     this.types.put(javaClass, type);
                 }
-            }
-        }
-        
+            } // synchronized end
+        }        
         return type;
     }
     

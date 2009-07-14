@@ -20,11 +20,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
-import java.util.Set;
-
 import javax.persistence.PersistenceException;
 import javax.persistence.metamodel.MappedSuperclassType;
-import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.Type;
 
 import org.eclipse.persistence.descriptors.RelationalDescriptor;

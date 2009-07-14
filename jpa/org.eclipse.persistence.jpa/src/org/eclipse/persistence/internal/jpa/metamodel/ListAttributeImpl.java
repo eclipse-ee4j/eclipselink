@@ -16,8 +16,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
-import java.util.List;
-
 import javax.persistence.metamodel.ListAttribute;
 
 import org.eclipse.persistence.mappings.CollectionMapping;

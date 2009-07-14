@@ -1171,6 +1171,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     
     /**
      * INTERNAL:
+     * Return whether this mapping is a Collection type.
      */
     public boolean isCollectionMapping() {
         return true;

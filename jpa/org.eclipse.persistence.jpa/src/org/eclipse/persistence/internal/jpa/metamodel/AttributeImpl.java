@@ -181,9 +181,12 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T> {
     /**
      *  Is the attribute collection-valued.
      *  @return boolean indicating whether attribute is 
-     *          collection-valued
+     *          collection-valued.<p>
+     *  This will be true for the mappings CollectionMapping, AbstractCompositeCollectionMapping, 
+     *  AbstractCompositeDirectCollectionMapping and their subclasses         
+     *          
      */
-    public boolean isCollection() {
+    public boolean isCollection() {        
         return getMapping().isCollectionMapping();
     }
     

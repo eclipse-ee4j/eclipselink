@@ -28,6 +28,9 @@ import javax.persistence.Query;
 import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.ParameterExpression;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.QueryBuilder;
 import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.Attribute;
@@ -42,13 +45,19 @@ import javax.persistence.metamodel.SingularAttribute;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.eclipse.persistence.config.CacheUsage;
+import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.internal.expressions.ClassTypeExpression;
 import org.eclipse.persistence.internal.jpa.metamodel.EntityTypeImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.MappedSuperclassTypeImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.MetamodelImpl;
 import org.eclipse.persistence.internal.jpa.querydef.ExpressionImpl;
+import org.eclipse.persistence.internal.jpa.querydef.SelectionImpl;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.testing.framework.QuerySQLTracker;
+import org.eclipse.persistence.testing.models.jpa.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Board;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Computer;
@@ -61,6 +70,17 @@ import org.eclipse.persistence.testing.models.jpa.metamodel.User;
 import org.eclipse.persistence.testing.models.jpa.metamodel.VectorProcessor;
 
 /**
+ * Disclaimer:
+ *    Yes I know the following are true for this test suite - but implementation time must be ""triaged"", and this testing code is at the bottom of the list when placed against actual implementation in the time provided.
+ *    - Tests must be modular - not one big huge test case that either passes or fails - it is better to have 10's of granular failures instead of only 1
+ *    - proper and fully optimized test cases
+ *    - full exception handling
+ *    - full rollback handling
+ *    - better documented assertion failures
+ *    - fully described test model with links to design document
+ *    - traceability back to use cases
+ *    
+ * 
  * These tests verify the JPA 2.0 Metamodel API.
  * The framework is as follows:
  *   - initialize persistence unit
@@ -485,6 +505,59 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertNotNull(entityLocation);
             //System.out.println("_Entity: " + entityLocation + " @" + entityLocation.hashCode());
             
+            // Criteria queries (use the Metamodel)
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            QueryBuilder qb = null;
+            List results = null;
+            try {
+                qb = em.getQueryBuilder();
+                //CriteriaQuery<String> cq = qb.createQuery(String.class);
+                CriteriaQuery<Computer> cq = qb.createQuery(Computer.class);
+                Expression expression = new ClassTypeExpression(); // probably not the right expression impl
+                // somehow add "name" to the expression TBD                
+                //cq.select((new SelectionImpl(String.class, expression)));
+                EntityTypeImpl<Computer> entityComputer2 = (EntityTypeImpl)metamodel.entity(Computer.class);                
+                Root from = cq.from(entityComputer2);
+                Path c = from.get("name");
+                cq.where(qb.equal(c, "name"));
+                Query query = em.createQuery(cq);
+
+                results = query.getResultList();
+                Computer computer = (Computer)results.get(0);
+                assertNotNull(computer);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            /* uncomment when the QueryBuilderImpl function below is implemented
+             * public <T> ParameterExpression<T> parameter(Class<T> paramClass, String name){
+            try {
+                qb = em.getQueryBuilder();
+                CriteriaQuery<Computer> cq = qb.createQuery(Computer.class);
+                Root from = cq.from(Computer.class);
+                Path c = from.get("name");
+                cq.where(qb.equal(c, qb.parameter(String.class, "emp_name")));
+                Query query = em.createQuery(cq);
+                results = query.getResultList();
+                Computer computer = (Computer)results.get(0);
+                assertNotNull(computer);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }*/
+            
+            // SingularAttributeType
+            // Test getBindableType - this is for SVN rev# 4644
+            //http://fisheye2.atlassian.com/changelog/eclipselink/?cs=4644
+            // Basic
+            Class nameJavaType = ((SingularAttribute<Computer, String>)entityComputer.getAttribute("name")).getBindableJavaType();
+            assertNotNull(nameJavaType);
+            assertEquals(String.class, nameJavaType);
+            
+            // OneToOne Entity
+            Class locationJavaType = ((SingularAttribute<Computer, Location>)entityComputer.getAttribute("location")).getBindableJavaType();
+            assertNotNull(locationJavaType);
+            assertEquals(Location.class, locationJavaType);
+            
             
             
             /**
@@ -492,7 +565,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
              */
             
             // Verify ManagedType operations
-            // ************************************
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            boolean expectedIAExceptionThrown = false;
             /**
              * The following variant test cases are common to all functions
              * 1) get*Attribute(name) = null (missing) --> IAE
@@ -506,14 +580,16 @@ public class MetamodelMetamodelTest extends MetamodelTest {
              //java.util.Set<Attribute<? super X, ?>> getAttributes();
             Set<Attribute<? super Manufacturer, ?>> attributeSet = entityManufacturer.getAttributes();
             assertNotNull(attributeSet);
-            // We should see 5 attributes (2 List, 3 Singular) for Manufacturer (computers, hardwareDesigners, id(from the mappedSuperclass), version, name(from the mappedSuperclass))
-            assertEquals(5, attributeSet.size());
+            // We should see 6 attributes (3 List, 3 Singular) for Manufacturer (computers, hardwareDesigners, id(from the mappedSuperclass), 
+            // version, name(from the mappedSuperclass) and corporateComputers from the Corporation mappedSuperclass)
+            assertEquals(6, attributeSet.size());
             // for each managed entity we will see 2 entries (one for the Id, one for the Version)
             assertTrue(attributeSet.contains(entityManufacturer.getAttribute("id"))); // 
             assertTrue(attributeSet.contains(entityManufacturer.getAttribute("version"))); //
             assertTrue(attributeSet.contains(entityManufacturer.getAttribute("name"))); //
             assertTrue(attributeSet.contains(entityManufacturer.getAttribute("computers"))); //
             assertTrue(attributeSet.contains(entityManufacturer.getAttribute("hardwareDesigners"))); //
+            assertTrue(attributeSet.contains(entityManufacturer.getAttribute("corporateComputers"))); //
 
             
             /**
@@ -631,6 +707,80 @@ public class MetamodelMetamodelTest extends MetamodelTest {
              *          name and type is not declared in the managed type
              */
             //<E> CollectionAttribute<X, E> getDeclaredCollection(String name, Class<E> elementType);
+            expectedIAExceptionThrown = false;            
+            try {
+                //<E> ListAttribute<X, E> getDeclaredList(String name, Class<E> elementType);
+                // UC1 - the attribute does not exist on the managedType (regardless of whether it is on any superType)
+                CollectionAttribute<Manufacturer, Location> anAttribute = 
+                    entityManufacturer.getDeclaredCollection("locations", entityLocation.getJavaType());
+            } catch (IllegalArgumentException iae) {
+                // expecting
+                //java.lang.IllegalArgumentException: The attribute [locations] from the managed type [ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer --> [DatabaseTable(CMP3_MM_MANUF)])]] is not present.
+                //iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
+            }
+            assertTrue(expectedIAExceptionThrown);
+            
+            expectedIAExceptionThrown = false;            
+            try {
+                //<E> ListAttribute<X, E> getDeclaredList(String name, Class<E> elementType);
+                // UC2 - the attribute is on the managedType (but is the wrong type)
+                // Also avoid a CCE on a List attribute
+                //java.lang.ClassCastException: org.eclipse.persistence.internal.jpa.metamodel.ListAttributeImpl cannot be cast to javax.persistence.metamodel.CollectionAttribute
+                CollectionAttribute<Manufacturer, ?> anAttribute = 
+                    entityManufacturer.getDeclaredCollection("hardwareDesigners", entityManufacturer.getJavaType());
+            } catch (IllegalArgumentException iae) {
+                // expecting
+                //java.lang.IllegalArgumentException: Expected attribute return type [COLLECTION] on the existing attribute [hardwareDesigners] on the managed type [ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer --> [DatabaseTable(CMP3_MM_MANUF)])]] but found attribute return type [LIST].
+                //iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
+            }
+            assertTrue(expectedIAExceptionThrown);            
+            
+            
+            // TODO: We need a Collection (computers is a Set)
+/*            expectedIAExceptionThrown = false;            
+            try {
+                //<E> ListAttribute<X, E> getDeclaredList(String name, Class<E> elementType);
+                // UC3 - the attribute is on the managedType (not on any superType)
+                CollectionAttribute<Manufacturer, HardwareDesigner> anAttribute = 
+                    entityManufacturer.getDeclaredCollection("computers", entityHardwareDesigner.getJavaType());
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
+            }
+            assertFalse(expectedIAExceptionThrown);            
+*/
+            
+/*            // TODO: We need a Collection on a superclass (computers is a Set)            
+            expectedIAExceptionThrown = false;            
+            try {
+                //<E> ListAttribute<X, E> getDeclaredList(String name, Class<E> elementType);
+                // UC4 - the attribute is on the immediate superclass but it is the wrong return type of LIST instead of COLLECTION
+                CollectionAttribute<Manufacturer, Computer> anAttribute = 
+                    entityManufacturer.getDeclaredCollection("corporateComputers", entityComputer.getJavaType());
+            } catch (IllegalArgumentException iae) {
+                // expecting
+                // java.lang.IllegalArgumentException: The declared attribute [corporateComputers] from the managed type [ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer --> [DatabaseTable(CMP3_MM_MANUF)])]] is not present - however, it is declared on a superclass.
+                //iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
+            }
+            assertTrue(expectedIAExceptionThrown);
+*/            
+            
+            expectedIAExceptionThrown = false;            
+            try {
+                //<E> ListAttribute<X, E> getDeclaredList(String name, Class<E> elementType);
+                // UC4 - the attribute is on the immediate superclass but it is the wrong return type of LIST instead of COLLECTION
+                CollectionAttribute<Manufacturer, Computer> anAttribute = 
+                    entityManufacturer.getDeclaredCollection("corporateComputers", entityComputer.getJavaType());
+            } catch (IllegalArgumentException iae) {
+                // expecting
+                // java.lang.IllegalArgumentException: Expected attribute return type [COLLECTION] on the existing attribute [corporateComputers] on the managed type [ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer --> [DatabaseTable(CMP3_MM_MANUF)])]] but found attribute return type [LIST].
+                //iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
+            }
+            assertTrue(expectedIAExceptionThrown);
             
             /**
              *  Return the Set-valued attribute declared by the managed type 
@@ -657,10 +807,62 @@ public class MetamodelMetamodelTest extends MetamodelTest {
              *  @throws IllegalArgumentException if attribute of the given
              *          name and type is not declared in the managed type
              */
-            //<E> ListAttribute<X, E> getDeclaredList(String name, Class<E> elementType);
-            ListAttribute<Manufacturer, HardwareDesigner> anAttribute = entityManufacturer.getDeclaredList("hardwareDesigners", entityHardwareDesigner.getJavaType());
-            System.out.println("entityManufacturer.getDeclaredList(hardwareDesigners) " + anAttribute);
-
+            expectedIAExceptionThrown = false;            
+            try {
+                //<E> ListAttribute<X, E> getDeclaredList(String name, Class<E> elementType);
+                // UC1 - the attribute does not exist on the managedType (regardless of whether it is on any superType)
+                ListAttribute<Manufacturer, Location> anAttribute = 
+                    entityManufacturer.getDeclaredList("locations", entityLocation.getJavaType());
+            } catch (IllegalArgumentException iae) {
+                // expecting
+                //java.lang.IllegalArgumentException: The attribute [locations] from the managed type [ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer --> [DatabaseTable(CMP3_MM_MANUF)])]] is not present.
+                //iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
+            }
+            assertTrue(expectedIAExceptionThrown);
+            
+            expectedIAExceptionThrown = false;            
+            try {
+                //<E> ListAttribute<X, E> getDeclaredList(String name, Class<E> elementType);
+                // UC2 - the attribute is on the managedType (but is the wrong type)
+                ListAttribute<Manufacturer, ?> anAttribute = 
+                    entityManufacturer.getDeclaredList("hardwareDesigners", entityManufacturer.getJavaType());
+            } catch (IllegalArgumentException iae) {
+                // expecting
+                //java.lang.IllegalArgumentException: Expected attribute type [class org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer] on the existing attribute [hardwareDesigners] on the managed type [ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer --> [DatabaseTable(CMP3_MM_MANUF)])]] but found attribute type [class org.eclipse.persistence.testing.models.jpa.metamodel.HardwareDesigner].
+                //iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
+            }
+            assertTrue(expectedIAExceptionThrown);            
+            
+            expectedIAExceptionThrown = false;            
+            try {
+                //<E> ListAttribute<X, E> getDeclaredList(String name, Class<E> elementType);
+                // UC3 - the attribute is on the managedType (not on any superType)
+                ListAttribute<Manufacturer, HardwareDesigner> anAttribute = 
+                    entityManufacturer.getDeclaredList("hardwareDesigners", entityHardwareDesigner.getJavaType());
+                //System.out.println("entityManufacturer.getDeclaredList(hardwareDesigners) " + anAttribute);
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
+            }
+            assertFalse(expectedIAExceptionThrown);            
+            
+            expectedIAExceptionThrown = false;            
+            try {
+                //<E> ListAttribute<X, E> getDeclaredList(String name, Class<E> elementType);
+                // UC4 - the attribute is on the immediate superclass
+                ListAttribute<Manufacturer, Computer> anAttribute = 
+                    entityManufacturer.getDeclaredList("corporateComputers", entityComputer.getJavaType());
+                //System.out.println("entityManufacturer.getDeclaredList(corporateComputers) " + anAttribute);
+            } catch (IllegalArgumentException iae) {
+                // expecting
+                // java.lang.IllegalArgumentException: The declared attribute [corporateComputers] from the managed type [ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer --> [DatabaseTable(CMP3_MM_MANUF)])]] is not present - however, it is declared on a superclass.
+                //iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
+            }
+            assertTrue(expectedIAExceptionThrown);
+            
             /**
              *  Return the Map-valued attribute declared by the managed 
              *  type that corresponds to the specified name and Java key 
@@ -687,6 +889,21 @@ public class MetamodelMetamodelTest extends MetamodelTest {
              *  @return declared collection valued attributes
              */
             //java.util.Set<PluralAttribute<X, ?, ?>> getDeclaredCollections();
+            // This also tests getCollections()
+            // Here we start with 6 attributes in getAttributes() - this is reduced to 3 in getCollections before declared filtering
+            // In declaredCollections we reduce this to 2 because one of the types "corporateComputers" is on a mappedSuperclass
+            expectedIAExceptionThrown = false;            
+            try {
+                //<E> ListAttribute<X, E> getDeclaredList(String name, Class<E> elementType);
+                // UC3 - the attribute is on the managedType (not on any superType)
+                Set<PluralAttribute<Manufacturer, ?, ?>> collections = 
+                    entityManufacturer.getDeclaredCollections();
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
+            }
+            assertFalse(expectedIAExceptionThrown);            
+            
 
             /**
              *  Return the attribute of the managed
@@ -706,7 +923,50 @@ public class MetamodelMetamodelTest extends MetamodelTest {
              *  @throws IllegalArgumentException if attribute of the given
              *          name is not declared in the managed type
              */
-            //Attribute<X, ?> getDeclaredAttribute(String name); 
+            //Attribute<X, ?> getDeclaredAttribute(String name);
+            expectedIAExceptionThrown = false;            
+            try {
+                //<E> ListAttribute<X, E> getDeclaredList(String name, Class<E> elementType);
+                // UC1 - the attribute does not exist on the managedType (regardless of whether it is on any superType)
+                Attribute<Manufacturer, ?> anAttribute = 
+                    entityManufacturer.getDeclaredAttribute("locations");//, entityLocation.getJavaType());
+            } catch (IllegalArgumentException iae) {
+                // expecting
+                //java.lang.IllegalArgumentException: The attribute [locations] from the managed type [ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer --> [DatabaseTable(CMP3_MM_MANUF)])]] is not present.
+                //iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
+            }
+            assertTrue(expectedIAExceptionThrown);
+            
+            expectedIAExceptionThrown = false;            
+            try {
+                //<E> ListAttribute<X, E> getDeclaredList(String name, Class<E> elementType);
+                // UC3 - the attribute is on the managedType (not on any superType)
+                Attribute<Manufacturer, ?> anAttribute = 
+                    entityManufacturer.getDeclaredAttribute("hardwareDesigners");//, entityHardwareDesigner.getJavaType());
+                //System.out.println("entityManufacturer.getDeclaredAttribute(hardwareDesigners) " + anAttribute);
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
+            }
+            assertFalse(expectedIAExceptionThrown);            
+            
+            expectedIAExceptionThrown = false;            
+            try {
+                //<E> ListAttribute<X, E> getDeclaredList(String name, Class<E> elementType);
+                // UC4 - the attribute is on the immediate superclass
+                Attribute<Manufacturer, ?> anAttribute = 
+                    entityManufacturer.getDeclaredAttribute("corporateComputers");//, entityComputer.getJavaType());
+                //System.out.println("entityManufacturer.getDeclaredList(corporateComputers) " + anAttribute);
+            } catch (IllegalArgumentException iae) {
+                // expecting
+                // java.lang.IllegalArgumentException: The declared attribute [corporateComputers] from the managed type [ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer --> [DatabaseTable(CMP3_MM_MANUF)])]] is not present - however, it is declared on a superclass.
+                //iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
+            }
+            assertTrue(expectedIAExceptionThrown);
+            
+            
 
             /**
              *  Return the single-valued attribute of the managed type that
@@ -810,6 +1070,95 @@ public class MetamodelMetamodelTest extends MetamodelTest {
              */
             //MapAttribute<X, ?, ?> getDeclaredMap(String name);            
             
+            // Verify ManagedType operations
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            
+            /**
+             *  Return the attribute that corresponds to the id attribute 
+             *  declared by the entity or mapped superclass.
+             *  @param type  the type of the represented declared id attribute
+             *  @return declared id attribute
+             *  @throws IllegalArgumentException if id attribute of the given
+             *          type is not declared in the identifiable type or if
+             *          the identifiable type has an id class
+             */
+            //public <Y> SingularAttribute<X, Y> getDeclaredId(Class<Y> type) {
+            
+            /**
+             *  Return the attribute that corresponds to the version 
+             *  attribute declared by the entity or mapped superclass.
+             *  @param type  the type of the represented declared version 
+             *               attribute
+             *  @return declared version attribute
+             *  @throws IllegalArgumentException if version attribute of the 
+             *          type is not declared in the identifiable type
+             */
+            //public <Y> SingularAttribute<X, Y> getDeclaredVersion(Class<Y> type) {
+            
+            /**
+             *   Return the attributes corresponding to the id class of the
+             *   identifiable type.
+             *   @return id attributes
+             *   @throws IllegalArgumentException if the identifiable type
+             *           does not have an id class
+             */
+            //public Set<SingularAttribute<? super X, ?>> getIdClassAttributes() {
+            
+            /**
+             *  Return the attribute that corresponds to the id attribute of 
+             *  the entity or mapped superclass.
+             *  @param type  the type of the represented id attribute
+             *  @return id attribute
+             *  @throws IllegalArgumentException if id attribute of the given
+             *          type is not present in the identifiable type or if
+             *          the identifiable type has an id class
+             */
+            //public <Y> SingularAttribute<? super X, Y> getId(Class<Y> type) {
+            
+            /**
+             *  Return the type that represents the type of the id.
+             *  @return type of id
+             */
+            //public abstract Type<?> getIdType();
+            
+            /**
+             *  Return the identifiable type that corresponds to the most
+             *  specific mapped superclass or entity extended by the entity 
+             *  or mapped superclass. 
+             *  @return supertype of identifiable type or null if no such supertype
+             */
+            //public IdentifiableType<? super X> getSupertype() {
+
+            /**
+             *  Return the attribute that corresponds to the version 
+             *    attribute of the entity or mapped superclass.
+             *  @param type  the type of the represented version attribute
+             *  @return version attribute
+             *  @throws IllegalArgumentException if version attribute of the 
+             *          given type is not present in the identifiable type
+             */
+            //public <Y> SingularAttribute<? super X, Y> getVersion(Class<Y> type) {
+            // in progress
+            //SingularAttribute<? super Manufacturer, Integer> versionAttribute = entityManufacturer.getVersion(Integer.class);
+            
+            /**
+             *  Whether or not the identifiable type has an id attribute.
+             *  Returns true for a simple id or embedded id; returns false
+             *  for an idclass.
+             *  @return boolean indicating whether or not the identifiable
+             *           type has a single id attribute
+             */
+            //public boolean hasSingleIdAttribute() {
+            
+            /**
+             *  Whether or not the identifiable type has a version attribute.
+             *  @return boolean indicating whether or not the identifiable
+             *           type has a version attribute
+             */
+            //public boolean hasVersionAttribute() {
+
+            
+            
             
             // get some static (non-runtime) attributes parameterized by <Owning type, return Type>
             // Note: the String based attribute names are non type-safe
@@ -873,9 +1222,27 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             
 
             // Variant use cases
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            boolean iae1thrown = false;
+            
+            // A Criteria API query that is expected to fail with an IAE
+            QueryBuilder qbForExceptions = null;
+            
+            iae1thrown = false;
+            try {
+                qbForExceptions = em.getQueryBuilder();
+                CriteriaQuery<Computer> cq = qbForExceptions.createQuery(Computer.class);
+                Root from = cq.from(Computer.class);
+                Path invalidPath = from.get("____unknown_attribute_name_should_fail_with_IAE_____");
+            } catch (Exception e) {
+                iae1thrown = true;
+                //e.printStackTrace();
+            }
+            assertTrue(iae1thrown);
+            
             
             // try a getAttribute on a missing attribute - should cause an IAE
-            boolean iae1thrown = false;
+            iae1thrown = false;
             try {
                 entityManufacturer.getAttribute("_unknownAttribute");
             } catch (IllegalArgumentException expectedIAE) {

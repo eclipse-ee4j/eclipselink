@@ -20,7 +20,6 @@ import javax.persistence.metamodel.Bindable;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.Type;
 
-import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
@@ -45,7 +44,7 @@ import org.eclipse.persistence.mappings.OneToOneMapping;
  */
 public class SingularAttributeImpl<X,T> extends AttributeImpl<X,T> implements SingularAttribute<X, T> {
 
-    /** The Type representing this type **/
+    /** The Type representing this Entity or Basic type **/
     protected Type<T> elementType;
     
     protected SingularAttributeImpl(ManagedTypeImpl<X> managedType, DatabaseMapping mapping) {
@@ -77,7 +76,7 @@ public class SingularAttributeImpl<X,T> extends AttributeImpl<X,T> implements Si
      * @return Java type
      */
     public Class<T> getBindableJavaType() {
-        // In SingularAttribute our BindableType is SINGLE_ATTRIBUTE - return the java type of the entity
+        // In SingularAttribute our BindableType is SINGLE_ATTRIBUTE - return the java type of the represented entity
         return this.elementType.getJavaType();
     }
     
