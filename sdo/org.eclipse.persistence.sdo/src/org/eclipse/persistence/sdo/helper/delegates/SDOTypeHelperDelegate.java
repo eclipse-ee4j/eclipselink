@@ -132,9 +132,9 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         aHelperContext = aContext;
 
         initWrapperTypes();
-        initTypesHashMap();
         initCommonjHashMap();
-        initCommonjJavaHashMap();
+        initCommonjJavaHashMap();        
+        initTypesHashMap();  
         initXsdToSDOType();
         initSdoToXSDType();
         initOpenProps();

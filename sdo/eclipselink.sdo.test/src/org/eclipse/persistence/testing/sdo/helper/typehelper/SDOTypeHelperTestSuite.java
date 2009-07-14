@@ -39,6 +39,7 @@ public class SDOTypeHelperTestSuite {
 		suite.addTest(new SDOTypeHelperDefineTestSuite().suite());			
         suite.addTest(new TestSuite(OpenContentPropertiesByNameTestCases.class));
         suite.addTestSuite(SDOTypeHelperExceptionTestCases.class);
+        suite.addTest(new TestSuite(SDOTypeHelperDelegateInitializeTestCases.class));
         return suite;
     }
 }
