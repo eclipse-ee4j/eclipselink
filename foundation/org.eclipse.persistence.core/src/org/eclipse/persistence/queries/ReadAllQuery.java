@@ -214,7 +214,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
         if (shouldCheckCacheOnly()) {
             // assert !isReportQuery();
             if (shouldUseWrapperPolicy()) {
-                getContainerPolicy().setElementDescriptor(getDescriptor());
+                getContainerPolicy().setElementDescriptor(this.descriptor);
             }
 
             // PERF: Fixed to not query each unit of work cache (is not conforming),
@@ -249,10 +249,10 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
 
         // Check if user defined a custom query.
         if (isCustomQueryUsed() == null) {
-            setIsCustomQueryUsed((!isUserDefined()) && isExpressionQuery() && (getSelectionCriteria() == null) && (!hasOrderByExpressions()) && (getDescriptor().getQueryManager().hasReadAllQuery()));
+            setIsCustomQueryUsed((!isUserDefined()) && isExpressionQuery() && (getSelectionCriteria() == null) && (!hasOrderByExpressions()) && (this.descriptor.getQueryManager().hasReadAllQuery()));
         }
         if (isCustomQueryUsed().booleanValue()) {
-            return getDescriptor().getQueryManager().getReadAllQuery();
+            return this.descriptor.getQueryManager().getReadAllQuery();
         } else {
             return null;
         }
@@ -409,12 +409,12 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
                     // bug6138532 - check for "cached no results" (InvalidObject singleton) in query 
                     // results, and return an empty container instance as configured
                     if (queryResults == InvalidObject.instance) {
-                        return getContainerPolicy().containerInstance();
+                        return getContainerPolicy().containerInstance(0);
                     }
                     Collection results = (Collection)queryResults;
                     if (session.isUnitOfWork()) {
                         ContainerPolicy policy = getContainerPolicy();
-                        Object resultCollection = policy.containerInstance();
+                        Object resultCollection = policy.containerInstance(results.size());
                         Object iterator = policy.iteratorFor(results);
                         while (policy.hasNext(iterator)) {
                             Object result = ((UnitOfWorkImpl)session).registerExistingObject(policy.next(iterator, session), this.descriptor);
@@ -446,8 +446,8 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
             return getContainerPolicy().execute();
         }
 
-        if (getDescriptor().isDescriptorForInterface()) {
-            Object returnValue = getDescriptor().getInterfacePolicy().selectAllObjectsUsingMultipleTableSubclassRead(this);
+        if (this.descriptor.isDescriptorForInterface()) {
+            Object returnValue = this.descriptor.getInterfacePolicy().selectAllObjectsUsingMultipleTableSubclassRead(this);
             setExecutionTime(System.currentTimeMillis());
             return returnValue;
         }
@@ -645,7 +645,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
         }
         // Since aggregates share the same query as their parent, must avoid the aggregate thinking
         // the parents mappings is for it, (queries only share if the aggregate was not joined).
-        if (mappingDescriptor.isAggregateDescriptor() && (mappingDescriptor != getDescriptor())) {
+        if (mappingDescriptor.isAggregateDescriptor() && (mappingDescriptor != this.descriptor)) {
             return false;
         }
         if (this.batchReadAttributes != null) {

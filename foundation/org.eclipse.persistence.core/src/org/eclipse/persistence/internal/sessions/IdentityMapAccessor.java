@@ -45,7 +45,16 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
     /**
      * INTERNAL:
      * An IdentityMapAccessor sits between the session and the identityMapManager
-     * It needs references in both directions
+     * It needs references in both directions.
+     */
+    public IdentityMapAccessor(AbstractSession session) {
+        this.session = session;
+    }
+    
+    /**
+     * INTERNAL:
+     * An IdentityMapAccessor sits between the session and the identityMapManager
+     * It needs references in both directions.
      */
     public IdentityMapAccessor(AbstractSession session, IdentityMapManager identityMapManager) {
         this.session = session;
@@ -55,7 +64,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
     /**
      * INTERNAL:
      * Deferred lock the identity map for the object, this is used for avoiding deadlock
-     * The return cacheKey should be used to release the deferred lock
+     * The return cacheKey should be used to release the deferred lock.
      */
     public CacheKey acquireDeferredLock(Vector primarKey, Class javaClass, ClassDescriptor descriptor) {
         return getIdentityMapManager().acquireDeferredLock(primarKey, javaClass, descriptor);
@@ -64,7 +73,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
     /**
      * INTERNAL:
      * Lock the identity map for the object, this must be done when building objects.
-     * The return cacheKey should be used to release the lock
+     * The return cacheKey should be used to release the lock.
      */
     public CacheKey acquireLock(Vector primarKey, Class javaClass, ClassDescriptor descriptor) {
         return acquireLock(primarKey, javaClass, false, descriptor);
@@ -158,14 +167,6 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      */
     public void clearQueryCache(String descriptorQueryName, Class queryClass) {
         getIdentityMapManager().clearQueryCache((ReadQuery)session.getDescriptor(queryClass).getQueryManager().getQuery(descriptorQueryName));
-    }
-
-    /**
-     * INTERNAL:
-     * Return whether the identity maps contain an item of the given class and key
-     */
-    public boolean containsKey(Vector key, Class theClass, ClassDescriptor descriptor) {
-        return getIdentityMapManager().containsKey(key, theClass, descriptor);
     }
 
     /**

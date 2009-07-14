@@ -82,7 +82,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
      * @exception  DatabaseException - an error has occurred on the database
      */
     public Integer deleteAll() throws DatabaseException {
-        if(((DeleteAllQuery)getQuery()).isPreparedUsingTempStorage()) {
+        if(((DeleteAllQuery)this.query).isPreparedUsingTempStorage()) {
             return deleteAllUsingTempTables();
         } else {
             if (hasMultipleCalls()) {
@@ -188,7 +188,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
      * @exception  DatabaseException - an error has occurred on the database.
      */
     protected Object executeCall() throws DatabaseException {
-        return executeCall(getCall());
+        return executeCall(this.call);
     }
 
     /**
@@ -197,12 +197,12 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
      */
     protected Object executeCall(DatasourceCall databaseCall) throws DatabaseException {
         // For CR 2923 must move to session we will execute call on now
-        // so correct DatasourcePlatform used by translate. 
-        AbstractSession sessionToUse = getQuery().getExecutionSession();
+        // so correct DatasourcePlatform used by translate.        
+        AbstractSession sessionToUse = this.query.getExecutionSession();
         DatasourceCall clonedCall = (DatasourceCall)databaseCall.clone();
-        clonedCall.setQuery(getQuery());
-        clonedCall.translate(getTranslationRow(), getModifyRow(), sessionToUse);
-        return sessionToUse.executeCall(clonedCall, getTranslationRow(), getQuery());
+        clonedCall.setQuery(this.query);
+        clonedCall.translate(this.query.getTranslationRow(), getModifyRow(), sessionToUse);
+        return sessionToUse.executeCall(clonedCall, this.query.getTranslationRow(), this.query);
     }
 
     /**
@@ -286,7 +286,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
      * This is lazy initialied to conserv space.
      */
     public boolean hasMultipleCalls() {
-        return (calls != null) && (!calls.isEmpty());
+        return (this.calls != null) && (!this.calls.isEmpty());
     }
 
     /**
@@ -346,7 +346,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
         // 
         // Bug 2804663 - LOBValueWriter is no longer a singleton, so we execute any deferred
         // select calls through the DatabaseAccessor which holds the writer instance
-        AbstractSession executionSession = getQuery().getExecutionSession();
+        AbstractSession executionSession = this.query.getExecutionSession();
         executionSession.getAccessor().flushSelectCalls(executionSession);
     }
 
@@ -699,7 +699,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
         // Building of SELECT statements is no longer done in DatabaseAccessor.basicExecuteCall
         // because DatabaseCall.isUpdateCall() can't recognize update in case StoredProcedureCall
         // is used.
-        AbstractSession executionSession = getQuery().getExecutionSession();
+        AbstractSession executionSession = this.query.getExecutionSession();
         executionSession.getAccessor().flushSelectCalls(executionSession);
         return returnedRowCount;
     }
@@ -709,13 +709,13 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
        * @exception  DatabaseException - an error has occurred on the database.
        */
     public Integer updateAll() throws DatabaseException {
-        if(((UpdateAllQuery)getQuery()).isPreparedUsingTempStorage() && getSession().getPlatform().supportsTempTables()) {
+        if(((UpdateAllQuery)this.query).isPreparedUsingTempStorage() && getSession().getPlatform().supportsTempTables()) {
             return updateAllUsingTempTables();
         } else {
             Integer rowCount = executeNoSelectCall();
-            if(((UpdateAllQuery)getQuery()).isPreparedUsingTempStorage()) {
+            if(((UpdateAllQuery)this.query).isPreparedUsingTempStorage()) {
                 // the query was prepared using Oracle anonymous block 
-                AbstractRecord outputRow = (AbstractRecord)getQuery().getProperty("output");
+                AbstractRecord outputRow = (AbstractRecord)this.query.getProperty("output");
                 rowCount = (Integer)outputRow.get("ROW_COUNT");
             }
             return rowCount;
@@ -795,7 +795,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
 
         // For CR 2923 must move to session we will execute call on now
         // so correct DatasourcePlatform used by translate. 
-        AbstractSession sessionToUse = getQuery().getExecutionSession();
+        AbstractSession sessionToUse = this.query.getExecutionSession();
 
         // yes - this is a bit ugly...
         Vector calls = ((DatasourceCallQueryMechanism)this.getDescriptor().getQueryManager().getUpdateQuery().getQueryMechanism()).getCalls();

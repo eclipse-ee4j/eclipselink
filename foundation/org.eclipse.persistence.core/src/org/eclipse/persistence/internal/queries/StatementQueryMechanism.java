@@ -91,9 +91,9 @@ public class StatementQueryMechanism extends CallQueryMechanism {
      */
     public Integer deleteObject() throws DatabaseException {
         // Prepare the calls if not already set (prepare may not have had the modify row).
-        if ((!hasMultipleCalls()) && (getCall() == null)) {
+        if ((this.call == null) && (!hasMultipleCalls())) {
             prepareDeleteObject();
-            if ((!hasMultipleCalls()) && (getCall() == null)) {
+            if ((this.call == null) && (!hasMultipleCalls())) {
                 return new Integer(1);// Must be 1 otherwise locking error will occur.
             }
         }
@@ -108,7 +108,7 @@ public class StatementQueryMechanism extends CallQueryMechanism {
      */
     public Integer executeNoSelect() throws DatabaseException {
         // Prepare the calls if not already set (prepare may not have had the modify row).
-        if ((!hasMultipleCalls()) && (getCall() == null)) {
+        if ((this.call == null) && (!hasMultipleCalls())) {
             prepareExecuteNoSelect();
         }
 
@@ -155,7 +155,7 @@ public class StatementQueryMechanism extends CallQueryMechanism {
      */
     public void insertObject() throws DatabaseException {
         // Prepare the calls if not already set (prepare may not have had the modify row).
-        if ((!hasMultipleCalls()) && (getCall() == null)) {
+        if ((this.call == null) && (!hasMultipleCalls())) {
             prepareInsertObject();
         }
 
@@ -420,9 +420,9 @@ public class StatementQueryMechanism extends CallQueryMechanism {
      */
     public Integer updateObject() throws DatabaseException {
         // Prepare the calls if not already set (prepare may not have had the modify row).
-        if ((!hasMultipleCalls()) && (getCall() == null)) {
+        if ((this.call == null) && (!hasMultipleCalls())) {
             prepareUpdateObject();
-            if ((!hasMultipleCalls()) && (getCall() == null)) {
+            if ((this.call == null) && (!hasMultipleCalls())) {
                 return new Integer(1);// Must be 1 otherwise locking error will occur.
             }
         }

@@ -347,7 +347,9 @@ public class MergeManager {
         // Ensure concurrency if cache isolation requires.
         this.session.getIdentityMapAccessorInstance().acquireWriteLock();
         this.session.log(SessionLog.FINER, SessionLog.PROPAGATION, "received_updates_from_remote_server");
-        this.session.getEventManager().preDistributedMergeUnitOfWorkChangeSet(uowChangeSet);
+        if (this.session.hasEventManager()) {
+            this.session.getEventManager().preDistributedMergeUnitOfWorkChangeSet(uowChangeSet);
+        }
 
         try {
             // Iterate over each clone and let the object build merge to clones into the originals.
@@ -381,7 +383,9 @@ public class MergeManager {
         } finally {
             this.session.getIdentityMapAccessorInstance().getWriteLockManager().releaseAllAcquiredLocks(this);
             this.session.getIdentityMapAccessorInstance().releaseWriteLock();
-            this.session.getEventManager().postDistributedMergeUnitOfWorkChangeSet(uowChangeSet);
+            if (this.session.hasEventManager()) {
+                this.session.getEventManager().postDistributedMergeUnitOfWorkChangeSet(uowChangeSet);
+            }
             this.session.endOperationProfile(SessionProfiler.DistributedMerge);
         }
     }

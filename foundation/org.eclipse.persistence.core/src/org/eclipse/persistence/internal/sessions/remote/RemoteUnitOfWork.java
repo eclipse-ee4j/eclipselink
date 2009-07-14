@@ -141,9 +141,13 @@ public class RemoteUnitOfWork extends UnitOfWorkImpl {
                 // Do not commit until the JTS wants to.
                 return;
             }
-            getEventManager().preCommitUnitOfWork();
-            super.commitRootUnitOfWork();// On the server the normal commit is done.
-            getEventManager().postCommitUnitOfWork();
+            if (this.eventManager != null) {
+                this.eventManager.preCommitUnitOfWork();
+            }
+            super.commitRootUnitOfWork(); // On the server the normal commit is done.
+            if (this.eventManager != null) {
+                this.eventManager.postCommitUnitOfWork();
+            }
             return;
         }
 
@@ -466,7 +470,9 @@ public class RemoteUnitOfWork extends UnitOfWorkImpl {
         setParent(session);
         setProject(session.getProject());
         setProfiler(getProfiler());
-        setEventManager(session.getEventManager().clone(this));
+        if (session.hasEventManager()) {
+            setEventManager(session.getEventManager().clone(this));
+        }
         //	setShouldLogMessages(session.shouldLogMessages());
         setSessionLog(session.getSessionLog());
         setLog(session.getLog());

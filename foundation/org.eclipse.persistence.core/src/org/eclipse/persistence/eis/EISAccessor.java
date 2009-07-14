@@ -171,7 +171,9 @@ public class EISAccessor extends DatasourceAccessor {
                         AbstractRecord outputRow = getEISPlatform().buildRow(output, eisCall, this);
                         if (outputRow != null) {
                             eisCall.getQuery().setProperty("output", outputRow);
-                            session.getEventManager().outputParametersDetected(outputRow, eisCall);
+                            if (session.hasEventManager()) {
+                                session.getEventManager().outputParametersDetected(outputRow, eisCall);
+                            }
                         }
                     }
                 } else if (eisCall.isOneRowReturned()) {

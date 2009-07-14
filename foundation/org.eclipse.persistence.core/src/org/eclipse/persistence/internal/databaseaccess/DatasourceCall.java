@@ -119,7 +119,7 @@ public abstract class DatasourceCall implements Call {
      * The return type is one of, NoReturn, ReturnOneRow or ReturnManyRows.
      */
     public boolean areManyRowsReturned() {
-        return getReturnType() == RETURN_MANY_ROWS;
+        return this.returnType == RETURN_MANY_ROWS;
     }
 
     public boolean isOutputParameterType(Integer parameterType) {
@@ -200,7 +200,7 @@ public abstract class DatasourceCall implements Call {
      * The return type is one of, NoReturn, ReturnOneRow or ReturnManyRows.
      */
     public boolean isCursorReturned() {
-        return getReturnType() == RETURN_CURSOR;
+        return this.returnType == RETURN_CURSOR;
     }
 
     /**
@@ -214,14 +214,14 @@ public abstract class DatasourceCall implements Call {
      * The return type is one of, NoReturn, ReturnOneRow or ReturnManyRows.
      */
     public boolean isNothingReturned() {
-        return getReturnType() == NO_RETURN;
+        return this.returnType == NO_RETURN;
     }
 
     /**
      * The return type is one of, NoReturn, ReturnOneRow or ReturnManyRows.
      */
     public boolean isOneRowReturned() {
-        return getReturnType() == RETURN_ONE_ROW;
+        return this.returnType == RETURN_ONE_ROW;
     }
 
     public boolean isSQLCall() {

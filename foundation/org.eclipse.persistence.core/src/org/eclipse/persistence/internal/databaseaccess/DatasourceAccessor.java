@@ -417,7 +417,9 @@ public abstract class DatasourceAccessor implements Accessor {
             } catch (RuntimeException exception) {
                 session.handleSevere(exception);
             }
-            session.getEventManager().postConnect(this);
+            if (session.hasEventManager()) {
+                session.getEventManager().postConnect(this);
+            }
             incrementCallCount(session);
             try {
                 buildConnectLog(session);
@@ -540,7 +542,9 @@ public abstract class DatasourceAccessor implements Accessor {
         reconnect(session);
         this.isInTransaction = false;
         this.isValid = true;
-        session.getEventManager().postConnect(this);
+        if (session.hasEventManager()) {
+            session.getEventManager().postConnect(this);
+        }
     }
 
     /**

@@ -59,6 +59,8 @@ public class Project implements Serializable, Cloneable {
 
     /** Cache if any descriptor is isolated. (set during initialization) */
     protected boolean hasIsolatedClasses;
+    /** Cache if all descriptors are isolated in the unit of work. (set during initialization) */
+    protected boolean hasNonIsolatedUOWClasses;
     /** Cache if any descriptor has history. (set during initialization) */
     protected boolean hasGenericHistorySupport;
     /** Cache if any descriptor is using ProxyIndirection. (set during initialization */
@@ -78,18 +80,16 @@ public class Project implements Serializable, Cloneable {
      */
     protected transient boolean hasMappingsPostCalculateChangesOnDeleted = false;
     
-    /** Default value for ClassDescriptor.identityMapClass 
-     */
+    /** Default value for ClassDescriptor.identityMapClass. */
     protected Class defaultIdentityMapClass = AbstractIdentityMap.getDefaultIdentityMapClass();
-    /** Default value for ClassDescriptor.identityMapSize 
-     */
+    
+    /** Default value for ClassDescriptor.identityMapSize. */
     protected int defaultIdentityMapSize = 100;
-    /** Default value for ClassDescriptor.isIsolated 
-     */
+    
+    /** Default value for ClassDescriptor.isIsolated. */
     protected boolean defaultIsIsolated = false;
     
-    /** list of queries - once Project is initialized, these are 
-     */
+    /** List of queries - once Project is initialized, these are copied to the Session. */
     protected transient List<DatabaseQuery> queries = null;
     
     /**
@@ -691,6 +691,7 @@ public class Project implements Serializable, Cloneable {
     public boolean hasIsolatedClasses() {
         return hasIsolatedClasses;
     }
+    
     /**
      * INTERNAL:
      * Set to true during descriptor initialize if any descriptor is isolated.
@@ -698,6 +699,26 @@ public class Project implements Serializable, Cloneable {
      */
     public void setHasIsolatedClasses(boolean hasIsolatedClasses) {
         this.hasIsolatedClasses = hasIsolatedClasses;
+    }
+
+    /**
+     * INTERNAL:
+     * Return if any descriptors are not isolated to the unit of work.
+     * Set to true during descriptor initialize if any descriptor is not isolated.
+     * Allows uow merge to be bypassed.
+     */
+    public boolean hasNonIsolatedUOWClasses() {
+        return hasNonIsolatedUOWClasses;
+    }
+    
+    /**
+     * INTERNAL:
+     * Set if any descriptors are not isolated to the unit of work.
+     * Set to true during descriptor initialize if any descriptor is not isolated.
+     * Allows uow merge to be bypassed.
+     */
+    public void setHasNonIsolatedUOWClasses(boolean hasNonIsolatedUOWClasses) {
+        this.hasNonIsolatedUOWClasses = hasNonIsolatedUOWClasses;
     }
 
     /**

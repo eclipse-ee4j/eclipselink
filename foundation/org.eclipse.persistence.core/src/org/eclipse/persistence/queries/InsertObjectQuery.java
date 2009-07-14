@@ -119,7 +119,7 @@ public class InsertObjectQuery extends WriteObjectQuery {
         checkDescriptor(session);
 
         // check if user defined a custom query
-        DescriptorQueryManager queryManager = getDescriptor().getQueryManager();
+        DescriptorQueryManager queryManager = this.descriptor.getQueryManager();
         if ((!isCallQuery())// this is not a hand-coded (custom SQL, SDK etc.) call
                  && (!isUserDefined())// and this is not a user-defined query (in the query manager)
                  && queryManager.hasInsertQuery()) {// and there is a user-defined query (in the query manager)

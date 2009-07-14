@@ -39,7 +39,7 @@ public class ClientSessionIdentityMapAccessor extends IdentityMapAccessor {
      * Reset the entire object cache.
      * This method blows away both this session's and its parents caches, including the server cache or any other cache.
      * This throws away any objects that have been read in.
-     * Extream caution should be used before doing this because object identity will no longer
+     * Extreme caution should be used before doing this because object identity will no longer
      * be maintained for any objects currently read in.  This should only be called
      * if the application knows that it no longer has references to object held in the cache.
      */
@@ -59,7 +59,7 @@ public class ClientSessionIdentityMapAccessor extends IdentityMapAccessor {
 
     /**
      * INTERNAL:
-     * The client session does not have a local indentity map, so this has no effect and should not be used.
+     * The client session does not have a local identity map, so this has no effect and should not be used.
      */
     public void initializeIdentityMap(Class theClass) {
         ;// Do nothing	
@@ -67,7 +67,7 @@ public class ClientSessionIdentityMapAccessor extends IdentityMapAccessor {
 
     /**
      * INTERNAL:
-     * The client session does not have a local indentity map, so this has no effect and should not be used.
+     * The client session does not have a local identity map, so this has no effect and should not be used.
      */
     public void initializeIdentityMaps() {
         ;// Do nothing	

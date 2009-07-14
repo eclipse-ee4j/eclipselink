@@ -35,6 +35,7 @@ import javax.persistence.spi.ClassTransformer;
 import javax.persistence.PersistenceException;
 
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
+import org.eclipse.persistence.internal.weaving.PersistenceWeaver;
 import org.eclipse.persistence.internal.weaving.TransformerFactory;
 import org.eclipse.persistence.sessions.JNDIConnector;
 import org.eclipse.persistence.logging.AbstractSessionLog;
@@ -100,6 +101,8 @@ public class EntityManagerSetupImpl {
      */
 
     protected MetadataProcessor processor = null;
+    /** Holds a reference to the weaver class transformer so it can be cleared after login. */
+    protected PersistenceWeaver weaver = null;
     protected PersistenceUnitInfo persistenceUnitInfo = null;
     protected Map predeployProperties = null;
     // count a number of open factories that use this object.
@@ -267,6 +270,11 @@ public class EntityManagerSetupImpl {
                     }
                 }
             }
+            // Clear the weaver's reference to meta-data information, as it is held by the class loader and will never gc.
+            if (this.weaver != null) {
+                this.weaver.clear();
+                this.weaver = null;
+            }            
             return session;
         } catch (Exception exception) {
             PersistenceException persistenceException = null;
@@ -820,8 +828,6 @@ public class EntityManagerSetupImpl {
             
             boolean throwExceptionOnFail = "true".equalsIgnoreCase(
                     EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.THROW_EXCEPTIONS, predeployProperties, "true", session));                
-    
-            ClassTransformer transformer = null;
             
             boolean weaveChangeTracking = false;
             boolean weaveLazy = false;
@@ -851,7 +857,7 @@ public class EntityManagerSetupImpl {
                 if (enableWeaving) {                
                     // build a list of entities the persistence unit represented by this EntityManagerSetupImpl will use
                     Collection entities = PersistenceUnitProcessor.buildEntityList(processor.getProject(), privateClassLoader);
-                    transformer = TransformerFactory.createTransformerAndModifyProject(session, entities, privateClassLoader, weaveLazy, weaveChangeTracking, weaveFetchGroups, weaveInternal);
+                    this.weaver = TransformerFactory.createTransformerAndModifyProject(session, entities, privateClassLoader, weaveLazy, weaveChangeTracking, weaveFetchGroups, weaveInternal);
                 }
             } else {
                 // The transformer is capable of altering domain classes to handle a LAZY hint for OneToOne mappings.  It will only
@@ -860,7 +866,7 @@ public class EntityManagerSetupImpl {
                     // If deploying from a sessions-xml it is still desirable to allow the classes to be weaved.                
                     // build a list of entities the persistence unit represented by this EntityManagerSetupImpl will use
                     Collection persistenceClasses = new ArrayList(session.getProject().getDescriptors().keySet());
-                    transformer = TransformerFactory.createTransformerAndModifyProject(session, persistenceClasses, privateClassLoader, weaveLazy, weaveChangeTracking, weaveFetchGroups, weaveInternal);
+                    this.weaver = TransformerFactory.createTransformerAndModifyProject(session, persistenceClasses, privateClassLoader, weaveLazy, weaveChangeTracking, weaveFetchGroups, weaveInternal);
                 }
             }
             // factoryCount is not incremented only in case of a first call to preDeploy
@@ -875,7 +881,7 @@ public class EntityManagerSetupImpl {
             if (isWeavingStatic) {
                 return null;
             } else {
-                return transformer;
+                return this.weaver;
             }
         } catch (RuntimeException ex) {
             state = STATE_PREDEPLOY_FAILED;

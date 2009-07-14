@@ -474,8 +474,12 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     public <T> T find(Class<T> entityClass, Object primaryKey, LockModeType lockMode, Map<String, Object> properties) {
         try {
             verifyOpen();
-            AbstractSession session = (AbstractSession) getActiveSession();
+            AbstractSession session = this.serverSession;
             ClassDescriptor descriptor = session.getDescriptor(entityClass);
+            // PERF: Avoid uow creation for read-only.
+            if (!descriptor.shouldBeReadOnly()) {
+                session = (AbstractSession) getActiveSession();
+            }
             if (descriptor == null || descriptor.isAggregateDescriptor() || descriptor.isAggregateCollectionDescriptor()) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("unknown_bean_class", new Object[] { entityClass }));
             }
@@ -575,7 +579,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             query.conformResultsInUnitOfWork();
         }
 
-        return executeQuery(query, lockMode, (UnitOfWork) session);
+        return executeQuery(query, lockMode, session);
     }
 
     /**
@@ -618,20 +622,20 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     /**
      * Execute the locking query.
      */
-    private Object executeQuery(ReadObjectQuery query, LockModeType lockMode, UnitOfWork uow) {
+    private Object executeQuery(ReadObjectQuery query, LockModeType lockMode, AbstractSession session) {
         // Make sure we set the lock mode type if there is one. It will
         // be handled in the query prepare statement. Setting the lock mode
         // will validate that a valid locking policy is in place if needed. If
         // a true value is returned it indicates that we were unable to set the
         // lock mode, throw an exception.
-        if (lockMode != null && query.setLockModeType(lockMode.name(), (AbstractSession) getActiveSession())) {
+        if (lockMode != null && query.setLockModeType(lockMode.name(), session)) {
             throw new PersistenceException(ExceptionLocalization.buildMessage("ejb30-wrong-lock_called_without_version_locking-index", null));
         }
 
         Object result = null;
 
         try {
-            result = uow.executeQuery(query);
+            result = session.executeQuery(query);
         } catch (DatabaseException e) {
             // If we catch a database exception as a result of executing a
             // pessimistic locking query we need to ask the platform which
@@ -640,7 +644,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             // the query was executed using a wait timeout value)
             if (lockMode != null && lockMode.name().contains(ObjectLevelReadQuery.PESSIMISTIC_)) {
                 // ask the platform if it is a lock timeout
-                if (uow.getPlatform().isLockTimeoutException(e)) {
+                if (session.getPlatform().isLockTimeoutException(e)) {
                     throw new LockTimeoutException(e);
                 } else {
                     throw new PessimisticLockException(e);
@@ -758,7 +762,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     public void refresh(Object entity, LockModeType lockMode, Map properties) {
         try {
             verifyOpen();
-            UnitOfWork uow = getActivePersistenceContext(checkForTransaction(false));
+            UnitOfWorkImpl uow = getActivePersistenceContext(checkForTransaction(false));
             if (!contains(entity, uow)) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("cant_refresh_not_managed_object", new Object[] { entity }));
             }
@@ -1426,7 +1430,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     }
 
     public void verifyOpen() {
-        if (!isOpen()) {
+        if (!this.isOpen || !this.factory.isOpen()) {
             throw new IllegalStateException(ExceptionLocalization.buildMessage("operation_on_closed_entity_manager"));
         }
     }

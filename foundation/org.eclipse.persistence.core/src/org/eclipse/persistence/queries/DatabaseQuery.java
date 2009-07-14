@@ -431,7 +431,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      */
     public void checkPrepare(AbstractSession session, AbstractRecord translationRow, boolean force) {
         // This query is first prepared for global common state, this must be synced.
-        if (!isPrepared()) {// Avoid the monitor is already prepare, must check again for concurrency.
+        if (!this.isPrepared) {// Avoid the monitor is already prepare, must check again for concurrency.
             // Profile the query preparation time.
             session.startOperationProfile(SessionProfiler.QUERY_PREPARE, this, SessionProfiler.ALL);
             // If this query will use the custom query, do not prepare.

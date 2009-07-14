@@ -160,9 +160,9 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     public Object buildBackupCloneForPartObject(Object attributeValue, Object clone, Object backup, UnitOfWorkImpl unitOfWork) {
         // Check for null
         if (attributeValue == null) {
-            return getContainerPolicy().containerInstance(1);
+            return this.containerPolicy.containerInstance(1);
         } else {
-            return getContainerPolicy().cloneFor(attributeValue);
+            return this.containerPolicy.cloneFor(attributeValue);
         }
     }
 
@@ -172,7 +172,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * Ignore the objects, use the attribute value.
      */
     public Object buildCloneForPartObject(Object attributeValue, Object original, Object clone, UnitOfWorkImpl unitOfWork, boolean isExisting) {
-        ContainerPolicy containerPolicy = getContainerPolicy();
+        ContainerPolicy containerPolicy = this.containerPolicy;
         if (attributeValue == null) {
             Object container = containerPolicy.containerInstance(1);
             if ((this.getDescriptor().getObjectChangePolicy().isObjectChangeTrackingPolicy()) && ((clone != null) && (((ChangeTracker)clone)._persistence_getPropertyChangeListener() != null)) && (container instanceof CollectionChangeTracker)) {
@@ -211,10 +211,10 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      */
     public void buildCopy(Object copy, Object original, ObjectCopyingPolicy policy) {
         Object attributeValue = getRealCollectionAttributeValueFromObject(original, policy.getSession());
-        Object valuesIterator = getContainerPolicy().iteratorFor(attributeValue);
-        attributeValue = getContainerPolicy().containerInstance(getContainerPolicy().sizeFor(attributeValue));
-        while (getContainerPolicy().hasNext(valuesIterator)) {
-            Object originalValue = getContainerPolicy().next(valuesIterator, policy.getSession());
+        Object valuesIterator = this.containerPolicy.iteratorFor(attributeValue);
+        attributeValue = this.containerPolicy.containerInstance(this.containerPolicy.sizeFor(attributeValue));
+        while (this.containerPolicy.hasNext(valuesIterator)) {
+            Object originalValue = this.containerPolicy.next(valuesIterator, policy.getSession());
             Object copyValue = originalValue;
             if (policy.shouldCascadeAllParts() || (policy.shouldCascadePrivateParts() && isPrivateOwned())) {
                 copyValue = policy.getSession().copyObject(originalValue, policy);
@@ -225,7 +225,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                     copyValue = originalValue;
                 }
             }
-            getContainerPolicy().addInto(copyValue, attributeValue, policy.getSession());
+            this.containerPolicy.addInto(copyValue, attributeValue, policy.getSession());
         }
         setRealAttributeValueInObject(copy, attributeValue);
     }
@@ -251,9 +251,9 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      */
     public Object[] buildReferencesPKList(Object entity, Object attribute, AbstractSession session){
         ClassDescriptor referenceDescriptor = getReferenceDescriptor();
-        Object collection = getIndirectionPolicy().getRealAttributeValueFromObject(entity, attribute);
-        Object[] result = new Object[getContainerPolicy().sizeFor(collection)];
-        Iterator iterator = (Iterator)getContainerPolicy().iteratorFor(collection);
+        Object collection = this.indirectionPolicy.getRealAttributeValueFromObject(entity, attribute);
+        Object[] result = new Object[this.containerPolicy.sizeFor(collection)];
+        Iterator iterator = (Iterator)this.containerPolicy.iteratorFor(collection);
         int index = 0;
         while(iterator.hasNext()){
             Object target = iterator.next();
@@ -276,13 +276,15 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * Cascade perform delete through mappings that require the cascade
      */
     public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
-        Object cloneAttribute = null;
-        cloneAttribute = getAttributeValueFromObject(object);
-        if ((cloneAttribute == null) || (!this.isCascadeRemove())) {
+        if (!isCascadeRemove()) {
+            return;
+        }
+        Object cloneAttribute = getAttributeValueFromObject(object);
+        if (cloneAttribute == null) {
             return;
         }
 
-        ContainerPolicy cp = getContainerPolicy();
+        ContainerPolicy cp = this.containerPolicy;
         Object cloneObjectCollection = null;
         cloneObjectCollection = getRealCollectionAttributeValueFromObject(object, uow);
         Object cloneIter = cp.iteratorFor(cloneObjectCollection);
@@ -304,9 +306,9 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     public void cascadePerformRemovePrivateOwnedObjectFromChangeSetIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
         // if the object is not instantiated, do not instantiate or cascade
         Object attributeValue = getAttributeValueFromObject(object);
-        if (attributeValue != null && getIndirectionPolicy().objectIsInstantiated(attributeValue)) {
+        if (attributeValue != null && this.indirectionPolicy.objectIsInstantiated(attributeValue)) {
             Object realObjectCollection = getRealCollectionAttributeValueFromObject(object, uow);
-            ContainerPolicy cp = getContainerPolicy();
+            ContainerPolicy cp = this.containerPolicy;
             for (Object cloneIter = cp.iteratorFor(realObjectCollection); cp.hasNext(cloneIter);) {
                 Object nextObject = cp.next(cloneIter, uow);
                 if (nextObject != null && !visitedObjects.containsKey(nextObject)) {
@@ -324,7 +326,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      */
     public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow) {
         Object cloneAttribute = getAttributeValueFromObject(object);
-        if ((cloneAttribute == null) || (!getIndirectionPolicy().objectIsInstantiated(cloneAttribute))) {
+        if ((cloneAttribute == null) || (!this.indirectionPolicy.objectIsInstantiated(cloneAttribute))) {
             if (cloneAttribute instanceof IndirectCollection)  {
                 IndirectCollection collection = (IndirectCollection)cloneAttribute;
                 if (collection.hasDeferredChanges()) {
@@ -343,7 +345,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             return;
         }
 
-        ContainerPolicy containerPolicy = getContainerPolicy();
+        ContainerPolicy containerPolicy = this.containerPolicy;
         Object cloneObjectCollection = getRealCollectionAttributeValueFromObject(object, uow);
         Object iterator = containerPolicy.iteratorFor(cloneObjectCollection);
         boolean cascade = isCascadePersist();
@@ -364,13 +366,15 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * Cascade registerNew for Create through mappings that require the cascade
      */
     public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
-        Object cloneAttribute = null;
-        cloneAttribute = getAttributeValueFromObject(object);
-        if ((cloneAttribute == null) || (!this.isCascadePersist()) || (!getIndirectionPolicy().objectIsInstantiated(cloneAttribute))) {
+        if (!isCascadePersist()) {
+            return;
+        }
+        Object cloneAttribute = getAttributeValueFromObject(object);
+        if ((cloneAttribute == null) || (!this.indirectionPolicy.objectIsInstantiated(cloneAttribute))) {
             return;
         }
 
-        ContainerPolicy cp = getContainerPolicy();
+        ContainerPolicy cp = this.containerPolicy;
         Object cloneObjectCollection = null;
         cloneObjectCollection = getRealCollectionAttributeValueFromObject(object, uow);
         Object cloneIter = cp.iteratorFor(cloneObjectCollection);
@@ -434,7 +438,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * This method is used to calculate the differences between two collections.
      */
     public void compareCollectionsForChange(Object oldCollection, Object newCollection, ChangeRecord changeRecord, AbstractSession session) {
-        getContainerPolicy().compareCollectionsForChange(oldCollection, newCollection, (CollectionChangeRecord) changeRecord, session, getReferenceDescriptor());
+        this.containerPolicy.compareCollectionsForChange(oldCollection, newCollection, (CollectionChangeRecord) changeRecord, session, getReferenceDescriptor());
     }
 
     /**
@@ -450,7 +454,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
 
         cloneAttribute = getAttributeValueFromObject(clone);
 
-        if ((cloneAttribute != null) && (!getIndirectionPolicy().objectIsInstantiated(cloneAttribute))) {
+        if ((cloneAttribute != null) && (!this.indirectionPolicy.objectIsInstantiated(cloneAttribute))) {
             return null;
         }
 
@@ -468,7 +472,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         if (cloneAttribute != null) {
             cloneObjectCollection = getRealCollectionAttributeValueFromObject(clone, session);
         } else {
-            cloneObjectCollection = getContainerPolicy().containerInstance(1);
+            cloneObjectCollection = this.containerPolicy.containerInstance(1);
         }
 
         CollectionChangeRecord changeRecord = new CollectionChangeRecord(owner);
@@ -508,7 +512,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                 Iterator removedObjects = record.getRemoveObjectList().values().iterator();
                 while (removedObjects.hasNext()) {
                     removedChangeSet = (ObjectChangeSet)removedObjects.next();
-                    objectRemovedDuringUpdate(query, getContainerPolicy().getCloneDataFromChangeSet(removedChangeSet), null);
+                    objectRemovedDuringUpdate(query, this.containerPolicy.getCloneDataFromChangeSet(removedChangeSet), null);
                     if (removedChangeSet.getOldKey() != null){
                         containerPolicy.propogatePostUpdate(query, removedChangeSet.getOldKey());
                     }
@@ -525,7 +529,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                         }
                         extraData.put(listOrderField, addedIndexInList);
                     }
-                    objectAddedDuringUpdate(query, getContainerPolicy().getCloneDataFromChangeSet(addedChangeSet), addedChangeSet, extraData);
+                    objectAddedDuringUpdate(query, this.containerPolicy.getCloneDataFromChangeSet(addedChangeSet), addedChangeSet, extraData);
                     if (addedChangeSet.getNewKey() != null){
                         containerPolicy.propogatePostUpdate(query, addedChangeSet.getNewKey());
                     }
@@ -589,7 +593,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             return;
         }
         
-        ContainerPolicy cp = getContainerPolicy();
+        ContainerPolicy cp = this.containerPolicy;
 
         Hashtable previousObjectsByKey = new Hashtable(cp.sizeFor(previousObjects) + 2); // Read from db or from backup in uow.
         Hashtable currentObjectsByKey = new Hashtable(cp.sizeFor(currentObjects) + 2); // Current value of object's attribute (clone in uow).
@@ -674,7 +678,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             return compareLists((List)firstCollection, (List)secondCollection, session, false);
         }
         
-        ContainerPolicy cp = getContainerPolicy();
+        ContainerPolicy cp = this.containerPolicy;
         if (cp.sizeFor(firstCollection) != cp.sizeFor(secondCollection)) {
             return false;
         }
@@ -709,7 +713,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             return compareLists((List)firstCollection, (List)secondCollection, session, true);
         }
 
-        ContainerPolicy cp = getContainerPolicy();
+        ContainerPolicy cp = this.containerPolicy;
         if (cp.sizeFor(firstCollection) != cp.sizeFor(secondCollection)) {
             return false;
         }
@@ -822,7 +826,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                         Map.Entry<CacheKey, List[]> entry = it.next();
                         CacheKey eachReferenceKey = entry.getKey(); 
                         List objects = entry.getValue()[0];
-                        List<AbstractRecord> rows = (List<AbstractRecord>)entry.getValue()[1];
+                        List<AbstractRecord> rows = entry.getValue()[1];
                         Object container = this.containerPolicy.containerInstance(objects.size());
                         this.containerPolicy.addAll(objects, container, query.getSession(), rows, batchQuery);
                         referenceObjectsByKey.put(eachReferenceKey, container);
@@ -905,7 +909,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             }
         }
 
-        Object remoteAttributeValue = session.getObjectsCorrespondingToAll(attributeValue, objectDescriptors, processedObjects, tempQuery, getContainerPolicy());
+        Object remoteAttributeValue = session.getObjectsCorrespondingToAll(attributeValue, objectDescriptors, processedObjects, tempQuery, this.containerPolicy);
         setRealAttributeValueInObject(object, remoteAttributeValue);
     }
 
@@ -946,7 +950,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * maintaining object identity.
      */
     public Object getObjectCorrespondingTo(Object object, RemoteSession session, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query) {
-        return session.getObjectsCorrespondingToAll(object, objectDescriptors, processedObjects, query, getContainerPolicy());
+        return session.getObjectsCorrespondingToAll(object, objectDescriptors, processedObjects, query, this.containerPolicy);
     }
 
     /**
@@ -986,7 +990,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     public Object getRealCollectionAttributeValueFromObject(Object object, AbstractSession session) throws DescriptorException {
         Object value = getRealAttributeValueFromObject(object, session);
         if (value == null) {
-            value = getContainerPolicy().containerInstance(1);
+            value = this.containerPolicy.containerInstance(1);
         }
         return value;
     }
@@ -1037,11 +1041,11 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     public void initialize(AbstractSession session) throws DescriptorException {
         super.initialize(session);
         setFields(collectFields());
-        getContainerPolicy().prepare(getSelectionQuery(), session);
+        this.containerPolicy.prepare(getSelectionQuery(), session);
 
         // Check that the container policy is correct for the collection type.
-        if ((!usesIndirection()) && (!getAttributeAccessor().getAttributeClass().isAssignableFrom(getContainerPolicy().getContainerClass()))) {
-            throw DescriptorException.incorrectCollectionPolicy(this, getAttributeAccessor().getAttributeClass(), getContainerPolicy().getContainerClass());
+        if ((!usesIndirection()) && (!getAttributeAccessor().getAttributeClass().isAssignableFrom(this.containerPolicy.getContainerClass()))) {
+            throw DescriptorException.incorrectCollectionPolicy(this, getAttributeAccessor().getAttributeClass(), this.containerPolicy.getContainerClass());
         }
         
         if(listOrderField != null) {
@@ -1077,17 +1081,17 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
 
         ContainerPolicy originalQueryContainerPolicy = getSelectionQueryContainerPolicy();
         
-        if(!getContainerPolicy().isOrderedListPolicy()) {
-            setContainerPolicy(new OrderedListContainerPolicy(getContainerPolicy().getContainerClass()));
+        if(!this.containerPolicy.isOrderedListPolicy()) {
+            setContainerPolicy(new OrderedListContainerPolicy(this.containerPolicy.getContainerClass()));
         }
-        OrderedListContainerPolicy orderedListContainerPolicy = (OrderedListContainerPolicy)getContainerPolicy();  
+        OrderedListContainerPolicy orderedListContainerPolicy = (OrderedListContainerPolicy)this.containerPolicy;  
         orderedListContainerPolicy.setListOrderField(this.listOrderField);
         orderedListContainerPolicy.setOrderCorrectionType(this.orderCorrectionType);
 
         // If ContainerPolicy's container class is IndirectList, originalQueryContainerPolicy's container class is not (likely Vector)
         // and orderCorrectionType doesn't require query to use IndirectList - then query will keep a separate container policy
         // that uses its original container class (likely Vector) - this is the same optimization as used in useTransparentList method.
-        if(getContainerPolicy().getContainerClass().isAssignableFrom(IndirectList.class) && 
+        if(this.containerPolicy.getContainerClass().isAssignableFrom(IndirectList.class) && 
            !IndirectList.class.isAssignableFrom(originalQueryContainerPolicy.getContainerClass()) &&
            this.orderCorrectionType != OrderCorrectionType.READ_WRITE ||
            originalQueryContainerPolicy == this.getSelectionQueryContainerPolicy())
@@ -1178,7 +1182,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * also check if it has been changed (as indirect collections avoid instantiation on add/remove.
      */
     public boolean isAttributeValueInstantiatedOrChanged(Object object) {
-        return getIndirectionPolicy().objectIsInstantiatedOrChanged(getAttributeValueFromObject(object));
+        return this.indirectionPolicy.objectIsInstantiatedOrChanged(getAttributeValueFromObject(object));
     }
 
     /**
@@ -1198,7 +1202,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         if (realAttributeValue == null) {
             return;
         }
-        ContainerPolicy cp = getContainerPolicy();
+        ContainerPolicy cp = this.containerPolicy;
         for (Object iter = cp.iteratorFor(realAttributeValue); cp.hasNext(iter);) {
             Object wrappedObject = cp.nextEntry(iter, iterator.getSession());
             Object object = cp.unwrapIteratorResult(wrappedObject);
@@ -1226,7 +1230,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         Object valueOfTarget = null;
         Object valueOfSource = null;
         AbstractSession parentSession = null;
-        ContainerPolicy containerPolicy = getContainerPolicy();
+        ContainerPolicy containerPolicy = this.containerPolicy;
         CollectionChangeRecord changeRecord = (CollectionChangeRecord) chgRecord;
         UnitOfWorkChangeSet uowChangeSet = (UnitOfWorkChangeSet)changeRecord.getOwner().getUOWChangeSet();
 
@@ -1290,7 +1294,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         if (isTargetUnInitialized) {
             // This will happen if the target object was removed from the cache before the commit was attempted
             if (mergeManager.shouldMergeWorkingCopyIntoOriginal() && (!isAttributeValueInstantiated(source))) {
-                setAttributeValueInObject(target, getIndirectionPolicy().getOriginalIndirectionObject(getAttributeValueFromObject(source), mergeManager.getSession()));
+                setAttributeValueInObject(target, this.indirectionPolicy.getOriginalIndirectionObject(getAttributeValueFromObject(source), mergeManager.getSession()));
                 return;
             }
         }
@@ -1306,7 +1310,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             if (!isAttributeValueInstantiated(target)) {
                 // We must clone and set the value holder from the source to the target.
                 Object attributeValue = getAttributeValueFromObject(source);
-                Object clonedAttributeValue = getIndirectionPolicy().cloneAttribute(attributeValue, source, target, (UnitOfWorkImpl) mergeManager.getSession(), false); // building clone from an original not a row. 
+                Object clonedAttributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, source, target, (UnitOfWorkImpl) mergeManager.getSession(), false); // building clone from an original not a row. 
                 setAttributeValueInObject(target, clonedAttributeValue);
                 
                 // This will occur when the clone's value has not been instantiated yet and we do not need
@@ -1326,7 +1330,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         // Force instantiation is not necessary and can cause problem with JTS drivers.
         AbstractSession mergeSession = mergeManager.getSession();
         Object valueOfTarget = getRealCollectionAttributeValueFromObject(target, mergeSession);
-        ContainerPolicy containerPolicy = getContainerPolicy();
+        ContainerPolicy containerPolicy = this.containerPolicy;
         // BUG#5190470 Must force instantiation of indirection collections.
         containerPolicy.sizeFor(valueOfTarget);
         boolean fireChangeEvents = false;
@@ -1605,7 +1609,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * Recurse thru the parts to delete the reference objects after the actual object is deleted.
      */
     public void postDelete(DeleteObjectQuery query) throws DatabaseException {
-        if (getContainerPolicy().propagatesEventsToCollection()){
+        if (this.containerPolicy.propagatesEventsToCollection()){
             Object queryObject = query.getObject();
             Object values = getAttributeValueFromObject(queryObject);
             Object iterator = containerPolicy.iteratorFor(values);
@@ -1621,7 +1625,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * Ensure the container policy is post initialized
      */
     public void postInitialize(AbstractSession session) {
-        getContainerPolicy().postInitialize(session);
+        this.containerPolicy.postInitialize(session);
     }
     
     /**
@@ -1629,14 +1633,14 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * A subclass should implement this method if it wants different behavior.
      * Recurse thru the parts to delete the reference objects after the actual object is deleted.
      */
-    public void postInsert(UpdateObjectQuery query) throws DatabaseException {
-        if (getContainerPolicy().propagatesEventsToCollection()){
+    public void postInsert(WriteObjectQuery query) throws DatabaseException {
+        if (this.containerPolicy.propagatesEventsToCollection()){
             Object queryObject = query.getObject();
             Object values = getAttributeValueFromObject(queryObject);
             Object iterator = containerPolicy.iteratorFor(values);
             while (containerPolicy.hasNext(iterator)){
                 Object wrappedObject = containerPolicy.nextEntry(iterator, query.getSession());
-                containerPolicy.propogatePostInsert(query, query.getObject());
+                containerPolicy.propogatePostInsert(query, wrappedObject);
             }
         }
     }
@@ -1646,7 +1650,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * Propagate preInsert event to container policy if necessary
      */
     public void preInsert(WriteObjectQuery query) throws DatabaseException, OptimisticLockException {
-        if (getContainerPolicy().propagatesEventsToCollection()){
+        if (this.containerPolicy.propagatesEventsToCollection()){
             Object queryObject = query.getObject();
             Object values = getAttributeValueFromObject(queryObject);
             Object iterator = containerPolicy.iteratorFor(values);
@@ -1663,7 +1667,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * Propagate preUpdate event to container policy if necessary
      */
     public void preUpdate(WriteObjectQuery query) throws DatabaseException {
-        if (getContainerPolicy().propagatesEventsToCollection()){
+        if (this.containerPolicy.propagatesEventsToCollection()){
             Object queryObject = query.getObject();
             Object values = getAttributeValueFromObject(queryObject);
             Object iterator = containerPolicy.iteratorFor(values);
@@ -1701,7 +1705,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * replace the value holders in the specified reference object(s)
      */
     public Map replaceValueHoldersIn(Object object, RemoteSessionController controller) {
-        return controller.replaceValueHoldersInAll(object, getContainerPolicy());
+        return controller.replaceValueHoldersInAll(object, this.containerPolicy);
     }
 
     /**
@@ -1798,7 +1802,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             collectionChangeRecord.setMapping(this);
             changeSet.addChange(collectionChangeRecord);
         }
-        getContainerPolicy().recordAddToCollectionInChangeRecord((ObjectChangeSet)changeSetToAdd, collectionChangeRecord);
+        this.containerPolicy.recordAddToCollectionInChangeRecord((ObjectChangeSet)changeSetToAdd, collectionChangeRecord);
         if (referenceKey != null) {
             ((ObjectChangeSet)changeSetToAdd).setNewKey(referenceKey);
         }
@@ -1817,7 +1821,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             collectionChangeRecord.setMapping(this);
             changeSet.addChange(collectionChangeRecord);
         }
-        getContainerPolicy().recordRemoveFromCollectionInChangeRecord((ObjectChangeSet)changeSetToRemove, collectionChangeRecord);
+        this.containerPolicy.recordRemoveFromCollectionInChangeRecord((ObjectChangeSet)changeSetToRemove, collectionChangeRecord);
         if (referenceKey != null) {
             ((ObjectChangeSet)changeSetToRemove).setOldKey(referenceKey);
         }
@@ -1846,7 +1850,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         collectionChangeRecord.setIsDeferred(true);
         objectChangeSet.deferredDetectionRequiredOn(getAttributeName());
         if (collectionChangeRecord.getOriginalCollection() == null) {
-            collectionChangeRecord.recreateOriginalCollection(oldValue, getContainerPolicy(), uow);
+            collectionChangeRecord.recreateOriginalCollection(oldValue, this.containerPolicy, uow);
         }
         collectionChangeRecord.setLatestCollection(newValue);        
     }
@@ -1878,7 +1882,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                 changeSet.addChange(collectionChangeRecord);
             }
             if(!collectionChangeRecord.isDeferred()) {
-                getContainerPolicy().recordUpdateToCollectionInChangeRecord(event, changeSetToAdd, collectionChangeRecord);
+                this.containerPolicy.recordUpdateToCollectionInChangeRecord(event, changeSetToAdd, collectionChangeRecord);
             }
         }
     }
@@ -1890,11 +1894,11 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * This is used for resuming or flushing units of work.
      */
     public void setChangeListener(Object clone, PropertyChangeListener listener, UnitOfWorkImpl uow) {
-        if (getIndirectionPolicy().usesTransparentIndirection() && isAttributeValueInstantiated(clone)) {
+        if (this.indirectionPolicy.usesTransparentIndirection() && isAttributeValueInstantiated(clone)) {
             Object attributeValue = getRealAttributeValueFromObject(clone, uow);
             if (!(attributeValue instanceof CollectionChangeTracker)) {
                 Object container = attributeValue;
-                ContainerPolicy containerPolicy = getContainerPolicy();
+                ContainerPolicy containerPolicy = this.containerPolicy;
                 if (attributeValue == null) {
                     container = containerPolicy.containerInstance(1);
                 } else {
@@ -2159,17 +2163,17 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     public void validateBeforeInitialization(AbstractSession session) throws DescriptorException {
         super.validateBeforeInitialization(session);
 
-        getIndirectionPolicy().validateContainerPolicy(session.getIntegrityChecker());
+        this.indirectionPolicy.validateContainerPolicy(session.getIntegrityChecker());
 
         if (getAttributeAccessor() instanceof InstanceVariableAttributeAccessor) {
             Class attributeType = ((InstanceVariableAttributeAccessor)getAttributeAccessor()).getAttributeType();
-            getIndirectionPolicy().validateDeclaredAttributeTypeForCollection(attributeType, session.getIntegrityChecker());
+            this.indirectionPolicy.validateDeclaredAttributeTypeForCollection(attributeType, session.getIntegrityChecker());
         } else if (getAttributeAccessor().isMethodAttributeAccessor()) {
             Class returnType = ((MethodAttributeAccessor)getAttributeAccessor()).getGetMethodReturnType();
-            getIndirectionPolicy().validateGetMethodReturnTypeForCollection(returnType, session.getIntegrityChecker());
+            this.indirectionPolicy.validateGetMethodReturnTypeForCollection(returnType, session.getIntegrityChecker());
 
             Class parameterType = ((MethodAttributeAccessor)getAttributeAccessor()).getSetMethodParameterType();
-            getIndirectionPolicy().validateSetMethodParameterTypeForCollection(parameterType, session.getIntegrityChecker());
+            this.indirectionPolicy.validateSetMethodParameterTypeForCollection(parameterType, session.getIntegrityChecker());
         }
     }
 
@@ -2186,7 +2190,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         if (isPrivateOwned()) {
             Object objects = getRealCollectionAttributeValueFromObject(object, session);
 
-            ContainerPolicy containerPolicy = getContainerPolicy();
+            ContainerPolicy containerPolicy = this.containerPolicy;
             for (Object iter = containerPolicy.iteratorFor(objects); containerPolicy.hasNext(iter);) {
                 if (!session.verifyDelete(containerPolicy.next(iter, session))) {
                     return false;
@@ -2201,7 +2205,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         prepareTranslationRow(row, object, session);
         Object value = session.executeQuery(getSelectionQuery(), row);
 
-        return getContainerPolicy().isEmpty(value);
+        return this.containerPolicy.isEmpty(value);
     }
 
     /**
@@ -2209,7 +2213,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * Return if this mapping supports change tracking.
      */
     public boolean isChangeTrackingSupported(Project project) {
-        return getIndirectionPolicy().usesTransparentIndirection();
+        return this.indirectionPolicy.usesTransparentIndirection();
     }
 
     /**
@@ -2219,13 +2223,13 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     public ChangeRecord buildChangeRecord(Object clone, ObjectChangeSet owner, AbstractSession session) {
         Object cloneAttribute = null;
         cloneAttribute = getAttributeValueFromObject(clone);
-        if ((cloneAttribute != null) && (!getIndirectionPolicy().objectIsInstantiated(cloneAttribute))) {
+        if ((cloneAttribute != null) && (!this.indirectionPolicy.objectIsInstantiated(cloneAttribute))) {
             return null;
         }
 
         // 2612538 - the default size of Map (32) is appropriate
         IdentityHashMap cloneKeyValues = new IdentityHashMap();
-        ContainerPolicy cp = getContainerPolicy();
+        ContainerPolicy cp = this.containerPolicy;
         Object cloneObjectCollection = null;
         if (cloneAttribute != null) {
             cloneObjectCollection = getRealCollectionAttributeValueFromObject(clone, session);
@@ -2257,8 +2261,8 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * may be available if the relationship has been cached.
      */
     public Object valueFromPKList(Object[] pks, AbstractSession session){
-        ContainerPolicy cp = getContainerPolicy();
-        Object result = cp.containerInstance();
+        ContainerPolicy cp = this.containerPolicy;
+        Object result = cp.containerInstance(pks.length);
         for (int index = 0; index < pks.length; ++index){
             Vector pk = null;
             if (getReferenceDescriptor().hasCMPPolicy()){
@@ -2282,7 +2286,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      */
     protected Object valueFromRowInternalWithJoin(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
 
-        Object value = getContainerPolicy().containerInstance();
+        Object value = this.containerPolicy.containerInstance();
         // Extract the primary key of the source object, to filter only the joined rows for that object.
         Vector sourceKey = getDescriptor().getObjectBuilder().extractPrimaryKeyFromRow(row, executionSession);
         CacheKey sourceCacheKey = new CacheKey(sourceKey);
@@ -2299,7 +2303,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             
             ArrayList targetObjects = null;
             ArrayList<AbstractRecord> targetRows = null;
-            boolean shouldAddAll = getContainerPolicy().shouldAddAll();
+            boolean shouldAddAll = this.containerPolicy.shouldAddAll();
             if(shouldAddAll) {
                 targetObjects = new ArrayList(size);
                 targetRows = new ArrayList(size);
@@ -2319,7 +2323,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                 Vector targetKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromRow(targetRow, executionSession);
                 if (targetKey == null) {
                     // A null primary key means an empty collection returned as nulls from an outerjoin.
-                    return getIndirectionPolicy().valueFromRow(value);
+                    return this.indirectionPolicy.valueFromRow(value);
                 }
                 
                 CacheKey targetCacheKey = new CacheKey(targetKey);            
@@ -2328,24 +2332,24 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                     nestedQuery.setTranslationRow(targetRow);
                     targetCacheKeys.add(targetCacheKey);
                     Object targetObject = getReferenceDescriptor().getObjectBuilder().buildObject(nestedQuery, targetRow);
-                    Object targetMapKey = getContainerPolicy().buildKeyFromJoinedRow(targetRow, joinManager, nestedQuery, executionSession);
+                    Object targetMapKey = this.containerPolicy.buildKeyFromJoinedRow(targetRow, joinManager, nestedQuery, executionSession);
                     nestedQuery.setTranslationRow(null);
                     if (targetMapKey == null){
                         if(shouldAddAll) {
                             targetObjects.add(targetObject);
                             targetRows.add(targetRow);
                         } else {
-                            getContainerPolicy().addInto(targetObject, value, executionSession);
+                            this.containerPolicy.addInto(targetObject, value, executionSession);
                         }
                     } else {
-                        getContainerPolicy().addInto(targetMapKey, targetObject, value, executionSession);
+                        this.containerPolicy.addInto(targetMapKey, targetObject, value, executionSession);
                     }
                 }
             }
             if(shouldAddAll) {
-                getContainerPolicy().addAll(targetObjects, value, executionSession, targetRows, nestedQuery);
+                this.containerPolicy.addAll(targetObjects, value, executionSession, targetRows, nestedQuery);
             }
         }
-        return getIndirectionPolicy().valueFromRow(value);
+        return this.indirectionPolicy.valueFromRow(value);
     }
 }

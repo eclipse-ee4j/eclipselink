@@ -487,7 +487,7 @@ public abstract class DatabaseCall extends DatasourceCall {
      * The return type is one of, NoReturn, ReturnOneRow or ReturnManyRows.
      */
     public boolean isCursorReturned() {
-        return getReturnType() == RETURN_CURSOR;
+        return this.returnType == RETURN_CURSOR;
     }
 
     /**

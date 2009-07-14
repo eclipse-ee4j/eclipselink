@@ -127,10 +127,12 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
         ValueHolderInterface valueHolder = null;
         Object container = null;
         IndirectList indirectList = null;
+        IndirectContainer indirectContainer = null;
         if (attributeValue instanceof IndirectContainer) {
-            valueHolder = ((IndirectContainer)attributeValue).getValueHolder();
-            if(attributeValue instanceof IndirectList) {
-                indirectList = (IndirectList)attributeValue;
+            indirectContainer = (IndirectContainer)attributeValue;
+            valueHolder = indirectContainer.getValueHolder();
+            if (indirectContainer instanceof IndirectList) {
+                indirectList = (IndirectList)indirectContainer;
             }
         }
         if (!buildDirectlyFromRow && unitOfWork.isOriginalNewObject(original)) {
@@ -140,12 +142,12 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
                     && (! ((DatabaseValueHolder) valueHolder).isInstantiated())
                     && (((DatabaseValueHolder) valueHolder).getSession() == null)
                     && (! ((DatabaseValueHolder) valueHolder).isSerializedRemoteUnitOfWorkValueHolder())) {
-                throw DescriptorException.attemptToRegisterDeadIndirection(original, getMapping());
+                throw DescriptorException.attemptToRegisterDeadIndirection(original, this.mapping);
             }
-            if (getMapping().getRelationshipPartner() == null) {
-                container = getMapping().buildCloneForPartObject(attributeValue, original, clone, unitOfWork, false);
+            if (this.mapping.getRelationshipPartner() == null) {
+                container = this.mapping.buildCloneForPartObject(attributeValue, original, clone, unitOfWork, false);
             } else {
-                if (!(attributeValue instanceof IndirectContainer)) {
+                if (indirectContainer == null) {
                     valueHolder = new ValueHolder(attributeValue);
                 }
                 AbstractRecord row = null;
@@ -158,29 +160,38 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
                 // here the code instantiates the valueholder in a privledged manner because a
                 // UOWValueHolder will assume the objects in the collection are existing if the valueholder
                 //  Goes through it's own instantiation process.
-                UnitOfWorkValueHolder newValueHolder = this.getMapping().createUnitOfWorkValueHolder(valueHolder, original, clone, row, unitOfWork, buildDirectlyFromRow);
+                UnitOfWorkValueHolder newValueHolder = this.mapping.createUnitOfWorkValueHolder(valueHolder, original, clone, row, unitOfWork, buildDirectlyFromRow);
                 container = buildIndirectContainer(newValueHolder);
-                Object cloneCollection = getMapping().buildCloneForPartObject(attributeValue, original, clone, unitOfWork, false);
+                Object cloneCollection = this.mapping.buildCloneForPartObject(attributeValue, original, clone, unitOfWork, false);
                 newValueHolder.privilegedSetValue(cloneCollection);
                 newValueHolder.setInstantiated();
             }
         } else {
-            if (!(attributeValue instanceof IndirectContainer)) {
+            if (indirectContainer == null) {
                 valueHolder = new ValueHolder(attributeValue);
             }
             AbstractRecord row = null;
             if (valueHolder instanceof DatabaseValueHolder) {
                 row = ((DatabaseValueHolder)valueHolder).getRow();
             }
-            container = buildIndirectContainer(getMapping().createUnitOfWorkValueHolder(valueHolder, original, clone, row, unitOfWork, buildDirectlyFromRow));
+            UnitOfWorkValueHolder uowValueHolder = this.mapping.createUnitOfWorkValueHolder(valueHolder, original, clone, row, unitOfWork, buildDirectlyFromRow);
+            if ((indirectContainer == null) || !buildDirectlyFromRow) {
+                container = buildIndirectContainer(uowValueHolder);
+            } else {
+                // PERF: If building from rows inside uow, there is no original,
+                // so just use the already built indirect collection.
+                indirectContainer.setValueHolder(uowValueHolder);
+                container = indirectContainer;              
+            }
         }
-        if ( (getMapping().getDescriptor().getObjectChangePolicy().isObjectChangeTrackingPolicy())
-          && (((ChangeTracker)clone)._persistence_getPropertyChangeListener() != null)
-          && (container instanceof CollectionChangeTracker) ) {
-            ((CollectionChangeTracker)container).setTrackedAttributeName(getMapping().getAttributeName());
+        // Set the change listener.
+        if ((this.mapping.getDescriptor().getObjectChangePolicy().isObjectChangeTrackingPolicy())
+                && (((ChangeTracker)clone)._persistence_getPropertyChangeListener() != null)
+                && (container instanceof CollectionChangeTracker) ) {
+            ((CollectionChangeTracker)container).setTrackedAttributeName(this.mapping.getAttributeName());
             ((CollectionChangeTracker)container)._persistence_setPropertyChangeListener(((ChangeTracker)clone)._persistence_getPropertyChangeListener());
         }
-        if(indirectList != null) {
+        if (indirectList != null) {
             ((IndirectList)container).setIsListOrderBrokenInDb(indirectList.isListOrderBrokenInDb());
         }
         return container;

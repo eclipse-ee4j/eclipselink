@@ -241,10 +241,14 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
             Accessor connection = pool.acquireConnection();
             clientSession.setWriteConnection(connection);
             //if connection is using external connection pooling then the event will be risen right after it connects.
-            if(!connection.usesExternalConnectionPooling()) {
-                clientSession.getEventManager().postAcquireConnection(connection);
+            if (!connection.usesExternalConnectionPooling()) {
+                if (clientSession.hasEventManager()) {
+                    clientSession.getEventManager().postAcquireConnection(connection);
+                }                
                 if (clientSession.isExclusiveIsolatedClientSession()) {
-                    getEventManager().postAcquireExclusiveConnection(clientSession, clientSession.getWriteConnection());
+                    if (this.eventManager != null) {
+                        this.eventManager.postAcquireExclusiveConnection(clientSession, clientSession.getWriteConnection());
+                    }
                 }
             }
         } else {
@@ -472,8 +476,10 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
     public Accessor allocateReadConnection() {
         Accessor connection = getReadConnectionPool().acquireConnection();
         //if connection is using external connection pooling then the event will be risen right after it connects.
-        if(!connection.usesExternalConnectionPooling()) {
-            getEventManager().postAcquireConnection(connection);
+        if (!connection.usesExternalConnectionPooling()) {
+            if (this.eventManager != null) {
+                this.eventManager.postAcquireConnection(connection);
+            }
         }
         return connection;
     }
@@ -684,7 +690,9 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * Used by the session to rise an appropriate event.
      */
     public void postConnectExternalConnection(Accessor accessor) {
-        getEventManager().postAcquireConnection(accessor);
+        if (this.eventManager != null) {
+            this.eventManager.postAcquireConnection(accessor);
+        }
     }
 
     /**
@@ -694,7 +702,9 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * Used by the session to rise an appropriate event.
      */
     public void preDisconnectExternalConnection(Accessor accessor) {
-        getEventManager().preReleaseConnection(accessor);
+        if (this.eventManager != null) {
+            this.eventManager.preReleaseConnection(accessor);
+        }
     }
     
     /**
@@ -705,10 +715,14 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
         if (clientSession.getConnectionPolicy().isPooled()) {
             ConnectionPool pool = (ConnectionPool)getConnectionPools().get(clientSession.getConnectionPolicy().getPoolName());
             //if connection is using external connection pooling then the event has been risen right before it disconnected.
-            if(!clientSession.getWriteConnection().usesExternalConnectionPooling()) {
-                clientSession.getEventManager().preReleaseConnection(clientSession.getWriteConnection());
+            if (!clientSession.getWriteConnection().usesExternalConnectionPooling()) {
+                if (clientSession.hasEventManager()) {
+                    clientSession.getEventManager().preReleaseConnection(clientSession.getWriteConnection());
+                }
                 if (clientSession.isExclusiveIsolatedClientSession()) {
-                    getEventManager().preReleaseExclusiveConnection(clientSession, clientSession.getWriteConnection());
+                    if (this.eventManager != null) {
+                        this.eventManager.preReleaseExclusiveConnection(clientSession, clientSession.getWriteConnection());
+                    }
                 }
             }
             pool.releaseConnection(clientSession.getWriteConnection());
@@ -741,8 +755,10 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      */
     public void releaseReadConnection(Accessor connection) {
         //if connection is using external connection pooling then the event has been risen right before it disconnected.
-        if(!connection.usesExternalConnectionPooling()) {
-            getEventManager().preReleaseConnection(connection);
+        if (!connection.usesExternalConnectionPooling()) {
+            if (this.eventManager != null) {
+                this.eventManager.preReleaseConnection(connection);
+            }
         }
         getReadConnectionPool().releaseConnection(connection);
     }

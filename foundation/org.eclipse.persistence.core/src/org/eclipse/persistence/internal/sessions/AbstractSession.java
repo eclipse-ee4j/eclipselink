@@ -139,6 +139,9 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
 
     /** Last descriptor accessed, use to optimize descriptor lookup. */
     transient protected ClassDescriptor lastDescriptorAccessed;
+    
+    /** PERF: cache descriptors from project. */
+    transient protected Map<Class, ClassDescriptor> descriptors;
 
     // bug 3078039: move EJBQL alias > descriptor map from Session to Project (MWN)
 
@@ -165,7 +168,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     protected boolean isFinalizersEnabled = false;
 
     /** List of active command threads. */
-    protected ExposedNodeLinkedList activeCommandThreads;
+    transient protected ExposedNodeLinkedList activeCommandThreads;
 
     /**
      * Indicates whether the session is synchronized.
@@ -554,9 +557,13 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         // Ensure mutual exclusion and call subclass specific begin.
         getTransactionMutex().acquire();
         if (!getTransactionMutex().isNested()) {
-            getEventManager().preBeginTransaction();
+            if (this.eventManager != null) {
+                this.eventManager.preBeginTransaction();
+            }
             basicBeginTransaction();
-            getEventManager().postBeginTransaction();
+            if (this.eventManager != null) {
+                this.eventManager.postBeginTransaction();
+            }
         }
     }
 
@@ -568,7 +575,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * @return ClassDescriptor
      */
     protected ClassDescriptor checkHierarchyForDescriptor(Class theClass){
-	    return getDescriptor(theClass.getSuperclass());
+        return getDescriptor(theClass.getSuperclass());
     }
 
     /**
@@ -581,10 +588,18 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
 
     /**
      * INTERNAL:
-     * clear the lastDescriptorAccessed.
+     * Clear the the lastDescriptorAccessed cache.
      */
     public void clearLastDescriptorAccessed() {
-        lastDescriptorAccessed = null;
+        this.lastDescriptorAccessed = null;
+    }
+
+    /**
+     * INTERNAL:
+     * Clear the the descriptors cache.
+     */
+    public void clearDescriptors() {
+        this.descriptors = null;
     }
 
     /**
@@ -647,9 +662,13 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     public void commitTransaction() throws DatabaseException, ConcurrencyException {
         // Release mutex and call subclass specific commit.
         if (!getTransactionMutex().isNested()) {
-            getEventManager().preCommitTransaction();
+            if (this.eventManager != null) {
+                this.eventManager.preCommitTransaction();
+            }
             basicCommitTransaction();
-            getEventManager().postCommitTransaction();
+            if (this.eventManager != null) {
+                this.eventManager.postCommitTransaction();
+            }
         }
 
         // This MUST not be in a try catch or finally as if the commit failed the transaction is still open.
@@ -848,7 +867,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * Updates the value of SessionProfiler state
      */
     public void updateProfile(String operationName, Object value) {
-        if (isInProfile()) {
+        if (this.isInProfile) {
             getProfiler().update(operationName, value);
         }
     }
@@ -858,7 +877,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * Updates the count of SessionProfiler event
      */
     public void incrementProfile(String operationName) {
-        if (isInProfile()) {
+        if (this.isInProfile) {
             getProfiler().occurred(operationName);
         }
     }
@@ -1179,14 +1198,18 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     public Object executeQuery(DatabaseQuery query, AbstractRecord row, int retryCount) throws DatabaseException {
 
         try {
-            getEventManager().preExecuteQuery(query);
+            if (this.eventManager != null) {
+                this.eventManager.preExecuteQuery(query);
+            }
             Object result;
             if (isInProfile()) {
                 result = getProfiler().profileExecutionOfQuery(query, row, this);
             } else {
                 result = internalExecuteQuery(query, row);
             }
-            getEventManager().postExecuteQuery(query, result);
+            if (this.eventManager != null) {
+                this.eventManager.postExecuteQuery(query, result);
+            }
             return result;
         } catch (RuntimeException exception) {
             if (exception instanceof QueryException) {
@@ -1599,40 +1622,47 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         }
 
         // Optimize descriptor lookup through caching the last one accessed.
-        ClassDescriptor lastDescriptor = this.lastDescriptorAccessed;
-        if ((lastDescriptor != null) && (lastDescriptor.getJavaClass() == theClass)) {
-            return lastDescriptor;
+        ClassDescriptor descriptor = this.lastDescriptorAccessed;
+        if ((descriptor != null) && (descriptor.getJavaClass() == theClass)) {
+            return descriptor;
         }
-
-        ClassDescriptor descriptor = (ClassDescriptor)this.project.getDescriptors().get(theClass);
-
-        if ((descriptor == null) && hasBroker()) {
-            // Also check the broker
-            descriptor = getBroker().getDescriptor(theClass);
-        }
-        if (descriptor == null) {
-            // Allow for an event listener to lazy register the descriptor for a class.
-            getEventManager().missingDescriptor(theClass);
-            descriptor = (ClassDescriptor)getDescriptors().get(theClass);
+        if (this.descriptors != null) {
+            descriptor = this.descriptors.get(theClass);
+        } else {
+            descriptor = (ClassDescriptor)this.project.getDescriptors().get(theClass);
         }
 
         if (descriptor == null) {
-            // This allows for the correct descriptor to be found if the class implements an interface,
-            // or extends a class that a descriptor is registered for.
-            // This is used by EJB to find the descriptor for a stub and remote to unwrap it,
-            // and by inheritance to allow for subclasses that have no additional state to not require a descriptor.
-            if (!theClass.isInterface()) {
-                Class[] interfaces = theClass.getInterfaces();
-                for (int index = 0; index < interfaces.length; ++index) {
-                    Class interfaceClass = interfaces[index];
-                    descriptor = getDescriptor(interfaceClass);
-                    if (descriptor != null) {
-                        getDescriptors().put(interfaceClass, descriptor);
-                        break;
-                    }
+            if (hasBroker()) {
+                // Also check the broker
+                descriptor = getBroker().getDescriptor(theClass);
+            }
+            if (descriptor == null) {
+                // Allow for an event listener to lazy register the descriptor for a class.
+                if (this.eventManager != null) {
+                    this.eventManager.missingDescriptor(theClass);
                 }
-                if (descriptor == null ) {
-                	descriptor = checkHierarchyForDescriptor(theClass);
+                descriptor = (ClassDescriptor)getDescriptors().get(theClass);
+    
+                if (descriptor == null) {
+                    // This allows for the correct descriptor to be found if the class implements an interface,
+                    // or extends a class that a descriptor is registered for.
+                    // This is used by EJB to find the descriptor for a stub and remote to unwrap it,
+                    // and by inheritance to allow for subclasses that have no additional state to not require a descriptor.
+                    if (!theClass.isInterface()) {
+                        Class[] interfaces = theClass.getInterfaces();
+                        for (int index = 0; index < interfaces.length; ++index) {
+                            Class interfaceClass = interfaces[index];
+                            descriptor = getDescriptor(interfaceClass);
+                            if (descriptor != null) {
+                                getDescriptors().put(interfaceClass, descriptor);
+                                break;
+                            }
+                        }
+                        if (descriptor == null ) {
+                            descriptor = checkHierarchyForDescriptor(theClass);
+                        }
+                    }
                 }
             }
         }
@@ -1701,6 +1731,14 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
             addQuery(databaseQuery.getName(), databaseQuery);
         }
         queries.clear();
+    }
+
+    /**
+     * INTERNAL:
+     * Return if an event manager has been set.
+     */
+    public boolean hasEventManager() {
+        return eventManager != null;
     }
 
     /**
@@ -2810,9 +2848,13 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         // Ensure release of mutex and call subclass specific release.
         try {
             if (!getTransactionMutex().isNested()) {
-                getEventManager().preRollbackTransaction();
+                if (this.eventManager != null) {
+                    this.eventManager.preRollbackTransaction();
+                }
                 basicRollbackTransaction();
-                getEventManager().postRollbackTransaction();
+                if (this.eventManager != null) {
+                    this.eventManager.postRollbackTransaction();
+                }
             }
         } finally {
             getTransactionMutex().release();
@@ -2857,12 +2899,10 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * The event manager can be used to register for various session events.
      */
     public void setEventManager(SessionEventManager eventManager) {
+        this.eventManager = eventManager;
         if (eventManager != null) {
-            this.eventManager = eventManager;
-        } else {
-            this.eventManager = new SessionEventManager();
+            this.eventManager.setSession(this);
         }
-        this.eventManager.setSession(this);
     }
 
     /**

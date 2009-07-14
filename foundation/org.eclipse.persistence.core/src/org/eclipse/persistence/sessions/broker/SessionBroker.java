@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     stardif - ClientSession broker ServerSession and change propogation additions
+ *     stardif - ClientSession broker ServerSession and change propagation additions
  ******************************************************************************/  
 package org.eclipse.persistence.sessions.broker;
 
@@ -42,8 +42,8 @@ import org.eclipse.persistence.internal.sessions.*;
  */
 public class SessionBroker extends DatabaseSessionImpl {
     protected SessionBroker parent;
-    protected Map sessionNamesByClass;
-    protected Map sessionsByName;
+    protected Map<Class, String> sessionNamesByClass;
+    protected Map<String, AbstractSession> sessionsByName;
     protected Sequencing sequencing;
 
     /**
@@ -54,8 +54,8 @@ public class SessionBroker extends DatabaseSessionImpl {
     public SessionBroker() {
         super(new org.eclipse.persistence.sessions.DatabaseLogin());
 
-        this.sessionsByName = new HashMap(2);
-        this.sessionNamesByClass = new HashMap(2);
+        this.sessionsByName = new HashMap<String, AbstractSession>();
+        this.sessionNamesByClass = new HashMap<Class, String>();
     }
 
     /**
@@ -66,7 +66,7 @@ public class SessionBroker extends DatabaseSessionImpl {
     protected SessionBroker(Map sessionNames) {
         super(new org.eclipse.persistence.sessions.DatabaseLogin());
 
-        this.sessionsByName = new HashMap(2);
+        this.sessionsByName = new HashMap<String, AbstractSession>();
         this.sessionNamesByClass = sessionNames;
     }
 
@@ -89,16 +89,16 @@ public class SessionBroker extends DatabaseSessionImpl {
         clientBroker.externalTransactionController = getExternalTransactionController();
         clientBroker.setServerPlatform(getServerPlatform());
         String sessionName;
-        AbstractSession ssession;
+        AbstractSession serverSession;
         Iterator names = this.getSessionsByName().keySet().iterator();
         while (names.hasNext()) {
             sessionName = (String)names.next();
-            ssession = getSessionForName(sessionName);
-            if (ssession instanceof org.eclipse.persistence.sessions.server.ServerSession) {
-                if (ssession.getProject().hasIsolatedClasses()) {
+            serverSession = getSessionForName(sessionName);
+            if (serverSession instanceof org.eclipse.persistence.sessions.server.ServerSession) {
+                if (serverSession.getProject().hasIsolatedClasses()) {
                     throw ValidationException.isolatedDataNotSupportedInSessionBroker(sessionName);
                 }
-                clientBroker.internalRegisterSession(sessionName, ((org.eclipse.persistence.sessions.server.ServerSession)ssession).acquireClientSession());
+                clientBroker.internalRegisterSession(sessionName, ((org.eclipse.persistence.sessions.server.ServerSession)serverSession).acquireClientSession());
             } else {
                 throw ValidationException.cannotAcquireClientSessionFromSession();
             }
@@ -268,13 +268,15 @@ public class SessionBroker extends DatabaseSessionImpl {
      * Return a copy (not using clone) of a session broker.
      */
     protected SessionBroker copySessionBroker() {
-        SessionBroker broker = new SessionBroker(this.getSessionNamesByClass());
+        SessionBroker broker = new SessionBroker(getSessionNamesByClass());
 
         broker.accessor = getAccessor();
         broker.name = getName();
         broker.sessionLog = getSessionLog();
         broker.project = project;
-        broker.eventManager = getEventManager().clone(broker);
+        if (hasEventManager()) {
+            broker.eventManager = getEventManager().clone(broker);
+        }
         broker.shouldPropagateChanges = shouldPropagateChanges;
 	
         return broker;
@@ -283,7 +285,7 @@ public class SessionBroker extends DatabaseSessionImpl {
     /**
      * INTERNAL:
      * Return the lowlevel database accessor.
-     * The database accesor is used for direct database access.
+     * The database accessor is used for direct database access.
      * The right accessor for this
      * broker will be returned.
      */
@@ -459,11 +461,11 @@ public class SessionBroker extends DatabaseSessionImpl {
             // CR2114; we don't have a session name. Return us.
             return this;
         }
-        String sessionName = (String) getSessionNamesByClass().get(domainClass);
+        String sessionName = getSessionNamesByClass().get(domainClass);
         if (sessionName == null) {
             throw ValidationException.noSessionRegisteredForClass(domainClass);
         }
-        return (AbstractSession)getSessionsByName().get(sessionName);
+        return getSessionsByName().get(sessionName);
     }
 
     /**
@@ -471,7 +473,7 @@ public class SessionBroker extends DatabaseSessionImpl {
      * Return the session by name.
      */
     public AbstractSession getSessionForName(String name) throws ValidationException {
-        AbstractSession sessionByName = (AbstractSession)getSessionsByName().get(name);
+        AbstractSession sessionByName = getSessionsByName().get(name);
         if (sessionByName == null) {
             throw ValidationException.noSessionRegisteredForName(name);
         }
@@ -504,7 +506,7 @@ public class SessionBroker extends DatabaseSessionImpl {
      * INTERNAL:
      * Return sessions indexed by class, each class can only have one default session.
      */
-    protected Map getSessionNamesByClass() {
+    protected Map<Class, String> getSessionNamesByClass() {
         return sessionNamesByClass;
     }
 
@@ -512,7 +514,7 @@ public class SessionBroker extends DatabaseSessionImpl {
      * INTERNAL:
      * Return sessions indexed by name.
      */
-    public Map getSessionsByName() {
+    public Map<String, AbstractSession> getSessionsByName() {
         return sessionsByName;
     }
 
@@ -548,6 +550,9 @@ public class SessionBroker extends DatabaseSessionImpl {
             }
             if (databaseSession.getProject().hasIsolatedClasses()) {
                 getProject().setHasIsolatedClasses(true);
+            }
+            if (databaseSession.getProject().hasNonIsolatedUOWClasses()) {
+                getProject().setHasNonIsolatedUOWClasses(true);
             }
         }
         
@@ -660,7 +665,9 @@ public class SessionBroker extends DatabaseSessionImpl {
         if (isLoggedIn) {
             throw ValidationException.alreadyLoggedIn(this.getName());
         } else {
-            getEventManager().preLogin(this);
+            if (this.eventManager != null) {
+                this.eventManager.preLogin(this);
+            }
             // Bug 3848021 - ensure the external transaction controller is initialized
             if (!isConnected()) {
                 getServerPlatform().initializeExternalTransactionController();
@@ -670,13 +677,15 @@ public class SessionBroker extends DatabaseSessionImpl {
             for (Iterator sessionEnum = getSessionsByName().values().iterator();
                      sessionEnum.hasNext();) {
                 DatabaseSessionImpl session = (DatabaseSessionImpl)sessionEnum.next();
-                session.getEventManager().preLogin(session);
+                if (session.hasEventManager()) {
+                    session.getEventManager().preLogin(session);
+                }
                 if (!session.isConnected()) {
                     session.connect();
                 }
             }
             initializeDescriptors();
-            if(getCommandManager()!=null) {
+            if (getCommandManager() != null) {
                 getCommandManager().initialize();
             }
             isLoggedIn = true;
@@ -693,7 +702,9 @@ public class SessionBroker extends DatabaseSessionImpl {
         if (isLoggedIn) {
             throw ValidationException.alreadyLoggedIn(this.getName());
         } else {
-            getEventManager().preLogin(this);
+            if (this.eventManager != null) {
+                this.eventManager.preLogin(this);
+            }
             // Bug 3848021 - ensure the external transaction controller is initialized
             if (!isConnected()) {
                 getServerPlatform().initializeExternalTransactionController();
@@ -703,7 +714,9 @@ public class SessionBroker extends DatabaseSessionImpl {
             for (Iterator sessionEnum = getSessionsByName().values().iterator();
                      sessionEnum.hasNext();) {
                 DatabaseSessionImpl session = (DatabaseSessionImpl)sessionEnum.next();
-                session.getEventManager().preLogin(session);
+                if (session.hasEventManager()) {
+                    session.getEventManager().preLogin(session);
+                }
                 session.getDatasourceLogin().setUserName(userName);
                 session.getDatasourceLogin().setPassword(password);
 
@@ -712,7 +725,7 @@ public class SessionBroker extends DatabaseSessionImpl {
                 }
             }
             initializeDescriptors();
-            isLoggedIn = true;
+            this.isLoggedIn = true;
         }
     }
 

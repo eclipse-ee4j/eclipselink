@@ -12,17 +12,13 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.weaving;
 
-// Java imports
 import java.lang.reflect.*;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.*;
-import javax.persistence.spi.ClassTransformer;
 
-// ASM imports
 import org.eclipse.persistence.internal.libraries.asm.Type;
 
-// TopLink imports
 import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.*;
@@ -66,7 +62,7 @@ public class TransformerFactory {
     protected boolean weaveFetchGroups;
     protected boolean weaveInternal;
     
-    public static ClassTransformer createTransformerAndModifyProject(
+    public static PersistenceWeaver createTransformerAndModifyProject(
             Session session, Collection entityClasses, ClassLoader classLoader,
             boolean weaveLazy, boolean weaveChangeTracking, boolean weaveFetchGroups, boolean weaveInternal) {
         if (session == null) {
@@ -78,7 +74,7 @@ public class TransformerFactory {
         }
         TransformerFactory tf = new TransformerFactory(session, entityClasses, classLoader, weaveLazy, weaveChangeTracking, weaveFetchGroups, weaveInternal);
         tf.buildClassDetailsAndModifyProject();
-        return tf.buildTopLinkWeaver();
+        return tf.buildPersistenceWeaver();
     }
     
     public TransformerFactory(Session session, Collection entityClasses, ClassLoader classLoader, boolean weaveLazy, boolean weaveChangeTracking, boolean weaveFetchGroups, boolean weaveInternal) {
@@ -129,7 +125,7 @@ public class TransformerFactory {
         }
     }
     
-    public ClassTransformer buildTopLinkWeaver() {
+    public PersistenceWeaver buildPersistenceWeaver() {
         return new PersistenceWeaver(session, classDetailsMap);
     }
 

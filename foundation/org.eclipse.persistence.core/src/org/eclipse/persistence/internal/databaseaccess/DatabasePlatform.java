@@ -1355,7 +1355,9 @@ public class DatabasePlatform extends DatasourcePlatform {
                     result = accessor.fetchRow(dbCall.getFields(), resultSet, metaData, session);
                     if (resultSet.next()) {
                         // Raise more rows event, some apps may interpret as error or warning.
-                        session.getEventManager().moreRowsDetected(dbCall);
+                        if (session.hasEventManager()) {
+                            session.getEventManager().moreRowsDetected(dbCall);
+                        }
                     }
                 } else {
                     result = null;

@@ -891,7 +891,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
                             Map.Entry<CacheKey, List[]> entry = it.next();
                             CacheKey eachReferenceKey = entry.getKey();
                             List referenceValues = entry.getValue()[0];
-                            List<AbstractRecord> referenceRows = (List<AbstractRecord>)entry.getValue()[1];
+                            List<AbstractRecord> referenceRows = entry.getValue()[1];
                             Object container = mappingContainerPolicy.containerInstance(referenceValues.size());
                             mappingContainerPolicy.addAll(referenceValues, container, query.getSession(), referenceRows, (DataReadQuery)query);
                             referenceDataByKey.put(eachReferenceKey, container);

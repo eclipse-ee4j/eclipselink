@@ -627,7 +627,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Used to build the object, and register it if in the context of a unit of work. 
      */
     public Object buildObject(AbstractRecord row) {
-        return getDescriptor().getObjectBuilder().buildObject(this, row);
+        return this.descriptor.getObjectBuilder().buildObject(this, row);
     }
 
     /**
@@ -646,7 +646,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Ensure that the descriptor has been set.
      */
     public void checkDescriptor(AbstractSession session) throws QueryException {
-        if (getDescriptor() == null) {
+        if (this.descriptor == null) {
             if (getReferenceClass() == null) {
                 throw QueryException.referenceClassMissing(this);
             }
@@ -683,16 +683,18 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         // The cache check must happen on the UnitOfWork in these cases either
         // to access transient state or for pessimistic locking, as only the 
         // UOW knows which objects it has locked.
-        Object result = checkEarlyReturnImpl(unitOfWork, translationRow);
+        Object result = null;
+        // PERF: Avoid uow check for read-only.
+        if (!this.descriptor.shouldBeReadOnly()) {
+            result = checkEarlyReturnImpl(unitOfWork, translationRow);
+        }
         if (result != null) {
             return result;
         }
 
-        // don't bother trying to get a cache hit on the parent session
-        // as if not in UnitOfWork it is not yet pessimistically locked
-        // on the database for sure.
-        // Note for ReadObjectQueries we totally ignore shouldCheckCacheOnly.
-        if (isReadObjectQuery() && isLockQuery()) {
+        // PERF: If a locking query, or isolated always, then cache is ignored, so no point checking.
+        // An error should be thrown on prepare is checkCacheOnly is used with these.
+        if ((!unitOfWork.isNestedUnitOfWork()) && (this.descriptor.shouldIsolateObjectsInUnitOfWork() || isLockQuery())) {
             return null;
         }
 
@@ -733,7 +735,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     protected void checkPrePrepare(AbstractSession session) {
         // This query is first prepared for global common state, this must be synced.
-        if (!isPrePrepared()) {// Avoid the monitor is already prePrepare, must check again for concurrency.      
+        if (!this.isPrePrepared) {// Avoid the monitor is already prePrepare, must check again for concurrency.      
             synchronized (this) {
                 if (!isPrePrepared()) {
                     AbstractSession alreadySetSession = getSession();
@@ -794,7 +796,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             clone = registerIndividualResult(result, unitOfWork, null);
         }
 
-        if (getDescriptor().hasWrapperPolicy() && getDescriptor().getWrapperPolicy().isWrapped(clone)) {
+        if (this.descriptor.hasWrapperPolicy() && this.descriptor.getWrapperPolicy().isWrapped(clone)) {
             // The only time the clone could be wrapped is if we are not registering
             // results in the unitOfWork and we are ready to return a final
             // (unregistered) result now.  Any further processing may accidently
@@ -1649,7 +1651,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * FOR UPDATE OF clause.
      */
     public boolean isLockQuery() {
-        return getLockMode() > NO_LOCK;
+        return (this.lockingClause != null) && (getLockMode() > NO_LOCK);
     }
 
     /**
@@ -1711,7 +1713,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * feature.
      */
     protected boolean isRegisteringResults() {
-        return ((shouldRegisterResultsInUnitOfWork() && getDescriptor().shouldRegisterResultsInUnitOfWork()) || isLockQuery());
+        return ((shouldRegisterResultsInUnitOfWork() && this.descriptor.shouldRegisterResultsInUnitOfWork()) || isLockQuery());
     }
 
     /**
@@ -1768,7 +1770,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         boolean isCacheable = isExpressionQuery() && (!getQueryMechanism().isJPQLCallQueryMechanism()) && isDefaultPropertiesQuery() && (!getSession().isHistoricalSession());
         DatabaseQuery cachedQuery = null;
         if (isCacheable) {
-            cachedQuery = getDescriptor().getQueryManager().getCachedExpressionQuery(this);
+            cachedQuery = this.descriptor.getQueryManager().getCachedExpressionQuery(this);
         } else {
             return false;
         }
@@ -1777,7 +1779,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             setIsPrepared(true);
             return true;
         }
-        getDescriptor().getQueryManager().putCachedExpressionQuery(this);
+        this.descriptor.getQueryManager().putCachedExpressionQuery(this);
         return false;
     }
 
@@ -1919,16 +1921,16 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Prepare the receiver for execution in a session.
      */
     protected void prepareQuery() throws QueryException {
-        if ((!shouldMaintainCache()) && shouldRefreshIdentityMapResult() && (!descriptor.isAggregateCollectionDescriptor())) {
+        if ((!shouldMaintainCache()) && shouldRefreshIdentityMapResult() && (!this.descriptor.isAggregateCollectionDescriptor())) {
             throw QueryException.refreshNotPossibleWithoutCache(this);
         }
         if (shouldMaintainCache() && hasPartialAttributeExpressions()) {
             throw QueryException.cannotCachePartialObjects(this);
         }
 
-        if (descriptor.isAggregateDescriptor()) {
+        if (this.descriptor.isAggregateDescriptor()) {
             // Not allowed
-            throw QueryException.aggregateObjectCannotBeDeletedOrWritten(descriptor, this);
+            throw QueryException.aggregateObjectCannotBeDeletedOrWritten(this.descriptor, this);
         }
 
         if (hasAsOfClause() && (getSession().getAsOfClause() == null)) {
@@ -1940,13 +1942,13 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         }
 
         // If fetch group manager is not set in the descriptor and the user attempts to use fetch group in the query dynamiclly, throw exception here.
-        if ((!getDescriptor().hasFetchGroupManager()) && ((getFetchGroup() != null) || (getFetchGroupName() != null))) {
-            throw QueryException.fetchGroupValidOnlyIfFetchGroupManagerInDescriptor(getDescriptor().getJavaClassName(), getName());
+        if ((!this.descriptor.hasFetchGroupManager()) && ((getFetchGroup() != null) || (getFetchGroupName() != null))) {
+            throw QueryException.fetchGroupValidOnlyIfFetchGroupManagerInDescriptor(this.descriptor.getJavaClassName(), getName());
         }
 
         // Prepare fetch group if applied.
-        if (getDescriptor().hasFetchGroupManager()) {
-            getDescriptor().getFetchGroupManager().prepareQueryWithFetchGroup(this);
+        if (this.descriptor.hasFetchGroupManager()) {
+            this.descriptor.getFetchGroupManager().prepareQueryWithFetchGroup(this);
         }
 
         // Validate and prepare join expressions.			
@@ -1969,13 +1971,13 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             }
         }
         if (!shouldOuterJoinSubclasses()) {
-            setShouldOuterJoinSubclasses(getMaxRows()>0 || getFirstResult()>0 || (getDescriptor()!=null && 
-                    getDescriptor().hasInheritance() && getDescriptor().getInheritancePolicy().shouldOuterJoinSubclasses()) );
+            setShouldOuterJoinSubclasses(getMaxRows()>0 || getFirstResult()>0 || (this.descriptor != null && 
+                    this.descriptor.hasInheritance() && this.descriptor.getInheritancePolicy().shouldOuterJoinSubclasses()) );
         }
         
         // Ensure the subclass call cache is initialized if a multiple table inheritance descriptor.
         // This must be initialized in the query before it is cloned, and never cloned.
-        if ((!shouldOuterJoinSubclasses()) && getDescriptor().hasInheritance() && getDescriptor().getInheritancePolicy().requiresMultipleTableSubclassRead()) {
+        if ((!shouldOuterJoinSubclasses()) && this.descriptor.hasInheritance() && this.descriptor.getInheritancePolicy().requiresMultipleTableSubclassRead()) {
             getConcreteSubclassCalls();
         }
     }
@@ -2567,7 +2569,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     * Helper method that checks if clone has been locked with uow.
     */
     public boolean isClonePessimisticLocked(Object clone, UnitOfWorkImpl uow) {
-        return getDescriptor().hasPessimisticLockingPolicy() && uow.isPessimisticLocked(clone);
+        return this.descriptor.hasPessimisticLockingPolicy() && uow.isPessimisticLocked(clone);
     }
 
     /**

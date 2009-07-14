@@ -80,7 +80,7 @@ public class DeleteObjectQuery extends ObjectLevelModifyQuery {
         checkDescriptor(session);
 
         // check if user defined a custom query
-        DescriptorQueryManager queryManager = getDescriptor().getQueryManager();
+        DescriptorQueryManager queryManager = this.descriptor.getQueryManager();
         if ((!isCallQuery())// this is not a hand-coded (custom SQL, SDK etc.) call
                  && (!isUserDefined())// and this is not a user-defined query (in the query manager)
                  && queryManager.hasDeleteQuery()) {// and there is a user-defined query (in the query manager)
@@ -140,7 +140,7 @@ public class DeleteObjectQuery extends ObjectLevelModifyQuery {
             if (!isUnitOfWork) {
                 session.beginTransaction();
             }
-            ClassDescriptor descriptor = getDescriptor();
+            ClassDescriptor descriptor = this.descriptor;
             DescriptorEventManager eventManager = descriptor.getEventManager();
             // PERF: Avoid events if no listeners.
             if (eventManager.hasAnyEventListeners()) {
@@ -167,7 +167,9 @@ public class DeleteObjectQuery extends ObjectLevelModifyQuery {
             int rowCount = getQueryMechanism().deleteObject().intValue();
 
             if (rowCount < 1) {
-                session.getEventManager().noRowsModified(this, object);
+                if (session.hasEventManager()) {
+                    session.getEventManager().noRowsModified(this, object);
+                }
             }
 
             if (descriptor.usesOptimisticLocking()) {

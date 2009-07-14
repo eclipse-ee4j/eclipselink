@@ -139,7 +139,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
             }
         }
 
-        if ((cloneAttribute != null) && (!getIndirectionPolicy().objectIsInstantiated(cloneAttribute))) {
+        if ((cloneAttribute != null) && (!this.indirectionPolicy.objectIsInstantiated(cloneAttribute))) {
             //the clone's valueholder was never triggered so there will be no change
             return null;
         }
@@ -379,11 +379,11 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
             // or for new objects.
             if (mergeManager.shouldMergeWorkingCopyIntoOriginal()) {
                 if (!isAttributeValueInstantiated(source)) {
-                    setAttributeValueInObject(target, getIndirectionPolicy().getOriginalIndirectionObject(getAttributeValueFromObject(source), mergeManager.getSession()));
+                    setAttributeValueInObject(target, this.indirectionPolicy.getOriginalIndirectionObject(getAttributeValueFromObject(source), mergeManager.getSession()));
                     return;
                 } else {
                     // Must clear the old value holder to cause it to be reset.
-                    getIndirectionPolicy().reset(target);
+                    this.indirectionPolicy.reset(target);
                 }
             }
         }
@@ -730,18 +730,22 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
     
     /**
      * INTERNAL:
-     * Cascade registerNew for Create through mappings that require the cascade
+     * Cascade remove through mappings that require the cascade.
+     * @param object is either the source object, or attribute value if getAttributeValueFromObject is true.
      */
-    public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects, boolean getAttributeValueFromObject){
+    public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects, boolean getAttributeValueFromObject) {
+        if (!isCascadeRemove()) {
+            return;
+        }
         Object attributeValue = null;
-        if (getAttributeValueFromObject){
+        if (getAttributeValueFromObject) {
             attributeValue = getAttributeValueFromObject(object);
         } else {
             attributeValue = object;
         }
-        if (attributeValue != null && this.isCascadeRemove() ){
-            if (getAttributeValueFromObject){
-                attributeValue = getIndirectionPolicy().getRealAttributeValueFromObject(object, attributeValue);
+        if (attributeValue != null) {
+            if (getAttributeValueFromObject) {
+                attributeValue = this.indirectionPolicy.getRealAttributeValueFromObject(object, attributeValue);
             }
             if (attributeValue != null && (! visitedObjects.containsKey(attributeValue)) ){
                 visitedObjects.put(attributeValue, attributeValue);
@@ -757,7 +761,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
     public void cascadePerformRemovePrivateOwnedObjectFromChangeSetIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
         // if the object is not instantiated, do not instantiate or cascade
         Object attributeValue = getAttributeValueFromObject(object);
-        if (attributeValue != null && getIndirectionPolicy().objectIsInstantiated(attributeValue)) {
+        if (attributeValue != null && this.indirectionPolicy.objectIsInstantiated(attributeValue)) {
             Object realValue = getRealAttributeValueFromObject(object, uow);
             if (!visitedObjects.containsKey(realValue)){
                 visitedObjects.put(realValue, realValue);
@@ -786,9 +790,9 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
         } else {
             attributeValue = object;
         }
-        if (attributeValue != null && getIndirectionPolicy().objectIsInstantiated(attributeValue)) {
+        if (attributeValue != null && this.indirectionPolicy.objectIsInstantiated(attributeValue)) {
             if (getAttributeValueFromObject){
-                attributeValue = getIndirectionPolicy().getRealAttributeValueFromObject(object, attributeValue);
+                attributeValue = this.indirectionPolicy.getRealAttributeValueFromObject(object, attributeValue);
             }
             // remove private owned object from uow list
             if (isCandidateForPrivateOwnedRemoval()) {
@@ -809,17 +813,21 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
     /**
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade
+     * @param object is either the source object, or attribute value if getAttributeValueFromObject is true.
      */
-    public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects, boolean getAttributeValueFromObject){
+    public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects, boolean getAttributeValueFromObject) {
+        if (!isCascadePersist()) {
+            return;
+        }
         Object attributeValue = null;
-        if (getAttributeValueFromObject){
+        if (getAttributeValueFromObject) {
             attributeValue = getAttributeValueFromObject(object);
         } else {
             attributeValue = object;
         }
-        if (attributeValue != null && this.isCascadePersist() && getIndirectionPolicy().objectIsInstantiated(attributeValue)){
+        if ((attributeValue != null) && this.indirectionPolicy.objectIsInstantiated(attributeValue)){
             if (getAttributeValueFromObject){
-                attributeValue = getIndirectionPolicy().getRealAttributeValueFromObject(object, attributeValue);
+                attributeValue = this.indirectionPolicy.getRealAttributeValueFromObject(object, attributeValue);
             }
             uow.registerNewObjectForPersist(attributeValue, visitedObjects);
             // add private owned object to uow list if mapping is a candidate and uow should discover new objects and the source object is new.
@@ -898,7 +906,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * Extract the reference pk for rvh usage in remote model.
      */
     public Vector extractPrimaryKeysForReferenceObject(Object domainObject, AbstractSession session) {
-        return getIndirectionPolicy().extractPrimaryKeyForReferenceObject(getAttributeValueFromObject(domainObject), session);
+        return this.indirectionPolicy.extractPrimaryKeyForReferenceObject(getAttributeValueFromObject(domainObject), session);
     }
 
     /**
@@ -932,7 +940,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
         super.preInitialize(session);
 		//Bug#4251902 Make Proxy Indirection writable and readable to deployment xml.  If ProxyIndirectionPolicy does not
 		//have any targetInterfaces, build a new set.
-        if ((getIndirectionPolicy() instanceof ProxyIndirectionPolicy) && !((ProxyIndirectionPolicy)getIndirectionPolicy()).hasTargetInterfaces()) {
+        if ((this.indirectionPolicy instanceof ProxyIndirectionPolicy) && !((ProxyIndirectionPolicy)this.indirectionPolicy).hasTargetInterfaces()) {
             useProxyIndirection();
         }
     }
@@ -1084,7 +1092,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      */
     public Object[] buildReferencesPKList(Object entity, Object attribute, AbstractSession session) {
         ClassDescriptor referenceDescriptor = getReferenceDescriptor();
-        Object target = getIndirectionPolicy().getRealAttributeValueFromObject(entity, attribute);
+        Object target = this.indirectionPolicy.getRealAttributeValueFromObject(entity, attribute);
         Object[] result = new Object[1];
         if (target != null){
             Vector pks = referenceDescriptor.getObjectBuilder().extractPrimaryKeyFromObject(target, session);

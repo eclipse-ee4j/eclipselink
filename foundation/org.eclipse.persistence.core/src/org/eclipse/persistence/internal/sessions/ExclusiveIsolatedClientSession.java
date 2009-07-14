@@ -55,7 +55,7 @@ public class ExclusiveIsolatedClientSession extends IsolatedClientSession {
         if (query.getAccessor() == null) {
             //if the connection has not yet been acquired then do it here.
             if (getAccessor() == null) {
-                this.getParent().acquireClientConnection(this);
+                this.parent.acquireClientConnection(this);
             }
             query.setAccessor(getAccessor());
         }
@@ -65,10 +65,10 @@ public class ExclusiveIsolatedClientSession extends IsolatedClientSession {
             if (call.isFinished()) {
                 query.setAccessor(null);
             }
-            if(!isActive() && getAccessor()!=null) {
+            if(!isActive() && getAccessor() != null) {
                 // the session has been already released and this query is likely instantiates a ValueHolder - 
                 // release exclusive connection right away, otherwise it may never be released.
-                getParent().releaseClientSession(this);
+                this.parent.releaseClientSession(this);
             }
         }
     }
@@ -108,7 +108,9 @@ public class ExclusiveIsolatedClientSession extends IsolatedClientSession {
      */
     public void postConnectExternalConnection(Accessor accessor) {
         super.postConnectExternalConnection(accessor);
-        getParent().getEventManager().postAcquireExclusiveConnection(this, accessor);
+        if (this.parent.hasEventManager()) {
+            this.parent.getEventManager().postAcquireExclusiveConnection(this, accessor);
+        }            
     }
 
     /**
@@ -119,7 +121,9 @@ public class ExclusiveIsolatedClientSession extends IsolatedClientSession {
      */
     public void preDisconnectExternalConnection(Accessor accessor) {
         super.preDisconnectExternalConnection(accessor);
-        getParent().getEventManager().preReleaseExclusiveConnection(this, accessor);
+        if (this.parent.hasEventManager()) {
+            this.parent.getEventManager().preReleaseExclusiveConnection(this, accessor);
+        }
     }
     
     /**
@@ -146,7 +150,7 @@ public class ExclusiveIsolatedClientSession extends IsolatedClientSession {
      * it to the server session.
      */
      protected boolean shouldExecuteLocally(DatabaseQuery query) {
-         if(shouldAlwaysUseExclusiveConnection) {
+         if (shouldAlwaysUseExclusiveConnection) {
              return true;
          } else {
              return super.shouldExecuteLocally(query);

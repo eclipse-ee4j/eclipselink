@@ -179,7 +179,7 @@ public class DoesExistQuery extends DatabaseQuery {
                 // Assume that if there is a cachekey, object exists.
                 if (this.checkDatabaseIfInvalid) {
                     checkDescriptor(object, session);
-                    if (getDescriptor().getCacheInvalidationPolicy().isInvalidated(cacheKey, System.currentTimeMillis())) {
+                    if (this.descriptor.getCacheInvalidationPolicy().isInvalidated(cacheKey, System.currentTimeMillis())) {
                         return null;
                     }
                 }
@@ -242,7 +242,7 @@ public class DoesExistQuery extends DatabaseQuery {
      * Return the write lock field or the first primary key field if not using locking.
      */
     protected DatabaseField getDoesExistField() {
-        return (getDescriptor().getPrimaryKeyFields().get(0));
+        return this.descriptor.getPrimaryKeyFields().get(0);
     }
 
     /**
@@ -311,7 +311,7 @@ public class DoesExistQuery extends DatabaseQuery {
      * Ensure that the descriptor has been set.
      */
     public void checkDescriptor(Object object, AbstractSession session) throws QueryException {
-        if (getDescriptor() == null) {
+        if (this.descriptor == null) {
             if (object == null) {
                 throw QueryException.objectToModifyNotSpecified(this);
             }
@@ -335,18 +335,18 @@ public class DoesExistQuery extends DatabaseQuery {
         if (getObject() == null) {
             throw QueryException.objectToModifyNotSpecified(this);
         }
-        setObject(getDescriptor().getObjectBuilder().unwrapObject(getObject(), getSession()));
+        setObject(this.descriptor.getObjectBuilder().unwrapObject(getObject(), getSession()));
 
-        if (getDescriptor() == null) {
+        if (this.descriptor == null) {
             setDescriptor(getSession().getDescriptor(getObject().getClass()));
         }
 
         if (getPrimaryKey() == null) {
-            setPrimaryKey(getDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(getObject(), getSession()));
+            setPrimaryKey(this.descriptor.getObjectBuilder().extractPrimaryKeyFromObject(getObject(), getSession()));
         }
 
         if ((getTranslationRow() == null) || (getTranslationRow().isEmpty())) {
-            setTranslationRow(getDescriptor().getObjectBuilder().buildRowForTranslation(getObject(), getSession()));
+            setTranslationRow(this.descriptor.getObjectBuilder().buildRowForTranslation(getObject(), getSession()));
         }
     }
 

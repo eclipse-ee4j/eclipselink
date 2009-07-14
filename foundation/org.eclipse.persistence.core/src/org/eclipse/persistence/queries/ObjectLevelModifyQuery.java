@@ -61,7 +61,7 @@ public abstract class ObjectLevelModifyQuery extends ModifyQuery {
      * Ensure that the descriptor has been set.
      */
     public void checkDescriptor(AbstractSession session) throws QueryException {
-        if (getDescriptor() == null) {
+        if (this.descriptor == null) {
             if (getObject() == null) {
                 throw QueryException.objectToModifyNotSpecified(this);
             }
@@ -95,12 +95,12 @@ public abstract class ObjectLevelModifyQuery extends ModifyQuery {
             throw QueryException.invalidQuery(this);
         }
 
-        if ((getObject() != null) && (unitOfWork.isClassReadOnly(getObject().getClass(), getDescriptor()))) {
-            return getObject();
+        if ((this.object != null) && (unitOfWork.isClassReadOnly(this.object.getClass(), this.descriptor))) {
+            return this.object;
         }
 
         // CR#3216 - Apply check to ObjectLevelModifyQuery not just WriteObjectQuery
-        if (unitOfWork.shouldPerformNoValidation() && unitOfWork.isUnregisteredExistingObject(getObject())) {
+        if (unitOfWork.shouldPerformNoValidation() && unitOfWork.isUnregisteredExistingObject(this.object)) {
             //if the object is an unregistered existing object then skip it.  This
             // Will only be in the collection if validation is turned off
             return null;
@@ -116,8 +116,8 @@ public abstract class ObjectLevelModifyQuery extends ModifyQuery {
     public Object getBackupClone() {
         // PERF: A backup clone is only required for the old commit,
         // So avoid its creation for normal commit.	
-        if ((backupClone == null) && getSession().isUnitOfWork()) {
-            setBackupClone(((UnitOfWorkImpl)getSession()).getBackupCloneForCommit(getObject(), getDescriptor()));
+        if ((backupClone == null) && this.session.isUnitOfWork()) {
+            setBackupClone(((UnitOfWorkImpl)this.session).getBackupCloneForCommit(this.object, this.descriptor));
         }
         return backupClone;
     }

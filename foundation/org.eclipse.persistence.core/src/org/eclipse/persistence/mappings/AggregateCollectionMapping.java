@@ -422,13 +422,13 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         mappingObject.aggregateToSourceFieldNames = new HashMap(this.aggregateToSourceFieldNames);
         mappingObject.nestedAggregateToSourceFieldNames = new HashMap(this.nestedAggregateToSourceFieldNames);
         if(updateListOrderFieldQuery != null) {
-            mappingObject.updateListOrderFieldQuery = (DataModifyQuery)this.updateListOrderFieldQuery; 
+            mappingObject.updateListOrderFieldQuery = this.updateListOrderFieldQuery; 
         }
         if(bulkUpdateListOrderFieldQuery != null) {
-            mappingObject.bulkUpdateListOrderFieldQuery = (DataModifyQuery)this.bulkUpdateListOrderFieldQuery; 
+            mappingObject.bulkUpdateListOrderFieldQuery = this.bulkUpdateListOrderFieldQuery; 
         }
         if(pkUpdateListOrderFieldQuery != null) {
-            mappingObject.pkUpdateListOrderFieldQuery = (DataModifyQuery)this.pkUpdateListOrderFieldQuery; 
+            mappingObject.pkUpdateListOrderFieldQuery = this.pkUpdateListOrderFieldQuery; 
         }
 
         return mappingObject;
@@ -712,14 +712,13 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
             } else {
                 // update the objects - but not their order values
                 if(!this.isEntireObjectPK) {
-                    Iterator<Map.Entry<CacheKey, Object[]>> it = previousAndCurrentByKey.entrySet().iterator();
-                    while(it.hasNext()) {
-                        Map.Entry<CacheKey, Object[]> entry = it.next();
-                        CacheKey key = entry.getKey();
+                    Iterator<Map.Entry<CacheKey, Object[]>> iterator = previousAndCurrentByKey.entrySet().iterator();
+                    while (iterator.hasNext()) {
+                        Map.Entry<CacheKey, Object[]> entry = iterator.next();
                         Object[] previousAndCurrent = entry.getValue();
                         // previousObject may be null, meaning currentObject has been added to the list
                         Object previousObject = previousAndCurrent[0];
-                        if(previousObject != null) {
+                        if( previousObject != null) {
                             Object currentObject = previousAndCurrent[1];                    
                             objectUnchangedDuringUpdate(query, currentObject, previousObject);
                         }
@@ -812,14 +811,13 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         }
         
         // Add the new objects
-        Iterator<Map.Entry<CacheKey, Object[]>> it = previousAndCurrentByKey.entrySet().iterator();
-        while(it.hasNext()) {
-            Map.Entry<CacheKey, Object[]> entry = it.next();
-            CacheKey key = entry.getKey();
+        Iterator<Map.Entry<CacheKey, Object[]>> iterator = previousAndCurrentByKey.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<CacheKey, Object[]> entry = iterator.next();
             Object[] previousAndCurrent = entry.getValue();
             // previousObject may be null, meaning currentObject has been added to the list
             Object previousObject = previousAndCurrent[0];
-            if(previousObject == null) {
+            if (previousObject == null) {
                 // there's no previous object - that means that current object should be added.
                 // currentObject is not null
                 Object currentObject = previousAndCurrent[1];
@@ -832,7 +830,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
                 objectAddedDuringUpdate(query, currentObject, null, extraData);
             }
         }        
-        if(shouldRepairOrder) {
+        if (shouldRepairOrder) {
             ((IndirectList)currentList).setIsListOrderBrokenInDb(false);
         }
     }
@@ -853,7 +851,6 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     }
 
     protected int objectChangedListOrderDuringUpdate(WriteObjectQuery query, CacheKey key, int newOrderValue) {
-        DataModifyQuery updateQuery;
         AbstractRecord translationRow = (AbstractRecord)query.getTranslationRow().clone();
         translationRow.put(this.listOrderField, newOrderValue);
         List pkValues = key.getKey();
@@ -962,8 +959,6 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         changeRecord.setChangedValues(collectionChanges);
         
         getContainerPolicy().compareCollectionsForChange(backupCollection, cloneCollection, changeRecord, session, remoteReferenceDescriptor);
-        
-        
         
         return changeRecord;
     }
@@ -1117,12 +1112,12 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * for inheritance purpose
      */
     public ClassDescriptor getReferenceDescriptor(Class theClass, AbstractSession session) {
-        if (getReferenceDescriptor().getJavaClass().equals(theClass)) {
-            return getReferenceDescriptor();
+        if (this.referenceDescriptor.getJavaClass() == theClass) {
+            return this.referenceDescriptor;
         } else {
             ClassDescriptor subDescriptor;
             // Since aggregate collection mappings clone their descriptors, for inheritance the correct child clone must be found.
-            subDescriptor = getReferenceDescriptor().getInheritancePolicy().getSubclassDescriptor(theClass);
+            subDescriptor = this.referenceDescriptor.getInheritancePolicy().getSubclassDescriptor(theClass);
             if (subDescriptor == null) {
                 throw DescriptorException.noSubClassMatch(theClass, this);
             } else {
@@ -1258,15 +1253,14 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
 
         HashMap<DatabaseField, DatabaseField> fieldTranslation = null;
         HashMap<DatabaseTable, DatabaseTable> tableTranslation = null;
-        Vector<DatabaseTable> newTables = null;
 
         int nAggregateTables = 0;
         if(getReferenceDescriptor().getTables() != null) {
             nAggregateTables = getReferenceDescriptor().getTables().size();
         }
-        if (! aggregateToSourceFieldNames.isEmpty()) {
+        if (!this.aggregateToSourceFieldNames.isEmpty()) {
             DatabaseTable aggregateDefaultTable = null;
-            if(nAggregateTables != 0) {
+            if (nAggregateTables != 0) {
                 aggregateDefaultTable = getReferenceDescriptor().getTables().get(0);
             } else {
                 aggregateDefaultTable = new DatabaseTable();
@@ -1274,20 +1268,20 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
             tableTranslation = new HashMap<DatabaseTable, DatabaseTable>();
             fieldTranslation = new HashMap<DatabaseField, DatabaseField>();
             
-            Iterator<Map.Entry<String, String>> it = this.aggregateToSourceFieldNames.entrySet().iterator();
-            while(it.hasNext()) {
-                Map.Entry<String, String> entry = it.next(); 
+            Iterator<Map.Entry<String, String>> iterator = this.aggregateToSourceFieldNames.entrySet().iterator();
+            while (iterator.hasNext()) {
+                Map.Entry<String, String> entry = iterator.next(); 
                 DatabaseField aggregateField = new DatabaseField(entry.getKey());
-                if(!aggregateField.hasTableName()) {
+                if (!aggregateField.hasTableName()) {
                     aggregateField.setTable(aggregateDefaultTable);
                 }
                 DatabaseField sourceField = new DatabaseField(entry.getValue());
-                if(!sourceField.hasTableName()) {
+                if (!sourceField.hasTableName()) {
                     //TODO: throw exception: source field doesn't have table
                 }
                 DatabaseTable sourceTable = sourceField.getTable();
                 DatabaseTable savedSourceTable = tableTranslation.get(aggregateField.getTable());
-                if(savedSourceTable == null) {
+                if (savedSourceTable == null) {
                     tableTranslation.put(aggregateField.getTable(), sourceTable);
                 } else {
                     if(!sourceTable.equals(savedSourceTable)) {
@@ -1297,13 +1291,13 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
                 fieldTranslation.put(aggregateField, sourceField);
             }
         } else {
-            if(nAggregateTables == 0) {
+            if (nAggregateTables == 0) {
                 //TODO: throw exception
             }
         }
         
         ClassDescriptor clonedDescriptor = (ClassDescriptor)getReferenceDescriptor().clone();
-        if(fieldTranslation != null) {
+        if( fieldTranslation != null) {
             translateTablesAndFields(clonedDescriptor, fieldTranslation, tableTranslation); 
         }
         
@@ -1314,7 +1308,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
             initializeParentInheritance(parentDescriptor, clonedDescriptor, session, fieldTranslation, tableTranslation);
         }
 
-        if(clonedDescriptor.isAggregateDescriptor()) {
+        if (clonedDescriptor.isAggregateDescriptor()) {
             clonedDescriptor.descriptorIsAggregateCollection();
         }
 
@@ -1322,7 +1316,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         
         clonedDescriptor.preInitialize(session);
         getContainerPolicy().initialize(session, clonedDescriptor.getDefaultTable());
-        if(clonedDescriptor.getPrimaryKeyFields().isEmpty()) {
+        if (clonedDescriptor.getPrimaryKeyFields().isEmpty()) {
             this.isEntireObjectPK = true;
             clonedDescriptor.getAdditionalAggregateCollectionKeyFields().addAll(this.getTargetForeignKeyFields());
             if(this.listOrderField != null && !this.isListOrderFieldUpdatable) {
@@ -1785,11 +1779,12 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
 
         // iterate over the changes and merge the collections
         Vector aggregateObjects = ((AggregateCollectionChangeRecord)changeRecord).getChangedValues();
-        valueOfTarget = containerPolicy.containerInstance();
+        int size = aggregateObjects.size();
+        valueOfTarget = containerPolicy.containerInstance(size);
         // Next iterate over the changes and add them to the container
         ObjectChangeSet objectChanges = null;
-        for (int i = 0; i < aggregateObjects.size(); ++i) {
-            objectChanges = (ObjectChangeSet)aggregateObjects.elementAt(i);
+        for (int index = 0; index < size; ++index) {
+            objectChanges = (ObjectChangeSet)aggregateObjects.elementAt(index);
             Class localClassType = objectChanges.getClassType(session);
             sourceAggregate = objectChanges.getUnitOfWorkClone();
 
@@ -1879,8 +1874,6 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * An object was removed to the collection during an update, delete it if private.
      */
     protected void objectRemovedDuringUpdate(ObjectLevelModifyQuery query, Object objectDeleted, Map extraData) throws DatabaseException, OptimisticLockException {
-        Object valueToDelete = containerPolicy.unwrapIteratorResult(objectDeleted);
-
         // Delete must not be done for uow or cascaded queries and we must cascade to cascade policy.
         DeleteObjectQuery deleteQuery = new DeleteObjectQuery();
         deleteQuery.setIsExecutionClone(true);
@@ -1998,7 +1991,6 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         if (containerPolicy.propagatesEventsToCollection() || mustDeleteReferenceObjectsOneByOne()) {
             for (Object iter = containerPolicy.iteratorFor(objects); containerPolicy.hasNext(iter);) {
                 Object wrappedObject = containerPolicy.nextEntry(iter, query.getSession());
-                Object object = containerPolicy.unwrapIteratorResult(wrappedObject);
                 DeleteObjectQuery deleteQuery = new DeleteObjectQuery();
                 deleteQuery.setIsExecutionClone(true);
                 Map extraData = null;

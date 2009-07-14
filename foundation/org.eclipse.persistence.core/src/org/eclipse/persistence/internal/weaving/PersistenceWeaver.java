@@ -55,6 +55,15 @@ public class PersistenceWeaver implements ClassTransformer {
         this.classDetailsMap = classDetailsMap;
     }
     
+    /**
+     * Allow the weaver to be clear to release its referenced memory.
+     * This is require because the class loader reference to the transformer will never gc.
+     */
+    public void clear() {
+        this.session = null;
+        this.classDetailsMap = null;        
+    }
+    
     public Map getClassDetailsMap() {
         return classDetailsMap;
     }
@@ -63,17 +72,19 @@ public class PersistenceWeaver implements ClassTransformer {
     // so the method is written without any Generic type <T>'s in the signature
     public byte[] transform(ClassLoader loader, String className,
             Class classBeingRedefined, ProtectionDomain protectionDomain,
-            byte[] classfileBuffer) throws IllegalClassFormatException {    
+            byte[] classfileBuffer) throws IllegalClassFormatException {
+        Map classDetailsMap = this.classDetailsMap;
+        Session session = this.session;
+        // Check if cleared already.
+        if ((classDetailsMap == null) || (session == null)) {
+            return null;
+        }
         try {
             /*
              * The ClassFileTransformer callback - when called by the JVM's
              * Instrumentation implementation - is invoked for every class loaded.
              * Thus, we must check the classDetailsMap to see if we are 'interested'
              * in the class.
-             * 
-             * Note: when invoked by the OC4J wrapper class
-             * org.eclipse.persistence.internal.jpa.oc4j.OC4JClassTransformer,
-             * callbacks are made only for the 'interesting' classes
              */
             ClassDetails classDetails = (ClassDetails)classDetailsMap.get(Helper.toSlashedClassName(className));
     

@@ -649,7 +649,9 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
         updateProfile(SessionProfiler.LoginTime, new Date(System.currentTimeMillis()));
 
         // Login and initialize
-        getEventManager().preLogin(this);
+        if (this.eventManager != null) {
+            this.eventManager.preLogin(this);
+        }
         //setup the external transaction controller
         getServerPlatform().initializeExternalTransactionController();
         log(SessionLog.INFO, null, "topLink_version", DatasourceLogin.getVersion());
@@ -672,7 +674,9 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
             getCommandManager().initialize();
         }
         log(SessionLog.INFO, null, "login_successful", this.getName());
-        getEventManager().postLogin(this);
+        if (this.eventManager != null) {
+            this.eventManager.postLogin(this);
+        }
 
         initializeConnectedTime();
         this.isLoggedIn = true;
@@ -680,6 +684,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
         
         //register the MBean
         getServerPlatform().registerMBean();
+        this.descriptors = getDescriptors();
     }
 
     /**

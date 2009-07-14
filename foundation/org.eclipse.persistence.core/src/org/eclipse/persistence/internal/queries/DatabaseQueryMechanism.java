@@ -305,15 +305,15 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
      * Convenience method
      */
     protected ClassDescriptor getDescriptor() {
-        return getQuery().getDescriptor();
+        return this.query.getDescriptor();
     }
 
     /**
      * Convenience method
      */
     public AbstractRecord getModifyRow() {
-        if (getQuery().isModifyQuery()) {
-            return ((ModifyQuery)getQuery()).getModifyRow();
+        if (this.query.isModifyQuery()) {
+            return ((ModifyQuery)this.query).getModifyRow();
         } else {
             return null;
         }
@@ -330,7 +330,7 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
      * Convenience method
      */
     protected ReadObjectQuery getReadObjectQuery() {
-        return (ReadObjectQuery)getQuery();
+        return (ReadObjectQuery)this.query;
     }
 
     /**
@@ -346,21 +346,21 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
      * Convenience method
      */
     protected AbstractSession getSession() {
-        return getQuery().getSession();
+        return this.query.getSession();
     }
 
     /**
      * Convenience method
      */
     protected AbstractRecord getTranslationRow() {
-        return getQuery().getTranslationRow();
+        return this.query.getTranslationRow();
     }
 
     /**
      * Convenience method
      */
     protected WriteObjectQuery getWriteObjectQuery() {
-        return (WriteObjectQuery)getQuery();
+        return (WriteObjectQuery)this.query;
     }
 
     /**
@@ -528,19 +528,19 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
      * This ensures that the query is cloned and prepared correctly.
      */
     protected void performUserDefinedWrite(WriteObjectQuery userDefinedWriteQuery) {
-        userDefinedWriteQuery.checkPrepare(getSession(), getTranslationRow());
+        WriteObjectQuery query = getWriteObjectQuery();
+        userDefinedWriteQuery.checkPrepare(query.getSession(), query.getTranslationRow());
 
-        Object object = getWriteObjectQuery().getObject();
         WriteObjectQuery writeQuery = (WriteObjectQuery)userDefinedWriteQuery.clone();
         writeQuery.setIsExecutionClone(true);
-        writeQuery.setObject(object);
-        writeQuery.setObjectChangeSet(getWriteObjectQuery().getObjectChangeSet());
-        writeQuery.setCascadePolicy(getQuery().getCascadePolicy());
-        writeQuery.setShouldMaintainCache(getQuery().shouldMaintainCache());
-        writeQuery.setTranslationRow(getTranslationRow());
-        writeQuery.setModifyRow(getModifyRow());
-        writeQuery.setPrimaryKey(getWriteObjectQuery().getPrimaryKey());
-        writeQuery.setSession(getSession());
+        writeQuery.setObject(query.getObject());
+        writeQuery.setObjectChangeSet(query.getObjectChangeSet());
+        writeQuery.setCascadePolicy(query.getCascadePolicy());
+        writeQuery.setShouldMaintainCache(query.shouldMaintainCache());
+        writeQuery.setTranslationRow(query.getTranslationRow());
+        writeQuery.setModifyRow(query.getModifyRow());
+        writeQuery.setPrimaryKey(query.getPrimaryKey());
+        writeQuery.setSession(query.getSession());
 
         // If there is a changeset, the change set method must be used.
         if (writeQuery.getObjectChangeSet() != null) {
@@ -1021,7 +1021,9 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
             int rowCount = updateObject().intValue();
 
             if (rowCount < 1) {
-                session.getEventManager().noRowsModified(writeQuery, object);
+                if (session.hasEventManager()) {
+                    session.getEventManager().noRowsModified(writeQuery, object);
+                }
             }
             if (descriptor.usesOptimisticLocking()) {
                 descriptor.getOptimisticLockingPolicy().validateUpdate(rowCount, object, writeQuery);
@@ -1135,7 +1137,9 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
             int rowCount = updateObject().intValue();
 
             if (rowCount < 1) {
-                session.getEventManager().noRowsModified(writeQuery, object);
+                if (session.hasEventManager()) {
+                    session.getEventManager().noRowsModified(writeQuery, object);
+                }
             }
             if (lockingPolicy != null) {
                 lockingPolicy.validateUpdate(rowCount, object, writeQuery);

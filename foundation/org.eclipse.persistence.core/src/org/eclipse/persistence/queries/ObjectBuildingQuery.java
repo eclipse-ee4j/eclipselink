@@ -300,7 +300,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
      * feature.
      */
     protected boolean isRegisteringResults() {
-        return ((shouldRegisterResultsInUnitOfWork() && getDescriptor().shouldRegisterResultsInUnitOfWork()) || isLockQuery());
+        return ((shouldRegisterResultsInUnitOfWork() && this.descriptor.shouldRegisterResultsInUnitOfWork()) || isLockQuery());
     }
 
     /**

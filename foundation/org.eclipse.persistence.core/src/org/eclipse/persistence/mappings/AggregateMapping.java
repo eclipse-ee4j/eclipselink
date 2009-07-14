@@ -451,8 +451,8 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * For inheritance purposes.
      */
     protected ClassDescriptor getReferenceDescriptor(Class theClass, AbstractSession session) {
-        if (getReferenceDescriptor().getJavaClass().equals(theClass)) {
-            return getReferenceDescriptor();
+        if (this.referenceDescriptor.getJavaClass() == theClass) {
+            return this.referenceDescriptor;
         }
 
         ClassDescriptor subDescriptor = session.getDescriptor(theClass);
@@ -468,7 +468,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
      */
     protected ClassDescriptor getReferenceDescriptor(Object attributeValue, AbstractSession session) {
         if (attributeValue == null) {
-            return getReferenceDescriptor();
+            return this.referenceDescriptor;
         } else {
             return getReferenceDescriptor(attributeValue.getClass(), session);
         }

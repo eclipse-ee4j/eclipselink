@@ -56,7 +56,9 @@ public class HistoricalSession extends AbstractSession {
         this.queries = parent.getQueries();
         this.profiler = parent.getProfiler();
         this.sessionLog = parent.getSessionLog();
-        this.eventManager = parent.getEventManager().clone(this);
+        if (parent.hasEventManager()) {
+            this.eventManager = parent.getEventManager().clone(this);
+        }
         this.exceptionHandler = parent.getExceptionHandler();
     }
     

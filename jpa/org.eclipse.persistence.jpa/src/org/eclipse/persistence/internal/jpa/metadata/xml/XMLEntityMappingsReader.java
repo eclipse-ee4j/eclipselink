@@ -78,17 +78,23 @@ public class XMLEntityMappingsReader {
         // TODO: Ideally we would have a better way to determine what xsd to use.
         try {
             XMLUnmarshaller unmarshaller = getOrm2Project().createUnmarshaller();
-            useLocalSchemaForUnmarshaller(unmarshaller, getOrm2_0Schema(), validateORMSchema);
+            if (validateORMSchema) {
+                useLocalSchemaForUnmarshaller(unmarshaller, getOrm2_0Schema());
+            }
             xmlEntityMappings = (XMLEntityMappings) unmarshaller.unmarshal(reader1);
         } catch (Exception orm2Error) {
             try {
                 XMLUnmarshaller unmarshaller = getOrm1Project().createUnmarshaller();
-                useLocalSchemaForUnmarshaller(unmarshaller, getOrm1_0Schema(), validateORMSchema);
+                if (validateORMSchema) {
+                    useLocalSchemaForUnmarshaller(unmarshaller, getOrm1_0Schema());
+                }
                 xmlEntityMappings = (XMLEntityMappings) unmarshaller.unmarshal(reader2);
             } catch (Exception orm1Error) {
                 try {
                     XMLUnmarshaller unmarshaller = getEclipseLinkOrmProject().createUnmarshaller();
-                    useLocalSchemaForUnmarshaller(unmarshaller, getEclipseLinkOrmSchema(), validateORMSchema);
+                    if (validateORMSchema) {
+                        useLocalSchemaForUnmarshaller(unmarshaller, getEclipseLinkOrmSchema());
+                    }
                     xmlEntityMappings = (XMLEntityMappings) unmarshaller.unmarshal(reader3);
                 } catch (Exception eclipselinkError) {
                     throw ValidationException.errorParsingMappingFile(mappingFileUrl, orm2Error, orm1Error, eclipselinkError);
@@ -169,10 +175,7 @@ public class XMLEntityMappingsReader {
      * @throws IOException
      * @throws SAXException
      */
-    private static void useLocalSchemaForUnmarshaller(XMLUnmarshaller unmarshaller, Schema schema, boolean validateORMSchema) {
-        if (!validateORMSchema) {
-    	    return;
-        }
+    private static void useLocalSchemaForUnmarshaller(XMLUnmarshaller unmarshaller, Schema schema) {
         try {
             unmarshaller.setSchema(schema);
         } catch (UnsupportedOperationException ex) {

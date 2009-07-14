@@ -1052,7 +1052,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
             event[3] = extraData;
             query.getSession().getCommitManager().addDataModificationEvent(this, event);
         } else {
-            insertAddedObjectEntry(query, objectAdded, (Map)extraData);
+            insertAddedObjectEntry(query, objectAdded, extraData);
         }
     }
 

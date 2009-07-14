@@ -15,6 +15,7 @@
 package org.eclipse.persistence.testing.tests.jpa.jpaadvancedproperties;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 import java.util.AbstractList;
 
@@ -94,7 +95,7 @@ public class JPAAdvPropertiesJUnitTestCase extends JUnitTestCase {
             em.remove(em.find(org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Customer.class, customerId));
             commitTransaction(em);
 
-            Vector listeners = session.getEventManager().getListeners();
+            List listeners = session.getEventManager().getListeners();
             boolean doseCustomizedSessionEventListenerExists=false;
             for (int i =0;i<listeners.size();i++){
                 Object aListener = listeners.get(i);

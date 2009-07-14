@@ -451,7 +451,9 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         }
 
         selectStatement.setFields(getSelectionFields(selectStatement, true));
-        selectStatement.setNonSelectFields(getNonSelectionFields());
+        if (query.hasNonFetchJoinedAttributeExpressions()) {
+            selectStatement.setNonSelectFields(query.getNonFetchJoinAttributeExpressions());
+        }
         selectStatement.normalize(getSession(), getDescriptor(), clonedExpressions);
         // Allow for joining indexes to be computed to ensure distinct rows.
         if (((ObjectLevelReadQuery)getQuery()).hasJoining()) {
@@ -473,16 +475,17 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
      * Customary inheritance expression is required for DeleteAllQuery and UpdateAllQuery preparation. 
      */
     protected SQLSelectStatement buildReportQuerySelectStatement(boolean isSubSelect, boolean useCustomaryInheritanceExpression, Expression inheritanceExpression) {
+        ReportQuery reportQuery = (ReportQuery)getQuery();
         // For bug 2612185: Need to know which original bases were mapped to which cloned bases.
         // Note: subSelects are already cloned so this table is not needed.
         // 2612538 - the default size of Map (32) is appropriate
         Map clonedExpressions = isSubSelect ? null : new IdentityHashMap();
         SQLSelectStatement selectStatement = buildBaseSelectStatement(isSubSelect, clonedExpressions);
-        selectStatement.setGroupByExpressions(((ReportQuery)getQuery()).getGroupByExpressions());
-        selectStatement.setHavingExpression(((ReportQuery)getQuery()).getHavingExpression());
+        selectStatement.setGroupByExpressions(reportQuery.getGroupByExpressions());
+        selectStatement.setHavingExpression(reportQuery.getHavingExpression());
         if (getDescriptor().hasInheritance()) {
-            if(useCustomaryInheritanceExpression) {
-                if(inheritanceExpression != null) {
+            if (useCustomaryInheritanceExpression) {
+                if (inheritanceExpression != null) {
                     if (selectStatement.getWhereClause() == null) {
                         selectStatement.setWhereClause((Expression)inheritanceExpression.clone());
                     } else {
@@ -493,15 +496,15 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                 getDescriptor().getInheritancePolicy().appendWithAllSubclassesExpression(selectStatement);
             }
         }
-        Vector fieldExpressions = ((ReportQuery)getQuery()).getQueryExpressions();
+        Vector fieldExpressions = reportQuery.getQueryExpressions();
         int itemOffset = fieldExpressions.size();
-        for (Iterator items = ((ReportQuery)getQuery()).getItems().iterator(); items.hasNext();) {
-            ReportItem item = (ReportItem) items.next();
+        for (Iterator items = reportQuery.getItems().iterator(); items.hasNext();) {
+            ReportItem item = (ReportItem)items.next();
             if (item.isConstructorItem()) {
                 ConstructorReportItem citem= (ConstructorReportItem)item;
                 List reportItems = citem.getReportItems();
                 int size = reportItems.size();
-                for (int i=0;i<size;i++) {
+                for (int i=0; i<size; i++) {
                     item = (ReportItem)reportItems.get(i);
                     extractStatementFromItem(item, clonedExpressions, selectStatement, fieldExpressions);
                 }
@@ -511,7 +514,9 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         }
             
         selectStatement.setFields(fieldExpressions);
-        selectStatement.setNonSelectFields(((ReportQuery)getQuery()).getNonFetchJoinAttributeExpressions());
+        if (reportQuery.hasNonFetchJoinedAttributeExpressions()) {
+            selectStatement.setNonSelectFields(reportQuery.getNonFetchJoinAttributeExpressions());
+        }
         
         // Subselects must be normalized in the context of the parent statement.
         if (!isSubSelect) {
@@ -519,14 +524,14 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         }
 
         //calculate indexes after normalize to insure expressions are set up correctly
-        for (Iterator items = ((ReportQuery)getQuery()).getItems().iterator(); items.hasNext();){
-            ReportItem item = (ReportItem) items.next();
+        for (Iterator items = reportQuery.getItems().iterator(); items.hasNext();){
+            ReportItem item = (ReportItem)items.next();
             
             if (item.isConstructorItem()) {
-                ConstructorReportItem citem= (ConstructorReportItem)item;
+                ConstructorReportItem citem = (ConstructorReportItem)item;
                 List reportItems = citem.getReportItems();
                 int size = reportItems.size();
-                for(int i=0;i<size;i++){
+                for (int i=0; i<size; i++) {
                     item = (ReportItem)reportItems.get(i);
                     itemOffset = computeAndSetItemOffset(item, itemOffset);
                 }
@@ -871,7 +876,8 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         }
         // If only checking the cache, and empty, return invalid, unless it is a unit of work,
         // in which case the parent cache still needs to be checked.
-        if ((cachedObject == null) && query.shouldCheckCacheOnly() && !session.isUnitOfWork()) {
+        if ((cachedObject == null) && query.shouldCheckCacheOnly()
+                && ((uow == null) ||  (!uow.isNestedUnitOfWork() && descriptor.shouldIsolateObjectsInUnitOfWork()))) {
             return InvalidObject.instance;
         }
 
@@ -945,19 +951,6 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             // Add additional fields, use for batch reading m-m.
             Helper.addAllToVector(fields, owner.getAdditionalFields());
         }
-        return fields;
-    }
-
-    /**
-     * Return the fields required in the from and where clause (join). These 
-     * fields will not apprear in the select clause. 
-     */
-    public Vector getNonSelectionFields() {
-        Vector fields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
-
-        // Add non fetch joined fields.
-        fields.addAll(((ObjectLevelReadQuery) getQuery()).getNonFetchJoinAttributeExpressions());
-        
         return fields;
     }
 
@@ -2464,11 +2457,13 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
      */
     public Vector selectAllRows() throws DatabaseException {
         // Check for multiple table inheritance which may require multiple queries.
-        if ((!((ObjectLevelReadQuery)getQuery()).shouldOuterJoinSubclasses()) && getDescriptor().hasInheritance() && getDescriptor().getInheritancePolicy().requiresMultipleTableSubclassRead() && (!getDescriptor().getInheritancePolicy().hasView())) {
-            return getDescriptor().getInheritancePolicy().selectAllRowUsingMultipleTableSubclassRead((ReadAllQuery)getQuery());
-        } else {
-            return selectAllRowsFromTable();
+        if (!((ObjectLevelReadQuery)this.query).shouldOuterJoinSubclasses()) {
+            ClassDescriptor descriptor = getDescriptor();
+            if (descriptor.hasInheritance() && descriptor.getInheritancePolicy().requiresMultipleTableSubclassRead() && (!descriptor.getInheritancePolicy().hasView())) {
+                return descriptor.getInheritancePolicy().selectAllRowUsingMultipleTableSubclassRead((ReadAllQuery)this.query);
+            }
         }
+        return selectAllRowsFromTable();
     }
 
     /**
@@ -2476,7 +2471,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
      * This is used only from query mechanism on a abstract-multiple table read.
      */
     public Vector selectAllRowsFromConcreteTable() throws DatabaseException {
-        ObjectLevelReadQuery query = (ObjectLevelReadQuery)getQuery();
+        ObjectLevelReadQuery query = (ObjectLevelReadQuery)this.query;
         // PERF: First check the subclass calls cache for the prepared call.
         // Must clear the translation row to avoid in-lining parameters unless not a prepared query.
         boolean shouldPrepare = query.shouldPrepare();
@@ -2493,7 +2488,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             // Must also build the call.
             super.prepareSelectAllRows();
             if (shouldPrepare) {
-                query.getConcreteSubclassCalls().put(query.getReferenceClass(), (DatabaseCall)getCall());
+                query.getConcreteSubclassCalls().put(query.getReferenceClass(), (DatabaseCall)this.call);
                 query.setTranslationRow(translationRow);                
             }
         } else {
@@ -2519,11 +2514,13 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
      */
     public AbstractRecord selectOneRow() throws DatabaseException {
         // Check for multiple table inheritance which may require multiple queries.
-        if ((!getReadObjectQuery().shouldOuterJoinSubclasses()) && getDescriptor().hasInheritance() && getDescriptor().getInheritancePolicy().requiresMultipleTableSubclassRead() && (!getDescriptor().getInheritancePolicy().hasView())) {
-            return getDescriptor().getInheritancePolicy().selectOneRowUsingMultipleTableSubclassRead((ReadObjectQuery)getQuery());
-        } else {
-            return selectOneRowFromTable();
+        if (!getReadObjectQuery().shouldOuterJoinSubclasses()) {
+            ClassDescriptor descriptor = getDescriptor();
+            if (descriptor.hasInheritance() && descriptor.getInheritancePolicy().requiresMultipleTableSubclassRead() && (!descriptor.getInheritancePolicy().hasView())) {
+                return descriptor.getInheritancePolicy().selectOneRowUsingMultipleTableSubclassRead((ReadObjectQuery)this.query);
+            }
         }
+        return selectOneRowFromTable();
     }
 
     /**
@@ -2531,14 +2528,14 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
      * This is used from query  mechanism during an abstract-multiple table read.
      */
     public AbstractRecord selectOneRowFromConcreteTable() throws DatabaseException {
-        ObjectLevelReadQuery query = (ObjectLevelReadQuery)getQuery();
+        ObjectLevelReadQuery query = (ObjectLevelReadQuery)this.query;
         // PERF: First check the subclass calls cache for the prepared call.
         DatabaseCall call = query.getConcreteSubclassCalls().get(query.getReferenceClass());
         if (call == null) {
             setSQLStatement(buildConcreteSelectStatement());
             // Must also build the call.
             super.prepareSelectOneRow();
-            query.getConcreteSubclassCalls().put(query.getReferenceClass(), (DatabaseCall)getCall());
+            query.getConcreteSubclassCalls().put(query.getReferenceClass(), (DatabaseCall)this.call);
         } else {
             setCall(call);
         }

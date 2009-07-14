@@ -617,7 +617,9 @@ public class DatabaseAccessor extends DatasourceAccessor {
                             }
                             if (resultSet.next()) {
                                 // Raise more rows event, some apps may interpret as error or warning.
-                                session.getEventManager().moreRowsDetected(dbCall);
+                                if (session.hasEventManager()) {
+                                    session.getEventManager().moreRowsDetected(dbCall);
+                                }
                             }
                         } else {
                             result = null;
@@ -852,7 +854,9 @@ public class DatabaseAccessor extends DatasourceAccessor {
         if (call.shouldBuildOutputRow()) {
             AbstractRecord outputRow = buildOutputRow((CallableStatement)statement, call, session);
             call.getQuery().setProperty("output", outputRow);
-            session.getEventManager().outputParametersDetected(outputRow, call);
+            if (session.hasEventManager()) {
+                session.getEventManager().outputParametersDetected(outputRow, call);
+            }
         }
 
         return rowCount;
@@ -879,7 +883,9 @@ public class DatabaseAccessor extends DatasourceAccessor {
         if (call.shouldBuildOutputRow()) {
             AbstractRecord outputRow = buildOutputRow((CallableStatement)statement, call, session);
             call.getQuery().setProperty("output", outputRow);
-            session.getEventManager().outputParametersDetected(outputRow, call);
+            if (session.hasEventManager()) {
+                session.getEventManager().outputParametersDetected(outputRow, call);
+            }
         }
 
         return resultSet;

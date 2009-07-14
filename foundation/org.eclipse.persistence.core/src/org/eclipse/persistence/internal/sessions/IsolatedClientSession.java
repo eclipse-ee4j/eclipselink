@@ -16,7 +16,6 @@ import java.util.Map;
 
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.sessions.server.*;
-import org.eclipse.persistence.internal.identitymaps.IdentityMapManager;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -42,7 +41,7 @@ public class IsolatedClientSession extends ClientSession {
     * the default IdentityMapManager functionality.
     */
     public void initializeIdentityMapAccessor() {
-        this.identityMapAccessor = new IsolatedClientSessionIdentityMapAccessor(this, new IdentityMapManager(this));
+        this.identityMapAccessor = new IsolatedClientSessionIdentityMapAccessor(this);
     }
 
     /**

@@ -127,7 +127,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             }
             query.setProperty(this, batchQuery);
         }
-        return getIndirectionPolicy().valueFromBatchQuery(batchQuery, row, query);
+        return this.indirectionPolicy.valueFromBatchQuery(batchQuery, row, query);
     }
 
     /**
@@ -136,7 +136,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      */
     public void buildBackupClone(Object clone, Object backup, UnitOfWorkImpl unitOfWork) {
         Object attributeValue = getAttributeValueFromObject(clone);
-        Object clonedAttributeValue = getIndirectionPolicy().backupCloneAttribute(attributeValue, clone, backup, unitOfWork);
+        Object clonedAttributeValue = this.indirectionPolicy.backupCloneAttribute(attributeValue, clone, backup, unitOfWork);
         setAttributeValueInObject(backup, clonedAttributeValue);
     }
 
@@ -153,7 +153,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      */
     public void buildClone(Object original, Object clone, UnitOfWorkImpl unitOfWork) {
         Object attributeValue = getAttributeValueFromObject(original);
-        Object clonedAttributeValue = getIndirectionPolicy().cloneAttribute(attributeValue, original, clone, unitOfWork, false); // building clone from an original not a row.
+        Object clonedAttributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, original, clone, unitOfWork, false); // building clone from an original not a row.
         //GFBug#404 - fix moved to ObjectBuildingQuery.registerIndividualResult 
         setAttributeValueInObject(clone, clonedAttributeValue);
     }
@@ -177,7 +177,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      */
     public void buildCloneFromRow(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object clone, ObjectBuildingQuery sourceQuery, UnitOfWorkImpl unitOfWork, AbstractSession executionSession) {
         Object attributeValue = valueFromRow(databaseRow, joinManager, sourceQuery, executionSession);
-        Object clonedAttributeValue = getIndirectionPolicy().cloneAttribute(attributeValue, null,// no original
+        Object clonedAttributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, null,// no original
                                                                             clone, unitOfWork, true);// building clone directly from row.
         setAttributeValueInObject(clone, clonedAttributeValue);
     }
@@ -541,7 +541,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * with client-side objects.
      */
     public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, RemoteSession session) {
-        getIndirectionPolicy().fixObjectReferences(object, objectDescriptors, processedObjects, query, session);
+        this.indirectionPolicy.fixObjectReferences(object, objectDescriptors, processedObjects, query, session);
     }
 
     /**
@@ -550,7 +550,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      */
     public Object getAttributeValueFromObject(Object object) throws DescriptorException {
         Object attributeValue = super.getAttributeValueFromObject(object);
-        Object indirectionValue = getIndirectionPolicy().validateAttributeOfInstantiatedObject(attributeValue);
+        Object indirectionValue = this.indirectionPolicy.validateAttributeOfInstantiatedObject(attributeValue);
 
         // PERF: Allow the indirection policy to initialize null attribute values,
         // this allows the indirection objects to not be initialized in the constructor.
@@ -643,7 +643,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * Trigger the instantiation of the attribute if lazy.
      */
     public void instantiateAttribute(Object object, AbstractSession session) {
-        getIndirectionPolicy().instantiateObject(object, getAttributeValueFromObject(object));
+        this.indirectionPolicy.instantiateObject(object, getAttributeValueFromObject(object));
     }
     
     /**
@@ -734,7 +734,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * specified remote value holder.
      */
     public Object getValueFromRemoteValueHolder(RemoteValueHolder remoteValueHolder) {
-        return getIndirectionPolicy().getValueFromRemoteValueHolder(remoteValueHolder);
+        return this.indirectionPolicy.getValueFromRemoteValueHolder(remoteValueHolder);
     }
 
     /**
@@ -753,7 +753,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
     public void preInitialize(AbstractSession session) throws DescriptorException {
         super.preInitialize(session);
         // If weaving was used the mapping must be configured to use the weaved get/set methods.
-        if ((getIndirectionPolicy() instanceof BasicIndirectionPolicy) && ClassConstants.PersistenceWeavedLazy_Class.isAssignableFrom(getDescriptor().getJavaClass())) {
+        if ((this.indirectionPolicy instanceof BasicIndirectionPolicy) && ClassConstants.PersistenceWeavedLazy_Class.isAssignableFrom(getDescriptor().getJavaClass())) {
             Class attributeType = getAttributeAccessor().getAttributeClass();
             // Check that not already weaved or coded.
             if (!(ClassConstants.ValueHolderInterface_Class.isAssignableFrom(attributeType))) {
@@ -782,7 +782,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         if (isPrivateOwned) getDescriptor().addMappingsPostCalculateChanges(this);
         initializeReferenceDescriptor(session);
         initializeSelectionQuery(session);
-        getIndirectionPolicy().initialize();
+        this.indirectionPolicy.initialize();
     }
 
     /**
@@ -829,7 +829,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * The referenced object is checked if it is instantiated or not
      */
     public boolean isAttributeValueInstantiated(Object object) {
-        return getIndirectionPolicy().objectIsInstantiated(getAttributeValueFromObject(object));
+        return this.indirectionPolicy.objectIsInstantiated(getAttributeValueFromObject(object));
     }
 
     /**
@@ -895,7 +895,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      */
     public void iterate(DescriptorIterator iterator) {
         Object attributeValue = this.getAttributeValueFromObject(iterator.getVisitedParent());
-        this.getIndirectionPolicy().iterateOnAttributeValue(iterator, attributeValue);
+        this.indirectionPolicy.iterateOnAttributeValue(iterator, attributeValue);
     }
 
     /**
@@ -911,7 +911,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * after copying some of the settings from the client value holder.
      */
     public void mergeRemoteValueHolder(Object clientSideDomainObject, Object serverSideDomainObject, MergeManager mergeManager) {
-        getIndirectionPolicy().mergeRemoteValueHolder(clientSideDomainObject, serverSideDomainObject, mergeManager);
+        this.indirectionPolicy.mergeRemoteValueHolder(clientSideDomainObject, serverSideDomainObject, mergeManager);
     }
 
     /**
@@ -1053,7 +1053,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * If the value holder is not instantiated then it is instantiated.
      */
     public void setRealAttributeValueInObject(Object object, Object value) throws DescriptorException {
-        this.getIndirectionPolicy().setRealAttributeValueInObject(object, value);
+        this.indirectionPolicy.setRealAttributeValueInObject(object, value);
     }
 
     /**
@@ -1309,7 +1309,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * This defaults to true and is strongly suggested as it give a huge performance gain.
      */
     public boolean usesIndirection() {
-        return getIndirectionPolicy().usesIndirection();
+        return this.indirectionPolicy.usesIndirection();
     }
     
     /**
@@ -1386,13 +1386,13 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
 
         if (getAttributeAccessor() instanceof InstanceVariableAttributeAccessor) {
             Class attributeType = ((InstanceVariableAttributeAccessor)getAttributeAccessor()).getAttributeType();
-            getIndirectionPolicy().validateDeclaredAttributeType(attributeType, session.getIntegrityChecker());
+            this.indirectionPolicy.validateDeclaredAttributeType(attributeType, session.getIntegrityChecker());
         } else if (getAttributeAccessor().isMethodAttributeAccessor()) {
             Class returnType = ((MethodAttributeAccessor)getAttributeAccessor()).getGetMethodReturnType();
-            getIndirectionPolicy().validateGetMethodReturnType(returnType, session.getIntegrityChecker());
+            this.indirectionPolicy.validateGetMethodReturnType(returnType, session.getIntegrityChecker());
 
             Class parameterType = ((MethodAttributeAccessor)getAttributeAccessor()).getSetMethodParameterType();
-            getIndirectionPolicy().validateSetMethodParameterType(parameterType, session.getIntegrityChecker());
+            this.indirectionPolicy.validateSetMethodParameterType(parameterType, session.getIntegrityChecker());
         }
     }
 

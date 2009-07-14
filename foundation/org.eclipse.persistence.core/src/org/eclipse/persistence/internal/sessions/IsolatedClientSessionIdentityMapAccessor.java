@@ -39,8 +39,8 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      * An IdentityMapAccessor sits between the session and the identityMapManager
      * It needs references in both directions
      */
-    public IsolatedClientSessionIdentityMapAccessor(AbstractSession session, IdentityMapManager identityMapManager) {
-        super(session, identityMapManager);
+    public IsolatedClientSessionIdentityMapAccessor(AbstractSession session) {
+        super(session);
     }
 
     /**
@@ -137,23 +137,14 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
     }
 
     /**
-     * INTERNAL:
-     * Return whether the identity maps contain an item of the given class and key
-     */
-    public boolean containsKey(Vector key, Class theClass, ClassDescriptor descriptor) {
-        if (descriptor.isIsolated()) {
-            return getIdentityMapManager().containsKey(key, theClass, descriptor);
-        } else {
-            return ((IsolatedClientSession)session).getParent().getIdentityMapAccessorInstance().containsKey(key, theClass, descriptor);
-        }
-    }
-
-    /**
      * ADVANCED:
      * Return if their is an object for the primary key.
      */
     public boolean containsObjectInIdentityMap(Vector primaryKey, Class theClass, ClassDescriptor descriptor) {
         if (descriptor.isIsolated()) {
+            if (this.identityMapManager == null) {
+                return false;
+            }
             return getIdentityMapManager().containsKey(primaryKey, theClass, descriptor);
         } else {
             return ((IsolatedClientSession)session).getParent().getIdentityMapAccessorInstance().containsObjectInIdentityMap(primaryKey, theClass, descriptor);
@@ -192,6 +183,9 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      */
     public CacheKey getCacheKeyForObject(Vector primaryKey, Class myClass, ClassDescriptor descriptor) {
         if (descriptor.isIsolated()) {
+            if (this.identityMapManager == null) {
+                return null;
+            }
             return getIdentityMapManager().getCacheKeyForObject(primaryKey, myClass, descriptor);
         } else {
             return ((IsolatedClientSession)session).getParent().getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey, myClass, descriptor);
@@ -206,6 +200,9 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      */
     public CacheKey getCacheKeyForObjectForLock(Vector primaryKey, Class myClass, ClassDescriptor descriptor) {
         if (descriptor.isIsolated()) {
+            if (this.identityMapManager == null) {
+                return null;
+            }
             return getIdentityMapManager().getCacheKeyForObjectForLock(primaryKey, myClass, descriptor);
         } else {
             return ((IsolatedClientSession)session).getParent().getIdentityMapAccessorInstance().getCacheKeyForObjectForLock(primaryKey, myClass, descriptor);
@@ -218,6 +215,9 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      */
     public Object getFromIdentityMap(Vector primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
         if (descriptor.isIsolated()) {
+            if (this.identityMapManager == null) {
+                return null;
+            }
             return getIdentityMapManager().getFromIdentityMap(primaryKey, theClass, shouldReturnInvalidatedObjects, descriptor);
         } else {
             return ((IsolatedClientSession)session).getParent().getIdentityMapAccessorInstance().getFromIdentityMap(primaryKey, theClass, shouldReturnInvalidatedObjects, descriptor);
@@ -245,6 +245,9 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      */
     public Object getFromIdentityMapWithDeferredLock(Vector primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
         if (descriptor.isIsolated()) {
+            if (this.identityMapManager == null) {
+                return null;
+            }
             return getIdentityMapManager().getFromIdentityMapWithDeferredLock(primaryKey, theClass, shouldReturnInvalidatedObjects, descriptor);
         } else {
             return ((IsolatedClientSession)session).getParent().getIdentityMapAccessorInstance().getFromIdentityMapWithDeferredLock(primaryKey, theClass, shouldReturnInvalidatedObjects, descriptor);
@@ -258,7 +261,11 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      * be overridden in sub classes.
      */
     public IdentityMapManager getIdentityMapManager() {
-        return identityMapManager;
+        // PERF: Lazy init manager as normally isolated object are only read in the unit of work.
+        if (this.identityMapManager == null) {
+            this.identityMapManager = new IdentityMapManager(this.session);
+        }
+        return this.identityMapManager;
     }
 
     /**

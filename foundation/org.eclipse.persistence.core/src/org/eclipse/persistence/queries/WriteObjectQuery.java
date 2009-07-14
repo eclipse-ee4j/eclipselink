@@ -76,10 +76,10 @@ public class WriteObjectQuery extends ObjectLevelModifyQuery {
             }
         } else {
             //Initialize does exist query
-            DoesExistQuery existQuery = (DoesExistQuery)getDescriptor().getQueryManager().getDoesExistQuery().clone();
+            DoesExistQuery existQuery = (DoesExistQuery)this.descriptor.getQueryManager().getDoesExistQuery().clone();
             existQuery.setObject(getObject());
             existQuery.setPrimaryKey(getPrimaryKey());
-            existQuery.setDescriptor(getDescriptor());
+            existQuery.setDescriptor(this.descriptor);
             existQuery.setTranslationRow(getTranslationRow());
 
             doesExist = ((Boolean)getSession().executeQuery(existQuery)).booleanValue();
@@ -150,7 +150,7 @@ public class WriteObjectQuery extends ObjectLevelModifyQuery {
         // Set the tranlation row, it may already be set in the custom query situation.
         // PERF: Only build the translation row for updates, as inserts do not have a where clause.
         if ((!isInsertObjectQuery()) && ((getTranslationRow() == null) || (getTranslationRow().isEmpty()))) {
-            setTranslationRow(getDescriptor().getObjectBuilder().buildRowForTranslation(getObject(), getSession()));
+            setTranslationRow(this.descriptor.getObjectBuilder().buildRowForTranslation(getObject(), getSession()));
         }
     }
 }

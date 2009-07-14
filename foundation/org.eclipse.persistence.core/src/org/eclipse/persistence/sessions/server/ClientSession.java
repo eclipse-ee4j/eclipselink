@@ -67,7 +67,8 @@ public class ClientSession extends AbstractSession {
     }
     
     public ClientSession(ServerSession parent, ConnectionPolicy connectionPolicy, Map properties) {
-        super(parent.getProject());
+        super();
+        this.project = parent.getProject();
         if (connectionPolicy.isUserDefinedConnection()) {
             // PERF: project only requires clone if login is different
             this.setProject((Project)getProject().clone());
@@ -85,12 +86,17 @@ public class ClientSession extends AbstractSession {
         this.isInProfile = parent.isInProfile();
         this.commitManager = parent.getCommitManager();
         this.sessionLog = parent.getSessionLog();
-        this.eventManager = parent.getEventManager().clone(this);
+        if (parent.hasEventManager()) {
+            this.eventManager = parent.getEventManager().clone(this);
+        }
         this.exceptionHandler = parent.getExceptionHandler();
         this.pessimisticLockTimeoutDefault = parent.getPessimisticLockTimeoutDefault();
-        this.queryTimeoutDefault=parent.getQueryTimeoutDefault();
+        this.queryTimeoutDefault = parent.getQueryTimeoutDefault();
         this.properties = properties;
-        this.eventManager.postAcquireClientSession();
+        if (this.eventManager != null) {
+            this.eventManager.postAcquireClientSession();
+        }
+        this.descriptors = parent.getDescriptors();
         incrementProfile(SessionProfiler.ClientSessionCreated);
     }
 
@@ -230,16 +236,6 @@ public class ClientSession extends AbstractSession {
      */
     public ConnectionPolicy getConnectionPolicy() {
         return connectionPolicy;
-    }
-
-    /**
-     * INTERNAL:
-     * Was PUBLIC: customer will be redirected to {@link org.eclipse.persistence.sessions.Session}.
-     * Return all registered descriptors.
-     * The clients session inherits its parent's descriptors.
-     */
-    public Map getDescriptors() {
-        return this.parent.getDescriptors();
     }
 
     /**
@@ -458,7 +454,9 @@ public class ClientSession extends AbstractSession {
         if (!isActive()) {
             return;
         }
-        getEventManager().preReleaseClientSession();
+        if (this.eventManager != null) { 
+            this.eventManager.preReleaseClientSession();
+        }
 
         //removed is Lazy check as we should always release the connection once
         //the client session has been released.  It is also required for the 
@@ -470,7 +468,9 @@ public class ClientSession extends AbstractSession {
         // we are not inactive until the connection is  released
         setIsActive(false);
         log(SessionLog.FINER, SessionLog.CONNECTION, "client_released");
-        getEventManager().postReleaseClientSession();
+        if (this.eventManager != null) { 
+            this.eventManager.postReleaseClientSession();
+        }
     }
 
     /**
@@ -573,7 +573,9 @@ public class ClientSession extends AbstractSession {
      * Used by the session to rise an appropriate event.
      */
     public void postConnectExternalConnection(Accessor accessor) {
-        getEventManager().postAcquireConnection(accessor);
+        if (this.eventManager != null) { 
+            this.eventManager.postAcquireConnection(accessor);
+        }
     }
 
     /**
@@ -583,7 +585,9 @@ public class ClientSession extends AbstractSession {
      * Used by the session to rise an appropriate event.
      */
     public void preDisconnectExternalConnection(Accessor accessor) {
-        getEventManager().preReleaseConnection(accessor);
+        if (this.eventManager != null) { 
+            this.eventManager.preReleaseConnection(accessor);
+        }
     }
 
     /**

@@ -2554,10 +2554,6 @@ public class ClassDescriptor implements Cloneable, Serializable {
      */
     public void initialize(AbstractSession session) throws DescriptorException {
         // These cached settings on the project must be set even if descriptor is initialized.
-        // If defined as read-only, add to it's project's default read-only classes collection.
-        if (shouldBeReadOnly() && (!session.getDefaultReadOnlyClasses().contains(getJavaClass()))) {
-            session.getDefaultReadOnlyClasses().add(getJavaClass());
-        }
         if (getHistoryPolicy() != null) {
             session.getProject().setHasGenericHistorySupport(true);
         }
@@ -2565,6 +2561,9 @@ public class ClassDescriptor implements Cloneable, Serializable {
         // Record that there is an isolated class in the project.
         if (isIsolated()) {
             session.getProject().setHasIsolatedClasses(true);
+        }
+        if (!shouldIsolateObjectsInUnitOfWork() && !shouldBeReadOnly()) {
+            session.getProject().setHasNonIsolatedUOWClasses(true);
         }
 
         // Avoid repetitive initialization (this does not solve loops)
@@ -3007,15 +3006,15 @@ public class ClassDescriptor implements Cloneable, Serializable {
 
     /**
      * PUBLIC:
-     * Return if the java class is interface
+     * Return if the java class is an interface.
      */
     public boolean isDescriptorForInterface() {
-        return (getDescriptorType() == INTERFACE);
+        return this.descriptorType == INTERFACE;
     }
 
     /**
      * PUBLIC
-     * return true if this descriptor is any type of aggregate descriptor
+     * return true if this descriptor is any type of aggregate descriptor.
      */
     public boolean isDescriptorTypeAggregate(){
         return this.descriptorType == AGGREGATE_COLLECTION || this.descriptorType == AGGREGATE;
@@ -3952,7 +3951,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * Objects will be built in the unit of work, and never merged into the session cache.
      */
     public boolean shouldIsolateObjectsInUnitOfWork() {
-        return getUnitOfWorkCacheIsolationLevel() == ISOLATE_CACHE_ALWAYS;
+        return this.unitOfWorkCacheIsolationLevel == ISOLATE_CACHE_ALWAYS;
     }
           
     /**
@@ -3960,7 +3959,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * Return if the unit of work should by-pass the session cache after an early transaction.
      */
     public boolean shouldIsolateObjectsInUnitOfWorkEarlyTransaction() {
-        return getUnitOfWorkCacheIsolationLevel() == ISOLATE_CACHE_AFTER_TRANSACTION;
+        return this.unitOfWorkCacheIsolationLevel == ISOLATE_CACHE_AFTER_TRANSACTION;
     }
               
     /**
@@ -3968,7 +3967,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * Return if the unit of work should use the session cache after an early transaction.
      */
     public boolean shouldUseSessionCacheInUnitOfWorkEarlyTransaction() {
-        return getUnitOfWorkCacheIsolationLevel() == USE_SESSION_CACHE_AFTER_TRANSACTION;
+        return this.unitOfWorkCacheIsolationLevel == USE_SESSION_CACHE_AFTER_TRANSACTION;
     }
     
     /**

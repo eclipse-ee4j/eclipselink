@@ -201,11 +201,10 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
      * Ensure that the descriptor has been set.
      */
     public void checkDescriptor(AbstractSession session) throws QueryException {
-        if (getReferenceClass() == null) {
-            throw QueryException.referenceClassMissing(this);
-        }
-
-        if (getDescriptor() == null) {
+        if (this.descriptor == null) {
+            if (getReferenceClass() == null) {
+                throw QueryException.referenceClassMissing(this);
+            }
             ClassDescriptor referenceDescriptor;
             //Bug#3947714  In case getSelectionObject() is proxy            
             if (getSelectionObject() != null && session.getProject().hasProxyIndirection()) {
@@ -225,7 +224,9 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
      * The cache check is done before the prepare as a hit will not require the work to be done.
      */
     protected Object checkEarlyReturnImpl(AbstractSession session, AbstractRecord translationRow) {
-        if (shouldCheckCache() && shouldMaintainCache() && (!shouldRefreshIdentityMapResult()) && (!(session.isRemoteSession() && (shouldRefreshRemoteIdentityMapResult() || getDescriptor().shouldDisableCacheHitsOnRemote()))) && (!(shouldCheckDescriptorForCacheUsage() && getDescriptor().shouldDisableCacheHits())) && (!getDescriptor().isDescriptorForInterface())) {
+        if (shouldCheckCache() && shouldMaintainCache() && (!shouldRefreshIdentityMapResult())
+                && (!(session.isRemoteSession() && (shouldRefreshRemoteIdentityMapResult() || this.descriptor.shouldDisableCacheHitsOnRemote())))
+                && (!(shouldCheckDescriptorForCacheUsage() && this.descriptor.shouldDisableCacheHits())) && (!this.descriptor.isDescriptorForInterface())) {
             Object cachedObject = getQueryMechanism().checkCacheForObject(translationRow, session);
 
             // Optimization: If find deleted object by exact primary
@@ -235,7 +236,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
             }
             if (cachedObject != null) {
                 if (shouldLoadResultIntoSelectionObject()) {
-                    ObjectBuilder builder = getDescriptor().getObjectBuilder();
+                    ObjectBuilder builder = this.descriptor.getObjectBuilder();
                     builder.copyInto(cachedObject, getSelectionObject());
                     //put this object into the cache.  This may cause some loss of identity
                     session.getIdentityMapAccessorInstance().putInIdentityMap(getSelectionObject());
@@ -258,7 +259,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
                 }
             }
             if (shouldUseWrapperPolicy()) {
-                cachedObject = getDescriptor().getObjectBuilder().wrapObject(cachedObject, session);
+                cachedObject = this.descriptor.getObjectBuilder().wrapObject(cachedObject, session);
             }            
             return cachedObject;
         } else {
@@ -282,19 +283,20 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
             // Check if user defined a custom query in the query manager.
             if (!isUserDefined()) {
                 if (!isCallQuery()) {
-                    DescriptorQueryManager descriptorQueryManager = getDescriptor().getQueryManager();
+                    DescriptorQueryManager descriptorQueryManager = this.descriptor.getQueryManager();
         
                     // By default all descriptors have a custom ("static") read-object query.
                     // This allows the read-object query and SQL to be prepare once.
                     if (descriptorQueryManager.hasReadObjectQuery()) {
                         // If the query require special SQL generation or execution do not use the static read object query.
                         // PERF: the read-object query should always be static to ensure no regeneration of SQL.
-                        if ((!hasJoining() || !getJoinedAttributeManager().hasJoinedAttributeExpressions()) && (!hasPartialAttributeExpressions()) && (!hasAsOfClause()) && (!hasNonDefaultFetchGroup()) && (getHintString() == null) && wasDefaultLockMode() && shouldIgnoreBindAllParameters() && (!hasFetchGroup()) && (getFetchGroupName() == null) && shouldUseDefaultFetchGroup()) {
+                        if ((!hasJoining() || !getJoinedAttributeManager().hasJoinedAttributeExpressions()) && (!hasPartialAttributeExpressions()) && (!hasAsOfClause()) && (!hasNonDefaultFetchGroup()) && (getHintString() == null)
+                                && wasDefaultLockMode() && shouldIgnoreBindAllParameters() && (!hasFetchGroup()) && (getFetchGroupName() == null) && shouldUseDefaultFetchGroup()) {
                             if ((getSelectionKey() != null) || (getSelectionObject() != null)) {// Must be primary key.
                                 setIsCustomQueryUsed(true);
                             } else {            
                                 if (getSelectionCriteria() != null) {
-                                    AbstractRecord primaryKeyRow = getDescriptor().getObjectBuilder().extractPrimaryKeyRowFromExpression(getSelectionCriteria(), translationRow, session);
+                                    AbstractRecord primaryKeyRow = this.descriptor.getObjectBuilder().extractPrimaryKeyRowFromExpression(getSelectionCriteria(), translationRow, session);
                 
                                     // Only execute the query if the selection criteria has the primary key fields set
                                     if (primaryKeyRow != null) {
@@ -312,7 +314,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
         }
         
         if (isCustomQueryUsed().booleanValue()) {
-            return getDescriptor().getQueryManager().getReadObjectQuery();
+            return this.descriptor.getQueryManager().getReadObjectQuery();
         } else {
             return null;
         }
@@ -332,7 +334,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
         if (buildDirectlyFromRows) {
             implementation = result;
         } else {
-            implementation = getDescriptor().getObjectBuilder().unwrapObject(result, unitOfWork.getParent());
+            implementation = this.descriptor.getObjectBuilder().unwrapObject(result, unitOfWork.getParent());
         }
 
         if ((getSelectionCriteria() != null) && (getSelectionKey() == null) && (getSelectionObject() == null)) {
@@ -347,7 +349,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
         }
 
         if (shouldUseWrapperPolicy()) {
-            return getDescriptor().getObjectBuilder().wrapObject(clone, unitOfWork);
+            return this.descriptor.getObjectBuilder().wrapObject(clone, unitOfWork);
         } else {
             return clone;
         }
@@ -405,10 +407,10 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
      * @return object - the first object found or null if none.
      */
     protected Object executeObjectLevelReadQuery() throws DatabaseException {
-        if (getDescriptor().isDescriptorForInterface()  || getDescriptor().hasTablePerClassPolicy()) {
-            Object returnValue = getDescriptor().getInterfacePolicy().selectOneObjectUsingMultipleTableSubclassRead(this);
+        if (this.descriptor.isDescriptorForInterface()  || this.descriptor.hasTablePerClassPolicy()) {
+            Object returnValue = this.descriptor.getInterfacePolicy().selectOneObjectUsingMultipleTableSubclassRead(this);
             
-            if (getDescriptor().hasTablePerClassPolicy() && returnValue == null) {
+            if (this.descriptor.hasTablePerClassPolicy() && returnValue == null) {
                 // let it fall through to query the root.
             } else {
                 setExecutionTime(System.currentTimeMillis());
@@ -483,7 +485,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
                 return null;
             }
             ResultSetMetaData metaData = resultSet.getMetaData();
-            return getDescriptor().getObjectBuilder().buildWorkingCopyCloneFromResultSet(this, null, resultSet, unitOfWork, accessor, metaData, platform);
+            return this.descriptor.getObjectBuilder().buildWorkingCopyCloneFromResultSet(this, null, resultSet, unitOfWork, accessor, metaData, platform);
         } catch (SQLException exception) {
             exceptionOccured = true;
             DatabaseException commException = accessor.processExceptionForCommError(session, exception, call);
@@ -670,10 +672,10 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
         if (shouldPrepare()) {
             if (getSelectionKey() != null) {
                 // Row must come from the key.
-                setTranslationRow(getDescriptor().getObjectBuilder().buildRowFromPrimaryKeyValues(getSelectionKey(), getSession()));
+                setTranslationRow(this.descriptor.getObjectBuilder().buildRowFromPrimaryKeyValues(getSelectionKey(), getSession()));
             } else if (getSelectionObject() != null) {
                 // The expression is set in the prepare as params.
-                setTranslationRow(getDescriptor().getObjectBuilder().buildRowForTranslation(getSelectionObject(), getSession()));
+                setTranslationRow(this.descriptor.getObjectBuilder().buildRowForTranslation(getSelectionObject(), getSession()));
             }
         }
     }
@@ -712,7 +714,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
         if (result == null) {
             return null;
         }
-        if (shouldConformResultsInUnitOfWork() || getDescriptor().shouldAlwaysConformResultsInUnitOfWork()) {
+        if (shouldConformResultsInUnitOfWork() || this.descriptor.shouldAlwaysConformResultsInUnitOfWork()) {
             return conformResult(result, unitOfWork, arguments, buildDirectlyFromRows);
         }
         Object clone = null;
@@ -723,7 +725,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
         }
 
         if (shouldUseWrapperPolicy()) {
-            clone = getDescriptor().getObjectBuilder().wrapObject(clone, unitOfWork);
+            clone = this.descriptor.getObjectBuilder().wrapObject(clone, unitOfWork);
         }
         return clone;
     }
@@ -860,7 +862,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
      * Return if the query has an non-default fetch group defined for itself.
      */
     protected boolean hasNonDefaultFetchGroup() {
-        return getDescriptor().hasFetchGroupManager() && ((this.getFetchGroup() != null) || (this.getFetchGroupName() != null) || (!this.shouldUseDefaultFetchGroup()));
+        return this.descriptor.hasFetchGroupManager() && ((this.fetchGroup != null) || (this.fetchGroupName != null) || (!this.shouldUseDefaultFetchGroup));
 
     }
 }

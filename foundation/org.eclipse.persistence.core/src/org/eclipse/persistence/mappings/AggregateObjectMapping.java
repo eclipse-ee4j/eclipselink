@@ -886,11 +886,11 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * Since aggregate object mappings clone their descriptors, for inheritance the correct child clone must be found.
      */
     public ClassDescriptor getReferenceDescriptor(Class theClass, AbstractSession session) {
-        if (getReferenceDescriptor().getJavaClass().equals(theClass)) {
-            return getReferenceDescriptor();
+        if (this.referenceDescriptor.getJavaClass() == theClass) {
+            return this.referenceDescriptor;
         }
 
-        ClassDescriptor subDescriptor = getReferenceDescriptor().getInheritancePolicy().getSubclassDescriptor(theClass);
+        ClassDescriptor subDescriptor = this.referenceDescriptor.getInheritancePolicy().getSubclassDescriptor(theClass);
         if (subDescriptor == null) {
             throw DescriptorException.noSubClassMatch(theClass, this);
         } else {
