@@ -554,6 +554,7 @@ public class SessionBroker extends DatabaseSessionImpl {
             if (databaseSession.getProject().hasNonIsolatedUOWClasses()) {
                 getProject().setHasNonIsolatedUOWClasses(true);
             }
+            getProject().getDefaultReadOnlyClasses().addAll(databaseSession.getProject().getDefaultReadOnlyClasses());
         }
         
         // ServerSessionBroker doesn't need sequencing.

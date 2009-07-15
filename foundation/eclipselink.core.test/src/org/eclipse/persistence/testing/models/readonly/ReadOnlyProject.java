@@ -456,9 +456,9 @@ public class ReadOnlyProject extends org.eclipse.persistence.sessions.Project {
         descriptor.addDirectMapping("id", "HOLLYWOODAGENT_ID");
         descriptor.addDirectMapping("name", "NAME");
 
-        descriptor.setShouldBeReadOnly(true);
-
         addDescriptor(descriptor);
+        
+        addDefaultReadOnlyClass(ReadOnlyHollywoodAgent.class);
     }
 
     /**
