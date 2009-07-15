@@ -174,7 +174,7 @@
         <run_jaxb_srg_tests runpathref="jaxb.run.path.against.jar"/>
         <run_oxm_srg_tests runpathref="oxm.run.path.against.jar"/>
     </target>
-	<target name="compile-and-run-jaxb-tests-against-jar" depends="compile-tests-against-jar" description="build and run moxy (oxm) tests against eclipselink.jar">
+    <target name="compile-and-run-jaxb-tests-against-jar" depends="compile-tests-against-jar" description="build and run moxy (oxm) tests against eclipselink.jar">
         <run_jaxb_tests runpathref="jaxb.run.path.against.jar"/>
     </target>
     <target name="compile-and-run-oxm-tests-against-jar" depends="compile-tests-against-jar" description="build and run moxy (oxm) tests against eclipselink.jar">
@@ -305,7 +305,7 @@
         <attribute name="runpathref"/>
         <sequential>
             <delete dir="${eclipselink.moxy.test}/${report.dir}/srg/jaxb" includeEmptyDirs="true" failonerror="false"/>
-			<mkdir dir="${eclipselink.moxy.test}/${report.dir}/srg/jaxb"/>
+            <mkdir dir="${eclipselink.moxy.test}/${report.dir}/srg/jaxb"/>
             <mkdir dir="${eclipselink.moxy.test}/${resource.dir}/${tmp.dir}"/>
             <junit printsummary="yes" fork="true" dir="${eclipselink.moxy.test}/${resource.dir}" showoutput="yes">
                 <env key="T_WORK" value="${tmp.dir}"/>
@@ -331,8 +331,8 @@
         <attribute name="runpathref"/>
         <sequential>
             <delete dir="${eclipselink.moxy.test}/${report.dir}/srg/oxm" includeEmptyDirs="true" failonerror="false"/>
-			<mkdir dir="${eclipselink.moxy.test}/${report.dir}/srg/oxm"/>
-			<mkdir dir="${eclipselink.moxy.test}/${report.dir}/srg/oxm/default"/>
+            <mkdir dir="${eclipselink.moxy.test}/${report.dir}/srg/oxm"/>
+            <mkdir dir="${eclipselink.moxy.test}/${report.dir}/srg/oxm/default"/>
             <junit printsummary="yes" fork="true" dir="${eclipselink.moxy.test}/${resource.dir}" showoutput="yes" maxmemory="512m">
                 <sysproperty key="useLogging" value="false"/>
                 <sysproperty key="eclipselink.xml.platform" value="${xml.platform}"/>
@@ -361,7 +361,7 @@
                 <syspropertyset refid="parser.properties"/>
                 <batchtest todir="${eclipselink.moxy.test}/${report.dir}/oxm/default">
                     <fileset dir="${eclipselink.moxy.test}/${src.dir}">
-						<include name="**/ContainerAccessorTestSuite.java"/>
+                        <include name="**/ContainerAccessorTestSuite.java"/>
                         <include name="**/*MappingTestSuite.java"/>
                         <include name="**/InheritanceTestSuite.java"/>
                         <include name="**/XMLMarshalTestCases.java"/>
@@ -378,6 +378,7 @@
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/DocPresMappingTestSuite.java"/>
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/anyobjectandanycollection/XMLAnyObjectAndAnyCollectionMappingTestSuite.java"/>
                         <exclude name="**/SAXMappingTestSuite.java"/>
+                        <include name="org/eclipse/persistence/testing/oxm/mappings/directcollection/nillable/DirectCollectionMappingNillableTestSuite.java"/>
                     </fileset>
                     <formatter type="xml"/>
                 </batchtest>
@@ -415,6 +416,7 @@
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/choice/XMLChoiceMappingTestSuite.java"/>
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/choicecollection/XMLChoiceCollectionMappingTestSuite.java"/>
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/sequenced/SequencedMappingTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/directcollection/nillable/DirectCollectionMappingNillableTestSuite.java"/>
                     </fileset>
                     <formatter type="xml"/>
                 </batchtest>
@@ -437,7 +439,7 @@
                 <syspropertyset refid="parser.properties"/>
                 <batchtest todir="${eclipselink.moxy.test}/${report.dir}/oxm/deploymentxml">
                     <fileset dir="${eclipselink.moxy.test}/${src.dir}">
-						<include name="**/ContainerAccessorTestSuite.java" />
+                        <include name="**/ContainerAccessorTestSuite.java" />
                         <include name="**/DocumentPreservationTestSuite.java"/>
                         <include name="**/RootElementTestSuite.java"/>
                         <include name="**/XMLRootTestSuite.java"/>
@@ -460,6 +462,7 @@
                         <!--exclude name="org/eclipse/persistence/testing/oxm/mappings/binarydata/XMLBinaryDataMappingTestSuite.java"/>
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/binarydatacollection/XMLBinaryDataCollectionMappingTestSuite.java"/ -->
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/sequenced/SequencedMappingTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/directcollection/nillable/DirectCollectionMappingNillableTestSuite.java"/>
                     </fileset>
                     <formatter type="xml"/>
                 </batchtest>
@@ -506,6 +509,7 @@
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/choice/XMLChoiceMappingTestSuite.java"/>
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/choicecollection/XMLChoiceCollectionMappingTestSuite.java"/>
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/sequenced/SequencedMappingTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/directcollection/nillable/DirectCollectionMappingNillableTestSuite.java"/>
                     </fileset>
                     <formatter type="xml"/>
                 </batchtest>
@@ -546,6 +550,7 @@
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/choice/XMLChoiceMappingTestSuite.java"/>
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/choicecollection/XMLChoiceCollectionMappingTestSuite.java"/>
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/sequenced/SequencedMappingTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/directcollection/nillable/DirectCollectionMappingNillableTestSuite.java"/>
                     </fileset>
                     <formatter type="xml"/>
                 </batchtest>
