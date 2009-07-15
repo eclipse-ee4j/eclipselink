@@ -35,6 +35,7 @@ import org.eclipse.persistence.internal.helper.*;
  */
 public class HistoricalDatabaseTable extends DatabaseTable {
     protected String historicalName;
+    protected String historicalNameDelimited;
 
     public HistoricalDatabaseTable() {
         super();
@@ -54,15 +55,34 @@ public class HistoricalDatabaseTable extends DatabaseTable {
      */
     public HistoricalDatabaseTable(DatabaseTable source, DatabaseTable mirroring) {
         super(source.getName(), source.getTableQualifier());
-        this.historicalName = mirroring.getQualifiedNameDelimited();
+        this.historicalName = mirroring.getQualifiedName();
+        if(mirroring.shouldUseDelimiters()) {
+            this.historicalNameDelimited = mirroring.getQualifiedNameDelimited();
+        }
     }
 
     public void setHistoricalName(String name) {
-        this.historicalName = name;
+        if (name.startsWith(Helper.getStartDatabaseDelimiter()) && name.endsWith(Helper.getEndDatabaseDelimiter())) {
+            this.historicalNameDelimited = name;
+            this.historicalName = this.historicalNameDelimited.replaceAll(Helper.getStartDatabaseDelimiter(), "");
+            this.historicalName = this.historicalName.replaceAll(Helper.getEndDatabaseDelimiter(), "");
+        } else {
+            this.historicalName = name ;
+        }
     }
 
     public String getQualifiedName() {
         if (historicalName != null) {
+            return historicalName;
+        } else {
+            return super.getQualifiedName();
+        }
+    }
+
+    public String getQualifiedNameDelimited() {
+        if (historicalNameDelimited != null) {
+            return historicalNameDelimited;
+        } else if(historicalName != null) {
             return historicalName;
         } else {
             return super.getQualifiedNameDelimited();

@@ -226,7 +226,7 @@ public class DatabaseTable implements Cloneable, Serializable {
      * @param name
      */
     public void setName(String name) {
-        if (name.startsWith(Helper.getStartDatabaseDelimiter()) && name.endsWith(Helper.getEndDatabaseDelimiter())){
+        if (name != null && name.startsWith(Helper.getStartDatabaseDelimiter()) && name.endsWith(Helper.getEndDatabaseDelimiter())){
             this.name = name.substring(1, name.length() - 1);
             useDelimiters = true;
         } else {
@@ -253,6 +253,15 @@ public class DatabaseTable implements Cloneable, Serializable {
         } else {
             setName(possiblyQualifiedName.substring(index + 1, possiblyQualifiedName.length()));
             setTableQualifier(possiblyQualifiedName.substring(0, index));
+
+            if(possiblyQualifiedName.startsWith(Helper.getStartDatabaseDelimiter()) && possiblyQualifiedName.endsWith(Helper.getEndDatabaseDelimiter())) {
+                // It's 'Qualifier.Name' - it should be treated as a single string.
+                // Would that be 'Qualifier'.'Name' both setName and setTableQualifier methods would have set useDelimeters to true.
+                if(!this.useDelimiters) {
+                    setName(possiblyQualifiedName);
+                    this.tableQualifier = "";
+                }
+            }
         }
     }
 
