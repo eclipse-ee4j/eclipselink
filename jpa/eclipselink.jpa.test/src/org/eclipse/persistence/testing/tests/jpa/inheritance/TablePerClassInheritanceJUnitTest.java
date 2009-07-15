@@ -46,7 +46,6 @@ import javax.persistence.EntityManager;
 public class TablePerClassInheritanceJUnitTest extends JUnitTestCase {
     private static Integer assassinId;
     private static Integer specialAssassinId;
-    private static Integer contractedPersonelId;
     private static Integer socialClub1Id;
     private static Integer socialClub2Id;
     private static Integer socialClub3Id;
@@ -133,7 +132,7 @@ public class TablePerClassInheritanceJUnitTest extends JUnitTestCase {
     public void testValidateAssassinWithGun() {
         EntityManager em = createEntityManager();
         
-        Assassin assassin = (Assassin) em.find(Assassin.class, assassinId);
+        Assassin assassin = em.find(Assassin.class, assassinId);
         assertNotNull("The assassin could not be read back.", assassin);
         
         Weapon weapon = assassin.getWeapon();
@@ -147,7 +146,7 @@ public class TablePerClassInheritanceJUnitTest extends JUnitTestCase {
     public void testValidateGunToAssassin() {
         EntityManager em = createEntityManager();
         
-        Gun gun = (Gun) em.find(Gun.class, gunSerialNumber);
+        Gun gun = em.find(Gun.class, gunSerialNumber);
         assertNotNull("The gun could not be read back.", gun);
         
         Assassin assassin = gun.getAssassin();
@@ -162,7 +161,7 @@ public class TablePerClassInheritanceJUnitTest extends JUnitTestCase {
         
         try {
             beginTransaction(em);
-            Assassin assassin = (Assassin) em.find(Assassin.class, assassinId);
+            Assassin assassin = em.find(Assassin.class, assassinId);
             
             // Assassin already has a gun, therefore, correct weapon already set
             // for a direct elimination.
@@ -187,7 +186,7 @@ public class TablePerClassInheritanceJUnitTest extends JUnitTestCase {
     public void testValidateDirectElimination() {
         EntityManager em = createEntityManager();
         
-        Elimination directElimination = (Elimination) em.find(Elimination.class, directEliminationPK);
+        Elimination directElimination = em.find(Elimination.class, directEliminationPK);
         assertNotNull("The direct elimination could not be read back.", directElimination);
         assertTrue("The elimination was not a direct elimination", directElimination.isDirectElimination());
         
@@ -206,7 +205,7 @@ public class TablePerClassInheritanceJUnitTest extends JUnitTestCase {
         try {
             beginTransaction(em);
             
-            Assassin assassin = (Assassin) em.find(Assassin.class, assassinId);
+            Assassin assassin = em.find(Assassin.class, assassinId);
         
             Bomb bomb = new Bomb();
             bomb.setBombType(Bomb.BOMBTYPE.DIRTY);
@@ -237,7 +236,7 @@ public class TablePerClassInheritanceJUnitTest extends JUnitTestCase {
     public void testValidateIndirectElimination() {
         EntityManager em = createEntityManager();
         
-        Elimination indirectElimination = (Elimination) em.find(Elimination.class, indirectEliminationPK);
+        Elimination indirectElimination = em.find(Elimination.class, indirectEliminationPK);
         assertNotNull("The indirect elimination could not be read back.", indirectElimination);
         assertTrue("The elimination was not an idirect elimination", indirectElimination.isIndirectElimination());
         
@@ -253,7 +252,7 @@ public class TablePerClassInheritanceJUnitTest extends JUnitTestCase {
     public void testValidateAssassinWithBombAndEliminations() {
         EntityManager em = createEntityManager();
         
-        Assassin assassin = (Assassin) em.find(Assassin.class, assassinId);
+        Assassin assassin = em.find(Assassin.class, assassinId);
         assertNotNull("The assassin could not be read back.", assassin);
         assassin.getEliminations();
         assertFalse("The assassin didn't have any eliminations", assassin.getEliminations().isEmpty());
@@ -335,14 +334,13 @@ public class TablePerClassInheritanceJUnitTest extends JUnitTestCase {
             ContractedPersonel contractedPersonel = new ContractedPersonel();
             contractedPersonel.setName("Hired Goon");
             em.persist(contractedPersonel);
-            contractedPersonelId = contractedPersonel.getId();
             
             SpecialAssassin specialAssassin = new SpecialAssassin();
             specialAssassin.setName("IED Expert");
             em.persist(specialAssassin);
             specialAssassinId = specialAssassin.getId();
             
-            Assassin assassin = (Assassin) em.find(Assassin.class, assassinId);
+            Assassin assassin = em.find(Assassin.class, assassinId);
             
             socialClub1.addMember(assassin);
             socialClub1.addMember(contractedPersonel);
@@ -355,8 +353,6 @@ public class TablePerClassInheritanceJUnitTest extends JUnitTestCase {
             socialClub3.addMember(specialAssassin);
             
             commitTransaction(em);
-        } catch (Exception exception) {
-            fail("Error creating and adding personel to new social clubs: " + exception.getMessage());
         } finally {
             closeEntityManager(em);
         }
@@ -365,7 +361,7 @@ public class TablePerClassInheritanceJUnitTest extends JUnitTestCase {
     public void testValidateSocialClub1Members() {
         EntityManager em = createEntityManager();
         
-        SocialClub socialClub1 = (SocialClub) createEntityManager().find(SocialClub.class, socialClub1Id);
+        SocialClub socialClub1 = createEntityManager().find(SocialClub.class, socialClub1Id);
         assertNotNull("The social club 1 could not be read back.", socialClub1);
         assertFalse("The member list was empty", socialClub1.getMembers().isEmpty());
         assertTrue("The member count was not the expected 3", socialClub1.getMembers().size() == 3);
@@ -376,7 +372,7 @@ public class TablePerClassInheritanceJUnitTest extends JUnitTestCase {
     public void testValidateSocialClub2Members() {
         EntityManager em = createEntityManager();
         
-        SocialClub socialClub2 = (SocialClub) createEntityManager().find(SocialClub.class, socialClub2Id);
+        SocialClub socialClub2 = createEntityManager().find(SocialClub.class, socialClub2Id);
         assertNotNull("The social club 1 could not be read back.", socialClub2);
         assertFalse("The member list was empty", socialClub2.getMembers().isEmpty());
         assertTrue("The member count was not the expected 2", socialClub2.getMembers().size() == 2);
@@ -387,7 +383,7 @@ public class TablePerClassInheritanceJUnitTest extends JUnitTestCase {
     public void testValidateSocialClub3Members() {
         EntityManager em = createEntityManager();
         
-        SocialClub socialClub3 = (SocialClub) createEntityManager().find(SocialClub.class, socialClub3Id);
+        SocialClub socialClub3 = createEntityManager().find(SocialClub.class, socialClub3Id);
         assertNotNull("The social club 1 could not be read back.", socialClub3);
         assertFalse("The member list was empty", socialClub3.getMembers().isEmpty());
         assertTrue("The member count was not the expected 2", socialClub3.getMembers().size() == 2);

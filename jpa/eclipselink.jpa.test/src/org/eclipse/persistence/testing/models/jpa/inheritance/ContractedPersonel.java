@@ -15,6 +15,7 @@ package org.eclipse.persistence.testing.models.jpa.inheritance;
 
 import static javax.persistence.GenerationType.TABLE;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -51,7 +52,7 @@ public class ContractedPersonel {
         joinColumns=@JoinColumn(name="PERSONEL_ID", referencedColumnName="ID"),
         inverseJoinColumns=@JoinColumn(name="CLUB_ID", referencedColumnName="ID")
     )
-    private List<SocialClub> socialClubs;
+    private List<SocialClub> socialClubs = new ArrayList<SocialClub>();
     
     @Version
     private Integer version;

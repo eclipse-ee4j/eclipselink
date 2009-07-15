@@ -44,6 +44,7 @@ public class ExceptionTestSaveDescriptor extends ExceptionTest {
     public void reset() {
         getSession().setIntegrityChecker(orgIntegrityChecker);
         getSession().getProject().setDescriptors(orgDescriptors);
+        getAbstractSession().clearDescriptors();
         //the next method re-addes all descriptor back into hashtable BUT this was changed for 10
         getSession().getProject().setOrderedDescriptors(orgOrderedDescriptor); //added
     }
