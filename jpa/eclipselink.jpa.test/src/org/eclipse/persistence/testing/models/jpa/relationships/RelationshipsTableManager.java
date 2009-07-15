@@ -776,7 +776,7 @@ public class RelationshipsTableManager extends TableCreator {
         table.addField(fieldREP_ID);
         
         FieldDefinition fieldCALL_ID = new FieldDefinition();
-        fieldCALL_ID.setName("customerServiceInteractions_KEY");
+        fieldCALL_ID.setName("cSInteractions_KEY");
         fieldCALL_ID.setTypeName("NUMBER");
         fieldCALL_ID.setSize(15);
         fieldCALL_ID.setSubSize(0);

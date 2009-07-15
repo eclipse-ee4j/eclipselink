@@ -132,20 +132,20 @@ public class Customer implements java.io.Serializable{
             inverseJoinColumns=
             @JoinColumn(name="REP_ID", referencedColumnName="ID")
     )
-    public Map<ServiceCall, CustomerServiceRepresentative> getCustomerServiceInteractions(){
+    public Map<ServiceCall, CustomerServiceRepresentative> getCSInteractions(){
         return customerServiceInteractions;
     }
     
-    public void setCustomerServiceInteractions(Map<ServiceCall, CustomerServiceRepresentative> interactions){
+    public void setCSInteractions(Map<ServiceCall, CustomerServiceRepresentative> interactions){
         this.customerServiceInteractions = interactions;
     }
     
-    public void addCustomerServiceInteraction(ServiceCall call, CustomerServiceRepresentative rep){
+    public void addCSInteraction(ServiceCall call, CustomerServiceRepresentative rep){
         customerServiceInteractions.put(call, rep);
         rep.addCustomer(this);
     }
     
-    public void removeCustomerServiceInteraction(ServiceCall call){
+    public void removeCSInteraction(ServiceCall call){
         customerServiceInteractions.remove(call);
     }
 }

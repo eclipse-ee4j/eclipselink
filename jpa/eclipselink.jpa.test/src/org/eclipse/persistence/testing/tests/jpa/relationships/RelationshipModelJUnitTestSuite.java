@@ -223,7 +223,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
         ServiceCall call = new ServiceCall();
         call.setDescription("Trade from Habs.");
         
-        cust.addCustomerServiceInteraction(call, rep);
+        cust.addCSInteraction(call, rep);
         
         em.persist(call);
         em.persist(cust);
