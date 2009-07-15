@@ -27,13 +27,24 @@ public class NestedTable extends DatabaseTable {
         super();
         this.queryKeyExpression = queryKeyExpression;
         name = (queryKeyExpression.getMapping().getDescriptor().getTables().firstElement()).getName();
-        tableQualifier = (queryKeyExpression.getMapping().getDescriptor().getTables().firstElement()).getQualifiedNameDelimited();
+        tableQualifier = (queryKeyExpression.getMapping().getDescriptor().getTables().firstElement()).getQualifiedName();
     }
 
     /**
-     * INTRENAL:
+     * INTERNAL:
      */
     public String getQualifiedName() {
+        return getQualifiedName(false);
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public String getQualifiedNameDelimited() {
+        return getQualifiedName(true);
+    }
+    
+    private String getQualifiedName(boolean allowDelimiters){
         if (qualifiedName == null) {
             // Print nested table using the TABLE function.
             DatabaseMapping mapping = queryKeyExpression.getMapping();
@@ -43,9 +54,21 @@ public class NestedTable extends DatabaseTable {
 
             StringBuffer name = new StringBuffer();
             name.append("TABLE(");
+            if (allowDelimiters && useDelimiters){
+                name.append(Helper.getStartDatabaseDelimiter());
+            }
             name.append(tableAlias.getName());
+            if (allowDelimiters && useDelimiters){
+                name.append(Helper.getEndDatabaseDelimiter());
+            }
             name.append(".");
+            if (allowDelimiters && useDelimiters){
+                name.append(Helper.getStartDatabaseDelimiter());
+            }
             name.append(mapping.getField().getNameDelimited());
+            if (allowDelimiters && useDelimiters){
+                name.append(Helper.getEndDatabaseDelimiter());
+            }
             name.append(")");
 
             qualifiedName = name.toString();
@@ -53,7 +76,7 @@ public class NestedTable extends DatabaseTable {
 
         return qualifiedName;
     }
-
+    
     public QueryKeyExpression getQuerykeyExpression() {
         return queryKeyExpression;
     }

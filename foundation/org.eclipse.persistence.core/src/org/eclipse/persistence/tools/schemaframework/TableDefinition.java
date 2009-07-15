@@ -380,7 +380,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
 
         fkConstraint.setSourceFields(sourceFields);
         fkConstraint.setTargetFields(targetFields);
-        fkConstraint.setTargetTable(tempTargetField.getTable().getQualifiedName());
+        fkConstraint.setTargetTable(tempTargetField.getTable().getQualifiedNameDelimited());
         String tempName = buildForeignKeyConstraintName(this.getName(), tempSourceField.getName(), platform.getMaxForeignKeyNameSize());
 
         fkConstraint.setName(tempName);
