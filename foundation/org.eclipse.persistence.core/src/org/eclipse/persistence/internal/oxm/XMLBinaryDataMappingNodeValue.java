@@ -100,7 +100,7 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
                 String c_id = "";
                 if (objectValue.getClass() == ClassConstants.APBYTE) {
                     byte[] bytes = (byte[]) objectValue;
-                    c_id = marshaller.getAttachmentMarshaller().addMtomAttachment(bytes, 0, bytes.length, lastFrag.getLocalName(), lastFrag.getNamespaceURI(), null);
+                    c_id = marshaller.getAttachmentMarshaller().addMtomAttachment(bytes, 0, bytes.length, this.xmlBinaryDataMapping.getMimeType(), lastFrag.getLocalName(), lastFrag.getNamespaceURI());
                 } else if (xmlBinaryDataMapping.getAttributeClassification() == XMLBinaryDataHelper.getXMLBinaryDataHelper().DATA_HANDLER) {
                     c_id = marshaller.getAttachmentMarshaller().addMtomAttachment((DataHandler) objectValue, lastFrag.getLocalName(), lastFrag.getNamespaceURI());
                 } else {

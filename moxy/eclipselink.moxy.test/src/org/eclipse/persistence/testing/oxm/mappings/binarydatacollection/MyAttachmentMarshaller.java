@@ -52,7 +52,7 @@ public class MyAttachmentMarshaller implements XMLAttachmentMarshaller {
         return id;
     }
 
-    public String addMtomAttachment(byte[] bytes, int start, int offset, String namespaceURI, String elemtnName, String mimeType) {
+    public String addMtomAttachment(byte[] bytes, int start, int offset, String mimeType, String elemtnName, String namespaceURI) {
         String id = MyAttachmentUnmarshaller.ATTACHMENT_TEST_ID;
 
         //String id = MyAttachmentUnmarshaller.ATTACHMENT_PREFIX +  MyAttachmentMarshaller.count;
