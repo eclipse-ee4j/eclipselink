@@ -100,20 +100,6 @@ public class DirectCollectionMappingTestSuite extends TestCase {
         suite.addTestSuite(DirectCollectionErrorTestCases.class);
         suite.addTest(UnionTestCases.suite());
 
-        // NodeNullPolicy test cases see: TopLinkOXM-Nillable4_blaise.doc
-        // see: TopLink_OX_Nillable_TestDesignSpec_v20061026.doc
-        // UC2a
-        suite.addTestSuite(DirectCollectionOptionalNodeNullPolicyElementTestCases.class);// 6 of 6 pass by default
-        // UC2b
-        //suite.addTestSuite(DirectCollectionOptionalNodeNullPolicyAttributeTestCases.class);// 6 of 6 pass by default
-        // UC3
-        // see #5876860: we are turning off failing Nillable tests for collections until the feature is implemented
-        //suite.addTestSuite(DirectCollectionNillableNodeNullPolicyTestCases.class);// 3 of 6 pass until implementation set
-        // UC4-true
-        // see #5876860: we are turning off failing Nillable tests for collections until the feature is implemented
-        //suite.addTestSuite(DirectCollectionIsSetNodeNullPolicyTrueTestCases.class);// 3 of 6 pass until implementation set
-        // UC4-false - n/a
-
         suite.addTestSuite(XMLDirectCollectionOfListsTestCases.class);
 
         return suite;

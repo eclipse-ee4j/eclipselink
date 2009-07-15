@@ -19,6 +19,8 @@ import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 //EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
+import org.eclipse.persistence.internal.sessions.factories.ObjectPersistenceRuntimeXMLProject_11_1_1.NullPolicyAttributeAccessor;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.mappings.converters.EnumTypeConverter;
 import org.eclipse.persistence.mappings.transformers.ConstantTransformer;
@@ -28,6 +30,7 @@ import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.oxm.mappings.converters.XMLListConverter;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
 import org.eclipse.persistence.oxm.schema.XMLSchemaClassPathReference;
@@ -305,5 +308,22 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends ObjectPersist
         //NULL_SQL_TYPE
         descriptor.addMapping(colDefMapping);
         return descriptor;
-    } 
+    }
+
+    
+    
+    @Override
+    protected ClassDescriptor buildXMLCompositeDirectCollectionMappingDescriptor() {
+        XMLDescriptor descriptor = (XMLDescriptor) super.buildXMLCompositeDirectCollectionMappingDescriptor();
+
+        XMLCompositeObjectMapping aMapping = new XMLCompositeObjectMapping();
+        aMapping.setReferenceClass(AbstractNullPolicy.class);
+        aMapping.setAttributeName("nullPolicy");
+        aMapping.setXPath(getPrimaryNamespaceXPath() + "null-policy");
+        ((DatabaseMapping)aMapping).setAttributeAccessor(new NullPolicyAttributeAccessor());
+        descriptor.addMapping(aMapping);
+        
+        return descriptor;
+    }
+
 }

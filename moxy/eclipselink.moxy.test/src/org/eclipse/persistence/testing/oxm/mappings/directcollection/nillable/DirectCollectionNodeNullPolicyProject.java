@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2009 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.mappings.directcollection.nillable;
 
+import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
@@ -27,7 +29,6 @@ public class DirectCollectionNodeNullPolicyProject extends Project {
     public DirectCollectionNodeNullPolicyProject(boolean fieldsAsElements) {
         XMLDescriptor aDescriptor = getEmployeeDescriptor(fieldsAsElements);
 
-        //aDescriptor.addMapping(aMapping);
         addDescriptor(aDescriptor);
     }
 
@@ -58,21 +59,30 @@ public class DirectCollectionNodeNullPolicyProject extends Project {
         idMapping.setXPath(xPathPrepend + "id" + xPathAppend);
         descriptor.addMapping(idMapping);
 
-        //XMLDirectMapping firstNameMapping = new XMLDirectMapping();
-        //firstNameMapping.setAttributeName("firstName");
-        //firstNameMapping.setXPath(xPathPrepend + "first-name" + xPathAppend);
-        //descriptor.addMapping(firstNameMapping);
+        XMLDirectMapping firstNameMapping = new XMLDirectMapping();
+        firstNameMapping.setAttributeName("firstName");
+        firstNameMapping.setXPath(xPathPrepend + "first-name" + xPathAppend);
+        descriptor.addMapping(firstNameMapping);
 
         XMLCompositeDirectCollectionMapping taskMapping = new XMLCompositeDirectCollectionMapping();
         taskMapping.setAttributeName("tasks");
-        taskMapping.setXPath(xPathPrepend + "task" + xPathAppend);
+        if (fieldsAsElements) {
+            taskMapping.setXPath(xPathPrepend + "task" + xPathAppend);
+        } else {
+            taskMapping.setXPath("tasks/" + xPathPrepend + "task" + xPathAppend);
+        }
         descriptor.addMapping(taskMapping);
 
         XMLDirectMapping lastNameMapping = new XMLDirectMapping();
         lastNameMapping.setAttributeName("lastName");
         lastNameMapping.setXPath(xPathPrepend + "last-name" + xPathAppend);
         descriptor.addMapping(lastNameMapping);
-        
+
+        NamespaceResolver nsr = new NamespaceResolver();
+        nsr.put(XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
+        descriptor.setNamespaceResolver(nsr);
+
         return descriptor;
     }
+
 }

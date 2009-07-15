@@ -25,6 +25,8 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
 import org.eclipse.persistence.mappings.foundation.AbstractCompositeDirectCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 
@@ -214,12 +216,15 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
  *
  * @since Oracle TopLink 10<i>g</i> Release 2 (10.1.3)
  */
-public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirectCollectionMapping implements XMLMapping {
+public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirectCollectionMapping implements XMLMapping, XMLNillableMapping {
     private boolean isCDATA;
     private boolean isWriteOnly;
+    private AbstractNullPolicy nullPolicy;
 
     public XMLCompositeDirectCollectionMapping() {
         super();
+        this.nullPolicy = new NullPolicy();
+        this.nullPolicy.setNullRepresentedByEmptyNode(true);
     }
 
     /**
@@ -383,5 +388,13 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
         getAttributeAccessor().setIsReadOnly(this.isReadOnly());
         super.preInitialize(session);
     }
-    
+
+    public AbstractNullPolicy getNullPolicy() {
+        return this.nullPolicy;
+    }
+
+    public void setNullPolicy(AbstractNullPolicy value) {
+        this.nullPolicy = value;
+    }
+
 }

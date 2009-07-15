@@ -3424,6 +3424,7 @@
       <xsd:extension base="abstract-composite-direct-collection-mapping">
         <xsd:sequence>
           <xsd:element minOccurs="0" name="is-cdata" type="xsd:boolean" />
+          <xsd:element minOccurs="0" name="null-policy" type="abstract-null-policy" />
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>

@@ -1115,7 +1115,10 @@ public class MappingsGenerator {
             ((XMLField) mapping.getField()).setSchemaType(XMLConstants.QNAME_QNAME);
         }
         
-       	
+        if (property.getActualType() == null || property.getActualType().getRawName().equals("java.lang.String")) {
+            mapping.getNullPolicy().setNullRepresentedByEmptyNode(false);
+        }     
+        
         if(property.isXmlElementType() && property.getGenericType()!=null ){           	
         	Class theClass = helper.getClassForJavaClass(property.getGenericType());
         	mapping.setAttributeElementClass(theClass);
