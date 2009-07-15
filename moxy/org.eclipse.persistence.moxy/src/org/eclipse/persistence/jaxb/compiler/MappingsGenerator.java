@@ -429,6 +429,11 @@ public class MappingsGenerator {
                 if(((DatabaseMapping)nestedMapping).isAbstractCompositeCollectionMapping()){
                     ((XMLCompositeCollectionMapping)nestedMapping).setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
                 }
+
+                if (((DatabaseMapping) nestedMapping).isAbstractCompositeDirectCollectionMapping()) {
+                    ((XMLCompositeDirectCollectionMapping) nestedMapping).getNullPolicy().setNullRepresentedByEmptyNode(false);
+                }
+
                 if (element.isList() && ((DatabaseMapping)nestedMapping).isAbstractCompositeDirectCollectionMapping()) {
                     XMLListConverter listConverter = new XMLListConverter();
                     listConverter.setObjectClassName(element.getJavaType().getQualifiedName());
