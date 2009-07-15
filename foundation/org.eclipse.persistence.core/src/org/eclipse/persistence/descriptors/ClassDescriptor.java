@@ -2578,7 +2578,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
             getInheritancePolicy().getParentDescriptor().initialize(session);
             if (getInheritancePolicy().getParentDescriptor().isIsolated()) {
                 //if the parent is isolated then the child must be isolated as well.
-                this.setIsIsolated(true);
+                setIsIsolated(true);
             }
             // Setup this early before useOptimisticLocking is called so that subclass
             // versioned by superclass are also covered
@@ -2623,7 +2623,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
 
             //bug241765: JPA 2.0 Derived identities - check if any mappings are marked as an ID
             if (mapping.isDerivedIdMapping()){
-                hasDerivedId = true;
+                this.hasDerivedId = true;
             }
             
             // Add all the fields in the mapping to myself.
@@ -2634,7 +2634,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
             session.getProject().setHasMappingsPostCalculateChangesOnDeleted(true);
         }
 
-        // PERF: Dont initialize locking until after fields have been computed so
+        // PERF: Don't initialize locking until after fields have been computed so
         // field is in correct position.
         if (!isAggregateDescriptor()) {
             if (!isChildDescriptor()) {
@@ -2663,7 +2663,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
                     }
                     //bug241765: JPA 2.0 Derived identities - check if any mappings are marked as an ID
                     if (mapping.isDerivedIdMapping()) {
-                        hasDerivedId = true;
+                        this.hasDerivedId = true;
                     }
                 }
             }
@@ -2674,7 +2674,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
         // I am sorting the mappings to ensure that all DirectToFields get merged before all other mappings
         // This prevents null key errors when merging maps
         // This resort will change the previous sort order, only do it if has inheritance.
-        if (this.hasInheritance() && shouldOrderMappings()) {
+        if (hasInheritance() && shouldOrderMappings()) {
             Vector mappings = getMappings();
             Object[] mappingsArray = new Object[mappings.size()];
             for (int index = 0; index < mappings.size(); index++) {
@@ -3426,8 +3426,20 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * Used to initialize a remote descriptor.
      */
     public void remoteInitialization(DistributedSession session) {
-        for (Enumeration mappings = getMappings().elements(); mappings.hasMoreElements();) {
-            DatabaseMapping mapping = (DatabaseMapping)mappings.nextElement();
+        // These cached settings on the project must be set even if descriptor is initialized.
+        if (getHistoryPolicy() != null) {
+            session.getProject().setHasGenericHistorySupport(true);
+        }
+
+        // Record that there is an isolated class in the project.
+        if (isIsolated()) {
+            session.getProject().setHasIsolatedClasses(true);
+        }
+        if (!shouldIsolateObjectsInUnitOfWork() && !shouldBeReadOnly()) {
+            session.getProject().setHasNonIsolatedUOWClasses(true);
+        }
+        
+        for (DatabaseMapping mapping : getMappings()) {
             mapping.remoteInitialization(session);
         }
 

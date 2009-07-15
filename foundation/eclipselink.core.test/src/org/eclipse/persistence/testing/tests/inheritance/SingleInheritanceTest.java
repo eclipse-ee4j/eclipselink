@@ -43,6 +43,7 @@ public class SingleInheritanceTest extends TestCase {
     public void reset() {
         //reset the descriptors, and add back the Vehicle's inheritance info and 1:1 mapping
         getSession().getProject().setDescriptors(originalDescriptors);
+        getAbstractSession().clearDescriptors();
         vehicleDescriptor.setInheritancePolicy(originalInheritancePolicy);
         vehicleDescriptor.addMapping(originalDbMapping);
         getSession().setLog(originalLogWriter);
