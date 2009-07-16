@@ -452,7 +452,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
 
         selectStatement.setFields(getSelectionFields(selectStatement, true));
         if (query.hasNonFetchJoinedAttributeExpressions()) {
-            selectStatement.setNonSelectFields(query.getNonFetchJoinAttributeExpressions());
+            selectStatement.setNonSelectFields(new ArrayList(query.getNonFetchJoinAttributeExpressions()));
         }
         selectStatement.normalize(getSession(), getDescriptor(), clonedExpressions);
         // Allow for joining indexes to be computed to ensure distinct rows.
