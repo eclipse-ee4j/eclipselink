@@ -205,13 +205,21 @@ public class HistoryFacade {
         while (descriptors.hasNext()) {
             ClassDescriptor descriptor = (ClassDescriptor)descriptors.next();
             policy = (HistoryPolicy)basePolicy.clone();
-            Vector tableNames = descriptor.getTableNames();
-            if (tableNames.size() == 0) {
+            List<DatabaseTable> tables = descriptor.getTables();
+            int size = tables.size();
+            if (size == 0) {
                 continue;
             }
-            for (int i = 0; i < tableNames.size(); i++) {
-                String name = (String)tableNames.elementAt(i);
-                policy.addHistoryTableName(name, name + "_HIST");
+            for (int i = 0; i < size; i++) {
+                DatabaseTable table = tables.get(i);
+                String name = table.getQualifiedNameDelimited();
+                String historicalName;
+                if(table.shouldUseDelimiters()) {
+                    historicalName = name.substring(0, name.length() - 1) + "_HIST" + Helper.getEndDatabaseDelimiter();
+                } else { 
+                    historicalName = name + "_HIST";
+                }
+                policy.addHistoryTableName(name, historicalName);
             }
             descriptor.setHistoryPolicy(policy);
 
