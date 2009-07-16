@@ -125,10 +125,7 @@ public class ReadAllExpressionTest extends org.eclipse.persistence.testing.frame
         } catch (java.sql.SQLException e) {}
 
         if (shouldTestBatchAttributesOnEmployee()) {
-            getQuery().addBatchReadAttribute("phoneNumbers");
-            getQuery().addBatchReadAttribute("address");
-            getQuery().addBatchReadAttribute("responsibilitiesList");
-            getQuery().addBatchReadAttribute("projects");
+            setupBatchAttributes();
         }
 
         // For testing Expressions executed In-Memory must in effect
@@ -149,16 +146,7 @@ public class ReadAllExpressionTest extends org.eclipse.persistence.testing.frame
     protected void test() {
         if (shouldTestBatchAttributesOnEmployee()) {
             super.test();
-            Vector result = (Vector) this.objectsFromDatabase;
-            Vector phoneNumbers = ((Employee) result.elementAt(0)).getPhoneNumbers();
-            ((Employee) result.elementAt(0)).getResponsibilitiesList().size();
-            ((Employee) result.elementAt(0)).getProjects().size();
-            if ((phoneNumbers == null) || (phoneNumbers.size() == 0)) {
-                    throw new TestErrorException("The original query was corrupted when made part of a batch query.");
-            }
-            if (((Employee) result.elementAt(0)).getAddress() == null) {
-                    throw new TestErrorException("The original query was corrupted when made part of a batch query.");
-            }
+            testBatchAttributes();
         } else {
             try {
                 super.test();
@@ -213,5 +201,25 @@ public class ReadAllExpressionTest extends org.eclipse.persistence.testing.frame
 
     protected void setHardReferenceToInMemoryObjects(Object hardReference) {
         this.hardReferenceToInMemoryObjects = hardReference;
+    }
+    
+    protected void setupBatchAttributes() {
+        getQuery().addBatchReadAttribute("phoneNumbers");
+        getQuery().addBatchReadAttribute("address");
+        getQuery().addBatchReadAttribute("responsibilitiesList");
+        getQuery().addBatchReadAttribute("projects");
+    }
+    
+    protected void testBatchAttributes() {
+        Vector result = (Vector) this.objectsFromDatabase;
+        Vector phoneNumbers = ((Employee) result.elementAt(0)).getPhoneNumbers();
+        ((Employee) result.elementAt(0)).getResponsibilitiesList().size();
+        ((Employee) result.elementAt(0)).getProjects().size();
+        if ((phoneNumbers == null) || (phoneNumbers.size() == 0)) {
+                throw new TestErrorException("The original query was corrupted when made part of a batch query.");
+        }
+        if (((Employee) result.elementAt(0)).getAddress() == null) {
+                throw new TestErrorException("The original query was corrupted when made part of a batch query.");
+        }
     }
 }

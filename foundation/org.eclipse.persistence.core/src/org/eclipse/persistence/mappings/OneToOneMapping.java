@@ -27,6 +27,7 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.internal.descriptors.CascadeLockingPolicy;
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
+import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.expressions.ObjectExpression;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.mappings.foundation.MapKeyMapping;
@@ -57,6 +58,12 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     
     public DatabaseTable keyTableForMapKey = null;
 
+    protected static final String setObject = "setObject";
+    
+    /** Mechanism holds relationTable and all fields and queries associated with it. */
+    protected transient RelationTableMechanism mechanism;
+
+    
     /**
      * PUBLIC:
      * Default constructor.
@@ -222,44 +229,93 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
         Expression base = ((ObjectExpression)expression).getBaseExpression();
         Expression foreignKeyJoin = null;
 
-        // Allow for equal null.
-        if (value == null) {
-            // Can only perform null comparison on foreign key relationships.
-            // It does not really make sense for target any way as it is the source key.
-            if (!isForeignKeyRelationship()) {
-                throw QueryException.cannotCompareTargetForeignKeysToNull(base, value, this);
-            }
-            for (Iterator sourceFieldsEnum = getSourceToTargetKeyFields().keySet().iterator();
-                     sourceFieldsEnum.hasNext();) {
-                DatabaseField field = (DatabaseField)sourceFieldsEnum.next();
-                Expression join = null;
-                join = base.getField(field).equal(null);
-                if (foreignKeyJoin == null) {
-                    foreignKeyJoin = join;
-                } else {
-                    foreignKeyJoin = foreignKeyJoin.and(join);
+        if(this.mechanism == null) {
+            // Allow for equal null.
+            if (value == null) {
+                // Can only perform null comparison on foreign key relationships.
+                // It does not really make sense for target any way as it is the source key.
+                if (!isForeignKeyRelationship()) {
+                    throw QueryException.cannotCompareTargetForeignKeysToNull(base, value, this);
+                }
+                for (Iterator sourceFieldsEnum = getSourceToTargetKeyFields().keySet().iterator();
+                         sourceFieldsEnum.hasNext();) {
+                    DatabaseField field = (DatabaseField)sourceFieldsEnum.next();
+                    Expression join = null;
+                    join = base.getField(field).equal(null);
+                    if (foreignKeyJoin == null) {
+                        foreignKeyJoin = join;
+                    } else {
+                        foreignKeyJoin = foreignKeyJoin.and(join);
+                    }
+                }
+            } else {
+                if (!getReferenceDescriptor().getJavaClass().isInstance(value)) {
+                    // Bug 3894351 - ensure any proxys are triggered so we can do a proper class comparison
+                    value = ProxyIndirectionPolicy.getValueFromProxy(value);
+                    if (!getReferenceDescriptor().getJavaClass().isInstance(value)) {
+                        throw QueryException.incorrectClassForObjectComparison(base, value, this);
+                    }
+                }
+    
+                Enumeration keyEnum = extractKeyFromReferenceObject(value, session).elements();
+                for (Iterator sourceFieldsEnum = getSourceToTargetKeyFields().keySet().iterator();
+                         sourceFieldsEnum.hasNext();) {
+                    DatabaseField field = (DatabaseField)sourceFieldsEnum.next();
+                    Expression join = null;
+                    join = base.getField(field).equal(keyEnum.nextElement());
+                    if (foreignKeyJoin == null) {
+                        foreignKeyJoin = join;
+                    } else {
+                        foreignKeyJoin = foreignKeyJoin.and(join);
+                    }
                 }
             }
         } else {
-            if (!getReferenceDescriptor().getJavaClass().isInstance(value)) {
-                // Bug 3894351 - ensure any proxys are triggered so we can do a proper class comparison
-                value = ProxyIndirectionPolicy.getValueFromProxy(value);
+            int size = this.mechanism.sourceKeyFields.size();
+            Vector keys = null;
+            if(value != null) {
                 if (!getReferenceDescriptor().getJavaClass().isInstance(value)) {
-                    throw QueryException.incorrectClassForObjectComparison(base, value, this);
+                    // Bug 3894351 - ensure any proxys are triggered so we can do a proper class comparison
+                    value = ProxyIndirectionPolicy.getValueFromProxy(value);
+                    if (!getReferenceDescriptor().getJavaClass().isInstance(value)) {
+                        throw QueryException.incorrectClassForObjectComparison(base, value, this);
+                    }
+                }
+                keys = extractKeyFromReferenceObject(value, session);
+                boolean allNulls = true;
+                for(int i=0; i < size; i++) {
+                    if(keys.get(i) != null) {
+                        allNulls = false;
+                        break;
+                    }
+                }
+                // the same case
+                if(allNulls) {
+                    value = null;
                 }
             }
-
-            Enumeration keyEnum = extractKeyFromReferenceObject(value, session).elements();
-            for (Iterator sourceFieldsEnum = getSourceToTargetKeyFields().keySet().iterator();
-                     sourceFieldsEnum.hasNext();) {
-                DatabaseField field = (DatabaseField)sourceFieldsEnum.next();
-                Expression join = null;
-                join = base.getField(field).equal(keyEnum.nextElement());
-                if (foreignKeyJoin == null) {
-                    foreignKeyJoin = join;
-                } else {
-                    foreignKeyJoin = foreignKeyJoin.and(join);
+            if(value != null) {
+                for(int i=0; i < size; i++) {
+                    DatabaseField field = this.mechanism.sourceKeyFields.get(i);
+                    Expression join = null;
+                    join = base.getField(field).equal(keys.get(i));
+                    if (foreignKeyJoin == null) {
+                        foreignKeyJoin = join;
+                    } else {
+                        foreignKeyJoin = foreignKeyJoin.and(join);
+                    }
                 }
+            } else {
+                ReportQuery subQuery = new ReportQuery(this.descriptor.getJavaClass(), new ExpressionBuilder());
+                Expression relationTableExp = subQuery.getExpressionBuilder().getTable(this.mechanism.relationTable);
+                Expression subSelectExp = null;
+                for(int i=0; i < size; i++) {
+                    subSelectExp = relationTableExp.getField(this.mechanism.sourceRelationKeyFields.get(i)).equal(base.getField(this.mechanism.sourceKeyFields.get(i))).and(subSelectExp);
+                }
+                subQuery.setSelectionCriteria(subSelectExp);
+                subQuery.dontRetrievePrimaryKeys();
+                subQuery.addAttribute("", subQuery.getExpressionBuilder().getField(this.mechanism.sourceKeyFields.get(0)));
+                foreignKeyJoin = base.notExists(subQuery);
             }
         }
         return foreignKeyJoin;
@@ -272,30 +328,46 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     public Expression buildObjectJoinExpression(Expression expression, Expression argument, AbstractSession session) {
         Expression base = ((org.eclipse.persistence.internal.expressions.ObjectExpression)expression).getBaseExpression();
         Expression foreignKeyJoin = null;
-        if (expression==argument){
-            for (Iterator sourceFieldsEnum = getSourceToTargetKeyFields().keySet().iterator();
-                     sourceFieldsEnum.hasNext();) {
-                DatabaseField field = (DatabaseField)sourceFieldsEnum.next();
-                Expression join = base.getField(field);
-                join = join.equal(join);
-                if (foreignKeyJoin == null) {
-                    foreignKeyJoin = join;
-                } else {
-                    foreignKeyJoin = foreignKeyJoin.and(join);
+        if(this.mechanism == null) {
+            if (expression==argument){
+                for (Iterator sourceFieldsEnum = getSourceToTargetKeyFields().keySet().iterator();
+                         sourceFieldsEnum.hasNext();) {
+                    DatabaseField field = (DatabaseField)sourceFieldsEnum.next();
+                    Expression join = base.getField(field);
+                    join = join.equal(join);
+                    if (foreignKeyJoin == null) {
+                        foreignKeyJoin = join;
+                    } else {
+                        foreignKeyJoin = foreignKeyJoin.and(join);
+                    }
+                }
+            }else{
+                Iterator targetFieldsEnum = getSourceToTargetKeyFields().values().iterator();
+                for (Iterator sourceFieldsEnum = getSourceToTargetKeyFields().keySet().iterator();
+                         sourceFieldsEnum.hasNext();) {
+                    DatabaseField sourceField = (DatabaseField)sourceFieldsEnum.next();
+                    DatabaseField targetField = (DatabaseField)targetFieldsEnum.next();
+                    Expression join = null;
+                    join = base.getField(sourceField).equal(argument.getField(targetField));
+                    if (foreignKeyJoin == null) {
+                        foreignKeyJoin = join;
+                    } else {
+                        foreignKeyJoin = foreignKeyJoin.and(join);
+                    }
                 }
             }
-        }else{
-            Iterator targetFieldsEnum = getSourceToTargetKeyFields().values().iterator();
-            for (Iterator sourceFieldsEnum = getSourceToTargetKeyFields().keySet().iterator();
-                     sourceFieldsEnum.hasNext();) {
-                DatabaseField sourceField = (DatabaseField)sourceFieldsEnum.next();
-                DatabaseField targetField = (DatabaseField)targetFieldsEnum.next();
-                Expression join = null;
-                join = base.getField(sourceField).equal(argument.getField(targetField));
-                if (foreignKeyJoin == null) {
-                    foreignKeyJoin = join;
-                } else {
-                    foreignKeyJoin = foreignKeyJoin.and(join);
+        } else {
+            if (expression==argument){
+                foreignKeyJoin = (new ConstantExpression(0, base)).equal(new ConstantExpression(0, base));
+            }else{
+                int size = this.mechanism.sourceKeyFields.size();
+                Expression relTable = base.getTable(this.mechanism.getRelationTable());
+                for(int i=0; i < size; i++) {
+                    Expression source = base.getField(this.mechanism.sourceKeyFields.get(i));
+                    Expression sourceRel = relTable.getField(this.mechanism.sourceRelationKeyFields.get(i));
+                    Expression targetRel = relTable.getField(this.mechanism.targetRelationKeyFields.get(i));
+                    Expression target = argument.getField(this.mechanism.targetKeyFields.get(i));
+                    foreignKeyJoin = source.equal(sourceRel).and(targetRel.equal(target)).and(foreignKeyJoin);
                 }
             }
         }
@@ -322,61 +394,65 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      */
     public Object clone() {
         OneToOneMapping clone = (OneToOneMapping)super.clone();
-        clone.setForeignKeyFields(org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(getForeignKeyFields().size()));
-        clone.setSourceToTargetKeyFields(new HashMap(getSourceToTargetKeyFields().size()));
-        clone.setTargetToSourceKeyFields(new HashMap(getTargetToSourceKeyFields().size()));
-        Hashtable setOfFields = new Hashtable(getTargetToSourceKeyFields().size());
-
-        //clone foreign keys and save the clones in a set
-        for (Enumeration enumtr = getForeignKeyFields().elements(); enumtr.hasMoreElements();) {
-            DatabaseField field = (DatabaseField)enumtr.nextElement();
-            DatabaseField fieldClone = (DatabaseField)field.clone();
-            setOfFields.put(field, fieldClone);
-            clone.getForeignKeyFields().addElement(fieldClone);
-        }
-
-        //get clones from set for source hashtable.  If they do not exist, create a new one.
-        for (Iterator sourceEnum = getSourceToTargetKeyFields().keySet().iterator();
-                 sourceEnum.hasNext();) {
-            DatabaseField sourceField = (DatabaseField)sourceEnum.next();
-            DatabaseField targetField = getSourceToTargetKeyFields().get(sourceField);
-
-            DatabaseField targetClone;
-            DatabaseField sourceClone;
-
-            targetClone = (DatabaseField)setOfFields.get(targetField);
-            if (targetClone == null) {
-                targetClone = (DatabaseField)targetField.clone();
-                setOfFields.put(targetField, targetClone);
+        if(this.mechanism == null) {
+            clone.setForeignKeyFields(org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(getForeignKeyFields().size()));
+            clone.setSourceToTargetKeyFields(new HashMap(getSourceToTargetKeyFields().size()));
+            clone.setTargetToSourceKeyFields(new HashMap(getTargetToSourceKeyFields().size()));
+            Hashtable setOfFields = new Hashtable(getTargetToSourceKeyFields().size());
+    
+            //clone foreign keys and save the clones in a set
+            for (Enumeration enumtr = getForeignKeyFields().elements(); enumtr.hasMoreElements();) {
+                DatabaseField field = (DatabaseField)enumtr.nextElement();
+                DatabaseField fieldClone = (DatabaseField)field.clone();
+                setOfFields.put(field, fieldClone);
+                clone.getForeignKeyFields().addElement(fieldClone);
             }
-            sourceClone = (DatabaseField)setOfFields.get(sourceField);
-            if (sourceClone == null) {
-                sourceClone = (DatabaseField)sourceField.clone();
-                setOfFields.put(sourceField, sourceClone);
+    
+            //get clones from set for source hashtable.  If they do not exist, create a new one.
+            for (Iterator sourceEnum = getSourceToTargetKeyFields().keySet().iterator();
+                     sourceEnum.hasNext();) {
+                DatabaseField sourceField = (DatabaseField)sourceEnum.next();
+                DatabaseField targetField = getSourceToTargetKeyFields().get(sourceField);
+    
+                DatabaseField targetClone;
+                DatabaseField sourceClone;
+    
+                targetClone = (DatabaseField)setOfFields.get(targetField);
+                if (targetClone == null) {
+                    targetClone = (DatabaseField)targetField.clone();
+                    setOfFields.put(targetField, targetClone);
+                }
+                sourceClone = (DatabaseField)setOfFields.get(sourceField);
+                if (sourceClone == null) {
+                    sourceClone = (DatabaseField)sourceField.clone();
+                    setOfFields.put(sourceField, sourceClone);
+                }
+                clone.getSourceToTargetKeyFields().put(sourceClone, targetClone);
             }
-            clone.getSourceToTargetKeyFields().put(sourceClone, targetClone);
-        }
-
-        //get clones from set for target hashtable.  If they do not exist, create a new one.
-        for (Iterator targetEnum = getTargetToSourceKeyFields().keySet().iterator();
-                 targetEnum.hasNext();) {
-            DatabaseField targetField = (DatabaseField)targetEnum.next();
-            DatabaseField sourceField = getTargetToSourceKeyFields().get(targetField);
-
-            DatabaseField targetClone;
-            DatabaseField sourceClone;
-
-            targetClone = (DatabaseField)setOfFields.get(targetField);
-            if (targetClone == null) {
-                targetClone = (DatabaseField)targetField.clone();
-                setOfFields.put(targetField, targetClone);
+    
+            //get clones from set for target hashtable.  If they do not exist, create a new one.
+            for (Iterator targetEnum = getTargetToSourceKeyFields().keySet().iterator();
+                     targetEnum.hasNext();) {
+                DatabaseField targetField = (DatabaseField)targetEnum.next();
+                DatabaseField sourceField = getTargetToSourceKeyFields().get(targetField);
+    
+                DatabaseField targetClone;
+                DatabaseField sourceClone;
+    
+                targetClone = (DatabaseField)setOfFields.get(targetField);
+                if (targetClone == null) {
+                    targetClone = (DatabaseField)targetField.clone();
+                    setOfFields.put(targetField, targetClone);
+                }
+                sourceClone = (DatabaseField)setOfFields.get(sourceField);
+                if (sourceClone == null) {
+                    sourceClone = (DatabaseField)sourceField.clone();
+                    setOfFields.put(sourceField, sourceClone);
+                }
+                clone.getTargetToSourceKeyFields().put(targetClone, sourceClone);
             }
-            sourceClone = (DatabaseField)setOfFields.get(sourceField);
-            if (sourceClone == null) {
-                sourceClone = (DatabaseField)sourceField.clone();
-                setOfFields.put(sourceField, sourceClone);
-            }
-            clone.getTargetToSourceKeyFields().put(targetClone, sourceClone);
+        } else {
+            clone.mechanism = (RelationTableMechanism)this.mechanism.clone();
         }
         return clone;
     }
@@ -428,21 +504,40 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * Extract the foreign key value from the source row.
      */
     protected Vector extractForeignKeyFromRow(AbstractRecord row, AbstractSession session) {
-        Vector key = new Vector();
+        Vector key;
 
-        for (Iterator fieldEnum = getSourceToTargetKeyFields().keySet().iterator();
-                 fieldEnum.hasNext();) {
-            DatabaseField field = (DatabaseField)fieldEnum.next();
-            Object value = row.get(field);
-
-            // Must ensure the classification gets a cache hit.
-            try {
-                value = session.getDatasourcePlatform().getConversionManager().convertObject(value, getDescriptor().getObjectBuilder().getFieldClassification(field));
-            } catch (ConversionException e) {
-                throw ConversionException.couldNotBeConverted(this, getDescriptor(), e);
+        if(this.mechanism == null) {
+            key = new Vector();
+            for (Iterator fieldEnum = getSourceToTargetKeyFields().keySet().iterator();
+                     fieldEnum.hasNext();) {
+                DatabaseField field = (DatabaseField)fieldEnum.next();
+                Object value = row.get(field);
+    
+                // Must ensure the classification gets a cache hit.
+                try {
+                    value = session.getDatasourcePlatform().getConversionManager().convertObject(value, getDescriptor().getObjectBuilder().getFieldClassification(field));
+                } catch (ConversionException e) {
+                    throw ConversionException.couldNotBeConverted(this, getDescriptor(), e);
+                }
+    
+                key.addElement(value);
             }
-
-            key.addElement(value);
+        } else {
+            int size = mechanism.sourceKeyFields.size();
+            key = new Vector(size);
+            for(int i=0; i < size; i++) {                
+                DatabaseField field = mechanism.sourceKeyFields.get(i);
+                Object value = row.get(field);
+                
+                // Must ensure the classification gets a cache hit.
+                try {
+                    value = session.getDatasourcePlatform().getConversionManager().convertObject(value, getDescriptor().getObjectBuilder().getFieldClassification(field));
+                } catch (ConversionException e) {
+                    throw ConversionException.couldNotBeConverted(this, getDescriptor(), e);
+                }
+    
+                key.addElement(value);
+            }            
         }
 
         return key;
@@ -470,17 +565,30 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * Extract the key value from the reference object.
      */
     protected Vector extractKeyFromReferenceObject(Object object, AbstractSession session) {
-        Vector key = new Vector();
+        Vector key;
 
-        for (Iterator fieldEnum = getSourceToTargetKeyFields().values().iterator();
-                 fieldEnum.hasNext();) {
-            DatabaseField field = (DatabaseField)fieldEnum.next();
-
-            if (object == null) {
-                key.addElement(null);
-            } else {
-                key.addElement(getReferenceDescriptor().getObjectBuilder().extractValueFromObjectForField(object, field, session));
+        if(this.mechanism == null) {
+            key = new Vector();
+            for (Iterator fieldEnum = getSourceToTargetKeyFields().values().iterator();
+                     fieldEnum.hasNext();) {
+                if (object == null) {
+                    key.addElement(null);
+                } else {
+                    DatabaseField field = (DatabaseField)fieldEnum.next();
+                    key.addElement(getReferenceDescriptor().getObjectBuilder().extractValueFromObjectForField(object, field, session));
+                }
             }
+        } else {
+            int size = mechanism.targetKeyFields.size();
+            key = new Vector(size);
+            for(int i=0; i < size; i++) {                
+                if (object == null) {
+                    key.addElement(null);
+                } else {
+                    DatabaseField field = mechanism.targetKeyFields.get(i);
+                    key.addElement(getReferenceDescriptor().getObjectBuilder().extractValueFromObjectForField(object, field, session));
+                }
+            }            
         }
 
         return key;
@@ -515,6 +623,13 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
         if (!query.isDistinctComputed()) {
             ((ObjectLevelReadQuery)batchQuery).useDistinct();
         }
+        if(this.mechanism != null) {
+            ReadAllQuery mappingBatchQuery = (ReadAllQuery)batchQuery;
+            mappingBatchQuery.setShouldIncludeData(true);
+            for (Enumeration relationFieldsEnum = this.mechanism.getSourceRelationKeyFields().elements(); relationFieldsEnum.hasMoreElements();) {
+                mappingBatchQuery.getAdditionalFields().add(mappingBatchQuery.getExpressionBuilder().getTable(this.mechanism.getRelationTable()).getField((DatabaseField)relationFieldsEnum.nextElement()));
+            }
+        }
     }
     
     /**
@@ -527,15 +642,32 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
         synchronized (query) {
             referenceObjectsByKey = getBatchReadObjects(query, session);
             if (referenceObjectsByKey == null) {
-                Vector results = (Vector)session.executeQuery(query, argumentRow);
-
+                Vector results;
                 referenceObjectsByKey = new Hashtable();
-
-                for (Enumeration enumeration = results.elements(); enumeration.hasMoreElements();) {
-                    Object eachReferenceObject = enumeration.nextElement();
-                    CacheKey eachReferenceKey = new CacheKey(extractKeyFromReferenceObject(eachReferenceObject, session));
-
-                    referenceObjectsByKey.put(eachReferenceKey, session.wrapObject(eachReferenceObject));
+                if(this.mechanism == null) {
+                    results = (Vector)session.executeQuery(query, argumentRow);
+    
+                    for (Enumeration enumeration = results.elements(); enumeration.hasMoreElements();) {
+                        Object eachReferenceObject = enumeration.nextElement();
+                        CacheKey eachReferenceKey = new CacheKey(extractKeyFromReferenceObject(eachReferenceObject, session));
+    
+                        referenceObjectsByKey.put(eachReferenceKey, session.wrapObject(eachReferenceObject));
+                    }
+                } else {
+                    ComplexQueryResult complexResult = (ComplexQueryResult)session.executeQuery(query, argumentRow);
+                    results = (Vector)complexResult.getResult();
+                    List<AbstractRecord> rows = (List)complexResult.getData();
+                    int size = results.size();
+                    for(int i=0; i < size; i++) {
+                        AbstractRecord row = rows.get(i);
+                        Vector key = new Vector();
+                        for (Enumeration relationFieldsEnum = this.mechanism.getSourceRelationKeyFields().elements(); relationFieldsEnum.hasMoreElements();) {
+                            key.add(row.get(relationFieldsEnum.nextElement()));
+                        }
+                        CacheKey eachReferenceKey = new CacheKey(key);
+                        
+                        referenceObjectsByKey.put(eachReferenceKey, session.wrapObject(results.get(i)));
+                    }
                 }
                 setBatchReadObjects(referenceObjectsByKey, query, session);
             }
@@ -571,7 +703,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     
     /**
      * INTERNAL:
-     * Return the classifiction for the field contained in the mapping.
+     * Return the classification for the field contained in the mapping.
      * This is used to convert the row value to a consistent java value.
      */
     public Class getFieldClassification(DatabaseField fieldToClassify) throws DescriptorException {
@@ -622,7 +754,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * @return
      */
     public List<DatabaseField> getIdentityFieldsForMapKey(){
-            return getForeignKeyFields();
+        return getForeignKeyFields();
     }
     
     
@@ -760,19 +892,36 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     public void initialize(AbstractSession session) throws DescriptorException {
         super.initialize(session);
 
-        // Must set table of foreign keys.
-        for (int index = 0; index < getForeignKeyFields().size(); index++) {
-            DatabaseField foreignKeyField = getForeignKeyFields().get(index);
-            foreignKeyField = getDescriptor().buildField(foreignKeyField, keyTableForMapKey);
-            getForeignKeyFields().set(index, foreignKeyField);
-        }
-
-        // If only a selection criteria is specified then the foreign keys do not have to be initialized.
-        if (!(getTargetToSourceKeyFields().isEmpty() && getSourceToTargetKeyFields().isEmpty())) {
-            if (getTargetToSourceKeyFields().isEmpty() || getSourceToTargetKeyFields().isEmpty()) {
-                initializeForeignKeysWithDefaults(session);
+        if(this.mechanism != null) {
+            if(this.mechanism.hasRelationTable()) {
+                if(!this.foreignKeyFields.isEmpty() || !this.sourceToTargetKeyFields.isEmpty() || !this.targetToSourceKeyFields.isEmpty()) {
+                    throw DescriptorException.oneToOneMappingConflict(this.getDescriptor(), this);
+                }
+                this.foreignKeyFields = null;
+                this.sourceToTargetKeyFields = null;
+                this.targetToSourceKeyFields = null;
+                
+                this.mechanism.initialize(session, this);
             } else {
-                initializeForeignKeys(session);
+                this.mechanism = null;
+            }
+        }
+        
+        if(this.mechanism == null) {
+            // Must set table of foreign keys.
+            for (int index = 0; index < getForeignKeyFields().size(); index++) {
+                DatabaseField foreignKeyField = getForeignKeyFields().get(index);
+                foreignKeyField = getDescriptor().buildField(foreignKeyField, keyTableForMapKey);
+                getForeignKeyFields().set(index, foreignKeyField);
+            }
+    
+            // If only a selection criteria is specified then the foreign keys do not have to be initialized.
+            if (!(getTargetToSourceKeyFields().isEmpty() && getSourceToTargetKeyFields().isEmpty())) {
+                if (getTargetToSourceKeyFields().isEmpty() || getSourceToTargetKeyFields().isEmpty()) {
+                    initializeForeignKeysWithDefaults(session);
+                } else {
+                    initializeForeignKeys(session);
+                }
             }
         }
 
@@ -780,7 +929,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
             if (shouldForceInitializationOfSelectionCriteria()) {
                 setSelectionCriteria(buildSelectionCriteria());
             } else {
-                buildSelectionCriteria(true, true);
+                setSelectionCriteria(buildSelectionCriteria(true, true));
             }
         } else {
             setShouldVerifyDelete(false);
@@ -932,28 +1081,83 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * @return
      */
     public Expression buildSelectionCriteria(boolean useParameter, boolean usePreviousSelectionCriteria){
-        // CR3922
-        if (getSourceToTargetKeyFields().isEmpty()) {
-            throw DescriptorException.noForeignKeysAreSpecified(this);
-        }
-
         Expression criteria = null;
+        if (usePreviousSelectionCriteria){
+            criteria = getSelectionCriteria();
+        }
         Expression builder = new ExpressionBuilder();
 
-        for (Iterator keys = getSourceToTargetKeyFields().keySet().iterator(); keys.hasNext();) {
-            DatabaseField foreignKey = (DatabaseField)keys.next();
-            DatabaseField targetKey = getSourceToTargetKeyFields().get(foreignKey);
-
-            Expression expression = null;
-            if (useParameter){
-                expression = builder.getField(targetKey).equal(builder.getParameter(foreignKey));
-            } else {
-                expression = builder.getField(targetKey).equal(builder.getField(foreignKey));
+        if(this.mechanism == null) {
+            // CR3922
+            if (getSourceToTargetKeyFields().isEmpty()) {
+                throw DescriptorException.noForeignKeysAreSpecified(this);
             }
-            
-            if (usePreviousSelectionCriteria){
-                setSelectionCriteria(expression.and(getSelectionCriteria()));
-            } else {
+    
+            for (Iterator keys = getSourceToTargetKeyFields().keySet().iterator(); keys.hasNext();) {
+                DatabaseField foreignKey = (DatabaseField)keys.next();
+                DatabaseField targetKey = getSourceToTargetKeyFields().get(foreignKey);
+    
+                Expression expression = null;
+                if (useParameter){
+                    expression = builder.getField(targetKey).equal(builder.getParameter(foreignKey));
+                } else {
+                    expression = builder.getField(targetKey).equal(builder.getField(foreignKey));
+                }
+                
+                if (criteria == null) {
+                    criteria = expression;
+                } else {
+                    criteria = expression.and(criteria);
+                }
+            }
+        } else {
+            DatabaseField relationKey;
+            DatabaseField sourceKey;
+            DatabaseField targetKey;
+            Expression exp1;
+            Expression exp2;
+            Expression expression;
+            Enumeration relationKeyEnum;
+            Enumeration sourceKeyEnum;
+            Enumeration targetKeyEnum;
+
+            Expression linkTable = null;
+
+            targetKeyEnum = this.mechanism.getTargetKeyFields().elements();
+            relationKeyEnum = this.mechanism.getTargetRelationKeyFields().elements();
+            for (; targetKeyEnum.hasMoreElements();) {
+                relationKey = (DatabaseField)relationKeyEnum.nextElement();
+                targetKey = (DatabaseField)targetKeyEnum.nextElement();
+                if (linkTable == null) {// We could just call getTable repeatedly, but it's a waste
+                    linkTable = builder.getTable(relationKey.getTable());
+                }
+
+                exp1 = builder.getField(targetKey);
+                exp2 = linkTable.getField(relationKey);
+                expression = exp1.equal(exp2);
+
+                if (criteria == null) {
+                    criteria = expression;
+                } else {
+                    criteria = expression.and(criteria);
+                }
+            }
+
+            relationKeyEnum = this.mechanism.getSourceRelationKeyFields().elements();
+            sourceKeyEnum = this.mechanism.getSourceKeyFields().elements();
+
+            for (; relationKeyEnum.hasMoreElements();) {
+                relationKey = (DatabaseField)relationKeyEnum.nextElement();
+                sourceKey = (DatabaseField)sourceKeyEnum.nextElement();
+
+                exp1 = linkTable.getField(relationKey);
+                if (useParameter){
+                    exp2 = builder.getParameter(sourceKey);
+                } else {
+                    exp2 = builder.getField(sourceKey);
+                }
+                expression = exp1.equal(exp2);
+
                 if (criteria == null) {
                     criteria = expression;
                 } else {
@@ -1240,7 +1444,12 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
         if (referenceObject == null) {
             return null;
         }
-        DatabaseField targetField = this.sourceToTargetKeyFields.get(field);
+        DatabaseField targetField;
+        if(this.mechanism == null) {
+            targetField = this.sourceToTargetKeyFields.get(field);
+        } else {
+            targetField = this.mechanism.targetKeyFields.get(this.mechanism.sourceKeyFields.indexOf(field));
+        }
 
         return this.referenceDescriptor.getObjectBuilder().extractValueFromObjectForField(referenceObject, targetField, session);
     }
@@ -1398,6 +1607,157 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
                  fieldsEnum.hasMoreElements();) {
             DatabaseField sourceKey = (DatabaseField)fieldsEnum.nextElement();
             databaseRow.add(sourceKey, null);
+        }
+    }
+
+    /**
+     * PUBLIC:
+     * Indicates whether the mapping has RelationTableMechanism.
+     */
+    public boolean hasRelationTableMechanism() {
+        return this.mechanism != null;
+    }
+
+    /**
+     * PUBLIC:
+     * Indicates whether the mapping has RelationTable.
+     */
+    public boolean hasRelationTable() {
+        return this.mechanism != null && this.mechanism.hasRelationTable();
+    }
+
+    /**
+     * PUBLIC:
+     * Returns RelationTableMechanism that may be owned by the mapping,
+     * that allows to configure the mapping to use relation table (just like ManyToManyMapping).
+     * By default its null, should be created and set into the mapping before use.
+     */
+    public RelationTableMechanism getRelationTableMechanism() {
+        return this.mechanism;
+    }
+    
+    /**
+     * PUBLIC:
+     * Set RelationTableMechanism into the mapping,
+     * that allows to configure the mapping to use relation table (just like ManyToManyMapping).
+     */
+    public void setRelationTableMechanism(RelationTableMechanism mechanism) {
+        this.mechanism = mechanism;
+    }
+    
+    /**
+     * INTERNAL:
+     * Delete privately owned parts
+     */
+    public void preDelete(DeleteObjectQuery query) throws DatabaseException, OptimisticLockException {
+        if(this.mechanism != null && !isReadOnly()) {
+            AbstractRecord sourceRow = this.mechanism.buildRelationTableSourceRow(query.getObject(), query.getSession(), this);
+            query.getSession().executeQuery(mechanism.deleteQuery, sourceRow);
+        }
+        super.preDelete(query);
+    }
+    
+    /**
+     * INTERNAL:
+     * Insert into relation table. This follows following steps.
+     * <p>- Extract primary key and its value from the source object.
+     * <p>- Extract target key and its value from the target object.
+     * <p>- Construct a insert statement with above fields and values for relation table.
+     * <p>- execute the statement.
+     */
+    public void postInsert(WriteObjectQuery query) throws DatabaseException {
+        super.postInsert(query);
+        if(this.mechanism != null && !isReadOnly()) {
+            Object targetObject = getRealAttributeValueFromObject(query.getObject(), query.getSession());
+            if (targetObject == null) {
+                return;
+            }
+            
+            // Batch data modification in the uow
+            if (query.shouldCascadeOnlyDependentParts()) {
+                // Hey I might actually want to use an inner class here... ok array for now.
+                Object[] event = new Object[3];
+                event[0] = setObject;
+                event[1] = this.mechanism.buildRelationTableSourceRow(query.getObject(), query.getSession(), this);
+                // targetObject may not have pk yet - wait to extract targetRow until the event is processed
+                event[2] = targetObject;
+                query.getSession().getCommitManager().addDataModificationEvent(this, event);
+            } else {
+                AbstractRecord sourceAndTargetRow = this.mechanism.buildRelationTableSourceAndTargetRow(query.getObject(), targetObject, query.getSession(), this);
+                query.getSession().executeQuery(this.mechanism.insertQuery, sourceAndTargetRow);
+            }
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Update the relation table with the entries related to this mapping.
+     * Delete entries removed, insert entries added.
+     * If private also insert/delete/update target objects.
+     */
+    public void postUpdate(WriteObjectQuery query) throws DatabaseException {
+        if(this.mechanism == null) {
+            super.postUpdate(query);
+        } else {
+            // If object is not instantiated then it's not changed.
+            if (!isAttributeValueInstantiated(query.getObject())) {
+                return;
+            }
+            
+            AbstractRecord sourceRow = null;
+            if(!isReadOnly()) {    
+                sourceRow = this.mechanism.buildRelationTableSourceRow(query.getObject(), query.getSession(), this);
+                query.getSession().executeQuery(this.mechanism.deleteQuery, sourceRow);
+            }
+            
+            super.postUpdate(query);
+
+            if(sourceRow != null) {    
+                Object targetObject = getRealAttributeValueFromObject(query.getObject(), query.getSession());
+                if (targetObject == null) {
+                    return;
+                }
+                // Batch data modification in the uow
+                if (query.shouldCascadeOnlyDependentParts()) {
+                    // Hey I might actually want to use an inner class here... ok array for now.
+                    Object[] event = new Object[3];
+                    event[0] = setObject;
+                    event[1] = sourceRow;
+                    // targetObject may not have pk yet - wait to extract targetRow until the event is processed
+                    event[2] = targetObject;
+                    query.getSession().getCommitManager().addDataModificationEvent(this, event);
+                } else {
+                    AbstractRecord sourceAndTargetRow = this.mechanism.addRelationTableTargetRow(targetObject, query.getSession(), sourceRow, this);
+                    query.getSession().executeQuery(this.mechanism.insertQuery, sourceAndTargetRow);
+                }
+            }
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Perform the commit event.
+     * This is used in the uow to delay data modifications.
+     */
+    public void performDataModificationEvent(Object[] event, AbstractSession session) throws DatabaseException, DescriptorException {
+        // Hey I might actually want to use an inner class here... ok array for now.
+        if (event[0] == setObject) {
+            AbstractRecord sourceAndTargetRow = this.mechanism.addRelationTableTargetRow(event[2], session, (AbstractRecord)event[1], this);
+            session.executeQuery(this.mechanism.insertQuery, sourceAndTargetRow);
+        } else {
+            throw DescriptorException.invalidDataModificationEventCode(event[0], this);
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Return all the fields populated by this mapping, these are foreign keys only.
+     */
+    protected Vector<DatabaseField> collectFields() {
+        if(this.mechanism != null) {
+            return new Vector(0);
+        } else {
+            return super.collectFields();
         }
     }
 }

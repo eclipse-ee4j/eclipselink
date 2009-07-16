@@ -1119,11 +1119,22 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         // DirectCollectMap - that uses DataReadQuery - adds listOrderField to selection query in initializeSelectionStatement method.
         if(getSelectionQuery().isReadAllQuery()) {
             ReadAllQuery readAllQuery = (ReadAllQuery)getSelectionQuery();
+            if(shouldUseListOrderFieldTableExpression()) {
+                initializeListOrderFieldTable(session);
+            }
             Expression expField = getListOrderFieldExpression(readAllQuery.getExpressionBuilder());
             readAllQuery.addAdditionalField(expField);
         }
         
         initializeChangeOrderTargetQuery(session);
+    }
+    
+    /**
+     * INTERNAL:
+     * Initializes listOrderField's table, does nothing by default. 
+     * Precondition: listOrderField != null.
+     */
+    protected void initializeListOrderFieldTable(AbstractSession session) {        
     }
     
     /**

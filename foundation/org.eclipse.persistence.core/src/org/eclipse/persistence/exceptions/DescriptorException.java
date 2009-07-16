@@ -228,6 +228,8 @@ public class DescriptorException extends ValidationException {
     public final static int LIST_ORDER_FIELD_REQUIRES_INDIRECT_LIST = 211;
     public final static int LIST_ORDER_FIELD_TABLE_IS_WRONG = 212;
     public final static int MULTIPLE_TARGET_FOREIGN_KEY_TABLES = 213;
+    public final static int ONE_TO_ONE_MAPPING_CONFLICT = 214;
+    public final static int NO_RELATION_TABLE_MECHANISM = 215;
 
     /**
      * INTERNAL:
@@ -1979,6 +1981,22 @@ public class DescriptorException extends ValidationException {
     
         DescriptorException descriptorException = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, MULTIPLE_TARGET_FOREIGN_KEY_TABLES, args), descriptor);
         descriptorException.setErrorCode(MULTIPLE_TARGET_FOREIGN_KEY_TABLES);
+        return descriptorException;
+    }
+
+    public static DescriptorException oneToOneMappingConflict(ClassDescriptor descriptor, DatabaseMapping mapping) {
+        Object[] args = { mapping };
+    
+        DescriptorException descriptorException = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, ONE_TO_ONE_MAPPING_CONFLICT, args), descriptor);
+        descriptorException.setErrorCode(ONE_TO_ONE_MAPPING_CONFLICT);
+        return descriptorException;
+    }
+
+    public static DescriptorException noRelationTableMechanism(DatabaseMapping mapping) {
+        Object[] args = {  };
+
+        DescriptorException descriptorException = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, NO_RELATION_TABLE_MECHANISM, args), mapping);
+        descriptorException.setErrorCode(NO_RELATION_TABLE_MECHANISM);
         return descriptorException;
     }
 

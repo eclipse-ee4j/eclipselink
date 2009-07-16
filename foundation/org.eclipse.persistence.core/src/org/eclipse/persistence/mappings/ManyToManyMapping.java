@@ -17,7 +17,6 @@ import java.util.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.history.*;
-import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.internal.expressions.*;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.queries.*;
@@ -42,28 +41,8 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
     protected static final String ObjectRemoved = "objectRemoved";
     protected static final String ObjectAdded = "objectAdded";
 
-    /** The intermediate relation table. */
-    protected transient DatabaseTable relationTable;
-
-    /** The field in the source table that corresponds to the key in the relation table */
-    protected transient Vector<DatabaseField> sourceKeyFields;
-
-    /**  The field in the target table that corresponds to the key in the relation table */
-    protected transient Vector<DatabaseField> targetKeyFields;
-
-    /** The field in the intermediate table that corresponds to the key in the source table */
-    protected transient Vector<DatabaseField> sourceRelationKeyFields;
-
-    /** The field in the intermediate table that corresponds to the key in the target table */
-    protected transient Vector<DatabaseField> targetRelationKeyFields;
-
-    /** Query used for single row deletion. */
-    protected transient DataModifyQuery deleteQuery;
-    protected transient boolean hasCustomDeleteQuery;
-
-    /** Used for insertion. */
-    protected transient DataModifyQuery insertQuery;
-    protected transient boolean hasCustomInsertQuery;
+    /** Mechanism holds relationTable and all fields and queries associated with it. */
+    protected transient RelationTableMechanism mechanism;
     protected HistoryPolicy historyPolicy;
 
     /**
@@ -71,14 +50,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * Default constructor.
      */
     public ManyToManyMapping() {
-        this.insertQuery = new DataModifyQuery();
-        this.deleteQuery = new DataModifyQuery();
-        this.sourceRelationKeyFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
-        this.targetRelationKeyFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
-        this.sourceKeyFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
-        this.targetKeyFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
-        this.hasCustomDeleteQuery = false;
-        this.hasCustomInsertQuery = false;
+        this.mechanism = new RelationTableMechanism();
         this.isListOrderFieldSupported = true;
     }
 
@@ -95,8 +67,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * key in the source table. This method is used if the keys are composite.
      */
     public void addSourceRelationKeyField(DatabaseField sourceRelationKeyField, DatabaseField sourcePrimaryKeyField) {
-        getSourceRelationKeyFields().addElement(sourceRelationKeyField);
-        getSourceKeyFields().addElement(sourcePrimaryKeyField);
+        this.mechanism.addSourceRelationKeyField(sourceRelationKeyField, sourcePrimaryKeyField);
     }
     
     /**
@@ -105,7 +76,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * key in the source table. This method is used if the keys are composite.
      */
     public void addSourceRelationKeyFieldName(String sourceRelationKeyFieldName, String sourcePrimaryKeyFieldName) {
-        addSourceRelationKeyField(new DatabaseField(sourceRelationKeyFieldName), new DatabaseField(sourcePrimaryKeyFieldName));
+        this.mechanism.addSourceRelationKeyFieldName(sourceRelationKeyFieldName, sourcePrimaryKeyFieldName);
     }
 
     /**
@@ -114,8 +85,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * key in the target table. This method is used if the keys are composite.
      */
     public void addTargetRelationKeyField(DatabaseField targetRelationKeyField, DatabaseField targetPrimaryKeyField) {
-        getTargetRelationKeyFields().addElement(targetRelationKeyField);
-        getTargetKeyFields().addElement(targetPrimaryKeyField);
+        this.mechanism.addTargetRelationKeyField(targetRelationKeyField, targetPrimaryKeyField);
     }
     
     /**
@@ -124,7 +94,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * key in the target table. This method is used if the keys are composite.
      */
     public void addTargetRelationKeyFieldName(String targetRelationKeyFieldName, String targetPrimaryKeyFieldName) {
-        addTargetRelationKeyField(new DatabaseField(targetRelationKeyFieldName), new DatabaseField(targetPrimaryKeyFieldName));
+        this.mechanism.addTargetRelationKeyFieldName(targetRelationKeyFieldName, targetPrimaryKeyFieldName);
     }
 
     /**
@@ -132,15 +102,8 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * The mapping clones itself to create deep copy.
      */
     public Object clone() {
-        ManyToManyMapping clone = (ManyToManyMapping)super.clone();
-
-        clone.setTargetKeyFields(cloneFields(getTargetKeyFields()));
-        clone.setSourceKeyFields(cloneFields(getSourceKeyFields()));
-        clone.setTargetRelationKeyFields(cloneFields(getTargetRelationKeyFields()));
-        clone.setSourceRelationKeyFields(cloneFields(getSourceRelationKeyFields()));
-        
-        clone.setInsertQuery((DataModifyQuery) insertQuery.clone());
-        clone.setDeleteQuery((DataModifyQuery) deleteQuery.clone());
+        ManyToManyMapping clone = (ManyToManyMapping)super.clone();        
+        clone.mechanism = (RelationTableMechanism)this.mechanism.clone();
 
         return clone;
     }
@@ -243,11 +206,11 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
     
 
     protected DataModifyQuery getDeleteQuery() {
-        return deleteQuery;
+        return this.mechanism.getDeleteQuery();
     }
 
     protected DataModifyQuery getInsertQuery() {
-        return insertQuery;
+        return this.mechanism.getInsertQuery();
     }
 
     /**
@@ -279,11 +242,25 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
     }
 
     /**
+     * PUBLIC:
+     * Returns RelationTableMechanism that may be owned by the mapping.
+     * Note that all RelationTableMechanism methods are accessible
+     * through the mapping directly.
+     * The only reason this method is provided
+     * is to allow a uniform approach to RelationTableMechanism
+     * in both ManyToManyMapping and OneToOneMapping
+     * that uses RelationTableMechanism.
+     */
+    public RelationTableMechanism getRelationTableMechanism() {
+        return this.mechanism;
+    }
+    
+    /**
      * INTERNAL:
      * Return the relation table associated with the mapping.
      */
     public DatabaseTable getRelationTable() {
-        return relationTable;
+        return this.mechanism.getRelationTable();
     }
 
     /**
@@ -291,10 +268,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * Return the relation table name associated with the mapping.
      */
     public String getRelationTableName() {
-        if (relationTable == null) {
-            return null;
-        }
-        return relationTable.getName();
+        return this.mechanism.getRelationTableName();
     }
 
     //CR#2407  This method is added to include table qualifier.
@@ -304,10 +278,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * Return the relation table qualified name associated with the mapping.
      */
     public String getRelationTableQualifiedName() {
-        if (relationTable == null) {
-            return null;
-        }
-        return relationTable.getQualifiedNameDelimited();
+        return this.mechanism.getRelationTableQualifiedName();
     }
 
     /**
@@ -333,13 +304,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * These are in-order with the sourceRelationKeyFieldNames.
      */
     public Vector getSourceKeyFieldNames() {
-        Vector fieldNames = new Vector(getSourceKeyFields().size());
-        for (Enumeration fieldsEnum = getSourceKeyFields().elements();
-                 fieldsEnum.hasMoreElements();) {
-            fieldNames.addElement(((DatabaseField)fieldsEnum.nextElement()).getQualifiedName());
-        }
-
-        return fieldNames;
+        return this.mechanism.getSourceKeyFieldNames();
     }
 
     /**
@@ -347,7 +312,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * Return all the source key fields associated with the mapping.
      */
     public Vector<DatabaseField> getSourceKeyFields() {
-        return sourceKeyFields;
+        return this.mechanism.getSourceKeyFields();
     }
 
     /**
@@ -356,21 +321,15 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * These are in-order with the sourceKeyFieldNames.
      */
     public Vector getSourceRelationKeyFieldNames() {
-        Vector fieldNames = new Vector(getSourceRelationKeyFields().size());
-        for (Enumeration fieldsEnum = getSourceRelationKeyFields().elements();
-                 fieldsEnum.hasMoreElements();) {
-            fieldNames.addElement(((DatabaseField)fieldsEnum.nextElement()).getQualifiedName());
-        }
-
-        return fieldNames;
+        return this.mechanism.getSourceRelationKeyFieldNames();
     }
 
     /**
      * INTERNAL:
-     * Return all the source realtion key fields associated with the mapping.
+     * Return all the source relation key fields associated with the mapping.
      */
     public Vector<DatabaseField> getSourceRelationKeyFields() {
-        return sourceRelationKeyFields;
+        return this.mechanism.getSourceRelationKeyFields();
     }
 
     /**
@@ -379,13 +338,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * These are in-order with the targetRelationKeyFieldNames.
      */
     public Vector getTargetKeyFieldNames() {
-        Vector fieldNames = new Vector(getTargetKeyFields().size());
-        for (Enumeration fieldsEnum = getTargetKeyFields().elements();
-                 fieldsEnum.hasMoreElements();) {
-            fieldNames.addElement(((DatabaseField)fieldsEnum.nextElement()).getQualifiedName());
-        }
-
-        return fieldNames;
+        return this.mechanism.getTargetKeyFieldNames();
     }
 
     /**
@@ -393,7 +346,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * Return all the target keys associated with the mapping.
      */
     public Vector<DatabaseField> getTargetKeyFields() {
-        return targetKeyFields;
+        return this.mechanism.getTargetKeyFields();
     }
 
     /**
@@ -402,13 +355,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * These are in-order with the targetKeyFieldNames.
      */
     public Vector getTargetRelationKeyFieldNames() {
-        Vector fieldNames = new Vector(getTargetRelationKeyFields().size());
-        for (Enumeration fieldsEnum = getTargetRelationKeyFields().elements();
-                 fieldsEnum.hasMoreElements();) {
-            fieldNames.addElement(((DatabaseField)fieldsEnum.nextElement()).getQualifiedName());
-        }
-
-        return fieldNames;
+        return this.mechanism.getTargetRelationKeyFieldNames();
     }
 
     /**
@@ -416,15 +363,15 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * Return all the target relation key fields associated with the mapping.
      */
     public Vector<DatabaseField> getTargetRelationKeyFields() {
-        return targetRelationKeyFields;
+        return this.mechanism.getTargetRelationKeyFields();
     }
 
     protected boolean hasCustomDeleteQuery() {
-        return hasCustomDeleteQuery;
+        return this.mechanism.hasCustomDeleteQuery();
     }
 
     protected boolean hasCustomInsertQuery() {
-        return hasCustomInsertQuery;
+        return this.mechanism.hasCustomInsertQuery();
     }
 
     /**
@@ -443,30 +390,12 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
         super.initialize(session);
         getDescriptor().getPreDeleteMappings().add(this);
 
-        initializeSourceRelationKeys(session);
-        initializeTargetRelationKeys(session);
-
-        if (isSingleSourceRelationKeySpecified()) {
-            initializeSourceKeysWithDefaults(session);
+        if(this.mechanism != null) {
+            this.mechanism.initialize(session, this);
         } else {
-            initializeSourceKeys(session);
+            throw DescriptorException.noRelationTableMechanism(this);
         }
 
-        if (isSingleTargetRelationKeySpecified()) {
-            initializeTargetKeysWithDefaults(session);
-        } else {
-            initializeTargetKeys(session);
-        }
-      
-        if (getRelationTable().getName().indexOf(' ') != -1) {
-            //table names contains a space so needs to be quoted.
-            String quoteChar = ((DatasourcePlatform)session.getDatasourcePlatform()).getIdentifierQuoteCharacter();
-            //Ensure this tablename hasn't already been quoted.
-            if (getRelationTable().getName().indexOf(quoteChar) == -1) {
-                getRelationTable().setName(quoteChar + getRelationTable().getName() + quoteChar);
-            }
-        }
-        getContainerPolicy().initialize(session, getRelationTable());
         if (shouldInitializeSelectionCriteria()) {
             if (shouldForceInitializationOfSelectionCriteria()) {
                 initializeSelectionCriteriaAndAddFieldsToQuery(session, null);
@@ -479,8 +408,6 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
         }
         
         initializeDeleteAllQuery(session);
-        initializeInsertQuery(session);
-        initializeDeleteQuery(session);
         if (getHistoryPolicy() != null) {
             getHistoryPolicy().initialize(session);
         }
@@ -559,8 +486,6 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
         modifyRow.add(listOrderField, null);
 
         SQLUpdateStatement statement = new SQLUpdateStatement();
-        // TODO: for now we assume that listOrderField.getTable() == relationalTable. 
-        // Should we cover the case when it's not true (i.e. listOrderField.getTable() == defaultTable)?
         statement.setTable(listOrderField.getTable());
         statement.setWhereClause(whereClause);
         statement.setModifyRow(modifyRow);
@@ -594,7 +519,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
             expression = subExpression.and(expression);
         }
 
-        // All the enteries are deleted in one shot.
+        // All the entries are deleted in one shot.
         statement.setWhereClause(expression);
         statement.setTable(getRelationTable());
         getDeleteAllQuery().setSQLStatement(statement);
@@ -602,102 +527,11 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
 
     /**
      * INTERNAL:
-     * Initialize delete query. This query is used to delete a specific row from the join table in uow,
-     * given the objects on both sides of the relation.
+     * Initializes listOrderField's table. 
+     * Precondition: listOrderField != null.
      */
-    protected void initializeDeleteQuery(AbstractSession session) {
-        if (!getDeleteQuery().hasSessionName()) {
-            getDeleteQuery().setSessionName(session.getName());
-        }
-        if (hasCustomDeleteQuery()) {
-            return;
-        }
-
-        // Build where clause expression.
-        Expression whereClause = null;
-        Expression builder = new ExpressionBuilder();
-
-        Enumeration relationKeyEnum = getSourceRelationKeyFields().elements();
-        for (; relationKeyEnum.hasMoreElements();) {
-            DatabaseField relationKey = (DatabaseField)relationKeyEnum.nextElement();
-
-            Expression expression = builder.getField(relationKey).equal(builder.getParameter(relationKey));
-            whereClause = expression.and(whereClause);
-        }
-
-        relationKeyEnum = getTargetRelationKeyFields().elements();
-        for (; relationKeyEnum.hasMoreElements();) {
-            DatabaseField relationKey = (DatabaseField)relationKeyEnum.nextElement();
-
-            Expression expression = builder.getField(relationKey).equal(builder.getParameter(relationKey));
-            whereClause = expression.and(whereClause);
-        }
-
-        SQLDeleteStatement statement = new SQLDeleteStatement();
-        statement.setTable(getRelationTable());
-        statement.setWhereClause(whereClause);
-        getDeleteQuery().setSQLStatement(statement);
-    }
-
-    /**
-     * INTERNAL:
-     * Initialize insert query. This query is used to insert the collection of objects into the
-     * relation table.
-     */
-    protected void initializeInsertQuery(AbstractSession session) {
-        if (!getInsertQuery().hasSessionName()) {
-            getInsertQuery().setSessionName(session.getName());
-        }
-        if (hasCustomInsertQuery()) {
-            return;
-        }
-
-        SQLInsertStatement statement = new SQLInsertStatement();
-        statement.setTable(getRelationTable());
-        AbstractRecord joinRow = new DatabaseRecord();
-        for (Enumeration targetEnum = getTargetRelationKeyFields().elements();
-                 targetEnum.hasMoreElements();) {
-            joinRow.put((DatabaseField)targetEnum.nextElement(), null);
-        }
-        for (Enumeration sourceEnum = getSourceRelationKeyFields().elements();
-                 sourceEnum.hasMoreElements();) {
-            joinRow.put((DatabaseField)sourceEnum.nextElement(), null);
-        }
-        if(listOrderField != null) {
-            joinRow.put(listOrderField, null);
-        }
-        getContainerPolicy().addFieldsForMapKey(joinRow);
-        statement.setModifyRow(joinRow);
-        getInsertQuery().setSQLStatement(statement);
-        getInsertQuery().setModifyRow(joinRow);
-    }
-
-    /**
-     * INTERNAL:
-     * Set the table qualifier on the relation table if required
-     */
-    protected void initializeRelationTable(AbstractSession session) throws DescriptorException {
-        Platform platform = session.getDatasourcePlatform();
-
-        if ((getRelationTable() == null) || (getRelationTableName().length() == 0)) {
-            throw DescriptorException.noRelationTable(this);
-        }
-
-        if (platform.getTableQualifier().length() > 0) {
-            if (getRelationTable().getTableQualifier().length() == 0) {
-                getRelationTable().setTableQualifier(platform.getTableQualifier());
-            }
-        }
-    }
-
-    /**
-     * Initialize and set the descriptor for the referenced class in this mapping.
-     * Added here initialization of relation table so that it's ready when
-     * CollectionMapping.initialize initializes listOrderField.
-     */
-    protected void initializeReferenceDescriptor(AbstractSession session) throws DescriptorException {
-        super.initializeReferenceDescriptor(session);
-        initializeRelationTable(session);
+    protected void initializeListOrderFieldTable(AbstractSession session) {
+        this.mechanism.initializeRelationTable(session, this);
     }
     
     /**
@@ -769,88 +603,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
 
             setSelectionCriteria(criteria);
         }
-    }
-    
-    /**
-     * INTERNAL:
-     * All the source key field names are converted to DatabaseField and stored.
-     */
-    protected void initializeSourceKeys(AbstractSession session) {
-        for (int index = 0; index < getSourceKeyFields().size(); index++) {
-            DatabaseField field = getDescriptor().buildField(getSourceKeyFields().get(index));
-            getSourceKeyFields().set(index, field);
-        }
-    }
-
-    /**
-     * INTERNAL:
-     * If a user does not specify the source key then the primary keys of the source table are used.
-     */
-    protected void initializeSourceKeysWithDefaults(AbstractSession session) {
-        List<DatabaseField> primaryKeyFields = getDescriptor().getPrimaryKeyFields();
-        for (int index = 0; index < primaryKeyFields.size(); index++) {
-            getSourceKeyFields().addElement(primaryKeyFields.get(index));
-        }
-    }
-
-    /**
-     * INTERNAL:
-     * All the source relation key field names are converted to DatabaseField and stored.
-     */
-    protected void initializeSourceRelationKeys(AbstractSession session) throws DescriptorException {
-        if (getSourceRelationKeyFields().size() == 0) {
-            throw DescriptorException.noSourceRelationKeysSpecified(this);
-        }
-
-        for (Enumeration entry = getSourceRelationKeyFields().elements(); entry.hasMoreElements();) {
-            DatabaseField field = (DatabaseField)entry.nextElement();
-            if (field.hasTableName() && (!(field.getTableName().equals(getRelationTable().getName())))) {
-                throw DescriptorException.relationKeyFieldNotProperlySpecified(field, this);
-            }
-            field.setTable(getRelationTable());
-        }
-    }
-
-    /**
-     * INTERNAL:
-     * All the target key field names are converted to DatabaseField and stored.
-     */
-    protected void initializeTargetKeys(AbstractSession session) {
-        for (int index = 0; index < getTargetKeyFields().size(); index++) {
-            DatabaseField field = getReferenceDescriptor().buildField(getTargetKeyFields().get(index));
-            getTargetKeyFields().set(index, field);
-        }
-    }
-
-    /**
-     * INTERNAL:
-     * If a user does not specify the target key then the primary keys of the target table are used.
-     */
-    protected void initializeTargetKeysWithDefaults(AbstractSession session) {
-        List<DatabaseField> primaryKeyFields = getReferenceDescriptor().getPrimaryKeyFields();
-        for (int index = 0; index < primaryKeyFields.size(); index++) {
-            getTargetKeyFields().addElement(primaryKeyFields.get(index));
-        }
-    }
-
-    /**
-     * INTERNAL:
-     * All the target relation key field names are converted to DatabaseField and stored.
-     */
-    protected void initializeTargetRelationKeys(AbstractSession session) {
-        if (getTargetRelationKeyFields().size() == 0) {
-            throw DescriptorException.noTargetRelationKeysSpecified(this);
-        }
-
-        for (Enumeration targetEnum = getTargetRelationKeyFields().elements();
-                 targetEnum.hasMoreElements();) {
-            DatabaseField field = (DatabaseField)targetEnum.nextElement();
-            if (field.hasTableName() && (!(field.getTableName().equals(getRelationTable().getName())))) {
-                throw DescriptorException.relationKeyFieldNotProperlySpecified(field, this);
-            }
-            field.setTable(getRelationTable());
-        }
-    }
+    }    
 
     /**
      * INTERNAL:
@@ -860,32 +613,16 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
         //cr 3819 added the line below to fix the translationtable to ensure that it
         // contains the required values
         prepareTranslationRow(query.getTranslationRow(), query.getObject(), query.getSession());
-        AbstractRecord databaseRow = new DatabaseRecord();
-
-        // Extract primary key and value from the source.
-        for (int index = 0; index < getSourceRelationKeyFields().size(); index++) {
-            DatabaseField sourceRelationKey = getSourceRelationKeyFields().elementAt(index);
-            DatabaseField sourceKey = getSourceKeyFields().elementAt(index);
-            Object sourceKeyValue = query.getTranslationRow().get(sourceKey);
-            databaseRow.put(sourceRelationKey, sourceKeyValue);
-        }
-
-        // Extract target field and its value. Construct insert statement and execute it
-        for (int index = 0; index < getTargetRelationKeyFields().size(); index++) {
-            DatabaseField targetRelationKey = getTargetRelationKeyFields().elementAt(index);
-            DatabaseField targetKey = getTargetKeyFields().elementAt(index);
-            Object targetKeyValue = getReferenceDescriptor().getObjectBuilder().extractValueFromObjectForField(containerPolicy.unwrapIteratorResult(objectAdded), targetKey, query.getSession());
-            databaseRow.put(targetRelationKey, targetKeyValue);
-        }
+        AbstractRecord databaseRow = this.mechanism.buildRelationTableSourceAndTargetRow(query.getTranslationRow(), containerPolicy.unwrapIteratorResult(objectAdded), query.getSession(), this);
         ContainerPolicy.copyMapDataToRow(getContainerPolicy().getKeyMappingDataForWriteQuery(objectAdded, query.getSession()), databaseRow);
         
         if(listOrderField != null && extraData != null) {
             databaseRow.put(listOrderField, extraData.get(listOrderField));
         }
         
-        query.getSession().executeQuery(getInsertQuery(), databaseRow);
+        query.getSession().executeQuery(this.mechanism.getInsertQuery(), databaseRow);
         if ((getHistoryPolicy() != null) && getHistoryPolicy().shouldHandleWrites()) {
-            getHistoryPolicy().mappingLogicalInsert(getInsertQuery(), databaseRow, query.getSession());
+            getHistoryPolicy().mappingLogicalInsert(this.mechanism.getInsertQuery(), databaseRow, query.getSession());
         }
     }
 
@@ -910,27 +647,14 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
         }
 
         prepareTranslationRow(query.getTranslationRow(), query.getObject(), query.getSession());
-        AbstractRecord databaseRow = new DatabaseRecord();
-
-        // Extract primary key and value from the source.
-        for (int index = 0; index < getSourceRelationKeyFields().size(); index++) {
-            DatabaseField sourceRelationKey = getSourceRelationKeyFields().elementAt(index);
-            DatabaseField sourceKey = getSourceKeyFields().elementAt(index);
-            Object sourceKeyValue = query.getTranslationRow().get(sourceKey);
-            databaseRow.put(sourceRelationKey, sourceKeyValue);
-        }
+        AbstractRecord databaseRow = this.mechanism.buildRelationTableSourceRow(query.getTranslationRow());
 
         int orderIndex = 0;
         // Extract target field and its value. Construct insert statement and execute it
         for (Object iter = cp.iteratorFor(objects); cp.hasNext(iter);) {
             Object wrappedObject = cp.nextEntry(iter, query.getSession());
             Object object = cp.unwrapIteratorResult(wrappedObject);
-            for (int index = 0; index < getTargetRelationKeyFields().size(); index++) {
-                DatabaseField targetRelationKey = getTargetRelationKeyFields().elementAt(index);
-                DatabaseField targetKey = getTargetKeyFields().elementAt(index);
-                Object targetKeyValue = getReferenceDescriptor().getObjectBuilder().extractValueFromObjectForField(object, targetKey, query.getSession());
-                databaseRow.put(targetRelationKey, targetKeyValue);
-            }
+            databaseRow = this.mechanism.addRelationTableTargetRow(object, query.getSession(), databaseRow, this);
 
             ContainerPolicy.copyMapDataToRow(cp.getKeyMappingDataForWriteQuery(wrappedObject, query.getSession()), databaseRow);
             
@@ -938,9 +662,9 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
                 databaseRow.put(listOrderField, orderIndex++);
             }
 
-            query.getSession().executeQuery(getInsertQuery(), databaseRow);
+            query.getSession().executeQuery(this.mechanism.getInsertQuery(), databaseRow);
             if ((getHistoryPolicy() != null) && getHistoryPolicy().shouldHandleWrites()) {
-                getHistoryPolicy().mappingLogicalInsert(getInsertQuery(), databaseRow, query.getSession());
+                getHistoryPolicy().mappingLogicalInsert(this.mechanism.getInsertQuery(), databaseRow, query.getSession());
             }
         }
     }
@@ -1012,22 +736,6 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
     }
 
     /**
-     * INTERNAL:
-     * Checks if a single source key was specified.
-     */
-    protected boolean isSingleSourceRelationKeySpecified() {
-        return getSourceKeyFields().isEmpty();
-    }
-
-    /**
-     * INTERNAL:
-     * Checks if a single target key was specified.
-     */
-    protected boolean isSingleTargetRelationKeySpecified() {
-        return getTargetKeyFields().isEmpty();
-    }
-
-    /**
      * For Many To Many mappings referenced objects are deleted one by one.
      */
     protected boolean mustDeleteReferenceObjectsOneByOne() {
@@ -1061,37 +769,21 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * An object was removed to the collection during an update, delete it if private.
      */
     protected void objectRemovedDuringUpdate(ObjectLevelModifyQuery query, Object objectDeleted, Map extraData) throws DatabaseException, OptimisticLockException {
-        AbstractRecord databaseRow = new DatabaseRecord();
-
-        // Extract primary key and value from the source.
-        for (int index = 0; index < getSourceRelationKeyFields().size(); index++) {
-            DatabaseField sourceRelationKey = getSourceRelationKeyFields().elementAt(index);
-            DatabaseField sourceKey = getSourceKeyFields().elementAt(index);
-            Object sourceKeyValue = query.getTranslationRow().get(sourceKey);
-            databaseRow.put(sourceRelationKey, sourceKeyValue);
-        }
-        
         Object unwrappedObjectDeleted = getContainerPolicy().unwrapIteratorResult(objectDeleted);
-        // Extract target field and its value. Construct insert statement and execute it
-        for (int index = 0; index < getTargetRelationKeyFields().size(); index++) {
-            DatabaseField targetRelationKey = getTargetRelationKeyFields().elementAt(index);
-            DatabaseField targetKey = getTargetKeyFields().elementAt(index);
-            Object targetKeyValue = getReferenceDescriptor().getObjectBuilder().extractValueFromObjectForField(unwrappedObjectDeleted, targetKey, query.getSession());
-            databaseRow.put(targetRelationKey, targetKeyValue);
-        }
+        AbstractRecord databaseRow = this.mechanism.buildRelationTableSourceAndTargetRow(query.getTranslationRow(), unwrappedObjectDeleted, query.getSession(), this);
 
         // In the uow data queries are cached until the end of the commit.
         if (query.shouldCascadeOnlyDependentParts()) {
             // Hey I might actually want to use an inner class here... ok array for now.
             Object[] event = new Object[3];
             event[0] = ObjectRemoved;
-            event[1] = getDeleteQuery();
+            event[1] = this.mechanism.getDeleteQuery();
             event[2] = databaseRow;
             query.getSession().getCommitManager().addDataModificationEvent(this, event);
         } else {
-            query.getSession().executeQuery(getDeleteQuery(), databaseRow);
+            query.getSession().executeQuery(this.mechanism.getDeleteQuery(), databaseRow);
             if ((getHistoryPolicy() != null) && getHistoryPolicy().shouldHandleWrites()) {
-                getHistoryPolicy().mappingLogicalDelete(getDeleteQuery(), databaseRow, query.getSession());
+                getHistoryPolicy().mappingLogicalDelete(this.mechanism.getDeleteQuery(), databaseRow, query.getSession());
             }
         }
 
@@ -1101,27 +793,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
 
     protected void objectOrderChangedDuringUpdate(WriteObjectQuery query, Object orderChangedObject, int orderIndex) {
         prepareTranslationRow(query.getTranslationRow(), query.getObject(), query.getSession());
-        AbstractRecord databaseRow = new DatabaseRecord();
-
-        // Extract primary key and value from the source.
-        for (int index = 0; index < getSourceRelationKeyFields().size(); index++) {
-            DatabaseField sourceRelationKey = getSourceRelationKeyFields().elementAt(index);
-            DatabaseField sourceKey = getSourceKeyFields().elementAt(index);
-            Object sourceKeyValue = query.getTranslationRow().get(sourceKey);
-            databaseRow.put(sourceRelationKey, sourceKeyValue);
-        }
-
-        // TODO: Do we need to unwrapped object here? 
-        // Object unwrappedOrderChangedObject = getContainerPolicy().unwrapIteratorResult(orderChangedObject);
-        
-        // Extract target field and its value. Construct insert statement and execute it
-        for (int index = 0; index < getTargetRelationKeyFields().size(); index++) {
-            DatabaseField targetRelationKey = getTargetRelationKeyFields().elementAt(index);
-            DatabaseField targetKey = getTargetKeyFields().elementAt(index);
-            Object targetKeyValue = getReferenceDescriptor().getObjectBuilder().extractValueFromObjectForField(orderChangedObject, targetKey, query.getSession());
-            databaseRow.put(targetRelationKey, targetKeyValue);
-        }
-
+        AbstractRecord databaseRow = this.mechanism.buildRelationTableSourceAndTargetRow(query.getTranslationRow(), orderChangedObject, query.getSession(), this);
         databaseRow.put(listOrderField, orderIndex);
   
         query.getSession().executeQuery(changeOrderTargetQuery, databaseRow);
@@ -1268,8 +940,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * This query must delete the row from the M-M join table.
      */
     public void setCustomDeleteQuery(DataModifyQuery query) {
-        setDeleteQuery(query);
-        setHasCustomDeleteQuery(true);
+        this.mechanism.setCustomDeleteQuery(query);
     }
 
     /**
@@ -1278,12 +949,11 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * This query must insert the row into the M-M join table.
      */
     public void setCustomInsertQuery(DataModifyQuery query) {
-        setInsertQuery(query);
-        setHasCustomInsertQuery(true);
+        this.mechanism.setCustomInsertQuery(query);
     }
 
     protected void setDeleteQuery(DataModifyQuery deleteQuery) {
-        this.deleteQuery = deleteQuery;
+        this.mechanism.setDeleteQuery(deleteQuery);
     }
 
     /**
@@ -1296,9 +966,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * Example, 'delete from PROJ_EMP where PROJ_ID = #PROJ_ID AND EMP_ID = #EMP_ID'.
      */
     public void setDeleteSQLString(String sqlString) {
-        DataModifyQuery query = new DataModifyQuery();
-        query.setSQLString(sqlString);
-        setCustomDeleteQuery(query);
+        this.mechanism.setDeleteSQLString(sqlString);
     }
     
     /**
@@ -1310,21 +978,11 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * Example, 'new SQLCall("delete from PROJ_EMP where PROJ_ID = #PROJ_ID AND EMP_ID = #EMP_ID")'.
      */
     public void setDeleteCall(Call call) {
-        DataModifyQuery query = new DataModifyQuery();
-        query.setCall(call);
-        setCustomDeleteQuery(query);
-    }
-
-    protected void setHasCustomDeleteQuery(boolean hasCustomDeleteQuery) {
-        this.hasCustomDeleteQuery = hasCustomDeleteQuery;
-    }
-
-    protected void setHasCustomInsertQuery(boolean bool) {
-        hasCustomInsertQuery = bool;
+        this.mechanism.setDeleteCall(call);
     }
 
     protected void setInsertQuery(DataModifyQuery insertQuery) {
-        this.insertQuery = insertQuery;
+        this.mechanism.setInsertQuery(insertQuery);
     }
 
     /**
@@ -1337,9 +995,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * Example, 'insert into PROJ_EMP (EMP_ID, PROJ_ID) values (#EMP_ID, #PROJ_ID)'.
      */
     public void setInsertSQLString(String sqlString) {
-        DataModifyQuery query = new DataModifyQuery();
-        query.setSQLString(sqlString);
-        setCustomInsertQuery(query);
+        this.mechanism.setInsertSQLString(sqlString);
     }
     
     /**
@@ -1351,18 +1007,32 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * Example, 'new SQLCall("insert into PROJ_EMP (EMP_ID, PROJ_ID) values (#EMP_ID, #PROJ_ID)")'.
      */
     public void setInsertCall(Call call) {
-        DataModifyQuery query = new DataModifyQuery();
-        query.setCall(call);
-        setCustomInsertQuery(query);
+        this.mechanism.setInsertCall(call);
     }
 
+    /**
+     * PUBLIC:
+     * Allows to set RelationTableMechanism to be owned by the mapping.
+     * It's not necessary to explicitly set the mechanism:
+     * one is created by mapping's constructor. 
+     * The only reason this method is provided
+     * is to allow a uniform approach to RelationTableMechanism
+     * in both ManyToManyMapping and OneToOneMapping
+     * that uses RelationTableMechanism.
+     * ManyToManyMapping must have RelationTableMechanism,
+     * never set it to null.
+     */
+    void setRelationTableMechanism(RelationTableMechanism mechanism) {
+        this.mechanism = mechanism;
+    }
+    
     /**
      * PUBLIC:
      * Set the relational table.
      * This is the join table that store both the source and target primary keys.
      */
     public void setRelationTable(DatabaseTable relationTable) {
-        this.relationTable = relationTable;
+        this.mechanism.setRelationTable(relationTable);
     }
     
     /**
@@ -1381,7 +1051,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * This is the join table that store both the source and target primary keys.
      */
     public void setRelationTableName(String tableName) {
-        relationTable = new DatabaseTable(tableName);
+        this.mechanism.setRelationTableName(tableName);
     }
 
     /**
@@ -1392,8 +1062,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      */
     public void setSessionName(String name) {
         super.setSessionName(name);
-        getInsertQuery().setSessionName(name);
-        getDeleteQuery().setSessionName(name);
+        this.mechanism.setSessionName(name);
     }
 
     /**
@@ -1402,12 +1071,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * These must be in-order with the sourceRelationKeyFieldNames.
      */
     public void setSourceKeyFieldNames(Vector fieldNames) {
-        Vector fields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(fieldNames.size());
-        for (Enumeration fieldNamesEnum = fieldNames.elements(); fieldNamesEnum.hasMoreElements();) {
-            fields.addElement(new DatabaseField((String)fieldNamesEnum.nextElement()));
-        }
-
-        setSourceKeyFields(fields);
+        this.mechanism.setSourceKeyFieldNames(fieldNames);
     }
 
     /**
@@ -1415,7 +1079,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * Set the source fields.
      */
     public void setSourceKeyFields(Vector<DatabaseField> sourceKeyFields) {
-        this.sourceKeyFields = sourceKeyFields;
+        this.mechanism.setSourceKeyFields(sourceKeyFields);
     }
 
     /**
@@ -1425,7 +1089,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * This method is used if the source primary key is a singleton only.
      */
     public void setSourceRelationKeyFieldName(String sourceRelationKeyFieldName) {
-        getSourceRelationKeyFields().addElement(new DatabaseField(sourceRelationKeyFieldName));
+        this.mechanism.setSourceRelationKeyFieldName(sourceRelationKeyFieldName);
     }
 
     /**
@@ -1434,12 +1098,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * These must be in-order with the sourceKeyFieldNames.
      */
     public void setSourceRelationKeyFieldNames(Vector fieldNames) {
-        Vector fields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(fieldNames.size());
-        for (Enumeration fieldNamesEnum = fieldNames.elements(); fieldNamesEnum.hasMoreElements();) {
-            fields.addElement(new DatabaseField((String)fieldNamesEnum.nextElement()));
-        }
-
-        setSourceRelationKeyFields(fields);
+        this.mechanism.setSourceRelationKeyFieldNames(fieldNames);
     }
 
     /**
@@ -1447,7 +1106,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * Set the source fields.
      */
     public void setSourceRelationKeyFields(Vector<DatabaseField> sourceRelationKeyFields) {
-        this.sourceRelationKeyFields = sourceRelationKeyFields;
+        this.mechanism.setSourceRelationKeyFields(sourceRelationKeyFields);
     }
 
     /**
@@ -1456,12 +1115,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * These must be in-order with the targetRelationKeyFieldNames.
      */
     public void setTargetKeyFieldNames(Vector fieldNames) {
-        Vector fields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(fieldNames.size());
-        for (Enumeration fieldNamesEnum = fieldNames.elements(); fieldNamesEnum.hasMoreElements();) {
-            fields.addElement(new DatabaseField((String)fieldNamesEnum.nextElement()));
-        }
-
-        setTargetKeyFields(fields);
+        this.mechanism.setTargetKeyFieldNames(fieldNames);
     }
 
     /**
@@ -1469,7 +1123,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * Set the target fields.
      */
     public void setTargetKeyFields(Vector<DatabaseField> targetKeyFields) {
-        this.targetKeyFields = targetKeyFields;
+        this.mechanism.setTargetKeyFields(targetKeyFields);
     }
 
     /**
@@ -1479,7 +1133,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * This method is used if the target's primary key is a singleton only.
      */
     public void setTargetRelationKeyFieldName(String targetRelationKeyFieldName) {
-        getTargetRelationKeyFields().addElement(new DatabaseField(targetRelationKeyFieldName));
+        this.mechanism.setTargetRelationKeyFieldName(targetRelationKeyFieldName);
     }
 
     /**
@@ -1488,12 +1142,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * These must be in-order with the targetKeyFieldNames.
      */
     public void setTargetRelationKeyFieldNames(Vector fieldNames) {
-        Vector fields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(fieldNames.size());
-        for (Enumeration fieldNamesEnum = fieldNames.elements(); fieldNamesEnum.hasMoreElements();) {
-            fields.addElement(new DatabaseField((String)fieldNamesEnum.nextElement()));
-        }
-
-        setTargetRelationKeyFields(fields);
+        this.mechanism.setTargetRelationKeyFieldNames(fieldNames);
     }
 
     /**
@@ -1501,7 +1150,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * Set the target fields.
      */
     public void setTargetRelationKeyFields(Vector<DatabaseField> targetRelationKeyFields) {
-        this.targetRelationKeyFields = targetRelationKeyFields;
+        this.mechanism.setTargetRelationKeyFields(targetRelationKeyFields);
     }
     
     /**

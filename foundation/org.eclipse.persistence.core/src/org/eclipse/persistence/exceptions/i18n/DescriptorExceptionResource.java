@@ -222,6 +222,8 @@ public class DescriptorExceptionResource extends ListResourceBundle {
                                            { "211", "[{0}] has list order field set and list order field validation mode is CORRECTION, that requires IndirectList to be assignable to the attribute." },
                                            { "212", "List order field specified for [{0}] has a wrong table [{1}]. Must use {2} instead." },
                                            { "213", "{0} requires all target foreign key fields to belong to the same table, but several were found: {1}." },
+                                           { "214", "{0} specifies relation table, that is not compatible with addForeignKey(Name) method, or use addSourceRelationKeyField(Name) and addTargetRelationKeyFieldName methods instead."},
+                                           { "215", "{0} must have non-null RelationTableMechanism."},
 
     };
 

@@ -365,7 +365,7 @@ public class FunctionExpression extends BaseExpression {
         if (getOperator().getSelector() == ExpressionOperator.NotNull) {
             foreignKeyJoin = foreignKeyJoin.not();
         }
-        return foreignKeyJoin;
+        return foreignKeyJoin.normalize(normalizer);
     }
 
     /**

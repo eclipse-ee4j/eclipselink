@@ -551,6 +551,7 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
         public void test() {
             ReadAllQuery query = new ReadAllQuery();
             query.setReferenceClass(Employee.class);
+            setSelectionCriteria(query);
             
             ReadAllQuery controlQuery = (ReadAllQuery)query.clone();
             
