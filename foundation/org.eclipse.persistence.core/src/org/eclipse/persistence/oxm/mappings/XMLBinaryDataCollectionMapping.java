@@ -107,7 +107,7 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
      * INTERNAL
      */
     public String getMimeType() {
-        return mimeTypePolicy.getMimeType(null);
+        return getMimeType(null);
     }
 
     public MimeTypePolicy getMimeTypePolicy() {
