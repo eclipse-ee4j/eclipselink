@@ -477,11 +477,11 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             AbstractSession session = this.serverSession;
             ClassDescriptor descriptor = session.getDescriptor(entityClass);
             // PERF: Avoid uow creation for read-only.
-            if (!descriptor.shouldBeReadOnly()) {
-                session = (AbstractSession) getActiveSession();
-            }
             if (descriptor == null || descriptor.isAggregateDescriptor() || descriptor.isAggregateCollectionDescriptor()) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("unknown_bean_class", new Object[] { entityClass }));
+            }
+            if (!descriptor.shouldBeReadOnly()) {
+                session = (AbstractSession) getActiveSession();
             }
             return (T) findInternal(descriptor, session, primaryKey, lockMode, properties);
         } catch (LockTimeoutException e) {
