@@ -46,7 +46,7 @@ public class JAXBIntegerListTestCases extends JAXBIntegerArrayTestCases {
 	}
 
 	protected Object getControlObject() {
-		Vector<Integer> integers = new Vector<Integer>();
+		ArrayList<Integer> integers = new ArrayList<Integer>();
 		integers.add(new Integer("10"));
 		integers.add(new Integer("20"));
 		integers.add(new Integer("30"));

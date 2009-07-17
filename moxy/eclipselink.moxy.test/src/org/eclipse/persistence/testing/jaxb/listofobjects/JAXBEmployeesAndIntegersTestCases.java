@@ -79,7 +79,7 @@ public class JAXBEmployeesAndIntegersTestCases extends
 		}
 	
 	protected Object getControlObject() {
-		Vector<Integer> integers = new Vector<Integer>();
+		List<Integer> integers = new ArrayList<Integer>();
 		integers.add(new Integer("10"));
 		integers.add(new Integer("20"));
 		integers.add(new Integer("30"));

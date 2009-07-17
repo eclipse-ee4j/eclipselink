@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.*;
 import javax.xml.namespace.QName;
 
@@ -385,7 +386,7 @@ public class MappingsGenerator {
         return mapping;
     }
     
-    public XMLMapping generateMappingForReferenceProperty(ReferenceProperty property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
+    public XMLMapping generateMappingForReferenceProperty(ReferenceProperty property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo)  {
                 
         boolean isCollection = isCollectionType(property);
         DatabaseMapping mapping;
@@ -423,9 +424,12 @@ public class MappingsGenerator {
             if(helper.getXMLToJavaTypeMap().get(element.getJavaType().getRawName()) == XMLConstants.BASE_64_BINARY_QNAME) {
                 xmlField.setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
             }
+            XMLMapping nestedMapping;
+            JAXBElementAttributeAccessor nestedAccessor;
             if(isCollection){
+            	nestedAccessor = new JAXBElementAttributeAccessor(mappingAccessor, mapping.getContainerPolicy());
                 ((XMLChoiceCollectionMapping)mapping).addChoiceElement(xmlField, element.getJavaTypeName());
-                XMLMapping nestedMapping = ((XMLChoiceCollectionMapping)mapping).getChoiceElementMappings().get(xmlField);
+                nestedMapping = ((XMLChoiceCollectionMapping)mapping).getChoiceElementMappings().get(xmlField);
                 if(((DatabaseMapping)nestedMapping).isAbstractCompositeCollectionMapping()){
                     ((XMLCompositeCollectionMapping)nestedMapping).setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
                 }
@@ -440,12 +444,12 @@ public class MappingsGenerator {
                     ((XMLCompositeDirectCollectionMapping)nestedMapping).setValueConverter(listConverter);
                 }
             }else{
+            	nestedAccessor = new JAXBElementAttributeAccessor(mappingAccessor);
                 ((XMLChoiceObjectMapping)mapping).addChoiceElement(xmlField, element.getJavaTypeName());
-                XMLMapping nestedMapping = ((XMLChoiceObjectMapping)mapping).getChoiceElementMappings().get(xmlField);
+                nestedMapping = ((XMLChoiceObjectMapping)mapping).getChoiceElementMappings().get(xmlField);
                 if(((DatabaseMapping)nestedMapping).isAbstractCompositeObjectMapping()){
                     ((XMLCompositeObjectMapping)nestedMapping).setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
                 }
- 
             }
             
             if(!element.isXmlRootElement()) {
@@ -455,9 +459,20 @@ public class MappingsGenerator {
                 }else{
                     ((XMLChoiceObjectMapping)mapping).addConverter(xmlField, converter);
                 }
-                qNamesToScopeClass.put(elementName, element.getScopeClass());
+                Class scopeClass = element.getScopeClass(); 
+            	if(scopeClass == javax.xml.bind.annotation.XmlElementDecl.GLOBAL.class){
+            		scopeClass = JAXBElement.GlobalScope.class;
+            	}
+                qNamesToScopeClass.put(elementName, scopeClass);
             }
-            hasJAXBElements = hasJAXBElements || !element.isXmlRootElement();           
+            hasJAXBElements = hasJAXBElements || !element.isXmlRootElement();   
+            Class theClass;
+			theClass = helper.getClassForJavaClass(element.getJavaType());
+            
+            nestedAccessor.setDeclaredType(theClass);
+                        
+            nestedAccessor.setQNamesToScopes(qNamesToScopeClass);
+            ((DatabaseMapping)nestedMapping).setAttributeAccessor(nestedAccessor);           
         }
         if(hasJAXBElements) {
             JAXBElementAttributeAccessor accessor;
@@ -466,6 +481,10 @@ public class MappingsGenerator {
             }else{
                 accessor = new JAXBElementAttributeAccessor(mappingAccessor);
             }
+            
+            Class theClass = helper.getClassForJavaClass(property.getActualType());
+            accessor.setDeclaredType(theClass);
+
             accessor.setQNamesToScopes(qNamesToScopeClass);
             mapping.setAttributeAccessor(accessor);
         }
@@ -504,7 +523,11 @@ public class MappingsGenerator {
         if(!isMixed) {
             mapping.setUseXMLRoot(true);
         }
-        mapping.setAttributeAccessor(new JAXBElementAttributeAccessor(mapping.getAttributeAccessor(), mapping.getContainerPolicy()));
+        JAXBElementAttributeAccessor accessor = new JAXBElementAttributeAccessor(mapping.getAttributeAccessor(), mapping.getContainerPolicy());
+
+        Class theClass = helper.getClassForJavaClass(property.getActualType());
+        accessor.setDeclaredType(theClass);
+        mapping.setAttributeAccessor(accessor);
         if(isLax) {
             mapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
         } else {
@@ -767,7 +790,7 @@ public class MappingsGenerator {
         descriptor.addMapping(mapping);
     }
     
-    public void generateAnyObjectMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
+    public void generateAnyObjectMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo)  {
         XMLAnyObjectMapping mapping = new XMLAnyObjectMapping();
         mapping.setAttributeName(property.getPropertyName());
         mapping.setMixedContent(false);
@@ -792,7 +815,10 @@ public class MappingsGenerator {
             mapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);   
         }
         mapping.setUseXMLRoot(true);
-        mapping.setAttributeAccessor(new JAXBElementAttributeAccessor(mapping.getAttributeAccessor()));
+        JAXBElementAttributeAccessor accessor = new JAXBElementAttributeAccessor(mapping.getAttributeAccessor());
+        Class theClass = helper.getClassForJavaClass(property.getActualType());
+        accessor.setDeclaredType(theClass);
+        mapping.setAttributeAccessor(accessor);
         descriptor.addMapping(mapping);
     }
     

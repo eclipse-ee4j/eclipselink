@@ -141,6 +141,9 @@ public class Property {
         if(cls == null){
             return;
         }
+        if(type != null && type == cls){
+        	return;
+        }
     	String clsName= cls.getRawName();
         if(type != null && isCollectionType(type)){  
             genericType = cls;

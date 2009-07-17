@@ -315,6 +315,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
     public void compareJAXBElementObjects(JAXBElement controlObj, JAXBElement testObj) {
         assertEquals(controlObj.getName().getLocalPart(), testObj.getName().getLocalPart());
         assertEquals(controlObj.getName().getNamespaceURI(), testObj.getName().getNamespaceURI());
+        assertEquals(controlObj.getDeclaredType(), testObj.getDeclaredType());
 
         Object controlValue = controlObj.getValue();
         Object testValue = testObj.getValue();

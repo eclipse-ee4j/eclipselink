@@ -20,6 +20,7 @@ import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
+import org.eclipse.persistence.internal.descriptors.InstanceVariableAttributeAccessor;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.oxm.XMLChoiceFieldToClassAssociation;
@@ -33,6 +34,7 @@ import org.eclipse.persistence.internal.sessions.ChangeRecord;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.mappings.AttributeAccessor;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.mappings.foundation.AbstractCompositeObjectMapping;
@@ -80,6 +82,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
     private Map<XMLField, XMLMapping> choiceElementMappings;
     private Map<XMLField, Converter> fieldsToConverters;
     private boolean isWriteOnly;
+    private static final AttributeAccessor temporaryAccessor = new InstanceVariableAttributeAccessor();;
 
     public XMLChoiceObjectMapping() {
         fieldToClassMappings = new HashMap<XMLField, Class>();
@@ -248,10 +251,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
         Iterator<XMLMapping> mappings = getChoiceElementMappings().values().iterator();
         while(mappings.hasNext()){
             DatabaseMapping nextMapping = (DatabaseMapping)mappings.next();
-            nextMapping.setDescriptor(getDescriptor());
-            nextMapping.setAttributeName(this.getAttributeName());          
-            nextMapping.setAttributeAccessor(getAttributeAccessor());
-            
+                        
             Converter converter = null;
             if(fieldsToConverters != null) {
                 converter = fieldsToConverters.get(nextMapping.getField());
@@ -349,7 +349,8 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
     private void addChoiceElementMapping(XMLField xmlField, String className){
                 
          if (xmlField.getLastXPathFragment().nameIsText()) {
-             XMLDirectMapping xmlMapping = new XMLDirectMapping();                 
+             XMLDirectMapping xmlMapping = new XMLDirectMapping();
+             xmlMapping.setAttributeAccessor(temporaryAccessor);
              Class theClass = XMLConversionManager.getDefaultXMLManager().convertClassNameToClass(className);
              xmlMapping.setAttributeClassification(theClass);
              xmlMapping.setField(xmlField);
@@ -357,6 +358,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
              
          } else {
              XMLCompositeObjectMapping xmlMapping = new XMLCompositeObjectMapping();
+             xmlMapping.setAttributeAccessor(temporaryAccessor);
              if(!className.equals("java.lang.Object")){
                  xmlMapping.setReferenceClassName(className);
              }            
@@ -369,11 +371,13 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
         
         if (xmlField.getLastXPathFragment().nameIsText()) {
             XMLDirectMapping xmlMapping = new XMLDirectMapping();
-            xmlMapping.setAttributeClassification(theClass);            
+            xmlMapping.setAttributeClassification(theClass);      
+            xmlMapping.setAttributeAccessor(temporaryAccessor);
             xmlMapping.setField(xmlField);
             this.choiceElementMappings.put(xmlField, xmlMapping);            
         } else {
-            XMLCompositeObjectMapping xmlMapping = new XMLCompositeObjectMapping();            
+            XMLCompositeObjectMapping xmlMapping = new XMLCompositeObjectMapping();
+            xmlMapping.setAttributeAccessor(temporaryAccessor);
             if(!theClass.equals(ClassConstants.OBJECT)){
                 xmlMapping.setReferenceClass(theClass);
             }            
@@ -394,6 +398,17 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
         getAttributeAccessor().setIsWriteOnly(this.isWriteOnly());
         getAttributeAccessor().setIsReadOnly(this.isReadOnly());
         super.preInitialize(session);
+        Iterator<XMLMapping> mappings = getChoiceElementMappings().values().iterator();
+        while(mappings.hasNext()){
+            DatabaseMapping nextMapping = (DatabaseMapping)mappings.next();
+            nextMapping.setDescriptor(getDescriptor());
+            nextMapping.setAttributeName(this.getAttributeName());
+            if(nextMapping.getAttributeAccessor() == temporaryAccessor){
+            	nextMapping.setAttributeAccessor(getAttributeAccessor());
+            }                        
+            nextMapping.preInitialize(session);
+        }
+        
     }
     
     public void setAttributeValueInObject(Object object, Object value) throws DescriptorException {
@@ -403,5 +418,4 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
         super.setAttributeValueInObject(object, value);
     }    
     
-
 }

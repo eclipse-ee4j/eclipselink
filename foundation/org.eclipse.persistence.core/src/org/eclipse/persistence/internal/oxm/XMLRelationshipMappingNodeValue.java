@@ -105,8 +105,10 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
         if(atts != null){           
             XMLContext xmlContext = unmarshalRecord.getUnmarshaller().getXMLContext();
             String schemaType = atts.getValue(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
-            if ((schemaType != null) && (!schemaType.equals(""))) {
-                XPathFragment frag = new XPathFragment();
+            if(schemaType != null){
+            	schemaType = schemaType.trim();
+                if(!schemaType.equals("")) {  
+                    XPathFragment frag = new XPathFragment();
                 frag.setXPath(schemaType);
     
                 QName qname = null;
@@ -124,6 +126,7 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
                         Class theClass = (Class)((XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager()).getDefaultXMLTypes().get(qname);
                         if(theClass == null){
                             throw XMLMarshalException.noDescriptorFound(mapping);
+                            }                   
                         }                   
                     }
                }

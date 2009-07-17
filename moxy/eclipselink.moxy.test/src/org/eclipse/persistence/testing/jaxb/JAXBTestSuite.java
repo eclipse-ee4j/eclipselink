@@ -20,6 +20,7 @@ import org.eclipse.persistence.testing.jaxb.xmlvalue.XmlValueTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlvalue.XmlValueWithAttributesTestCases;
 import org.eclipse.persistence.testing.jaxb.inheritance.JAXBInheritanceTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbelement.complex.JAXBElementComplexTestCases;
+import org.eclipse.persistence.testing.jaxb.jaxbelement.nested.JAXBElementNestedTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbelement.simple.JAXBElementSimpleTestCases;
 import org.eclipse.persistence.testing.jaxb.listofobjects.ListofObjects;
 import org.eclipse.persistence.testing.jaxb.xmlidref.XmlIdRefTestCases;
@@ -66,6 +67,7 @@ public class JAXBTestSuite extends TestCase {
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlenum.XmlEnumElementCollectionTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlenum.XmlEnumAttributeCollectionTestCases.class);
         suite.addTestSuite(JAXBElementSimpleTestCases.class);
+        suite.addTestSuite(JAXBElementNestedTestCases.class);
         suite.addTestSuite(JAXBElementComplexTestCases.class);
         suite.addTestSuite(RootWithCompositeObjectTestCases.class);
        // suite.addTestSuite(JAXBInheritanceTestCases.class);

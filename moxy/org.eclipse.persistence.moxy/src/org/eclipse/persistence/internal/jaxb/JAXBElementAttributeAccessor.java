@@ -28,8 +28,9 @@ public class JAXBElementAttributeAccessor extends AttributeAccessor {
 	private ContainerPolicy containerPolicy;
 	private boolean isContainer;
 	private Map<QName, Class> qNamesToScopes;
+	private Class declaredType;
 	private final static String JAXB_ELEMENT_CLASSNAME = "javax.xml.bind.JAXBElement";
-	
+		
 	public JAXBElementAttributeAccessor(AttributeAccessor nestedAccessor) {
 		this.nestedAccessor = nestedAccessor;
 		this.isContainer = false;
@@ -104,9 +105,9 @@ public class JAXBElementAttributeAccessor extends AttributeAccessor {
 			QName name = new QName(root.getNamespaceURI(), root.getLocalName());
 			Object value = root.getObject();
 			if(value == null){
-				return createJAXBElement(name, Object.class, root.getObject());
+				return createJAXBElement(name, Object.class, value);
 			}else{
-				return createJAXBElement(name, root.getObject().getClass(), root.getObject());
+				return createJAXBElement(name, getDeclaredType(),value);		
 			}			
 		} else if(originalObject instanceof WrappedValue){
 			Object unwrappedValue = ((WrappedValue)originalObject).getWrappedValue();					
@@ -127,6 +128,9 @@ public class JAXBElementAttributeAccessor extends AttributeAccessor {
     		theClass = ClassConstants.DURATION;
     	}
     	Class scopeClass = qNamesToScopes.get(qname);
+    	if(scopeClass == javax.xml.bind.annotation.XmlElementDecl.GLOBAL.class){
+    		scopeClass = JAXBElement.GlobalScope.class;
+    	}
     	return new JAXBElement(qname, theClass, scopeClass, value);
     }
 	
@@ -136,4 +140,11 @@ public class JAXBElementAttributeAccessor extends AttributeAccessor {
 	public void setQNamesToScopes(Map<QName, Class> namesToScopes) {
 		qNamesToScopes = namesToScopes;
 	}  
+
+	public void setDeclaredType(Class declaredType) {
+		this.declaredType = declaredType;
+	}
+	public Class getDeclaredType() {
+		return declaredType;
+	}
 }

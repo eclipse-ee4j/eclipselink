@@ -297,7 +297,8 @@ public class Helper {
     			return null;
     		}
     	}else{
-    		return org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(javaClass.getRawName(), getClass().getClassLoader());                          		
+    		
+    		return org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(javaClass.getQualifiedName(), loader);                          		
     	}
     }
 }
