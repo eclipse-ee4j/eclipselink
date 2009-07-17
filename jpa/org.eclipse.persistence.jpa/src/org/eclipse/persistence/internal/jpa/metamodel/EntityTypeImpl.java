@@ -16,7 +16,9 @@
  *     07/06/2009-2.0  mobrien - 266912: Introduce IdentifiableTypeImpl between ManagedTypeImpl
  *       - EntityTypeImpl now inherits from IdentifiableTypeImpl instead of ManagedTypeImpl
  *       - MappedSuperclassTypeImpl now inherits from IdentifiableTypeImpl instead
- *       of implementing IdentifiableType indirectly  
+ *       of implementing IdentifiableType indirectly
+ *     07/16/2009-2.0  mobrien - 266912: implement getIdType() minus full composite key support
+ *         http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_47:_20090715:_Implement_IdentifiableType.getIdType.28.29_for_composite_keys
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
@@ -81,22 +83,24 @@ public class EntityTypeImpl<X> extends IdentifiableTypeImpl<X> implements Entity
         // descriptor.getPrimaryKeyPolicy().getIdClass();
         CMPPolicy cmpPolicy = getDescriptor().getCMPPolicy();
         
-        if (cmpPolicy == null) {
+        if (null == cmpPolicy) {
+            // Composite key support (IE: @EmbeddedId)
             java.util.List<DatabaseMapping> pkMappings = getDescriptor().getObjectBuilder().getPrimaryKeyMappings();
             
             if (pkMappings.size() == 1) {
-                //Class aClass = pkMappings.get(0).getAttributeClassification();
-                // Basic Type?
-                return null;//new BasicImpl(aClass);
+                Class aClass = pkMappings.get(0).getAttributeClassification(); // null for OneToOneMapping
+                // lookup class in our types map
+                Type<?> aType = this.metamodel.type(aClass);
+                return aType;
             }
         }
         
+        // Single Key support using any Java class - built in or user defined
+        // There already is an instance of the PKclass on the policy
         if (cmpPolicy instanceof CMP3Policy) {
-            // EntityType or IdentifiableType?
-            //Class aClass = ((CMP3Policy) cmpPolicy).getPKClass();
-            return this.getSupertype();
+            // BasicType, EntityType or IdentifiableType are handled here, lookup the class in the types map and create a wrapper if it does not exist yet
+            return this.metamodel.getType(((CMP3Policy) cmpPolicy).getPKClass());
         }
-        
         // TODO: Error message for incompatible JPA config
         throw new IllegalStateException("Incompatible persistence configuration");
     }
