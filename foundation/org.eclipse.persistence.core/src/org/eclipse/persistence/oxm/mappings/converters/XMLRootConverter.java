@@ -75,6 +75,10 @@ public class XMLRootConverter implements XMLConverter {
 		while(fragment.getNextFragment() != null && !(fragment.getNextFragment().nameIsText())) {
 			fragment = fragment.getNextFragment();
 		}
+		if(fragment.hasNamespace() && associatedField.getNamespaceResolver() != null){
+			String uri = associatedField.getNamespaceResolver().resolveNamespacePrefix(fragment.getPrefix());
+			fragment.setNamespaceURI(uri);
+		}
 		this.rootFragment = fragment;
 		this.mapping = mapping;
 	}
