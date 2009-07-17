@@ -23,6 +23,8 @@ package org.eclipse.persistence.testing.oxm.mappings.binarydatacollection;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+
+import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.identifiedbyname.withgroupingelement.BinaryDataCollectionForcedInlineBinaryTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.identifiedbyname.withgroupingelement.BinaryDataCollectionWithGroupingElementIdentifiedByNameEmptyNSRTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.identifiedbyname.withgroupingelement.BinaryDataCollectionWithGroupingElementIdentifiedByNameNullNSRTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.identifiedbyname.withgroupingelement.BinaryDataCollectionWithGroupingElementIdentifiedByNameXOPonNSRTestCases;
@@ -35,6 +37,7 @@ public class XMLBinaryDataCollectionMappingTestSuite extends TestCase {
         suite.addTestSuite(BinaryDataCollectionWithGroupingElementIdentifiedByNameNullNSRTestCases.class);
         // expect: Exception Description: A namespace for the prefix ns0:Include was not found in the namespace resolver.
         suite.addTestSuite(BinaryDataCollectionWithGroupingElementIdentifiedByNameEmptyNSRTestCases.class);
+        suite.addTestSuite(BinaryDataCollectionForcedInlineBinaryTestCases.class);
         return suite;
     }
 

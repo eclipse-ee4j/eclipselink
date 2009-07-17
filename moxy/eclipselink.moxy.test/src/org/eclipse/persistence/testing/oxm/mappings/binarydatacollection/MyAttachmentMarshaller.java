@@ -35,8 +35,12 @@ import org.eclipse.persistence.oxm.attachment.XMLAttachmentMarshaller;
 public class MyAttachmentMarshaller implements XMLAttachmentMarshaller {
     public static int count = 0;
     public static HashMap attachments = new HashMap();
+    public boolean returnNull = false;
 
     public String addSwaRefAttachment(DataHandler data) {
+        if(returnNull) {
+            return null;
+        }
         String id = MyAttachmentUnmarshaller.ATTACHMENT_TEST_ID;
 
         //String id = MyAttachmentUnmarshaller.ATTACHMENT_PREFIX +  MyAttachmentMarshaller.count;
@@ -46,6 +50,9 @@ public class MyAttachmentMarshaller implements XMLAttachmentMarshaller {
     }
     
     public String addSwaRefAttachment(byte[] data, int offset, int length) {
+        if(returnNull) {
+            return null;
+        }
         String id = MyAttachmentUnmarshaller.ATTACHMENT_TEST_ID;
         MyAttachmentMarshaller.count++;
         attachments.put(id, data);
@@ -53,6 +60,9 @@ public class MyAttachmentMarshaller implements XMLAttachmentMarshaller {
     }
 
     public String addMtomAttachment(byte[] bytes, int start, int offset, String mimeType, String elemtnName, String namespaceURI) {
+        if(returnNull) {
+            return null;
+        }
         String id = MyAttachmentUnmarshaller.ATTACHMENT_TEST_ID;
 
         //String id = MyAttachmentUnmarshaller.ATTACHMENT_PREFIX +  MyAttachmentMarshaller.count;
@@ -63,6 +73,9 @@ public class MyAttachmentMarshaller implements XMLAttachmentMarshaller {
     }
 
     public String addMtomAttachment(DataHandler data, String namespaceURI, String elementName) {
+        if(returnNull) {
+            return null;
+        }
         String id = MyAttachmentUnmarshaller.ATTACHMENT_TEST_ID;
 
         //String id = MyAttachmentUnmarshaller.ATTACHMENT_PREFIX +  MyAttachmentMarshaller.count;
@@ -73,5 +86,9 @@ public class MyAttachmentMarshaller implements XMLAttachmentMarshaller {
 
     public boolean isXOPPackage() {
         return true;
+    }
+    
+    public void setReturnNull(boolean b) {
+        this.returnNull = b;
     }
 }

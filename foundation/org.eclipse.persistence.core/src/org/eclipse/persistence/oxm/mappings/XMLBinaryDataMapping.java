@@ -193,65 +193,81 @@ public class XMLBinaryDataMapping extends XMLDirectMapping {
         if (record.isXOPPackage() && !isSwaRef() && !shouldInlineBinaryData()) {
             //write as attachment
             String c_id = "";
+            byte[] bytes = null;
             if ((getAttributeClassification() == ClassConstants.ABYTE) || (getAttributeClassification() == ClassConstants.APBYTE)) {
                 if (getAttributeClassification() == ClassConstants.ABYTE) {
                     attributeValue = ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(attributeValue, ClassConstants.APBYTE);
                 }
+                bytes = (byte[])attributeValue;
                 c_id = marshaller.getAttachmentMarshaller().addMtomAttachment(//
-                        (byte[]) attributeValue, 0,//
-                        ((byte[]) attributeValue).length,// 
+                        bytes, 0,//
+                        bytes.length,// 
                         this.getMimeType(parent),//
                         field.getLastXPathFragment().getLocalName(),// 
                         field.getLastXPathFragment().getNamespaceURI());//
             } else if (getAttributeClassification() == XMLBinaryDataHelper.getXMLBinaryDataHelper().DATA_HANDLER) {
                 c_id = marshaller.getAttachmentMarshaller().addMtomAttachment(//
                         (DataHandler) attributeValue, field.getLastXPathFragment().getLocalName(), field.getLastXPathFragment().getNamespaceURI());
+                if(c_id == null) {
+                    //get the bytes so we can write it out inline
+                    XMLBinaryDataHelper.EncodedData data = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(//
+                            attributeValue, marshaller, getMimeType(parent));
+                    bytes = data.getData();
+                }
             } else {
                 XMLBinaryDataHelper.EncodedData data = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(//
                         attributeValue, marshaller, getMimeType(parent));
-                byte[] bytes = data.getData();
+                bytes = data.getData();
                 c_id = marshaller.getAttachmentMarshaller().addMtomAttachment(bytes, 0,//
                         bytes.length,//
                         data.getMimeType(),//
                         field.getLastXPathFragment().getLocalName(),//
                         field.getLastXPathFragment().getNamespaceURI());
             }
-            String xpath = this.getXPath();
-            String prefix = null;
-            boolean prefixAlreadyDefined = false;
-            // If the field's resolver is non-null and has an entry for XOP, 
-            // use it - otherwise, create a new resolver, set the XOP entry, 
-            // on it, and use it instead.
-            // We do this to avoid setting the XOP namespace declaration on
-            // a given field or descriptor's resolver, as it is only required
-            // on the current element
-            NamespaceResolver resolver = field.getNamespaceResolver();
-            if (resolver != null) {
-                prefix = resolver.resolveNamespaceURI(XMLConstants.XOP_URL);
-            }
-            if (prefix == null) {
-                prefix = XMLConstants.XOP_PREFIX;
-                resolver = new NamespaceResolver();
-                resolver.put(prefix, XMLConstants.XOP_URL);
+            if(c_id == null) {
+                XMLField textField = new XMLField(field.getXPath() + "/text()");
+                textField.setNamespaceResolver(field.getNamespaceResolver());
+                textField.setSchemaType(field.getSchemaType());
+                record.put(textField, bytes);
+                //write out bytes inline
             } else {
-                prefixAlreadyDefined = true;
-            }
+                String xpath = this.getXPath();
+                String prefix = null;
+                boolean prefixAlreadyDefined = false;
+                //  If the field's resolver is non-null and has an entry for XOP, 
+                //  use it - otherwise, create a new resolver, set the XOP entry, 
+                // on it, and use it instead.
+                // We do this to avoid setting the XOP namespace declaration on
+                // a given field or descriptor's resolver, as it is only required
+                // on the current element
+                NamespaceResolver resolver = field.getNamespaceResolver();
+                if (resolver != null) {
+                    prefix = resolver.resolveNamespaceURI(XMLConstants.XOP_URL);
+                }
+                if (prefix == null) {
+                    prefix = XMLConstants.XOP_PREFIX;
+                    resolver = new NamespaceResolver();
+                    resolver.put(prefix, XMLConstants.XOP_URL);
+                } else {
+                    prefixAlreadyDefined = true;
+                }
+                
+                String incxpath = xpath + "/" + prefix + ":Include";
 
-            String incxpath = xpath + "/" + prefix + ":Include";
+                xpath += ("/" + prefix + include);
+                XMLField xpathField = new XMLField(xpath);
+                xpathField.setNamespaceResolver(resolver);
+                record.put(xpathField, c_id);
 
-            xpath += ("/" + prefix + include);
-            XMLField xpathField = new XMLField(xpath);
-            xpathField.setNamespaceResolver(resolver);
-            record.put(xpathField, c_id);
-
-            // Need to call setAttributeNS on the record, unless the xop prefix
-            // is defined on the descriptor's resolver already
-            XMLField incField = new XMLField(incxpath);
-            incField.setNamespaceResolver(resolver);
-            Object obj = record.getIndicatingNoEntry(incField);
-            if (!prefixAlreadyDefined && obj != null && obj instanceof DOMRecord) {
-                if (((DOMRecord) obj).getDOM().getNodeType() == Node.ELEMENT_NODE) {
-                    ((Element) ((DOMRecord) obj).getDOM()).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + prefix, XMLConstants.XOP_URL);
+                // Need to call setAttributeNS on the record, unless the xop prefix
+                // is defined on the descriptor's resolver already
+                XMLField incField = new XMLField(incxpath);
+                incField.setNamespaceResolver(resolver);
+                Object obj = record.getIndicatingNoEntry(incField);
+                if (!prefixAlreadyDefined && obj != null && obj instanceof DOMRecord) {
+                    if (((DOMRecord) obj).getDOM().getNodeType() == Node.ELEMENT_NODE) {
+                        ((Element) ((DOMRecord) obj).getDOM()).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + prefix, XMLConstants.XOP_URL);
+                    }
                 }
             }
         } else if (isSwaRef() && (marshaller.getAttachmentMarshaller() != null)) {
@@ -337,6 +353,11 @@ public class XMLBinaryDataMapping extends XMLDirectMapping {
                     } else {
                         fieldValue = unmarshaller.getAttachmentUnmarshaller().getAttachmentAsDataHandler(includeValue);
                     }
+                } else {
+                    //If we didn't find the Include element, check for inline
+                    fieldValue = record.get("text()");
+                    //should be a base64 string
+                    fieldValue = ((XMLConversionManager) executionSession.getDatasourcePlatform().getConversionManager()).convertSchemaBase64ToByteArray(fieldValue);
                 }
             } else if ((unmarshaller.getAttachmentUnmarshaller() != null) && isSwaRef()) {
                 String refValue = (String) record.get("text()");

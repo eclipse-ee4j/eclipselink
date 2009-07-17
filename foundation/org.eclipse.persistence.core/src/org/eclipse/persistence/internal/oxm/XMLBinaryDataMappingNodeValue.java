@@ -84,61 +84,80 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
         if (xmlBinaryDataMapping.isSwaRef() && (marshaller.getAttachmentMarshaller() != null)) {
             //object value should be a DataHandler
             String c_id = null;
+            byte[] bytes = null;
             if (xmlBinaryDataMapping.getAttributeClassification() == XMLBinaryDataHelper.getXMLBinaryDataHelper().DATA_HANDLER) {
                 c_id = marshaller.getAttachmentMarshaller().addSwaRefAttachment((DataHandler) objectValue);
+                if(c_id == null) {
+                    bytes = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(//
+                            objectValue, marshaller, xmlBinaryDataMapping.getMimeType(object)).getData();
+                }
             } else {
                 XMLBinaryDataHelper.EncodedData data = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(//
                         objectValue, marshaller, xmlBinaryDataMapping.getMimeType(object));
-                byte[] bytes = data.getData();
+                bytes = data.getData();
                 c_id = marshaller.getAttachmentMarshaller().addSwaRefAttachment(bytes, 0, bytes.length);
-
             }
-            marshalRecord.characters(c_id);
+            if(c_id != null) {
+                marshalRecord.characters(c_id);
+            } else {
+                String value = getValueToWrite(((XMLField) xmlBinaryDataMapping.getField()).getSchemaType(), bytes, session);
+                marshalRecord.characters(value);
+            }
         } else {
             if (marshalRecord.isXOPPackage() && !xmlBinaryDataMapping.shouldInlineBinaryData()) {
                 XPathFragment lastFrag = ((XMLField) xmlBinaryDataMapping.getField()).getLastXPathFragment();
                 String c_id = "";
+                byte[] bytes = null;
                 if (objectValue.getClass() == ClassConstants.APBYTE) {
-                    byte[] bytes = (byte[]) objectValue;
-                    c_id = marshaller.getAttachmentMarshaller().addMtomAttachment(bytes, 0, bytes.length, this.xmlBinaryDataMapping.getMimeType(), lastFrag.getLocalName(), lastFrag.getNamespaceURI());
+                    bytes = (byte[]) objectValue;
+                    c_id = marshaller.getAttachmentMarshaller().addMtomAttachment(bytes, 0, bytes.length, this.xmlBinaryDataMapping.getMimeType(object), lastFrag.getLocalName(), lastFrag.getNamespaceURI());
                 } else if (xmlBinaryDataMapping.getAttributeClassification() == XMLBinaryDataHelper.getXMLBinaryDataHelper().DATA_HANDLER) {
                     c_id = marshaller.getAttachmentMarshaller().addMtomAttachment((DataHandler) objectValue, lastFrag.getLocalName(), lastFrag.getNamespaceURI());
+                    if(c_id == null) {
+                        bytes = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(//
+                                objectValue, marshaller, xmlBinaryDataMapping.getMimeType(object)).getData();
+                    }
                 } else {
                     XMLBinaryDataHelper.EncodedData data = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(//
                             objectValue, marshaller, xmlBinaryDataMapping.getMimeType(object));
-                    byte[] bytes = data.getData();
+                    bytes = data.getData();
                     c_id = marshaller.getAttachmentMarshaller().addMtomAttachment(bytes, 0, bytes.length, data.getMimeType(), lastFrag.getLocalName(), lastFrag.getNamespaceURI());
                 }
 
-                String xopPrefix = null;
-                // If the field's resolver is non-null and has an entry for XOP, 
-                // use it - otherwise, create a new resolver, set the XOP entry, 
-                // on it, and use it instead.
-                // We do this to avoid setting the XOP namespace declaration on
-                // a given field or descriptor's resolver, as it is only required
-                // on the current element
+                if(c_id == null) {
+                    String value = getValueToWrite(((XMLField) xmlBinaryDataMapping.getField()).getSchemaType(), bytes, session);
+                    marshalRecord.characters(value);
+                } else {
+                    String xopPrefix = null;
+                    // If the field's resolver is non-null and has an entry for XOP, 
+                    // use it - otherwise, create a new resolver, set the XOP entry, 
+                    // on it, and use it instead.
+                    // We do this to avoid setting the XOP namespace declaration on
+                    // a given field or descriptor's resolver, as it is only required
+                    // on the current element
 
-                // 20061023: handle NPE on null NSR
-                if (namespaceResolver != null) {
-                    xopPrefix = namespaceResolver.resolveNamespaceURI(XMLConstants.XOP_URL);
+                    // 20061023: handle NPE on null NSR
+                    if (namespaceResolver != null) {
+                        xopPrefix = namespaceResolver.resolveNamespaceURI(XMLConstants.XOP_URL);
+                    }
+                    boolean addDeclaration = false;
+                    if (xopPrefix == null || namespaceResolver == null) {
+                        addDeclaration = true;
+                        xopPrefix = XMLConstants.XOP_PREFIX;
+                        namespaceResolver = new NamespaceResolver();
+                        namespaceResolver.put(xopPrefix, XMLConstants.XOP_URL);
+                    }
+                    XPathFragment xopInclude = new XPathFragment(xopPrefix + ":Include");
+                    xopInclude.setNamespaceURI(XMLConstants.XOP_URL);
+                    marshalRecord.openStartElement(xopInclude, namespaceResolver);
+                    marshalRecord.attribute("", "href", "href", c_id);
+                    if (addDeclaration) {
+                        marshalRecord.attribute(XMLConstants.XMLNS_URL, xopPrefix, XMLConstants.XMLNS + ":" + xopPrefix, XMLConstants.XOP_URL);
+                    }
+                    marshalRecord.closeStartElement();
+                    marshalRecord.endElement(xPathFragment, namespaceResolver);
+                    //marshal as an attachment
                 }
-                boolean addDeclaration = false;
-                if (xopPrefix == null || namespaceResolver == null) {
-                    addDeclaration = true;
-                    xopPrefix = XMLConstants.XOP_PREFIX;
-                    namespaceResolver = new NamespaceResolver();
-                    namespaceResolver.put(xopPrefix, XMLConstants.XOP_URL);
-                }
-                XPathFragment xopInclude = new XPathFragment(xopPrefix + ":Include");
-                xopInclude.setNamespaceURI(XMLConstants.XOP_URL);
-                marshalRecord.openStartElement(xopInclude, namespaceResolver);
-                marshalRecord.attribute("", "href", "href", c_id);
-                if (addDeclaration) {
-                    marshalRecord.attribute(XMLConstants.XMLNS_URL, xopPrefix, XMLConstants.XMLNS + ":" + xopPrefix, XMLConstants.XOP_URL);
-                }
-                marshalRecord.closeStartElement();
-                marshalRecord.endElement(xPathFragment, namespaceResolver);
-                //marshal as an attachment
             } else {
                 String value = "";
                 if ((objectValue.getClass() == ClassConstants.ABYTE) || (objectValue.getClass() == ClassConstants.APBYTE)) {
