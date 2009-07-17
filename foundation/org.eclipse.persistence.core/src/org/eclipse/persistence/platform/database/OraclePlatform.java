@@ -478,20 +478,20 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      * INTERNAL:
      * Produce a DataReadQuery which updates(!) the sequence number in the db
      * and returns it. Currently implemented on Oracle only.
-     * @param sequenceName Name known by Oracle to be a defined sequence
+     * @param qualifiedSeqName known by Oracle to be a defined sequence
      */
-    public ValueReadQuery buildSelectQueryForSequenceObject(String seqName, Integer size) {
-        return new ValueReadQuery("SELECT " + getQualifiedName(seqName) + ".NEXTVAL FROM DUAL");
+    public ValueReadQuery buildSelectQueryForSequenceObject(String qualifiedSeqName, Integer size) {
+        return new ValueReadQuery("SELECT " + qualifiedSeqName + ".NEXTVAL FROM DUAL");
     }
 
     /**
      * INTERNAL:
-     * Though Oracle doesn't support identity it could be immitated,
+     * Though Oracle doesn't support identity it could be imitated,
      * see comment to setSupportsIdentity method.
-     * @param sequenceName Name known by Oracle to be a defined sequence
+     * @param qualifiedSeqName known by Oracle to be a defined sequence
      */
-    public ValueReadQuery buildSelectQueryForIdentity(String seqName, Integer size) {
-        return new ValueReadQuery("SELECT " + getQualifiedName(seqName) + ".CURRVAL FROM DUAL");
+    public ValueReadQuery buildSelectQueryForIdentity(String qualifiedSeqName, Integer size) {
+        return new ValueReadQuery("SELECT " + qualifiedSeqName + ".CURRVAL FROM DUAL");
     }
 
     /**

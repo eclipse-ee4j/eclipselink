@@ -499,7 +499,7 @@ public class MetadataProject {
      * Add a sequence generator metadata to the project. The actual processing 
      * isn't done till processSequencing is called.
      */
-    public void addSequenceGenerator(SequenceGeneratorMetadata sequenceGenerator) {
+    public void addSequenceGenerator(SequenceGeneratorMetadata sequenceGenerator, String defaultCatalog, String defaultSchema) {
         String name = sequenceGenerator.getName();
         
         // Check if the sequence generator name uses a reserved name.
@@ -508,6 +508,12 @@ public class MetadataProject {
         } else if (name.equals(DEFAULT_IDENTITY_GENERATOR)) {
             throw ValidationException.sequenceGeneratorUsingAReservedName(DEFAULT_IDENTITY_GENERATOR, sequenceGenerator.getLocation());
         }
+        
+        // Catalog could be "" or null, need to check for an XML default.
+        sequenceGenerator.setCatalog(MetadataHelper.getName(sequenceGenerator.getCatalog(), defaultCatalog, sequenceGenerator.getCatalogContext(), m_logger, sequenceGenerator.getLocation()));
+        // Schema could be "" or null, need to check for an XML default.
+        sequenceGenerator.setSchema(MetadataHelper.getName(sequenceGenerator.getSchema(), defaultSchema, sequenceGenerator.getSchemaContext(), m_logger, sequenceGenerator.getLocation()));
+        
         
         // Check if the name is used with a table generator.
         TableGeneratorMetadata tableGenerator = m_tableGenerators.get(name);
@@ -1006,6 +1012,7 @@ public class MetadataProject {
                 }
                 
                 NativeSequence sequence = new NativeSequence(seqName, allocationSize, false);
+                sequence.setQualifier(sequenceGenerator.getQualifier());
                 sequences.put(sequenceGeneratorName, sequence);
                 
                 if (sequenceGeneratorName.equals(DEFAULT_AUTO_GENERATOR)) {

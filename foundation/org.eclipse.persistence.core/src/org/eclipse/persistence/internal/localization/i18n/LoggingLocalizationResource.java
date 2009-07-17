@@ -190,6 +190,8 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "metadata_default_table_generator_name", "The table generator name defined within [{0}] is being defaulted to: {1}." },
         { "metadata_default_table_generator_schema", "The table generator schema defined within [{0}] is being defaulted to: {1}." },
         { "metadata_default_table_generator_catalog", "The table generator catalog defined within [{0}] is being defaulted to: {1}." },
+        { "metadata_default_sequence_generator_schema", "The sequence generator schema defined within [{0}] is being defaulted to: {1}." },
+        { "metadata_default_sequence_generator_catalog", "The sequence generator catalog defined within [{0}] is being defaulted to: {1}." },
         { "metadata_default_join_table_name", "The join table name for the many to many mapping [{0}] is being defaulted to: {1}." },
         { "metadata_default_join_schema", "The join table schema for the many to many mapping [{0}] is being defaulted to: {1}." },
         { "metadata_default_join_catalog", "The join table catalog for the many to many mapping [{0}] is being defaulted to: {1}." },

@@ -14,6 +14,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.sequencing;
 
+import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
@@ -30,6 +31,8 @@ public class SequenceGeneratorMetadata extends ORMetadata {
     private Integer m_initialValue;
     
     private String m_name;
+    private String m_schema;
+    private String m_catalog;
     private String m_sequenceName;
     
     /**
@@ -48,6 +51,8 @@ public class SequenceGeneratorMetadata extends ORMetadata {
         m_allocationSize = (Integer) sequenceGenerator.getAttribute("allocationSize");
         m_initialValue = (Integer) sequenceGenerator.getAttribute("initialValue"); 
         m_name = (String) sequenceGenerator.getAttributeString("name"); 
+        m_schema = (String) sequenceGenerator.getAttribute("schema"); 
+        m_catalog = (String) sequenceGenerator.getAttribute("catalog");
         m_sequenceName = (String) sequenceGenerator.getAttributeString("sequenceName"); 
     }
     
@@ -87,6 +92,37 @@ public class SequenceGeneratorMetadata extends ORMetadata {
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getCatalog() {
+        return m_catalog;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for processing.
+     */
+    public String getQualifier() {
+        if(m_catalog.length() == 0) {
+            if(m_schema.length() == 0) {
+                return "";
+            } else {
+                return  m_schema;
+            }
+        } else {
+            return m_catalog + '.' + m_schema;
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public String getCatalogContext() {
+        return MetadataLogger.SEQUENCE_GENERATOR_CATALOG;
+    }
+    
+    /**
+     * INTERNAL:
      * To satisfy the abstract getIdentifier() method from ORMetadata.
      */
     @Override
@@ -114,6 +150,21 @@ public class SequenceGeneratorMetadata extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public String getSchema() {
+        return m_schema;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public String getSchemaContext() {
+        return MetadataLogger.SEQUENCE_GENERATOR_SCHEMA;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public String getSequenceName() {
         return m_sequenceName;
     }  
@@ -130,6 +181,14 @@ public class SequenceGeneratorMetadata extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public void setCatalog(String catalog) {
+        m_catalog = catalog;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setInitialValue(Integer initialValue) {
         m_initialValue = initialValue;
     }
@@ -140,6 +199,14 @@ public class SequenceGeneratorMetadata extends ORMetadata {
      */
     public void setName(String name) {
         m_name = name;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setSchema(String schema) {
+        m_schema = schema;
     }
     
     /**

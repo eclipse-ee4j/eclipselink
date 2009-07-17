@@ -149,7 +149,7 @@ public class DefaultSequence extends Sequence {
      * It's a chance to do initialization.
      */
     protected void onConnect() {
-        // nothing to do
+        qualifier = getDefaultSequence().getQualifier();
     }
 
     /**
@@ -158,6 +158,13 @@ public class DefaultSequence extends Sequence {
      * It's a chance to do deinitialization.
      */
     public void onDisconnect() {
-        // nothing to do
+        qualifier = "";
+    }
+
+    /**
+     * INTERNAL:
+     * Ignored, getDefaultSequence().getQualifier() used instead.
+     */
+    public void setQualifier(String qualifier) {
     }
 }

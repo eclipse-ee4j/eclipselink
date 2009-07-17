@@ -148,4 +148,13 @@ public class SequenceObjectDefinition extends SequenceDefinition {
             this.buildAlterIncrementWriter(session, schemaWriter);
         }
     }
+
+    /**
+     * INTERNAL:
+     * Most major databases support a creator name scope.
+     * This means whenever the database object is referenced, it must be qualified.
+     */
+    public String getFullName() {
+        return sequence.getQualified(getName());
+    }
 }

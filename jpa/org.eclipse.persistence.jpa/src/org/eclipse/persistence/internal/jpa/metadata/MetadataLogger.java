@@ -116,6 +116,9 @@ public class MetadataLogger {
     public static final String TABLE_GENERATOR_SCHEMA = "metadata_default_table_generator_schema";
     public static final String TABLE_GENERATOR_CATALOG = "metadata_default_table_generator_catalog";
     
+    public static final String SEQUENCE_GENERATOR_SCHEMA = "metadata_default_sequence_generator_schema";
+    public static final String SEQUENCE_GENERATOR_CATALOG = "metadata_default_sequence_generator_catalog";
+    
     public static final String JOIN_TABLE_NAME = "metadata_default_join_table_name";
     public static final String JOIN_TABLE_SCHEMA = "metadata_default_join_table_schema";
     public static final String JOIN_TABLE_CATALOG = "metadata_default_join_table_catalog";
@@ -242,6 +245,9 @@ public class MetadataLogger {
         addContextString(TABLE_GENERATOR_SCHEMA);
         addContextString(TABLE_GENERATOR_CATALOG);
         
+        addContextString(SEQUENCE_GENERATOR_SCHEMA);
+        addContextString(SEQUENCE_GENERATOR_CATALOG);
+
         addContextString(JOIN_TABLE_NAME);
         addContextString(JOIN_TABLE_SCHEMA);
         addContextString(JOIN_TABLE_CATALOG);

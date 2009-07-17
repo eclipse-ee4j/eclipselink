@@ -237,8 +237,8 @@ public class PostgreSQLPlatform extends DatabasePlatform {
      * If the platform supportsSequenceObjects then (at least) one of buildSelectQueryForSequenceObject
      * methods should return non-null query.
      */
-    public ValueReadQuery buildSelectQueryForSequenceObject(String seqName, Integer size) {
-        return new ValueReadQuery("select nextval(\'"  + getQualifiedName(seqName) + "\')");
+    public ValueReadQuery buildSelectQueryForSequenceObject(String qualifiedSeqName, Integer size) {
+        return new ValueReadQuery("select nextval(\'"  + qualifiedSeqName + "\')");
     }
 
     /**

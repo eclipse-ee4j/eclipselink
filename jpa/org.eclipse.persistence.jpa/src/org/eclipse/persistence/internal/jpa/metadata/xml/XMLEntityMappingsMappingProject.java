@@ -1952,6 +1952,8 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         sequenceNameMapping.setXPath("@sequence-name");
         descriptor.addMapping(sequenceNameMapping);
         
+        descriptor.addMapping(getCatalogAttributeMapping());
+        descriptor.addMapping(getSchemaAttributeMapping());
         descriptor.addMapping(getInitialValueAttributeMapping());
         descriptor.addMapping(getAllocationSizeAttributeMapping());
         

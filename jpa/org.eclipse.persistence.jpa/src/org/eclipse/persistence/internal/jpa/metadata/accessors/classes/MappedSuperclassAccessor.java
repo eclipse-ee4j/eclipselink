@@ -1038,7 +1038,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     protected void processSequenceGenerator() {       
         if (isAnnotationPresent(SequenceGenerator.class)) {
             // Ask the common processor to process what we found.
-            getProject().addSequenceGenerator(new SequenceGeneratorMetadata(getAnnotation(SequenceGenerator.class), getAccessibleObject()));
+            getProject().addSequenceGenerator(new SequenceGeneratorMetadata(getAnnotation(SequenceGenerator.class), getAccessibleObject()), getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema());
         }
     }
     

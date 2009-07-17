@@ -33,7 +33,6 @@ public class UnaryTableSequence extends QuerySequence {
     protected String selectString2;
     protected int updateStringBufferSize;
     protected int selectStringBufferSize;
-    protected String qualifier = "";
 
     public UnaryTableSequence() {
         super(false, true);
@@ -92,7 +91,6 @@ public class UnaryTableSequence extends QuerySequence {
     * INTERNAL:
     */
     public void onConnect() {
-        qualifier = getDatasourcePlatform().getTableQualifier();
         super.onConnect();
         initialize();
     }
@@ -103,7 +101,6 @@ public class UnaryTableSequence extends QuerySequence {
     public void onDisconnect() {
         clear();
         super.onDisconnect();
-        qualifier = "";
     }
 
     protected ValueReadQuery buildSelectQuery(String seqName, Integer size) {

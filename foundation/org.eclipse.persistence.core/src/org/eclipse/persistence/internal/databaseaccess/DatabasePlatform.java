@@ -2066,7 +2066,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      * If the platform supportsSequenceObjects then (at least) one of buildSelectQueryForSequenceObject
      * methods should return non-null query.
      */
-    public ValueReadQuery buildSelectQueryForSequenceObject(String seqName, Integer size) {
+    public ValueReadQuery buildSelectQueryForSequenceObject(String qualifiedSeqName, Integer size) {
         return null;
     }
 

@@ -121,9 +121,9 @@ public class NativeSequence extends QuerySequence {
     */
     protected ValueReadQuery buildSelectQuery(String seqName, Integer size) {
         if(this.shouldAcquireValueAfterInsert()) {
-            return ((DatabasePlatform)getDatasourcePlatform()).buildSelectQueryForIdentity(seqName, size);
+            return ((DatabasePlatform)getDatasourcePlatform()).buildSelectQueryForIdentity(getQualified(seqName), size);
         } else {
-            return ((DatabasePlatform)getDatasourcePlatform()).buildSelectQueryForSequenceObject(seqName, size);
+            return ((DatabasePlatform)getDatasourcePlatform()).buildSelectQueryForSequenceObject(getQualified(seqName), size);
         }
     }
 

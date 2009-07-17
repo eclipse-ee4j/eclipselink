@@ -1130,7 +1130,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     protected void processSequenceGenerator() {
         // Process the xml defined sequence generator first.
         if (m_sequenceGenerator != null) {
-            getProject().addSequenceGenerator(m_sequenceGenerator);
+            getProject().addSequenceGenerator(m_sequenceGenerator, getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema());
         }
         
         // Process the annotation defined sequence generator second.

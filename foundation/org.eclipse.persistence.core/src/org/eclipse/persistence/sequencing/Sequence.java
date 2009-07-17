@@ -48,6 +48,11 @@ public abstract class Sequence implements Serializable, Cloneable {
     // number of times onConnect was called - number of times onDisconnect was called
     protected int depth;
 
+    protected String qualifier = "";
+    // true indicates that qualifier was set through setQualifier method, 
+    // false - copied from platform (or not set at all). 
+    protected boolean isCustomQualifier;
+    
     public Sequence() {
         super();
     }
@@ -253,6 +258,9 @@ public abstract class Sequence implements Serializable, Cloneable {
      */
     public void onConnect(Platform platform) {
         setDatasourcePlatform(platform);
+        if(depth==0 && !isCustomQualifier) {
+            qualifier = getDatasourcePlatform().getTableQualifier();
+        }
         onConnect();
         depth++;
     }
@@ -272,6 +280,9 @@ public abstract class Sequence implements Serializable, Cloneable {
     public void onDisconnect(Platform platform) {
         if (isConnected()) {
             depth--;
+            if(depth==0 && !isCustomQualifier) {
+                qualifier = "";
+            }
             // Can no longer disconnect sequences, as they are part of descriptor shared meta-data.
         }
     }
@@ -304,6 +315,42 @@ public abstract class Sequence implements Serializable, Cloneable {
             String name2 = ((DatasourcePlatform)otherPlatform).toString() + '(' + hashCode2 + ')';
 
             throw ValidationException.sequenceCannotBeConnectedToTwoPlatforms(getName(), name1, name2);
+        }
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public void setQualifier(String qualifier) {
+        if(qualifier == null) {
+            qualifier = "";
+        }
+        this.isCustomQualifier = qualifier.length() > 0;
+        this.qualifier = qualifier;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public boolean isCustomQualifier() {
+        return isCustomQualifier;
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public String getQualifier() {
+        return qualifier;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public String getQualified(String str) {
+        if (qualifier.equals("")) {
+            return str;
+        } else {
+            return qualifier + "." + str;
         }
     }
 }

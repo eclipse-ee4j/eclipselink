@@ -40,9 +40,6 @@ public class TableSequence extends QuerySequence {
     /** Hold the name of the column in the sequence table which specifies the sequence name */
     protected String nameFieldName = "SEQ_NAME";
     
-    /** Hold the name of the table qualifier */
-    protected String qualifier = "";
-
     public TableSequence() {
         super(false, true);
         setTableName(defaultTableName);
@@ -141,11 +138,7 @@ public class TableSequence extends QuerySequence {
     }
 
     public String getQualifiedTableName() {
-        if (qualifier.equals("")) {
-            return getTableName();
-        } else {
-            return qualifier + "." + getTableName();
-        }
+        return getQualified(getTableName());
     }
 
     public void setTable(DatabaseTable table) {
@@ -182,21 +175,5 @@ public class TableSequence extends QuerySequence {
         query.setSQLString(writer.toString());
 
         return query;
-    }
-
-    /**
-    * INTERNAL:
-    */
-    public void onConnect() {
-        qualifier = getDatasourcePlatform().getTableQualifier();
-        super.onConnect();
-    }
-
-    /**
-    * INTERNAL:
-    */
-    public void onDisconnect() {
-        super.onDisconnect();
-        qualifier = "";
     }
 }

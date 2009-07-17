@@ -140,12 +140,12 @@ public class TimesTenPlatform extends DatabasePlatform {
 
     /**
      * INTERNAL:
-     *    Produce a DataReadQuery which updates(!) the sequence number in the db
+     *  Produce a DataReadQuery which updates(!) the sequence number in the db
      *  and returns it. 
-     *    @param sequenceName        Name known by TimesTen to be a defined sequence
+     *  @param qualifiedSeqName known by TimesTen to be a defined sequence
      */
-    public ValueReadQuery buildSelectQueryForSequenceObject(String seqName, Integer size) {
-        return new ValueReadQuery("SELECT " + getQualifiedName(seqName) + ".NEXTVAL FROM DUAL");
+    public ValueReadQuery buildSelectQueryForSequenceObject(String qualifiedSeqName, Integer size) {
+        return new ValueReadQuery("SELECT " + qualifiedSeqName + ".NEXTVAL FROM DUAL");
     }
 
     /**
@@ -156,17 +156,6 @@ public class TimesTenPlatform extends DatabasePlatform {
         return "CREATE MATERIALIZED VIEW ";
     }
     
-    /**
-     *  Prepend sequence name with table qualifier (if any)
-     */
-    protected String getQualifiedSequenceName(String seqName) {
-        if (getTableQualifier().equals("")) {
-            return seqName;
-        } else {
-            return getTableQualifier() + "." + seqName;
-        }
-    }
-
     /**
      * INTERNAL:
      * Used for pessimistic locking.

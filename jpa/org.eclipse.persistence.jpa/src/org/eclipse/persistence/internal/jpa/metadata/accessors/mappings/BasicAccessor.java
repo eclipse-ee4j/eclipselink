@@ -321,7 +321,7 @@ public class BasicAccessor extends DirectAccessor {
 
         // Add the sequence generator to the project if one is set.
         if (m_sequenceGenerator != null) {
-            getProject().addSequenceGenerator(m_sequenceGenerator);
+            getProject().addSequenceGenerator(m_sequenceGenerator, getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema());
         }
     }
 

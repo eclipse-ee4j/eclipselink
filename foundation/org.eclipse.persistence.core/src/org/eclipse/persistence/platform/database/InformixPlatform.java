@@ -279,8 +279,8 @@ public class InformixPlatform extends org.eclipse.persistence.platform.database.
      * If the platform supportsSequenceObjects then (at least) one of buildSelectQueryForSequenceObject
      * methods should return non-null query.
      */
-    public ValueReadQuery buildSelectQueryForSequenceObject(String seqName, Integer size) {
-        return new ValueReadQuery("select " + getQualifiedName(seqName) + ".nextval from systables where tabid = 1");
+    public ValueReadQuery buildSelectQueryForSequenceObject(String qualifiedSeqName, Integer size) {
+        return new ValueReadQuery("select " + qualifiedSeqName + ".nextval from systables where tabid = 1");
     }
  
     /**

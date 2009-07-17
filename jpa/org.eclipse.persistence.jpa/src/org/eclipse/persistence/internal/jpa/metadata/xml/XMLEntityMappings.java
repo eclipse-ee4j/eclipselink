@@ -591,7 +591,7 @@ public class XMLEntityMappings extends ORMetadata {
         // Add the XML sequence generators to the project.
         for (SequenceGeneratorMetadata sequenceGenerator : m_sequenceGenerators) {
             sequenceGenerator.initXMLObject(m_file, this);
-            m_project.addSequenceGenerator(sequenceGenerator);
+            m_project.addSequenceGenerator(sequenceGenerator, getDefaultCatalog(), getDefaultSchema());
         }
             
         // Add the XML named queries to the project.
