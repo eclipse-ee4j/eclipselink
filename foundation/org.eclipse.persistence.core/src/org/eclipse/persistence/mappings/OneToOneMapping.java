@@ -658,11 +658,15 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
                     results = (Vector)complexResult.getResult();
                     List<AbstractRecord> rows = (List)complexResult.getData();
                     int size = results.size();
+                    int sourceSize = this.mechanism.getSourceKeyFields().size();
                     for(int i=0; i < size; i++) {
                         AbstractRecord row = rows.get(i);
                         Vector key = new Vector();
-                        for (Enumeration relationFieldsEnum = this.mechanism.getSourceRelationKeyFields().elements(); relationFieldsEnum.hasMoreElements();) {
-                            key.add(row.get(relationFieldsEnum.nextElement()));
+                        for (int k = 0; k < sourceSize; k++) {
+                            Object value = row.get(this.mechanism.getSourceRelationKeyFields().get(k));
+                            // must do the same conversion as extractForeignKeyFromRow does 
+                            // so that CacheKey created here and in extractForeignKeyFromRow compare correctly. 
+                            key.add(session.getDatasourcePlatform().getConversionManager().convertObject(value, getDescriptor().getObjectBuilder().getFieldClassification(this.mechanism.getSourceKeyFields().get(k))));
                         }
                         CacheKey eachReferenceKey = new CacheKey(key);
                         
@@ -1643,6 +1647,18 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      */
     public void setRelationTableMechanism(RelationTableMechanism mechanism) {
         this.mechanism = mechanism;
+    }
+    
+    /**
+     * PUBLIC:
+     * Return RelationTable.
+     */
+    public DatabaseTable getRelationTable() {
+        if(this.mechanism != null) {
+            return this.mechanism.getRelationTable();
+        } else {
+            return null;
+        }
     }
     
     /**

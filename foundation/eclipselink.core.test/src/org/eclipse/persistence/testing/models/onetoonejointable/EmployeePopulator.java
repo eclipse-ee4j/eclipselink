@@ -32,6 +32,11 @@ public class EmployeePopulator {
 
     public EmployeePopulator() {
         this.populationManager = PopulationManager.getDefaultManager();
+        this.startCalendar = Calendar.getInstance();
+        this.startCalendar.set(Calendar.MILLISECOND, 0);
+        this.endCalendar = Calendar.getInstance();
+        this.endCalendar.set(Calendar.MILLISECOND, 0);
+
     }
 
     public Address addressExample1() {

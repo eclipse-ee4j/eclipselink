@@ -14,10 +14,18 @@ package org.eclipse.persistence.mappings.querykeys;
 
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.*;
+import org.eclipse.persistence.internal.expressions.DataExpression;
+import org.eclipse.persistence.internal.expressions.ExpressionIterator;
+import org.eclipse.persistence.internal.expressions.ParameterExpression;
+import org.eclipse.persistence.internal.expressions.TableExpression;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
@@ -148,5 +156,49 @@ public class ForeignReferenceQueryKey extends QueryKey {
         // Should extract the target table from joinCriteria (if it's not null),
         // like ManyToManyQueryKey.getRelationTable does.
         return desc.getTables().firstElement();
+    }
+
+    /**
+     * PUBLIC:
+     * Returns the relation table.
+     * Currently only ManyToMany and OneToOne may have relation table.
+     * The method is overridden to return null for other subclasses.
+     * The returned relationTable still could be null.
+     */
+    public DatabaseTable getRelationTable(ClassDescriptor referenceDescriptor) {
+        ExpressionIterator expIterator = new ExpressionIterator() {
+            public void iterate(Expression each) {
+                if(each.isTableExpression()) {
+                    ((Collection)this.getResult()).add(((TableExpression)each).getTable());
+                }
+                else if(each.isDataExpression()) {
+                    DatabaseField field = ((DataExpression)each).getField();
+                    if(field != null && field.hasTableName()) {
+                        ((Collection)this.getResult()).add(field.getTable());
+                    }
+                } else if(each.isParameterExpression()) {
+                    DatabaseField field = ((ParameterExpression)each).getField();
+                    if(field != null && field.hasTableName()) {
+                        ((Collection)this.getResult()).add(field.getTable());
+                    }
+                }
+            }
+        };
+        
+        expIterator.setResult(new HashSet());
+        expIterator.iterateOn(this.joinCriteria);
+        HashSet<DatabaseTable> tables = (HashSet)expIterator.getResult();
+        
+        DatabaseTable relationTable = null;
+        Iterator<DatabaseTable> it = tables.iterator();
+        while(it.hasNext()) {
+            DatabaseTable table = it.next();
+            // neither source nor reference descriptor contains table - must be relationTable
+            if(!descriptor.getTables().contains(table) && !referenceDescriptor.getTables().contains(table)) {
+                relationTable = table;
+                break;
+            }
+        }
+        return relationTable;
     }
 }

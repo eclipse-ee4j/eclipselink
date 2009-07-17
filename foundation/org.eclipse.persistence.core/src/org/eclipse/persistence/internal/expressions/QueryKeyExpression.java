@@ -1118,7 +1118,6 @@ public class QueryKeyExpression extends ObjectExpression {
      * Calculate the relation table for based on the various QueryKeyExpression
      * usages (join query keys, custom defined query keys, or query keys for
      * mappings).
-     * Should only be called in ManyToMany case (isManyToMany returns true).
      * 
      * Called from {@link SQLSelectStatement#appendFromClauseForOuterJoin}.
      * 
@@ -1126,9 +1125,16 @@ public class QueryKeyExpression extends ObjectExpression {
      */    
     public DatabaseTable getRelationTable() {
         if(getMapping() != null) {
-            return ((ManyToManyMapping)getMapping()).getRelationTable();
+            if(getMapping().isManyToManyMapping()) {
+                return ((ManyToManyMapping)getMapping()).getRelationTable();
+            } else if(getMapping().isOneToOneMapping()) {
+                return ((OneToOneMapping)getMapping()).getRelationTable();
+            }
         } else {
-            return ((ManyToManyQueryKey)getQueryKeyOrNull()).getRelationTable(getDescriptor());
+            if(getQueryKeyOrNull().isForeignReferenceQueryKey()) {
+                return ((ForeignReferenceQueryKey)getQueryKeyOrNull()).getRelationTable(getDescriptor());
+            }
         }
+        return null;
     }
 }

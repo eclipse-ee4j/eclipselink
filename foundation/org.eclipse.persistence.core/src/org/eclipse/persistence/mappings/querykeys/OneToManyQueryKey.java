@@ -12,6 +12,9 @@
  ******************************************************************************/  
 package org.eclipse.persistence.mappings.querykeys;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+
 
 /**
  * <p>
@@ -35,5 +38,13 @@ public class OneToManyQueryKey extends ForeignReferenceQueryKey {
      */
     public boolean isOneToManyQueryKey() {
         return true;
+    }
+
+    /**
+     * PUBLIC:
+     * Returns the reference table.
+     */
+    public DatabaseTable getRelationTable(ClassDescriptor referenceDescriptor) {
+        return null;
     }
 }

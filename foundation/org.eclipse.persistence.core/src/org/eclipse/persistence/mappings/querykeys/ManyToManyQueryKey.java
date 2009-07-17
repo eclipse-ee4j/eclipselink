@@ -12,18 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.mappings.querykeys;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.QueryException;
-import org.eclipse.persistence.expressions.Expression;
-import org.eclipse.persistence.internal.expressions.DataExpression;
-import org.eclipse.persistence.internal.expressions.ExpressionIterator;
-import org.eclipse.persistence.internal.expressions.ParameterExpression;
-import org.eclipse.persistence.internal.expressions.TableExpression;
-import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 
 
@@ -55,39 +45,7 @@ public class ManyToManyQueryKey extends ForeignReferenceQueryKey {
      * Returns the reference table.
      */
     public DatabaseTable getRelationTable(ClassDescriptor referenceDescriptor) {
-        ExpressionIterator expIterator = new ExpressionIterator() {
-            public void iterate(Expression each) {
-                if(each.isTableExpression()) {
-                    ((Collection)this.getResult()).add(((TableExpression)each).getTable());
-                }
-                else if(each.isDataExpression()) {
-                    DatabaseField field = ((DataExpression)each).getField();
-                    if(field != null && field.hasTableName()) {
-                        ((Collection)this.getResult()).add(field.getTable());
-                    }
-                } else if(each.isParameterExpression()) {
-                    DatabaseField field = ((ParameterExpression)each).getField();
-                    if(field != null && field.hasTableName()) {
-                        ((Collection)this.getResult()).add(field.getTable());
-                    }
-                }
-            }
-        };
-        
-        expIterator.setResult(new HashSet());
-        expIterator.iterateOn(this.joinCriteria);
-        HashSet<DatabaseTable> tables = (HashSet)expIterator.getResult();
-        
-        DatabaseTable relationTable = null;
-        Iterator<DatabaseTable> it = tables.iterator();
-        while(it.hasNext()) {
-            DatabaseTable table = it.next();
-            // neither source nor reference descriptor contains table - must be relationTable
-            if(!descriptor.getTables().contains(table) && !referenceDescriptor.getTables().contains(table)) {
-                relationTable = table;
-                break;
-            }
-        }
+        DatabaseTable relationTable = super.getRelationTable(referenceDescriptor);
         if(relationTable != null) {
             return relationTable;
         } else {

@@ -311,97 +311,101 @@ public class SQLSelectStatement extends SQLStatement {
 
                 if(outerExpression == null) {
                     printAdditionalJoins(printer, outerJoinedAliases, (ClassDescriptor)getDescriptorsForMultitableInheritanceOnly().get(index), (Map)getOuterJoinedAdditionalJoinCriteria().elementAt(index));
-                } else if (outerExpression.isDirectCollection()) {
-                    // Append the join clause,
-                    // If this is a direct collection, join to direct table.
-                    Expression onExpression = (Expression)getOuterJoinedMappingCriteria().elementAt(index);
-
-                    DatabaseTable newAlias = onExpression.aliasForTable(targetTable);
-                    writer.write(" LEFT OUTER JOIN ");
-                    writer.write(targetTable.getQualifiedNameDelimited());
-                    writer.write(" ");
-                    outerJoinedAliases.addElement(newAlias);
-                    writer.write(newAlias.getQualifiedNameDelimited());
-                    writer.write(" ON ");
-
-                    if (session.getPlatform() instanceof DB2MainframePlatform) {
-                        ((RelationExpression)onExpression).printSQLNoParens(printer);
-                    } else {
-                        onExpression.printSQL(printer);
-                    }
-
-                    //Bug#4240751 Treat ManyToManyMapping separately for out join
-                } else if (outerExpression.isManyToMany()) {
-                    // Must outer join each of the targets tables.
-                    // The first table is joined with the mapping join criteria,
-                    // the rest of the tables are joined with the additional join criteria.
-                    // For example: EMPLOYEE t1 LEFT OUTER JOIN (PROJ_EMP t3 LEFT OUTER JOIN PROJECT t0 ON (t0.PROJ_ID = t3.PROJ_ID)) ON (t3.EMP_ID = t1.EMP_ID)
-                    DatabaseTable relationTable = outerExpression.getRelationTable();
-                    DatabaseTable relationAlias = ((Expression)getOuterJoinedMappingCriteria().elementAt(index)).aliasForTable(relationTable);
-                    writer.write(" LEFT OUTER JOIN (");
-                    writer.write(relationTable.getQualifiedNameDelimited());
-                    writer.write(" ");
-                    outerJoinedAliases.addElement(relationAlias);
-                    writer.write(relationAlias.getQualifiedNameDelimited());
-                    
-                    Vector tablesInOrder = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(3);
-                    // glassfish issue 2440: store aliases instead of tables
-                    // in the tablesInOrder. This allows to distinguish source
-                    // and target table in case of an self referencing relationship.
-                    tablesInOrder.add(sourceAlias);
-                    tablesInOrder.add(relationAlias);
-                    tablesInOrder.add(targetAlias);
-                    TreeMap indexToExpressionMap = new TreeMap();
-                    mapTableIndexToExpression((Expression)getOuterJoinedMappingCriteria().elementAt(index), indexToExpressionMap, tablesInOrder);
-                    Expression sourceToRelationJoin = (Expression)indexToExpressionMap.get(new Integer(1));
-                    Expression relationToTargetJoin = (Expression)indexToExpressionMap.get(new Integer(2));
-                    
-                    writer.write(" JOIN ");
-                    writer.write(targetTable.getQualifiedNameDelimited());
-                    writer.write(" ");
-                    outerJoinedAliases.addElement(targetAlias);
-                    writer.write(targetAlias.getQualifiedNameDelimited());
-                    writer.write(" ON ");
-                    if (session.getPlatform() instanceof DB2MainframePlatform) {
-                        ((RelationExpression)relationToTargetJoin).printSQLNoParens(printer);
-                    } else {
-                        relationToTargetJoin.printSQL(printer);
-                    }
-                    
-                    Map tablesJoinExpression = (Map)getOuterJoinedAdditionalJoinCriteria().elementAt(index);
-                    if(tablesJoinExpression != null && !tablesJoinExpression.isEmpty()) {
-                        printAdditionalJoins(printer, outerJoinedAliases, outerExpression.getDescriptor(), tablesJoinExpression);
-                    }
-                    writer.write(") ON ");
-                    if (session.getPlatform() instanceof DB2MainframePlatform) {
-                        ((RelationExpression)sourceToRelationJoin).printSQLNoParens(printer);
-                    } else {
-                        sourceToRelationJoin.printSQL(printer);
-                    }
                 } else {
-                    // Must outerjoin each of the targets tables.
-                    // The first table is joined with the mapping join criteria,
-                    // the rest of the tables are joined with the additional join criteria.
-                    writer.write(" LEFT OUTER JOIN ");
-                    Map tablesJoinExpression = (Map)getOuterJoinedAdditionalJoinCriteria().elementAt(index);
-                    boolean hasAdditionalJoinExpressions = tablesJoinExpression != null && !tablesJoinExpression.isEmpty();
-                    if(hasAdditionalJoinExpressions) {
-                        writer.write("(");
-                    }
-                    writer.write(targetTable.getQualifiedNameDelimited());
-                    writer.write(" ");
-                    outerJoinedAliases.addElement(targetAlias);
-                    writer.write(targetAlias.getQualifiedNameDelimited());
-                    if(hasAdditionalJoinExpressions) {
-                        printAdditionalJoins(printer, outerJoinedAliases, outerExpression.getDescriptor(), tablesJoinExpression);
-                        writer.write(")");
-                    }
-                    writer.write(" ON ");
-                    Expression sourceToTargetJoin = (Expression)getOuterJoinedMappingCriteria().elementAt(index);
-                    if (session.getPlatform() instanceof DB2MainframePlatform) {
-                        ((RelationExpression)sourceToTargetJoin).printSQLNoParens(printer);
+                    DatabaseTable relationTable = outerExpression.getRelationTable();
+                    if(relationTable == null) {
+                        if (outerExpression.isDirectCollection()) {
+                            // Append the join clause,
+                            // If this is a direct collection, join to direct table.
+                            Expression onExpression = (Expression)getOuterJoinedMappingCriteria().elementAt(index);
+        
+                            DatabaseTable newAlias = onExpression.aliasForTable(targetTable);
+                            writer.write(" LEFT OUTER JOIN ");
+                            writer.write(targetTable.getQualifiedNameDelimited());
+                            writer.write(" ");
+                            outerJoinedAliases.addElement(newAlias);
+                            writer.write(newAlias.getQualifiedNameDelimited());
+                            writer.write(" ON ");
+        
+                            if (session.getPlatform() instanceof DB2MainframePlatform) {
+                                ((RelationExpression)onExpression).printSQLNoParens(printer);
+                            } else {
+                                onExpression.printSQL(printer);
+                            }
+                        } else {
+                            // Must outerjoin each of the targets tables.
+                            // The first table is joined with the mapping join criteria,
+                            // the rest of the tables are joined with the additional join criteria.
+                            writer.write(" LEFT OUTER JOIN ");
+                            Map tablesJoinExpression = (Map)getOuterJoinedAdditionalJoinCriteria().elementAt(index);
+                            boolean hasAdditionalJoinExpressions = tablesJoinExpression != null && !tablesJoinExpression.isEmpty();
+                            if(hasAdditionalJoinExpressions) {
+                                writer.write("(");
+                            }
+                            writer.write(targetTable.getQualifiedNameDelimited());
+                            writer.write(" ");
+                            outerJoinedAliases.addElement(targetAlias);
+                            writer.write(targetAlias.getQualifiedNameDelimited());
+                            if(hasAdditionalJoinExpressions) {
+                                printAdditionalJoins(printer, outerJoinedAliases, outerExpression.getDescriptor(), tablesJoinExpression);
+                                writer.write(")");
+                            }
+                            writer.write(" ON ");
+                            Expression sourceToTargetJoin = (Expression)getOuterJoinedMappingCriteria().elementAt(index);
+                            if (session.getPlatform() instanceof DB2MainframePlatform) {
+                                ((RelationExpression)sourceToTargetJoin).printSQLNoParens(printer);
+                            } else {
+                                sourceToTargetJoin.printSQL(printer);
+                            }
+                        }
                     } else {
-                        sourceToTargetJoin.printSQL(printer);
+                        //Bug#4240751 Treat ManyToManyMapping separately for out join
+                        // Must outer join each of the targets tables.
+                        // The first table is joined with the mapping join criteria,
+                        // the rest of the tables are joined with the additional join criteria.
+                        // For example: EMPLOYEE t1 LEFT OUTER JOIN (PROJ_EMP t3 LEFT OUTER JOIN PROJECT t0 ON (t0.PROJ_ID = t3.PROJ_ID)) ON (t3.EMP_ID = t1.EMP_ID)
+                        // Now OneToOneMapping also may have relation table.
+                        DatabaseTable relationAlias = ((Expression)getOuterJoinedMappingCriteria().elementAt(index)).aliasForTable(relationTable);
+                        writer.write(" LEFT OUTER JOIN (");
+                        writer.write(relationTable.getQualifiedNameDelimited());
+                        writer.write(" ");
+                        outerJoinedAliases.addElement(relationAlias);
+                        writer.write(relationAlias.getQualifiedNameDelimited());
+                        
+                        Vector tablesInOrder = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(3);
+                        // glassfish issue 2440: store aliases instead of tables
+                        // in the tablesInOrder. This allows to distinguish source
+                        // and target table in case of an self referencing relationship.
+                        tablesInOrder.add(sourceAlias);
+                        tablesInOrder.add(relationAlias);
+                        tablesInOrder.add(targetAlias);
+                        TreeMap indexToExpressionMap = new TreeMap();
+                        mapTableIndexToExpression((Expression)getOuterJoinedMappingCriteria().elementAt(index), indexToExpressionMap, tablesInOrder);
+                        Expression sourceToRelationJoin = (Expression)indexToExpressionMap.get(new Integer(1));
+                        Expression relationToTargetJoin = (Expression)indexToExpressionMap.get(new Integer(2));
+                        
+                        writer.write(" JOIN ");
+                        writer.write(targetTable.getQualifiedNameDelimited());
+                        writer.write(" ");
+                        outerJoinedAliases.addElement(targetAlias);
+                        writer.write(targetAlias.getQualifiedNameDelimited());
+                        writer.write(" ON ");
+                        if (session.getPlatform() instanceof DB2MainframePlatform) {
+                            ((RelationExpression)relationToTargetJoin).printSQLNoParens(printer);
+                        } else {
+                            relationToTargetJoin.printSQL(printer);
+                        }
+                        
+                        Map tablesJoinExpression = (Map)getOuterJoinedAdditionalJoinCriteria().elementAt(index);
+                        if(tablesJoinExpression != null && !tablesJoinExpression.isEmpty()) {
+                            printAdditionalJoins(printer, outerJoinedAliases, outerExpression.getDescriptor(), tablesJoinExpression);
+                        }
+                        writer.write(") ON ");
+                        if (session.getPlatform() instanceof DB2MainframePlatform) {
+                            ((RelationExpression)sourceToRelationJoin).printSQLNoParens(printer);
+                        } else {
+                            sourceToRelationJoin.printSQL(printer);
+                        }
                     }
                 }
             }
