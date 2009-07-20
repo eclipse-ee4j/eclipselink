@@ -45,6 +45,7 @@ import org.eclipse.persistence.mappings.DirectMapMapping;
 import org.eclipse.persistence.mappings.ManyToManyMapping;
 import org.eclipse.persistence.mappings.OneToManyMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
+import org.eclipse.persistence.mappings.RelationTableMechanism;
 import org.eclipse.persistence.mappings.TransformationMapping;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescriptor;
 import org.eclipse.persistence.oxm.XMLDescriptor;
@@ -317,7 +318,7 @@ public class DefaultTableGenerator {
                 // times for the same table.
                 continue;
             } else if (mapping.isManyToManyMapping()) {
-                buildRelationTableDefinition((ManyToManyMapping) mapping);
+                buildRelationTableDefinition(((ManyToManyMapping)mapping).getRelationTableMechanism(), ((ManyToManyMapping)mapping).getListOrderField());
             } else if (mapping.isDirectCollectionMapping()) {
                 buildDirectCollectionTableDefinition((DirectCollectionMapping) mapping, desc);
             } else if (mapping.isDirectToFieldMapping()) {
@@ -337,7 +338,12 @@ public class DefaultTableGenerator {
                 addForeignkeyFieldToAggregateTargetTable((AggregateCollectionMapping) mapping);
             } else if (mapping.isForeignReferenceMapping()) {
                 if (mapping.isOneToOneMapping()) {
-                    addForeignKeyFieldToSourceTargetTable((OneToOneMapping) mapping);
+                    RelationTableMechanism relationTableMechanism = ((OneToOneMapping)mapping).getRelationTableMechanism(); 
+                    if(relationTableMechanism == null) {
+                        addForeignKeyFieldToSourceTargetTable((OneToOneMapping) mapping);
+                    } else {
+                        buildRelationTableDefinition(relationTableMechanism, null);
+                    }
                 } else if (mapping.isOneToManyMapping()) {
                     addForeignKeyFieldToSourceTargetTable((OneToManyMapping) mapping);
                 }
@@ -352,21 +358,25 @@ public class DefaultTableGenerator {
     /**
      * Build relation table definitions for all many-to-many relationships in a EclipseLink descriptor.
      */
-    private void buildRelationTableDefinition(ManyToManyMapping mapping) {
+    private void buildRelationTableDefinition(RelationTableMechanism relationTableMechanism, DatabaseField listOrderField) {
         //first create relation table
-        TableDefinition tblDef = getTableDefFromDBTable(mapping.getRelationTable());
+        TableDefinition tblDef = getTableDefFromDBTable(relationTableMechanism.getRelationTable());
 
         //add source foreign key fields into the relation table
-        Vector srcFkFields = mapping.getSourceRelationKeyFields();
-        Vector srcKeyFields = mapping.getSourceKeyFields();
+        Vector srcFkFields = relationTableMechanism.getSourceRelationKeyFields();
+        Vector srcKeyFields = relationTableMechanism.getSourceKeyFields();
 
         buildRelationTableFields(tblDef, srcFkFields, srcKeyFields);
 
         //add target foreign key fields into the relation table
-        Vector targFkFields = mapping.getTargetRelationKeyFields();
-        Vector targKeyFields = mapping.getTargetKeyFields();
+        Vector targFkFields = relationTableMechanism.getTargetRelationKeyFields();
+        Vector targKeyFields = relationTableMechanism.getTargetKeyFields();
         
         buildRelationTableFields(tblDef, targFkFields, targKeyFields);
+        
+        if(listOrderField != null) {
+            tblDef.addField(getFieldDefFromDBField(listOrderField, false));
+        }
     }
 
     /**
@@ -423,6 +433,10 @@ public class DefaultTableGenerator {
         if (mapping.isDirectMapMapping() && ! mapping.getContainerPolicy().isMappedKeyMapPolicy() ) {
             dbField = ((DirectMapMapping) mapping).getDirectKeyField();
             tblDef.addField(getFieldDefFromDBField(dbField, false));
+            
+            if(mapping.getListOrderField() != null) {
+                tblDef.addField(getFieldDefFromDBField(mapping.getListOrderField(), false));
+            }
         }
     }
 
@@ -485,7 +499,8 @@ public class DefaultTableGenerator {
     }
 
     /**
-     * Add the foreign key to the aggregate collection mapping target table
+     * Add the foreign key to the aggregate collection mapping target table.
+     * Also add listOrderField if specified.
      */
     private void addForeignkeyFieldToAggregateTargetTable(AggregateCollectionMapping mapping) {
         //unlike normal one-to-many mapping, aggregate collection mapping does not have 1:1 back reference
@@ -495,11 +510,15 @@ public class DefaultTableGenerator {
         while (targFKIter.hasNext()) {
             DatabaseField dbField = (DatabaseField) targFKIter.next();
 
-            //retrive the target table denifition
+            //retrieve the target table definition
             TableDefinition targTblDef = getTableDefFromDBTable(dbField.getTable());
 
             //add the target foreign key field definition to the table definition
             targTblDef.addField(getFieldDefFromDBField(dbField, false));
+        }
+
+        if(mapping.getListOrderField() != null) {
+            getTableDefFromDBTable(mapping.getListOrderField().getTable()).addField(getFieldDefFromDBField(mapping.getListOrderField(), false));
         }
     }
 
@@ -513,6 +532,9 @@ public class DefaultTableGenerator {
     
     private void addForeignKeyFieldToSourceTargetTable(OneToManyMapping mapping) {        
         addForeignMappingFkConstraint(mapping.getTargetForeignKeysToSourceKeys());
+        if(mapping.getListOrderField() != null) {
+            getTableDefFromDBTable(mapping.getListOrderField().getTable()).addField(getFieldDefFromDBField(mapping.getListOrderField(), false));
+        }
     }    
 
     private void addForeignMappingFkConstraint(final Map<DatabaseField, DatabaseField> srcFields) {
@@ -630,7 +652,7 @@ public class DefaultTableGenerator {
 
                 if ((fieldType == null) || (!fieldType.isPrimitive() && 
                         (databasePlatform.getFieldTypeDefinition(fieldType) == null))) {
-                    //TODO: log a warning for inaccessiable type or not convertable type.
+                    //TODO: log a warning for inaccessible type or not convertable type.
                     AbstractSessionLog.getLog().log(SessionLog.FINEST, "field_type_set_to_java_lang_string", dbField.getQualifiedName(), fieldType);
 
                     //set the default type (lang.String) to all un-resolved java type, like null, Number, util.Date, NChar/NType, Calendar
