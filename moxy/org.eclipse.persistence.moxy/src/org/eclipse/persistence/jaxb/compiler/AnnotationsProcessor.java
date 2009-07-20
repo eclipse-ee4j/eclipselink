@@ -865,7 +865,8 @@ public class AnnotationsProcessor {
     private void processTypeQName(JavaClass javaClass, TypeInfo info, NamespaceInfo packageNamespace) {
         String typeName = info.getSchemaTypeName();
         if (typeName != null && !("".equals(typeName))) {
-            QName typeQName = new QName(packageNamespace.getNamespace(), typeName);
+            QName typeQName = new QName(info.getClassNamespace(), typeName);
+        	
             boolean containsQName = typeQNames.contains(typeQName);
             if (containsQName) {
                 throw JAXBException.nameCollision(typeQName.getNamespaceURI(), typeQName.getLocalPart());
@@ -987,7 +988,8 @@ public class AnnotationsProcessor {
                 parent = parent.getSuperclass();
             }
         }
-        property.setSchemaName(getQNameForProperty(propertyName, javaHasAnnotations, getNamespaceInfoForPackage(cls)));
+         
+        property.setSchemaName(getQNameForProperty(propertyName, javaHasAnnotations, getNamespaceInfoForPackage(cls), info.getClassNamespace()));
         
         processPropertyAnnotations(info, cls, javaHasAnnotations, property);
         
@@ -1614,7 +1616,7 @@ public class AnnotationsProcessor {
         return typeName;
     }
 
-    public QName getQNameForProperty(String defaultName, JavaHasAnnotations element, NamespaceInfo namespaceInfo) {
+    public QName getQNameForProperty(String defaultName, JavaHasAnnotations element, NamespaceInfo namespaceInfo, String uri) {
         String name = "##default";
         String namespace = "##default";
         QName qName = null;
@@ -1631,7 +1633,7 @@ public class AnnotationsProcessor {
                 qName = new QName(namespace, name);
             } else {
                 if (namespaceInfo.isAttributeFormQualified()) {
-                    qName = new QName(namespaceInfo.getNamespace(), name);
+                    qName = new QName(uri, name);
                 } else {
                     qName = new QName(name);
                 }
@@ -1651,7 +1653,7 @@ public class AnnotationsProcessor {
                 qName = new QName(namespace, name);
             } else {
                 if (namespaceInfo.isElementFormQualified()) {
-                    qName = new QName(namespaceInfo.getNamespace(), name);
+                	qName = new QName(uri, name);
                 } else {
                     qName = new QName(name);
                 }
