@@ -28,7 +28,8 @@ public class CharactersEvent extends SAXEvent {
 
     public CharactersEvent(char[] theCharacters, int theStart, int theEnd) {
         super();
-        characters = theCharacters;
+        //clone the character array. The one passed in from the original SAX event may change.
+        characters = theCharacters.clone();
         start = theStart;
         end = theEnd;
     }
