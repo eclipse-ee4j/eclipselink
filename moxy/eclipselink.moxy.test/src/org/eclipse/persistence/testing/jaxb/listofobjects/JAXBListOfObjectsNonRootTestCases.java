@@ -167,4 +167,12 @@ public class JAXBListOfObjectsNonRootTestCases extends
 	protected String getNoXsiTypeControlResourceName() {
 		return XML_RESOURCE_NO_XSI_TYPE;
 	}
+	
+	
+	public void testTypeToSchemaTypeMap(){
+		HashMap<Type, javax.xml.namespace.QName> typesMap = ((org.eclipse.persistence.jaxb.JAXBContext)jaxbContext).getTypeToSchemaType();		
+		int mapSize = typesMap.size();
+		assertEquals(2, mapSize);
+	}
+	
 }

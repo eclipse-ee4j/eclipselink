@@ -207,26 +207,29 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
 	    while(descriptors.hasNext()) {
 	        XMLDescriptor next = (XMLDescriptor)descriptors.next();
 	        Class javaClass = next.getJavaClass();
-	        QName schemaType = next.getSchemaReference().getSchemaContextAsQName(next.getNamespaceResolver());
-	        Type type;
-	        if(generator != null) {
-	            type = generator.getAnnotationsProcessor().getGeneratedClassesToCollectionClasses().get(javaClass);
-	            if(type == null) {
-	                JavaClass arrayClass = (JavaClass)generator.getAnnotationsProcessor().getGeneratedClassesToArrayClasses().get(javaClass);
-	                if(arrayClass != null) {
-	                    String arrayClassName = arrayClass.getName();
-	                    try {
-	                        type = PrivilegedAccessHelper.getClassForName(arrayClassName);
-	                    } catch (Exception ex){}
-	                }
-	            }
-	            if(type == null) {
-	                type = javaClass;
-	            }
-	        } else {
-	            type = javaClass;
+	        
+	        if(next.getSchemaReference() != null){
+		        QName schemaType = next.getSchemaReference().getSchemaContextAsQName(next.getNamespaceResolver());
+		        Type type;
+		        if(generator != null) {
+		            type = generator.getAnnotationsProcessor().getGeneratedClassesToCollectionClasses().get(javaClass);
+		            if(type == null) {
+		                JavaClass arrayClass = (JavaClass)generator.getAnnotationsProcessor().getGeneratedClassesToArrayClasses().get(javaClass);
+		                if(arrayClass != null) {
+		                    String arrayClassName = arrayClass.getName();
+		                    try {
+		                        type = PrivilegedAccessHelper.getClassForName(arrayClassName);
+		                    } catch (Exception ex){}
+		                }
+		            }
+		            if(type == null) {
+		                type = javaClass;
+		            }
+		        } else {
+		            type = javaClass;
+		        }
+		        this.typeToSchemaType.put(type, schemaType);
 	        }
-	        this.typeToSchemaType.put(type, schemaType);
 	    }
 	    
 	    //Add any types that we didn't generate descriptors for (built in types)
