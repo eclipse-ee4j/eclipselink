@@ -1776,6 +1776,8 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         XMLTypes.put(XMLConstants.UNSIGNED_INT_QNAME, ClassConstants.PLONG);
         XMLTypes.put(XMLConstants.UNSIGNED_SHORT_QNAME, ClassConstants.PINT);
         XMLTypes.put(XMLConstants.ANY_SIMPLE_TYPE_QNAME, ClassConstants.STRING);
+        XMLTypes.put(XMLConstants.NAME_QNAME, ClassConstants.STRING);
+        XMLTypes.put(XMLConstants.NCNAME_QNAME, ClassConstants.STRING);
 
         return XMLTypes;
     }

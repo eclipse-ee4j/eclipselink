@@ -25,10 +25,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
-import org.xml.sax.XMLReader;
-
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLMarshaller;
@@ -38,6 +34,9 @@ import org.eclipse.persistence.oxm.mappings.XMLFragmentMapping;
 import org.eclipse.persistence.platform.xml.SAXDocumentBuilder;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
 
 /**
  * Namespace qualified XMLFragmentMapping tests
@@ -637,7 +636,14 @@ public class XMLFragmentNSTestCases extends OXTestCase {
         log("\nActual:");
         log(testObject.toString());
         log("\n");
-        assertEquals(getReadControlObject(resource), testObject);
+        
+        Employee testEmp = (Employee) testObject;
+        removeEmptyTextNodes(testEmp.xmlNode);
+        
+        Employee controlEmp = (Employee) getReadControlObject(resource);
+        removeEmptyTextNodes(controlEmp.xmlNode);
+        
+        assertEquals(controlEmp, testEmp);
     }    
     
     protected Document importNodeFix(Document testDocument) {

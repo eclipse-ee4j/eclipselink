@@ -237,8 +237,9 @@ public class SAXUnmarshallerHandler implements ContentHandler {
             unmarshalRecord.setAttributes(atts);
             unmarshalRecord.setUnmarshalNamespaceResolver(unmarshalNamespaceResolver);
             unmarshalRecord.startDocument();            
-            unmarshalRecord.startElement(namespaceURI, localName, qName, atts);
             xmlReader.setContentHandler(unmarshalRecord);
+            unmarshalRecord.startElement(namespaceURI, localName, qName, atts);
+
             
             try {
                 unmarshalRecord.getXMLReader().setProperty("http://xml.org/sax/properties/lexical-handler", unmarshalRecord);

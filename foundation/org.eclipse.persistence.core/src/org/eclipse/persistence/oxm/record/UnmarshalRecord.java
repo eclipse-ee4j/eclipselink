@@ -528,9 +528,8 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
                 int selfRecordsSize = selfRecords.size();                
                 for (int x = 0; x < selfRecordsSize; x++) {                
                     UnmarshalRecord selfRecord =((UnmarshalRecord)selfRecords.get(x));                	
-                    if(selfRecord == null){                		
-                        getXMLReader().setContentHandler(getFragmentBuilder());
-                        getFragmentBuilder().startElement(namespaceURI, localName, qName, atts);
+                    if(selfRecord == null){
+                    	getFragmentBuilder().startElement(namespaceURI, localName, qName, atts);
                     }else{
                         selfRecord.startElement(namespaceURI, localName, qName, atts);
                     }                                        
@@ -663,9 +662,11 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
                 int selfRecordsSize = selfRecords.size();
                 for (int x = 0; x < selfRecordsSize; x++) {
                     UnmarshalRecord selfRecord = ((UnmarshalRecord)selfRecords.get(x));            	
-                    if(selfRecord != null){
+                    if(selfRecord != null){                    	
                         selfRecord.endElement(namespaceURI, localName, qName);
-                    }
+                    }else{                    	
+                    	getFragmentBuilder().endSelfElement(namespaceURI, localName, qName);
+                    }                    
                 }
             }
 
@@ -738,6 +739,8 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
                     UnmarshalRecord selfRecord = ((UnmarshalRecord)selfRecords.get(x));            	
                     if(selfRecord != null){
                         selfRecord.characters(ch, start, length);
+                    } else {
+                    	getFragmentBuilder().characters(ch, start, length);
                     }
                 }
             }

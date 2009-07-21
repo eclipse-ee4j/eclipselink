@@ -65,9 +65,8 @@ public class SAXFragmentBuilder extends SAXDocumentBuilder {
         Element element = getInitializedDocument().createElementNS(namespaceURI, qName);
         Node parentNode = (Node)nodes.peek();
 
-        if ((stringBuffer.length() > 0) && !(nodes.size() == 1)) {
-            Text text = getInitializedDocument().createTextNode(stringBuffer.toString());
-            parentNode.appendChild(text);
+        boolean bufferContainsOnlyWhitespace = stringBuffer.toString().trim().length() == 0;
+        if (bufferContainsOnlyWhitespace) {
             stringBuffer.reset();
         }
         appendChildNode(parentNode, element);
@@ -152,6 +151,22 @@ public class SAXFragmentBuilder extends SAXDocumentBuilder {
         }
     }
 
+    
+    
+    public void endSelfElement(String namespaceURI, String localName, String qName) throws SAXException {        
+    	
+    	if (super.nodes.size() == 2) {
+            Element endedElement = (Element)nodes.peek();
+            if (stringBuffer.length() > 0) {
+                Text text = getInitializedDocument().createTextNode(stringBuffer.toString());
+                endedElement.appendChild(text);
+                stringBuffer.reset();
+            }         
+        } else {
+            super.endElement(namespaceURI, localName, qName);
+        }
+    }
+    
     public Stack getNodes() {
         return super.nodes;
     }

@@ -67,6 +67,8 @@ public class XMLConstants {
     public static final String INT = "int";
     public static final String INTEGER = "integer";
     public static final String LONG = "long";
+    public static final String NAME = "Name";
+    public static final String NCNAME = "NCName";
     public static final String QNAME = "QName";
     public static final String SHORT = "short";
     public static final String STRING = "string";
@@ -103,6 +105,8 @@ public class XMLConstants {
     public static final QName INT_QNAME = new QName(SCHEMA_URL, INT);
     public static final QName INTEGER_QNAME = new QName(SCHEMA_URL, INTEGER);
     public static final QName LONG_QNAME = new QName(SCHEMA_URL, LONG);
+    public static final QName NAME_QNAME = new QName(SCHEMA_URL, NAME);
+    public static final QName NCNAME_QNAME = new QName(SCHEMA_URL, NCNAME);
     public static final QName QNAME_QNAME = new QName(SCHEMA_URL, QNAME);
     public static final QName SHORT_QNAME = new QName(SCHEMA_URL, SHORT);
     public static final QName STRING_QNAME = new QName(SCHEMA_URL, STRING);
