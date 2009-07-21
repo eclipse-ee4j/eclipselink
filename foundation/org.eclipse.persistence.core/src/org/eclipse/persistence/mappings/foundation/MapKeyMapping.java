@@ -149,6 +149,13 @@ public interface MapKeyMapping extends MapComponentMapping {
     
     /**
      * INTERNAL:
+     * Return a Map of any foreign keys defined within the the MapKey
+     * @return
+     */
+    public Map<DatabaseField, DatabaseField> getForeignKeyFieldsForMapKey();
+    
+    /**
+     * INTERNAL:
      * Get the descriptor for the Map Key
      * @return
      */

@@ -15,6 +15,11 @@
         <class>org.eclipse.persistence.testing.models.jpa.xml.merge.inherited.EmbeddedSerialNumber</class>
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.weaving.impl.EquipmentDAO</class>
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.weaving.impl.PortDAO</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.MapHolder</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.EntityMapKey</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.EntityMapValueWithBackPointer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.EntityMapValue</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.MMEntityMapValue</class>
         <properties>
             <property name="eclipselink.session=name" value="mergeinherited-session"/>
             <property name="eclipselink.jdbc.read-connections.shared" value="true"/>

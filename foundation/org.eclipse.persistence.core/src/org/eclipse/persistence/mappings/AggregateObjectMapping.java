@@ -850,6 +850,16 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         return getReferenceDescriptor().getAllFields();
     }
     
+
+    /**
+     * INTERNAL:
+     * Return a Map of any foreign keys defined within the the MapKey
+     * @return
+     */
+    public Map<DatabaseField, DatabaseField> getForeignKeyFieldsForMapKey(){
+        return null;
+    }
+    
     /**
      * INTERNAL:
      * This is used to preserve object identity during a refreshObject()

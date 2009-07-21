@@ -42,6 +42,7 @@ import javax.persistence.MapKey;
 import javax.persistence.MapKeyClass;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.MapKeyEnumerated;
+import javax.persistence.MapKeyJoinColumns;
 import javax.persistence.MapKeyTemporal;
 import javax.persistence.OrderBy;
 import javax.persistence.OrderColumn;
@@ -50,6 +51,7 @@ import org.eclipse.persistence.annotations.MapKeyConvert;
 import org.eclipse.persistence.annotations.OrderCorrection;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
@@ -196,6 +198,15 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
             m_mapKeyTemporal = new TemporalMetadata(getAnnotation(MapKeyTemporal.class), accessibleObject);
         }
         
+        // Set the map key join columns if some are present.
+        m_mapKeyJoinColumns = new ArrayList<JoinColumnMetadata>();
+        // Process all the map key join columns first.
+        if (isAnnotationPresent(MapKeyJoinColumns.class)) {
+            for (Object jColumn : (Object[]) getAnnotation(MapKeyJoinColumns.class).getAttributeArray("value")) {
+                m_mapKeyJoinColumns.add(new JoinColumnMetadata((MetadataAnnotation)jColumn, accessibleObject));
+            }
+        }
+        
         // Set the map key column if one is defined.
         if (isAnnotationPresent(MapKeyColumn.class)) {
             m_mapKeyColumn = new ColumnMetadata(getAnnotation(MapKeyColumn.class), accessibleObject, getAttributeName());
@@ -284,6 +295,16 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
         }
     }
 
+    /**
+     * INTERNAL:
+     * Return the default table to hold the foreign key of a MapKey when
+     * and Entity is used as the MapKey
+     * @return
+     */
+    protected DatabaseTable getDefaultTableForEntityMapKey(){
+        return getCollectionTable().getDatabaseTable();
+    }
+    
     /**
      * INTERNAL:
      */

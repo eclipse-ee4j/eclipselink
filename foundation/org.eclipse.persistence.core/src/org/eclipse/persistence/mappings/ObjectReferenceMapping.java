@@ -455,7 +455,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
     /**
      * INTERNAL:
      * Returns the foreign key names associated with the mapping.
-     * These are the fields that will be populated by the 1-1 mapping when writting.
+     * These are the fields that will be populated by the 1-1 mapping when writing.
      */
     public Vector<DatabaseField> getForeignKeyFields() {
         return foreignKeyFields;

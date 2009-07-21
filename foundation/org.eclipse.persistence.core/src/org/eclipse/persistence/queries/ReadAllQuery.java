@@ -836,7 +836,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
                 // null is placed in the row collection for 1-m joining to filter duplicate rows.
                 if (row != null) {
                     Object clone = buildObject(row);
-                    cp.addInto(clone, clones, unitOfWork);
+                    cp.addInto(clone, clones, unitOfWork, row, this);
                 }
             }
             return clones;

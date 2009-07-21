@@ -748,8 +748,17 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
             return this.getTargetToSourceKeyFields();
         }
     }
+    
 
-
+    /**
+     * INTERNAL:
+     * Return a Map of any foreign keys defined within the the MapKey
+     * @return
+     */
+    public Map<DatabaseField, DatabaseField> getForeignKeyFieldsForMapKey(){
+        return getSourceToTargetKeyFields();
+    }
+    
     /**
      * INTERNAL:
      * Return the fields that make up the identity of the mapped object.  For mappings with

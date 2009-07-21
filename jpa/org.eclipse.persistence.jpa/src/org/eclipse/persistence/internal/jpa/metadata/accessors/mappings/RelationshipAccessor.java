@@ -253,16 +253,14 @@ public abstract class RelationshipAccessor extends MappingAccessor {
             if (m_joinTable != null) {
                 // TODO: Log an override message ...
             }
-            
-            return getDescriptor().getAssociationOverrideFor(getAttributeName()).getJoinTable();
+            m_joinTable = getDescriptor().getAssociationOverrideFor(getAttributeName()).getJoinTable();
         } else {
             if (m_joinTable == null) {
                 // TODO: Log a defaulting message.
-                return new JoinTableMetadata(null, getAccessibleObject());
-            } else {
-                return m_joinTable;
+                m_joinTable = new JoinTableMetadata(null, getAccessibleObject());
             }
         }
+        return m_joinTable;
     }
     
     /**

@@ -24,6 +24,7 @@ import java.util.Vector;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
@@ -55,6 +56,18 @@ public class ManyToManyAccessor extends CollectionAccessor {
         super(manyToMany, accessibleObject, classAccessor);
         
         setMappedBy((String) manyToMany.getAttribute("mappedBy"));
+    }
+    
+    
+    /**
+     * INTERNAL:
+     * Return the default table to hold the foreign key of a MapKey when
+     * and Entity is used as the MapKey
+     * @return
+     */
+    @Override
+    protected DatabaseTable getDefaultTableForEntityMapKey(){
+        return getJoinTableMetadata().getDatabaseTable();
     }
     
     /**

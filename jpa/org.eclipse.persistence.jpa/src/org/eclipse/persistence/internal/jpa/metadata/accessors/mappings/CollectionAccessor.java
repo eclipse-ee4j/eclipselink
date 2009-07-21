@@ -74,6 +74,7 @@ import org.eclipse.persistence.internal.jpa.metadata.tables.JoinTableMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.EmbeddableMapping;
@@ -135,7 +136,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
         
         // Set the map key if one is present.
         if (isAnnotationPresent(MapKey.class)) {
-            m_mapKey = (String) getAnnotation(MapKey.class).getAttribute("name");
+            m_mapKey = (String)getAnnotation(MapKey.class).getAttributeString("name");
         }
         
         // Set the map key class if one is defined.
@@ -221,8 +222,18 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
      */
     @Override
     protected ColumnMetadata getColumn(String loggingCtx) {
-        return m_mapKeyColumn == null ? super.getColumn(loggingCtx) : m_mapKeyColumn;
+        if (loggingCtx.equals(MetadataLogger.MAP_KEY_COLUMN)) {
+            if (m_mapKeyColumn == null) {
+                return new ColumnMetadata(getAnnotation(MapKeyColumn.class), getAccessibleObject(), getAttributeName());
+            } else {
+                return m_mapKeyColumn;
+            }
+        } else {
+            return super.getColumn(loggingCtx);
+        }
     }
+
+    
     
     /**
      * INTERNAL:

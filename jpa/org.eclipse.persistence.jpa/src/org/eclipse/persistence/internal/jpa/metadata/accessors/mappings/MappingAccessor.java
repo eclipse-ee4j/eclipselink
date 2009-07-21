@@ -376,8 +376,10 @@ public abstract class MappingAccessor extends MetadataAccessor {
         
            
         field.setName(getName(field.getName(), defaultName, loggingCtx));
-
-        field.getTable().setUseDelimiters(useDelimitedIdentifier());
+        
+        if(field.getTable() != null){
+            field.getTable().setUseDelimiters(useDelimitedIdentifier());
+        }
         field.setUseDelimiters(useDelimitedIdentifier());
                        
         return field;
@@ -715,6 +717,15 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * @see CollectionAccessor
      */
     protected boolean hasLob(boolean isForMapKey) {
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return whether the map key has been set.
+     * @return
+     */
+    public boolean hasMapKey(){
         return false;
     }
     
@@ -1138,10 +1149,9 @@ public abstract class MappingAccessor extends MetadataAccessor {
         if (isMappedKeyMapAccessor()) {
             MappedKeyMapAccessor mapKeyMapAccessor = (MappedKeyMapAccessor) this;
             MetadataClass mapKeyClass = mapKeyMapAccessor.getMapKeyClass();
-            
             if (mapKeyClass != null && (getProject().hasEntity(mapKeyClass) || getProject().hasEmbeddable(mapKeyClass) || mapKeyMapAccessor.getMapKeyColumn() != null)) {
-                // TODO: if map key is specified we should throw an exception.
-                processMapKeyClass(mapKeyClass, mapping, mapKeyMapAccessor);
+            // TODO: if map key is specified we should throw an exception.
+               processMapKeyClass(mapKeyClass, mapping, mapKeyMapAccessor);
             } else {
                 // Set the indirection policy on the mapping
                 setIndirectionPolicy(mapping, processMapKey(mapKey, mapping), usesIndirection());

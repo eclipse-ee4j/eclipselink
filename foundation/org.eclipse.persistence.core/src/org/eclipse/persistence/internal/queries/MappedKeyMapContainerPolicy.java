@@ -471,6 +471,15 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements D
     
     /**
      * INTERNAL:
+     * Return a Map of any foreign keys defined within the the MapKey
+     * @return
+     */
+    public Map<DatabaseField, DatabaseField> getForeignKeyFieldsForMapKey(){
+        return keyMapping.getForeignKeyFieldsForMapKey();
+    }
+    
+    /**
+     * INTERNAL:
      * Return the reference descriptor for the map key if it exists
      */
     public ClassDescriptor getDescriptorForMapKey(){

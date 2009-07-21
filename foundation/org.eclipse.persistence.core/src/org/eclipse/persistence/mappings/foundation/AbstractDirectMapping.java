@@ -773,6 +773,15 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
 
     /**
      * INTERNAL:
+     * Return a Map of any foreign keys defined within the the MapKey
+     * @return
+     */
+    public Map<DatabaseField, DatabaseField> getForeignKeyFieldsForMapKey(){
+        return null;
+    }
+    
+    /**
+     * INTERNAL:
      * Return the fields that make up the identity of the mapped object.  For mappings with
      * a primary key, it will be the set of fields in the primary key.  For mappings without
      * a primary key it will likely be all the fields
