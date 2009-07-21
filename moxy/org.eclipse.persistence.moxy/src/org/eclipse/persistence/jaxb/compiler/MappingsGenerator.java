@@ -387,7 +387,12 @@ public class MappingsGenerator {
     }
     
     public XMLMapping generateMappingForReferenceProperty(ReferenceProperty property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo)  {
-                
+           
+        if(property.isMixedContent()) {
+            XMLAnyCollectionMapping mapping = generateAnyCollectionMapping(property, descriptor, namespaceInfo, true);
+            mapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
+            return mapping;
+        }
         boolean isCollection = isCollectionType(property);
         DatabaseMapping mapping;
         if(isCollection) {
