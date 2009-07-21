@@ -122,6 +122,15 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T> {
     }
     
     /**
+     * INTERNAL: 
+     * Return the concrete metamodel that this attribute is associated with.
+     * @return MetamodelImpl
+     */
+    public MetamodelImpl getMetamodel() {
+        return this.managedType.getMetamodel();
+    }
+    
+    /**
      * Return the name of the attribute.
      * @return name
      */

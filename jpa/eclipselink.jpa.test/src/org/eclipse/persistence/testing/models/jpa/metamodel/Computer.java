@@ -32,7 +32,7 @@ import javax.persistence.Version;
 
 @Entity(name="ComputerMetamodel")
 @Table(name="CMP3_MM_COMPUTER")
-public class Computer implements java.io.Serializable{
+public class Computer implements java.io.Serializable {
     @Id
     @GeneratedValue(strategy=TABLE, generator="COMPUTER_MM_TABLE_GENERATOR")
     @TableGenerator(
@@ -49,7 +49,9 @@ public class Computer implements java.io.Serializable{
     @Column(name="COMPUTER_VERSION")
     private int version;
 
-    @OneToOne
+    @OneToOne(fetch=EAGER)
+    @JoinColumn(name="LOCATION_LOCATION_ID", referencedColumnName="LOCATION_ID")    
+    //@Column(name="LOCATION_ID", unique=false, nullable=false, updatable=false)
     private Location location;
     
     private String name;

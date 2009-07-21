@@ -35,6 +35,13 @@ public class HardwareDesigner extends Designer implements java.io.Serializable{
             inverseJoinColumns =@JoinColumn(name="MANUF_ID"))   
     private Manufacturer employer;
 
+    // The M:1 side is the owning side
+    @ManyToOne(fetch=EAGER)//LAZY)
+    @JoinTable(name="CMP3_MM_MANUF_MM_HWDES_MAP", 
+            joinColumns = @JoinColumn(name="DESIGNER_MAP_ID"), 
+            inverseJoinColumns =@JoinColumn(name="MANUF_ID"))   
+    private Manufacturer mappedEmployer;
+    
     @Version
     @Column(name="HWDESIGNER_VERSION")
     private int version;
@@ -55,6 +62,14 @@ public class HardwareDesigner extends Designer implements java.io.Serializable{
 
     public void setEmployer(Manufacturer employer) {
         this.employer = employer;
+    }
+
+    public Manufacturer getMappedEmployer() {
+        return mappedEmployer;
+    }
+
+    public void setMappedEmployer(Manufacturer mappedEmployer) {
+        this.mappedEmployer = mappedEmployer;
     }
     
 }

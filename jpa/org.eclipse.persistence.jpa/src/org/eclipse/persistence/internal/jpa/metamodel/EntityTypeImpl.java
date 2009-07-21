@@ -29,6 +29,7 @@ import javax.persistence.metamodel.Type;
 import org.eclipse.persistence.descriptors.CMPPolicy;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.internal.jpa.CMP3Policy;
+import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 
 /**
@@ -90,7 +91,7 @@ public class EntityTypeImpl<X> extends IdentifiableTypeImpl<X> implements Entity
             if (pkMappings.size() == 1) {
                 Class aClass = pkMappings.get(0).getAttributeClassification(); // null for OneToOneMapping
                 // lookup class in our types map
-                Type<?> aType = this.metamodel.type(aClass);
+                Type<?> aType = this.metamodel.getType(aClass);
                 return aType;
             }
         }
@@ -101,8 +102,10 @@ public class EntityTypeImpl<X> extends IdentifiableTypeImpl<X> implements Entity
             // BasicType, EntityType or IdentifiableType are handled here, lookup the class in the types map and create a wrapper if it does not exist yet
             return this.metamodel.getType(((CMP3Policy) cmpPolicy).getPKClass());
         }
-        // TODO: Error message for incompatible JPA config
-        throw new IllegalStateException("Incompatible persistence configuration");
+        // Non-specification mandated exception        
+        throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
+                "metamodel_incompatible_persistence_config_for_getIdType", 
+                new Object[] { this }));        
     }
     
     /**

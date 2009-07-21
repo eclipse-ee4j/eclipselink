@@ -278,6 +278,16 @@ public class MetamodelImpl implements Metamodel {
         }        
         return type;
     }
+
+    /**
+     * INTERNAL:
+     * Return the Map of types on this metamodel.
+     * This includes all Entity, MappedSuperclass, Embeddable and Basic types
+     * @return
+     */
+    public Map<Class, TypeImpl<?>> getTypes() {
+        return types;
+    }
     
     /**
      * INTERNAL:

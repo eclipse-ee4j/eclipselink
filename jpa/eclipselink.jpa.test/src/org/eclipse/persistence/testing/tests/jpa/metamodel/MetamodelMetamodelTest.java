@@ -17,9 +17,11 @@ package org.eclipse.persistence.testing.tests.jpa.metamodel;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
@@ -35,12 +37,15 @@ import javax.persistence.criteria.QueryBuilder;
 import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.CollectionAttribute;
+import javax.persistence.metamodel.IdentifiableType;
 import javax.persistence.metamodel.ListAttribute;
 import javax.persistence.metamodel.MapAttribute;
 import javax.persistence.metamodel.Metamodel;
 import javax.persistence.metamodel.PluralAttribute;
 import javax.persistence.metamodel.SetAttribute;
 import javax.persistence.metamodel.SingularAttribute;
+import javax.persistence.metamodel.Type;
+import javax.persistence.metamodel.Type.PersistenceType;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -53,6 +58,7 @@ import org.eclipse.persistence.internal.expressions.ClassTypeExpression;
 import org.eclipse.persistence.internal.jpa.metamodel.EntityTypeImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.MappedSuperclassTypeImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.MetamodelImpl;
+import org.eclipse.persistence.internal.jpa.metamodel.TypeImpl;
 import org.eclipse.persistence.internal.jpa.querydef.ExpressionImpl;
 import org.eclipse.persistence.internal.jpa.querydef.SelectionImpl;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -60,7 +66,9 @@ import org.eclipse.persistence.testing.framework.QuerySQLTracker;
 import org.eclipse.persistence.testing.models.jpa.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Board;
+import org.eclipse.persistence.testing.models.jpa.metamodel.CompositePK;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Computer;
+import org.eclipse.persistence.testing.models.jpa.metamodel.EmbeddedPK;
 import org.eclipse.persistence.testing.models.jpa.metamodel.HardwareDesigner;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Location;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer;
@@ -374,10 +382,11 @@ public class MetamodelMetamodelTest extends MetamodelTest {
     public void testImplementation() {
         EntityManagerFactory emf = null;
         EntityManager em = null;
-        Set<Computer> computersList = new HashSet();
-        Collection<Memory> memories = new HashSet();
-        Collection<VectorProcessor> processors = new HashSet();
-        Collection<HardwareDesigner> hardwareDesigners = new HashSet();
+        Set<Computer> computersList = new HashSet<Computer>();
+        Collection<Memory> memories = new HashSet<Memory>();
+        Collection<VectorProcessor> processors = new HashSet<VectorProcessor>();
+        Collection<HardwareDesigner> hardwareDesigners = new HashSet<HardwareDesigner>();
+        Map<String, HardwareDesigner> mappedDesigners = new HashMap<String, HardwareDesigner>();
         Computer computer1 = null;
         Computer computer2 = null;
         Manufacturer manufacturer = null;
@@ -390,7 +399,11 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         Memory memory1 = null;
         Memory memory2 = null;
         Location location1 = null;
-        Location location2 = null;        
+        Location location2 = null;   
+        
+        // Embedded objects
+        EmbeddedPK embeddedPKforLocation1 = new EmbeddedPK();        
+        EmbeddedPK embeddedPKforLocation2 = new EmbeddedPK();
         
         boolean exceptionThrown = false;
         Metamodel metamodel = null;
@@ -429,6 +442,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             memories.add(memory1);
             memories.add(memory2);
             hardwareDesigners.add(hardwareDesigner1);
+            
+            mappedDesigners.put(hardwareDesigner1.getName(), hardwareDesigner1);
 
             // set owning and inverse sides of 1:m and m:1 relationships
             manufacturer.setComputers(computersList);
@@ -436,6 +451,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             hardwareDesigner1.setEmployer(manufacturer);
             hardwareDesigner1.setPrimaryEmployer(manufacturer);
             hardwareDesigner1.setSecondaryEmployer(manufacturer);
+            // both sides of the relationship are set
+            hardwareDesigner1.setMappedEmployer(manufacturer);
             computer1.setManufacturer(manufacturer);
             computer2.setManufacturer(manufacturer);
             board1.setMemories(memories);
@@ -448,6 +465,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             softwareDesigner1.setPrimaryEmployer(manufacturer);
             softwareDesigner1.setSecondaryEmployer(manufacturer);
             
+            
             // set 1:1 relationships
             computer1.setLocation(location1);
             computer2.setLocation(location2);
@@ -456,6 +474,10 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             computer1.setName("CDC-6600");
             computer2.setName("CM-5");
             
+            // setup embedded objects
+            location1.setPrimaryKey(embeddedPKforLocation1);
+            location2.setPrimaryKey(embeddedPKforLocation2);
+                
             // persist all entities to the database in a single transaction
             em.persist(computer1);
             em.persist(computer2);
@@ -478,7 +500,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             //assertNotNull(metamodel);
             
             // Verify EntityType access to entities in the metamodel
-            // These enties are metamodel entities (1 per type) not JPA entity instances (IdentifiableType)
+            // These entities are metamodel entities (1 per type) not JPA entity instances (IdentifiableType)
             // TODO: temporarily used the impl classes - so F3 resolves in the IDE - revert to the interface for production
             EntityTypeImpl<Computer> entityComputer = (EntityTypeImpl)metamodel.entity(Computer.class);
             assertNotNull(entityComputer);
@@ -512,19 +534,22 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             try {
                 qb = em.getQueryBuilder();
                 //CriteriaQuery<String> cq = qb.createQuery(String.class);
-                CriteriaQuery<Computer> cq = qb.createQuery(Computer.class);
+                CriteriaQuery<Computer> criteriaQuery = qb.createQuery(Computer.class);
                 Expression expression = new ClassTypeExpression(); // probably not the right expression impl
                 // somehow add "name" to the expression TBD                
-                //cq.select((new SelectionImpl(String.class, expression)));
+                //criteriaQuery.select((new SelectionImpl(String.class, expression)));
                 EntityTypeImpl<Computer> entityComputer2 = (EntityTypeImpl)metamodel.entity(Computer.class);                
-                Root from = cq.from(entityComputer2);
-                Path c = from.get("name");
-                cq.where(qb.equal(c, "name"));
-                Query query = em.createQuery(cq);
-
+                Root from = criteriaQuery.from(entityComputer2);
+                Path path = from.get("name");
+                criteriaQuery.where(qb.equal(path, "name"));
+                Query query = em.createQuery(criteriaQuery);
                 results = query.getResultList();
-                Computer computer = (Computer)results.get(0);
-                assertNotNull(computer);
+                if(results.size() > 0) {
+                    Computer computer = (Computer)results.get(0);
+                    assertNotNull(computer);
+                } else {
+                    fail("Results from criteria query (ReadAllQuery(referenceClass=Computer sql=SELECT COMPUTER_ID, NAME, COMPUTER_VERSION, MANUFACTURER_PERSON_ID, LOCATION_LOCATION_ID FROM CMP3_MM_COMPUTER) were expected");
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -563,10 +588,201 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             /**
              * TODO: all test code below requires assert*() calls - and is in mid implementation
              */
+            boolean expectedIAExceptionThrown = false;
+            
+            // Verify IdentifiableType operations
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            /**
+             *  Return the attribute that corresponds to the id attribute of 
+             *  the entity or mapped superclass.
+             *  @param type  the type of the represented id attribute
+             *  @return id attribute
+             *  @throws IllegalArgumentException if id attribute of the given
+             *          type is not present in the identifiable type or if
+             *          the identifiable type has an id class
+             */
+            //<Y> SingularAttribute<? super X, Y> getId(Class<Y> type);
+
+            /**
+             *  Return the attribute that corresponds to the version 
+             *    attribute of the entity or mapped superclass.
+             *  @param type  the type of the represented version attribute
+             *  @return version attribute
+             *  @throws IllegalArgumentException if version attribute of the 
+             *          given type is not present in the identifiable type
+             */
+            //<Y> SingularAttribute<? super X, Y> getVersion(Class<Y> type);
+
+            /**
+             *  Return the attribute that corresponds to the id attribute 
+             *  declared by the entity or mapped superclass.
+             *  @param type  the type of the represented declared id attribute
+             *  @return declared id attribute
+             *  @throws IllegalArgumentException if id attribute of the given
+             *          type is not declared in the identifiable type or if
+             *          the identifiable type has an id class
+             */
+            //<Y> SingularAttribute<X, Y> getDeclaredId(Class<Y> type);
+
+            /**
+             *  Return the attribute that corresponds to the version 
+             *  attribute declared by the entity or mapped superclass.
+             *  @param type  the type of the represented declared version 
+             *               attribute
+             *  @return declared version attribute
+             *  @throws IllegalArgumentException if version attribute of the 
+             *          type is not declared in the identifiable type
+             */
+            //<Y> SingularAttribute<X, Y> getDeclaredVersion(Class<Y> type);
+            
+            /**
+             *  Return the identifiable type that corresponds to the most
+             *  specific mapped superclass or entity extended by the entity 
+             *  or mapped superclass. 
+             *  @return supertype of identifiable type or null if no such supertype
+             */
+            //IdentifiableType<? super X> getSupertype();
+            
+            // Test normal path
+            expectedIAExceptionThrown = false;
+            IdentifiableType<? super Manufacturer> superTypeManufacturer = null;
+            try {
+                superTypeManufacturer = entityManufacturer.getSupertype();
+            } catch (IllegalArgumentException iae) {
+                // expecting no exception
+                //iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
+            }
+            assertFalse(expectedIAExceptionThrown);
+            assertNotNull(superTypeManufacturer);
+            /**
+             * see 
+ metamodel    MetamodelImpl  (id=113) 
+    embeddables LinkedHashMap<K,V>  (id=251)    
+        size    0   
+    entities    LinkedHashMap<K,V>  (id=253)    
+        size    10  
+    managedTypes    LinkedHashMap<K,V>  (id=254)    
+        size    14  
+    mappedSuperclasses  HashSet<E>  (id=255)    
+        map HashMap<K,V>  (id=278)  
+            size    4   
+    types   LinkedHashMap<K,V>  (id=259)    
+        size    17  
+              */
+            // Check for superclass using non-API code
+            //assertEquals(metamodel.type("org.eclipse.persistence.testing.models.jpa.metamodel.Corporation"), superType);
+            
+            // Test error path (null return)
+            expectedIAExceptionThrown = false;
+            IdentifiableType<? super Location> superTypeLocation = null;
+            try {
+                superTypeLocation = entityLocation.getSupertype();
+            } catch (IllegalArgumentException iae) {
+                // expecting no exception
+                //iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
+            }
+            assertFalse(expectedIAExceptionThrown);
+            assertNull(superTypeLocation);
+            
+
+            /**
+             *  Whether or not the identifiable type has an id attribute.
+             *  Returns true for a simple id or embedded id; returns false
+             *  for an idclass.
+             *  @return boolean indicating whether or not the identifiable
+             *           type has a single id attribute
+             */
+            //boolean hasSingleIdAttribute();
+
+            /**
+             *  Whether or not the identifiable type has a version attribute.
+             *  @return boolean indicating whether or not the identifiable
+             *           type has a version attribute
+             */
+            //boolean hasVersionAttribute();
+
+            /**
+             *   Return the attributes corresponding to the id class of the
+             *   identifiable type.
+             *   @return id attributes
+             *   @throws IllegalArgumentException if the identifiable type
+             *           does not have an id class
+             */
+             //java.util.Set<SingularAttribute<? super X, ?>> getIdClassAttributes();
+
+            /**
+             *  Return the type that represents the type of the id.
+             *  @return type of id
+             */
+            //Type<?> getIdType();            
+            // Test normal path for an [Embeddable] type via @EmbeddedId
+            expectedIAExceptionThrown = false;
+            Type<?> locationIdType = null;
+            try {
+                locationIdType = entityLocation.getIdType();
+            } catch (IllegalArgumentException iae) {
+                // expecting no exception
+                //iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
+            }
+            assertFalse(expectedIAExceptionThrown);
+            assertNotNull(locationIdType);
+            assertEquals(PersistenceType.EMBEDDABLE, locationIdType.getPersistenceType());
+            assertEquals(EmbeddedPK.class, locationIdType.getJavaType());
+
+
+            // Test normal path for a [Basic] type
+            expectedIAExceptionThrown = false;
+            Type<?> computerIdType = null;
+            try {
+                computerIdType = entityComputer.getIdType();
+            } catch (IllegalArgumentException iae) {
+                // expecting no exception
+                //iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
+            }
+            assertFalse(expectedIAExceptionThrown);
+            assertNotNull(computerIdType);
+            assertEquals(PersistenceType.BASIC, computerIdType.getPersistenceType());
+            assertEquals(Integer.class, computerIdType.getJavaType());
+
+            
+            // Verify all types (entities, embeddables, mappedsuperclasses and basic)
+            try {
+                // get all 19 types (a non spec function - for testing introspection)
+                Map<Class, TypeImpl<?>> typesMap = ((MetamodelImpl)metamodel).getTypes();
+                // verify each one
+                assertNotNull(typesMap);
+                assertEquals(19, typesMap.size());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            /*
+            {class org.eclipse.persistence.testing.models.jpa.metamodel.SoftwareDesigner=ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.SoftwareDesigner --> [DatabaseTable(CMP3_MM_SWDESIGNER)])], 
+                class org.eclipse.persistence.testing.models.jpa.metamodel.EmbeddedPK=ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.EmbeddedPK --> [])], 
+                class org.eclipse.persistence.testing.models.jpa.metamodel.User=ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.User --> [DatabaseTable(CMP3_MM_USER)])], 
+                class org.eclipse.persistence.testing.models.jpa.metamodel.Location=ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Location --> [DatabaseTable(CMP3_MM_LOCATION)])], 
+                class org.eclipse.persistence.testing.models.jpa.metamodel.CompositePK=ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.CompositePK --> [])], 
+                class org.eclipse.persistence.testing.models.jpa.metamodel.ArrayProcessor=ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.ArrayProcessor --> [DatabaseTable(CMP3_MM_ARRAYPROC)])], 
+                class org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer=ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer --> [DatabaseTable(CMP3_MM_MANUF)])], 
+                class org.eclipse.persistence.testing.models.jpa.metamodel.Memory=ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Memory --> [DatabaseTable(CMP3_MM_MEMORY)])], 
+                class org.eclipse.persistence.testing.models.jpa.metamodel.VectorProcessor=ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.VectorProcessor --> [DatabaseTable(CMP3_MM_PROC)])], 
+                class org.eclipse.persistence.testing.models.jpa.metamodel.Board=ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Board --> [DatabaseTable(CMP3_MM_BOARD)])], 
+                class org.eclipse.persistence.testing.models.jpa.metamodel.Computer=ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Computer --> [DatabaseTable(CMP3_MM_COMPUTER)])], 
+                class org.eclipse.persistence.testing.models.jpa.metamodel.HardwareDesigner=ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.HardwareDesigner --> [DatabaseTable(CMP3_MM_HWDESIGNER)])], 
+                class org.eclipse.persistence.testing.models.jpa.metamodel.Corporation=MappedSuperclassTypeImpl@24202381 [descriptor: RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Corporation --> [DatabaseTable(__METAMODEL_RESERVED_IN_MEM_ONLY_TABLE_NAME)]), mappings: [org.eclipse.persistence.mappings.ManyToManyMapping[corporateComputers]]], 
+                class org.eclipse.persistence.testing.models.jpa.metamodel.Designer=MappedSuperclassTypeImpl@22595578 [descriptor: RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Designer --> [DatabaseTable(__METAMODEL_RESERVED_IN_MEM_ONLY_TABLE_NAME)]), mappings: [org.eclipse.persistence.mappings.OneToOneMapping[secondaryEmployer], org.eclipse.persistence.mappings.OneToOneMapping[primaryEmployer]]], 
+                class org.eclipse.persistence.testing.models.jpa.metamodel.Processor=MappedSuperclassTypeImpl@28381082 [descriptor: RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Processor --> [DatabaseTable(__METAMODEL_RESERVED_IN_MEM_ONLY_TABLE_NAME)]), mappings: []], 
+                class org.eclipse.persistence.testing.models.jpa.metamodel.Person=MappedSuperclassTypeImpl@24600030 [descriptor: RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Person --> [DatabaseTable(__METAMODEL_RESERVED_IN_MEM_ONLY_TABLE_NAME)]), mappings: [org.eclipse.persistence.mappings.DirectToFieldMapping[id-->__METAMODEL_RESERVED_IN_MEM_ONLY_TABLE_NAME.PERSON_ID], org.eclipse.persistence.mappings.DirectToFieldMapping[name-->__METAMODEL_RESERVED_IN_MEM_ONLY_TABLE_NAME.NAME]]], 
+                class java.lang.Integer=org.eclipse.persistence.internal.jpa.metamodel.BasicTypeImpl@1b7e37, 
+                class java.lang.String=org.eclipse.persistence.internal.jpa.metamodel.BasicTypeImpl@fb541d, 
+                int=org.eclipse.persistence.internal.jpa.metamodel.BasicTypeImpl@4f5403}
+                */
             
             // Verify ManagedType operations
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            boolean expectedIAExceptionThrown = false;
             /**
              * The following variant test cases are common to all functions
              * 1) get*Attribute(name) = null (missing) --> IAE
@@ -582,7 +798,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertNotNull(attributeSet);
             // We should see 6 attributes (3 List, 3 Singular) for Manufacturer (computers, hardwareDesigners, id(from the mappedSuperclass), 
             // version, name(from the mappedSuperclass) and corporateComputers from the Corporation mappedSuperclass)
-            assertEquals(6, attributeSet.size());
+            assertEquals(7, attributeSet.size());
             // for each managed entity we will see 2 entries (one for the Id, one for the Version)
             assertTrue(attributeSet.contains(entityManufacturer.getAttribute("id"))); // 
             assertTrue(attributeSet.contains(entityManufacturer.getAttribute("version"))); //
@@ -590,6 +806,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertTrue(attributeSet.contains(entityManufacturer.getAttribute("computers"))); //
             assertTrue(attributeSet.contains(entityManufacturer.getAttribute("hardwareDesigners"))); //
             assertTrue(attributeSet.contains(entityManufacturer.getAttribute("corporateComputers"))); //
+            assertTrue(attributeSet.contains(entityManufacturer.getAttribute("hardwareDesignersMap"))); //
 
             
             /**

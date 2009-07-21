@@ -15,21 +15,23 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.metamodel;
 
+import static javax.persistence.FetchType.EAGER;
 import static javax.persistence.GenerationType.TABLE;
 
 import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Version;
 
 @Entity(name="LocationMetamodel")
 @Table(name="CMP3_MM_LOCATION")
-public class Location implements java.io.Serializable{
-    @Id
-    @GeneratedValue(strategy=TABLE, generator="LOCATION_MM_TABLE_GENERATOR")
+public class Location implements java.io.Serializable {
+    /*@GeneratedValue(strategy=TABLE, generator="LOCATION_MM_TABLE_GENERATOR")
     @TableGenerator(
         name="LOCATION_MM_TABLE_GENERATOR", 
         table="CMP3_MM_LOCATION_SEQ", 
@@ -38,7 +40,15 @@ public class Location implements java.io.Serializable{
         pkColumnValue="CUST_MM_SEQ"
     )
     @Column(name="LOCATION_ID")    
-    private Integer id;
+    private Integer id;*/
+    
+    // Any reference to this embedded key requires a bidirectional relationship (not unidirectional)
+    @EmbeddedId
+    @Column(name="LOCATION_ID")    
+    protected EmbeddedPK primaryKey;
+    
+    // Inverse side of a bidirectional 1:1 with Computer as the owning side
+    @OneToOne(fetch=EAGER, mappedBy="location")
     
     @Version
     @Column(name="LOCATION_VERSION")
@@ -46,6 +56,14 @@ public class Location implements java.io.Serializable{
     
     public Location() {}
 
+    public EmbeddedPK getPrimaryKey() {
+        return primaryKey;
+    }
+
+    public void setPrimaryKey(EmbeddedPK primaryKey) {
+        this.primaryKey = primaryKey;
+    }
+    
     public int getVersion() { 
         return version; 
     }
@@ -54,12 +72,12 @@ public class Location implements java.io.Serializable{
         this.version = version;
     }
 
-    public Integer getId() {
+/*    public Integer getId() {
         return id;
     }
 
     public void setId(Integer id) {
         this.id = id;
-    }
+    }*/
     
 }

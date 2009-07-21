@@ -50,9 +50,14 @@ public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, java.util.
         super(managedType, mapping);
 
         MapContainerPolicy policy = (MapContainerPolicy) mapping.getContainerPolicy();
-        Type<?> keyType = managedType.getMetamodel().getType(policy.getKeyType().getClass());
-        //Type<?> keyType = managedType.getMetamodel().getType(policy.getElementClass());
-        this.keyType = (Type<K>) keyType;
+        Object policyKeyType = policy.getKeyType(); // both cases return a Class<?>
+        if(null == policyKeyType) {
+            // no key type, use Object  - test case required
+            this.keyType = getMetamodel().getType((Class<K>)Object.class);
+        } else {
+            Type<?> keyType = managedType.getMetamodel().getType((Class)policyKeyType);
+            this.keyType = (Type<K>) keyType;
+        }
     }
 
     /**
@@ -70,8 +75,7 @@ public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, java.util.
      * @see MapAttribute
      */
     public Class<K> getKeyJavaType() {
-        //return ((MapContainerPolicy) getCollectionMapping().getContainerPolicy()).getKeyType();
-        return ((MapContainerPolicy) getCollectionMapping().getContainerPolicy()).getContainerClass();
+        return keyType.getJavaType();
     }
 
     /**

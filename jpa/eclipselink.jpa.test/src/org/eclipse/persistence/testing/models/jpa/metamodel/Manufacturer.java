@@ -18,7 +18,9 @@ package org.eclipse.persistence.testing.models.jpa.metamodel;
 import static javax.persistence.CascadeType.ALL;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -46,6 +48,10 @@ public class Manufacturer extends Corporation implements java.io.Serializable{
     //@OneToMany(cascade=ALL, mappedBy="manufacturer")
     //private Collection<SoftwareDesigner> softwareDesigners = new HashSet<SoftwareDesigner>();
 
+    // If a JoinTable with a JoinColumn is used - then we need a mappedBy on the inverse side here
+    @OneToMany(cascade=ALL, mappedBy="mappedEmployer")
+    private Map<String, HardwareDesigner> hardwareDesignersMap = new HashMap<String, HardwareDesigner>();
+
     public Manufacturer() {}
 
     public int getVersion() { 
@@ -72,6 +78,7 @@ public class Manufacturer extends Corporation implements java.io.Serializable{
 
     public void removeComputer(Computer aComputer) {
         getComputers().remove(aComputer);
+        aComputer.setManufacturer(null);
     }
 
     public Collection<HardwareDesigner> getHardwareDesigners() {
@@ -82,5 +89,22 @@ public class Manufacturer extends Corporation implements java.io.Serializable{
         this.hardwareDesigners = designers;
     }
 
+    public Map<String, HardwareDesigner> getHardwareDesignersMap() {
+        return hardwareDesignersMap;
+    }
+
+    public void setHardwareDesignersMap(Map<String, HardwareDesigner> hardwareDesignersMap) {
+        this.hardwareDesignersMap = hardwareDesignersMap;
+    }
+
+    public void addHardwareDesignerToMap(HardwareDesigner aDesigner) {
+        this.getHardwareDesignersMap().put(aDesigner.getName(), aDesigner);
+        aDesigner.setMappedEmployer(this);
+    }
+
+    public void removeHardwareDesignerFromMapr(HardwareDesigner aDesigner) {
+        this.getHardwareDesignersMap().remove(aDesigner.getName());
+        aDesigner.setMappedEmployer(null);
+    }
     
 }
