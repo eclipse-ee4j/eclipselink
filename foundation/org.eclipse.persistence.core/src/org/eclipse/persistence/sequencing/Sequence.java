@@ -258,7 +258,7 @@ public abstract class Sequence implements Serializable, Cloneable {
      */
     public void onConnect(Platform platform) {
         setDatasourcePlatform(platform);
-        if(depth==0 && !isCustomQualifier) {
+        if(!isCustomQualifier) {
             qualifier = getDatasourcePlatform().getTableQualifier();
         }
         onConnect();
