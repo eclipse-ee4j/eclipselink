@@ -27,6 +27,7 @@ import javax.xml.validation.Schema;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import org.eclipse.persistence.internal.jaxb.WrappedValue;
 import org.eclipse.persistence.oxm.XMLBinder;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
@@ -88,9 +89,12 @@ public class JAXBBinder extends Binder {
             Object returnValue = xmlBinder.unmarshal((Node) obj);
             if (returnValue instanceof XMLRoot) {
                 XMLRoot xmlRoot = (XMLRoot) returnValue;
+                if(xmlRoot.getObject() instanceof JAXBElement) {
+                    return xmlRoot.getObject();
+                }
                 return new JAXBElement(new QName(xmlRoot.getNamespaceURI(), xmlRoot.getLocalName()), xmlRoot.getObject().getClass(), xmlRoot.getObject());
             } else {
-                return returnValue;                
+                return returnValue;
             }
         } catch (Exception e) {
             throw new UnmarshalException(e);
@@ -127,7 +131,7 @@ public class JAXBBinder extends Binder {
             throw new IllegalArgumentException();
         }
 
-        if (obj instanceof JAXBElement) {
+        if (obj instanceof JAXBElement && !(obj instanceof WrappedValue)) {
             obj = ((JAXBElement) obj).getValue();
         }
         xmlBinder.updateXML(obj, ((Element) xmlNode));

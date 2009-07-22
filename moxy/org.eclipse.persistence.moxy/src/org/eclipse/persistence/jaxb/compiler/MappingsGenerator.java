@@ -1607,8 +1607,8 @@ public class MappingsGenerator {
                     if(nextElement.getJavaTypeName().equals(OBJECT_CLASS_NAME)){
                         XMLCompositeObjectMapping mapping = new XMLCompositeObjectMapping();
                         mapping.setAttributeName("value");
-                        mapping.setSetMethodName("setWrappedValue");
-                        mapping.setGetMethodName("getWrappedValue");                                
+                        mapping.setSetMethodName("setValue");
+                        mapping.setGetMethodName("getValue");
                         mapping.getNullPolicy().setNullRepresentedByXsiNil(true);                                                       
                         mapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
                         mapping.setXPath(".");
@@ -1619,8 +1619,8 @@ public class MappingsGenerator {
                         XMLDirectMapping mapping = new XMLDirectMapping();
                         mapping.setAttributeName("value");
                         mapping.setXPath("text()");
-                        mapping.setSetMethodName("setWrappedValue");
-                        mapping.setGetMethodName("getWrappedValue");
+                        mapping.setSetMethodName("setValue");
+                        mapping.setGetMethodName("getValue");
 
                         if(helper.isBuiltInJavaType(nextElement.getJavaType())){                                    
                             Class attributeClassification = org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(attributeTypeName, getClass().getClassLoader());                      
@@ -1654,7 +1654,8 @@ public class MappingsGenerator {
     				NamespaceResolver resolver = info.getNamespaceResolver();
     				String prefix = resolver.resolveNamespaceURI(namespaceUri);
     				desc.setNamespaceResolver(resolver);
-                    desc.setDefaultRootElement(prefix + ":" + next.getLocalPart());
+                    desc.setDefaultRootElement("");
+                    desc.addRootElement(prefix + ":" + next.getLocalPart());
                 } else {
                     if(namespaceUri.equals("")) {
                         desc.setDefaultRootElement(next.getLocalPart());
@@ -1663,9 +1664,10 @@ public class MappingsGenerator {
                         String prefix = resolver.generatePrefix();
                         resolver.put(prefix, namespaceUri);
                         desc.setNamespaceResolver(resolver);
-                        desc.setDefaultRootElement(prefix + ":" + next.getLocalPart());
-    				}
-    			}
+                        desc.setDefaultRootElement("");
+                        desc.addRootElement(prefix + ":" + next.getLocalPart());
+                    }
+                }
                 project.addDescriptor(desc);
             }else if(type != null && !type.isTransient()){
                 if(next.getNamespaceURI() == null || next.getNamespaceURI().equals("")) {
@@ -1709,8 +1711,8 @@ public class MappingsGenerator {
         org.eclipse.persistence.internal.libraries.asm.ClassWriter cw = new org.eclipse.persistence.internal.libraries.asm.ClassWriter(false);
         
         CodeVisitor cv;
-        cw.visit(Constants.V1_5, Constants.ACC_PUBLIC, className.replace(".", "/"), org.eclipse.persistence.internal.libraries.asm.Type.getType(Object.class).getInternalName(), new String[]{Type.getType(WrappedValue.class).getInternalName()}, null); 
-        
+        cw.visit(Constants.V1_5, Constants.ACC_PUBLIC, className.replace(".", "/"), org.eclipse.persistence.internal.libraries.asm.Type.getType(WrappedValue.class).getInternalName(), new String[0], null); 
+
         String fieldType = null;
         if(isList){
             fieldType ="Ljava/util/List;";
@@ -1720,71 +1722,20 @@ public class MappingsGenerator {
                 fieldType = "L" + fieldType + ";";
             }
         }
-                
-        cw.visitField(Constants.ACC_PRIVATE, "value", fieldType, null, null);
-               
-        cw.visitField(Constants.ACC_PRIVATE, "isSetValue", "Z", null, null);
-                
-        cw.visitField(Constants.ACC_PRIVATE + Constants.ACC_STATIC, "wrappedValueQName", "Ljavax/xml/namespace/QName;", null, null);
-              
+
         cv = cw.visitMethod(Constants.ACC_PUBLIC, "<init>", "()V", null, null);
         cv.visitVarInsn(Constants.ALOAD, 0);
-        cv.visitMethodInsn(Constants.INVOKESPECIAL, "java/lang/Object", "<init>", "()V");
-        cv.visitInsn(Constants.RETURN);
-        cv.visitMaxs(1, 1);
-             
-        cv = cw.visitMethod(Constants.ACC_STATIC, "<clinit>", "()V", null, null);
         cv.visitTypeInsn(Constants.NEW, "javax/xml/namespace/QName");
         cv.visitInsn(Constants.DUP);
         cv.visitLdcInsn(theQName.getNamespaceURI());
         cv.visitLdcInsn(theQName.getLocalPart());
         cv.visitMethodInsn(Constants.INVOKESPECIAL, "javax/xml/namespace/QName", "<init>", "(Ljava/lang/String;Ljava/lang/String;)V");
-        cv.visitFieldInsn(Constants.PUTSTATIC, className.replace(".", "/"), "wrappedValueQName", "Ljavax/xml/namespace/QName;");
-        cv.visitInsn(Constants.RETURN);
-        cv.visitMaxs(4, 0);
-               
-        cv = cw.visitMethod(Constants.ACC_PUBLIC, "getWrappedValue", Type.getMethodDescriptor(Type.getType(Object.class), new Type[]{}), null, null);       
-        cv.visitVarInsn(Constants.ALOAD, 0);
-        cv.visitFieldInsn(Constants.GETFIELD, className.replace(".", "/"), "value", fieldType);        
-        cv.visitInsn(Type.getType(Object.class).getOpcode(Constants.IRETURN));
-        cv.visitMaxs(1, 1);
-                
-        String castType = fieldType;
-        if(castType.endsWith(";") && !castType.startsWith("[L")){
-            castType = castType.substring(0, castType.length()-1);
-        }
-    
-        if(castType.startsWith("L")){
-            castType = castType.substring(1, castType.length());
-        }
-            
-        cv = cw.visitMethod(Constants.ACC_PUBLIC, "setWrappedValue", "(Ljava/lang/Object;)V", null, null);
-        cv.visitVarInsn(Constants.ALOAD, 0);
-        cv.visitVarInsn(Constants.ALOAD, 1);
-        cv.visitTypeInsn(Constants.CHECKCAST, castType);
-        cv.visitFieldInsn(Constants.PUTFIELD, className.replace(".", "/"), "value", fieldType);
-        cv.visitVarInsn(Constants.ALOAD, 0);
-        cv.visitInsn(Constants.ICONST_1);   
-        cv.visitFieldInsn(Constants.PUTFIELD, className.replace(".", "/"), "isSetValue", "Z");        
-        cv.visitInsn(Constants.RETURN);
-        cv.visitMaxs(2, 2);        
-        
-        cv = cw.visitMethod(Constants.ACC_PUBLIC, "isSetValue", "()Z", null, null);
-        cv.visitVarInsn(Constants.ALOAD, 0);
-        cv.visitFieldInsn(Constants.GETFIELD, className.replace(".", "/"), "isSetValue", "Z");
-        cv.visitInsn(Constants.IRETURN);
-        cv.visitMaxs(1, 1);        
-        
-        cv = cw.visitMethod(Constants.ACC_PUBLIC, "getQName", "()Ljavax/xml/namespace/QName;", null, null);
-        cv.visitFieldInsn(Constants.GETSTATIC, className.replace(".", "/"), "wrappedValueQName", "Ljavax/xml/namespace/QName;");
-        cv.visitInsn(Constants.ARETURN);
-        cv.visitMaxs(1, 1);
-        
-        cv = cw.visitMethod(Constants.ACC_PUBLIC, "getWrappedValueClass", "()Ljava/lang/Class;", null, null);
         cv.visitLdcInsn(Type.getType(fieldType));
-        cv.visitInsn(Constants.ARETURN);
-        cv.visitMaxs(1, 1);
-      
+        cv.visitInsn(Constants.ACONST_NULL);
+        cv.visitMethodInsn(Constants.INVOKESPECIAL, "org/eclipse/persistence/internal/jaxb/WrappedValue", "<init>", "(Ljavax/xml/namespace/QName;Ljava/lang/Class;Ljava/lang/Object;)V");
+        cv.visitInsn(Constants.RETURN);
+        cv.visitMaxs(5, 1);
+
         cw.visitEnd();
         
         byte[] classBytes = cw.toByteArray();

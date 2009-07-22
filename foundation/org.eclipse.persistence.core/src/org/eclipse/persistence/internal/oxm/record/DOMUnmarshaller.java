@@ -398,22 +398,25 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
         // try and get a Unit Of Work from the XMLContext
         AbstractSession readSession = xmlContext.getReadSession(referenceClass);
 
-        ReadObjectQuery query = new ReadObjectQuery();
-        query.setReferenceClass(referenceClass);
-        query.setSession(readSession);
-
         XMLDescriptor descriptor = (XMLDescriptor) readSession.getDescriptor(referenceClass);
         if (descriptor == null) {
             throw XMLMarshalException.descriptorNotFoundInProject(referenceClass.getName());
         }
 
-        xmlRow.setUnmarshaller(xmlUnmarshaller);
-        xmlRow.setDocPresPolicy(xmlContext.getDocumentPreservationPolicy(readSession));
-        XMLObjectBuilder objectBuilder = (XMLObjectBuilder) descriptor.getObjectBuilder();
-        Object object = objectBuilder.buildObject(query, xmlRow, null);
+        Object object = null;
+        if(null == xmlRow.getDOM().getAttributes().getNamedItemNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE)) {
+            xmlRow.setUnmarshaller(xmlUnmarshaller);
+            xmlRow.setDocPresPolicy(xmlContext.getDocumentPreservationPolicy(readSession));
+            XMLObjectBuilder objectBuilder = (XMLObjectBuilder) descriptor.getObjectBuilder();
 
-        // resolve mapping references
-        xmlUnmarshaller.resolveReferences(readSession);
+            ReadObjectQuery query = new ReadObjectQuery();
+            query.setReferenceClass(referenceClass);
+            query.setSession(readSession);
+            object = objectBuilder.buildObject(query, xmlRow, null);
+
+            // resolve mapping references
+            xmlUnmarshaller.resolveReferences(readSession);
+        }
 
         String elementNamespaceUri = xmlRow.getDOM().getNamespaceURI();
         String elementLocalName = xmlRow.getDOM().getLocalName();

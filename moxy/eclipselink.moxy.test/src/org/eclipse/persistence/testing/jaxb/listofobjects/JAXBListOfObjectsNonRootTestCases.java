@@ -117,7 +117,7 @@ public class JAXBListOfObjectsNonRootTestCases extends
 		listofObjects.setStringIntegerHashMap(stringIntegerMap);
 				
 		QName qname = new QName("listOfObjectsNamespace", "root");
-		JAXBElement jaxbElement = new JAXBElement(qname, listofObjects.getClass(), null);
+		JAXBElement jaxbElement = new JAXBElement(qname, Object.class, null);
 		jaxbElement.setValue(listofObjects);
 
 		return jaxbElement;

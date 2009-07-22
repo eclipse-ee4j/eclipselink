@@ -60,7 +60,7 @@ public class JAXBCharArrayTestCases extends JAXBListOfObjectsTestCases {
 		chars[3] = 'd';
 
 		QName qname = new QName("examplenamespace", "root");
-		JAXBElement jaxbElement = new JAXBElement(qname, chars.getClass(), null);
+		JAXBElement jaxbElement = new JAXBElement(qname, Object.class, null);
 		jaxbElement.setValue(chars);
 
 		return jaxbElement;

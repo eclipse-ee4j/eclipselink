@@ -63,7 +63,7 @@ public class JAXBIntArrayTestCases extends JAXBListOfObjectsTestCases {
 		ints[3] = 40;
 
 		QName qname = new QName("examplenamespace", "root");
-		JAXBElement jaxbElement = new JAXBElement(qname, ints.getClass(), null);
+		JAXBElement jaxbElement = new JAXBElement(qname, Object.class, null);
 		jaxbElement.setValue(ints);
 
 		return jaxbElement;

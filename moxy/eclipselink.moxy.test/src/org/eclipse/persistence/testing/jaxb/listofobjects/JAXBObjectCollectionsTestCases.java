@@ -94,7 +94,7 @@ public class JAXBObjectCollectionsTestCases extends JAXBListOfObjectsTestCases {
 		myObjectList.add(40);
 		
 		QName qname = new QName("rootNamespace", "root");
-		JAXBElement jaxbElement = new JAXBElement(qname, myObjectList.getClass(), null);
+		JAXBElement jaxbElement = new JAXBElement(qname, Object.class, null);
 		jaxbElement.setValue(myObjectList);
 
 		return jaxbElement;

@@ -9,10 +9,14 @@
 *
 * Contributors:
 * mmacivor - April 25/2008 - 1.0M8 - Initial implementation
+* bdoughan - July 17/2009 - 2.0 - Refactored to extend JAXBElement
 ******************************************************************************/
 package org.eclipse.persistence.internal.jaxb;
 
+import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
+
+import org.eclipse.persistence.internal.helper.ClassConstants;
 
 /**
  * INTERNAL:
@@ -24,16 +28,26 @@ import javax.xml.namespace.QName;
  * @author mmacivor
  *
  */
-public interface WrappedValue {	
-	
-	public Object getWrappedValue();
-	
-	public void setWrappedValue(Object value);
-	
-	public Class getWrappedValueClass();
-	
-	public QName getQName();
-	
-	public boolean isSetValue();	
-	
+public class WrappedValue extends JAXBElement {
+
+    private boolean setValue;
+
+    public WrappedValue(QName name, Class declaredType, Object value) {
+        super(name, declaredType, value);
+        this.setValue = false;
+    }
+
+    @Override
+    public void setValue(Object value) {
+        if(value == null && this.getDeclaredType() == ClassConstants.STRING) {
+            value = "";
+        }
+        super.setValue(value);
+        setValue = true;
+    }
+
+    public boolean isSetValue() {
+        return setValue;
+    }
+
 }

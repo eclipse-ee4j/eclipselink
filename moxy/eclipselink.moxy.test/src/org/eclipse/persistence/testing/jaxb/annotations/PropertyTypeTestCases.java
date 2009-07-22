@@ -73,7 +73,7 @@ public class PropertyTypeTestCases extends JAXBTestCases {
         testObject.booleanListTest.add(Boolean.TRUE);
 
         QName rootQName = new QName("root");
-        JAXBElement jaxbElement = new JAXBElement<TestObject>(rootQName,TestObject.class, testObject);
+        JAXBElement jaxbElement = new JAXBElement<Object>(rootQName,Object.class, testObject);
         return jaxbElement;
     }
 

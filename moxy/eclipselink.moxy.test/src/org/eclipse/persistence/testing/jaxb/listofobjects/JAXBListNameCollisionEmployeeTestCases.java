@@ -87,7 +87,7 @@ public class JAXBListNameCollisionEmployeeTestCases extends
 		emps.add(employee2);
 
 		QName qname = new QName("rootNamespace", "root");
-		JAXBElement jaxbElement = new JAXBElement(qname, emps.getClass(), null);
+		JAXBElement jaxbElement = new JAXBElement(qname, Object.class, null);
 		jaxbElement.setValue(emps);
 
 		return jaxbElement;

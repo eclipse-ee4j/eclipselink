@@ -185,21 +185,25 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
 
     /**
      * Return the root element's prefix qualified name
-     *
-     * @return
      */
     public String getRootElementName() {
         return rootElementName;
     }
 
+    public void setRootElementName(String qName) {
+        this.rootElementName = qName;
+    }
+
     /**
      * Return the root element's namespace URI
-     *
-     * @return
      */
     public String getRootElementNamespaceUri() {
         return rootElementNamespaceUri;
-    }     
+    }
+
+    public void setRootElementNamespaceUri(String uri) {
+        this.rootElementNamespaceUri = uri;
+    }
 
     public void setParentRecord(UnmarshalRecord parentRecord) {
         this.parentRecord = parentRecord;

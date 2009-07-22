@@ -712,9 +712,13 @@ public class XMLMarshaller {
         if (treeObjectBuilder != null) {
             treeObjectBuilder.buildRow(marshalRecord, object, (AbstractSession) session, this);
         } else if (isXMLRoot) {
-            String value = null;
-            value = (String) XMLConversionManager.getDefaultXMLManager().convertObject(object, String.class, root.getSchemaType());
-            marshalRecord.characters(value);
+            if(null == object) {
+                marshalRecord.attribute(XMLConstants.XMLNS_URL, XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.XMLNS + ':' + XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
+                marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE, XMLConstants.SCHEMA_INSTANCE_PREFIX + ':' + XMLConstants.SCHEMA_NIL_ATTRIBUTE, "true");
+            } else {
+                String value = (String) XMLConversionManager.getDefaultXMLManager().convertObject(object, String.class, root.getSchemaType());
+                marshalRecord.characters(value);
+            }
         }
 
         if (null != rootFragment) {
@@ -1172,7 +1176,11 @@ public class XMLMarshaller {
         XMLDescriptor descriptor = null;
 
         try {
-            descriptor = (XMLDescriptor) xmlContext.getSession(((XMLRoot) object).getObject()).getDescriptor(((XMLRoot) object).getObject());
+            AbstractSession session = xmlContext.getSession(((XMLRoot) object).getObject());
+            if(null == session) {
+                return null;
+            }
+            descriptor = (XMLDescriptor) session.getDescriptor(((XMLRoot) object).getObject());
         } catch (XMLMarshalException marshalException) {
             if ((descriptor == null) && isSimpleXMLRoot((XMLRoot) object)) {
                 return null;

@@ -19,6 +19,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -51,7 +52,6 @@ import org.eclipse.persistence.jaxb.JAXBUnmarshallerHandler;
 import org.eclipse.persistence.jaxb.attachment.AttachmentUnmarshallerAdapter;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.jaxb.many.ManyValue;
-import org.eclipse.persistence.internal.jaxb.WrappedValue;
 
 /**
  * INTERNAL:
@@ -75,7 +75,6 @@ public class JAXBUnmarshaller implements Unmarshaller {
     private JAXBContext jaxbContext;
     public static final String XML_JAVATYPE_ADAPTERS = "xml-javatype-adapters";
     public static final String STAX_SOURCE_CLASS_NAME = "javax.xml.transform.stax.StAXSource";
-    private HashMap<QName, Class> qNamesToDeclaredClasses;
     
     public JAXBUnmarshaller(XMLUnmarshaller newXMLUnmarshaller) {
         super();
@@ -178,11 +177,11 @@ public class JAXBUnmarshaller implements Unmarshaller {
     	if (obj instanceof XMLRoot) {    		
     		return createJAXBElementFromXMLRoot(((XMLRoot)obj));    		
     	}
-    	
-    	if(obj instanceof WrappedValue) {
-    		return createJAXBElementFromWrappedValue(((WrappedValue)obj));
-        }            		        	    	    	
-    	
+
+        if(obj instanceof JAXBElement) {
+            return (JAXBElement) obj;
+        }
+
     	// at this point, the default root element of the object being marshalled 
     	// to == the root element - here we need to create a JAXBElement 
     	// instance using information from the returned object
@@ -409,54 +408,39 @@ public class JAXBUnmarshaller implements Unmarshaller {
     }        
         
     private Object createJAXBElementIfRequired(Object value){    	
-    	if(value instanceof WrappedValue) {
-    		return createJAXBElementFromWrappedValue(((WrappedValue)value));
-        }            		        	
     	if(value instanceof XMLRoot){
     		return createJAXBElementFromXMLRoot((XMLRoot)value);
     	}
     	return value;
     }
-    
-    private JAXBElement createJAXBElementFromWrappedValue(WrappedValue wrappedValue){
-    	Object unwrappedValue = wrappedValue.getWrappedValue();
-    	if(unwrappedValue == null && wrappedValue.getWrappedValueClass().equals(ClassConstants.STRING)){
-    		if(!wrappedValue.isSetValue()){
-    			unwrappedValue = "";
-    		}
-    	}
-    	return createJAXBElement(wrappedValue.getQName(), wrappedValue.getWrappedValueClass(), unwrappedValue);
-    }
-        
-    
+
     private JAXBElement createJAXBElementFromXMLRoot(XMLRoot xmlRoot){    	    	    		
     	Object value = xmlRoot.getObject();
-    	QName qname = new QName(xmlRoot.getNamespaceURI(), xmlRoot.getLocalName());
-    	if(value == null){    		    		
-    		return createJAXBElement(qname, Object.class, value);
-    	}
+        if(value instanceof JAXBElement) {
+            return (JAXBElement) value;
+        }
+
+        QName qname = new QName(xmlRoot.getNamespaceURI(), xmlRoot.getLocalName());
     	if(value instanceof ManyValue){    		   		
     		value = ((ManyValue)value).getItem();
     	}
-    	
+
+    	Map<QName, Class> qNamesToDeclaredClasses = jaxbContext.getQNamesToDeclaredClasses();
     	if(qNamesToDeclaredClasses != null){
     		Class declaredClass = qNamesToDeclaredClasses.get(qname);
     		if(declaredClass != null){
     			return createJAXBElement(qname, declaredClass, value);
     		}
-    	}    	    	
-    	
+        }
+
     	XMLDescriptor descriptorForQName = xmlUnmarshaller.getXMLContext().getDescriptor(qname);
     	if(descriptorForQName != null){
     		return createJAXBElement(qname, descriptorForQName.getJavaClass(), value);
     	}
-    	
-    	    	
-    	return createJAXBElement(qname, value.getClass(), value);    		
-    	
+
+        return createJAXBElement(qname, Object.class, value);
     }
-      
-    
+
     private JAXBElement createJAXBElement(QName qname, Class theClass, Object value){
    
     	if(theClass == null){
@@ -472,12 +456,8 @@ public class JAXBUnmarshaller implements Unmarshaller {
     	return new JAXBElement(qname, theClass, value);
     }
 
-	public void setQNamesToDeclaredClasses(HashMap<QName, Class> qNamesToDeclaredClassesMap) {
-		qNamesToDeclaredClasses = qNamesToDeclaredClassesMap;
-	}
-
 	public void setJaxbContext(JAXBContext jaxbContext) {
 		this.jaxbContext = jaxbContext;
-	}       
+	}
+
 }
-    

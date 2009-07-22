@@ -143,7 +143,6 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             }
             unmarshaller.setUnmarshalCallbacks(generator.getUnmarshalCallbacks());
         }        
-        unmarshaller.setQNamesToDeclaredClasses(this.qNamesToDeclaredClasses);
         unmarshaller.setJaxbContext(this);
         return unmarshaller;
     }

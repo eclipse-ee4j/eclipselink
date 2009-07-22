@@ -139,16 +139,16 @@ public class SAXUnmarshallerHandler implements ContentHandler {
             }
 
             XMLDescriptor xmlDescriptor = null;
-                String type = atts.getValue(XMLConstants.SCHEMA_INSTANCE_URL, "type");
-                if (null != type) {
-                    XPathFragment typeFragment = new XPathFragment(type);
+            String type = atts.getValue(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
+            if (null != type) {
+                XPathFragment typeFragment = new XPathFragment(type);
 
-                    // set the prefix using a reverse key lookup by uri value on namespaceMap 
-                    if (null != unmarshalNamespaceResolver) {
-                        typeFragment.setNamespaceURI(unmarshalNamespaceResolver.getNamespaceURI(typeFragment.getPrefix()));
-                    }
-                    xmlDescriptor = xmlContext.getDescriptorByGlobalType(typeFragment);
+                // set the prefix using a reverse key lookup by uri value on namespaceMap 
+                if (null != unmarshalNamespaceResolver) {
+                    typeFragment.setNamespaceURI(unmarshalNamespaceResolver.getNamespaceURI(typeFragment.getPrefix()));
                 }
+                xmlDescriptor = xmlContext.getDescriptorByGlobalType(typeFragment);
+            }
             if(xmlDescriptor == null){
             	xmlDescriptor = xmlContext.getDescriptor(rootQName);
             	
@@ -235,17 +235,21 @@ public class SAXUnmarshallerHandler implements ContentHandler {
             unmarshalRecord.setUnmarshaller(this.unmarshaller);
             unmarshalRecord.setXMLReader(this.getXMLReader());
             unmarshalRecord.setAttributes(atts);
-            unmarshalRecord.setUnmarshalNamespaceResolver(unmarshalNamespaceResolver);
-            unmarshalRecord.startDocument();            
-            xmlReader.setContentHandler(unmarshalRecord);
-            unmarshalRecord.startElement(namespaceURI, localName, qName, atts);
 
-            
-            try {
-                unmarshalRecord.getXMLReader().setProperty("http://xml.org/sax/properties/lexical-handler", unmarshalRecord);
-            } catch (SAXNotRecognizedException ex) {
-            } catch (SAXNotSupportedException ex) {
-                //if lexical handling is not supported by this parser, just ignore. 
+            if(atts != null && null == atts.getValue(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE)) {
+                unmarshalRecord.setUnmarshalNamespaceResolver(unmarshalNamespaceResolver);
+                unmarshalRecord.startDocument();
+                xmlReader.setContentHandler(unmarshalRecord);
+                unmarshalRecord.startElement(namespaceURI, localName, qName, atts);
+                try {
+                    unmarshalRecord.getXMLReader().setProperty("http://xml.org/sax/properties/lexical-handler", unmarshalRecord);
+                } catch (SAXNotRecognizedException ex) {
+                } catch (SAXNotSupportedException ex) {
+                    //if lexical handling is not supported by this parser, just ignore. 
+                }
+            } else {
+                unmarshalRecord.setRootElementName(qName);
+                unmarshalRecord.setRootElementNamespaceUri(namespaceURI);
             }
 
             // if we located the descriptor via xsi:type attribute, create and 

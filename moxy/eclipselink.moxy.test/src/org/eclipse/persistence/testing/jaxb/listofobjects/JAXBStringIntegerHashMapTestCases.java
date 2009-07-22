@@ -63,7 +63,7 @@ public class JAXBStringIntegerHashMapTestCases extends JAXBListOfObjectsTestCase
 		theMap.put("thekey3", new Integer(30));
 				
 		QName qname = new QName("examplenamespace", "root");
-		JAXBElement jaxbElement = new JAXBElement(qname, theMap.getClass(), null);
+		JAXBElement jaxbElement = new JAXBElement(qname, Object.class, null);
 		jaxbElement.setValue(theMap);
 
 		return jaxbElement;

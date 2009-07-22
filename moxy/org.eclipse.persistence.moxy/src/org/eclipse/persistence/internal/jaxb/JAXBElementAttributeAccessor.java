@@ -29,8 +29,7 @@ public class JAXBElementAttributeAccessor extends AttributeAccessor {
 	private boolean isContainer;
 	private Map<QName, Class> qNamesToScopes;
 	private Class declaredType;
-	private final static String JAXB_ELEMENT_CLASSNAME = "javax.xml.bind.JAXBElement";
-		
+
 	public JAXBElementAttributeAccessor(AttributeAccessor nestedAccessor) {
 		this.nestedAccessor = nestedAccessor;
 		this.isContainer = false;
@@ -64,18 +63,16 @@ public class JAXBElementAttributeAccessor extends AttributeAccessor {
 				}
 			}
 			value = results;
-		} else {
-			if(value !=null && value.getClass().getName().equals(JAXB_ELEMENT_CLASSNAME)) {
-				JAXBElement element = (JAXBElement)value;
-				XMLRoot root = new XMLRoot();
-				root.setLocalName(element.getName().getLocalPart());
-				root.setNamespaceURI(element.getName().getNamespaceURI());
-				root.setObject(element.getValue());
-				value = root;
-			}
-		}
-		return value;
-	}
+        } else if(value instanceof JAXBElement) {
+            JAXBElement element = (JAXBElement)value;
+            XMLRoot root = new XMLRoot();
+            root.setLocalName(element.getName().getLocalPart());
+            root.setNamespaceURI(element.getName().getNamespaceURI());
+            root.setObject(element.getValue());
+            value = root;
+        }
+        return value;
+    }
 	
 	public void setAttributeValueInObject(Object object, Object value) {
 		Object attributeValue = value;
@@ -100,24 +97,20 @@ public class JAXBElementAttributeAccessor extends AttributeAccessor {
     }
     
     private Object unwrapObject(Object originalObject){
-    	if(originalObject instanceof XMLRoot) {
-			XMLRoot root = (XMLRoot)originalObject;			
-			QName name = new QName(root.getNamespaceURI(), root.getLocalName());
-			Object value = root.getObject();
-			if(value == null){
-				return createJAXBElement(name, Object.class, value);
-			}else{
-				return createJAXBElement(name, getDeclaredType(),value);		
-			}			
-		} else if(originalObject instanceof WrappedValue){
-			Object unwrappedValue = ((WrappedValue)originalObject).getWrappedValue();					
-			Class theClass = ((WrappedValue)originalObject).getWrappedValueClass();
-			return createJAXBElement(((WrappedValue)originalObject).getQName(), theClass, unwrappedValue);			
-		} else {			
-			return originalObject;		
-		}
-    }	    
-    
+        if(originalObject instanceof XMLRoot) {
+            XMLRoot root = (XMLRoot)originalObject;
+            QName name = new QName(root.getNamespaceURI(), root.getLocalName());
+            Object value = root.getObject();
+            if(value == null){
+                return createJAXBElement(name, Object.class, value);
+            }else{
+                return createJAXBElement(name, getDeclaredType(),value);
+            }
+        } else {
+            return originalObject;
+        }
+    }
+
     private JAXBElement createJAXBElement(QName qname, Class theClass, Object value){
     	if(value != null && value instanceof JAXBElement){
     		return (JAXBElement)value;

@@ -121,7 +121,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
 			if(theClass != null && WrappedValue.class.isAssignableFrom(theClass)) {
 				ClassDescriptor desc = xmlMarshaller.getXMLContext().getSession(theClass).getDescriptor(theClass);
 				Object newObject = desc.getInstantiationPolicy().buildNewInstance();
-				((WrappedValue)newObject).setWrappedValue(objectValue);
+				((WrappedValue)newObject).setValue(objectValue);
 				xmlroot.setObject(newObject);
 			}   
 		}

@@ -25,6 +25,8 @@ import org.eclipse.persistence.testing.oxm.xmlroot.complex.XMLRootComplexNullUri
 import org.eclipse.persistence.testing.oxm.xmlroot.complex.XMLRootComplexTestCases;
 import org.eclipse.persistence.testing.oxm.xmlroot.complex.XMLRootMultipleMarshalTestCases;
 import org.eclipse.persistence.testing.oxm.xmlroot.complex.XMLRootNullSchemaReferenceTestCases;
+import org.eclipse.persistence.testing.oxm.xmlroot.nil.XMLRootNilForceWrapTestCases;
+import org.eclipse.persistence.testing.oxm.xmlroot.nil.XMLRootNilTestCases;
 import org.eclipse.persistence.testing.oxm.xmlroot.simple.XMLRootDurationTestCases;
 import org.eclipse.persistence.testing.oxm.xmlroot.simple.XMLRootSimpleCollectionTestCases;
 import org.eclipse.persistence.testing.oxm.xmlroot.simple.XMLRootSimpleTestCases;
@@ -64,6 +66,8 @@ public class XMLRootTestSuite extends TestCase {
         suite.addTestSuite(XMLRootSimpleCollectionTestCases.class);
         suite.addTestSuite(XMLRootXMLGregorianCalendarTestCases.class);
         suite.addTestSuite(XMLRootDurationTestCases.class);
+        suite.addTestSuite(XMLRootNilTestCases.class);
+        suite.addTestSuite(XMLRootNilForceWrapTestCases.class);
         return suite;
     }
 }

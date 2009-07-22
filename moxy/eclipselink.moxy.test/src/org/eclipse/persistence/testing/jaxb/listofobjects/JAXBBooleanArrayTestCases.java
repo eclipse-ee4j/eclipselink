@@ -60,7 +60,7 @@ public Map<String,InputStream> getControlSchemaFiles(){
 		booleans[3] = Boolean.TRUE.booleanValue();
 
 		QName qname = new QName("examplenamespace", "root");
-		JAXBElement jaxbElement = new JAXBElement(qname, booleans.getClass(),null);
+		JAXBElement jaxbElement = new JAXBElement(qname, Object.class,null);
 		jaxbElement.setValue(booleans);
 
 		return jaxbElement;

@@ -53,7 +53,7 @@ public class JAXBIntegerArrayTestCases extends JAXBListOfObjectsTestCases {
 		integers[3] = 40;
 
 		QName qname = new QName("examplenamespace", "root");
-		JAXBElement jaxbElement = new JAXBElement(qname, integers.getClass(),null);
+		JAXBElement jaxbElement = new JAXBElement(qname, Object.class ,null);
 		jaxbElement.setValue(integers);
 
 		return jaxbElement;
