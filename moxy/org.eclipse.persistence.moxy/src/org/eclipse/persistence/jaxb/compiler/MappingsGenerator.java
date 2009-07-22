@@ -390,7 +390,6 @@ public class MappingsGenerator {
            
         if(property.isMixedContent()) {
             XMLAnyCollectionMapping mapping = generateAnyCollectionMapping(property, descriptor, namespaceInfo, true);
-            mapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
             return mapping;
         }
         boolean isCollection = isCollectionType(property);
