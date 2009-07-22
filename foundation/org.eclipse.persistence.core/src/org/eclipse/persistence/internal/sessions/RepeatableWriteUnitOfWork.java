@@ -408,7 +408,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      * To avoid putting the original object into the shared cache, and
      * therefore, impede the 'detaching' of the original after commit, a clone 
      * of the original should be registered not the actual original object. 
-     * This is a JPA override to traditional Eclipselink behavior.
+     * This is a JPA override to traditional EclipseLink behavior.
      */
     @Override
     protected Object cloneAndRegisterNewObject(Object original) {

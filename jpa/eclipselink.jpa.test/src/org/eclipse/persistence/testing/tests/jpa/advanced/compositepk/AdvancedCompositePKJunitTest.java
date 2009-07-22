@@ -257,7 +257,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
         assertTrue("Error on reading back the junior scientist.", jScientist != null);
     }
 
-    //bug gf672 - JBQL Select query with IN/ANY in WHERE clause and subselect fails.
+    //bug gf672 - JPQL Select query with IN/ANY in WHERE clause and subselect fails.
     public void testAnyAndAll() {
         EntityManager em = createEntityManager();
         
