@@ -26,6 +26,7 @@ import javax.xml.validation.Schema;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.ReferenceResolver;
+import org.eclipse.persistence.internal.oxm.StrBuffer;
 import org.eclipse.persistence.internal.oxm.record.PlatformUnmarshaller;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -91,6 +92,7 @@ public class XMLUnmarshaller {
     private Properties unmarshalProperties;
 
     private Class unmappedContentHandlerClass;
+    private StrBuffer stringBuffer;
 
     static {
         try {
@@ -109,7 +111,8 @@ public class XMLUnmarshaller {
 
     protected XMLUnmarshaller(XMLContext xmlContext) {
         setXMLContext(xmlContext);
-        initialize();      
+        stringBuffer = new StrBuffer();
+        initialize();
     }
 
     private void initialize() {
@@ -255,6 +258,14 @@ public class XMLUnmarshaller {
      */
     public void setUnmappedContentHandlerClass(Class aClass) {
         this.unmappedContentHandlerClass = aClass;
+    }
+
+    /**
+     * INTERNAL:
+     * This is the text handler during unmarshal operations.
+     */
+    public StrBuffer getStringBuffer() {
+        return stringBuffer;
     }
 
     /**

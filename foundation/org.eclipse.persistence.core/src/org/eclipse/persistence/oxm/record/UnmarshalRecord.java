@@ -22,6 +22,7 @@ import java.util.Vector;
 
 import javax.xml.namespace.QName;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.DescriptorEventManager;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
@@ -50,7 +51,7 @@ import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
-import org.eclipse.persistence.oxm.XMLUnmarshaller;
+import org.eclipse.persistence.oxm.XMLUnmarshalListener;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
 import org.eclipse.persistence.oxm.unmapped.UnmappedContentHandler;
 import org.eclipse.persistence.oxm.unmapped.DefaultUnmappedContentHandler;
@@ -98,13 +99,11 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
     private Map indexMap;
     private List nullCapableValues;
     private Map containersMap;
-    private StrBuffer stringBuffer;
     private boolean isBufferCDATA;
     private Attributes attributes;
     private QName typeQName;
     private String rootElementName;
     private String rootElementNamespaceUri;
-    private XMLUnmarshaller unmarshaller;
     private SAXFragmentBuilder fragmentBuilder;
     private String encoding;
     private String version;
@@ -118,14 +117,12 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
         super();
         this.levelIndex = 0;
         this.xPathFragment = new XPathFragment();
-        this.stringBuffer = new StrBuffer();
         this.isBufferCDATA = false;
         this.treeObjectBuilder = treeObjectBuilder;
-        nullCapableValues = new ArrayList();
         if (null != treeObjectBuilder) {
             this.xPathNode = treeObjectBuilder.getRootXPathNode();
             if (null != treeObjectBuilder.getNullCapableValues()) {
-                nullCapableValues.addAll(treeObjectBuilder.getNullCapableValues());
+                this.nullCapableValues = new ArrayList(treeObjectBuilder.getNullCapableValues());
             }
         }
         fragmentBuilder = new SAXFragmentBuilder(this);
@@ -232,8 +229,10 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
         return this.nullCapableValues;
     }
 
-    public void removeNullCapableValue(NullCapableValue nullCapableValue) {        
-        getNullCapableValues().remove(nullCapableValue);
+    public void removeNullCapableValue(NullCapableValue nullCapableValue) {   
+        if(null != nullCapableValues) {
+            nullCapableValues.remove(nullCapableValue);
+        }
     }
 
     public Object getContainerInstance(ContainerValue containerValue) {
@@ -292,7 +291,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
     }
 
     public StrBuffer getStringBuffer() {
-        return this.stringBuffer;
+        return getUnmarshaller().getStringBuffer();
     }
 
     public Attributes getAttributes() {
@@ -355,17 +354,18 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
                 object = treeObjectBuilder.buildNewInstance();
             }
             this.setCurrentObject(object);
-            if ((this.unmarshaller != null) && (this.unmarshaller.getUnmarshalListener() != null)) {
-                if (this.parentRecord != null) {
-                    this.unmarshaller.getUnmarshalListener().beforeUnmarshal(object, parentRecord.getCurrentObject());
+            XMLUnmarshalListener xmlUnmarshalListener = getUnmarshaller().getUnmarshalListener();
+            if (null != xmlUnmarshalListener) {
+                if (null == this.parentRecord) {
+                    xmlUnmarshalListener.beforeUnmarshal(object, null);
                 } else {
-                    this.unmarshaller.getUnmarshalListener().beforeUnmarshal(object, null);
+                    xmlUnmarshalListener.beforeUnmarshal(object, parentRecord.getCurrentObject());
                 }
             }
-            if (parentRecord != null) {
-                this.xmlReader.newObjectEvent(object, parentRecord.getCurrentObject(), selfRecordMapping);
-            } else {
+            if (null == parentRecord) {
                 this.xmlReader.newObjectEvent(object, null, selfRecordMapping);
+            } else {
+                this.xmlReader.newObjectEvent(object, parentRecord.getCurrentObject(), selfRecordMapping);
             }
             List containerValues = treeObjectBuilder.getContainerValues();
             if (null != containerValues) {
@@ -440,14 +440,16 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
 
             // PROCESS NULL CAPABLE VALUES
             // This must be done because the node may not have existed to 
-            // trigger the mapping.            
-            int nullValuesSize = getNullCapableValues().size();
-            NullCapableValue nullCapableValue;
-            for (int x = 0; x < nullValuesSize; x++) {
-                nullCapableValue = (NullCapableValue)getNullCapableValues().get(x);
-                nullCapableValue.setNullValue(object, session);
+            // trigger the mapping.
+            if(null != getNullCapableValues()) {
+                int nullValuesSize = getNullCapableValues().size();
+                NullCapableValue nullCapableValue;
+                for (int x = 0; x < nullValuesSize; x++) {
+                    nullCapableValue = (NullCapableValue)getNullCapableValues().get(x);
+                    nullCapableValue.setNullValue(object, session);
+                }
             }
-            
+
             // PROCESS TRANSFORMATION MAPPINGS
             List transformationMappings = treeObjectBuilder.getTransformationMappings();
             if (null != transformationMappings) {
@@ -461,17 +463,17 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
                 }
             }
             
-            if ((this.unmarshaller != null) && (unmarshaller.getUnmarshalListener() != null)) {
+            if (getUnmarshaller().getUnmarshalListener() != null) {
                 if (this.parentRecord != null) {
-                    unmarshaller.getUnmarshalListener().afterUnmarshal(object, parentRecord.getCurrentObject());
+                    getUnmarshaller().getUnmarshalListener().afterUnmarshal(object, parentRecord.getCurrentObject());
                 } else {
-                    unmarshaller.getUnmarshalListener().afterUnmarshal(object, null);
+                    getUnmarshaller().getUnmarshalListener().afterUnmarshal(object, null);
                 }
             }
             
             // HANDLE POST BUILD EVENTS
-            XMLDescriptor xmlDescriptor = (XMLDescriptor) session.getDescriptor(object);
-            if ((xmlDescriptor != null) && (xmlDescriptor.getEventManager().hasAnyEventListeners())) {
+            ClassDescriptor xmlDescriptor = treeObjectBuilder.getDescriptor();
+            if (xmlDescriptor.getEventManager().hasAnyEventListeners()) {
                 DescriptorEvent event = new DescriptorEvent(object);
                 event.setSession(session);
                 event.setRecord(this);
@@ -489,7 +491,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
 
         // if the object has any primary key fields set, add it to the cache
         if (session.isUnitOfWork()) {
-            XMLDescriptor xmlDescriptor = (XMLDescriptor)session.getDescriptor(object);
+            ClassDescriptor xmlDescriptor = treeObjectBuilder.getDescriptor();
             if ((xmlDescriptor != null) && (xmlDescriptor.getPrimaryKeyFieldNames().size() > 0)) {
                 Vector pk = treeObjectBuilder.extractPrimaryKeyFromObject(object, session);
                 CacheKey key = session.getIdentityMapAccessorInstance().acquireDeferredLock(pk, xmlDescriptor.getJavaClass(), xmlDescriptor);
@@ -639,7 +641,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
         if ((null != selfRecords) || (null == xmlReader) || isSelfRecord()) {
             return;
         }
-        Class unmappedContentHandlerClass = unmarshaller.getUnmappedContentHandlerClass();
+        Class unmappedContentHandlerClass = getUnmarshaller().getUnmappedContentHandlerClass();
         UnmappedContentHandler unmappedContentHandler;
         if (null == unmappedContentHandlerClass) {
             unmappedContentHandler = DEFAULT_UNMAPPED_CONTENT_HANDLER;
@@ -682,7 +684,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
             } else {
                 XPathNode textNode = (XPathNode) xPathNode.getTextNode();
                 
-                if (null != textNode && textNode.isWhitespaceAware() && stringBuffer.length() == 0) {
+                if (null != textNode && textNode.isWhitespaceAware() && getStringBuffer().length() == 0) {
                     boolean isXsiNil = false;
                     if (getAttributes() != null) {
                         isXsiNil = getAttributes().getIndex(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE) >= 0;
@@ -768,7 +770,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
                 unmarshalContext.characters(this);
             }
             if (null != xPathNode.getUnmarshalNodeValue()) {
-                stringBuffer.append(ch, start, length);
+                getStringBuffer().append(ch, start, length);
             }
         } catch (EclipseLinkException e) {
             if (null == xmlReader.getErrorHandler()) {
@@ -889,14 +891,6 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
             }
         }
         return null;
-    }
-
-    public XMLUnmarshaller getUnmarshaller() {
-        return this.unmarshaller;
-    }
-
-    public void setUnmarshaller(XMLUnmarshaller unmarshaller) {
-        this.unmarshaller = unmarshaller;
     }
 
     public SAXFragmentBuilder getFragmentBuilder() {

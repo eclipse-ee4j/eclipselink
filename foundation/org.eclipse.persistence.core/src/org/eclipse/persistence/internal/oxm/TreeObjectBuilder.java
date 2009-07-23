@@ -74,7 +74,6 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
     public TreeObjectBuilder(ClassDescriptor descriptor) {
         super(descriptor);
         rootXPathNode = new XPathNode();
-        transformationMappings = new ArrayList();
     }
 
     public XPathNode getRootXPathNode() {

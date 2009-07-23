@@ -37,6 +37,7 @@ public class XMLInlineBinaryHandler extends UnmarshalRecord {
         this.isCollection = isCollection;
         this.mapping = mapping;
         this.parent = parent;
+        this.setUnmarshaller(parent.getUnmarshaller());
     }
     
     @Override
