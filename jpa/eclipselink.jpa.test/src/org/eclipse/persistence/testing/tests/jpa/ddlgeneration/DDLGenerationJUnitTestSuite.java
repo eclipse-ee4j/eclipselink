@@ -60,12 +60,16 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
     public void testSetup() {
-        // Trigger DDL generation
-        //TODO: Let's add a flag which do not disregard DDL generation errors.
-        //TODO: This is required to ensure that DDL generation has succeeded.
-        EntityManager em = createEntityManager(DDL_PU);
-        //em.close();
-        clearCache(DDL_PU);
+        try{
+            // Trigger DDL generation
+            //TODO: Let's add a flag which do not disregard DDL generation errors.
+            //TODO: This is required to ensure that DDL generation has succeeded.
+            EntityManager em = createEntityManager(DDL_PU);
+            //em.close();
+            clearCache(DDL_PU);
+        } catch (Throwable t){
+            t.printStackTrace();
+        }
     }
 
     // Test for GF#1392
@@ -417,7 +421,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
         }
     }
     
-    public void testDDLUnidirectionalOneToMany() {        
+    public void testDDLUnidirectionalOneToMany() {    
         EntityManager em = createEntityManager(DDL_PU);
         beginTransaction(em);
         try {
@@ -469,183 +473,220 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
     
     public void testDirectCollectionMapping(){
         EntityManager em = createEntityManager(DDL_PU);
-        beginTransaction(em);
-        
-        MapHolder holder = new MapHolder();
-        holder.setId(1);
-        EntityMapKey key = new EntityMapKey();
-        key.setId(1);
-        holder.getDCMap().put(key, "test1");
-        em.persist(holder);
-        em.persist(key);
-        
         try{
-            em.flush();
-        } catch (Exception e){
-            fail("Caught Exception while trying to flush a new ddl-generated DirectCollectionMapping.");
+            beginTransaction(em);
+            
+            MapHolder holder = new MapHolder();
+            holder.setId(1);
+            EntityMapKey key = new EntityMapKey();
+            key.setId(1);
+            holder.getDCMap().put(key, "test1");
+            em.persist(holder);
+            em.persist(key);
+            
+            try{
+                em.flush();
+            } catch (Exception e){
+                e.printStackTrace();
+                fail("Caught Exception while trying to flush a new ddl-generated DirectCollectionMapping." + e);
+            }
+            
+            clearCache(DDL_PU);
+            em.refresh(holder);
+            assertTrue(holder.getDCMap().get(key) != null);
+            
+            holder.getDCMap().remove(key);
+            em.remove(holder);
+            em.remove(key);
+            
+            try{
+                em.flush();
+            } catch (Exception e){
+                e.printStackTrace();
+                fail("Caught Exception while trying to remove a new ddl-generated DirectCollectionMapping." + e);
+            }
+            
+            rollbackTransaction(em);
+        } finally {
+            closeEntityManager(em);
         }
-        
-        clearCache(DDL_PU);
-        em.refresh(holder);
-        assertTrue(holder.getDCMap().get(key) != null);
-        
-        em.remove(holder);
-        em.remove(key);
-        
-        try{
-            em.flush();
-        } catch (Exception e){
-            fail("Caught Exception while trying to remove a new ddl-generated DirectCollectionMapping.");
-        }
-        
-        rollbackTransaction(em);
     }
     
     public void testAggregateCollectionMapping(){
         EntityManager em = createEntityManager(DDL_PU);
-        beginTransaction(em);
-        
-        MapHolder holder = new MapHolder();
-        holder.setId(2);
-        EntityMapKey key = new EntityMapKey();
-        key.setId(2);
-        AggregateMapValue value = new AggregateMapValue();
-        value.setDescription("test2");
-        holder.getACMap().put(key, value);
-        em.persist(holder);
-        em.persist(key);
-        
         try{
-            em.flush();
-        } catch (Exception e){
-            fail("Caught Exception while trying to flush a new ddl-generated AggregateCollectionMapping.");
+            beginTransaction(em);
+            
+            MapHolder holder = new MapHolder();
+            holder.setId(2);
+            EntityMapKey key = new EntityMapKey();
+            key.setId(2);
+            AggregateMapValue value = new AggregateMapValue();
+            value.setDescription("test2");
+            holder.getACMap().put(key, value);
+            em.persist(holder);
+            em.persist(key);
+            
+            try{
+                em.flush();
+            } catch (Exception e){
+                e.printStackTrace();
+                fail("Caught Exception while trying to flush a new ddl-generated AggregateCollectionMapping." + e);
+            }
+            
+            clearCache(DDL_PU);
+            em.refresh(holder);
+            assertTrue(holder.getACMap().get(key) != null);
+            
+            holder.getACMap().remove(key);
+            em.remove(holder);
+            em.remove(key);
+            
+            try{
+                em.flush();
+            } catch (Exception e){
+                e.printStackTrace();
+                fail("Caught Exception while trying to remove a new ddl-generated AggregateCollectionMapping." + e);
+            }
+            
+            rollbackTransaction(em);
+        } finally {
+            closeEntityManager(em);
         }
-        
-        clearCache(DDL_PU);
-        em.refresh(holder);
-        assertTrue(holder.getACMap().get(key) != null);
-        
-        em.remove(holder);
-        em.remove(key);
-        
-        try{
-            em.flush();
-        } catch (Exception e){
-            fail("Caught Exception while trying to remove a new ddl-generated AggregateCollectionMapping.");
-        }
-        
-        rollbackTransaction(em);
     }
     
     public void testOneToManyMapping(){
         EntityManager em = createEntityManager(DDL_PU);
-        beginTransaction(em);
-        
-        MapHolder holder = new MapHolder();
-        holder.setId(3);
-        AggregateMapKey key = new AggregateMapKey();
-        key.setDescription("test3");
-        EntityMapValueWithBackPointer value = new EntityMapValueWithBackPointer();
-        value.setHolder(holder);
-        value.setId(3);
-        holder.getOTMMap().put(key, value);
-        em.persist(holder);
-        em.persist(value);
-        
         try{
-            em.flush();
-        } catch (Exception e){
-            fail("Caught Exception while trying to flush a new ddl-generated OneToManyMapping.");
+            beginTransaction(em);
+            
+            MapHolder holder = new MapHolder();
+            holder.setId(3);
+            AggregateMapKey key = new AggregateMapKey();
+            key.setDescription("test3");
+            EntityMapValueWithBackPointer value = new EntityMapValueWithBackPointer();
+            value.setHolder(holder);
+            value.setId(3);
+            holder.getOTMMap().put(key, value);
+            em.persist(holder);
+            em.persist(value);
+            
+            try{
+                em.flush();
+            } catch (Exception e){
+                e.printStackTrace();
+                fail("Caught Exception while trying to flush a new ddl-generated OneToManyMapping." + e);
+            }
+            
+            clearCache(DDL_PU);
+            em.refresh(holder);
+            holder.getOTMMap().get(key);
+            assertTrue(holder.getOTMMap().get(key) != null);
+            
+            holder.getOTMMap().remove(key);
+            value.setHolder(null);
+            em.remove(holder);
+            em.remove(value);
+            
+            try{
+                em.flush();
+            } catch (Exception e){
+                e.printStackTrace();
+                fail("Caught Exception while trying to remove a new ddl-generated OneToManyMapping." + e);
+            }
+            
+            rollbackTransaction(em);
+        } finally {
+            closeEntityManager(em);
         }
-        
-        clearCache(DDL_PU);
-        em.refresh(holder);
-        holder.getOTMMap().get(key);
-        assertTrue(holder.getOTMMap().get(key) != null);
-        
-        em.remove(holder);
-        em.remove(value);
-        
-        try{
-            em.flush();
-        } catch (Exception e){
-            fail("Caught Exception while trying to remove a new ddl-generated OneToManyMapping.");
-        }
-        
-        rollbackTransaction(em);
     }
     
     public void testUnidirectionalOneToManyMapping(){
         EntityManager em = createEntityManager(DDL_PU);
-        beginTransaction(em);
-        
-        MapHolder holder = new MapHolder();
-        holder.setId(4);
-        EntityMapValue value = new EntityMapValue();
-        value.setId(4);
-        holder.getUOTMMap().put(4, value);
-        em.persist(holder);
-        em.persist(value);
-        
         try{
-            em.flush();
-        } catch (Exception e){
-            fail("Caught Exception while trying to flush a new ddl-generated OneToManyMapping.");
+            beginTransaction(em);
+            
+            MapHolder holder = new MapHolder();
+            holder.setId(4);
+            EntityMapValue value = new EntityMapValue();
+            value.setId(4);
+            holder.getUOTMMap().put(4, value);
+            em.persist(holder);
+            em.persist(value);
+            
+            try{
+                em.flush();
+            } catch (Exception e){
+                e.printStackTrace();
+                fail("Caught Exception while trying to flush a new ddl-generated OneToManyMapping." + e);
+            }
+            
+            clearCache(DDL_PU);
+            em.refresh(holder);
+            assertTrue(holder.getUOTMMap().get(4) != null);
+            
+            holder.getUOTMMap().remove(4);
+            em.remove(holder);
+            em.remove(value);
+            
+            try{
+                em.flush();
+            } catch (Exception e){
+                e.printStackTrace();
+                fail("Caught Exception while trying to remove a new ddl-generated OneToManyMapping."+ e);
+            }
+            
+            rollbackTransaction(em);
+        } finally {
+            closeEntityManager(em);
         }
-        
-        clearCache(DDL_PU);
-        em.refresh(holder);
-        assertTrue(holder.getUOTMMap().get(4) != null);
-        
-        em.remove(holder);
-        em.remove(value);
-        
-        try{
-            em.flush();
-        } catch (Exception e){
-            fail("Caught Exception while trying to remove a new ddl-generated OneToManyMapping.");
-        }
-        
-        rollbackTransaction(em);
     }
     
     public void testManyToManyMapping(){
         EntityManager em = createEntityManager(DDL_PU);
-        beginTransaction(em);
-        
-        MapHolder holder = new MapHolder();
-        holder.setId(5);
-        EntityMapKey key = new EntityMapKey();
-        key.setId(5);
-        MMEntityMapValue value = new MMEntityMapValue();
-        value.getHolders().add(holder);
-        value.setId(5);
-        holder.getMTMMap().put(key, value);
-        em.persist(holder);
-        em.persist(key);
-        em.persist(value);
-        
         try{
-            em.flush();
-        } catch (Exception e){
-            fail("Caught Exception while trying to flush a new ddl-generated OneToManyMapping.");
+            beginTransaction(em);
+            
+            MapHolder holder = new MapHolder();
+            holder.setId(5);
+            EntityMapKey key = new EntityMapKey();
+            key.setId(5);
+            MMEntityMapValue value = new MMEntityMapValue();
+            value.getHolders().add(holder);
+            value.setId(5);
+            holder.getMTMMap().put(key, value);
+            em.persist(holder);
+            em.persist(key);
+            em.persist(value);
+            
+            try{
+                em.flush();
+            } catch (Exception e){
+                e.printStackTrace();
+                fail("Caught Exception while trying to flush a new ddl-generated OneToManyMapping."+ e);
+            }
+            
+            clearCache(DDL_PU);
+            em.refresh(holder);
+            assertTrue(holder.getMTMMap().get(key) != null);
+            
+            holder.getMTMMap().remove(key);
+            value.getHolders().remove(0);
+            em.remove(holder);
+            em.remove(key);
+            em.remove(value);
+            
+            try{
+                em.flush();
+            } catch (Exception e){
+                e.printStackTrace();
+                fail("Caught Exception while trying to remove a new ddl-generated OneToManyMapping." + e);
+            }
+            
+            rollbackTransaction(em);
+        } finally {
+            closeEntityManager(em);
         }
-        
-        clearCache(DDL_PU);
-        em.refresh(holder);
-        assertTrue(holder.getMTMMap().get(key) != null);
-        
-        em.remove(holder);
-        em.remove(key);
-        em.remove(value);
-        
-        try{
-            em.flush();
-        } catch (Exception e){
-            fail("Caught Exception while trying to remove a new ddl-generated OneToManyMapping.");
-        }
-        
-        rollbackTransaction(em);
     }
     
     protected void cleanupEquipmentAndPorts(EntityManagerFactory factory) {
