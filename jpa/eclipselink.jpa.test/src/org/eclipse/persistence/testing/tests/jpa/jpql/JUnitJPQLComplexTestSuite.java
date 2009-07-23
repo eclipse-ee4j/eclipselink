@@ -188,6 +188,11 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         Employee emp2 = (Employee)getServerSession().readAllObjects(Employee.class).lastElement();
         
         clearCache();
+        
+        Query query = em.createQuery("delete from Employee e where e.id in (select p.id from Project p where p.id = ?1)");
+        query.setParameter(1, 100);
+        query.executeUpdate();
+        
         String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";
         ejbqlString = ejbqlString + "(ABS(emp.salary) = ";
         ejbqlString = ejbqlString + emp1.getSalary() + ")";

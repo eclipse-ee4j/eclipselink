@@ -32,7 +32,8 @@ import static javax.persistence.InheritanceType.*;
 @Entity
 @Table(name="CMP3_PERSON")
 @Inheritance(strategy=JOINED)
-@DiscriminatorValue("P")
+@DiscriminatorValue("1")
+@DiscriminatorColumn(discriminatorType=DiscriminatorType.INTEGER)
 public class Person implements Serializable {
     public Number id;
     public String name;

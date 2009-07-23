@@ -142,6 +142,7 @@ public class MetadataLogger {
     /*                       OTHER WARNING MESSSAGES                         */ 
     /*************************************************************************/
     public static final String WARNING_INVALID_COLLECTION_USED_ON_LAZY_RELATION = "non_jpa_allowed_type_used_for_collection_using_lazy_access";
+    public static final String WARNING_INCORRECT_DISCRIMINATOR_FORMAT = "metadata_warning_integer_discriminator_could_not_be_built";
 
     /*************************************************************************/
     
@@ -253,6 +254,7 @@ public class MetadataLogger {
         m_ctxStrings.put(VARIABLE_ONE_TO_ONE_MAPPING_REFERENCE_CLASS, VARIABLE_ONE_TO_ONE_MAPPING_REFERENCE_CLASS);
         
         m_ctxStrings.put(WARNING_INVALID_COLLECTION_USED_ON_LAZY_RELATION, WARNING_INVALID_COLLECTION_USED_ON_LAZY_RELATION);
+        m_ctxStrings.put(WARNING_INCORRECT_DISCRIMINATOR_FORMAT, WARNING_INCORRECT_DISCRIMINATOR_FORMAT);
     }
     
     /**

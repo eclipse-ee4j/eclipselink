@@ -23,6 +23,7 @@ import javax.persistence.InheritanceType;
 import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.descriptors.TablePerClassPolicy;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.MappedSuperclassAccessor;
@@ -176,10 +177,19 @@ public class InheritanceMetadata extends ORMetadata {
             // abstract and should be not be added to the class name indicator 
             // list.
             String discriminatorValue = accessor.getDiscriminatorValueOrNull();
-            
             if (discriminatorValue != null) {
+                if (rootDescriptor.getClassDescriptor().getInheritancePolicy().getClassIndicatorField().getType() == Integer.class){
+                    try{
+                        Integer integerDiscriminator = new Integer(discriminatorValue);
+                        rootDescriptor.getClassDescriptor().getInheritancePolicy().addClassNameIndicator(accessor.getJavaClassName(), integerDiscriminator);
+                        return;
+                    } catch (NumberFormatException exc){
+                        accessor.getLogger().logWarningMessage(MetadataLogger.WARNING_INCORRECT_DISCRIMINATOR_FORMAT, accessor.getJavaClassName(), discriminatorValue);
+                    }
+                }
                 rootDescriptor.getClassDescriptor().getInheritancePolicy().addClassNameIndicator(accessor.getJavaClassName(), discriminatorValue);
             }
+
         }
     }
     
