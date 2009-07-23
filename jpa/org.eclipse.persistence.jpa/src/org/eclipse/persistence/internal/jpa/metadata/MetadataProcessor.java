@@ -90,10 +90,6 @@ public class MetadataProcessor {
         m_project = new MetadataProject(puInfo, session, enableLazyForOneToOne, weaveEager);
     }
     
-    public MetadataFactory getMetadataFactory() {
-        return m_factory;
-    }
-    
     /**
      * INTERNAL: 
      * Method to place EntityListener's on the descriptors from the given 
@@ -116,6 +112,13 @@ public class MetadataProcessor {
      */
     public void addNamedQueries() {
         m_project.processQueries(m_loader);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public MetadataFactory getMetadataFactory() {
+        return m_factory;
     }
     
     /**

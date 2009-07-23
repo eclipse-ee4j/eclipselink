@@ -71,7 +71,6 @@ public class XMLEntityMappings extends ORMetadata {
     private boolean m_isEclipseLinkORMFile;
     
     private ClassLoader m_loader;
-    private MetadataFactory m_factory;
     
     private List<EntityAccessor> m_entities;
     private List<ConverterMetadata> m_converters;
@@ -87,6 +86,7 @@ public class XMLEntityMappings extends ORMetadata {
     private List<TableGeneratorMetadata> m_tableGenerators;
     private List<TypeConverterMetadata> m_typeConverters;
     
+    private MetadataFactory m_factory;
     private MetadataFile m_file;
     private MetadataProject m_project;
     
@@ -106,14 +106,6 @@ public class XMLEntityMappings extends ORMetadata {
     public XMLEntityMappings() {
         super("<entity-mappings>");
         m_isEclipseLinkORMFile = false;
-    }
-
-    public MetadataFactory getMetadataFactory() {
-        return m_factory;
-    }
-
-    public void setMetadataFactory(MetadataFactory factory) {
-        m_factory = factory;
     }
     
     /**
@@ -350,6 +342,13 @@ public class XMLEntityMappings extends ORMetadata {
      */
     public URL getMappingFile() {
         return m_mappingFileURL;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public MetadataFactory getMetadataFactory() {
+        return m_factory;
     }
     
     /**
@@ -720,7 +719,6 @@ public class XMLEntityMappings extends ORMetadata {
         MetadataClass metadataClass = getMetadataFactory().getClassMetadata(getFullClassName(mappedSuperclass.getClassName()));
         mappedSuperclass.initXMLClassAccessor(metadataClass, descriptor, m_project, this);
         
-        
         return mappedSuperclass;
     }
     
@@ -817,6 +815,13 @@ public class XMLEntityMappings extends ORMetadata {
      */
     public void setMappingFile(URL mappingFileURL) {
         m_mappingFileURL = mappingFileURL;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void setMetadataFactory(MetadataFactory factory) {
+        m_factory = factory;
     }
     
     /**
