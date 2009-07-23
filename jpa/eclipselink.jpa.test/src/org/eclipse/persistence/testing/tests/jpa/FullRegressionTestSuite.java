@@ -201,6 +201,16 @@ public class FullRegressionTestSuite extends TestSuite{
 
         // JPA 2.0 Metamodel model
         fullSuite.addTest(org.eclipse.persistence.testing.tests.jpa.metamodel.MetamodelTestSuite.suite());
+
+        // JPA 2.0 Criteria JPQL model
+        suite = new TestSuite();
+        suite.setName("Criteria");
+        suite.addTest(org.eclipse.persistence.testing.tests.jpa.criteria.JUnitCriteriaUnitTestSuite.suite());
+        suite.addTest(org.eclipse.persistence.testing.tests.jpa.criteria.AdvancedCompositePKJunitTest.suite());
+        suite.addTest(org.eclipse.persistence.testing.tests.jpa.criteria.AdvancedQueryTestSuite.suite());
+        suite.addTest(org.eclipse.persistence.testing.tests.jpa.criteria.JUnitCriteriaSimpleTestSuite.suite());
+        // Uncomment for development testing only - currently f:20, e:74
+        //fullSuite.addTest(suite);
         
         // JPA 2.0 Cacheable model
         fullSuite.addTest(CacheableModelJunitTest.suite());

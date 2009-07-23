@@ -55,15 +55,15 @@ public class SingularAttributeImpl<X,T> extends AttributeImpl<X,T> implements Si
             // EntityType
             // We support @OneToOne but not EIS, Reference or VariableOneToOne
             if(mapping.isOneToOneMapping()) {
-                elementType = (Type<T>)managedType.getMetamodel().getType(
+                elementType = (Type<T>)getMetamodel().getType(
                         ((OneToOneMapping)mapping).getReferenceClass());
             } else {
                 // TODO: default to containing class
-                elementType = (Type<T>)managedType.getMetamodel().getType(managedType.getJavaType()); 
+                elementType = (Type<T>)getMetamodel().getType(managedType.getJavaType()); 
             }
         } else {
             // BasicType
-            elementType = (Type<T>)managedType.getMetamodel().getType(attributeClassification);
+            elementType = (Type<T>)getMetamodel().getType(attributeClassification);
         }
     }
 

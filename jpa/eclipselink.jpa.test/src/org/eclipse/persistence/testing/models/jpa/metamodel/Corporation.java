@@ -19,10 +19,6 @@ import static javax.persistence.CascadeType.ALL;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Set;
-
-import javax.persistence.Column;
-import javax.persistence.JoinColumn;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.OneToMany;
 

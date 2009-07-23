@@ -19,8 +19,13 @@ package org.eclipse.persistence.internal.jpa.metamodel;
 import javax.persistence.metamodel.MapAttribute;
 import javax.persistence.metamodel.Type;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.internal.queries.MapContainerPolicy;
+import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
 import org.eclipse.persistence.mappings.CollectionMapping;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.foundation.MapKeyMapping;
 
 /**
  * <p>
@@ -50,14 +55,49 @@ public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, java.util.
         super(managedType, mapping);
 
         MapContainerPolicy policy = (MapContainerPolicy) mapping.getContainerPolicy();
-        Object policyKeyType = policy.getKeyType(); // both cases return a Class<?>
+        Object policyKeyType = policy.getKeyType(); // returns a Class<?> or descriptor (via AggregateObjectMapping)        
+        Type<?> aKeyType = null;
+        // Default to Object class for any variant cases that are not handled
+        Class<?> javaClass = Object.class;
         if(null == policyKeyType) {
-            // no key type, use Object  - test case required
-            this.keyType = getMetamodel().getType((Class<K>)Object.class);
-        } else {
-            Type<?> keyType = managedType.getMetamodel().getType((Class)policyKeyType);
-            this.keyType = (Type<K>) keyType;
+            // No policy key type = IdClass (use CMP3Policy.pkClass)
+            if(managedType.isIdentifiableType()) {
+                // Use the CMPPolicy on the element not the one on the managedType
+                if(policy.getElementDescriptor() != null && policy.getElementDescriptor().getCMPPolicy() != null) {
+                    javaClass = policy.getElementDescriptor().getCMPPolicy().getPKClass();
+                } else {
+                    if(null == policy.getElementDescriptor()) {
+                        // check for a keyMapping on the mapping
+                        if(policy.isMappedKeyMapPolicy()) {
+                            MapKeyMapping mapKeyMapping = ((MappedKeyMapContainerPolicy)policy).getKeyMapping();
+                            RelationalDescriptor descriptor = (RelationalDescriptor)((DatabaseMapping)mapKeyMapping).getDescriptor();
+                            // If the reference descriptor is null then we are on a direct mapping
+                            if(null == descriptor) {
+                                throw new IllegalArgumentException("Unsupported operation on " + managedType);
+                            } else {
+                                if(null == descriptor.getCMPPolicy()) { // for __PK_METAMODEL_RESERVED_IN_MEM_ONLY_FIELD_NAME
+                                    //throw new IllegalArgumentException("Unsupported operation on " + managedType);
+                                    javaClass = Object.class;
+                                } else {
+                                    javaClass = descriptor.getCMPPolicy().getPKClass();        
+                                }
+                            }
+                        }
+                    } else {                        
+                    }
+                }
+            } else {
+                // Handle EmbeddableType
+            }
+        } else {            
+            if(policyKeyType instanceof ClassDescriptor) { // from AggregateObjectMapping
+                javaClass = (Class<?>)((ClassDescriptor)policyKeyType).getJavaClass();
+            } else {
+                javaClass = (Class<?>)policyKeyType;
+            }            
         }
+        aKeyType = getMetamodel().getType(javaClass);
+        this.keyType = (Type<K>) aKeyType;
     }
 
     /**

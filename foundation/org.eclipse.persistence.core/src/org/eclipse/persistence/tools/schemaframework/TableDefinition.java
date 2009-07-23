@@ -45,7 +45,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
     /**
      * PUBLIC:
      * Add the field to the table, default sizes are used.
-     * @param type is the Java class type coresponding to the database type.
+     * @param type is the Java class type corresponding to the database type.
      */
     public void addField(String fieldName, Class type) {
         this.addField(new FieldDefinition(fieldName, type));
@@ -54,7 +54,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
     /**
      * PUBLIC:
      * Add the field to the table.
-     * @param type is the Java class type coresponding to the database type.
+     * @param type is the Java class type corresponding to the database type.
      */
     public void addField(String fieldName, Class type, int fieldSize) {
         this.addField(new FieldDefinition(fieldName, type, fieldSize));
@@ -63,7 +63,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
     /**
      * PUBLIC:
      * Add the field to the table.
-     * @param type is the Java class type coresponding to the database type.
+     * @param type is the Java class type corresponding to the database type.
      */
     public void addField(String fieldName, Class type, int fieldSize, int fieldSubSize) {
         this.addField(new FieldDefinition(fieldName, type, fieldSize, fieldSubSize));
@@ -137,8 +137,8 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * PUBLIC:
      * Add the field to the table, default sizes are used.
      * Identity fields are used on Sybase for native sequencing,
-     * The field must be of numberish type and cannot have a subsize.
-     * @param type is the Java class type coresponding to the database type.
+     * The field must be of number type and cannot have a subsize.
+     * @param type is the Java class type corresponding to the database type.
      */
     public void addIdentityField(String fieldName, Class type) {
         FieldDefinition fieldDef = new FieldDefinition(fieldName, type);
@@ -151,8 +151,8 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * PUBLIC:
      * Add the field to the table, default sizes are used.
      * Identity fields are used on Sybase for native sequencing,
-     * The field must be of numberish type and cannot have a subsize.
-     * @param type is the Java class type coresponding to the database type.
+     * The field must be of number type and cannot have a subsize.
+     * @param type is the Java class type corresponding to the database type.
      */
     public void addIdentityField(String fieldName, Class type, int fieldSize) {
         FieldDefinition fieldDef = new FieldDefinition(fieldName, type, fieldSize);
@@ -165,7 +165,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * PUBLIC:
      * Add the field to the table, default sizes are used.
      * This field is set as part of the primary key.
-     * @param type is the Java class type coresponding to the database type.
+     * @param type is the Java class type corresponding to the database type.
      */
     public void addPrimaryKeyField(String fieldName, Class type) {
         FieldDefinition fieldDef = new FieldDefinition(fieldName, type);
@@ -177,7 +177,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * PUBLIC:
      * Add the field to the table, default sizes are used.
      * This field is set as part of the primary key.
-     * @param type is the Java class type coresponding to the database type.
+     * @param type is the Java class type corresponding to the database type.
      */
     public void addPrimaryKeyField(String fieldName, Class type, int fieldSize) {
         FieldDefinition fieldDef = new FieldDefinition(fieldName, type, fieldSize);
@@ -188,7 +188,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
     /**
      * INTERNAL:
      * Return the alter table statement to add the constraints.
-     * This is done seperatly from the create because of dependecies.
+     * This is done separately from the create because of dependencies.
      */
     public Writer buildConstraintCreationWriter(AbstractSession session, ForeignKeyConstraint foreignKey, Writer writer) throws ValidationException {
         try {
@@ -210,7 +210,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
     /**
      * INTERNAL:
      * Return the alter table statement to drop the constraints.
-     * This is done seperatly to allow constraints to be dropped before the tables.
+     * This is done separately to allow constraints to be dropped before the tables.
      */
     public Writer buildConstraintDeletionWriter(AbstractSession session, ForeignKeyConstraint foreignKey, Writer writer) throws ValidationException {
         try {
@@ -247,7 +247,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
     /**
      * INTERNAL:
      * Return the alter table statement to drop the constraints.
-     * This is done seperatly to allow constraints to be dropped before the tables.
+     * This is done separately to allow constraints to be dropped before the tables.
      */
     public Writer buildUniqueConstraintDeletionWriter(AbstractSession session, UniqueKeyConstraint uniqueKey, Writer writer) throws ValidationException {
         try {
@@ -366,7 +366,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
     }
 
     /**
-     * Build a foriegn key constraint using FieldDefinition.getForeignKeyFieldName().
+     * Build a foreign key constraint using FieldDefinition.getForeignKeyFieldName().
      */
     protected ForeignKeyConstraint buildForeignKeyConstraint(FieldDefinition field, DatabasePlatform platform) {
         Vector sourceFields = new Vector();
@@ -388,7 +388,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
     }
 
     /**
-     * Build a foriegn key constraint.
+     * Build a foreign key constraint.
      */
     protected ForeignKeyConstraint buildForeignKeyConstraint(Vector fkFieldNames, Vector pkFieldNames, TableDefinition targetTable, DatabasePlatform platform) {
         assert fkFieldNames.size() > 0 && fkFieldNames.size() == pkFieldNames.size();

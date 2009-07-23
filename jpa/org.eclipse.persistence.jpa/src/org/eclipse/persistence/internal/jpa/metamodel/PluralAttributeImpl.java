@@ -59,18 +59,18 @@ public abstract class PluralAttributeImpl<X, C, V> extends AttributeImpl<X, C> i
         ClassDescriptor elementDesc = mapping.getContainerPolicy().getElementDescriptor();
 
         if (elementDesc != null) {
-            this.elementType = (Type<V>)managedType.getMetamodel().getType(elementDesc.getJavaClass());
+            this.elementType = (Type<V>)getMetamodel().getType(elementDesc.getJavaClass());
         } else {
             // TODO: BasicCollection (DirectCollectionMapping)
             // See CollectionContainerPolicy
             if(mapping.isDirectCollectionMapping() || mapping.isAbstractCompositeDirectCollectionMapping()) {// || mapping.isAbstractDirectMapping() ) {
                 //CollectionContainerPolicy policy = (CollectionContainerPolicy) mapping.getContainerPolicy();
-                //this.elementType = managedType.getMetamodel().getType(policy.getElementDescriptor().getJavaClass());
+                //this.elementType = getMetamodel().getType(policy.getElementDescriptor().getJavaClass());
             }
             // TODO: Handle DirectMapContainerPolicy
             if(mapping.isMapKeyMapping()) {
                 MapContainerPolicy policy = (MapContainerPolicy) mapping.getContainerPolicy();
-                this.elementType = (Type<V>)managedType.getMetamodel().getType(policy.getElementClass());
+                this.elementType = (Type<V>)getMetamodel().getType(policy.getElementClass());
             }
         }
     }
