@@ -31,6 +31,7 @@ public class ElementDeclaration {
     private boolean isList = false;
     private Class javaTypeAdapterClass;
     private Class scopeClass;
+    private String defaultValue;
     
     public ElementDeclaration(QName name, JavaClass javaType, String javaTypeName, boolean isList) {
         this.elementName = name;
@@ -121,6 +122,14 @@ public class ElementDeclaration {
     
     public void setScopeClass(Class scopeClass) {
         this.scopeClass = scopeClass;
+    }
+    
+    public String getDefaultValue() {
+        return this.defaultValue;
+    }
+    
+    public void setDefaultValue(String value) {
+        this.defaultValue = value;
     }
 
 }

@@ -1830,6 +1830,9 @@ public class AnnotationsProcessor {
                         }
                         declaration.setSubstitutionHead(new QName(subHeadNamespace, subHeadLocal));
                     }
+                    if (!(elementDecl.defaultValue().length() == 1 && elementDecl.defaultValue().startsWith("\u0000"))) {
+                        declaration.setDefaultValue(elementDecl.defaultValue());
+                    }
 
                     if (helper.isAnnotationPresent(next, XmlJavaTypeAdapter.class)) {
                         XmlJavaTypeAdapter typeAdapter = (XmlJavaTypeAdapter) helper.getAnnotation(next, XmlJavaTypeAdapter.class);

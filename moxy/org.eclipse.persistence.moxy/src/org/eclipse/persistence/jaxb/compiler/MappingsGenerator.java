@@ -617,9 +617,10 @@ public class MappingsGenerator {
             mapping.getNullPolicy().setNullRepresentedByXsiNil(true);
         }
         mapping.setField(getXPathForField(property, namespaceInfo, true));
+        mapping.getNullPolicy().setNullRepresentedByEmptyNode(false);
 
         if (property.getType().getRawName().equals("java.lang.String")) {
-            mapping.getNullPolicy().setNullRepresentedByEmptyNode(false);
+            mapping.setNullValue("");
         }
         
         if (!mapping.getXPath().equals("text()")) {
@@ -633,6 +634,9 @@ public class MappingsGenerator {
 
         if(XMLConstants.QNAME_QNAME.equals(property.getSchemaType())){
             ((XMLField) mapping.getField()).setSchemaType(XMLConstants.QNAME_QNAME);
+        }
+        if(property.getDefaultValue() != null) {
+            mapping.setNullValue(property.getDefaultValue());
         }
         descriptor.addMapping(mapping);
         return mapping;
@@ -1621,6 +1625,9 @@ public class MappingsGenerator {
                         mapping.setXPath("text()");
                         mapping.setSetMethodName("setValue");
                         mapping.setGetMethodName("getValue");
+                        if(nextElement.getDefaultValue() != null) {
+                            mapping.setNullValue(nextElement.getDefaultValue());
+                        }
 
                         if(helper.isBuiltInJavaType(nextElement.getJavaType())){                                    
                             Class attributeClassification = org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(attributeTypeName, getClass().getClassLoader());                      
@@ -1628,7 +1635,7 @@ public class MappingsGenerator {
                         }               
                         
                         IsSetNullPolicy nullPolicy = new IsSetNullPolicy("isSetValue", false, true, XMLNullRepresentationType.ABSENT_NODE);
-                        nullPolicy.setNullRepresentedByEmptyNode(true);
+                        //nullPolicy.setNullRepresentedByEmptyNode(true);
                         mapping.setNullPolicy(nullPolicy);
                                             
                         if(type != null && type.isEnumerationType()){

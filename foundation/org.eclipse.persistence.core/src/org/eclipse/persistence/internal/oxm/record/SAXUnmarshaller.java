@@ -88,6 +88,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             saxParserFactory = SAXParserFactory.newInstance();
             saxParserFactory.setNamespaceAware(true);
             saxParserFactory.setFeature("http://xml.org/sax/features/namespace-prefixes", true);
+            saxParserFactory.setFeature("http://apache.org/xml/features/validation/schema/element-default", false);            
             
             saxParser = saxParserFactory.newSAXParser();
             xmlReader = new XMLReader(saxParser.getXMLReader());

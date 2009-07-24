@@ -93,7 +93,12 @@ public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullC
         if (!xmlField.getLastXPathFragment().nameIsText()) {
             return;
         }
-        Object value = unmarshalRecord.getStringBuffer().toString();
+        Object value;
+        if(unmarshalRecord.getStringBuffer().length() == 0) {
+            value = this.getMapping().getNullValue();
+        } else {
+            value = unmarshalRecord.getStringBuffer().toString();
+        }
         unmarshalRecord.resetStringBuffer();
 
         XMLConversionManager xmlConversionManager = (XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager();

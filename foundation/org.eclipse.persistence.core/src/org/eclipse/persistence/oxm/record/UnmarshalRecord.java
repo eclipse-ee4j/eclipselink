@@ -112,6 +112,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
     private boolean isSelfRecord;
     private UnmarshalContext unmarshalContext;
     private UnmarshalNamespaceResolver unmarshalNamespaceResolver;
+    private boolean isXsiNil;
 
     public UnmarshalRecord(TreeObjectBuilder treeObjectBuilder) {
         super();
@@ -572,6 +573,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
                 unmarshalContext.startElement(this);
                 levelIndex++;
 
+                isXsiNil = atts.getIndex(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE) >= 0;
                 NodeValue nodeValue = node.getUnmarshalNodeValue();
                 if (null != nodeValue) {
                     if (!nodeValue.startElement(xPathFragment, this, atts)) {
@@ -685,15 +687,13 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
                 XPathNode textNode = (XPathNode) xPathNode.getTextNode();
                 
                 if (null != textNode && textNode.isWhitespaceAware() && getStringBuffer().length() == 0) {
-                    boolean isXsiNil = false;
-                    if (getAttributes() != null) {
-                        isXsiNil = getAttributes().getIndex(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE) >= 0;
-                    }
                     if (!isXsiNil) {
                         if (textNode.getUnmarshalNodeValue().isMappingNodeValue()) {
                             MappingNodeValue mappingNodeValue = (MappingNodeValue) textNode.getUnmarshalNodeValue();
                             mappingNodeValue.endElement(xPathFragment, this);
                         }
+                    } else {
+                        isXsiNil = false;
                     }
                 }
             }
