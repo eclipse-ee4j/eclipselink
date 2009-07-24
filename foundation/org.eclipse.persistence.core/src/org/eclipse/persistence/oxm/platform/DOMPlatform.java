@@ -12,6 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.oxm.platform;
 
+import java.util.Map;
+
 import org.eclipse.persistence.internal.oxm.record.DOMUnmarshaller;
 import org.eclipse.persistence.internal.oxm.record.PlatformUnmarshaller;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
@@ -35,6 +37,14 @@ public class DOMPlatform extends XMLPlatform {
      * INTERNAL:
      */
     public PlatformUnmarshaller newPlatformUnmarshaller(XMLUnmarshaller xmlUnmarshaller) {
-        return new DOMUnmarshaller(xmlUnmarshaller);
+        return new DOMUnmarshaller(xmlUnmarshaller, null);
     }
+
+    /**
+     * INTERNAL:
+     */
+    public PlatformUnmarshaller newPlatformUnmarshaller(XMLUnmarshaller xmlUnmarshaller, Map<String, Boolean> parserFeatures) {
+        return new DOMUnmarshaller(xmlUnmarshaller, parserFeatures);
+    }
+
 }

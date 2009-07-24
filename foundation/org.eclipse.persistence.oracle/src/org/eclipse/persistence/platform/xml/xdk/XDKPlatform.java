@@ -15,6 +15,7 @@ package org.eclipse.persistence.platform.xml.xdk;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -181,6 +182,10 @@ public class XDKPlatform implements XMLPlatform {
     }
 
     public XMLParser newXMLParser() {
+        return new XDKParser();
+    }
+
+    public XMLParser newXMLParser(Map<String, Boolean> parserFeatures) {
         return new XDKParser();
     }
 

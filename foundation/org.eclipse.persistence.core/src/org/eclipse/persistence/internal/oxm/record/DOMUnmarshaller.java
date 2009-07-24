@@ -18,6 +18,8 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.util.Map;
+
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 import javax.xml.validation.Schema;
@@ -67,9 +69,13 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
     private XMLUnmarshaller xmlUnmarshaller;
     private boolean isResultAlwaysXMLRoot;
 
-    public DOMUnmarshaller(XMLUnmarshaller xmlUnmarshaller) {
+    public DOMUnmarshaller(XMLUnmarshaller xmlUnmarshaller, Map<String, Boolean> parserFeatures) {
         super();
-        parser = XMLPlatformFactory.getInstance().getXMLPlatform().newXMLParser();
+        if(null == parserFeatures) {
+            parser = XMLPlatformFactory.getInstance().getXMLPlatform().newXMLParser();
+        } else {
+            parser = XMLPlatformFactory.getInstance().getXMLPlatform().newXMLParser(parserFeatures);
+        }
         parser.setNamespaceAware(true);
         parser.setValidationMode(XMLParser.NONVALIDATING);
         this.xmlUnmarshaller = xmlUnmarshaller;

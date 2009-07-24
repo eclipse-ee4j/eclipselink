@@ -69,6 +69,13 @@ import org.eclipse.persistence.jaxb.javamodel.JavaClass;
  */
 
 public class JAXBContext extends javax.xml.bind.JAXBContext {
+
+    private static final Map<String, Boolean> PARSER_FEATURES = new HashMap<String, Boolean>(2);
+    static {
+        PARSER_FEATURES.put("http://apache.org/xml/features/validation/schema/normalized-value", false);
+        PARSER_FEATURES.put("http://apache.org/xml/features/validation/schema/element-default", false);            
+    }
+
     private XMLContext xmlContext;
     private org.eclipse.persistence.jaxb.compiler.Generator generator;    
     private HashMap<QName, Class> qNameToGeneratedClasses;
@@ -133,7 +140,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     }
 
     public Unmarshaller createUnmarshaller() {
-        JAXBUnmarshaller unmarshaller = new JAXBUnmarshaller(xmlContext.createUnmarshaller());
+        JAXBUnmarshaller unmarshaller = new JAXBUnmarshaller(xmlContext.createUnmarshaller(PARSER_FEATURES));
         if (generator != null && generator.hasUnmarshalCallbacks()) {
             // initialize each callback in the map
             for (Iterator callIt = generator.getUnmarshalCallbacks().keySet().iterator(); callIt.hasNext(); ) {

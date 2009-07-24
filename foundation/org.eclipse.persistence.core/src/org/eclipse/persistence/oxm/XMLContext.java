@@ -302,8 +302,21 @@ public class XMLContext {
      * @return An XMLUnmarshaller based on this XMLContext
      */
     public XMLUnmarshaller createUnmarshaller() {
-        XMLUnmarshaller unmarshaller = new XMLUnmarshaller(this);
-        return unmarshaller;
+        return new XMLUnmarshaller(this);
+    }
+
+    /**
+     * Create a new XMLUnmarshaller
+     * <pre>
+     * Map<String, Boolean> parserFeatures = new HashMap<String, Boolean>(1);
+     * parserFeatures.put("http://apache.org/xml/features/validation/schema/normalized-value", false);
+     * XMLUnmarshaller unmarshaller = xmlContext.createUnmarshaller(parserFeatures);
+     * </pre>
+     * @return An XMLUnmarshaller based on this XMLContext, the underlying
+     * parser will use the passed in parser features.
+     */
+    public XMLUnmarshaller createUnmarshaller(Map<String, Boolean> parserFeatures) {
+        return new XMLUnmarshaller(this, parserFeatures);
     }
 
     /**

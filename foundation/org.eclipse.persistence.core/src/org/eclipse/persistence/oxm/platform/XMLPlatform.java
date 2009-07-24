@@ -12,6 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.oxm.platform;
 
+import java.util.Map;
+
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
@@ -32,4 +34,10 @@ public abstract class XMLPlatform extends DatasourcePlatform {
      * INTERNAL:
      */
     public abstract PlatformUnmarshaller newPlatformUnmarshaller(XMLUnmarshaller xmlUnmarshaller);
+
+    /**
+     * INTERNAL:
+     */
+    public abstract PlatformUnmarshaller newPlatformUnmarshaller(XMLUnmarshaller xmlUnmarshaller, Map<String, Boolean> parserFeatures);
+
 }

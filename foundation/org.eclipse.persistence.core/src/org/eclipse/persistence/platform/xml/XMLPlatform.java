@@ -13,6 +13,8 @@
 package org.eclipse.persistence.platform.xml;
 
 import java.net.URL;
+import java.util.Map;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -99,9 +101,16 @@ public interface XMLPlatform {
     public XMLParser newXMLParser();
 
     /**
+     * Return a concrete implementation of the XML parser abstraction that is
+     * compatible with the XML Platform, based on these parser features.
+     * @return a platform specific XML parser
+     */
+    public XMLParser newXMLParser(Map<String, Boolean> parserFeatures);
+
+    /**
      * Return a concrete implementation of the XML transformer abstraction that is
      * compatible with the XML Platform.
-     * @return a platform specific XML transfomer
+     * @return a platform specific XML transformer
      */
     public XMLTransformer newXMLTransformer();
 

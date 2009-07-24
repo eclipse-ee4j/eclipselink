@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.net.URL;
+import java.util.Map;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -82,22 +83,26 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     private boolean isResultAlwaysXMLRoot;
     private SAXParserFactory saxParserFactory;
 
-    public SAXUnmarshaller(XMLUnmarshaller xmlUnmarshaller) throws XMLMarshalException {
+    public SAXUnmarshaller(XMLUnmarshaller xmlUnmarshaller, Map<String, Boolean> parserFeatures) throws XMLMarshalException {
         super();
         try {
             saxParserFactory = SAXParserFactory.newInstance();
             saxParserFactory.setNamespaceAware(true);
             saxParserFactory.setFeature("http://xml.org/sax/features/namespace-prefixes", true);
-            saxParserFactory.setFeature("http://apache.org/xml/features/validation/schema/element-default", false);            
-            
+            if(null != parserFeatures) {
+                for(String parserFeature : parserFeatures.keySet()) {
+                    saxParserFactory.setFeature(parserFeature, parserFeatures.get(parserFeature));
+                }
+            }
+
             saxParser = saxParserFactory.newSAXParser();
+
             xmlReader = new XMLReader(saxParser.getXMLReader());
-            
-            DefaultErrorHandler handler = new DefaultErrorHandler();
-            xmlReader.setErrorHandler(handler);
+            xmlReader.setErrorHandler(new DefaultErrorHandler());
             xmlParser = XMLPlatformFactory.getInstance().getXMLPlatform().newXMLParser();
             xmlParser.setNamespaceAware(true);
             xmlParser.setValidationMode(XMLParser.NONVALIDATING);
+
             this.xmlUnmarshaller = xmlUnmarshaller;
         } catch (Exception e) {
             throw XMLMarshalException.errorInstantiatingSchemaPlatform(e);

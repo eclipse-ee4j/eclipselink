@@ -17,6 +17,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.net.URL;
+import java.util.Map;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -56,6 +58,19 @@ public class JAXPParser implements XMLParser {
         errorHandler = new DefaultErrorHandler();
         setNamespaceAware(true);
         setWhitespacePreserving(false);
+    }
+
+    public JAXPParser(Map<String, Boolean> parserFeatures) {
+        this();
+        try {
+            if(null != parserFeatures) {
+                for(String parserFeature : parserFeatures.keySet()) {
+                    documentBuilderFactory.setFeature(parserFeature, parserFeatures.get(parserFeature));
+                }
+            }
+        } catch(Exception e) {
+            throw XMLPlatformException.xmlPlatformParseException(e);
+        }
     }
 
     public void setNamespaceAware(boolean isNamespaceAware) {

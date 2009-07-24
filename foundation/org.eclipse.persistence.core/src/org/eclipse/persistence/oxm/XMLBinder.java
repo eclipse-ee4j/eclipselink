@@ -65,7 +65,7 @@ public class XMLBinder {
     public XMLBinder(XMLContext context) {
         marshaller = context.createMarshaller();
         unmarshaller = context.createUnmarshaller();
-        saxUnmarshaller = new SAXUnmarshaller(unmarshaller);
+        saxUnmarshaller = new SAXUnmarshaller(unmarshaller, null);
         this.context = context;
         documentPreservationPolicy = new XMLBinderPolicy();
         reader = new DOMReader();

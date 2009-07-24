@@ -20,6 +20,7 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Properties;
 import javax.xml.transform.Source;
 import javax.xml.validation.Schema;
@@ -110,23 +111,27 @@ public class XMLUnmarshaller {
     }
 
     protected XMLUnmarshaller(XMLContext xmlContext) {
-        setXMLContext(xmlContext);
-        stringBuffer = new StrBuffer();
-        initialize();
+        this(xmlContext, null);
     }
 
-    private void initialize() {
+    protected XMLUnmarshaller(XMLContext xmlContext, Map<String, Boolean> parserFeatures) {
+        setXMLContext(xmlContext);
+        stringBuffer = new StrBuffer();
+        initialize(parserFeatures);
+    }
+
+    private void initialize(Map<String, Boolean> parserFeatures) {
         DatabaseSession session = xmlContext.getSession(0);
         XMLPlatform xmlPlatform = (XMLPlatform)session.getDatasourceLogin().getDatasourcePlatform();
-        platformUnmarshaller = xmlPlatform.newPlatformUnmarshaller(this);
+        platformUnmarshaller = xmlPlatform.newPlatformUnmarshaller(this, parserFeatures);
         platformUnmarshaller.setWhitespacePreserving(false);
         unmarshalProperties = new Properties();
 
         // Waiting on XDK to fix bug #3697940 to enable this code
-        //initializeSchemas();        
+        //initializeSchemas();
         setValidationMode(NONVALIDATING);
     }
-    
+
     private void initializeSchemas() {
         if (!schemasAreInitialized) {
             HashSet schemas = new HashSet();

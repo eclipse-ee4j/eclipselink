@@ -15,6 +15,8 @@ package org.eclipse.persistence.platform.xml.jaxp;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -129,6 +131,10 @@ public class JAXPPlatform implements XMLPlatform {
 
     public XMLParser newXMLParser() {
         return new JAXPParser();
+    }
+
+    public XMLParser newXMLParser(Map<String, Boolean> parserFeatures) {
+        return new JAXPParser(parserFeatures);
     }
 
     public XMLTransformer newXMLTransformer() {
