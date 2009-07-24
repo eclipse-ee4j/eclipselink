@@ -24,6 +24,7 @@
                 <column name="BB_DATE"/>
                 <temporal>DATE</temporal>
             </basic>
+            <transient name="localTransientString"/>
         </attributes>
     </entity>
     <entity name="MergeCanadian" class="org.eclipse.persistence.testing.models.jpa.xml.merge.inherited.Canadian" access="FIELD">

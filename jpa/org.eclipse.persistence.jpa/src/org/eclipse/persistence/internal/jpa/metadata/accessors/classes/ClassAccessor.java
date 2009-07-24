@@ -327,7 +327,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
      */
     protected void addAccessorFields(boolean processingInverse) {
         for (MetadataField metadataField : getJavaClass().getFields().values()) {
-            if (metadataField.isAnnotationPresent(Transient.class)) {
+            if (metadataField.isAnnotationPresent(Transient.class, getDescriptor())) {
                 if (metadataField.hasMoreThanOneDeclaredAnnotation(getDescriptor())) {
                     throw ValidationException.mappingAnnotationsAppliedToTransientAttribute(metadataField);
                 }
@@ -362,8 +362,8 @@ public abstract class ClassAccessor extends MetadataAccessor {
      * setting.
      */
     protected void addAccessorMethods(boolean processingInverse) {
-        for (MetadataMethod metadataMethod : getJavaClass().getMethods().values()) {            
-            if (metadataMethod.isAnnotationPresent(Transient.class)) {    
+        for (MetadataMethod metadataMethod : getJavaClass().getMethods().values()) {
+            if ( metadataMethod.isAnnotationPresent(Transient.class, getDescriptor())) {    
                 if (metadataMethod.hasMoreThanOneDeclaredAnnotation(getDescriptor())) {
                     throw ValidationException.mappingAnnotationsAppliedToTransientAttribute(metadataMethod);
                 }

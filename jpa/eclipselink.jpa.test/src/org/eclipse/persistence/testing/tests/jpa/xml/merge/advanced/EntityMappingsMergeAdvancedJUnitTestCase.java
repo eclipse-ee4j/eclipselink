@@ -131,6 +131,14 @@ public class EntityMappingsMergeAdvancedJUnitTestCase extends JUnitTestCase {
         }
     }
 
+    public void testIgnoredTransientAnnotation(){
+        Map descriptors = getServerSession().getDescriptors();
+        ClassDescriptor descriptor = (ClassDescriptor)descriptors.get(Employee.class);
+        DatabaseMapping mapping = descriptor.getMappingForAttributeName("lastName");
+        assertTrue("No mapping for attribute that was set as @Transient, in a metadata complete entity.", mapping !=null);
+        assertTrue("Incorrect mapping for attribute that was set as @Transient, in a metadata complete entity.", mapping.isDirectToFieldMapping());
+    }
+    
     public static void main(String[] args) {
          junit.textui.TestRunner.run(EntityMappingsMergeAdvancedJUnitTestCase.suite());
     }
