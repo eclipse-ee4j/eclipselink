@@ -183,6 +183,10 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                         "<schema-type>{http://www.w3.org/2001/XMLSchema}decimal</schema-type>" +
                      "</field>" +
                      "<attribute-classification>java.math.BigDecimal</attribute-classification>" +
+                     "<null-policy xsi:type=\"null-policy\">" +
+                        "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
+                        "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
+                     "</null-policy>" +
                   "</attribute-mapping>" +
                   "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
                      "<attribute-name>reg_name</attribute-name>" +
@@ -190,6 +194,10 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                          "<schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>" +
                      "</field>" +
                      "<attribute-classification>java.lang.String</attribute-classification>" +
+                     "<null-policy xsi:type=\"null-policy\">" +
+                        "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
+                        "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
+                     "</null-policy>" +
                   "</attribute-mapping>" +
                "</attribute-mappings>" +
                "<descriptor-type>aggregate</descriptor-type>" +
@@ -198,6 +206,12 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                "<default-root-element>regionType</default-root-element>" +
                "<default-root-element-field name=\"regionType\" xsi:type=\"node\"/>" +
                "<namespace-resolver>" +
+                  "<namespaces>" +
+                     "<namespace>" +
+                        "<prefix>xsi</prefix>" +
+                        "<namespace-uri>http://www.w3.org/2001/XMLSchema-instance</namespace-uri>" +
+                     "</namespace>" +
+                  "</namespaces>" +
                   "<default-namespace-uri>urn:struct1</default-namespace-uri>" +
                "</namespace-resolver>" +
                "<schema xsi:type=\"schema-url-reference\">" +
@@ -396,6 +410,10 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                       "<schema-type>{http://www.w3.org/2001/XMLSchema}decimal</schema-type>" +
                    "</field>" +
                    "<attribute-classification>java.math.BigDecimal</attribute-classification>" +
+                   "<null-policy xsi:type=\"null-policy\">" +
+                      "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
+                      "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
+                   "</null-policy>" +
                 "</attribute-mapping>" +
                 "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
                    "<attribute-name>reg_name</attribute-name>" +
@@ -403,12 +421,22 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                        "<schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>" +
                     "</field>" +
                     "<attribute-classification>java.lang.String</attribute-classification>" +
+                    "<null-policy xsi:type=\"null-policy\">" +
+                       "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
+                       "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
+                    "</null-policy>" +
                 "</attribute-mapping>" +
              "</attribute-mappings>" +
              "<descriptor-type>aggregate</descriptor-type>" +
              "<instantiation/>" +
              "<copying xsi:type=\"instantiation-copy-policy\"/>" +
              "<namespace-resolver>" +
+                 "<namespaces>" +
+                     "<namespace>" +
+                        "<prefix>xsi</prefix>" +
+                        "<namespace-uri>http://www.w3.org/2001/XMLSchema-instance</namespace-uri>" +
+                     "</namespace>" +
+                 "</namespaces>" +
                 "<default-namespace-uri>urn:struct2</default-namespace-uri>" +
              "</namespace-resolver>" +
              "<schema xsi:type=\"schema-url-reference\">" +
@@ -428,6 +456,10 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                      "<schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>" +
                   "</field>" +
                   "<attribute-classification>java.lang.String</attribute-classification>" +
+                  "<null-policy xsi:type=\"null-policy\">" +
+	                 "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
+	                 "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
+	              "</null-policy>" +
                "</attribute-mapping>" +
                "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
                   "<attribute-name>suburb</attribute-name>" +
@@ -435,6 +467,10 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                      "<schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>" +
                   "</field>" +
                   "<attribute-classification>java.lang.String</attribute-classification>" +
+                  "<null-policy xsi:type=\"null-policy\">" +
+	                 "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
+	                 "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
+	              "</null-policy>" +
                "</attribute-mapping>" +
                "<attribute-mapping xsi:type=\"xml-composite-object-mapping\">" +
                   "<attribute-name>addr_region</attribute-name>" +
@@ -447,6 +483,10 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                      "<schema-type>{http://www.w3.org/2001/XMLSchema}integer</schema-type>" +
                   "</field>" +
                   "<attribute-classification>java.math.BigInteger</attribute-classification>" +
+                  "<null-policy xsi:type=\"null-policy\">" +
+	                 "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
+	                 "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
+	              "</null-policy>" +
                "</attribute-mapping>" +
              "</attribute-mappings>" +
              "<descriptor-type>aggregate</descriptor-type>" +
@@ -455,6 +495,12 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
              "<default-root-element>emp_addressType</default-root-element>" +
              "<default-root-element-field name=\"emp_addressType\" xsi:type=\"node\"/>" +
              "<namespace-resolver>" +
+                 "<namespaces>" +
+                     "<namespace>" +
+                        "<prefix>xsi</prefix>" +
+                        "<namespace-uri>http://www.w3.org/2001/XMLSchema-instance</namespace-uri>" +
+                     "</namespace>" +
+                 "</namespaces>" +
                 "<default-namespace-uri>urn:struct2</default-namespace-uri>" +
              "</namespace-resolver>" +
              "<schema xsi:type=\"schema-url-reference\">" +
@@ -793,6 +839,10 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                           "<schema-type>{http://www.w3.org/2001/XMLSchema}decimal</schema-type>" +
                        "</field>" +
                        "<attribute-classification>java.math.BigDecimal</attribute-classification>" +
+                       "<null-policy xsi:type=\"null-policy\">" +
+  	                      "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
+  	                      "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
+  	                   "</null-policy>" +
                     "</attribute-mapping>" +
                     "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
                        "<attribute-name>reg_name</attribute-name>" +
@@ -800,12 +850,22 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                           "<schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>" +
                        "</field>" +
                        "<attribute-classification>java.lang.String</attribute-classification>" +
+                       "<null-policy xsi:type=\"null-policy\">" +
+	                      "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
+	                      "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
+	                   "</null-policy>" +
                     "</attribute-mapping>" +
                  "</attribute-mappings>" +
                  "<descriptor-type>aggregate</descriptor-type>" +
                  "<instantiation/>" +
                  "<copying xsi:type=\"instantiation-copy-policy\"/>" +
                  "<namespace-resolver>" +
+                     "<namespaces>" +
+                         "<namespace>" +
+                            "<prefix>xsi</prefix>" +
+                            "<namespace-uri>http://www.w3.org/2001/XMLSchema-instance</namespace-uri>" +
+                         "</namespace>" +
+                     "</namespaces>" +
                     "<default-namespace-uri>urn:struct3</default-namespace-uri>" +
                  "</namespace-resolver>" +
                  "<schema xsi:type=\"schema-url-reference\">" +
@@ -825,6 +885,10 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                           "<schema-type>{http://www.w3.org/2001/XMLSchema}decimal</schema-type>" +
                        "</field>" +
                        "<attribute-classification>java.math.BigDecimal</attribute-classification>" +
+                       "<null-policy xsi:type=\"null-policy\">" +
+	                      "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
+	                      "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
+	                   "</null-policy>" +
                     "</attribute-mapping>" +
                     "<attribute-mapping xsi:type=\"xml-composite-object-mapping\">" +
                        "<attribute-name>address</attribute-name>" +
@@ -837,6 +901,10 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                           "<schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>" +
                        "</field>" +
                        "<attribute-classification>java.lang.String</attribute-classification>" +
+                       "<null-policy xsi:type=\"null-policy\">" +
+	                      "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
+	                      "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
+	                   "</null-policy>" +
                     "</attribute-mapping>" +
                     "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
                        "<attribute-name>date_of_hire</attribute-name>" +
@@ -852,6 +920,10 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                           "</java-to-xml-conversion-pair>" +
                        "</field>" +
                        "<attribute-classification>java.sql.Date</attribute-classification>" +
+                       "<null-policy xsi:type=\"null-policy\">" +
+	                      "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
+	                      "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
+	                   "</null-policy>" +
                     "</attribute-mapping>" +
                  "</attribute-mappings>" +
                  "<descriptor-type>aggregate</descriptor-type>" +
@@ -889,6 +961,10 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                           "<schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>" +
                        "</field>" +
                        "<attribute-classification>java.lang.String</attribute-classification>" +
+                       "<null-policy xsi:type=\"null-policy\">" +
+	                      "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
+	                      "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
+	                   "</null-policy>" +
                     "</attribute-mapping>" +
                     "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
                        "<attribute-name>suburb</attribute-name>" +
@@ -896,6 +972,10 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                           "<schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>" +
                        "</field>" +
                        "<attribute-classification>java.lang.String</attribute-classification>" +
+                       "<null-policy xsi:type=\"null-policy\">" +
+	                      "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
+	                      "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
+	                   "</null-policy>" +
                     "</attribute-mapping>" +
                     "<attribute-mapping xsi:type=\"xml-composite-object-mapping\">" +
                        "<attribute-name>addr_region</attribute-name>" +
@@ -908,12 +988,22 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                           "<schema-type>{http://www.w3.org/2001/XMLSchema}integer</schema-type>" +
                        "</field>" +
                        "<attribute-classification>java.math.BigInteger</attribute-classification>" +
+                       "<null-policy xsi:type=\"null-policy\">" +
+	                      "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
+	                      "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
+	                   "</null-policy>" +
                     "</attribute-mapping>" +
                  "</attribute-mappings>" +
                  "<descriptor-type>aggregate</descriptor-type>" +
                  "<instantiation/>" +
                  "<copying xsi:type=\"instantiation-copy-policy\"/>" +
                  "<namespace-resolver>" +
+                    "<namespaces>" +
+                       "<namespace>" +
+                          "<prefix>xsi</prefix>" +
+                          "<namespace-uri>http://www.w3.org/2001/XMLSchema-instance</namespace-uri>" +
+                       "</namespace>" +
+                    "</namespaces>" +
                     "<default-namespace-uri>urn:struct3</default-namespace-uri>" +
                  "</namespace-resolver>" +
                  "<schema xsi:type=\"schema-url-reference\">" +
@@ -1131,6 +1221,10 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                           "<schema-type>{http://www.w3.org/2001/XMLSchema}decimal</schema-type>" +
                        "</field>" +
                        "<attribute-classification>java.math.BigDecimal</attribute-classification>" +
+                       "<null-policy xsi:type=\"null-policy\">" +
+	                      "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
+	                      "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
+	                   "</null-policy>" +
                     "</attribute-mapping>" +
                     "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
                        "<attribute-name>name</attribute-name>" +
@@ -1138,12 +1232,22 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                           "<schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>" +
                        "</field>" +
                        "<attribute-classification>java.lang.String</attribute-classification>" +
+                       "<null-policy xsi:type=\"null-policy\">" +
+	                      "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
+	                      "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
+	                   "</null-policy>" +
                     "</attribute-mapping>" +
                  "</attribute-mappings>" +
                  "<descriptor-type>aggregate</descriptor-type>" +
                  "<instantiation/>" +
                  "<copying xsi:type=\"instantiation-copy-policy\"/>" +
                  "<namespace-resolver>" +
+                     "<namespaces>" +
+                         "<namespace>" +
+                            "<prefix>xsi</prefix>" +
+                            "<namespace-uri>http://www.w3.org/2001/XMLSchema-instance</namespace-uri>" +
+                         "</namespace>" +
+                     "</namespaces>" +
                     "<default-namespace-uri>urn:empArray</default-namespace-uri>" +
                  "</namespace-resolver>" +
                  "<schema xsi:type=\"schema-url-reference\">" +
@@ -1316,6 +1420,10 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                        "<container xsi:type=\"container-policy\">" +
                           "<collection-type>java.util.ArrayList</collection-type>" +
                        "</container>" +
+                       "<null-policy xsi:type=\"null-policy\">" +
+                          "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
+                          "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
+                       "</null-policy>" +
                     "</attribute-mapping>" +
                  "</attribute-mappings>" +
                  "<descriptor-type>aggregate</descriptor-type>" +
@@ -1324,6 +1432,12 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                  "<default-root-element>somepackage_tbl1Type</default-root-element>" +
                  "<default-root-element-field name=\"somepackage_tbl1Type\" xsi:type=\"node\"/>" +
                  "<namespace-resolver>" +
+                    "<namespaces>" +
+                       "<namespace>" +
+                          "<prefix>xsi</prefix>" +
+                          "<namespace-uri>http://www.w3.org/2001/XMLSchema-instance</namespace-uri>" +
+                       "</namespace>" +
+                    "</namespaces>" +
                     "<default-namespace-uri>urn:tbl1</default-namespace-uri>" +
                  "</namespace-resolver>" +
                  "<schema xsi:type=\"schema-url-reference\">" +
@@ -1458,6 +1572,10 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                        "<container xsi:type=\"container-policy\">" +
                           "<collection-type>java.util.ArrayList</collection-type>" +
                        "</container>" +
+                       "<null-policy xsi:type=\"null-policy\">" +
+                          "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
+                          "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
+                       "</null-policy>" +
                     "</attribute-mapping>" +
                  "</attribute-mappings>" +
                  "<descriptor-type>aggregate</descriptor-type>" +
@@ -1466,6 +1584,12 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                  "<default-root-element>somepackage_tbl5Type</default-root-element>" +
                  "<default-root-element-field name=\"somepackage_tbl5Type\" xsi:type=\"node\"/>" +
                  "<namespace-resolver>" +
+                     "<namespaces>" +
+                        "<namespace>" +
+                           "<prefix>xsi</prefix>" +
+                           "<namespace-uri>http://www.w3.org/2001/XMLSchema-instance</namespace-uri>" +
+                        "</namespace>" +
+                     "</namespaces>" +
                     "<default-namespace-uri>urn:tbl5</default-namespace-uri>" +
                  "</namespace-resolver>" +
                  "<schema xsi:type=\"schema-url-reference\">" +
@@ -1685,6 +1809,10 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                        "<container xsi:type=\"container-policy\">" +
                           "<collection-type>java.util.ArrayList</collection-type>" +
                        "</container>" +
+                       "<null-policy xsi:type=\"null-policy\">" +
+                          "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
+                          "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
+                       "</null-policy>" +
                     "</attribute-mapping>" +
                     "<attribute-mapping xsi:type=\"xml-composite-direct-collection-mapping\">" +
                        "<attribute-name>t2</attribute-name>" +
@@ -1697,6 +1825,10 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                        "<container xsi:type=\"container-policy\">" +
                           "<collection-type>java.util.ArrayList</collection-type>" +
                        "</container>" +
+                       "<null-policy xsi:type=\"null-policy\">" +
+                          "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
+                          "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
+                       "</null-policy>" +
                     "</attribute-mapping>" +
                     "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
                        "<attribute-name>t3</attribute-name>" +
@@ -1704,6 +1836,10 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                           "<schema-type>{http://www.w3.org/2001/XMLSchema}integer</schema-type>" +
                        "</field>" +
                        "<attribute-classification>java.math.BigInteger</attribute-classification>" +
+                       "<null-policy xsi:type=\"null-policy\">" +
+	                      "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
+	                      "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
+	                   "</null-policy>" +
                     "</attribute-mapping>" +
                  "</attribute-mappings>" +
                  "<descriptor-type>aggregate</descriptor-type>" +
@@ -1712,6 +1848,12 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                  "<default-root-element>somepackage_arecordType</default-root-element>" +
                  "<default-root-element-field name=\"somepackage_arecordType\" xsi:type=\"node\"/>" +
                  "<namespace-resolver>" +
+                     "<namespaces>" +
+                        "<namespace>" +
+                           "<prefix>xsi</prefix>" +
+                           "<namespace-uri>http://www.w3.org/2001/XMLSchema-instance</namespace-uri>" +
+                        "</namespace>" +
+                     "</namespaces>" +
                     "<default-namespace-uri>urn:aRecord</default-namespace-uri>" +
                  "</namespace-resolver>" +
                  "<schema xsi:type=\"schema-url-reference\">" +
@@ -1736,12 +1878,22 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                        "<container xsi:type=\"container-policy\">" +
                           "<collection-type>java.util.ArrayList</collection-type>" +
                        "</container>" +
+                       "<null-policy xsi:type=\"null-policy\">" +
+                          "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
+                          "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
+                       "</null-policy>" +
                     "</attribute-mapping>" +
                  "</attribute-mappings>" +
                  "<descriptor-type>aggregate</descriptor-type>" +
                  "<instantiation/>" +
                  "<copying xsi:type=\"instantiation-copy-policy\"/>" +
                  "<namespace-resolver>" +
+                     "<namespaces>" +
+                        "<namespace>" +
+                           "<prefix>xsi</prefix>" +
+                           "<namespace-uri>http://www.w3.org/2001/XMLSchema-instance</namespace-uri>" +
+                        "</namespace>" +
+                     "</namespaces>" +
                     "<default-namespace-uri>urn:aRecord</default-namespace-uri>" +
                  "</namespace-resolver>" +
                  "<schema xsi:type=\"schema-url-reference\">" +
@@ -1766,12 +1918,22 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                        "<container xsi:type=\"container-policy\">" +
                           "<collection-type>java.util.ArrayList</collection-type>" +
                        "</container>" +
+                       "<null-policy xsi:type=\"null-policy\">" +
+                          "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
+                          "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
+                       "</null-policy>" +
                     "</attribute-mapping>" +
                  "</attribute-mappings>" +
                  "<descriptor-type>aggregate</descriptor-type>" +
                  "<instantiation/>" +
                  "<copying xsi:type=\"instantiation-copy-policy\"/>" +
                  "<namespace-resolver>" +
+                     "<namespaces>" +
+                        "<namespace>" +
+                           "<prefix>xsi</prefix>" +
+                           "<namespace-uri>http://www.w3.org/2001/XMLSchema-instance</namespace-uri>" +
+                        "</namespace>" +
+                     "</namespaces>" +
                     "<default-namespace-uri>urn:aRecord</default-namespace-uri>" +
                  "</namespace-resolver>" +
                  "<schema xsi:type=\"schema-url-reference\">" +
@@ -2044,6 +2206,10 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                        "<container xsi:type=\"container-policy\">" +
                           "<collection-type>java.util.ArrayList</collection-type>" +
                        "</container>" +
+                       "<null-policy xsi:type=\"null-policy\">" +
+                          "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
+                          "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
+                       "</null-policy>" +
                     "</attribute-mapping>" +
                  "</attribute-mappings>" +
                  "<descriptor-type>aggregate</descriptor-type>" +
@@ -2052,6 +2218,12 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                  "<default-root-element>somepackage_crecordType</default-root-element>" +
                  "<default-root-element-field name=\"somepackage_crecordType\" xsi:type=\"node\"/>" +
                  "<namespace-resolver>" +
+                     "<namespaces>" +
+                        "<namespace>" +
+                           "<prefix>xsi</prefix>" +
+                           "<namespace-uri>http://www.w3.org/2001/XMLSchema-instance</namespace-uri>" +
+                        "</namespace>" +
+                     "</namespaces>" +
                     "<default-namespace-uri>urn:cRecord</default-namespace-uri>" +
                  "</namespace-resolver>" +
                  "<schema xsi:type=\"schema-url-reference\">" +
@@ -2076,6 +2248,10 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                        "<container xsi:type=\"container-policy\">" +
                           "<collection-type>java.util.ArrayList</collection-type>" +
                        "</container>" +
+                       "<null-policy xsi:type=\"null-policy\">" +
+                          "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
+                          "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
+                       "</null-policy>" +
                     "</attribute-mapping>" +
                     "<attribute-mapping xsi:type=\"xml-composite-direct-collection-mapping\">" +
                        "<attribute-name>t2</attribute-name>" +
@@ -2088,6 +2264,10 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                        "<container xsi:type=\"container-policy\">" +
                           "<collection-type>java.util.ArrayList</collection-type>" +
                        "</container>" +
+                       "<null-policy xsi:type=\"null-policy\">" +
+                          "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
+                          "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
+                       "</null-policy>" +
                     "</attribute-mapping>" +
                     "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
                        "<attribute-name>t3</attribute-name>" +
@@ -2095,12 +2275,22 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                           "<schema-type>{http://www.w3.org/2001/XMLSchema}integer</schema-type>" +
                        "</field>" +
                        "<attribute-classification>java.math.BigInteger</attribute-classification>" +
+                       "<null-policy xsi:type=\"null-policy\">" +
+	                      "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
+	                      "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
+	                   "</null-policy>" +
                     "</attribute-mapping>" +
                  "</attribute-mappings>" +
                  "<descriptor-type>aggregate</descriptor-type>" +
                  "<instantiation/>" +
                  "<copying xsi:type=\"instantiation-copy-policy\"/>" +
                  "<namespace-resolver>" +
+                     "<namespaces>" +
+                        "<namespace>" +
+                           "<prefix>xsi</prefix>" +
+                           "<namespace-uri>http://www.w3.org/2001/XMLSchema-instance</namespace-uri>" +
+                        "</namespace>" +
+                     "</namespaces>" +
                     "<default-namespace-uri>urn:cRecord</default-namespace-uri>" +
                  "</namespace-resolver>" +
                  "<schema xsi:type=\"schema-url-reference\">" +
@@ -2125,12 +2315,22 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                        "<container xsi:type=\"container-policy\">" +
                           "<collection-type>java.util.ArrayList</collection-type>" +
                        "</container>" +
+                       "<null-policy xsi:type=\"null-policy\">" +
+                          "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
+                          "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
+                       "</null-policy>" +
                     "</attribute-mapping>" +
                  "</attribute-mappings>" +
                  "<descriptor-type>aggregate</descriptor-type>" +
                  "<instantiation/>" +
                  "<copying xsi:type=\"instantiation-copy-policy\"/>" +
                  "<namespace-resolver>" +
+                     "<namespaces>" +
+                        "<namespace>" +
+                           "<prefix>xsi</prefix>" +
+                           "<namespace-uri>http://www.w3.org/2001/XMLSchema-instance</namespace-uri>" +
+                        "</namespace>" +
+                     "</namespaces>" +
                     "<default-namespace-uri>urn:cRecord</default-namespace-uri>" +
                  "</namespace-resolver>" +
                  "<schema xsi:type=\"schema-url-reference\">" +
@@ -2155,12 +2355,22 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                        "<container xsi:type=\"container-policy\">" +
                           "<collection-type>java.util.ArrayList</collection-type>" +
                        "</container>" +
+                       "<null-policy xsi:type=\"null-policy\">" +
+                          "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
+                          "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
+                       "</null-policy>" +
                     "</attribute-mapping>" +
                  "</attribute-mappings>" +
                  "<descriptor-type>aggregate</descriptor-type>" +
                  "<instantiation/>" +
                  "<copying xsi:type=\"instantiation-copy-policy\"/>" +
                  "<namespace-resolver>" +
+                     "<namespaces>" +
+                        "<namespace>" +
+                           "<prefix>xsi</prefix>" +
+                           "<namespace-uri>http://www.w3.org/2001/XMLSchema-instance</namespace-uri>" +
+                        "</namespace>" +
+                     "</namespaces>" +
                     "<default-namespace-uri>urn:cRecord</default-namespace-uri>" +
                  "</namespace-resolver>" +
                  "<schema xsi:type=\"schema-url-reference\">" +

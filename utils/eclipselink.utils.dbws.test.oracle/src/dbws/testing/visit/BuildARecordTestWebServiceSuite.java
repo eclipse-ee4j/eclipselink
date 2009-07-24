@@ -118,7 +118,7 @@ public class BuildARecordTestWebServiceSuite extends WebServiceTestSuite impleme
           "<SOAP-ENV:Body>" +          
              "<srvc:" + ADVJDBC_BUILD_ARECORD_TEST + "Response xmlns=\"" + ADVJDBC_BUILD_ARECORD_NAMESPACE +"\" xmlns:srvc=\"" + ADVJDBC_BUILD_ARECORD_SERVICE_NAMESPACE + "\">" +
                 "<srvc:result>" +
-                   "<somepackage_arecordType>" +
+                   "<somepackage_arecordType xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
                       "<t1>" +
                          "<item>entry 1</item>" +
                          "<item>entry 2</item>" +

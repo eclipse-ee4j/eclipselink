@@ -119,7 +119,7 @@ public class BuildTbl2TestWebServiceSuite extends WebServiceSOAP12TestSuite impl
           "<env:Body>" +          
              "<srvc:" + ADVJDBC_BUILD_TBL2_TEST + "Response xmlns=\"" + ADVJDBC_BUILD_TBL2_NAMESPACE +"\" xmlns:srvc=\"" + ADVJDBC_BUILD_TBL2_SERVICE_NAMESPACE + "\">" +
                  "<srvc:result>" +
-                     "<somepackage_tbl2Type>" +
+                     "<somepackage_tbl2Type xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
                         "<item>1</item>" +
                         "<item>2</item>" +
                         "<item>3</item>" +

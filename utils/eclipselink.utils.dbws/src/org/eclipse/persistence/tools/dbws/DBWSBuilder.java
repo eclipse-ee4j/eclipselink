@@ -96,6 +96,7 @@ import org.eclipse.persistence.internal.xr.Parameter;
 import org.eclipse.persistence.internal.xr.QueryOperation;
 import org.eclipse.persistence.internal.xr.Result;
 import org.eclipse.persistence.internal.xr.UpdateOperation;
+import org.eclipse.persistence.internal.xr.Util;
 import org.eclipse.persistence.internal.xr.XRServiceModel;
 import org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormatProject;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -113,6 +114,7 @@ import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.platform.DOMPlatform;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.oxm.schema.XMLSchemaURLReference;
@@ -163,10 +165,13 @@ import static org.eclipse.persistence.internal.xr.Util.DBWS_SERVICE_XML;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_SESSIONS_XML;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_WSDL;
 import static org.eclipse.persistence.internal.xr.Util.DEFAULT_ATTACHMENT_MIMETYPE;
+import static org.eclipse.persistence.internal.xr.Util.PK_QUERYNAME;
 import static org.eclipse.persistence.internal.xr.Util.SCHEMA_2_CLASS;
 import static org.eclipse.persistence.internal.xr.Util.TARGET_NAMESPACE_PREFIX;
 import static org.eclipse.persistence.internal.xr.Util.getClassFromJDBCType;
 import static org.eclipse.persistence.oxm.XMLConstants.BASE_64_BINARY_QNAME;
+import static org.eclipse.persistence.oxm.XMLConstants.SCHEMA_INSTANCE_PREFIX;
+import static org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType.XSI_NIL;
 import static org.eclipse.persistence.platform.database.oracle.publisher.Util.TOPLEVEL;
 import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.archive;
 import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.noArchive;
@@ -180,7 +185,6 @@ import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_SOURCE_FILE;
 import static org.eclipse.persistence.tools.dbws.Util.DEFAULT_PLATFORM_CLASSNAME;
 import static org.eclipse.persistence.tools.dbws.Util.DEFAULT_WSDL_LOCATION_URI;
 import static org.eclipse.persistence.tools.dbws.Util.FINDALL_QUERYNAME;
-import static org.eclipse.persistence.tools.dbws.Util.PK_QUERYNAME;
 import static org.eclipse.persistence.tools.dbws.Util.REMOVE_OPERATION_NAME;
 import static org.eclipse.persistence.tools.dbws.Util.SWAREF_FILENAME;
 import static org.eclipse.persistence.tools.dbws.Util.THE_INSTANCE_NAME;
@@ -190,6 +194,7 @@ import static org.eclipse.persistence.tools.dbws.Util.WSI_SWAREF;
 import static org.eclipse.persistence.tools.dbws.Util.WSI_SWAREF_PREFIX;
 import static org.eclipse.persistence.tools.dbws.Util.WSI_SWAREF_URI;
 import static org.eclipse.persistence.tools.dbws.Util.WSI_SWAREF_XSD_FILE;
+import static org.eclipse.persistence.tools.dbws.Util.addSimpleXMLFormat;
 import static org.eclipse.persistence.tools.dbws.Util.getXMLTypeFromJDBCType;
 import static org.eclipse.persistence.tools.dbws.Util.InOut.IN;
 import static org.eclipse.persistence.tools.dbws.Util.InOut.INOUT;
@@ -502,6 +507,10 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         packager.end();
     }
 
+    public OutputStream getShadowDDLStream() {
+        return __nullStream;
+    }
+    
     public void buildDbArtifacts() {
         // do Table operations first
         boolean isOracle = 
@@ -701,6 +710,8 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
             xdesc.setAlias(tablenameAlias);
             NamespaceResolver nr = new NamespaceResolver();
             nr.setDefaultNamespaceURI(getTargetNamespace());
+            nr.put(SCHEMA_INSTANCE_PREFIX,
+                W3C_XML_SCHEMA_INSTANCE_NS_URI); // to support xsi:nil policy
             xdesc.setNamespaceResolver(nr);
             xdesc.setDefaultRootElement(tablenameAlias);
             XMLSchemaURLReference schemaReference = new XMLSchemaURLReference("");
@@ -763,6 +774,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                 databaseField.setSqlType(jdbcType);
                 dtfm.setField(databaseField);
                 xdm.setAttributeName(fieldName);
+                xdm.setAttributeClassificationName(attributeClass.getName());
                 String xPath = "";
                 ElementStyle style = nct.styleForElement(columnName);
                 if (style == NONE) {
@@ -773,6 +785,11 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                 }
                 else if (style == ELEMENT){
                     xPath += fieldName;
+                    AbstractNullPolicy nullPolicy = xdm.getNullPolicy();
+                    nullPolicy.setNullRepresentedByEmptyNode(false);
+                    nullPolicy.setMarshalNullRepresentation(XSI_NIL);
+                    nullPolicy.setNullRepresentedByXsiNil(true);
+                    xdm.setNullPolicy(nullPolicy);
                 }
                 desc.addMapping(dtfm);
                 xdesc.addMapping(xdm);
@@ -783,11 +800,8 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                 XMLField xmlField = (XMLField)xdm.getField();
                 xmlField.setSchemaType(qName);
                 if (!isSwaRef && qName == BASE_64_BINARY_QNAME) {
-                    // need xsi, xsd namespaces 
-                    nr.put("xsi", W3C_XML_SCHEMA_INSTANCE_NS_URI);
+                    // need xsd namespaces 
                     nr.put("xsd", W3C_XML_SCHEMA_NS_URI);
-                    xmlField.setIsTypedTextField(true);
-                    xmlField.addConversion(BASE_64_BINARY_QNAME, APBYTE);
                 }
                 if (dbColumn.isPK()) {
                     desc.addPrimaryKeyField(databaseField);
@@ -1183,7 +1197,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
             }
         }
         else {
-            Util.addSimpleXMLFormat(schema);
+            addSimpleXMLFormat(schema);
             schema.setTargetNamespace(getTargetNamespace());
         }
     }
@@ -1228,10 +1242,10 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                 }
                 if (buildCRUDoperations) {
                     QueryOperation findByPKQueryOperation = new QueryOperation();
-                    findByPKQueryOperation.setName(PK_QUERYNAME + "_" + tablenameAlias);
+                    findByPKQueryOperation.setName(Util.PK_QUERYNAME + "_" + tablenameAlias);
                     findByPKQueryOperation.setUserDefined(false);
                     NamedQueryHandler nqh1 = new NamedQueryHandler();
-                    nqh1.setName(PK_QUERYNAME);
+                    nqh1.setName(Util.PK_QUERYNAME);
                     nqh1.setDescriptor(tablenameAlias);
                     Result result = new Result();
                     QName theInstanceType = new QName(getTargetNamespace(), tablenameAlias,
@@ -1271,7 +1285,14 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                     xrServiceModel.getOperations().put(updateOperation.getName(), updateOperation);
                     DeleteOperation deleteOperation = new DeleteOperation();
                     deleteOperation.setName(REMOVE_OPERATION_NAME + "_" + tablenameAlias);
-                    deleteOperation.getParameters().add(theInstance);
+                    deleteOperation.setDescriptorName(tablenameAlias);
+                    for (Iterator j = desc.getPrimaryKeyFields().iterator(); j.hasNext();) {
+                        DatabaseField field = (DatabaseField)j.next();
+                        Parameter p = new Parameter();
+                        p.setName(field.getName().toLowerCase());
+                        p.setType(getXMLTypeFromJDBCType(field.getSqlType()));
+                        deleteOperation.getParameters().add(p);
+                    }
                     xrServiceModel.getOperations().put(deleteOperation.getName(), deleteOperation);
                 }
             }
@@ -1765,5 +1786,12 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
             this.name = name;
             this.procOpModel = procOpModel;
         }
+    }
+    
+    public NamingConventionTransformer getTopNamingConventionTransformer() {
+        return topTransformer;
+    }
+    public void setTopNamingConventionTransformer(NamingConventionTransformer topTransformer) {
+        this.topTransformer = topTransformer;
     }
 }

@@ -367,7 +367,7 @@
   </target>
 
   <target
-    name="test"
+    name="run-tests"
     if="support.test"
     depends="build"
     >

@@ -96,7 +96,7 @@ public class CRUDTestSuite extends DBWSTestSuite {
     }
     public static final String CRUD1_CONTROL_DOC =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-        "<crud_tableType xmlns=\"urn:crud\">" +
+        "<crud_tableType xmlns=\"urn:crud\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
           "<id>1</id>" +
           "<name>crud1</name>" +
         "</crud_tableType>";
@@ -122,15 +122,15 @@ public class CRUDTestSuite extends DBWSTestSuite {
     public static final String FIND_ALL_CONTROL_DOC =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?> " +
         "<all>" +
-          "<crud_tableType xmlns=\"urn:crud\">" +
+           "<crud_tableType xmlns=\"urn:crud\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
             "<id>1</id>" +
             "<name>crud1</name>" +
           "</crud_tableType>" +
-          "<crud_tableType xmlns=\"urn:crud\">" +
+          "<crud_tableType xmlns=\"urn:crud\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
             "<id>2</id>" +
             "<name>crud2</name>" +
           "</crud_tableType>" +
-          "<crud_tableType xmlns=\"urn:crud\">" +
+          "<crud_tableType xmlns=\"urn:crud\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
             "<id>3</id>" +
             "<name>other</name>" +
           "</crud_tableType>" +
@@ -157,11 +157,11 @@ public class CRUDTestSuite extends DBWSTestSuite {
     public static final String FIND_BY_NAME_CONTROL_DOC =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?> " +
         "<some>" +
-          "<crud_tableType xmlns=\"urn:crud\">" +
+          "<crud_tableType xmlns=\"urn:crud\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
             "<id>1</id>" +
             "<name>crud1</name>" +
           "</crud_tableType>" +
-          "<crud_tableType xmlns=\"urn:crud\">" +
+          "<crud_tableType xmlns=\"urn:crud\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
             "<id>2</id>" +
             "<name>crud2</name>" +
           "</crud_tableType>" +
@@ -188,7 +188,7 @@ public class CRUDTestSuite extends DBWSTestSuite {
         Vector<BaseEntity> result = (Vector<BaseEntity>)op.invoke(xrService, invocation);
         BaseEntity firstEmp = result.firstElement();
         Invocation invocation2 = new Invocation("delete_crud_tableType");
-        invocation2.setParameter("theInstance", firstEmp);
+        invocation2.setParameter("id", firstEmp.get(0));
         Operation op2 = xrService.getOperation(invocation2.getName());
         op2.invoke(xrService, invocation2);
         Vector<BaseEntity> result2 = (Vector<BaseEntity>)op.invoke(xrService, invocation);

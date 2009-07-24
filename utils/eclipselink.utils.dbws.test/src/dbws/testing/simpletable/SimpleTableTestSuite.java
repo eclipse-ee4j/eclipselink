@@ -79,7 +79,7 @@ public class SimpleTableTestSuite extends DBWSTestSuite {
     }
     public static final String ONE_PERSON_XML =
         "<?xml version = '1.0' encoding = 'UTF-8'?>" +
-        "<simpletableType xmlns=\"urn:simpletable\">" +
+        "<simpletableType xmlns=\"urn:simpletable\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
           "<id>1</id>" +
           "<name>mike</name>" +
           "<since>2001-12-25-05:00</since>" +

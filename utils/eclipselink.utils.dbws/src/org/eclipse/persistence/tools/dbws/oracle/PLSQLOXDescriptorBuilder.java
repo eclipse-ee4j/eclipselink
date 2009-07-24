@@ -33,6 +33,7 @@ import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.oxm.schema.XMLSchemaURLReference;
 import org.eclipse.persistence.platform.database.oracle.publisher.visit.PublisherDefaultListener;
@@ -51,6 +52,7 @@ import static org.eclipse.persistence.oxm.XMLConstants.INTEGER_QNAME;
 import static org.eclipse.persistence.oxm.XMLConstants.SCHEMA_INSTANCE_PREFIX;
 import static org.eclipse.persistence.oxm.XMLConstants.SCHEMA_PREFIX;
 import static org.eclipse.persistence.oxm.XMLConstants.STRING_QNAME;
+import static org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType.XSI_NIL;
 
 public class PLSQLOXDescriptorBuilder extends PublisherDefaultListener {
 
@@ -137,6 +139,13 @@ public class PLSQLOXDescriptorBuilder extends PublisherDefaultListener {
                     itemsMapping.setUsesSingleNode(true);
                     itemsMapping.setXPath("item/text()");
                     itemsMapping.useCollectionClassName("java.util.ArrayList");
+                    AbstractNullPolicy nullPolicy = itemsMapping.getNullPolicy();
+                    nullPolicy.setNullRepresentedByEmptyNode(false);
+                    nullPolicy.setMarshalNullRepresentation(XSI_NIL);
+                    nullPolicy.setNullRepresentedByXsiNil(true);
+                    itemsMapping.setNullPolicy(nullPolicy);
+                    xdesc.getNamespaceResolver().put(SCHEMA_INSTANCE_PREFIX,
+                        W3C_XML_SCHEMA_INSTANCE_NS_URI); // to support xsi:nil policy
                     xdesc.addMapping(itemsMapping);
                 }
                 else {
@@ -215,6 +224,13 @@ public class PLSQLOXDescriptorBuilder extends PublisherDefaultListener {
                         fieldMapping.setUsesSingleNode(true);
                         fieldMapping.setXPath(lfieldName + "/item/text()");
                         fieldMapping.useCollectionClassName("java.util.ArrayList");
+                        AbstractNullPolicy nullPolicy = fieldMapping.getNullPolicy();
+                        nullPolicy.setNullRepresentedByEmptyNode(false);
+                        nullPolicy.setMarshalNullRepresentation(XSI_NIL);
+                        nullPolicy.setNullRepresentedByXsiNil(true);
+                        fieldMapping.setNullPolicy(nullPolicy);
+                        xdesc.getNamespaceResolver().put(SCHEMA_INSTANCE_PREFIX,
+                            W3C_XML_SCHEMA_INSTANCE_NS_URI); // to support xsi:nil policy
                         xdesc.addMapping(fieldMapping);
                     }
                 }
@@ -250,6 +266,13 @@ public class PLSQLOXDescriptorBuilder extends PublisherDefaultListener {
                     fieldMapping.setAttributeClassification(attributeClass);
                 }
                 fieldMapping.setField(xField);
+                AbstractNullPolicy nullPolicy = fieldMapping.getNullPolicy();
+                nullPolicy.setNullRepresentedByEmptyNode(false);
+                nullPolicy.setMarshalNullRepresentation(XSI_NIL);
+                nullPolicy.setNullRepresentedByXsiNil(true);
+                fieldMapping.setNullPolicy(nullPolicy);
+                xdesc.getNamespaceResolver().put(SCHEMA_INSTANCE_PREFIX,
+                    W3C_XML_SCHEMA_INSTANCE_NS_URI); // to support xsi:nil policy
                 xdesc.addMapping(fieldMapping);
             }
         }

@@ -76,10 +76,9 @@ import org.eclipse.persistence.sessions.factories.XMLProjectReader;
 import static org.eclipse.persistence.oxm.XMLConstants.INT_QNAME;
 import static org.eclipse.persistence.oxm.XMLConstants.STRING_QNAME;
 
-public class OracleObjecttypeTestSuite {
+import static dbws.testing.DBWSTestHelper.CONSTANT_PROJECT_BUILD_VERSION;
 
-    static final String CONSTANT_PROJECT_BUILD_VERSION = 
-        "Eclipse Persistence Services - some version (some build date)";
+public class OracleObjecttypeTestSuite {
 
     static final String DATABASE_USERNAME_KEY = "db.user";
     static final String DATABASE_PASSWORD_KEY = "db.pwd";
@@ -258,18 +257,30 @@ public class OracleObjecttypeTestSuite {
                        "<field name=\"street/text()\" xsi:type=\"node\">" +
                           "<schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>" +
                        "</field>" +
+                       "<null-policy xsi:type=\"null-policy\">" +
+                          "<empty-node-represents-null>true</empty-node-represents-null>" +
+                          "<null-representation-for-xml>ABSENT_NODE</null-representation-for-xml>" +
+                       "</null-policy>" +
                     "</attribute-mapping>" +
                     "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
                        "<attribute-name>city</attribute-name>" +
                        "<field name=\"city/text()\" xsi:type=\"node\">" +
                           "<schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>" +
                        "</field>" +
+                       "<null-policy xsi:type=\"null-policy\">" +
+                          "<empty-node-represents-null>true</empty-node-represents-null>" +
+                          "<null-representation-for-xml>ABSENT_NODE</null-representation-for-xml>" +
+                       "</null-policy>" +
                     "</attribute-mapping>" +
                     "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
                        "<attribute-name>province</attribute-name>" +
                        "<field name=\"province/text()\" xsi:type=\"node\">" +
                           "<schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>" +
                        "</field>" +
+                       "<null-policy xsi:type=\"null-policy\">" +
+                          "<empty-node-represents-null>true</empty-node-represents-null>" +
+                          "<null-representation-for-xml>ABSENT_NODE</null-representation-for-xml>" +
+                       "</null-policy>" +
                     "</attribute-mapping>" +
                  "</attribute-mappings>" +
                  "<descriptor-type>aggregate</descriptor-type>" +
@@ -296,18 +307,30 @@ public class OracleObjecttypeTestSuite {
                        "<field name=\"id/text()\" xsi:type=\"node\">" +
                           "<schema-type>{http://www.w3.org/2001/XMLSchema}int</schema-type>" +
                        "</field>" +
+                       "<null-policy xsi:type=\"null-policy\">" +
+                          "<empty-node-represents-null>true</empty-node-represents-null>" +
+                          "<null-representation-for-xml>ABSENT_NODE</null-representation-for-xml>" +
+                       "</null-policy>" +
                     "</attribute-mapping>" +
                     "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
                        "<attribute-name>firstName</attribute-name>" +
                        "<field name=\"first-name/text()\" xsi:type=\"node\">" +
                           "<schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>" +
                        "</field>" +
+                       "<null-policy xsi:type=\"null-policy\">" +
+                          "<empty-node-represents-null>true</empty-node-represents-null>" +
+                          "<null-representation-for-xml>ABSENT_NODE</null-representation-for-xml>" +
+                       "</null-policy>" +
                     "</attribute-mapping>" +
                     "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
                        "<attribute-name>lastName</attribute-name>" +
                        "<field name=\"last-name/text()\" xsi:type=\"node\">" +
                           "<schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>" +
                        "</field>" +
+                       "<null-policy xsi:type=\"null-policy\">" +
+                          "<empty-node-represents-null>true</empty-node-represents-null>" +
+                          "<null-representation-for-xml>ABSENT_NODE</null-representation-for-xml>" +
+                       "</null-policy>" +
                     "</attribute-mapping>" +
                     "<attribute-mapping xsi:type=\"xml-composite-object-mapping\">" +
                        "<attribute-name>address</attribute-name>" +

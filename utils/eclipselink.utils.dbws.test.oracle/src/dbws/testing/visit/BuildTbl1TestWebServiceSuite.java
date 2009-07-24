@@ -117,7 +117,7 @@ public class BuildTbl1TestWebServiceSuite extends WebServiceTestSuite implements
           "<SOAP-ENV:Body>" +          
              "<srvc:" + ADVJDBC_BUILD_TBL1_TEST + "Response xmlns=\"" + ADVJDBC_BUILD_TBL1_NAMESPACE +"\" xmlns:srvc=\"" + ADVJDBC_BUILD_TBL1_SERVICE_NAMESPACE + "\">" +
                  "<srvc:result>" +
-                     "<somepackage_tbl1Type>" +
+                     "<somepackage_tbl1Type xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
                         "<item>entry 1</item>" +
                         "<item>entry 2</item>" +
                         "<item>entry 3</item>" +

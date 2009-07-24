@@ -118,15 +118,15 @@ public class BuildEmpArrayTestWebServiceSuite extends WebServiceTestSuite implem
              "<srvc:" + ADVJDBC_BUILD_EMPARRAY_TEST + "Response xmlns=\"" + ADVJDBC_BUILD_EMPARRAY_NAMESPACE +"\" xmlns:srvc=\"" + ADVJDBC_BUILD_EMPARRAY_SERVICE_NAMESPACE + "\">" +
                  "<srvc:result>" +
                      "<emp_info_arrayType>" +
-                        "<item>" +
+                        "<item xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
                            "<id>1</id>" +
                            "<name>entry 1</name>" +
                         "</item>" +
-                        "<item>" +
+                        "<item xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
                            "<id>2</id>" +
                            "<name>entry 2</name>" +
                         "</item>" +
-                        "<item>" +
+                        "<item xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
                            "<id>3</id>" +
                            "<name>entry 3</name>" +
                         "</item>" +

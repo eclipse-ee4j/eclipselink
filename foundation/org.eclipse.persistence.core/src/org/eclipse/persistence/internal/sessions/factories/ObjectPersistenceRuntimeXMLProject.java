@@ -4247,6 +4247,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         nameMapping.setGetMethodName("getName");
         nameMapping.setSetMethodName("setName");
         nameMapping.setXPath("@name");
+        nameMapping.getNullPolicy().setNullRepresentedByEmptyNode(false);
         descriptor.addMapping(nameMapping);
 
         return descriptor;

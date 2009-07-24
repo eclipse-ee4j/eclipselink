@@ -268,21 +268,6 @@
           name="dbws.testing.visit.@{testsuite-name}Suite"
         />
       </junit>
-      <junitreport
-        todir="${run.dir}"
-        >
-        <fileset
-          dir="."
-          >
-          <include
-            name="TEST-*TestSuite.xml"
-          />
-        </fileset>
-        <report
-          format="noframes"
-          todir="${run.dir}"
-        />
-      </junitreport>
     </sequential>
   </macrodef>
   <macrodef
@@ -348,7 +333,7 @@
   </target>
 
   <target
-    name="test"
+    name="run-tests"
     if="support.test"
     depends="build"
     >
@@ -370,5 +355,20 @@
     <RunTestsuite testsuite-name="P6testWebService"/>
     <RunTestsuite testsuite-name="PLSQLHelperObjectsBuilderTest"/>
     <TeardownDatabase filename="alltests"/>
+    <junitreport
+      todir="${run.dir}"
+      >
+      <fileset
+        dir="."
+        >
+        <include
+          name="TEST-*Suite.xml"
+        />
+      </fileset>
+      <report
+        format="noframes"
+        todir="${run.dir}"
+      />
+    </junitreport>
   </target>
 </project>

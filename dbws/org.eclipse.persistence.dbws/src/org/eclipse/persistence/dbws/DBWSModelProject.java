@@ -524,7 +524,12 @@ public class DBWSModelProject extends Project {
         name.setAttributeName("name");
         name.setXPath("name/text()");
         descriptor.addMapping(name);
-
+        
+        XMLDirectMapping descriptorName = new XMLDirectMapping();
+        descriptorName.setAttributeName("descriptorName");
+        descriptorName.setXPath("descriptor-name/text()");
+        descriptor.addMapping(descriptorName);
+        
         XMLCompositeCollectionMapping parameters = new XMLCompositeCollectionMapping();
         parameters.setAttributeName("parameters");
         parameters.setReferenceClass(Parameter.class);

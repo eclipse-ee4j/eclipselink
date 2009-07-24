@@ -477,4 +477,6 @@ public class Util {
     public static final String TARGET_NAMESPACE_PREFIX = "ns1";
     public static final String SERVICE_NAMESPACE_PREFIX = "srvc";
     public static final String SERVICE_SUFFIX = "Service";
+    public static final String PK_QUERYNAME =
+    "findByPrimaryKey";
 }

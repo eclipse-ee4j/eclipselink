@@ -34,6 +34,7 @@ import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.oxm.schema.XMLSchemaURLReference;
 import org.eclipse.persistence.platform.database.oracle.publisher.visit.PublisherDefaultListener;
@@ -43,6 +44,7 @@ import static org.eclipse.persistence.internal.helper.ClassConstants.Object_Clas
 import static org.eclipse.persistence.oxm.XMLConstants.DATE_QNAME;
 import static org.eclipse.persistence.oxm.XMLConstants.SCHEMA_INSTANCE_PREFIX;
 import static org.eclipse.persistence.oxm.XMLConstants.SCHEMA_PREFIX;
+import static org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType.XSI_NIL;
 import static org.eclipse.persistence.tools.dbws.oracle.PLSQLOXDescriptorBuilder.attributeClassFromDatabaseType;
 import static org.eclipse.persistence.tools.dbws.oracle.PLSQLOXDescriptorBuilder.qnameFromDatabaseType;
 
@@ -119,8 +121,6 @@ public class AdvancedJDBCOXDescriptorBuilder extends PublisherDefaultListener {
                             fieldMapping.setAttributeClassification(java.sql.Date.class);
                             xField.addXMLConversion(DATE_QNAME, java.sql.Date.class);
                             xField.addJavaConversion(java.sql.Date.class, DATE_QNAME);
-                            xdesc.getNamespaceResolver().put(SCHEMA_INSTANCE_PREFIX,
-                                W3C_XML_SCHEMA_INSTANCE_NS_URI);
                             xdesc.getNamespaceResolver().put(SCHEMA_PREFIX, W3C_XML_SCHEMA_NS_URI);
                         }
                         else {
@@ -132,6 +132,13 @@ public class AdvancedJDBCOXDescriptorBuilder extends PublisherDefaultListener {
                             fieldMapping.setAttributeClassification(attributeClass);
                         }
                         fieldMapping.setField(xField);
+                        AbstractNullPolicy nullPolicy = fieldMapping.getNullPolicy();
+                        nullPolicy.setNullRepresentedByEmptyNode(false);
+                        nullPolicy.setMarshalNullRepresentation(XSI_NIL);
+                        nullPolicy.setNullRepresentedByXsiNil(true);
+                        fieldMapping.setNullPolicy(nullPolicy);
+                        xdesc.getNamespaceResolver().put(SCHEMA_INSTANCE_PREFIX,
+                            W3C_XML_SCHEMA_INSTANCE_NS_URI); // to support xsi:nil policy
                         xdesc.addMapping(fieldMapping);
                     }
                     // last attribute, pop ObjectTypeHelper off stack
@@ -156,6 +163,13 @@ public class AdvancedJDBCOXDescriptorBuilder extends PublisherDefaultListener {
                         ((XMLField)dirCollectMapping.getField()).setSchemaType(
                             qnameFromDatabaseType(componentType));
                         dirCollectMapping.useCollectionClassName("java.util.ArrayList");
+                        AbstractNullPolicy nullPolicy = dirCollectMapping.getNullPolicy();
+                        nullPolicy.setNullRepresentedByEmptyNode(false);
+                        nullPolicy.setMarshalNullRepresentation(XSI_NIL);
+                        nullPolicy.setNullRepresentedByXsiNil(true);
+                        dirCollectMapping.setNullPolicy(nullPolicy);
+                        xdesc.getNamespaceResolver().put(SCHEMA_INSTANCE_PREFIX,
+                            W3C_XML_SCHEMA_INSTANCE_NS_URI); // to support xsi:nil policy
                         xdesc.addMapping(dirCollectMapping);
                     }
                 }
@@ -175,6 +189,13 @@ public class AdvancedJDBCOXDescriptorBuilder extends PublisherDefaultListener {
                     ((XMLField)itemsMapping.getField()).setSchemaType(
                         qnameFromDatabaseType(componentType));
                     itemsMapping.useCollectionClassName("java.util.ArrayList");
+                    AbstractNullPolicy nullPolicy = itemsMapping.getNullPolicy();
+                    nullPolicy.setNullRepresentedByEmptyNode(false);
+                    nullPolicy.setMarshalNullRepresentation(XSI_NIL);
+                    nullPolicy.setNullRepresentedByXsiNil(true);
+                    itemsMapping.setNullPolicy(nullPolicy);
+                    xdesc.getNamespaceResolver().put(SCHEMA_INSTANCE_PREFIX,
+                        W3C_XML_SCHEMA_INSTANCE_NS_URI); // to support xsi:nil policy
                     xdesc.addMapping(itemsMapping);
                 }
                 ListenerHelper listenerHelper2 = stac.peek();
@@ -199,6 +220,13 @@ public class AdvancedJDBCOXDescriptorBuilder extends PublisherDefaultListener {
                             fieldMapping.setField(field);
                             field.setSchemaType(qnameFromDatabaseType(componentType));
                             fieldMapping.useCollectionClassName("java.util.ArrayList");
+                            AbstractNullPolicy nullPolicy = fieldMapping.getNullPolicy();
+                            nullPolicy.setNullRepresentedByEmptyNode(false);
+                            nullPolicy.setMarshalNullRepresentation(XSI_NIL);
+                            nullPolicy.setNullRepresentedByXsiNil(true);
+                            fieldMapping.setNullPolicy(nullPolicy);
+                            xdesc2.getNamespaceResolver().put(SCHEMA_INSTANCE_PREFIX,
+                                W3C_XML_SCHEMA_INSTANCE_NS_URI); // to support xsi:nil policy
                             xdesc2.addMapping(fieldMapping);
                         }
                         // last attribute, pop ObjectTypeHelper off stack

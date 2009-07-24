@@ -136,7 +136,7 @@ public class P5testWebServiceSuite extends WebServiceTestSuite implements Provid
           "<SOAP-ENV:Body>" +
             "<srvc:" + PROC5_TEST + "Response xmlns=\"" + PROC5_NAMESPACE + "\" xmlns:srvc=\"" + PROC5_SERVICE_NAMESPACE + "\">" +
               "<srvc:result>" +
-                "<SOMEPACKAGE_ARECORD>" +
+                "<SOMEPACKAGE_ARECORD xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
                   "<t1>" +
                     "<item>this</item>" +
                     "<item>is</item>" +

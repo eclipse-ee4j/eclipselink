@@ -118,7 +118,7 @@ public class BuildCRecordTestWebServiceSuite extends WebServiceTestSuite impleme
           "<SOAP-ENV:Body>" +          
              "<srvc:" + ADVJDBC_BUILD_CRECORD_TEST + "Response xmlns=\"" + ADVJDBC_BUILD_CRECORD_NAMESPACE +"\" xmlns:srvc=\"" + ADVJDBC_BUILD_CRECORD_SERVICE_NAMESPACE + "\">" +
                 "<srvc:result>" +
-                   "<somepackage_crecordType>" +
+                   "<somepackage_crecordType xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
                    "<c1>" +
                       "<t1>" +
                          "<item>entry 1</item>" +
