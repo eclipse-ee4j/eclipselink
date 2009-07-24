@@ -1542,7 +1542,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
                 }
             }
             
-            if(isNewUserRequired!=null || isNewPasswordRequired!=null || isNewDriverRequired!=null || isNewConnectionStringRequired!=null || isNewDataSourceRequired) {
+            if(isNewUserRequired!=null || isNewPasswordRequired!=null || isNewDriverRequired!=null || isNewConnectionStringRequired!=null || isNewDataSourceRequired!=null) {
                 // a new login required - so a new policy required, too.
                 if(newPolicy == null) {
                     newPolicy = (ConnectionPolicy)policy.clone();
