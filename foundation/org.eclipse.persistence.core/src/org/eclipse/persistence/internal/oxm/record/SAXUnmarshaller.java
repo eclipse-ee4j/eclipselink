@@ -91,7 +91,12 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             saxParserFactory.setFeature("http://xml.org/sax/features/namespace-prefixes", true);
             if(null != parserFeatures) {
                 for(String parserFeature : parserFeatures.keySet()) {
-                    saxParserFactory.setFeature(parserFeature, parserFeatures.get(parserFeature));
+                    try {
+                        saxParserFactory.setFeature(parserFeature, parserFeatures.get(parserFeature));
+                    } catch(org.xml.sax.SAXNotRecognizedException ex) {
+                        //ignore if the parser doesn't recognize or support this feature
+                    } catch(org.xml.sax.SAXNotSupportedException ex) {
+                    }
                 }
             }
 
