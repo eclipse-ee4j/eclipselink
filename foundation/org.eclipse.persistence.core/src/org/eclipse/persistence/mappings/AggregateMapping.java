@@ -593,7 +593,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
         }
 
         Object targetAttributeValue = getAttributeValueFromObject(target);
-        if (targetAttributeValue == null) {
+        if (targetAttributeValue == null || !targetAttributeValue.getClass().equals(sourceAttributeValue.getClass())) {
             // avoid null-pointer/nothing to merge to - create a new instance
             // (a new clone cannot be used as all changes must be merged)
             targetAttributeValue = buildNewMergeInstanceOf(sourceAttributeValue, mergeManager.getSession());
