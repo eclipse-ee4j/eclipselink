@@ -518,7 +518,6 @@
             <pathelement path="${eclipselink.extension.oracle.test.dir}/${eclipselink.proxyauthentication.model}.jar"/>
             <pathelement path="${eclipselink.extension.oracle.test.dir}/${eclipselink.jpa.oracle}-tests.jar"/>
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.delimited.model}.jar"/>
-            <pathelement path="${oracle.extensions.depend.dir}/${oracle.spatial.lib}"/>
         </path>
         <path id="run.extended.classpath">
             <pathelement path="${eclipselink.jpa.test}/${classes.dir}"/>
