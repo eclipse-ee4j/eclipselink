@@ -392,7 +392,7 @@ public class MappingsGenerator {
             XMLAnyCollectionMapping mapping = generateAnyCollectionMapping(property, descriptor, namespaceInfo, true);
             return mapping;
         }
-        boolean isCollection = isCollectionType(property);
+        boolean isCollection = isCollectionType(property) || property.getType().isArray();
         DatabaseMapping mapping;
         if(isCollection) {
             mapping = new XMLChoiceCollectionMapping();
@@ -419,6 +419,11 @@ public class MappingsGenerator {
         List<ElementDeclaration> referencedElements = property.getReferencedElements();
         boolean hasJAXBElements = false;
         AttributeAccessor mappingAccessor = mapping.getAttributeAccessor();
+        if(property.getType().isArray()) {
+            JAXBObjectArrayAttributeAccessor accessor = new JAXBObjectArrayAttributeAccessor(mappingAccessor, mapping.getContainerPolicy());           
+            accessor.setComponentClassName(property.getType().getComponentType().getRawName());
+            mappingAccessor = accessor;         
+        }
         Map<QName, Class> qNamesToScopeClass = new HashMap<QName, Class>();
         for(ElementDeclaration element:referencedElements) {
             QName elementName = element.getElementName();
@@ -431,6 +436,7 @@ public class MappingsGenerator {
             XMLMapping nestedMapping;
             JAXBElementAttributeAccessor nestedAccessor;
             if(isCollection){
+
             	nestedAccessor = new JAXBElementAttributeAccessor(mappingAccessor, mapping.getContainerPolicy());
                 ((XMLChoiceCollectionMapping)mapping).addChoiceElement(xmlField, element.getJavaTypeName());
                 nestedMapping = ((XMLChoiceCollectionMapping)mapping).getChoiceElementMappings().get(xmlField);
