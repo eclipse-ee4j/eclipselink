@@ -19,7 +19,8 @@
  *        the parent ClientSession is released, too.
  *     03/19/2009-2.0 Michael O'Brien  
  *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)
- *
+ *     07/13/2009-2.0 Guy Pelletier 
+ *       - 277039: JPA 2.0 Cache Usage Settings
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa;
 
@@ -66,6 +67,8 @@ import org.eclipse.persistence.sessions.server.ServerSession;
  * @since TopLink Essentials - JPA 1.0
  */
 public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityManager {
+    protected enum OperationType {FIND, REFRESH, LOCK};
+    
     /** Allows transparent transactions across JTA and local transactions. */
     protected TransactionWrapperImpl transaction;
 
@@ -121,6 +124,11 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * always uses persist.
      */
     protected boolean persistOnCommit;
+    
+    /**
+     * Property to avoid writing to the cache on commit (merge)
+     */
+    protected boolean cacheStoreBypass;
 
     /**
      * The FlashClearCache mode to be used. Relevant only in case call to flush
@@ -174,6 +182,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         this.flushClearCache = FlushClearCache.DEFAULT;
         this.persistOnCommit = true;
         this.isOpen = true;
+        this.cacheStoreBypass = false;
         initialize(properties);
     }
 
@@ -198,6 +207,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         this.flushClearCache = factory.getFlushClearCache();
         this.shouldValidateExistence = factory.shouldValidateExistence();
         this.isOpen = true;
+        this.cacheStoreBypass = false;
         initialize(properties);
     }
 
@@ -356,7 +366,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      *             key.
      */
     public <T> T find(Class<T> entityClass, Object primaryKey) {
-        return find(entityClass, primaryKey, null, null);
+        return find(entityClass, primaryKey, null, getQueryHints(entityClass, OperationType.FIND));
     }
 
     /**
@@ -420,13 +430,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      *             if an unsupported lock call is made
      */
     public <T> T find(Class<T> entityClass, Object primaryKey, LockModeType lockMode) {
-        HashMap<String, Object> queryHints = null;
-        if (properties != null && properties.containsKey(QueryHints.PESSIMISTIC_LOCK_TIMEOUT)) {
-            queryHints = new HashMap<String, Object>();
-            queryHints.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, properties.get(QueryHints.PESSIMISTIC_LOCK_TIMEOUT));
-        }
-
-        return find(entityClass, primaryKey, lockMode, queryHints);
+        return find(entityClass, primaryKey, lockMode, getQueryHints(entityClass, OperationType.FIND));
     }
 
     /**
@@ -575,7 +579,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 
         // Apply any EclipseLink defaults if they haven't been set through
         // the properties.
-        if (properties == null || !properties.containsKey(QueryHints.CACHE_USAGE)) {
+        if (properties == null || ( !properties.containsKey(QueryHints.CACHE_USAGE) && !properties.containsKey(QueryHints.CACHE_RETRIEVE_MODE) && !properties.containsKey(QueryHints.CACHE_STORE_MODE))) {
             query.conformResultsInUnitOfWork();
         }
 
@@ -664,7 +668,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      *            instance registered in the current persistence context.
      */
     public void refresh(Object entity) {
-        refresh(entity, null, null);
+        refresh(entity, null, getQueryHints(entity, OperationType.REFRESH));
     }
 
     /**
@@ -718,13 +722,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      *             if an unsupported lock call is made
      */
     public void refresh(Object entity, LockModeType lockMode) {
-        HashMap queryHints = null;
-        if (properties != null && properties.containsKey(QueryHints.PESSIMISTIC_LOCK_TIMEOUT)) {
-            queryHints = new HashMap();
-            queryHints.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, properties.get(QueryHints.PESSIMISTIC_LOCK_TIMEOUT));
-        }
-
-        refresh(entity, lockMode, queryHints);
+        refresh(entity, lockMode, getQueryHints(entity, OperationType.REFRESH));
     }
 
     /**
@@ -1353,13 +1351,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      *             if there is no transaction
      */
     public void lock(Object entity, LockModeType lockMode) {
-        HashMap queryHints = null;
-        if (properties != null && properties.containsKey(QueryHints.PESSIMISTIC_LOCK_TIMEOUT)) {
-            queryHints = new HashMap();
-            queryHints.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, properties.get(QueryHints.PESSIMISTIC_LOCK_TIMEOUT));
-        }
-
-        lock(entity, lockMode, queryHints);
+        lock(entity, lockMode, getQueryHints(entity, OperationType.LOCK));
     }
 
     /**
@@ -1444,6 +1436,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             this.extendedPersistenceContext.setFlushClearCache(this.flushClearCache);
             this.extendedPersistenceContext.setShouldValidateExistence(this.shouldValidateExistence);
             this.extendedPersistenceContext.setShouldCascadeCloneToJoinedRelationship(true);
+            this.extendedPersistenceContext.setShouldStoreByPassCache(this.cacheStoreBypass);
             if (txn != null) {
                 // if there is an active txn we must register with it on
                 // creation of PC
@@ -1478,8 +1471,18 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * @see EntityManager#setProperty(java.lang.String, java.lang.Object)
      */
     public void setProperty(String propertyName, Object value) {
-        // TODO 
-        throw new PersistenceException("Not Yet Implemented");
+        if (hasActivePersistenceContext()) {
+            this.extendedPersistenceContext.log(SessionLog.WARNING, SessionLog.PROPERTIES, "entity_manager_sets_properties_while_context_is_active");
+        }
+        
+        if (this.properties == null) {
+            this.properties = new HashMap();
+        }
+        
+        properties.put(propertyName, value);
+        
+        // Re-process the properties.
+        processProperties();
     }
 
     /**
@@ -1579,6 +1582,11 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             String flushClearCache = getPropertiesHandlerProperty(EntityManagerProperties.FLUSH_CLEAR_CACHE);
             if (flushClearCache != null) {
                 this.flushClearCache = flushClearCache;
+            }
+            // This property could be a string or an enum.
+            Object cacheStoreMode = properties.get(QueryHints.CACHE_STORE_MODE);
+            if (cacheStoreMode != null) {
+                this.cacheStoreBypass = cacheStoreMode.equals(CacheStoreMode.BYPASS) || cacheStoreMode.equals(CacheStoreMode.BYPASS.name());
             }
         }
 
@@ -1973,7 +1981,54 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         }
         return this.factory.getQueryBuilder();
     }
-
+    
+    /**
+     * Before any find or refresh operation, gather any persistence unit 
+     * properties that should be applied to the query. 
+     */
+    protected HashMap<String, Object> getQueryHints(Object entity, OperationType operation) {
+        HashMap<String, Object> queryHints = null;
+    
+        // If the entity is null or there are no properties just return null.
+        // Individual methods will handle the entity = null case, although we
+        // could likely do it here as well.
+        if (entity != null && properties != null) {
+            queryHints = new HashMap<String, Object>();
+            
+            if (properties.containsKey(QueryHints.PESSIMISTIC_LOCK_TIMEOUT)) {
+                queryHints.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, properties.get(QueryHints.PESSIMISTIC_LOCK_TIMEOUT));
+            }
+            
+            // Ignore the JPA cache settings if the eclipselink setting has
+            // been specified.
+            if (! properties.containsKey(QueryHints.CACHE_USAGE)) { 
+                // If the descriptor is isolated then it is not cacheable so ignore 
+                // the properties. A null descriptor case will be handled in the 
+                // individual operation methods so no need to worry about it here.
+                Class cls = entity instanceof Class ? (Class) entity : entity.getClass();
+                ClassDescriptor descriptor = getActiveSession().getDescriptor(cls);
+            
+                if (descriptor != null && ! descriptor.isIsolated()) {
+                    if (operation != OperationType.LOCK) {
+                        // For a find operation, apply the javax.persistence.cacheRetrieveMode
+                        if (operation == OperationType.FIND) {
+                            if (properties.containsKey(QueryHints.CACHE_RETRIEVE_MODE)) {
+                                queryHints.put(QueryHints.CACHE_RETRIEVE_MODE, properties.get(QueryHints.CACHE_RETRIEVE_MODE));
+                            }
+                        }
+                        
+                        // For both find and refresh operations, apply javax.persistence.cacheStoreMode 
+                        if (properties.containsKey(QueryHints.CACHE_STORE_MODE)) {
+                            queryHints.put(QueryHints.CACHE_STORE_MODE, properties.get(QueryHints.CACHE_STORE_MODE));
+                        }
+                    }
+                }
+            }
+        }
+        
+        return queryHints;
+    }
+    
     /**
      * Return an instance of Metamodel interface for access to the
      * metamodel of the persistence unit.

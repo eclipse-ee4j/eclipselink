@@ -81,7 +81,6 @@ public class MetadataLogger {
     
     public static final String IGNORE_VERSION_LOCKING = "metadata_warning_ignore_version_locking";
     public static final String IGNORE_INHERITANCE_SUBCLASS_CACHE = "metadata_warning_ignore_inheritance_subclass_cache";
-    public static final String IGNORE_INHERITANCE_SUBCLASS_CACHEABLE = "metadata_warning_ignore_inheritance_subclass_cacheable";
     public static final String IGNORE_INHERITANCE_SUBCLASS_CACHE_INTERCEPTOR = "metadata_warning_ignore_inheritance_subclass_cache_interceptor";
     public static final String IGNORE_INHERITANCE_SUBCLASS_DEFAULT_REDIRECTORS = "metadata_warning_ignore_inheritance_subclass_default_redirectors";
     public static final String IGNORE_INHERITANCE_SUBCLASS_READ_ONLY = "metadata_warning_ignore_inheritance_subclass_read_only";
@@ -211,7 +210,6 @@ public class MetadataLogger {
         addContextString(IGNORE_ASSOCIATION_OVERRIDE);
         
         addContextString(IGNORE_INHERITANCE_SUBCLASS_CACHE);
-        addContextString(IGNORE_INHERITANCE_SUBCLASS_CACHEABLE);
         addContextString(IGNORE_INHERITANCE_SUBCLASS_CACHE_INTERCEPTOR);
         addContextString(IGNORE_INHERITANCE_SUBCLASS_DEFAULT_REDIRECTORS);
         addContextString(IGNORE_INHERITANCE_SUBCLASS_READ_ONLY);

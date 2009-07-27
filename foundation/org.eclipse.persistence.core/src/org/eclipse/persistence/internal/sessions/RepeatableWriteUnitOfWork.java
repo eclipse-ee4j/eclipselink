@@ -10,6 +10,8 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
         Gordon Yorke - VM managed entity detachment
+ *     07/16/2009-2.0 Guy Pelletier 
+ *       - 277039: JPA 2.0 Cache Usage Settings
  ******************************************************************************/  
 package org.eclipse.persistence.internal.sessions;
 
@@ -38,6 +40,13 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      * This is used when an EntityTransaction is controlling the transaction.
      */
     protected boolean shouldTerminateTransaction;
+    
+    /**
+     * Used to determine if we should bypass any merge into the cache. This is
+     * a JPA flag and is true when the cacheStoreMode property is set to BYPASS.
+     * Otherwise, EclipseLink behaves as it usually would.
+     */
+    protected boolean shouldStoreBypassCache;
     
     /**
      * The FlashClearCache mode to be used.
@@ -69,6 +78,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
         this.shouldTerminateTransaction = true;
         this.shouldNewObjectsBeCached = true;
         this.isWithinFlush = false;
+        this.shouldStoreBypassCache = false;
     }
     
     /**
@@ -132,6 +142,16 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      */
     public boolean shouldClearForCloseOnRelease() {
         return true;
+    }
+    
+    /**
+     * INTERNAL:
+     * Returns true if the UOW should bypass any updated to the shared cache
+     * during the merge.
+     */
+    @Override
+    public boolean shouldStoreBypassCache() {
+        return shouldStoreBypassCache;
     }
 
     /**
@@ -491,6 +511,10 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
         }
     }
 
+    public void setShouldStoreByPassCache(boolean shouldStoreBypassCache) {
+        this.shouldStoreBypassCache = shouldStoreBypassCache;
+    }
+    
     public void setShouldTerminateTransaction(boolean shouldTerminateTransaction) {
         this.shouldTerminateTransaction = shouldTerminateTransaction;
     }

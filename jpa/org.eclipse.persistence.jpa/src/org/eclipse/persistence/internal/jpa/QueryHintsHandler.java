@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     07/13/2009-2.0 Guy Pelletier 
+ *       - 277039: JPA 2.0 Cache Usage Settings
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
@@ -20,6 +22,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.StringTokenizer;
+
+import javax.persistence.CacheRetrieveMode;
+import javax.persistence.CacheStoreMode;
 
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.QueryException;
@@ -203,6 +208,8 @@ public class QueryHintsHandler {
         static {
             addHint(new BindParametersHint());
             addHint(new CacheUsageHint());
+            addHint(new CacheRetrieveModeHint());
+            addHint(new CacheStoreModeHint());
             addHint(new QueryTypeHint());
             addHint(new PessimisticLockHint());
             addHint(new PessimisticLockTimeoutHint());
@@ -399,6 +406,49 @@ public class QueryHintsHandler {
             } else {
                 query.setShouldBindAllParameters(((Boolean)valueToApply).booleanValue());
             }
+            return query;
+        }
+    }
+    
+    protected static class CacheRetrieveModeHint extends Hint {
+        CacheRetrieveModeHint() {
+            super(QueryHints.CACHE_RETRIEVE_MODE, CacheRetrieveMode.USE.name());
+        }
+    
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader) {
+            if (query.isObjectLevelReadQuery()) {
+                if (valueToApply.equals(CacheRetrieveMode.BYPASS) || valueToApply.equals(CacheRetrieveMode.BYPASS.name())) {
+                    query.retrieveBypassCache();
+                }
+
+                // CacheRetrieveMode.USE will use the EclipseLink default of 
+                // shouldCheckDescriptorForCacheUsage which in most cases is CheckCacheByPrimaryKey.
+            } else {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+            }
+            
+            return query;
+        }
+    }
+    
+    protected static class CacheStoreModeHint extends Hint {
+        CacheStoreModeHint() {
+            super(QueryHints.CACHE_STORE_MODE, CacheStoreMode.USE.name());
+        }
+    
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader) {
+            if (valueToApply.equals(CacheStoreMode.BYPASS) || valueToApply.equals(CacheStoreMode.BYPASS.name())) {
+                query.storeBypassCache();
+            } else if (valueToApply.equals(CacheStoreMode.REFRESH) || valueToApply.equals(CacheStoreMode.REFRESH.name())) {
+                if (query.isObjectLevelReadQuery()) {
+                    ((ObjectLevelReadQuery) query).refreshIdentityMapResult();
+                } else {
+                    throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+                }
+            } 
+            
+            // CacheStoreMode.USE will use the EclipseLink default maintainCache.
+            
             return query;
         }
     }

@@ -147,7 +147,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     /**
      * INTERNAL:
      */
-    protected MappedSuperclassAccessor(MetadataAnnotation annotation, MetadataClass cls, MetadataProject project) {
+    public MappedSuperclassAccessor(MetadataAnnotation annotation, MetadataClass cls, MetadataProject project) {
         super(annotation, cls, project);
     }
     
@@ -587,10 +587,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      */
     protected void processCacheable() {
         if (m_cacheable != null || isAnnotationPresent(Cacheable.class)) {
-            if (getDescriptor().isInheritanceSubclass()) {
-                // Ignore cacheable if specified on an inheritance subclass
-                getLogger().logWarningMessage(MetadataLogger.IGNORE_INHERITANCE_SUBCLASS_CACHEABLE, getJavaClass());
-            } else if (getDescriptor().hasCacheable()) {
+            if (getDescriptor().hasCacheable()) {
                 // Ignore cacheable on mapped superclass if cacheable is already 
                 // defined on the entity.
                 getLogger().logWarningMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_CACHE, getDescriptor().getJavaClass(), getJavaClass());

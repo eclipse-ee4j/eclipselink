@@ -216,7 +216,7 @@ public class MetadataProcessor {
             entityMappings.initPersistenceUnitClasses(entities, embeddables);  
         }
 
-        // 2 - Iterate though all the XML entities and add them to the project 
+        // 2 - Iterate through all the XML entities and add them to the project 
         // and apply any persistence unit defaults.
         for (EntityAccessor entity : entities.values()) {
             // This will apply global persistence unit defaults.

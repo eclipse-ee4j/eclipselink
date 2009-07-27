@@ -27,8 +27,8 @@ package javax.persistence;
 /**
  * The <code>javax.persistence.CacheRetrieveMode</code> property specifies the
  * behavior when data is retrieved by the find methods and by the execution of
- * queries. The cacheGetMode property is ignored for the refresh method, which
- * always causes data to be retrieved from the database, not the cache.
+ * queries. The cacheRetrieveMode property is ignored for the refresh method, 
+ * which always causes data to be retrieved from the database, not the cache.
  * 
  * @since Java Persistence 2.0
  */

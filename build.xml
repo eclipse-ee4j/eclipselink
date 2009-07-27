@@ -291,6 +291,8 @@
                     javax/persistence/AccessType.class,
                     javax/persistence/Cache.class,
                     javax/persistence/Cacheable.class,
+					javax/persistence/CacheStoreMode.class,
+					javax/persistence/CacheRetrieveMode.class,
                     javax/persistence/LockModeType.class,
                     javax/persistence/LockTimeoutException.class,
                     javax/persistence/PessimisticLockException.class,

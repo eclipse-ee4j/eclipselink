@@ -93,6 +93,7 @@
         <mapping-file>META-INF/cacheable-entity-mappings.xml</mapping-file>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableFalseEntity</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.ChildCacheableFalseEntity</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueMappedSuperclass</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableFalseEntity</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableNoneEntity</class>
@@ -104,6 +105,7 @@
         <mapping-file>META-INF/cacheable-entity-mappings.xml</mapping-file>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableFalseEntity</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.ChildCacheableFalseEntity</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueMappedSuperclass</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableFalseEntity</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableNoneEntity</class>
@@ -115,6 +117,7 @@
         <mapping-file>META-INF/cacheable-entity-mappings.xml</mapping-file>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableFalseEntity</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.ChildCacheableFalseEntity</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueMappedSuperclass</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableFalseEntity</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableNoneEntity</class>
@@ -126,7 +129,8 @@
         <mapping-file>META-INF/cacheable-entity-mappings.xml</mapping-file>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableFalseEntity</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueEntity</class>
-                <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueMappedSuperclass</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.ChildCacheableFalseEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueMappedSuperclass</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableFalseEntity</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableNoneEntity</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>

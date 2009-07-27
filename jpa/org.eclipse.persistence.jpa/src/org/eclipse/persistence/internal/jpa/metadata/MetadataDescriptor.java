@@ -1090,11 +1090,13 @@ public class MetadataDescriptor {
      * this descriptor.
      */
     public boolean isCacheableTrue() {
-        if (isInheritanceSubclass()) {
-            return getInheritanceRootDescriptor().isCacheableTrue(); 
-        } 
+        if (m_cacheable != null) {
+            return m_cacheable.booleanValue();
+        } else if (isInheritanceSubclass()) {
+            return getInheritanceParentDescriptor().isCacheableTrue();
+        }
         
-        return m_cacheable != null && m_cacheable.booleanValue();
+        return false;
     }
     
     /**
@@ -1103,13 +1105,14 @@ public class MetadataDescriptor {
      * this descriptor.
      */
     public boolean isCacheableFalse() {
-        if (isInheritanceSubclass()) {
-            return getInheritanceRootDescriptor().isCacheableFalse(); 
+        if (m_cacheable != null) {
+            return ! m_cacheable.booleanValue();
+        } else if (isInheritanceSubclass()) {
+            return getInheritanceParentDescriptor().isCacheableFalse();
         }
-        
-        return m_cacheable != null && ! m_cacheable.booleanValue();
+
+        return false;
     }
-    
     
     /**
      * INTERNAL:

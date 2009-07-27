@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     07/16/2009-2.0 Guy Pelletier 
+ *       - 277039: JPA 2.0 Cache Usage Settings
  ******************************************************************************/  
 package org.eclipse.persistence.queries;
 
@@ -238,10 +240,11 @@ public abstract class ModifyAllQuery extends ModifyQuery {
 
     /**
      * INTERNAL:
-     * After execution we need to merge the changes into the shared cache
+     * After execution we need to merge the changes into the shared cache, 
+     * unless the query has been tagged to bypass on the store.
      */
     public void mergeChangesIntoSharedCache() {
-        if (shouldInvalidateCache()) {
+        if (shouldInvalidateCache() && ! shouldStoreBypassCache()) {
             invalidateCache();
         }
     }

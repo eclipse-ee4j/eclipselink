@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     07/16/2009-2.0 Guy Pelletier 
+ *       - 277039: JPA 2.0 Cache Usage Settings
  ******************************************************************************/  
 package org.eclipse.persistence.queries;
 
@@ -88,6 +90,10 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
 
     // Bug#3476483 - Restore shouldMaintainCache to previous state after reverse of bug fix 3240668
     protected boolean shouldMaintainCache;
+    
+    /** JPA flags to control the shared cache*/
+    protected boolean shouldRetrieveBypassCache = false;
+    protected boolean shouldStoreBypassCache = false;
 
     /** Internally used by the mappings as a temporary store. */
     protected Map<Object, Object> properties;
@@ -1636,6 +1642,17 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         // by default, do nothing
         return null;
     }
+    
+    /**
+     * ADVANCED:
+     * JPA flag used to control the behavior of the shared cache. This flag
+     * specifies the behavior when data is retrieved by the find methods and 
+     * by the execution of queries. Calling this method will set a retrieve
+     * bypass to true. 
+     */
+    public void retrieveBypassCache() {
+        setShouldRetrieveBypassCache(true);
+    }
 
     /**
      * INTERNAL: Build the list of arguments fields from the argument names and types.
@@ -1996,6 +2013,26 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
 
     /**
      * ADVANCED:
+     * JPA flag used to control the behavior of the shared cache. This flag
+     * specifies the behavior when data is retrieved by the find methods and 
+     * by the execution of queries.
+     */
+    public void setShouldRetrieveBypassCache(boolean shouldRetrieveBypassCache) {
+        this.shouldRetrieveBypassCache = shouldRetrieveBypassCache;
+    }
+    
+    /**
+     * ADVANCED:
+     * JPA flag used to control the behavior of the shared cache. This flag
+     * specifies the behavior when data is read from the database and when
+     * data is committed into the database.
+     */
+    public void setShouldStoreBypassCache(boolean shouldStoreBypassCache) {
+        this.shouldStoreBypassCache = shouldStoreBypassCache;
+    }
+    
+    /**
+     * ADVANCED:
      * The wrapper policy can be enable on a query.
      */
     public void setShouldUseWrapperPolicy(boolean shouldUseWrapperPolicy) {
@@ -2152,12 +2189,46 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
 
     /**
      * ADVANCED:
+     * JPA flag used to control the behavior of the shared cache. This flag
+     * specifies the behavior when data is retrieved by the find methods and 
+     * by the execution of queries.
+     */
+    public boolean shouldRetrieveBypassCache() {
+        return this.shouldRetrieveBypassCache;
+    }
+    
+    /**
+     * ADVANCED:
+     * JPA flag used to control the behavior of the shared cache. This flag
+     * specifies the behavior when data is read from the database and when
+     * data is committed into the database.
+     */
+    public boolean shouldStoreBypassCache() {
+        return this.shouldStoreBypassCache;
+    }
+    
+    /**
+     * ADVANCED:
      * The wrapper policy can be enabled on a query.
      */
     public boolean shouldUseWrapperPolicy() {
         return shouldUseWrapperPolicy;
     }
 
+    /**
+     * ADVANCED:
+     * JPA flag used to control the behavior of the shared cache. This flag
+     * specifies the behavior when data is read from the database and when
+     * data is committed into the database. Calling this method will set a 
+     * store bypass to true.
+     * 
+     * Note: For a cache store mode of REFRESH, see refreshIdentityMapResult() 
+     * from ObjectLevelReadQuery.
+     */
+    public void storeBypassCache() {
+        setShouldStoreBypassCache(true);
+    }
+    
     public String toString() {
     	String referenceClassString = "";
     	String nameString = "";

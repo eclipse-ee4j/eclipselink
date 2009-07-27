@@ -22,7 +22,8 @@
  *     17/04/2009-1.1 Michael O'Brien
  *         - 272022: For rollback scenarios - If the current thread and the active thread
  *            on the mutex do not match for read locks (not yet transitioned to deferred locks) - switch them
- *                        
+ *     07/16/2009-2.0 Guy Pelletier 
+ *       - 277039: JPA 2.0 Cache Usage Settings
  ******************************************************************************/  
 package org.eclipse.persistence.internal.sessions;
 
@@ -3229,22 +3230,24 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 //If we are merging into the shared cache acquire all required locks before merging.
                 this.parent.getIdentityMapAccessorInstance().getWriteLockManager().acquireRequiredLocks(getMergeManager(), (UnitOfWorkChangeSet)getUnitOfWorkChangeSet());
             }
-            for (Map<ObjectChangeSet, ObjectChangeSet> objectChangesList : ((UnitOfWorkChangeSet)getUnitOfWorkChangeSet()).getObjectChanges().values()) {
-                // May be no changes for that class type.
-                for (ObjectChangeSet changeSetToWrite : objectChangesList.values()) {
-                    if (changeSetToWrite.hasChanges()) {
-                        Object objectToWrite = changeSetToWrite.getUnitOfWorkClone();
-                        // It would be so much nicer if the change set was keyed by the class instead of class name,
-                        // so this could be done once.  We should key on class, and only convert to keying on name when broadcasting changes.
-                        ClassDescriptor descriptor = getDescriptor(objectToWrite);
-                        // PERF: Do not merge into the session cache if set to unit of work isolated.
-                        if ((!isNestedUnitOfWork) && descriptor.shouldIsolateObjectsInUnitOfWork()) {
-                            break;
+                if (! shouldStoreBypassCache()) {
+                    for (Map<ObjectChangeSet, ObjectChangeSet> objectChangesList : ((UnitOfWorkChangeSet)getUnitOfWorkChangeSet()).getObjectChanges().values()) {
+                        // May be no changes for that class type.
+                        for (ObjectChangeSet changeSetToWrite : objectChangesList.values()) {
+                            if (changeSetToWrite.hasChanges()) {
+                                Object objectToWrite = changeSetToWrite.getUnitOfWorkClone();
+                                // It would be so much nicer if the change set was keyed by the class instead of class name,
+                                // so this could be done once.  We should key on class, and only convert to keying on name when broadcasting changes.
+                                ClassDescriptor descriptor = getDescriptor(objectToWrite);
+                                // PERF: Do not merge into the session cache if set to unit of work isolated.
+                                if ((!isNestedUnitOfWork) && descriptor.shouldIsolateObjectsInUnitOfWork()) {
+                                    break;
+                                }
+                                manager.mergeChanges(objectToWrite, changeSetToWrite);
+                            }
                         }
-                        manager.mergeChanges(objectToWrite, changeSetToWrite);
                     }
                 }
-            }
 
             // Notify the queries to merge into the shared cache
             if (this.modifyAllQueries != null) {
@@ -5081,6 +5084,17 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      */
     public boolean shouldResumeUnitOfWorkOnTransactionCompletion(){
         return this.resumeOnTransactionCompletion;
+    }
+    
+    /**
+     * INTERNAL:
+     * This is a JPA setting that is off by default in regular EclipseLink. It's
+     * used to avoid updating the shared cache when the cacheStoreMode property
+     * is set to BYPASS.
+     * @see RepeatableWriteUnitOfWork.
+     */
+    public boolean shouldStoreBypassCache() {
+        return false;
     }
     
     /**

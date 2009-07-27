@@ -10,6 +10,8 @@
  * Contributors:
  *     06/16/2009-2.0 Guy Pelletier 
  *       - 277039: JPA 2.0 Cache Usage Settings
+ *     07/16/2009-2.0 Guy Pelletier 
+ *       - 277039: JPA 2.0 Cache Usage Settings
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.cacheable;
 
@@ -55,6 +57,27 @@ public class CacheableTableCreator extends TableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(true);
         table.addField(fieldID);
+        
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("NAME");
+        fieldNAME.setTypeName("VARCHAR");
+        fieldNAME.setSize(75);
+        fieldNAME.setShouldAllowNull(true);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setIsIdentity(false);
+        table.addField(fieldNAME);
+        
+        FieldDefinition fieldDTYPE = new FieldDefinition();
+        fieldDTYPE.setName("DTYPE");
+        fieldDTYPE.setTypeName("VARCHAR2");
+        fieldDTYPE.setSize(15);
+        fieldDTYPE.setSubSize(0);
+        fieldDTYPE.setIsPrimaryKey(false);
+        fieldDTYPE.setIsIdentity(false);
+        fieldDTYPE.setUnique(false);
+        fieldDTYPE.setShouldAllowNull(true);
+        table.addField(fieldDTYPE);
     
         return table;
     }

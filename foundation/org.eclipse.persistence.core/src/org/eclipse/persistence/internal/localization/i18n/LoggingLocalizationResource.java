@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     07/16/2009-2.0 Guy Pelletier 
+ *       - 277039: JPA 2.0 Cache Usage Settings
  ******************************************************************************/  
 package org.eclipse.persistence.internal.localization.i18n;
 
@@ -252,7 +254,6 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "metadata_warning_ignore_association_override", "Ignoring the association override named [{0}] on the element [{1}] of the mapped superclass [{2}] since an association override with the same name has been specified on the entity class [{3}]." },
         
         { "metadata_warning_ignore_inheritance_subclass_cache", "Ignoring the cache metadata on the inheritance subclass [{0}]. Cache metadata should only be specified on the root of the inheritance hierarchy and can not be overidden in an inheritance subclass." },
-        { "metadata_warning_ignore_inheritance_subclass_cacheable", "Ignoring the cacheable metadata on the inheritance subclass [{0}]. Cacheable metadata should only be specified on the root of the inheritance hierarchy and can not be overidden in an inheritance subclass." },
         { "metadata_warning_ignore_inheritance_subclass_cache_interceptor", "Ignoring the cache interceptor metadata on the inheritance subclass [{0}]. Cache interceptor metadata should only be specified on the root of the inheritance hierarchy and can not be overidden in an inheritance subclass." },
         { "metadata_warning_ignore_inheritance_subclass_default_redirectors", "Ignoring the default redirector metadata on the inheritance subclass [{0}]. Default redirector metadata should only be specified on the root of the inheritance hierarchy and can not be overidden in an inheritance subclass." },
         { "metadata_warning_ignore_inheritance_subclass_read_only", "Ignoring the read only setting on the inheritance subclass [{0}]. A read only setting should only be specified on the root of the inheritance hierarchy and can not be overridden in an inheritance subclass." },

@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     07/16/2009-2.0 Guy Pelletier 
+ *       - 277039: JPA 2.0 Cache Usage Settings
  ******************************************************************************/  
 package org.eclipse.persistence.internal.descriptors;
 
@@ -536,7 +538,8 @@ public class ObjectBuilder implements Cloneable, Serializable {
         if (!concreteDescriptor.shouldUseSessionCacheInUnitOfWorkEarlyTransaction()) {
             if (((unitOfWork.hasCommitManager() && unitOfWork.getCommitManager().isActive())
                     || unitOfWork.wasTransactionBegunPrematurely()
-                    || concreteDescriptor.shouldIsolateObjectsInUnitOfWork())
+                    || concreteDescriptor.shouldIsolateObjectsInUnitOfWork()
+                    || query.shouldStoreBypassCache())
                         && (!unitOfWork.isClassReadOnly(concreteDescriptor.getJavaClass(), concreteDescriptor))) {
                 // It is easier to switch once to the correct builder here.
                 return concreteDescriptor.getObjectBuilder().buildWorkingCopyCloneFromRow(query, joinManager, databaseRow, unitOfWork, primaryKey);
@@ -567,6 +570,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
         Object original = null;
         Object clone = null;
 
+        
         // forwarding queries to different sessions is now as simple as setting
         // the session on the query.
         query.setSession(session);
@@ -637,7 +641,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 }
             }
 
-            if (domainObject == null) {
+            if (domainObject == null || query.shouldRetrieveBypassCache()) {
                 cacheHit = false;
                 if (query.isReadObjectQuery() && ((ReadObjectQuery)query).shouldLoadResultIntoSelectionObject()) {
                     domainObject = ((ReadObjectQuery)query).getSelectionObject();
@@ -646,13 +650,13 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 }
 
                 // The object must be registered before building its attributes to resolve circular dependencies.
-                if (query.shouldMaintainCache()) {
+                if (query.shouldMaintainCache() && ! query.shouldStoreBypassCache()) {
                     cacheKey.setObject(domainObject);
                     copyQueryInfoToCacheKey(cacheKey, query, databaseRow, session, concreteDescriptor);
                 }
 
                 concreteDescriptor.getObjectBuilder().buildAttributesIntoObject(domainObject, databaseRow, query, joinManager, false);
-                if (query.shouldMaintainCache()) {
+                if (query.shouldMaintainCache() && ! query.shouldStoreBypassCache()) {
                     // Set the fetch group to the domain object, after built.
                     if ((query.getFetchGroup() != null) && concreteDescriptor.hasFetchGroupManager()) {
                         concreteDescriptor.getFetchGroupManager().setObjectFetchGroup(domainObject, query.getFetchGroup(), session);
@@ -1326,7 +1330,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                     // If the original is invalid or always refresh then need to refresh.
                     isARefresh = wasAnOriginal && (descriptor.shouldAlwaysRefreshCache() || descriptor.getCacheInvalidationPolicy().isInvalidated(originalCacheKey, query.getExecutionTime()));
                     // Otherwise can just register the cached original object and return it.
-                    if (wasAnOriginal && (!isARefresh)) {
+                    if (wasAnOriginal && (!isARefresh) && ! query.shouldRetrieveBypassCache()) {
                         return unitOfWork.cloneAndRegisterObject(original, originalCacheKey, unitOfWorkCacheKey, descriptor);
                     }
                 }
@@ -1337,7 +1341,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 // that method we don't need to lock the shared cache, because
                 // are not building off of an original in the shared cache.
                 // The copy policy is easier to invoke if we have an original.
-                if (wasAnOriginal) {
+                if (wasAnOriginal && query.shouldStoreBypassCache()) {
                     workingClone = instantiateWorkingCopyClone(original, unitOfWork);
                     // intentionally put nothing in clones to originals, unless really was one.
                     unitOfWork.getCloneToOriginals().put(workingClone, original);

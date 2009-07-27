@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     07/16/2009-2.0 Guy Pelletier 
+ *       - 277039: JPA 2.0 Cache Usage Settings
  ******************************************************************************/  
 package org.eclipse.persistence.config;
 
@@ -41,6 +43,27 @@ public class QueryHints {
      */
     public static final String BIND_PARAMETERS = "eclipselink.jdbc.bind-parameters";
 
+    /**
+     * "javax.persistence.cacheRetrieveMode"
+     * <p>Configures the behavior when data is retrieved by the find methods and 
+     * by the execution of queries. The cacheRetrieveMode is ignored for the 
+     * refresh method, which always causes data to be retrieved from the 
+     * database and not the cache.
+     * @see org.eclipse.persistence.queries.DatabaseQuery#dontMaintainCache()
+     * @see org.eclipse.persistence.queries.ObjectLevelReadQuery#shouldCheckDescriptorForCacheUsage()
+     */
+    public static final String CACHE_RETRIEVE_MODE = "javax.persistence.cacheRetrieveMode";
+    
+    /**
+     * "javax.persistence.cacheStoreMode"
+     * <p> Configures the behavior when data is read from the database and when 
+     * data is committed into the database.
+     * @see org.eclipse.persistence.queries.DatabaseQuery#dontMaintainCache()
+     * @see org.eclipse.persistence.queries.DatabaseQuery#maintainCache()
+     * @see org.eclipse.persistence.queries.ObjectLevelReadQuery#refreshIdentityMapResult()
+     */
+    public static final String CACHE_STORE_MODE = "javax.persistence.cacheStoreMode";
+    
     /**
      * "eclipselink.cache-usage"
      * <p>Configures the query to utilize the EclipseLink cache, by default the cache is not checked on queries before accessing the database.
