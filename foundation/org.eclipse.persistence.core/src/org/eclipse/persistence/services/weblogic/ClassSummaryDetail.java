@@ -20,7 +20,6 @@ package org.eclipse.persistence.services.weblogic;
 
 import javax.management.openmbean.CompositeType;
 import javax.management.openmbean.SimpleType;
-import javax.management.openmbean.ArrayType;
 import javax.management.openmbean.OpenType;
 import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.CompositeDataSupport;

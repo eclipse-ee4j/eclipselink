@@ -66,7 +66,6 @@ import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.DefaultSessionLog;
 import org.eclipse.persistence.logging.JavaLog;
 import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.platform.server.ServerPlatform;
 import org.eclipse.persistence.platform.server.wls.WebLogicPlatform;
 import org.eclipse.persistence.services.RuntimeServices;
 import org.eclipse.persistence.sessions.DatabaseLogin;
