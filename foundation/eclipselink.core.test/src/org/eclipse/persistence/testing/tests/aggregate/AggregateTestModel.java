@@ -85,6 +85,7 @@ public class AggregateTestModel extends TestModel {
 
     public static TestSuite getAggregateInheritanceTestSuite() {
         TestSuite suite = getSRGAggregateInheritanceTestSuite();
+        suite.addTest(new AggregateInheritanceInitAggregateTestCase());
 
         // Add new tests here...
         return suite;
