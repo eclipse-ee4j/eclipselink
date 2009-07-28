@@ -857,39 +857,57 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         EntityManager em = createEntityManager();
 
         // Create and persist the beerConsumer
-        beginTransaction(em);
-        beerConsumer = new BeerConsumer();
-        beerConsumer.setName("Beer Man");
+        try {
+            beginTransaction(em);
+            beerConsumer = new BeerConsumer();
+            beerConsumer.setName("Beer Man");
 
-        blueLightPersisted = new BlueLight();
-        beerConsumer.getBlueLightBeersToConsume().add(blueLightPersisted);
-        blueLightPersisted.setBeerConsumer(beerConsumer);
+            blueLightPersisted = new BlueLight();
+            beerConsumer.getBlueLightBeersToConsume().add(blueLightPersisted);
+            blueLightPersisted.setBeerConsumer(beerConsumer);
 
-        em.persist(beerConsumer);
+            em.persist(beerConsumer);
 
-        // Unique key must be set before commit.
-        blueLightPersisted.setUniqueKey(blueLightPersisted.getId().toBigInteger());
+            // Unique key must be set before commit.
+            blueLightPersisted.setUniqueKey(blueLightPersisted.getId().toBigInteger());
 
-        commitTransaction(em);
-
-        // They should be known by the EM
-        assertTrue(em.contains(beerConsumer));
-        assertTrue(em.contains(blueLightPersisted));
+            // They should be known by the EM
+            assertTrue(em.contains(beerConsumer));
+            assertTrue(em.contains(blueLightPersisted));
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+            throw e;
+        }
 
         // Create BlueLightDetached and manage the relations
-        beginTransaction(em);
-        blueLightDetached = new BlueLight();
-        blueLightDetached.setUniqueKey(new BigDecimal(blueLightPersisted.getUniqueKey().intValue() + 1).toBigInteger());
+        try {
+            beginTransaction(em);
+            blueLightDetached = new BlueLight();
+            blueLightDetached.setUniqueKey(new BigDecimal(blueLightPersisted.getUniqueKey().intValue() + 1).toBigInteger());
 
-        // Set the pointers
-        beerConsumer.getBlueLightBeersToConsume().add(blueLightDetached);
-        blueLightDetached.setBeerConsumer(beerConsumer);
+            // Set the pointers
+            beerConsumer.getBlueLightBeersToConsume().add(blueLightDetached);
+            blueLightDetached.setBeerConsumer(beerConsumer);
 
-        // And now remove the beer consumer. The remove-operation should cascade
-        em.remove(beerConsumer);
+            // And now remove the beer consumer. The remove-operation should cascade
+            if (isOnServer()){
+                beerConsumer = em.find(BeerConsumer.class, m_beerConsumerId);
+            }
+            em.remove(beerConsumer);
 
-        // It's o.k. should be detached
-        assertFalse(em.contains(blueLightDetached));
+            // It's o.k. should be detached
+            assertFalse(em.contains(blueLightDetached));
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+            throw e;
+        }
 
         try {
             commitTransaction(em);
